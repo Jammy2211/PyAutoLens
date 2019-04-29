@@ -491,7 +491,7 @@ class TestAbstractTracer(object):
             assert tracer.angular_diameter_distance_from_image_to_source_plane_in_units(unit_length='kpc') == \
                    pytest.approx(1481890.4, 1e-5)
 
-            assert tracer.critical_surface_mass_density_between_planes_in_units(i=0, j=1, unit_length='kpc',
+            assert tracer.critical_surface_density_between_planes_in_units(i=0, j=1, unit_length='kpc',
                                                                                 unit_mass='solMass') == \
                    pytest.approx(4.85e9, 1e-2)
 
@@ -499,7 +499,7 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            assert tracer.critical_surface_mass_density_between_planes_in_units(i=0, j=1, unit_length='arcsec',
+            assert tracer.critical_surface_density_between_planes_in_units(i=0, j=1, unit_length='arcsec',
                                                                                 unit_mass='solMass') == \
                    pytest.approx(17593241668, 1e-2)
 
@@ -717,11 +717,11 @@ class TestAbstractTracer(object):
             assert tracer.einstein_radius_of_plane_in_units(i=0, unit_length='kpc') == g0_einstein_radius + g1_einstein_radius
             assert tracer.einstein_radius_of_plane_in_units(i=1, unit_length='kpc') is None
 
-            critical_surface_mass_density = tracer.critical_surface_mass_density_between_planes_in_units(i=0,j=1,
+            critical_surface_density = tracer.critical_surface_density_between_planes_in_units(i=0,j=1,
                                                                                                          unit_mass='solMass')
 
-            g0_mass = g0.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
-            g1_mass = g1.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
+            g0_mass = g0.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=critical_surface_density)
+            g1_mass = g1.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=critical_surface_density)
             assert tracer.einstein_mass_between_planes_in_units(i=0, j=1, unit_mass='solMass') == g0_mass + g1_mass
             assert tracer.einstein_mass_between_planes_in_units(i=1, j=1, unit_mass='solMass') is None
 
@@ -759,13 +759,13 @@ class TestAbstractTracer(object):
                    g0_einstein_radius + g1_einstein_radius
             assert tracer.einstein_radius_of_plane_in_units(i=1, unit_length='kpc') is None
 
-            critical_surface_mass_density = tracer.critical_surface_mass_density_between_planes_in_units(i=0,j=1,
+            critical_surface_density = tracer.critical_surface_density_between_planes_in_units(i=0,j=1,
                                                                                                          unit_mass='solMass')
 
             g0_mass = g0.einstein_mass_in_units(unit_mass='solMass',
-                                                critical_surface_mass_density=critical_surface_mass_density)
+                                                critical_surface_density=critical_surface_density)
             g1_mass = g1.einstein_mass_in_units(unit_mass='solMass',
-                                                critical_surface_mass_density=critical_surface_mass_density)
+                                                critical_surface_density=critical_surface_density)
             assert tracer.einstein_mass_between_planes_in_units(i=0, j=1, unit_mass='solMass') == g0_mass + g1_mass
             assert tracer.einstein_mass_between_planes_in_units(i=1, j=1, unit_mass='solMass') is None
             assert tracer.einstein_mass_between_image_and_source_plane_in_units(unit_mass='solMass') == \
@@ -1177,9 +1177,9 @@ class TestMultiTracer(object):
                    pytest.approx(-957816)
             assert tracer.angular_diameter_distance_between_planes_in_units(i=2, j=2, unit_length='kpc') == 0.0
 
-            assert tracer.critical_surface_mass_density_between_planes_in_units(
+            assert tracer.critical_surface_density_between_planes_in_units(
                 i=0, j=1, unit_length='kpc', unit_mass='solMass') == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_surface_mass_density_between_planes_in_units(
+            assert tracer.critical_surface_density_between_planes_in_units(
                 i=0, j=1, unit_length='arcsec', unit_mass='solMass') == pytest.approx(17593241668, 1e-2)
 
             assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(0.9500, 1e-4)
@@ -1248,9 +1248,9 @@ class TestMultiTracer(object):
                    pytest.approx(-399419, 1e-5)
             assert tracer.angular_diameter_distance_between_planes_in_units(i=3, j=3, unit_length='kpc') == 0.0
 
-            assert tracer.critical_surface_mass_density_between_planes_in_units(
+            assert tracer.critical_surface_density_between_planes_in_units(
                 i=0, j=1, unit_length='kpc', unit_mass='solMass') == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_surface_mass_density_between_planes_in_units(
+            assert tracer.critical_surface_density_between_planes_in_units(
                 i=0, j=1, unit_length='arcsec', unit_mass='solMass') == pytest.approx(17593241668, 1e-2)
 
             assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(0.9348, 1e-4)

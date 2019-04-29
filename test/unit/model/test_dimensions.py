@@ -88,7 +88,7 @@ class TestMass(object):
         assert unit_angular == 2.0
         assert unit_angular.unit == 'angular'
 
-        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_mass_density=2.0)
+        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_density=2.0)
 
         assert unit_sol_mass == 4.0
         assert unit_sol_mass.unit == 'solMass'
@@ -98,7 +98,7 @@ class TestMass(object):
         assert unit_sol_mass == 4.0
         assert unit_sol_mass.unit == 'solMass'
 
-        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_mass_density=2.0)
+        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_density=2.0)
 
         assert unit_angular == 2.0
         assert unit_angular.unit == 'angular'
@@ -123,7 +123,7 @@ class TestMassOverLuminosity(object):
         assert unit_angular == 2.0
         assert unit_angular.unit == 'angular / eps'
 
-        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_mass_density=2.0,
+        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_density=2.0,
                                              unit_luminosity='eps')
 
         assert unit_sol_mass == 4.0
@@ -134,7 +134,7 @@ class TestMassOverLuminosity(object):
         assert unit_sol_mass == 4.0
         assert unit_sol_mass.unit == 'solMass / eps'
 
-        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_mass_density=2.0,
+        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_density=2.0,
                                              unit_luminosity='eps')
 
         assert unit_angular == 2.0
@@ -192,7 +192,7 @@ class TestMassOverLength2(object):
         assert unit_angular == 2.0
         assert unit_angular.unit == 'angular / arcsec^2'
 
-        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_mass_density=2.0,
+        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_density=2.0,
                                              unit_length='arcsec')
 
         assert unit_sol_mass == 4.0
@@ -203,7 +203,7 @@ class TestMassOverLength2(object):
         assert unit_sol_mass == 4.0
         assert unit_sol_mass.unit == 'solMass / arcsec^2'
 
-        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_mass_density=2.0,
+        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_density=2.0,
                                              unit_length='arcsec')
 
         assert unit_angular == 2.0
@@ -261,7 +261,7 @@ class TestMassOverLength3(object):
         assert unit_angular == 2.0
         assert unit_angular.unit == 'angular / arcsec^3'
 
-        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_mass_density=2.0,
+        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_density=2.0,
                                              unit_length='arcsec')
 
         assert unit_sol_mass == 4.0
@@ -272,7 +272,7 @@ class TestMassOverLength3(object):
         assert unit_sol_mass == 4.0
         assert unit_sol_mass.unit == 'solMass / arcsec^3'
 
-        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_mass_density=2.0,
+        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_density=2.0,
                                              unit_length='arcsec')
 
         assert unit_angular == 2.0

@@ -12,7 +12,7 @@ class DimensionsProfile(object):
         pass
 
     def new_profile_with_units_converted(self, unit_length=None, unit_luminosity=None, unit_mass=None,
-                                         kpc_per_arcsec=None, exposure_time=None, critical_surface_mass_density=None):
+                                         kpc_per_arcsec=None, exposure_time=None, critical_surface_density=None):
 
         constructor_args = inspect.getfullargspec(self.__init__).args
 
@@ -25,9 +25,9 @@ class DimensionsProfile(object):
             if unit_luminosity is not None and isinstance(value, Luminosity):
                 return value.convert(unit_luminosity, exposure_time)
             if unit_mass is not None and isinstance(value, Mass):
-                return value.convert(unit_mass, critical_surface_mass_density)
+                return value.convert(unit_mass, critical_surface_density)
             if (unit_mass is not None or unit_luminosity is not None) and isinstance(value, MassOverLuminosity):
-                return value.convert(unit_mass, unit_luminosity, critical_surface_mass_density, exposure_time)
+                return value.convert(unit_mass, unit_luminosity, critical_surface_density, exposure_time)
             return value
 
         return self.__class__(
@@ -87,12 +87,12 @@ class Mass(dimension_type.DimensionType):
     def unit(self):
         return self.unit_mass
 
-    def convert(self, unit_mass, critical_surface_mass_density=None):
+    def convert(self, unit_mass, critical_surface_density=None):
 
         value = self
 
         value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
-                             critical_surface_mass_density=critical_surface_mass_density)
+                             critical_surface_density=critical_surface_density)
 
         return Mass(value=value, unit_mass=unit_mass)
 
@@ -110,7 +110,7 @@ class MassOverLuminosity(dimension_type.DimensionType):
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_luminosity
 
-    def convert(self, unit_luminosity, unit_mass,  exposure_time=None, critical_surface_mass_density=None):
+    def convert(self, unit_luminosity, unit_mass,  exposure_time=None, critical_surface_density=None):
         
         value = self
 
@@ -122,7 +122,7 @@ class MassOverLuminosity(dimension_type.DimensionType):
         
         if unit_mass is not None:
             value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
-                                 critical_surface_mass_density=critical_surface_mass_density)
+                                 critical_surface_density=critical_surface_density)
         else:
             unit_mass = value.unit_mass
 
@@ -142,7 +142,7 @@ class MassOverLength2(dimension_type.DimensionType):
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_length + '^2'
 
-    def convert(self, unit_length, unit_mass, critical_surface_mass_density=None, kpc_per_arcsec=None):
+    def convert(self, unit_length, unit_mass, critical_surface_density=None, kpc_per_arcsec=None):
 
         value = self
 
@@ -154,7 +154,7 @@ class MassOverLength2(dimension_type.DimensionType):
 
         if unit_mass is not None:
             value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
-                                 critical_surface_mass_density=critical_surface_mass_density)
+                                 critical_surface_density=critical_surface_density)
         else:
             unit_mass = value.unit_mass
 
@@ -173,7 +173,7 @@ class MassOverLength3(dimension_type.DimensionType):
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_length + '^3'
 
-    def convert(self, unit_length, unit_mass, critical_surface_mass_density=None, kpc_per_arcsec=None):
+    def convert(self, unit_length, unit_mass, critical_surface_density=None, kpc_per_arcsec=None):
 
         value = self
 
@@ -185,7 +185,7 @@ class MassOverLength3(dimension_type.DimensionType):
 
         if unit_mass is not None:
             value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
-                                 critical_surface_mass_density=critical_surface_mass_density)
+                                 critical_surface_density=critical_surface_density)
         else:
             unit_mass = value.unit_mass
 
@@ -225,18 +225,18 @@ def convert_luminosity(value, unit_current, unit_new, power, exposure_time):
         raise exc.UnitsException('The unit specified for the luminosity of a value was an invalid string, you '
                                  'must use (electrons per second | counts)')
 
-def convert_mass(value, unit_current, unit_new, critical_surface_mass_density):
+def convert_mass(value, unit_current, unit_new, critical_surface_density):
     
-    if unit_current is not unit_new and critical_surface_mass_density is None:
+    if unit_current is not unit_new and critical_surface_density is None:
         raise exc.UnitsException('The mass for a value has been requested in new units '
                                  'without a critical surface mass density conversion factor.')
 
     if unit_current is unit_new:
         return value
     elif unit_current is 'angular' and unit_new is 'solMass':
-        return critical_surface_mass_density * value
+        return critical_surface_density * value
     elif unit_current is 'solMass' and unit_new is 'angular':
-        return value / critical_surface_mass_density
+        return value / critical_surface_density
     else:
         raise exc.UnitsException('The unit specified for the mass of a value was an invalid string, you '
                                  'must use (angular | solMass)')

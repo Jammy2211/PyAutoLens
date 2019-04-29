@@ -126,14 +126,14 @@ class TestAbstractPlane(object):
 
             plane = pl.AbstractPlane(redshift=0.6, galaxies=None)
 
-            assert plane.cosmic_average_mass_density_in_units(unit_length='arcsec', unit_mass='solMass') == \
-                   cosmology_util.cosmic_average_mass_density_from_redshift_and_cosmology(
+            assert plane.cosmic_average_density_in_units(unit_length='arcsec', unit_mass='solMass') == \
+                   cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
                        redshift=0.6, cosmology=planck, unit_length='arcsec', unit_mass='solMass')
 
             plane = pl.AbstractPlane(redshift=0.6, galaxies=None, cosmology=planck)
 
-            assert plane.cosmic_average_mass_density_in_units(unit_length='kpc', unit_mass='solMass') == \
-                   cosmology_util.cosmic_average_mass_density_from_redshift_and_cosmology(
+            assert plane.cosmic_average_density_in_units(unit_length='kpc', unit_mass='solMass') == \
+                   cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
                        redshift=0.6, cosmology=planck, unit_length='kpc', unit_mass='solMass')
 
     class TestProperties:
@@ -336,11 +336,11 @@ class TestAbstractPlane(object):
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
-            g0_mass = g0.mass_within_circle_in_units(radius=radius, unit_mass='solMass', critical_surface_mass_density=3.0)
-            g1_mass = g1.mass_within_circle_in_units(radius=radius, unit_mass='solMass', critical_surface_mass_density=3.0)
+            g0_mass = g0.mass_within_circle_in_units(radius=radius, unit_mass='solMass', critical_surface_density=3.0)
+            g1_mass = g1.mass_within_circle_in_units(radius=radius, unit_mass='solMass', critical_surface_density=3.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=0.5)
             plane_masses = plane.masses_of_galaxies_within_circles_in_units(radius=radius, unit_mass='solMass',
-                                                                            critical_surface_mass_density=3.0)
+                                                                            critical_surface_density=3.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -387,13 +387,13 @@ class TestAbstractPlane(object):
             assert plane_masses[1] == g1_mass
 
             g0_mass = g0.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='solMass',
-                                                      critical_surface_mass_density=3.0)
+                                                      critical_surface_density=3.0)
             g1_mass = g1.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='solMass',
-                                                      critical_surface_mass_density=3.0)
+                                                      critical_surface_density=3.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=0.5)
             plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(major_axis=major_axis,
                                                                              unit_mass='solMass',
-                                                                             critical_surface_mass_density=3.0)
+                                                                             critical_surface_density=3.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -435,7 +435,7 @@ class TestAbstractPlane(object):
             assert plane.einstein_radius_in_units(unit_length='arcsec') == pytest.approx(1.0, 1.0e-4)
             assert plane.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == pytest.approx(2.0, 1.0e-4)
             assert plane.einstein_mass_in_units(unit_mass='angular') == pytest.approx(np.pi, 1.0e-4)
-            assert plane.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=2.0) == \
+            assert plane.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=2.0) == \
                    pytest.approx(2.0*np.pi, 1.0e-4)
 
             plane = pl.AbstractPlane(galaxies=[sis_1], redshift=0.5)
@@ -443,7 +443,7 @@ class TestAbstractPlane(object):
             assert plane.einstein_radius_in_units(unit_length='arcsec') == pytest.approx(2.0, 1.0e-4)
             assert plane.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == pytest.approx(4.0, 1.0e-4)
             assert plane.einstein_mass_in_units(unit_mass='angular') == pytest.approx(np.pi*2.0**2.0, 1.0e-4)
-            assert plane.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=2.0) == \
+            assert plane.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=2.0) == \
                    pytest.approx(2.0*np.pi*2.0**2.0, 1.0e-4)
 
             plane = pl.AbstractPlane(galaxies=[sis_0, sis_1], redshift=0.5)
@@ -452,7 +452,7 @@ class TestAbstractPlane(object):
             assert plane.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == \
                    pytest.approx(2.0*3.0, 1.0e-4)
             assert plane.einstein_mass_in_units(unit_mass='angular') == pytest.approx(np.pi*(1.0 + 2.0**2.0), 1.0e-4)
-            assert plane.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=2.0) == \
+            assert plane.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=2.0) == \
                    pytest.approx(2.0*np.pi*(1.0 + 2.0**2.0), 1.0e-4)
 
         def test__include_galaxy_with_no_mass_profile__does_not_impact_einstein_radius_or_mass(self):
