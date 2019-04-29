@@ -51,6 +51,8 @@ class TestCase:
         assert len(source_galaxy.light_profiles) == 2
         assert len(source_galaxy.mass_profiles) == 0
 
+        print(lens_galaxy.light_profiles)
+
         assert len(lens_galaxy.light_profiles) == 1
         assert len(lens_galaxy.mass_profiles) == 1
 
