@@ -20,6 +20,7 @@ class MaskException(Exception):
 class CosmologyException(Exception):
     pass
 
+
 class GalaxyException(Exception):
     pass
 
