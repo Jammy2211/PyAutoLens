@@ -1311,123 +1311,57 @@ class TestTruncatedNFW(object):
                pytest.approx(np.array([0.134395, 0.840674]), 1.0e-4)
 
     def test__coord_function_k__correct_values(self):
+
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=2.0)
 
         assert truncated_nfw.coord_func_k(grid_radius=np.array([2.0, 3.0])) == \
-               pytest.approx(np.array([-0.88137, -0.62514]), 1.0e-4)
+               pytest.approx(np.array([-0.09983408, -0.06661738]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=4.0)
 
         assert truncated_nfw.coord_func_k(grid_radius=np.array([2.0, 3.0])) == \
-               pytest.approx(np.array([-1.44363, -1.09861]), 1.0e-4)
+               pytest.approx(np.array([-0.19869011, -0.1329414]), 1.0e-4)
 
     def test__coord_function_l__correct_values(self):
-        # f_r = self.coord_func_f(r=r)
-        # g_r = self.coord_func_g(r=r)
-        # k_r = self.coord_func_k(r=r)
-        #
-        # coeff = np.divide(self.truncation_radius**2.0, (self.truncation_radius**2.0 + 1.0)**2.0)
-        # term_1 = (self.truncation_radius**2.0 + 1.0)*g_r
-        # term_2 = 2*f_r
-        # term_3 = np.pi/(np.sqrt(self.truncation_radius ** 2.0 + r ** 2.0))
-        # term_4 = ((self.truncation_radius**2.0 - 1.0) /
-        #           (self.truncation_radius * (np.sqrt(self.truncation_radius ** 2.0 + r ** 2.0)))) * k_r
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=2.0)
 
-        coeff = 0.16
-        term_1 = 0.6590003532
-        term_2 = 1.20919957615
-        term_3 = 1.1107207345
-        term_4 = -0.4674189301
-
-        value = coeff * (term_1 + term_2 - term_3 + term_4)
-
         assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
+               pytest.approx(np.array([0.00080191, 0.00080191]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
 
-        coeff = 0.09
-        term_1 = 1.3180007
-        term_2 = 1.20919957615
-        term_3 = 0.87132
-        term_4 = -0.883647
-
-        value = coeff * (term_1 + term_2 - term_3 + term_4)
-
         assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
+               pytest.approx(np.array([.00178711, 0.00178711]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
-        coeff = 0.09
-        term_1 = 0.705987
-        term_2 = 0.870419
-        term_3 = 0.74048
-        term_4 = -0.553977
-
-        value = coeff * (term_1 + term_2 - term_3 + term_4)
-
         assert truncated_nfw.coord_func_l(grid_radius=np.array([3.0, 3.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
+               pytest.approx(np.array([0.00044044, 0.00044044]), 1.0e-4)
 
     def test__coord_function_m__correct_values(self):
-        # f_r = self.coord_func_f(r=r)
-        # k_r = self.coord_func_k(r=r)
-        #
-        # coeff = (self.truncation_radius**2.0 / (self.truncation_radius**2.0 + 1.0) ** 2.0
-        # term_1 = ((self.truncation_radius**2.0 + 2.0*r**2.0 - 1.0)*f_r)
-        # term_2 = (np.pi*self.truncation_radius)
-        # term_3 = ((self.truncation_radius**2.0 - 1.0) * np.log(self.truncation_radius))
-        # term_4 = (np.sqrt(r**2.0 + self.truncation_radius**2.0)*((
-        # (self.truncation_radius**2.0 - 1.0)/self.truncation_radius)*k_r - np.pi))
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=2.0)
 
-        coeff = 0.16
-        term_1 = 6.650597
-        term_2 = 6.283185
-        term_3 = 2.079441
-        term_4 = -12.62511
-
-        value = coeff * (term_1 + term_2 + term_3 + term_4)
-
         assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
+               pytest.approx(np.array([0.0398826, 0.0398826]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
 
-        coeff = 0.09
-        term_1 = 9.673596
-        term_2 = 9.4247779
-        term_3 = 8.788898
-        term_4 = -22.81458
-
-        value = coeff * (term_1 + term_2 + term_3 + term_4)
-
         assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
+               pytest.approx(np.array([0.06726646, 0.06726646]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
-
-        coeff = 0.09
-        term_1 = 11.31545
-        term_2 = 9.4247779
-        term_3 = 8.788898
-        term_4 = -23.30025
-
-        value = coeff * (term_1 + term_2 + term_3 + term_4)
 
         assert truncated_nfw.coord_func_m(grid_radius=np.array([3.0, 3.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
+               pytest.approx(np.array([0.06946888, 0.06946888]), 1.0e-4)
 
     def test__convergence_correct_values(self):
 
@@ -1450,9 +1384,10 @@ class TestTruncatedNFW(object):
                                                  truncation_radius=2.0)
 
         assert truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == \
-               pytest.approx(6.0 * 0.7042266, 1.0e-4)
+               pytest.approx(1.51047026, 1.0e-4)
 
     def test__deflections_correct_values(self):
+
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
                                                  truncation_radius=2.0)
 
@@ -1489,11 +1424,11 @@ class TestTruncatedNFW(object):
 
         deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
 
-        factor = (4.0 * 1.0 * 4.0) / (2.0 / 4.0)
-        assert deflections[0, 0] == pytest.approx(factor * 0.116951813, 1.0e-4)
+        assert deflections[0, 0] == pytest.approx(2.1702661386, 1.0e-4)
         assert deflections[0, 1] == pytest.approx(0.0, 1.0e-4)
 
     def test__compare_nfw_and_truncated_nfw_with_large_truncation_radius__convergence_and_deflections_identical(self):
+
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0,
                                                  truncation_radius=50000.0)
 
@@ -1512,6 +1447,7 @@ class TestTruncatedNFW(object):
         assert truncated_nfw_deflections == pytest.approx(nfw_deflections, 1.0e-4)
 
     def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
+
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(-0.7, 0.5), kappa_s=1.0, scale_radius=8.0,
                                                  truncation_radius=2.0)
 
@@ -3122,17 +3058,17 @@ class TestEinsteinRadiusMass(object):
         assert sis_kpc.einstein_radius_in_units(unit_length='kpc') == pytest.approx(2.0, 1e-4)
         assert sis_kpc.einstein_radius_in_units(unit_length='arcsec', kpc_per_arcsec=2.0) == pytest.approx(1.0, 1e-4)
 
-        nfw_arcsec = mp.SphericalNFW(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
-                                     kappa_s=0.5, scale_radius=dim.Length(5.0, 'arcsec'))
-        assert nfw_arcsec.average_convergence_of_1_radius_in_units(unit_length='arcsec') == pytest.approx(2.76386, 1e-4)
-        assert nfw_arcsec.einstein_radius_in_units(unit_length='arcsec') == pytest.approx(2.76386, 1e-4)
-        assert nfw_arcsec.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == pytest.approx(2.0*2.76386, 1e-4)
-        
-        nfw_kpc = mp.SphericalNFW(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
-                                  kappa_s=0.5, scale_radius=dim.Length(5.0, 'kpc'))
-        assert nfw_kpc.average_convergence_of_1_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == pytest.approx(2.76386, 1e-4)
-        assert nfw_kpc.einstein_radius_in_units(unit_length='kpc') == pytest.approx(2.76386, 1e-4)
-        assert nfw_kpc.einstein_radius_in_units(unit_length='arcsec', kpc_per_arcsec=2.0) == pytest.approx(0.5*2.76386, 1e-4)
+        # nfw_arcsec = mp.SphericalNFW(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
+        #                              kappa_s=0.5, scale_radius=dim.Length(5.0, 'arcsec'))
+        # assert nfw_arcsec.average_convergence_of_1_radius_in_units(unit_length='arcsec') == pytest.approx(2.76386, 1e-4)
+        # assert nfw_arcsec.einstein_radius_in_units(unit_length='arcsec') == pytest.approx(2.76386, 1e-4)
+        # assert nfw_arcsec.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == pytest.approx(2.0*2.76386, 1e-4)
+        #
+        # nfw_kpc = mp.SphericalNFW(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
+        #                           kappa_s=0.5, scale_radius=dim.Length(5.0, 'kpc'))
+        # assert nfw_kpc.average_convergence_of_1_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == pytest.approx(2.76386, 1e-4)
+        # assert nfw_kpc.einstein_radius_in_units(unit_length='kpc') == pytest.approx(2.76386, 1e-4)
+        # assert nfw_kpc.einstein_radius_in_units(unit_length='arcsec', kpc_per_arcsec=2.0) == pytest.approx(0.5*2.76386, 1e-4)
 
     def test__einstein_mass__radius_unit_conversions(self):
         
@@ -3192,15 +3128,17 @@ class TestMassWithinCircle(object):
     def test__mass_in_angular_units__singular_isothermal_sphere__compare_to_analytic(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
+
         radius = dim.Length(2.0, 'arcsec')
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                               critical_surface_density=None)
+
+        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         sis = mp.SphericalIsothermal(einstein_radius=4.0)
+
         radius = dim.Length(4.0, 'arcsec')
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                               critical_surface_density=None)
+
+        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
     def test__mass_in_angular_units__singular_isothermal__compare_to_grid(self):
@@ -3211,8 +3149,7 @@ class TestMassWithinCircle(object):
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sis)
 
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                               critical_surface_density=None)
+        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
 
         assert mass_grid == pytest.approx(mass, 0.02)
 
@@ -3222,16 +3159,15 @@ class TestMassWithinCircle(object):
 
         sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
                                             einstein_radius=dim.Length(2.0, 'arcsec'))
+
         radius = dim.Length(2.0, 'arcsec')
-        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                      critical_surface_density=None)
+        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular')
         assert math.pi * sis_arcsec.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         # arcsec -> kpc
 
         radius = dim.Length(2.0, 'kpc')
         mass = sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                      critical_surface_density=None,
                                                       kpc_per_arcsec=2.0)
         assert 2.0 * math.pi * sis_arcsec.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
@@ -3241,15 +3177,13 @@ class TestMassWithinCircle(object):
                                          einstein_radius=dim.Length(2.0,'kpc'))
 
         radius = dim.Length(2.0, 'kpc')
-        mass = sis_kpc.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                   critical_surface_density=None)
+        mass = sis_kpc.mass_within_circle_in_units(radius=radius, unit_mass='angular')
         assert math.pi * sis_kpc.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         # kpc -> arcsec
 
         radius = dim.Length(2.0, 'arcsec')
         mass = sis_kpc.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                   critical_surface_density=None,
                                                    kpc_per_arcsec=2.0)
         assert 0.5 * math.pi * sis_kpc.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
@@ -3257,9 +3191,16 @@ class TestMassWithinCircle(object):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         radius = dim.Length(2.0, 'arcsec')
+        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
 
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+        mass = sis.mass_within_circle_in_units(radius=radius, critical_surface_density=critical_surface_density,
+                                               unit_mass='angular')
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
+
+        critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'angular')
+        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+                                               critical_surface_density=critical_surface_density)
+        assert 2.0 * math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
         mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
@@ -3296,6 +3237,7 @@ class TestMassWithinEllipse(object):
     def test__mass_in_angular_units__singular_isothermal_sphere__compare_circle_and_ellipse(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
+
         radius = dim.Length(2.0)
         mass_circle = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
         mass_ellipse = sis.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
@@ -3331,15 +3273,15 @@ class TestMassWithinEllipse(object):
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=major_axis, profile=sie_arcsec)
 
-        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
-                                                       critical_surface_density=None)
+        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis,
+                                                       unit_mass='angular')
         assert mass_grid == pytest.approx(mass, 0.1)
 
         # arcsec -> kpc
 
         major_axis = dim.Length(0.5, 'kpc')
-        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
-                                                       critical_surface_density=None,
+        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis,
+                                                       unit_mass='angular',
                                                        kpc_per_arcsec=2.0)
         assert 2.0 * mass_grid == pytest.approx(mass, 0.1)
 
@@ -3349,14 +3291,15 @@ class TestMassWithinEllipse(object):
                                          einstein_radius=dim.Length(2.0,'kpc'))
 
         major_axis = dim.Length(0.5, 'kpc')
-        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular', critical_surface_density=None)
+        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis,
+                                                    unit_mass='angular')
         assert mass_grid == pytest.approx(mass, 0.1)
 
         # kpc -> arcsec
 
         major_axis = dim.Length(0.5, 'arcsec')
-        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
-                                                    critical_surface_density=None,
+        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis,
+                                                    unit_mass='angular',
                                                     kpc_per_arcsec=2.0)
         assert 0.5 * mass_grid == pytest.approx(mass, 0.1)
 
@@ -3367,8 +3310,9 @@ class TestMassWithinEllipse(object):
         radius = dim.Length(2.0, 'arcsec')
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sie)
-
-        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, critical_surface_density=critical_surface_density,
+                                                unit_mass='angular')
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert mass_grid == pytest.approx(radius * sie.axis_ratio * mass, 0.1)
@@ -3386,12 +3330,15 @@ class TestMassWithinEllipse(object):
                                             einstein_radius=dim.Length(2.0, 'arcsec'))
 
         major_axis = dim.Length(2.0, 'arcsec')
-        sis_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular', critical_surface_density=None)
+        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
 
         with pytest.raises(exc.UnitsException):
-            sis_arcsec.mass_within_ellipse_in_units(major_axis=0.5, unit_mass='solMass', critical_surface_density=None)
+            sis_arcsec.mass_within_ellipse_in_units(major_axis=0.5, unit_mass='solMass',
+                                                    critical_surface_density=critical_surface_density)
             major_axis = dim.Length(2.0,'kpc')
             sis_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular', kpc_per_arcsec=None)
+            sis_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
+                                                    critical_surface_density=None)
 
     def test__radius_and_critical_surface_density_different_length_units__raises_exception(self):
 
@@ -3412,13 +3359,16 @@ class TestDensityBetweenAnnuli(object):
         einstein_radius = 1.0
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=einstein_radius)
 
+        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
+
         inner_annuli_radius = dim.Length(2.0)
         inner_mass = math.pi * einstein_radius * inner_annuli_radius
         outer_annuli_radius = dim.Length(3.0)
         outer_mass = math.pi * einstein_radius * outer_annuli_radius
 
         density_between_annuli = sis.density_between_circular_annuli_in_angular_units(
-            inner_annuli_radius=inner_annuli_radius, outer_annuli_radius=outer_annuli_radius)
+            critical_surface_density=critical_surface_density,  inner_annuli_radius=inner_annuli_radius,
+            outer_annuli_radius=outer_annuli_radius)
 
         annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius ** 2.0)
 
@@ -3428,11 +3378,20 @@ class TestDensityBetweenAnnuli(object):
 
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
 
-        inner_mass = nfw.mass_within_circle_in_units(radius=dim.Length(1.0), unit_mass='angular')
-        outer_mass = nfw.mass_within_circle_in_units(radius=dim.Length(2.0), unit_mass='angular')
+        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
 
-        density_between_annuli = nfw.density_between_circular_annuli_in_angular_units(inner_annuli_radius=dim.Length(1.0),
-                                                                                      outer_annuli_radius=dim.Length(2.0))
+        inner_mass = nfw.mass_within_circle_in_units(radius=dim.Length(1.0),
+                                                     critical_surface_density=critical_surface_density,
+                                                     unit_mass='angular')
+
+        outer_mass = nfw.mass_within_circle_in_units(radius=dim.Length(2.0),
+                                                     critical_surface_density=critical_surface_density,
+                                                     unit_mass='angular')
+
+        density_between_annuli = nfw.density_between_circular_annuli_in_angular_units(
+            critical_surface_density=critical_surface_density,
+            inner_annuli_radius=dim.Length(1.0),
+            outer_annuli_radius=dim.Length(2.0))
 
         annuli_area = (np.pi * 2.0 ** 2.0) - (np.pi * 1.0 ** 2.0)
 
@@ -3460,7 +3419,8 @@ class TestSummarize(object):
 
     def test_truncated_nfw_challenge(self):
 
-        profile = mp.SphericalTruncatedNFWChallenge(centre=(0.0, 0.0), kappa_s=1.0)
+        profile = mp.SphericalTruncatedNFWChallenge(kappa_s=1.0)
+
         summary_text = "\n".join(
             profile.summary_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
                                      unit_length='arcsec', unit_mass='angular'))
