@@ -98,64 +98,6 @@ def convert_profile_to_input_units(func):
 
     return wrapper
 
-def convert_profile_to_input_parameter_units(func):
-    """
-
-    Parameters
-    ----------
-    func : (profiles, *args, **kwargs) -> Object
-        A function that requries the units of its input parameters to be checked.
-
-    Returns
-    -------
-        The original function
-    """
-
-    @wraps(func)
-    def wrapper(profile, *args, **kwargs):
-        """
-
-        Parameters
-        ----------
-        profile : DimensionsProfile
-            The profiles that owns the function
-
-        Returns
-        -------
-            The DimensionsProfile
-        """
-
-        def check_all_units_identical(list_units):
-            return list_units[1:] == list_units[:-1]
-
-        length_units = []
-        luminosity_units = []
-        mass_units = []
-
-        for key, value in kwargs.items():
-
-            if hasattr(value, 'unit_length'):
-                length_units.append(value.unit_length)
-
-            if hasattr(value, 'unit_luminosity'):
-                luminosity_units.append(value.unit_luminosity)
-
-            if hasattr(value, 'unit_mass'):
-                mass_units.append(value.unit_mass)
-
-        if not check_all_units_identical(list_units=length_units):
-            raise exc.UnitsException('The length units of the parametes input to this method are not identical')
-
-        if not check_all_units_identical(list_units=luminosity_units):
-            raise exc.UnitsException('The luminosity units of the parametes input to this method are not identical')
-
-        if not check_all_units_identical(list_units=mass_units):
-            raise exc.UnitsException('The mass units of the parametes input to this method are not identical')
-
-        return func(profile, *args, **kwargs)
-
-    return wrapper
-
 
 class DimensionsProfile(object):
 
