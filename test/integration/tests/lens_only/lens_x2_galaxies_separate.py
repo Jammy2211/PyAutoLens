@@ -24,12 +24,12 @@ def pipeline():
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
     ccd_data = simulation_util.load_test_ccd_data(data_type='lens_only_x2_galaxies', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
-    pipeline.run(data=ccd_data)
+    pipeline.run(data=ccd_data, assert_optimizer_pickle_matches=False)
 
 def make_pipeline(test_name):
     
-    def modify_mask_function(img):
-        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_arcsec=5.)
+    def modify_mask_function(image):
+        return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.)
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
 
