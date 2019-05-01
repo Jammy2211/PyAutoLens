@@ -1,13 +1,14 @@
 import inspect
 import typing
 from functools import wraps
+from astropy import cosmology as cosmo
 
 from autofit.tools import dimension_type
 from autolens.model import cosmology_util
 from autolens import exc
 
 
-def convert_profile_to_input_units(func):
+def convert_units_to_input_units(func):
     """
 
     Parameters
@@ -42,7 +43,7 @@ def convert_profile_to_input_units(func):
 
         # Extract input values which are used for conversions
 
-        cosmology = kwargs['cosmology'] if 'cosmology' in kwargs else None
+        cosmology = kwargs['cosmology'] if 'cosmology' in kwargs else cosmo.Planck15
         redshift_lens = kwargs['redshift_lens'] if 'redshift_lens' in kwargs else None
         redshift_source = kwargs['redshift_source'] if 'redshift_source' in kwargs else None
         exposure_time = kwargs['exposure_time'] if 'exposure_time' in kwargs else None
@@ -104,6 +105,8 @@ def convert_profile_to_input_units(func):
                                                            unit_mass=unit_mass, kpc_per_arcsec=kpc_per_arcsec,
                                                            exposure_time=exposure_time,
                                                            critical_surface_density=critical_surface_density)
+
+        kwargs['critical_surface_density'] = critical_surface_density
 
         return func(profile, *args, **kwargs)
 
