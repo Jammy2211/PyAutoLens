@@ -12,8 +12,8 @@ from scipy.optimize import root_scalar
 from astropy import cosmology as cosmo
 
 from autofit.tools.dimension_type import map_types
+from autolens.model import cosmology_util
 from autolens import decorator_util
-from autolens import exc
 from autolens.data.array import grids
 from autolens.model import dimensions as dim
 from autolens.model.profiles import geometry_profiles
@@ -166,9 +166,9 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    @dim.convert_profile_to_input_units
+    @dim.convert_units_to_input_units
     def mass_within_circle_in_units(self, radius: dim.Length, redshift_lens, redshift_source,
-                                    unit_mass='solMass', cosmology=cosmo.Planck15):
+                                    unit_mass='solMass', cosmology=cosmo.Planck15, **kwargs):
         """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
         specified radius. This is centred on the mass profile.
 
@@ -187,16 +187,18 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
             units to phsical units (e.g. solar masses).
         """
+
+        critical_surface_density = kwargs['critical_surface_density']
+
         mass = dim.Mass(value=quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0],
                         unit_mass=self.unit_mass)
+
         return mass.convert(unit_mass=unit_mass, critical_surface_density=critical_surface_density)
 
-    @dim.convert_profile_to_input_units
+    @dim.convert_units_to_input_units
     def mass_within_ellipse_in_units(self,
-                                     major_axis : dim.Length,
-                                     unit_mass='solMass',
-                                     kpc_per_arcsec : float = None,
-                                     critical_surface_density : dim.MassOverLength2 = None):
+                                     major_axis : dim.Length, redshift_lens, redshift_source,
+                                    unit_mass='solMass', cosmology=cosmo.Planck15, **kwargs):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
         specified major axis. This is centred on the mass profile.
 
@@ -215,8 +217,12 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             The critical surface mass density of the strong lens configuration, which converts mass from angular \
             units to phsical units (e.g. solar masses).
         """
+
+        critical_surface_density = kwargs['critical_surface_density']
+
         mass = dim.Mass(value=quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
                                    unit_mass=self.unit_mass)
+
         return mass.convert(unit_mass=unit_mass, critical_surface_density=critical_surface_density)
 
     def mass_integral(self, x, axis_ratio):

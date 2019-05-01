@@ -80,35 +80,43 @@ class TestMass(object):
 
     def test__conversions_from_angular_and_sol_mass_and_back__errors_raised_if_no_exposure_time(self):
 
-        unit_angular = dim.Mass(value=2.0)
+        mass_angular = dim.Mass(value=2.0)
 
-        assert unit_angular == 2.0
-        assert unit_angular.unit_mass == 'angular'
+        assert mass_angular == 2.0
+        assert mass_angular.unit_mass == 'angular'
 
-        unit_angular = unit_angular.convert(unit_mass='angular')
+        # angular -> angular, stays 2.0
 
-        assert unit_angular == 2.0
-        assert unit_angular.unit == 'angular'
+        mass_angular = mass_angular.convert(unit_mass='angular')
 
-        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_density=2.0)
+        assert mass_angular == 2.0
+        assert mass_angular.unit == 'angular'
 
-        assert unit_sol_mass == 4.0
-        assert unit_sol_mass.unit == 'solMass'
+        # angular -> solMass, converts to 2.0 * 2.0 = 4.0
 
-        unit_sol_mass = unit_sol_mass.convert(unit_mass='solMass')
+        mas_sol_mass = mass_angular.convert(unit_mass='solMass',critical_surface_density=2.0)
 
-        assert unit_sol_mass == 4.0
-        assert unit_sol_mass.unit == 'solMass'
+        assert mas_sol_mass == 4.0
+        assert mas_sol_mass.unit == 'solMass'
 
-        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_density=2.0)
+        # solMass -> solMass, stays 4.0
 
-        assert unit_angular == 2.0
-        assert unit_angular.unit == 'angular'
+        mas_sol_mass = mas_sol_mass.convert(unit_mass='solMass')
+
+        assert mas_sol_mass == 4.0
+        assert mas_sol_mass.unit == 'solMass'
+
+        # solMass -> angular, stays 4.0
+
+        mass_angular = mas_sol_mass.convert(unit_mass='angular', critical_surface_density=2.0)
+
+        assert mass_angular == 2.0
+        assert mass_angular.unit == 'angular'
 
         with pytest.raises(exc.UnitsException):
-            unit_angular.convert(unit_mass='solMass')
-            unit_sol_mass.convert(unit_mass='angular')
-            unit_angular.convert(unit_mass='lol')
+            mass_angular.convert(unit_mass='solMass')
+            mas_sol_mass.convert(unit_mass='angular')
+            mass_angular.convert(unit_mass='lol')
 
 
 class TestMassOverLuminosity(object):
@@ -337,13 +345,13 @@ class MockDimensionsProfile(dim.DimensionsProfile):
         self.mass = mass
         self.mass_over_luminosity = mass_over_luminosity
 
-    @dim.convert_profile_to_input_units
+    @dim.convert_units_to_input_units
     def unit_length_calc(self, length_input : dim.Length, redshift_lens=None, cosmology=MockCosmology(),
                          unit_length='arcsec'):
 
         return dim.Length(self.length + length_input, self.unit_length)
 
-    @dim.convert_profile_to_input_units
+    @dim.convert_units_to_input_units
     def unit_luminosity_calc(self,
                              luminosity_input : dim.Luminosity = None, redshift_lens=None, cosmology=MockCosmology(),
                              unit_luminosity='eps',
@@ -351,7 +359,7 @@ class MockDimensionsProfile(dim.DimensionsProfile):
 
         return dim.Luminosity(self.luminosity + luminosity_input, self.unit_luminosity)
 
-    @dim.convert_profile_to_input_units
+    @dim.convert_units_to_input_units
     def unit_mass_calc(self,
                        mass_input : dim.Mass = None, redshift_lens=None, redshift_source=1.0, cosmology=MockCosmology(),
                        unit_mass='angular'):

@@ -10,6 +10,8 @@ from autolens.data.array import mask as msk
 from autolens.model import dimensions as dim
 from autolens.model.profiles import mass_profiles as mp
 
+from test.unit.mock.mock_cosmology import MockCosmology
+
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
 
@@ -3072,14 +3074,16 @@ class TestMassWithinCircle(object):
 
         radius = dim.Length(2.0, 'arcsec')
 
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                               unit_mass='angular')
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         sis = mp.SphericalIsothermal(einstein_radius=4.0)
 
         radius = dim.Length(4.0, 'arcsec')
 
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                               unit_mass='angular')
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
     def test__mass_in_angular_units__singular_isothermal__compare_to_grid(self):
@@ -3090,11 +3094,14 @@ class TestMassWithinCircle(object):
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sis)
 
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0, 
+                                               unit_mass='angular')
 
         assert mass_grid == pytest.approx(mass, 0.02)
 
     def test__radius_units_conversions__mass_profile_updates_units_and_computes_correct_mass(self):
+
+        cosmology = MockCosmology(kpc_per_arcsec=2.0)
 
         # arcsec -> arcsec
 
@@ -3102,15 +3109,26 @@ class TestMassWithinCircle(object):
                                             einstein_radius=dim.Length(2.0, 'arcsec'))
 
         radius = dim.Length(2.0, 'arcsec')
-        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular')
         assert math.pi * sis_arcsec.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         # arcsec -> kpc
 
         radius = dim.Length(2.0, 'kpc')
-        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                      kpc_per_arcsec=2.0)
-        assert 2.0 * math.pi * sis_arcsec.einstein_radius * radius == pytest.approx(mass, 1e-3)
+        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular', cosmology=cosmology)
+        assert math.pi * sis_arcsec.einstein_radius * 1.0 == pytest.approx(mass, 1e-3)
+
+        # 2.0 arcsec = 4.0 kpc, same masses.
+
+        radius = dim.Length(2.0, 'arcsec')
+        mass_arcsec = sis_arcsec.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular', cosmology=cosmology)
+        radius = dim.Length(4.0, 'kpc')
+        mass_kpc = sis_arcsec.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular', cosmology=cosmology)
+        assert mass_arcsec == mass_kpc
 
         # kpc -> kpc
 
@@ -3118,59 +3136,46 @@ class TestMassWithinCircle(object):
                                          einstein_radius=dim.Length(2.0,'kpc'))
 
         radius = dim.Length(2.0, 'kpc')
-        mass = sis_kpc.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+        mass = sis_kpc.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                   unit_mass='angular', cosmology=cosmology)
         assert math.pi * sis_kpc.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         # kpc -> arcsec
 
         radius = dim.Length(2.0, 'arcsec')
-        mass = sis_kpc.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                   kpc_per_arcsec=2.0)
-        assert 0.5 * math.pi * sis_kpc.einstein_radius * radius == pytest.approx(mass, 1e-3)
+        mass = sis_kpc.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                   unit_mass='angular', cosmology=cosmology)
+        assert 2.0 * math.pi * sis_kpc.einstein_radius * radius == pytest.approx(mass, 1e-3)
+
+        # 2.0 arcsec = 4.0 kpc, same masses.
+
+        radius = dim.Length(2.0, 'arcsec')
+        mass_arcsec = sis_kpc.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular', cosmology=cosmology)
+        radius = dim.Length(4.0, 'kpc')
+        mass_kpc = sis_kpc.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular')
+        assert mass_arcsec == mass_kpc
 
     def test__mass_units_conversions__multiplies_by_critical_surface_density_factor(self):
 
+        cosmology = MockCosmology(critical_surface_density=2.0)
+
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         radius = dim.Length(2.0, 'arcsec')
-        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
 
-        mass = sis.mass_within_circle_in_units(radius=radius, critical_surface_density=critical_surface_density,
-                                               unit_mass='angular')
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                               unit_mass='angular', cosmology=cosmology)
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
-        critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'angular')
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
-                                               critical_surface_density=critical_surface_density)
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                               unit_mass='solMass', cosmology=cosmology)
         assert 2.0 * math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
-                                               critical_surface_density=critical_surface_density)
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                               unit_mass='solMass', cosmology=cosmology)
         assert 2.0 * math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
-
-    def test__unit_conversions_check_correctly_that_inputs_are_given(self):
-
-        sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
-                                            einstein_radius=dim.Length(2.0, 'arcsec'))
-
-        radius = dim.Length(2.0, 'arcsec')
-        sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular', critical_surface_density=None)
-
-        with pytest.raises(exc.UnitsException):
-            sis_arcsec.mass_within_circle_in_units(radius=0.5, unit_mass='solMass', critical_surface_density=None)
-            radius = dim.Length(2.0,'kpc')
-            sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular', kpc_per_arcsec=None)
-
-    def test__radius_and_critical_surface_density_different_length_units__raises_exception(self):
-
-        sis = mp.SphericalIsothermal(einstein_radius=2.0)
-        radius = dim.Length(2.0, 'arcsec')
-
-        critical_surface_density = dim.MassOverLength2(2.0, 'kpc', 'angular')
-
-        with pytest.raises(exc.UnitsException):
-            sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                               critical_surface_density=critical_surface_density)
 
 
 class TestMassWithinEllipse(object):
@@ -3180,14 +3185,18 @@ class TestMassWithinEllipse(object):
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
 
         radius = dim.Length(2.0)
-        mass_circle = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
-        mass_ellipse = sis.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+        mass_circle = sis.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular')
+        mass_ellipse = sis.mass_within_ellipse_in_units(major_axis=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                        unit_mass='angular')
         assert mass_circle == mass_ellipse
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
         radius = dim.Length(2.0)
-        mass_circle = sie.mass_within_circle_in_units(radius=radius, unit_mass='angular')
-        mass_ellipse = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+        mass_circle = sie.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular')
+        mass_ellipse = sie.mass_within_ellipse_in_units(major_axis=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                        unit_mass='angular')
         assert mass_circle == mass_ellipse * 2.0
 
     def test__mass_in_angular_units__singular_isothermal_ellipsoid__compare_to_grid(self):
@@ -3198,12 +3207,15 @@ class TestMassWithinEllipse(object):
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sie)
 
-        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                unit_mass='angular')
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert mass_grid == pytest.approx(mass, 0.1)
 
     def test__radius_units_conversions__mass_profile_updates_units_and_computes_correct_mass(self):
+
+        cosmology = MockCosmology(kpc_per_arcsec=2.0)
 
         # arcsec -> arcsec
 
@@ -3214,17 +3226,26 @@ class TestMassWithinEllipse(object):
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=major_axis, profile=sie_arcsec)
 
-        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis,
+        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, redshift_lens=0.5, redshift_source=1.0,
                                                        unit_mass='angular')
         assert mass_grid == pytest.approx(mass, 0.1)
 
         # arcsec -> kpc
 
         major_axis = dim.Length(0.5, 'kpc')
-        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis,
-                                                       unit_mass='angular',
-                                                       kpc_per_arcsec=2.0)
-        assert 2.0 * mass_grid == pytest.approx(mass, 0.1)
+        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, redshift_lens=0.5, redshift_source=1.0,
+                                                       unit_mass='angular', cosmology=cosmology)
+        assert 0.5 * mass_grid == pytest.approx(mass, 0.1)
+
+        # 2.0 arcsec = 4.0 kpc, same masses.
+
+        radius = dim.Length(2.0, 'arcsec')
+        mass_arcsec = sie_arcsec.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular', cosmology=cosmology)
+        radius = dim.Length(4.0, 'kpc')
+        mass_kpc = sie_arcsec.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular', cosmology=cosmology)
+        assert mass_arcsec == mass_kpc
 
         # kpc -> kpc
 
@@ -3232,65 +3253,48 @@ class TestMassWithinEllipse(object):
                                          einstein_radius=dim.Length(2.0,'kpc'))
 
         major_axis = dim.Length(0.5, 'kpc')
-        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis,
+        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, redshift_lens=0.5, redshift_source=1.0,
                                                     unit_mass='angular')
         assert mass_grid == pytest.approx(mass, 0.1)
 
         # kpc -> arcsec
 
         major_axis = dim.Length(0.5, 'arcsec')
-        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis,
-                                                    unit_mass='angular',
-                                                    kpc_per_arcsec=2.0)
-        assert 0.5 * mass_grid == pytest.approx(mass, 0.1)
+        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, redshift_lens=0.5, redshift_source=1.0,
+                                                    unit_mass='angular', cosmology=cosmology)
+        assert 2.0 * mass_grid == pytest.approx(mass, 0.1)
+
+        # 2.0 arcsec = 4.0 kpc, same masses.
+
+        radius = dim.Length(2.0, 'arcsec')
+        mass_arcsec = sie_kpc.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular', cosmology=cosmology)
+        radius = dim.Length(4.0, 'kpc')
+        mass_kpc = sie_kpc.mass_within_circle_in_units(radius=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                      unit_mass='angular')
+        assert mass_arcsec == mass_kpc
 
     def test__mass_unit_conversions__compare_to_grid__mutliplies_by_critical_surface_density(self):
+
+        cosmology = MockCosmology(critical_surface_density=2.0)
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
 
         radius = dim.Length(2.0, 'arcsec')
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sie)
-        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
-        mass = sie.mass_within_ellipse_in_units(major_axis=radius, critical_surface_density=critical_surface_density,
-                                                unit_mass='angular')
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                unit_mass='angular', cosmology=cosmology)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert mass_grid == pytest.approx(radius * sie.axis_ratio * mass, 0.1)
 
         critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
-        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='solMass',
-                                                critical_surface_density=critical_surface_density)
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, redshift_lens=0.5, redshift_source=1.0,
+                                                unit_mass='solMass', cosmology=cosmology)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert mass_grid == pytest.approx(0.5 * radius * sie.axis_ratio * mass, 0.1)
-
-    def test__unit_conversions_check_correctly_that_inputs_are_given(self):
-
-        sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
-                                            einstein_radius=dim.Length(2.0, 'arcsec'))
-
-        major_axis = dim.Length(2.0, 'arcsec')
-        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
-
-        with pytest.raises(exc.UnitsException):
-            sis_arcsec.mass_within_ellipse_in_units(major_axis=0.5, unit_mass='solMass',
-                                                    critical_surface_density=critical_surface_density)
-            major_axis = dim.Length(2.0,'kpc')
-            sis_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular', kpc_per_arcsec=None)
-            sis_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
-                                                    critical_surface_density=None)
-
-    def test__radius_and_critical_surface_density_different_length_units__raises_exception(self):
-
-        sis = mp.SphericalIsothermal(einstein_radius=2.0)
-        radius = dim.Length(2.0, 'arcsec')
-
-        critical_surface_density = dim.MassOverLength2(2.0, 'kpc', 'angular')
-
-        with pytest.raises(exc.UnitsException):
-            sis.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
-                                               critical_surface_density=critical_surface_density)
 
 
 class TestDensityBetweenAnnuli(object):
