@@ -855,7 +855,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def coord_func_h(self, grid_radius):
         return np.log(grid_radius / 2.0) + self.coord_func_f(grid_radius=grid_radius)
 
-    @dim.convert_profile_to_input_units
+ #   @dim.convert_profile_to_input_units
     def rho_at_scale_radius_for_units(self,
                                       critical_surface_density: dim.MassOverLength2,
                                       unit_length='arcsec', unit_mass='solMass',
@@ -870,7 +870,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         return rho_at_scale_radius.convert(unit_length=unit_length, unit_mass=unit_mass, kpc_per_arcsec=kpc_per_arcsec,
                                            critical_surface_density=critical_surface_density)
 
-    @dim.convert_profile_to_input_units
+ #   @dim.convert_profile_to_input_units
     def delta_concentration(self,
                             critical_surface_density: dim.MassOverLength2,
                             cosmic_average_density: dim.MassOverLength3,
@@ -881,7 +881,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
         return rho_scale_radius / cosmic_average_density
 
-    @dim.convert_profile_to_input_units
+  #  @dim.convert_profile_to_input_units
     def concentration(self,critical_surface_density: dim.MassOverLength2,
                       cosmic_average_density: dim.MassOverLength3,
                       unit_length='arcsec'):
@@ -896,7 +896,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         return 200.0 / 3.0 * (concentration * concentration * concentration /
                               (np.log(1 + concentration) - concentration / (1 + concentration))) - delta_concentration
 
-    @dim.convert_profile_to_input_units
+ #   @dim.convert_profile_to_input_units
     def radius_at_200_for_units(self, unit_length='arcsec',
                                 kpc_per_arcsec : float = None,
                                 critical_surface_density : dim.MassOverLength2 = None,
@@ -910,7 +910,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
         return radius_at_200.convert(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
 
-    @dim.convert_profile_to_input_units
+ #   @dim.convert_profile_to_input_units
     def mass_at_200(self,
                     critical_surface_density: dim.MassOverLength2,
                     cosmic_average_density: dim.MassOverLength3):
