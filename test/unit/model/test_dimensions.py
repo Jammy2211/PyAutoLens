@@ -6,6 +6,7 @@ from autolens.model import dimensions as dim
 
 from test.unit.mock.mock_cosmology import MockCosmology
 
+
 class TestLength(object):
 
     def test__conversions_from_arcsec_to_kpc_and_back__errors_raised_if_no_kpc_per_arcsec(self):
@@ -340,21 +341,22 @@ class MockDimensionsProfile(dim.DimensionsProfile):
     def unit_length_calc(self, length_input : dim.Length, redshift_lens=None, cosmology=MockCosmology(),
                          unit_length='arcsec'):
 
-        return dim.Length(self.length + length_input, self.length.unit_length)
+        return dim.Length(self.length + length_input, self.unit_length)
 
     @dim.convert_profile_to_input_units
     def unit_luminosity_calc(self,
-                    luminosity_0 : dim.Luminosity = None, luminosity_1 : dim.Luminosity = None,
-                    exposure_time : float = None):
+                             luminosity_input : dim.Luminosity = None, redshift_lens=None, cosmology=MockCosmology(),
+                             unit_luminosity='eps',
+                             exposure_time : float = None):
 
-        return dim.Luminosity(self.luminosity + luminosity_0, self.luminosity.unit_luminosity)
+        return dim.Luminosity(self.luminosity + luminosity_input, self.unit_luminosity)
 
     @dim.convert_profile_to_input_units
     def unit_mass_calc(self,
-                    mass_0 : dim.Mass = None, mass_1 : dim.Mass = None,
-                    critical_surface_density : dim.MassOverLength2 = None):
+                       mass_input : dim.Mass = None, redshift_lens=None, redshift_source=1.0, cosmology=MockCosmology(),
+                       unit_mass='angular'):
 
-        return dim.Mass(self.mass + mass_0, self.mass.unit_mass)
+        return dim.Mass(self.mass + mass_input, self.unit_mass)
 
 
 class TestDimensionsProfile(object):
@@ -816,62 +818,109 @@ class TestUnitCheckConversionWwrapper(object):
         
         profile = MockDimensionsProfile(luminosity=dim.Luminosity(3.0, 'eps'))
 
-        luminosity = profile.unit_luminosity_calc(luminosity_0=dim.Luminosity(1.0, 'eps'))
+        cosmo = MockCosmology()
+
+        # luminosity: eps -> eps, stays 3.0,  luminosity_input: eps -> eps, stays 1.0
+
+        luminosity_input = dim.Luminosity(1.0, 'eps')
+        luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='eps')
         assert luminosity.unit_luminosity == 'eps'
         assert luminosity == 4.0
 
-        luminosity = profile.unit_luminosity_calc(luminosity_0=dim.Luminosity(1.0, 'counts'), exposure_time=1.0)
-        assert luminosity.unit_luminosity == 'counts'
-        assert luminosity == 4.0
+        # luminosity: eps -> eps, stays 3.0,  luminosity_input  counts -> eps, converts to 1.0 / 2.0 = 0.5
 
-        luminosity = profile.unit_luminosity_calc(luminosity_0=dim.Luminosity(1.0, 'counts'), exposure_time=2.0)
+        luminosity_input = dim.Luminosity(1.0, 'counts')
+        luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='eps',
+                                                  redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
+        assert luminosity.unit_luminosity == 'eps'
+        assert luminosity == 3.5
+
+        # luminosity: eps -> counts, converts to 3.0 * 2.0 = 6.0,  luminosity_input  counts -> counts, stays 1.0
+
+        luminosity_input = dim.Luminosity(1.0, 'counts')
+        luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='counts',
+                                          redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
         assert luminosity.unit_luminosity == 'counts'
         assert luminosity == 7.0
 
         profile = MockDimensionsProfile(luminosity=dim.Luminosity(3.0, 'counts'))
 
-        luminosity = profile.unit_luminosity_calc(luminosity_0=dim.Luminosity(1.0, 'counts'))
+        # luminosity: counts -> counts, stays 3.0,  luminosity_input: counts -> counts, stays 1.0
+
+        luminosity_input = dim.Luminosity(1.0, 'counts')
+        luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='counts',
+                                          redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
         assert luminosity.unit_luminosity == 'counts'
         assert luminosity == 4.0
 
-        luminosity = profile.unit_luminosity_calc(luminosity_0=dim.Luminosity(1.0, 'eps'), exposure_time=1.0)
-        assert luminosity.unit_luminosity == 'eps'
-        assert luminosity == 4.0
+        # luminosity: counts -> counts, stays 3.0,  luminosity_input: eps -> counts, convert to 1.0 * 2.0 = 2.0
 
-        luminosity = profile.unit_luminosity_calc(luminosity_0=dim.Luminosity(1.0, 'eps'), exposure_time=2.0)
+        luminosity_input = dim.Luminosity(1.0, 'eps')
+        luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='counts',
+                                          redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
+        assert luminosity.unit_luminosity == 'counts'
+        assert luminosity == 5.0
+
+        # luminosity: counts -> eps, converts to 3.0 / 2.0 = 1.5,  luminosity_input: counts -> counts, stays 1.0
+
+        luminosity_input = dim.Luminosity(1.0, 'eps')
+        luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='eps',
+                                          redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
         assert luminosity.unit_luminosity == 'eps'
         assert luminosity == 2.5
 
     def test__profile_mass_units_calculations__profile_is_converted_for_calculation_if_different_to_input_units(self):
 
-        profile = MockDimensionsProfile(mass=dim.Mass(3.0, 'angular'))
+        profile = MockDimensionsProfile(length=dim.Length(1.0, 'arcsec'), mass=dim.Mass(3.0, 'angular'))
 
-        mass = profile.unit_mass_calc(mass_0=dim.Mass(1.0, 'angular'))
+        cosmo = MockCosmology(critical_surface_density=2.0)
+
+        # mass: angular -> angular, stays 3.0,  mass_input: angular -> angular, stays 1.0
+
+        mass_input = dim.Mass(1.0, 'angular')
+        mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='angular',
+                                      redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'angular'
         assert mass == 4.0
 
-        critical_surface_density = dim.MassOverLength2(1.0, unit_length='arcsec', unit_mass='solMass')
-        mass = profile.unit_mass_calc(mass_0=dim.Mass(1.0, 'solMass'), critical_surface_density=critical_surface_density)
-        assert mass.unit_mass == 'solMass'
+        # mass: angular -> angular, stays 3.0,  mass_input  solMass -> angular, stays as 1.0
+
+        mass_input = dim.Mass(1.0, 'solMass')
+        mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='angular',
+                                      redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
+        assert mass.unit_mass == 'angular'
         assert mass == 4.0
 
-        critical_surface_density = dim.MassOverLength2(2.0, unit_length='arcsec', unit_mass='solMass')
-        mass = profile.unit_mass_calc(mass_0=dim.Mass(1.0, 'solMass'), critical_surface_density=critical_surface_density)
+        # mass: angular -> solMass, converts to 3.0 * 2.0 = 6.0,  mass_input  solMass -> solMass, stays 1.0
+
+        mass_input = dim.Mass(1.0, 'solMass')
+        mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='solMass',
+                                          redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'solMass'
         assert mass == 7.0
 
-        profile = MockDimensionsProfile(mass=dim.Mass(3.0, 'solMass'))
+        profile = MockDimensionsProfile(length=dim.Length(1.0, 'arcsec'), mass=dim.Mass(3.0, 'solMass'))
 
-        mass = profile.unit_mass_calc(mass_0=dim.Mass(1.0, 'solMass'))
+        # mass: solMass -> solMass, stays 3.0,  mass_input: solMass -> solMass, stays 1.0
+
+        mass_input = dim.Mass(1.0, 'solMass')
+        mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='solMass',
+                                          redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'solMass'
         assert mass == 4.0
 
-        critical_surface_density = dim.MassOverLength2(1.0, unit_length='arcsec', unit_mass='angular')
-        mass = profile.unit_mass_calc(mass_0=dim.Mass(1.0, 'angular'), critical_surface_density=critical_surface_density)
+        # mass: solMass -> solMass, stays 3.0,  mass_input: angular -> solMass, convert to 1.0 * 2.0 = 2.0
+
+        mass_input = dim.Mass(1.0, 'angular')
+        mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='solMass',
+                                          redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
+        assert mass.unit_mass == 'solMass'
+        assert mass == 5.0
+
+        # mass: solMass -> angular, stays 3.0,  mass_input: solMass -> solMass, stays 1.0
+
+        mass_input = dim.Mass(1.0, 'angular')
+        mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='angular',
+                                          redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'angular'
         assert mass == 4.0
-
-        critical_surface_density = dim.MassOverLength2(2.0, unit_length='arcsec', unit_mass='angular')
-        mass = profile.unit_mass_calc(mass_0=dim.Mass(1.0, 'angular'), critical_surface_density=critical_surface_density)
-        assert mass.unit_mass == 'angular'
-        assert mass == 2.5

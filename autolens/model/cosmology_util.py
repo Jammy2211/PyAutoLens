@@ -62,7 +62,7 @@ def critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
         redshift_0, redshift_1, cosmology, unit_length='arcsec', unit_mass='solMass'):
 
     if unit_mass is 'angular':
-        raise exc.UnitsException('The mass units of a critical surface mass density cannot be angular')
+        return dim.MassOverLength2(value=1.0, unit_mass=unit_mass, unit_length=unit_length)
 
     const = constants.c.to('kpc / s') ** 2.0 / (4 * math.pi * constants.G.to( 'kpc3 / (' + unit_mass + ' s2)'))
 
