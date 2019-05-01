@@ -9,6 +9,7 @@ from scipy import special
 from scipy.integrate import quad
 from scipy.optimize import fsolve
 from scipy.optimize import root_scalar
+from astropy import cosmology as cosmo
 
 from autofit.tools.dimension_type import map_types
 from autolens import decorator_util
@@ -166,11 +167,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         self.phi = phi
 
     @dim.convert_profile_to_input_units
-    def mass_within_circle_in_units(self,
-                                    radius: dim.Length,
-                                    unit_mass='solMass',
-                                    kpc_per_arcsec : float = None,
-                                    critical_surface_density : dim.MassOverLength2 = None):
+    def mass_within_circle_in_units(self, radius: dim.Length, redshift_lens, redshift_source,
+                                    unit_mass='solMass', cosmology=cosmo.Planck15):
         """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
         specified radius. This is centred on the mass profile.
 

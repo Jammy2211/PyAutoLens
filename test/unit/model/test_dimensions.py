@@ -4,6 +4,7 @@ from autolens import exc
 from autofit.tools.dimension_type import map_types
 from autolens.model import dimensions as dim
 
+from test.unit.mock.mock_cosmology import MockCosmology
 
 class TestLength(object):
 
@@ -336,11 +337,10 @@ class MockDimensionsProfile(dim.DimensionsProfile):
         self.mass_over_luminosity = mass_over_luminosity
 
     @dim.convert_profile_to_input_units
-    def unit_length_calc(self,
-                    length_0 : dim.Length = None, length_1 : dim.Length = None,
-                    kpc_per_arcsec : float = None):
+    def unit_length_calc(self, length_input : dim.Length, redshift_lens=None, cosmology=MockCosmology(),
+                         unit_length='arcsec'):
 
-        return dim.Length(self.length + length_0, self.length.unit_length)
+        return dim.Length(self.length + length_input, self.length.unit_length)
 
     @dim.convert_profile_to_input_units
     def unit_luminosity_calc(self,
@@ -359,366 +359,456 @@ class MockDimensionsProfile(dim.DimensionsProfile):
 
 class TestDimensionsProfile(object):
 
-    def test__arcsec_to_kpc_conversions_of_length__float_and_tuple_length__conversion_converts_values(self):
+    class TestUnitProperties(object):
 
-        profile_arcsec = MockDimensionsProfile(
-            position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
-            param_float=2.0,
-            length=dim.Length(value=3.0, unit_length='arcsec'),
-            luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
-            mass=dim.Mass(value=5.0, unit_mass='angular'),
-            mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+        def test__unit_length__extracted_from_profile(self):
 
-        assert profile_arcsec.position == (1.0, 2.0)
-        assert profile_arcsec.position[0].unit_length == 'arcsec'
-        assert profile_arcsec.position[1].unit_length == 'arcsec'
-        assert profile_arcsec.param_float == 2.0
-        assert profile_arcsec.length == 3.0
-        assert profile_arcsec.length.unit_length == 'arcsec'
-        assert profile_arcsec.luminosity == 4.0
-        assert profile_arcsec.luminosity.unit_luminosity == 'eps'
-        assert profile_arcsec.mass == 5.0
-        assert profile_arcsec.mass.unit_mass == 'angular'
-        assert profile_arcsec.mass_over_luminosity == 6.0
-        assert profile_arcsec.mass_over_luminosity.unit == 'angular / eps'
+            profile = MockDimensionsProfile(length=dim.Length(value=3.0, unit_length='arcsec'))
 
-        profile_arcsec = profile_arcsec.new_profile_with_units_converted(unit_length='arcsec')
+            assert profile.unit_length == 'arcsec'
 
-        assert profile_arcsec.position == (1.0, 2.0)
-        assert profile_arcsec.position[0].unit == 'arcsec'
-        assert profile_arcsec.position[1].unit == 'arcsec'
-        assert profile_arcsec.param_float == 2.0
-        assert profile_arcsec.length == 3.0
-        assert profile_arcsec.length.unit == 'arcsec'
-        assert profile_arcsec.luminosity == 4.0
-        assert profile_arcsec.luminosity.unit == 'eps'
-        assert profile_arcsec.mass == 5.0
-        assert profile_arcsec.mass.unit_mass == 'angular'
-        assert profile_arcsec.mass_over_luminosity == 6.0
-        assert profile_arcsec.mass_over_luminosity.unit == 'angular / eps'
+            profile = MockDimensionsProfile(length=dim.Length(value=3.0, unit_length='kpc'))
 
-        profile_kpc = profile_arcsec.new_profile_with_units_converted(unit_length='kpc', kpc_per_arcsec=2.0)
+            assert profile.unit_length == 'kpc'
 
-        assert profile_kpc.position == (2.0, 4.0)
-        assert profile_kpc.position[0].unit == 'kpc'
-        assert profile_kpc.position[1].unit == 'kpc'
-        assert profile_kpc.param_float == 2.0
-        assert profile_kpc.length == 6.0
-        assert profile_kpc.length.unit == 'kpc'
-        assert profile_kpc.luminosity == 4.0
-        assert profile_kpc.luminosity.unit == 'eps'
-        assert profile_arcsec.mass == 5.0
-        assert profile_arcsec.mass.unit_mass == 'angular'
-        assert profile_kpc.mass_over_luminosity == 6.0
-        assert profile_kpc.mass_over_luminosity.unit == 'angular / eps'
+            profile = MockDimensionsProfile(length=1.0)
 
-        profile_kpc = profile_kpc.new_profile_with_units_converted(unit_length='kpc')
+            assert profile.unit_length == None
 
-        assert profile_kpc.position == (2.0, 4.0)
-        assert profile_kpc.position[0].unit == 'kpc'
-        assert profile_kpc.position[1].unit == 'kpc'
-        assert profile_kpc.param_float == 2.0
-        assert profile_kpc.length == 6.0
-        assert profile_kpc.length.unit == 'kpc'
-        assert profile_kpc.luminosity == 4.0
-        assert profile_kpc.luminosity.unit == 'eps'
-        assert profile_arcsec.mass == 5.0
-        assert profile_arcsec.mass.unit_mass == 'angular'
-        assert profile_kpc.mass_over_luminosity == 6.0
-        assert profile_kpc.mass_over_luminosity.unit == 'angular / eps'
+        def test__unit_luminosity__extracted_from_profile(self):
 
-        profile_arcsec = profile_kpc.new_profile_with_units_converted(unit_length='arcsec', kpc_per_arcsec=2.0)
+            profile = MockDimensionsProfile(luminosity=dim.Luminosity(value=3.0, unit_luminosity='eps'),
+                                            mass_over_luminosity=dim.MassOverLuminosity(value=3.0, unit_luminosity='eps'))
 
-        assert profile_arcsec.position == (1.0, 2.0)
-        assert profile_arcsec.position[0].unit == 'arcsec'
-        assert profile_arcsec.position[1].unit == 'arcsec'
-        assert profile_arcsec.param_float == 2.0
-        assert profile_arcsec.length == 3.0
-        assert profile_arcsec.length.unit == 'arcsec'
-        assert profile_arcsec.luminosity == 4.0
-        assert profile_arcsec.luminosity.unit == 'eps'
-        assert profile_arcsec.mass == 5.0
-        assert profile_arcsec.mass.unit_mass == 'angular'
-        assert profile_arcsec.mass_over_luminosity == 6.0
-        assert profile_arcsec.mass_over_luminosity.unit == 'angular / eps'
+            assert profile.unit_luminosity == 'eps'
 
-    def test__conversion_requires_kpc_per_arcsec_but_does_not_supply_it_raises_error(self):
+            profile = MockDimensionsProfile(luminosity=1.0,
+                                            mass_over_luminosity=dim.MassOverLuminosity(value=3.0, unit_luminosity='eps'))
 
-        profile_arcsec = MockDimensionsProfile(position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),)
+            assert profile.unit_luminosity == 'eps'
 
-        with pytest.raises(exc.UnitsException):
-            profile_arcsec.new_profile_with_units_converted(unit_length='kpc')
+            profile = MockDimensionsProfile(luminosity=dim.Luminosity(value=3.0, unit_luminosity='eps'),
+                                            mass_over_luminosity=1.0)
 
-        profile_kpc = profile_arcsec.new_profile_with_units_converted(unit_length='kpc', kpc_per_arcsec=2.0)
+            assert profile.unit_luminosity == 'eps'
 
-        with pytest.raises(exc.UnitsException):
-            profile_kpc.new_profile_with_units_converted(unit_length='arcsec')
+            profile = MockDimensionsProfile(luminosity=dim.Luminosity(value=3.0, unit_luminosity='counts'),
+                                            mass_over_luminosity=dim.MassOverLuminosity(value=3.0, unit_luminosity='counts'))
 
-    def test__eps_to_counts_conversions_of_luminosity__conversions_convert_values(self):
+            assert profile.unit_luminosity == 'counts'
 
-        profile_eps = MockDimensionsProfile(
-            position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
-            param_float=2.0,
-            length=dim.Length(value=3.0, unit_length='arcsec'),
-            luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
-            mass=dim.Mass(value=5.0, unit_mass='angular'),
-            mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+            profile = MockDimensionsProfile(luminosity=1.0,
+                                            mass_over_luminosity=dim.MassOverLuminosity(value=3.0, unit_luminosity='counts'))
 
-        assert profile_eps.position == (1.0, 2.0)
-        assert profile_eps.position[0].unit_length == 'arcsec'
-        assert profile_eps.position[1].unit_length == 'arcsec'
-        assert profile_eps.param_float == 2.0
-        assert profile_eps.length == 3.0
-        assert profile_eps.length.unit_length == 'arcsec'
-        assert profile_eps.luminosity == 4.0
-        assert profile_eps.luminosity.unit_luminosity == 'eps'
-        assert profile_eps.mass == 5.0
-        assert profile_eps.mass.unit_mass == 'angular'
-        assert profile_eps.mass_over_luminosity == 6.0
-        assert profile_eps.mass_over_luminosity.unit == 'angular / eps'
-
-        profile_eps = profile_eps.new_profile_with_units_converted(unit_luminosity='eps')
-
-        assert profile_eps.position == (1.0, 2.0)
-        assert profile_eps.position[0].unit_length == 'arcsec'
-        assert profile_eps.position[1].unit_length == 'arcsec'
-        assert profile_eps.param_float == 2.0
-        assert profile_eps.length == 3.0
-        assert profile_eps.length.unit_length == 'arcsec'
-        assert profile_eps.luminosity == 4.0
-        assert profile_eps.luminosity.unit_luminosity == 'eps'
-        assert profile_eps.mass == 5.0
-        assert profile_eps.mass.unit_mass == 'angular'
-        assert profile_eps.mass_over_luminosity == 6.0
-        assert profile_eps.mass_over_luminosity.unit == 'angular / eps'
-        
-        profile_counts = profile_eps.new_profile_with_units_converted(unit_luminosity='counts',
-                                                                      exposure_time=10.0)
-
-        assert profile_counts.position == (1.0, 2.0)
-        assert profile_counts.position[0].unit_length == 'arcsec'
-        assert profile_counts.position[1].unit_length == 'arcsec'
-        assert profile_counts.param_float == 2.0
-        assert profile_counts.length == 3.0
-        assert profile_counts.length.unit_length == 'arcsec'
-        assert profile_counts.luminosity == 40.0
-        assert profile_counts.luminosity.unit_luminosity == 'counts'
-        assert profile_counts.mass == 5.0
-        assert profile_counts.mass.unit_mass == 'angular'
-        assert profile_counts.mass_over_luminosity == pytest.approx(0.6, 1.0e-4)
-        assert profile_counts.mass_over_luminosity.unit == 'angular / counts'
-
-        profile_counts = profile_counts.new_profile_with_units_converted(unit_luminosity='counts')
+            assert profile.unit_luminosity == 'counts'
 
 
-        assert profile_counts.position == (1.0, 2.0)
-        assert profile_counts.position[0].unit_length == 'arcsec'
-        assert profile_counts.position[1].unit_length == 'arcsec'
-        assert profile_counts.param_float == 2.0
-        assert profile_counts.length == 3.0
-        assert profile_counts.length.unit_length == 'arcsec'
-        assert profile_counts.luminosity == 40.0
-        assert profile_counts.luminosity.unit_luminosity == 'counts'
-        assert profile_counts.mass == 5.0
-        assert profile_counts.mass.unit_mass == 'angular'
-        assert profile_counts.mass_over_luminosity == pytest.approx(0.6, 1.0e-4)
-        assert profile_counts.mass_over_luminosity.unit == 'angular / counts'
+            profile = MockDimensionsProfile(luminosity=dim.Luminosity(value=3.0, unit_luminosity='counts'),
+                                            mass_over_luminosity=1.0)
 
-        profile_eps = profile_counts.new_profile_with_units_converted(unit_luminosity='eps',
-                                                                      exposure_time=10.0)
+            assert profile.unit_luminosity == 'counts'
 
-        assert profile_eps.position == (1.0, 2.0)
-        assert profile_eps.position[0].unit_length == 'arcsec'
-        assert profile_eps.position[1].unit_length == 'arcsec'
-        assert profile_eps.param_float == 2.0
-        assert profile_eps.length == 3.0
-        assert profile_eps.length.unit_length == 'arcsec'
-        assert profile_eps.luminosity == 4.0
-        assert profile_eps.luminosity.unit_luminosity == 'eps'
-        assert profile_eps.mass == 5.0
-        assert profile_eps.mass.unit_mass == 'angular'
-        assert profile_eps.mass_over_luminosity == pytest.approx(6.0, 1.0e-4)
-        assert profile_eps.mass_over_luminosity.unit == 'angular / eps'
+            profile = MockDimensionsProfile(luminosity=1.0, mass_over_luminosity=1.0)
 
-    def test__luminosity_conversion_requires_exposure_time_but_does_not_supply_it_raises_error(self):
+            assert profile.unit_luminosity == None
+            
+        def test__unit_mass__extracted_from_profile(self):
 
-        profile_eps = MockDimensionsProfile(
-            position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
-            param_float=2.0,
-            length=dim.Length(value=3.0, unit_length='arcsec'),
-            luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
-            mass=dim.Mass(value=5.0, unit_mass='angular'),
-            mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+            profile = MockDimensionsProfile(mass=dim.Mass(value=3.0, unit_mass='angular'),
+                                            mass_over_luminosity=dim.MassOverLuminosity(value=3.0, unit_mass='angular'))
 
-        with pytest.raises(exc.UnitsException):
-            profile_eps.new_profile_with_units_converted(unit_luminosity='counts')
+            assert profile.unit_mass == 'angular'
 
-        profile_counts = profile_eps.new_profile_with_units_converted(unit_luminosity='counts', exposure_time=10.0)
+            profile = MockDimensionsProfile(mass=1.0,
+                                            mass_over_luminosity=dim.MassOverLuminosity(value=3.0, unit_mass='angular'))
 
-        with pytest.raises(exc.UnitsException):
-            profile_counts.new_profile_with_units_converted(unit_luminosity='eps')
+            assert profile.unit_mass == 'angular'
 
-    def test__angular_to_solMass_conversions_of_mass__conversions_convert_values(self):
-        
-        profile_angular = MockDimensionsProfile(
-            position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
-            param_float=2.0,
-            length=dim.Length(value=3.0, unit_length='arcsec'),
-            luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
-            mass=dim.Mass(value=5.0, unit_mass='angular'),
-            mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+            profile = MockDimensionsProfile(mass=dim.Mass(value=3.0, unit_mass='angular'),
+                                            mass_over_luminosity=1.0)
 
-        assert profile_angular.position == (1.0, 2.0)
-        assert profile_angular.position[0].unit_length == 'arcsec'
-        assert profile_angular.position[1].unit_length == 'arcsec'
-        assert profile_angular.param_float == 2.0
-        assert profile_angular.length == 3.0
-        assert profile_angular.length.unit_length == 'arcsec'
-        assert profile_angular.luminosity == 4.0
-        assert profile_angular.luminosity.unit_luminosity == 'eps'
-        assert profile_angular.mass == 5.0
-        assert profile_angular.mass.unit_mass == 'angular'
-        assert profile_angular.mass_over_luminosity == 6.0
-        assert profile_angular.mass_over_luminosity.unit == 'angular / eps'
+            assert profile.unit_mass == 'angular'
 
-        profile_angular = profile_angular.new_profile_with_units_converted(unit_mass='angular')
+            profile = MockDimensionsProfile(mass=dim.Mass(value=3.0, unit_mass='solMass'),
+                                            mass_over_luminosity=dim.MassOverLuminosity(value=3.0, unit_mass='solMass'))
 
-        assert profile_angular.position == (1.0, 2.0)
-        assert profile_angular.position[0].unit_length == 'arcsec'
-        assert profile_angular.position[1].unit_length == 'arcsec'
-        assert profile_angular.param_float == 2.0
-        assert profile_angular.length == 3.0
-        assert profile_angular.length.unit_length == 'arcsec'
-        assert profile_angular.luminosity == 4.0
-        assert profile_angular.luminosity.unit_luminosity == 'eps'
-        assert profile_angular.mass == 5.0
-        assert profile_angular.mass.unit_mass == 'angular'
-        assert profile_angular.mass_over_luminosity == 6.0
-        assert profile_angular.mass_over_luminosity.unit == 'angular / eps'
+            assert profile.unit_mass == 'solMass'
 
-        profile_solMass = profile_angular.new_profile_with_units_converted(unit_mass='solMass',
-                                                                      critical_surface_density=10.0)
+            profile = MockDimensionsProfile(mass=1.0,
+                                            mass_over_luminosity=dim.MassOverLuminosity(value=3.0, unit_mass='solMass'))
 
-        assert profile_solMass.position == (1.0, 2.0)
-        assert profile_solMass.position[0].unit_length == 'arcsec'
-        assert profile_solMass.position[1].unit_length == 'arcsec'
-        assert profile_solMass.param_float == 2.0
-        assert profile_solMass.length == 3.0
-        assert profile_solMass.length.unit_length == 'arcsec'
-        assert profile_solMass.luminosity == 4.0
-        assert profile_solMass.luminosity.unit_luminosity == 'eps'
-        assert profile_solMass.mass == 50.0
-        assert profile_solMass.mass.unit_mass == 'solMass'
-        assert profile_solMass.mass_over_luminosity == pytest.approx(60.0, 1.0e-4)
-        assert profile_solMass.mass_over_luminosity.unit == 'solMass / eps'
+            assert profile.unit_mass == 'solMass'
 
-        profile_solMass = profile_solMass.new_profile_with_units_converted(unit_mass='solMass')
 
-        assert profile_solMass.position == (1.0, 2.0)
-        assert profile_solMass.position[0].unit_length == 'arcsec'
-        assert profile_solMass.position[1].unit_length == 'arcsec'
-        assert profile_solMass.param_float == 2.0
-        assert profile_solMass.length == 3.0
-        assert profile_solMass.length.unit_length == 'arcsec'
-        assert profile_solMass.luminosity == 4.0
-        assert profile_solMass.luminosity.unit_luminosity == 'eps'
-        assert profile_solMass.mass == 50.0
-        assert profile_solMass.mass.unit_mass == 'solMass'
-        assert profile_solMass.mass_over_luminosity == pytest.approx(60.0, 1.0e-4)
-        assert profile_solMass.mass_over_luminosity.unit == 'solMass / eps'
+            profile = MockDimensionsProfile(mass=dim.Mass(value=3.0, unit_mass='solMass'),
+                                            mass_over_luminosity=1.0)
 
-        profile_angular = profile_solMass.new_profile_with_units_converted(unit_mass='angular',
-                                                                      critical_surface_density=10.0)
+            assert profile.unit_mass == 'solMass'
 
-        assert profile_angular.position == (1.0, 2.0)
-        assert profile_angular.position[0].unit_length == 'arcsec'
-        assert profile_angular.position[1].unit_length == 'arcsec'
-        assert profile_angular.param_float == 2.0
-        assert profile_angular.length == 3.0
-        assert profile_angular.length.unit_length == 'arcsec'
-        assert profile_angular.luminosity == 4.0
-        assert profile_angular.luminosity.unit_luminosity == 'eps'
-        assert profile_angular.mass == 5.0
-        assert profile_angular.mass.unit_mass == 'angular'
-        assert profile_angular.mass_over_luminosity == pytest.approx(6.0, 1.0e-4)
-        assert profile_angular.mass_over_luminosity.unit == 'angular / eps'
+            profile = MockDimensionsProfile(mass=1.0, mass_over_luminosity=1.0)
 
-    def test__mass_conversion_requires_critical_surface_density_but_does_not_supply_it_raises_error(self):
-        
-        profile_angular = MockDimensionsProfile(
-            position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
-            param_float=2.0,
-            length=dim.Length(value=3.0, unit_length='arcsec'),
-            luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
-            mass=dim.Mass(value=5.0, unit_mass='angular'),
-            mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+            assert profile.unit_mass == None
 
-        with pytest.raises(exc.UnitsException):
-            profile_angular.new_profile_with_units_converted(unit_mass='solMass')
 
-        profile_solMass = profile_angular.new_profile_with_units_converted(unit_mass='solMass', critical_surface_density=10.0)
+    class TestUnitConversions(object):
 
-        with pytest.raises(exc.UnitsException):
-            profile_solMass.new_profile_with_units_converted(unit_mass='angular')
+        def test__arcsec_to_kpc_conversions_of_length__float_and_tuple_length__conversion_converts_values(self):
+
+            profile_arcsec = MockDimensionsProfile(
+                position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
+                param_float=2.0,
+                length=dim.Length(value=3.0, unit_length='arcsec'),
+                luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
+                mass=dim.Mass(value=5.0, unit_mass='angular'),
+                mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+
+            assert profile_arcsec.position == (1.0, 2.0)
+            assert profile_arcsec.position[0].unit_length == 'arcsec'
+            assert profile_arcsec.position[1].unit_length == 'arcsec'
+            assert profile_arcsec.param_float == 2.0
+            assert profile_arcsec.length == 3.0
+            assert profile_arcsec.length.unit_length == 'arcsec'
+            assert profile_arcsec.luminosity == 4.0
+            assert profile_arcsec.luminosity.unit_luminosity == 'eps'
+            assert profile_arcsec.mass == 5.0
+            assert profile_arcsec.mass.unit_mass == 'angular'
+            assert profile_arcsec.mass_over_luminosity == 6.0
+            assert profile_arcsec.mass_over_luminosity.unit == 'angular / eps'
+
+            profile_arcsec = profile_arcsec.new_profile_with_units_converted(unit_length='arcsec')
+
+            assert profile_arcsec.position == (1.0, 2.0)
+            assert profile_arcsec.position[0].unit == 'arcsec'
+            assert profile_arcsec.position[1].unit == 'arcsec'
+            assert profile_arcsec.param_float == 2.0
+            assert profile_arcsec.length == 3.0
+            assert profile_arcsec.length.unit == 'arcsec'
+            assert profile_arcsec.luminosity == 4.0
+            assert profile_arcsec.luminosity.unit == 'eps'
+            assert profile_arcsec.mass == 5.0
+            assert profile_arcsec.mass.unit_mass == 'angular'
+            assert profile_arcsec.mass_over_luminosity == 6.0
+            assert profile_arcsec.mass_over_luminosity.unit == 'angular / eps'
+
+            profile_kpc = profile_arcsec.new_profile_with_units_converted(unit_length='kpc', kpc_per_arcsec=2.0)
+
+            assert profile_kpc.position == (2.0, 4.0)
+            assert profile_kpc.position[0].unit == 'kpc'
+            assert profile_kpc.position[1].unit == 'kpc'
+            assert profile_kpc.param_float == 2.0
+            assert profile_kpc.length == 6.0
+            assert profile_kpc.length.unit == 'kpc'
+            assert profile_kpc.luminosity == 4.0
+            assert profile_kpc.luminosity.unit == 'eps'
+            assert profile_arcsec.mass == 5.0
+            assert profile_arcsec.mass.unit_mass == 'angular'
+            assert profile_kpc.mass_over_luminosity == 6.0
+            assert profile_kpc.mass_over_luminosity.unit == 'angular / eps'
+
+            profile_kpc = profile_kpc.new_profile_with_units_converted(unit_length='kpc')
+
+            assert profile_kpc.position == (2.0, 4.0)
+            assert profile_kpc.position[0].unit == 'kpc'
+            assert profile_kpc.position[1].unit == 'kpc'
+            assert profile_kpc.param_float == 2.0
+            assert profile_kpc.length == 6.0
+            assert profile_kpc.length.unit == 'kpc'
+            assert profile_kpc.luminosity == 4.0
+            assert profile_kpc.luminosity.unit == 'eps'
+            assert profile_arcsec.mass == 5.0
+            assert profile_arcsec.mass.unit_mass == 'angular'
+            assert profile_kpc.mass_over_luminosity == 6.0
+            assert profile_kpc.mass_over_luminosity.unit == 'angular / eps'
+
+            profile_arcsec = profile_kpc.new_profile_with_units_converted(unit_length='arcsec', kpc_per_arcsec=2.0)
+
+            assert profile_arcsec.position == (1.0, 2.0)
+            assert profile_arcsec.position[0].unit == 'arcsec'
+            assert profile_arcsec.position[1].unit == 'arcsec'
+            assert profile_arcsec.param_float == 2.0
+            assert profile_arcsec.length == 3.0
+            assert profile_arcsec.length.unit == 'arcsec'
+            assert profile_arcsec.luminosity == 4.0
+            assert profile_arcsec.luminosity.unit == 'eps'
+            assert profile_arcsec.mass == 5.0
+            assert profile_arcsec.mass.unit_mass == 'angular'
+            assert profile_arcsec.mass_over_luminosity == 6.0
+            assert profile_arcsec.mass_over_luminosity.unit == 'angular / eps'
+
+        def test__conversion_requires_kpc_per_arcsec_but_does_not_supply_it_raises_error(self):
+
+            profile_arcsec = MockDimensionsProfile(position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),)
+
+            with pytest.raises(exc.UnitsException):
+                profile_arcsec.new_profile_with_units_converted(unit_length='kpc')
+
+            profile_kpc = profile_arcsec.new_profile_with_units_converted(unit_length='kpc', kpc_per_arcsec=2.0)
+
+            with pytest.raises(exc.UnitsException):
+                profile_kpc.new_profile_with_units_converted(unit_length='arcsec')
+
+        def test__eps_to_counts_conversions_of_luminosity__conversions_convert_values(self):
+
+            profile_eps = MockDimensionsProfile(
+                position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
+                param_float=2.0,
+                length=dim.Length(value=3.0, unit_length='arcsec'),
+                luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
+                mass=dim.Mass(value=5.0, unit_mass='angular'),
+                mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+
+            assert profile_eps.position == (1.0, 2.0)
+            assert profile_eps.position[0].unit_length == 'arcsec'
+            assert profile_eps.position[1].unit_length == 'arcsec'
+            assert profile_eps.param_float == 2.0
+            assert profile_eps.length == 3.0
+            assert profile_eps.length.unit_length == 'arcsec'
+            assert profile_eps.luminosity == 4.0
+            assert profile_eps.luminosity.unit_luminosity == 'eps'
+            assert profile_eps.mass == 5.0
+            assert profile_eps.mass.unit_mass == 'angular'
+            assert profile_eps.mass_over_luminosity == 6.0
+            assert profile_eps.mass_over_luminosity.unit == 'angular / eps'
+
+            profile_eps = profile_eps.new_profile_with_units_converted(unit_luminosity='eps')
+
+            assert profile_eps.position == (1.0, 2.0)
+            assert profile_eps.position[0].unit_length == 'arcsec'
+            assert profile_eps.position[1].unit_length == 'arcsec'
+            assert profile_eps.param_float == 2.0
+            assert profile_eps.length == 3.0
+            assert profile_eps.length.unit_length == 'arcsec'
+            assert profile_eps.luminosity == 4.0
+            assert profile_eps.luminosity.unit_luminosity == 'eps'
+            assert profile_eps.mass == 5.0
+            assert profile_eps.mass.unit_mass == 'angular'
+            assert profile_eps.mass_over_luminosity == 6.0
+            assert profile_eps.mass_over_luminosity.unit == 'angular / eps'
+
+            profile_counts = profile_eps.new_profile_with_units_converted(unit_luminosity='counts',
+                                                                          exposure_time=10.0)
+
+            assert profile_counts.position == (1.0, 2.0)
+            assert profile_counts.position[0].unit_length == 'arcsec'
+            assert profile_counts.position[1].unit_length == 'arcsec'
+            assert profile_counts.param_float == 2.0
+            assert profile_counts.length == 3.0
+            assert profile_counts.length.unit_length == 'arcsec'
+            assert profile_counts.luminosity == 40.0
+            assert profile_counts.luminosity.unit_luminosity == 'counts'
+            assert profile_counts.mass == 5.0
+            assert profile_counts.mass.unit_mass == 'angular'
+            assert profile_counts.mass_over_luminosity == pytest.approx(0.6, 1.0e-4)
+            assert profile_counts.mass_over_luminosity.unit == 'angular / counts'
+
+            profile_counts = profile_counts.new_profile_with_units_converted(unit_luminosity='counts')
+
+
+            assert profile_counts.position == (1.0, 2.0)
+            assert profile_counts.position[0].unit_length == 'arcsec'
+            assert profile_counts.position[1].unit_length == 'arcsec'
+            assert profile_counts.param_float == 2.0
+            assert profile_counts.length == 3.0
+            assert profile_counts.length.unit_length == 'arcsec'
+            assert profile_counts.luminosity == 40.0
+            assert profile_counts.luminosity.unit_luminosity == 'counts'
+            assert profile_counts.mass == 5.0
+            assert profile_counts.mass.unit_mass == 'angular'
+            assert profile_counts.mass_over_luminosity == pytest.approx(0.6, 1.0e-4)
+            assert profile_counts.mass_over_luminosity.unit == 'angular / counts'
+
+            profile_eps = profile_counts.new_profile_with_units_converted(unit_luminosity='eps',
+                                                                          exposure_time=10.0)
+
+            assert profile_eps.position == (1.0, 2.0)
+            assert profile_eps.position[0].unit_length == 'arcsec'
+            assert profile_eps.position[1].unit_length == 'arcsec'
+            assert profile_eps.param_float == 2.0
+            assert profile_eps.length == 3.0
+            assert profile_eps.length.unit_length == 'arcsec'
+            assert profile_eps.luminosity == 4.0
+            assert profile_eps.luminosity.unit_luminosity == 'eps'
+            assert profile_eps.mass == 5.0
+            assert profile_eps.mass.unit_mass == 'angular'
+            assert profile_eps.mass_over_luminosity == pytest.approx(6.0, 1.0e-4)
+            assert profile_eps.mass_over_luminosity.unit == 'angular / eps'
+
+        def test__luminosity_conversion_requires_exposure_time_but_does_not_supply_it_raises_error(self):
+
+            profile_eps = MockDimensionsProfile(
+                position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
+                param_float=2.0,
+                length=dim.Length(value=3.0, unit_length='arcsec'),
+                luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
+                mass=dim.Mass(value=5.0, unit_mass='angular'),
+                mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+
+            with pytest.raises(exc.UnitsException):
+                profile_eps.new_profile_with_units_converted(unit_luminosity='counts')
+
+            profile_counts = profile_eps.new_profile_with_units_converted(unit_luminosity='counts', exposure_time=10.0)
+
+            with pytest.raises(exc.UnitsException):
+                profile_counts.new_profile_with_units_converted(unit_luminosity='eps')
+
+        def test__angular_to_solMass_conversions_of_mass__conversions_convert_values(self):
+
+            profile_angular = MockDimensionsProfile(
+                position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
+                param_float=2.0,
+                length=dim.Length(value=3.0, unit_length='arcsec'),
+                luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
+                mass=dim.Mass(value=5.0, unit_mass='angular'),
+                mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+
+            assert profile_angular.position == (1.0, 2.0)
+            assert profile_angular.position[0].unit_length == 'arcsec'
+            assert profile_angular.position[1].unit_length == 'arcsec'
+            assert profile_angular.param_float == 2.0
+            assert profile_angular.length == 3.0
+            assert profile_angular.length.unit_length == 'arcsec'
+            assert profile_angular.luminosity == 4.0
+            assert profile_angular.luminosity.unit_luminosity == 'eps'
+            assert profile_angular.mass == 5.0
+            assert profile_angular.mass.unit_mass == 'angular'
+            assert profile_angular.mass_over_luminosity == 6.0
+            assert profile_angular.mass_over_luminosity.unit == 'angular / eps'
+
+            profile_angular = profile_angular.new_profile_with_units_converted(unit_mass='angular')
+
+            assert profile_angular.position == (1.0, 2.0)
+            assert profile_angular.position[0].unit_length == 'arcsec'
+            assert profile_angular.position[1].unit_length == 'arcsec'
+            assert profile_angular.param_float == 2.0
+            assert profile_angular.length == 3.0
+            assert profile_angular.length.unit_length == 'arcsec'
+            assert profile_angular.luminosity == 4.0
+            assert profile_angular.luminosity.unit_luminosity == 'eps'
+            assert profile_angular.mass == 5.0
+            assert profile_angular.mass.unit_mass == 'angular'
+            assert profile_angular.mass_over_luminosity == 6.0
+            assert profile_angular.mass_over_luminosity.unit == 'angular / eps'
+
+            profile_solMass = profile_angular.new_profile_with_units_converted(unit_mass='solMass',
+                                                                          critical_surface_density=10.0)
+
+            assert profile_solMass.position == (1.0, 2.0)
+            assert profile_solMass.position[0].unit_length == 'arcsec'
+            assert profile_solMass.position[1].unit_length == 'arcsec'
+            assert profile_solMass.param_float == 2.0
+            assert profile_solMass.length == 3.0
+            assert profile_solMass.length.unit_length == 'arcsec'
+            assert profile_solMass.luminosity == 4.0
+            assert profile_solMass.luminosity.unit_luminosity == 'eps'
+            assert profile_solMass.mass == 50.0
+            assert profile_solMass.mass.unit_mass == 'solMass'
+            assert profile_solMass.mass_over_luminosity == pytest.approx(60.0, 1.0e-4)
+            assert profile_solMass.mass_over_luminosity.unit == 'solMass / eps'
+
+            profile_solMass = profile_solMass.new_profile_with_units_converted(unit_mass='solMass')
+
+            assert profile_solMass.position == (1.0, 2.0)
+            assert profile_solMass.position[0].unit_length == 'arcsec'
+            assert profile_solMass.position[1].unit_length == 'arcsec'
+            assert profile_solMass.param_float == 2.0
+            assert profile_solMass.length == 3.0
+            assert profile_solMass.length.unit_length == 'arcsec'
+            assert profile_solMass.luminosity == 4.0
+            assert profile_solMass.luminosity.unit_luminosity == 'eps'
+            assert profile_solMass.mass == 50.0
+            assert profile_solMass.mass.unit_mass == 'solMass'
+            assert profile_solMass.mass_over_luminosity == pytest.approx(60.0, 1.0e-4)
+            assert profile_solMass.mass_over_luminosity.unit == 'solMass / eps'
+
+            profile_angular = profile_solMass.new_profile_with_units_converted(unit_mass='angular',
+                                                                          critical_surface_density=10.0)
+
+            assert profile_angular.position == (1.0, 2.0)
+            assert profile_angular.position[0].unit_length == 'arcsec'
+            assert profile_angular.position[1].unit_length == 'arcsec'
+            assert profile_angular.param_float == 2.0
+            assert profile_angular.length == 3.0
+            assert profile_angular.length.unit_length == 'arcsec'
+            assert profile_angular.luminosity == 4.0
+            assert profile_angular.luminosity.unit_luminosity == 'eps'
+            assert profile_angular.mass == 5.0
+            assert profile_angular.mass.unit_mass == 'angular'
+            assert profile_angular.mass_over_luminosity == pytest.approx(6.0, 1.0e-4)
+            assert profile_angular.mass_over_luminosity.unit == 'angular / eps'
+
+        def test__mass_conversion_requires_critical_surface_density_but_does_not_supply_it_raises_error(self):
+
+            profile_angular = MockDimensionsProfile(
+                position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
+                param_float=2.0,
+                length=dim.Length(value=3.0, unit_length='arcsec'),
+                luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
+                mass=dim.Mass(value=5.0, unit_mass='angular'),
+                mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
+
+            with pytest.raises(exc.UnitsException):
+                profile_angular.new_profile_with_units_converted(unit_mass='solMass')
+
+            profile_solMass = profile_angular.new_profile_with_units_converted(unit_mass='solMass', critical_surface_density=10.0)
+
+            with pytest.raises(exc.UnitsException):
+                profile_solMass.new_profile_with_units_converted(unit_mass='angular')
+
 
 class TestUnitCheckConversionWwrapper(object):
-
-    def test__if_units_of_input_are_not_same_raises_error(self):
-
-        profile = MockDimensionsProfile(
-            position=(dim.Length(1.0, 'arcsec'), dim.Length(2.0, 'arcsec')),
-            param_float=2.0,
-            length=dim.Length(value=3.0, unit_length='arcsec'),
-            luminosity=dim.Luminosity(value=4.0, unit_luminosity='eps'),
-            mass=dim.Mass(value=5.0, unit_mass='angular'),
-            mass_over_luminosity=dim.MassOverLuminosity(value=6.0, unit_luminosity='eps', unit_mass='angular'))
-
-        profile.unit_length_calc(length_0=dim.Length(1.0, 'arcsec'), length_1=dim.Length(1.0, 'arcsec'))
-        profile.unit_length_calc(length_0=dim.Length(1.0, 'kpc'), length_1=dim.Length(1.0, 'kpc'), kpc_per_arcsec=1.0)
-
-        profile.unit_luminosity_calc(luminosity_0=dim.Luminosity(1.0, 'eps'), luminosity_1=dim.Luminosity(1.0, 'eps'))
-        profile.unit_luminosity_calc(luminosity_0=dim.Luminosity(1.0, 'counts'), luminosity_1=dim.Luminosity(1.0, 'counts'),
-                                     exposure_time=1.0)
-
-        profile.unit_mass_calc(mass_0=dim.Mass(1.0, 'angular'), mass_1=dim.Mass(1.0, 'angular'))
-        profile.unit_mass_calc(mass_0=dim.Mass(1.0, 'solMass'), mass_1=dim.Mass(1.0, 'solMass'),
-                               critical_surface_density=1.0)
-
-        with pytest.raises(exc.UnitsException):
-
-            profile.unit_length_calc(length_0=dim.Length(1.0, 'arcsec'), length_1=dim.Length(1.0, 'kpc'), kpc_per_arcsec=1.0)
-            profile.unit_luminosity_calc(luminosity_0=dim.Luminosity(1.0, 'counts'), luminosity_1=dim.Luminosity(1.0, 'eps'),
-                                         exposure_time=1.0)
-            profile.unit_mass_calc(mass_0=dim.Mass(1.0, 'solMass'), mass_1=dim.Mass(1.0, 'angular'),
-                                   critical_surface_density=1.0)
 
     def test__profile_length_units_calculations__profile_is_converted_for_calculation_if_different_to_input_units(self):
 
         profile = MockDimensionsProfile(length=dim.Length(3.0, 'arcsec'))
 
-        length = profile.unit_length_calc(length_0=dim.Length(1.0, 'arcsec'))
+        cosmo = MockCosmology(kpc_per_arcsec=2.0)
+
+        # length: arcsec -> arcsec, stays 3.0,  length_input: arcsec -> arcsec, stays 1.0
+
+        length_input = dim.Length(1.0, 'arcsec')
+        length = profile.unit_length_calc(length_input=length_input, unit_length='arcsec')
         assert length.unit_length == 'arcsec'
         assert length == 4.0
 
-        length = profile.unit_length_calc(length_0=dim.Length(1.0, 'kpc'), kpc_per_arcsec=1.0)
-        assert length.unit_length == 'kpc'
-        assert length == 4.0
+        # length: arcsec -> arcsec, stays 3.0,  length_input  kpc -> arcsec, converts to 1.0 / 2.0 = 0.5
 
-        length = profile.unit_length_calc(length_0=dim.Length(1.0, 'kpc'), kpc_per_arcsec=2.0)
+        length_input = dim.Length(1.0, 'kpc')
+        length = profile.unit_length_calc(length_input=length_input, unit_length='arcsec',
+                                          redshift_lens=0.5, cosmology=cosmo)
+        assert length.unit_length == 'arcsec'
+        assert length == 3.5
+
+        # length: arcsec -> kpc, converts to 3.0 * 2.0 = 6.0,  length_input  kpc -> kpc, stays 1.0
+
+        length_input = dim.Length(1.0, 'kpc')
+        length = profile.unit_length_calc(length_input=length_input, unit_length='kpc',
+                                          redshift_lens=0.5, cosmology=cosmo)
         assert length.unit_length == 'kpc'
         assert length == 7.0
         
         profile = MockDimensionsProfile(length=dim.Length(3.0, 'kpc'))
 
-        length = profile.unit_length_calc(length_0=dim.Length(1.0, 'kpc'))
+        # length: kpc -> kpc, stays 3.0,  length_input: kpc -> kpc, stays 1.0
+
+        length_input = dim.Length(1.0, 'kpc')
+        length = profile.unit_length_calc(length_input=length_input, unit_length='kpc',
+                                          redshift_lens=0.5, cosmology=cosmo)
         assert length.unit_length == 'kpc'
         assert length == 4.0
 
-        length = profile.unit_length_calc(length_0=dim.Length(1.0, 'arcsec'), kpc_per_arcsec=1.0)
-        assert length.unit_length == 'arcsec'
-        assert length == 4.0
+        # length: kpc -> kpc, stays 3.0,  length_input: arcsec -> kpc, convert to 1.0 * 2.0 = 2.0
 
-        length = profile.unit_length_calc(length_0=dim.Length(1.0, 'arcsec'), kpc_per_arcsec=2.0)
+        length_input = dim.Length(1.0, 'arcsec')
+        length = profile.unit_length_calc(length_input=length_input, unit_length='kpc',
+                                          redshift_lens=0.5, cosmology=cosmo)
+        assert length.unit_length == 'kpc'
+        assert length == 5.0
+
+        # length: kpc -> arcsec, converts to 3.0 / 2.0 = 1.5,  length_input: kpc -> kpc, stays 1.0
+
+        length_input = dim.Length(1.0, 'arcsec')
+        length = profile.unit_length_calc(length_input=length_input, unit_length='arcsec',
+                                          redshift_lens=0.5, cosmology=cosmo)
         assert length.unit_length == 'arcsec'
         assert length == 2.5
 
