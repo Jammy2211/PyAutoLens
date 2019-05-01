@@ -355,21 +355,27 @@ class TestAbstractPlane(object):
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
             radius = dim.Length(1.0, 'arcsec')
+            critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
 
-            g0_mass = g0.mass_within_circle_in_units(radius=radius)
-            g1_mass = g1.mass_within_circle_in_units(radius=radius)
+            g0_mass = g0.mass_within_circle_in_units(radius=radius, critical_surface_density=critical_surface_density)
+            g1_mass = g1.mass_within_circle_in_units(radius=radius, critical_surface_density=critical_surface_density)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=0.5)
-            plane_masses = plane.masses_of_galaxies_within_circles_in_units(radius=radius)
+            plane_masses = plane.masses_of_galaxies_within_circles_in_units(radius=radius,
+                                                                            critical_surface_density=critical_surface_density)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
             radius = dim.Length(1.0, 'kpc')
+            critical_surface_density = dim.MassOverLength2(1.0, 'kpc', 'angular')
 
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=0.5)
-            g0_mass = g0.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=plane.kpc_per_arcsec)
-            g1_mass = g1.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=plane.kpc_per_arcsec)
-            plane_masses = plane.masses_of_galaxies_within_circles_in_units(radius=radius)
+            g0_mass = g0.mass_within_circle_in_units(radius=radius, critical_surface_density=critical_surface_density,
+                                                     kpc_per_arcsec=plane.kpc_per_arcsec)
+            g1_mass = g1.mass_within_circle_in_units(radius=radius, critical_surface_density=critical_surface_density,
+                                                     kpc_per_arcsec=plane.kpc_per_arcsec)
+            plane_masses = plane.masses_of_galaxies_within_circles_in_units(radius=radius,
+                                                                            critical_surface_density=critical_surface_density)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -410,21 +416,29 @@ class TestAbstractPlane(object):
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
             major_axis = dim.Length(1.0, 'arcsec')
+            critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
 
-            g0_mass = g0.mass_within_ellipse_in_units(major_axis=major_axis)
-            g1_mass = g1.mass_within_ellipse_in_units(major_axis=major_axis)
+            g0_mass = g0.mass_within_ellipse_in_units(major_axis=major_axis,
+                                                      critical_surface_density=critical_surface_density)
+            g1_mass = g1.mass_within_ellipse_in_units(major_axis=major_axis,
+                                                      critical_surface_density=critical_surface_density)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=0.5)
-            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(major_axis=major_axis)
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(major_axis=major_axis,
+                                                                             critical_surface_density=critical_surface_density)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
             major_axis = dim.Length(1.0, 'kpc')
+            critical_surface_density = dim.MassOverLength2(1.0, 'kpc', 'angular')
 
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=0.5)
-            g0_mass = g0.mass_within_ellipse_in_units(major_axis=major_axis, kpc_per_arcsec=plane.kpc_per_arcsec)
-            g1_mass = g1.mass_within_ellipse_in_units(major_axis=major_axis, kpc_per_arcsec=plane.kpc_per_arcsec)
-            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(major_axis=major_axis)
+            g0_mass = g0.mass_within_ellipse_in_units(major_axis=major_axis, critical_surface_density=critical_surface_density,
+                                                      kpc_per_arcsec=plane.kpc_per_arcsec)
+            g1_mass = g1.mass_within_ellipse_in_units(major_axis=major_axis, critical_surface_density=critical_surface_density,
+                                                      kpc_per_arcsec=plane.kpc_per_arcsec)
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(major_axis=major_axis,
+                                                                             critical_surface_density=critical_surface_density)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass

@@ -279,16 +279,21 @@ class TestMassProfiles(object):
 
             galaxy_arcsec = g.Galaxy(redshift=0.5, mass_profile=sie)
 
+            critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
             radius = dim.Length(0.5, 'arcsec')
 
-            mass = sie.mass_within_circle_in_units(radius=radius)
-            g_mass_arcsec = galaxy_arcsec.mass_within_circle_in_units(radius=radius)
+            mass = sie.mass_within_circle_in_units(radius=radius, critical_surface_density=critical_surface_density)
+            g_mass_arcsec = galaxy_arcsec.mass_within_circle_in_units(radius=radius,
+                                                                      critical_surface_density=critical_surface_density)
             assert mass == g_mass_arcsec
 
             radius = dim.Length(0.5, 'kpc')
+            critical_surface_density = dim.MassOverLength2(1.0, 'kpc', 'angular')
 
-            mass = sie.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
-            g_mass_kpc = galaxy_arcsec.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
+            mass = sie.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0,
+                                                   critical_surface_density=critical_surface_density)
+            g_mass_kpc = galaxy_arcsec.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0,
+                                                                   critical_surface_density=critical_surface_density)
             assert mass == g_mass_kpc
 
         def test__mass_unit_conversions__same_as_individual_profile(self):
