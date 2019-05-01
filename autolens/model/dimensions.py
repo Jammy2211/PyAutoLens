@@ -3,7 +3,9 @@ import typing
 from functools import wraps
 
 from autofit.tools import dimension_type
+from autolens.model import cosmology_util
 from autolens import exc
+
 
 def convert_profile_to_input_units(func):
     """
@@ -32,62 +34,71 @@ def convert_profile_to_input_units(func):
             The DimensionsProfile
         """
 
-        def check_all_units_identical(list_units):
-            return list_units[1:] == list_units[:-1]
+        # Extract units of calculation, to convert the input variables and profile to use these units.
 
-        length_units = []
-        luminosity_units = []
-        mass_units = []
+        unit_length = kwargs['unit_length'] if 'unit_length' in kwargs else 'arcsec'
+        unit_mass = kwargs['unit_mass'] if 'unit_mass' in kwargs else 'angular'
+        unit_luminosity = kwargs['unit_luminosity'] if 'unit_luminosity' in kwargs else 'eps'
+
+        # Extract input values which are used for conversions
+
+        cosmology = kwargs['cosmology'] if 'cosmology' in kwargs else None
+        redshift_lens = kwargs['redshift_lens'] if 'redshift_lens' in kwargs else None
+        redshift_source = kwargs['redshift_source'] if 'redshift_source' in kwargs else None
+        exposure_time = kwargs['exposure_time'] if 'exposure_time' in kwargs else None
+
+        # Use cosmology and redshifts to compute conversion factors.
+
+        if redshift_lens is not None and cosmology is not None:
+
+            kpc_per_arcsec = cosmology_util.kpc_per_arcsec_from_redshift_and_cosmology(redshift=redshift_lens,
+                                                                                       cosmology=cosmology)
+
+        else:
+
+            kpc_per_arcsec = None
+
+        if redshift_lens is not None and redshift_source is not None and cosmology is not None and \
+                unit_length is not None and unit_mass is not None:
+
+            critical_surface_density = \
+                cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
+                    redshift_0=redshift_lens, redshift_1=redshift_source, cosmology=cosmology,
+                    unit_length=unit_length, unit_mass=unit_mass)
+
+        else:
+
+            critical_surface_density = None
+
+        # Convert all input parameters to units of input units.
 
         for key, value in kwargs.items():
 
-            if hasattr(value, 'unit_length'):
-                length_units.append(value.unit_length)
+            if isinstance(value, Length):
+                kwargs[key] = value.convert(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
 
-            if hasattr(value, 'unit_luminosity'):
-                luminosity_units.append(value.unit_luminosity)
+            if isinstance(value, Luminosity):
+                kwargs[key] = value.convert(unit_luminosity=unit_luminosity, exposure_time=exposure_time)
 
-            if hasattr(value, 'unit_mass'):
-                mass_units.append(value.unit_mass)
+            if isinstance(value, Mass):
+                kwargs[key] = value.convert(unit_mass=unit_mass, critical_surface_density=critical_surface_density)
 
-        if not check_all_units_identical(list_units=length_units):
-            raise exc.UnitsException('The length units of the parametes input to this method are not identical')
+            if isinstance(value, MassOverLuminosity):
+                kwargs[key] = value.convert(unit_luminosity=unit_luminosity, unit_mass=unit_mass,
+                                            exposure_time=exposure_time,
+                                            critical_surface_density=critical_surface_density)
 
-        if not check_all_units_identical(list_units=luminosity_units):
-            raise exc.UnitsException('The luminosity units of the parametes input to this method are not identical')
+            if isinstance(value, MassOverLength2):
+                kwargs[key] = value.convert(unit_length=unit_length, unit_mass=unit_mass,
+                                            kpc_per_arcsec=kpc_per_arcsec,
+                                            critical_surface_density=critical_surface_density)
 
-        if not check_all_units_identical(list_units=mass_units):
-            raise exc.UnitsException('The mass units of the parametes input to this method are not identical')
+            if isinstance(value, MassOverLength3):
+                kwargs[key] = value.convert(unit_length=unit_length, unit_mass=unit_mass,
+                                            kpc_per_arcsec=kpc_per_arcsec,
+                                            critical_surface_density=critical_surface_density)
 
-        if not length_units:
-            unit_length = None
-        else:
-            unit_length = length_units[0]
-
-        if not luminosity_units:
-            unit_luminosity = None
-        else:
-            unit_luminosity = luminosity_units[0]
-
-        if not mass_units:
-            unit_mass = None
-        else:
-            unit_mass = mass_units[0]
-
-        if 'kpc_per_arcsec' in kwargs:
-            kpc_per_arcsec = kwargs['kpc_per_arcsec']
-        else:
-            kpc_per_arcsec = None
-
-        if 'exposure_time' in kwargs:
-            exposure_time = kwargs['exposure_time']
-        else:
-            exposure_time = None
-
-        if 'critical_surface_density' in kwargs:
-            critical_surface_density = kwargs['critical_surface_density']
-        else:
-            critical_surface_density = None
+        # Convert profile to input parameter units
 
         profile = profile.new_profile_with_units_converted(unit_length=unit_length, unit_luminosity=unit_luminosity,
                                                            unit_mass=unit_mass, kpc_per_arcsec=kpc_per_arcsec,
@@ -127,6 +138,33 @@ class DimensionsProfile(object):
         return self.__class__(
             **{key: convert(value) for key, value in self.__dict__.items() if key in constructor_args})
 
+    @property
+    def unit_length(self):
+
+        for attr, value in self.__dict__.items():
+            if hasattr(value, 'unit_length'):
+                return value.unit_length
+
+        return None
+
+    @property
+    def unit_luminosity(self):
+
+        for attr, value in self.__dict__.items():
+            if hasattr(value, 'unit_luminosity'):
+                return value.unit_luminosity
+
+        return None
+    
+
+    @property
+    def unit_mass(self):
+
+        for attr, value in self.__dict__.items():
+            if hasattr(value, 'unit_mass'):
+                return value.unit_mass
+
+        return None
 
 class Length(dimension_type.DimensionType):
 
@@ -140,7 +178,6 @@ class Length(dimension_type.DimensionType):
         return self.unit_length
 
     def convert(self, unit_length, kpc_per_arcsec=None):
-
         value = self
 
         value = convert_length(value=value, unit_current=self.unit_length, unit_new=unit_length,
@@ -161,7 +198,6 @@ class Luminosity(dimension_type.DimensionType):
         return self.unit_luminosity
 
     def convert(self, unit_luminosity, exposure_time=None):
-
         value = self
 
         value = convert_luminosity(value=value, unit_current=self.unit_luminosity, unit_new=unit_luminosity,
@@ -182,7 +218,6 @@ class Mass(dimension_type.DimensionType):
         return self.unit_mass
 
     def convert(self, unit_mass, critical_surface_density=None):
-
         value = self
 
         value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
@@ -205,8 +240,8 @@ class MassOverLuminosity(dimension_type.DimensionType):
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_luminosity
 
-    def convert(self, unit_luminosity, unit_mass,  exposure_time=None, critical_surface_density=None):
-        
+    def convert(self, unit_luminosity, unit_mass, exposure_time=None, critical_surface_density=None):
+
         value = self
         if unit_luminosity is not None:
             value = convert_luminosity(value=value, unit_current=self.unit_luminosity, unit_new=unit_luminosity,
@@ -236,13 +271,13 @@ class MassOverLength2(dimension_type.DimensionType):
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_length + '^2'
 
-    def convert(self, unit_length, unit_mass, kpc_per_arcsec=None, critical_surface_density=None,):
+    def convert(self, unit_length, unit_mass, kpc_per_arcsec=None, critical_surface_density=None, ):
 
         value = self
 
         if unit_length is not None:
             value = convert_length(value=value, unit_current=self.unit_length, unit_new=unit_length,
-                                       power=self.unit_length_power, kpc_per_arcsec=kpc_per_arcsec)
+                                   power=self.unit_length_power, kpc_per_arcsec=kpc_per_arcsec)
         else:
             unit_length = value.unit_length
 
@@ -274,7 +309,7 @@ class MassOverLength3(dimension_type.DimensionType):
 
         if unit_length is not None:
             value = convert_length(value=value, unit_current=self.unit_length, unit_new=unit_length,
-                                       power=self.unit_length_power, kpc_per_arcsec=kpc_per_arcsec)
+                                   power=self.unit_length_power, kpc_per_arcsec=kpc_per_arcsec)
         else:
             unit_length = value.unit_length
 
@@ -286,10 +321,11 @@ class MassOverLength3(dimension_type.DimensionType):
 
         return MassOverLength3(value=value, unit_mass=unit_mass, unit_length=unit_length)
 
+
 Position = typing.Tuple[Length, Length]
 
+
 def convert_length(value, unit_current, unit_new, power, kpc_per_arcsec):
-    
     if unit_current is not unit_new and kpc_per_arcsec is None:
         raise exc.UnitsException('The length for a value has been requested in new units without a '
                                  'kpc_per_arcsec conversion factor.')
@@ -297,15 +333,15 @@ def convert_length(value, unit_current, unit_new, power, kpc_per_arcsec):
     if unit_current is unit_new:
         return value
     elif unit_current is 'arcsec' and unit_new is 'kpc':
-        return (kpc_per_arcsec**power) * value
+        return (kpc_per_arcsec ** power) * value
     elif unit_current is 'kpc' and unit_new is 'arcsec':
-        return value / (kpc_per_arcsec**power)
+        return value / (kpc_per_arcsec ** power)
     else:
         raise exc.UnitsException('The unit specified for the length of a value was an invalid string, you '
                                  'must use (arcsec | kpc)')
 
+
 def convert_luminosity(value, unit_current, unit_new, power, exposure_time):
-    
     if unit_current is not unit_new and exposure_time is None:
         raise exc.UnitsException('The luminosity for a value has been requested in new units '
                                  'without an  exposure time conversion factor.')
@@ -313,15 +349,15 @@ def convert_luminosity(value, unit_current, unit_new, power, exposure_time):
     if unit_current is unit_new:
         return value
     elif unit_current is 'eps' and unit_new is 'counts':
-        return (exposure_time**power) * value
+        return (exposure_time ** power) * value
     elif unit_current is 'counts' and unit_new is 'eps':
-        return value / (exposure_time**power)
+        return value / (exposure_time ** power)
     else:
         raise exc.UnitsException('The unit specified for the luminosity of a value was an invalid string, you '
                                  'must use (electrons per second | counts)')
 
+
 def convert_mass(value, unit_current, unit_new, critical_surface_density):
-    
     if unit_current is not unit_new and critical_surface_density is None:
         raise exc.UnitsException('The mass for a value has been requested in new units '
                                  'without a critical surface mass density conversion factor.')
