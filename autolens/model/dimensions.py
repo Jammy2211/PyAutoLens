@@ -36,9 +36,9 @@ def convert_profile_to_input_units(func):
 
         # Extract units of calculation, to convert the input variables and profile to use these units.
 
-        unit_length = kwargs['unit_length'] if 'unit_length' in kwargs else 'arcsec'
-        unit_mass = kwargs['unit_mass'] if 'unit_mass' in kwargs else 'angular'
-        unit_luminosity = kwargs['unit_luminosity'] if 'unit_luminosity' in kwargs else 'eps'
+        unit_length = kwargs['unit_length'] if 'unit_length' in kwargs else profile.unit_length
+        unit_mass = kwargs['unit_mass'] if 'unit_mass' in kwargs else profile.unit_luminosity
+        unit_luminosity = kwargs['unit_luminosity'] if 'unit_luminosity' in kwargs else profile.unit_mass
 
         # Extract input values which are used for conversions
 
