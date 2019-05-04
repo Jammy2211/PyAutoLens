@@ -12,7 +12,6 @@ from scipy.optimize import root_scalar
 from astropy import cosmology as cosmo
 
 from autofit.tools.dimension_type import map_types
-from autolens.model import cosmology_util
 from autolens import decorator_util
 from autolens.data.array import grids
 from autolens.model import dimensions as dim
@@ -161,8 +160,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @dim.convert_units_to_input_units
     def mass_within_circle_in_units(
-            self, radius: dim.Length,
-            unit_mass='solMass', redshift_lens=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+            self, radius: dim.Length, unit_mass='solMass',
+            redshift_lens=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
         """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
         specified radius. This is centred on the mass profile.
 
@@ -191,8 +190,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @dim.convert_units_to_input_units
     def mass_within_ellipse_in_units(
-            self, major_axis : dim.Length,
-            unit_mass='solMass',
+            self, major_axis : dim.Length, unit_mass='solMass',
             redshift_lens=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
         specified major axis. This is centred on the mass profile.
