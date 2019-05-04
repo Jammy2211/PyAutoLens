@@ -38,8 +38,8 @@ def convert_units_to_input_units(func):
         # Extract units of calculation, to convert the input variables and profile to use these units.
 
         unit_length = kwargs['unit_length'] if 'unit_length' in kwargs else profile.unit_length
-        unit_mass = kwargs['unit_mass'] if 'unit_mass' in kwargs else profile.unit_luminosity
-        unit_luminosity = kwargs['unit_luminosity'] if 'unit_luminosity' in kwargs else profile.unit_mass
+        unit_luminosity = kwargs['unit_luminosity'] if 'unit_luminosity' in kwargs else profile.unit_luminosity
+        unit_mass = kwargs['unit_mass'] if 'unit_mass' in kwargs else profile.unit_mass
 
         # Extract input values which are used for conversions
 
@@ -70,6 +70,19 @@ def convert_units_to_input_units(func):
         else:
 
             critical_surface_density = None
+
+        if redshift_lens is not None and cosmology is not None and unit_length is not None and \
+                unit_mass is not None and unit_mass is not 'angular':
+
+            cosmic_average_density = \
+                cosmology_util.cosmic_average_density_from_redshift_and_cosmology(redshift=redshift_lens,
+                    cosmology=cosmology, unit_length=unit_length, unit_mass=unit_mass)
+
+        else:
+
+            cosmic_average_density = None
+
+        print(cosmic_average_density)
 
         # Convert all input parameters to units of input units.
 
@@ -106,7 +119,14 @@ def convert_units_to_input_units(func):
                                                            exposure_time=exposure_time,
                                                            critical_surface_density=critical_surface_density)
 
-        kwargs['critical_surface_density'] = critical_surface_density
+        if kpc_per_arcsec is not None:
+            kwargs['kpc_per_arcsec'] = kpc_per_arcsec
+
+        if critical_surface_density is not None:
+            kwargs['critical_surface_density'] = critical_surface_density
+
+        if cosmic_average_density is not None:
+            kwargs['cosmic_average_density'] = cosmic_average_density
 
         return func(profile, *args, **kwargs)
 
@@ -158,7 +178,6 @@ class DimensionsProfile(object):
                 return value.unit_luminosity
 
         return None
-    
 
     @property
     def unit_mass(self):
