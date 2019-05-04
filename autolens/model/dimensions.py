@@ -82,8 +82,6 @@ def convert_units_to_input_units(func):
 
             cosmic_average_density = None
 
-        print(cosmic_average_density)
-
         # Convert all input parameters to units of input units.
 
         for key, value in kwargs.items():
