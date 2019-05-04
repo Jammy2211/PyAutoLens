@@ -38,9 +38,6 @@ def angular_diameter_distance_between_redshifts_from_redshifts_and_cosmlology(re
 def cosmic_average_density_from_redshift_and_cosmology(redshift, cosmology,unit_length='arcsec',
                                                             unit_mass='solMass'):
 
-    if unit_mass is 'angular':
-        raise exc.UnitsException('The mass units of the cosmic average mass density cannot be angular')
-
     cosmic_average_density_kpc = cosmology.critical_density(z=redshift).to(unit_mass + ' / kpc^3')
 
     cosmic_average_density_kpc = dim.MassOverLength3(value=cosmic_average_density_kpc.value,
@@ -90,6 +87,7 @@ def critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
     if unit_length is not 'arcsec':
         critical_surface_density = critical_surface_density_kpc.convert(unit_length=unit_length,
                                                                                   unit_mass=unit_mass)
+
     elif unit_length is 'arcsec':
         kpc_per_arcsec = kpc_per_arcsec_from_redshift_and_cosmology(redshift=redshift_0,
                                                                                   cosmology=cosmology)
