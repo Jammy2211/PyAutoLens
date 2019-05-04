@@ -256,8 +256,8 @@ class Galaxy(object):
         """
         if self.has_mass_profile:
             return sum(map(lambda p: p.mass_within_circle_in_units(
-                radius=radius, redshift_profile=self.redshift, redshift_source=redshift_source, unit_mass=unit_mass,
-                cosmology=cosmology, kwargs=kwargs),
+                radius=radius, redshift_profile=self.redshift, redshift_source=redshift_source,
+                unit_mass=unit_mass, cosmology=cosmology, kwargs=kwargs),
                            self.mass_profiles))
         else:
             return None
