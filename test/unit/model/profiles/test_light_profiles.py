@@ -7,7 +7,6 @@ import pytest
 import scipy.special
 
 from autofit import conf
-from autolens import exc
 from autolens.model import dimensions as dim
 from autolens.model.profiles import light_profiles as lp
 
@@ -675,7 +674,7 @@ class TestLuminosityWithinCircle(object):
 
         luminosity_analytic = luminosity_from_radius_and_profile(radius=1.0, profile=sersic_kpc)
 
-        luminosity = sersic_kpc.luminosity_within_circle_in_units(radius=radius, redshift_lens=0.5, cosmology=cosmology)
+        luminosity = sersic_kpc.luminosity_within_circle_in_units(radius=radius, redshift_profile=0.5, cosmology=cosmology)
 
         assert luminosity_analytic == pytest.approx(luminosity, 1e-3)
 
@@ -693,17 +692,17 @@ class TestLuminosityWithinCircle(object):
 
         luminosity_analytic = luminosity_from_radius_and_profile(radius=0.25, profile=sersic_arcsec)
 
-        luminosity = sersic_arcsec.luminosity_within_circle_in_units(radius=radius, redshift_lens=0.5,
+        luminosity = sersic_arcsec.luminosity_within_circle_in_units(radius=radius, redshift_profile=0.5,
                                                                      cosmology=cosmology)
 
         assert luminosity_analytic == pytest.approx(luminosity, 1e-3)
 
         radius = dim.Length(2.0, 'arcsec')
-        luminosity_arcsec = sersic_arcsec.luminosity_within_circle_in_units(radius=radius, redshift_lens=0.5,
-                                                      unit_mass='angular', cosmology=cosmology)
+        luminosity_arcsec = sersic_arcsec.luminosity_within_circle_in_units(radius=radius, redshift_profile=0.5,
+                                                                            unit_mass='angular', cosmology=cosmology)
         radius = dim.Length(4.0, 'kpc')
-        luminosity_kpc = sersic_arcsec.luminosity_within_circle_in_units(radius=radius, redshift_lens=0.5,
-                                                      unit_mass='angular', cosmology=cosmology)
+        luminosity_kpc = sersic_arcsec.luminosity_within_circle_in_units(radius=radius, redshift_profile=0.5,
+                                                                         unit_mass='angular', cosmology=cosmology)
         assert luminosity_arcsec == luminosity_kpc
 
 

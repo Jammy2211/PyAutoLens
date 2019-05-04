@@ -1,6 +1,7 @@
 from itertools import count
 
 import numpy as np
+from astropy import cosmology as cosmo
 
 from autolens import exc
 from autolens.model import dimensions as dim
@@ -135,7 +136,8 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-    def luminosity_within_circle_in_units(self, radius : dim.Length, unit_luminosity='eps', kpc_per_arcsec=None, exposure_time=None):
+    def luminosity_within_circle_in_units(self, radius: dim.Length, unit_luminosity='eps',
+                                          exposure_time=None, cosmology=cosmo.Planck15, **kwargs):
         """Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
 
         See *light_profiles.luminosity_within_circle* for details of how this is performed.
@@ -150,13 +152,15 @@ class Galaxy(object):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_circle_in_units(radius=radius, unit_luminosity=unit_luminosity,
-                                                                         kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time),
+            return sum(map(lambda p: p.luminosity_within_circle_in_units(
+                radius=radius, unit_luminosity=unit_luminosity, redshift_profile=self.redshift,
+                exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs),
                            self.light_profiles))
         else:
             return None
 
-    def luminosity_within_ellipse_in_units(self, major_axis : dim.Length, unit_luminosity='eps', kpc_per_arcsec=None, exposure_time=None):
+    def luminosity_within_ellipse_in_units(self, major_axis : dim.Length, unit_luminosity='eps',
+                                           exposure_time=None, cosmology=cosmo.Planck15, **kwargs):
         """Compute the total luminosity of the galaxy's light profiles, within an ellipse of specified major axis. This 
         is performed via integration of each light profile and is centred, oriented and aligned with each light
         model's individual geometry.
@@ -173,8 +177,9 @@ class Galaxy(object):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_ellipse_in_units(major_axis=major_axis, unit_luminosity=unit_luminosity,
-                                                                          kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time),
+            return sum(map(lambda p: p.luminosity_within_ellipse_in_units(
+                major_axis=major_axis, unit_luminosity=unit_luminosity, redshift_profile=self.redshift,
+                exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs),
                            self.light_profiles))
         else:
             return None
@@ -233,7 +238,8 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def mass_within_circle_in_units(self, radius, unit_mass='solMass', kpc_per_arcsec=None, critical_surface_density=None):
+    def mass_within_circle_in_units(self, radius : dim.Length, redshift_source=None,
+                                    unit_mass='solMass', cosmology=cosmo.Planck15, **kwargs):
         """Compute the total angular mass of the galaxy's mass profiles within a circle of specified radius.
 
         See *profiles.mass_profiles.mass_within_circle* for details of how this is performed.
@@ -249,14 +255,15 @@ class Galaxy(object):
             units to physical units (e.g. solar masses).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_circle_in_units(radius=radius, unit_mass=unit_mass,
-                                                                   kpc_per_arcsec=kpc_per_arcsec,
-                                                                   critical_surface_density=critical_surface_density),
+            return sum(map(lambda p: p.mass_within_circle_in_units(
+                radius=radius, redshift_profile=self.redshift, redshift_source=redshift_source, unit_mass=unit_mass,
+                cosmology=cosmology, kwargs=kwargs),
                            self.mass_profiles))
         else:
             return None
 
-    def mass_within_ellipse_in_units(self, major_axis, unit_mass='solMass', kpc_per_arcsec=None, critical_surface_density=None):
+    def mass_within_ellipse_in_units(self, major_axis : dim.Length, redshift_source=None,
+                                    unit_mass='solMass', cosmology=cosmo.Planck15, **kwargs):
         """Compute the total angular mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
         See *profiles.mass_profiles.angualr_mass_within_ellipse* for details of how this is performed.
@@ -271,26 +278,28 @@ class Galaxy(object):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass=unit_mass,
-                                                                    kpc_per_arcsec=kpc_per_arcsec,
-                                                                    critical_surface_density=critical_surface_density),
+            return sum(map(lambda p: p.mass_within_ellipse_in_units(
+                major_axis=major_axis, redshift_profile=self.redshift, redshift_source=redshift_source,
+                unit_mass=unit_mass, cosmology=cosmology, kwargs=kwargs),
                            self.mass_profiles))
         else:
             return None
 
-    def einstein_radius_in_units(self, unit_length='arcsec', kpc_per_arcsec=None):
+    def einstein_radius_in_units(self, unit_length='arcsec', cosmology=cosmo.Planck15):
         """The Einstein Radius of this galaxy, which is the sum of Einstein Radii of its mass profiles.
 
         If the galaxy is composed of multiple ellipitcal profiles with different axis-ratios, this Einstein Radius \
         may be inaccurate. This is because the differently oriented ellipses of each mass profile """
 
         if self.has_mass_profile:
-            return sum(map(lambda p: p.einstein_radius_in_units(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec),
+            return sum(map(lambda p: p.einstein_radius_in_units(
+                unit_length=unit_length, redshift_profile=self.redshift, cosmology=cosmology),
                            self.mass_profiles))
         else:
             return None
 
-    def einstein_mass_in_units(self, unit_mass='solMass', critical_surface_density=None):
+    def einstein_mass_in_units(self, unit_mass='solMass',
+                               redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
         """The Einstein Mass of this galaxy, which is the sum of Einstein Radii of its mass profiles.
 
         If the galaxy is composed of multiple ellipitcal profiles with different axis-ratios, this Einstein Mass \
@@ -298,8 +307,9 @@ class Galaxy(object):
 
         if self.has_mass_profile:
             return sum(
-                map(lambda p: p.einstein_mass_in_units(unit_mass=unit_mass,
-                                                       critical_surface_density=critical_surface_density),
+                map(lambda p: p.einstein_mass_in_units(
+                    unit_mass=unit_mass, redshift_profile=self.redshift, redshift_source=redshift_source,
+                    cosmology=cosmology, kwargs=kwargs),
                     self.mass_profiles))
         else:
             return None

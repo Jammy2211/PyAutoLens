@@ -37,10 +37,14 @@ class LightProfile(object):
         """
         raise NotImplementedError("intensity_from_grid should be overridden")
 
-    def luminosity_within_circle_in_units(self, radius):
+    def luminosity_within_circle_in_units(
+            self, radius: dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         raise NotImplementedError()
 
-    def luminosity_within_ellipse_in_units(self, major_axis):
+    def luminosity_within_ellipse_in_units(
+            self, major_axis: dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         raise NotImplementedError()
 
 
@@ -69,7 +73,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     @dim.convert_units_to_input_units
     def luminosity_within_circle_in_units(
             self, radius: dim.Length, unit_luminosity='eps',
-            exposure_time=None, redshift_lens=None, cosmology=cosmo.Planck15, **kwargs):
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
         centred on the light profile's centre.
 
@@ -94,7 +98,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     @dim.convert_units_to_input_units
     def luminosity_within_ellipse_in_units(
             self, major_axis : dim.Length, unit_luminosity='eps',
-            exposure_time=None, redshift_lens=None, cosmology=cosmo.Planck15, **kwargs):
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
         This is centred on the light profile's centre.
 

@@ -44,38 +44,38 @@ def convert_units_to_input_units(func):
         # Extract input values which are used for conversions
 
         cosmology = kwargs['cosmology'] if 'cosmology' in kwargs else cosmo.Planck15
-        redshift_lens = kwargs['redshift_lens'] if 'redshift_lens' in kwargs else None
+        redshift_profile = kwargs['redshift_profile'] if 'redshift_profile' in kwargs else None
         redshift_source = kwargs['redshift_source'] if 'redshift_source' in kwargs else None
         exposure_time = kwargs['exposure_time'] if 'exposure_time' in kwargs else None
 
         # Use cosmology and redshifts to compute conversion factors.
 
-        if redshift_lens is not None and cosmology is not None:
+        if redshift_profile is not None and cosmology is not None:
 
-            kpc_per_arcsec = cosmology_util.kpc_per_arcsec_from_redshift_and_cosmology(redshift=redshift_lens,
+            kpc_per_arcsec = cosmology_util.kpc_per_arcsec_from_redshift_and_cosmology(redshift=redshift_profile,
                                                                                        cosmology=cosmology)
 
         else:
 
             kpc_per_arcsec = None
 
-        if redshift_lens is not None and redshift_source is not None and cosmology is not None and \
+        if redshift_profile is not None and redshift_source is not None and cosmology is not None and \
                 unit_length is not None and unit_mass is not None:
 
             critical_surface_density = \
                 cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
-                    redshift_0=redshift_lens, redshift_1=redshift_source, cosmology=cosmology,
+                    redshift_0=redshift_profile, redshift_1=redshift_source, cosmology=cosmology,
                     unit_length=unit_length, unit_mass=unit_mass)
 
         else:
 
             critical_surface_density = None
 
-        if redshift_lens is not None and cosmology is not None and unit_length is not None and \
+        if redshift_profile is not None and cosmology is not None and unit_length is not None and \
                 unit_mass is not None and unit_mass is not 'angular':
 
             cosmic_average_density = \
-                cosmology_util.cosmic_average_density_from_redshift_and_cosmology(redshift=redshift_lens,
+                cosmology_util.cosmic_average_density_from_redshift_and_cosmology(redshift=redshift_profile,
                     cosmology=cosmology, unit_length=unit_length, unit_mass=unit_mass)
 
         else:
