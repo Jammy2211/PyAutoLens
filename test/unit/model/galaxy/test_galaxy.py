@@ -6,6 +6,7 @@ from autolens.model import dimensions as dim
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_and_mass_profiles as lmp, light_profiles as lp, mass_profiles as mp
 
+from test.unit.mock.mock_cosmology import MockCosmology
 
 @pytest.fixture(name="sersic_0")
 def make_sersic_0():
@@ -80,6 +81,8 @@ class TestLightProfiles(object):
 
         def test__radius_unit_conversions__multiply_by_kpc_per_arcsec(self):
 
+            cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
+
             sersic = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
                                            sersic_index=1.0)
 
@@ -88,13 +91,18 @@ class TestLightProfiles(object):
             radius = dim.Length(0.5, 'arcsec')
 
             luminosity = sersic.luminosity_within_circle_in_units(radius=radius)
+
             g_luminosity_arcsec = galaxy_arcsec.luminosity_within_circle_in_units(radius=radius)
+
             assert luminosity == g_luminosity_arcsec
 
             radius = dim.Length(0.5, 'kpc')
 
-            luminosity = sersic.luminosity_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
-            g_luminosity_kpc = galaxy_arcsec.luminosity_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
+            luminosity = sersic.luminosity_within_circle_in_units(radius=radius, redshift_profile=0.5,
+                                                                  cosmology=cosmology)
+
+            g_luminosity_kpc = galaxy_arcsec.luminosity_within_circle_in_units(radius=radius, cosmology=cosmology)
+
             assert luminosity == g_luminosity_kpc
 
         def test__luminosity_unit_conversions__multiply_by_exposure_time(self):
@@ -105,12 +113,18 @@ class TestLightProfiles(object):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            luminosity = sersic.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps', exposure_time=2.0)
-            gal_luminosity = galaxy.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps', exposure_time=2.0)
+            luminosity = sersic.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps',
+
+                                                                   exposure_time=2.0)
+            gal_luminosity = galaxy.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps',
+                                                                       exposure_time=2.0)
             assert luminosity == gal_luminosity
 
-            luminosity = sersic.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts', exposure_time=2.0)
-            gal_luminosity = galaxy.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts', exposure_time=2.0)
+            luminosity = sersic.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts',
+                                                                  exposure_time=2.0)
+
+            gal_luminosity = galaxy.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts',
+                                                                      exposure_time=2.0)
             assert luminosity == gal_luminosity
 
         def test__no_light_profile__returns_none(self):
@@ -275,28 +289,33 @@ class TestMassProfiles(object):
 
         def test__radius_unit_conversions__multiply_by_kpc_per_arcsec(self):
 
+            cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=1.0)
+
             sie = mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
 
             galaxy_arcsec = g.Galaxy(redshift=0.5, mass_profile=sie)
 
-            critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'angular')
             radius = dim.Length(0.5, 'arcsec')
 
-            mass = sie.mass_within_circle_in_units(radius=radius, critical_surface_density=critical_surface_density)
-            g_mass_arcsec = galaxy_arcsec.mass_within_circle_in_units(radius=radius,
-                                                                      critical_surface_density=critical_surface_density)
+            mass = sie.mass_within_circle_in_units(radius=radius, unit_mass='solMass', redshift_profile=0.5,
+                                                   redshift_source=1.0, cosmology=cosmology)
+
+            g_mass_arcsec = galaxy_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+                                                                      redshift_source=1.0, cosmology=cosmology)
             assert mass == g_mass_arcsec
 
             radius = dim.Length(0.5, 'kpc')
-            critical_surface_density = dim.MassOverLength2(1.0, 'kpc', 'angular')
 
-            mass = sie.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0,
-                                                   critical_surface_density=critical_surface_density)
-            g_mass_kpc = galaxy_arcsec.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0,
-                                                                   critical_surface_density=critical_surface_density)
+            mass = sie.mass_within_circle_in_units(radius=radius, unit_mass='solMass', redshift_profile=0.5,
+                                                   redshift_source=1.0, cosmology=cosmology)
+
+            g_mass_kpc = galaxy_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+                                                                   redshift_source=1.0, cosmology=cosmology)
             assert mass == g_mass_kpc
 
         def test__mass_unit_conversions__same_as_individual_profile(self):
+
+            cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=2.0)
 
             sie = mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
 
@@ -304,18 +323,18 @@ class TestMassProfiles(object):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
-
             mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
-                                                    critical_surface_density=critical_surface_density)
+                                                    redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
+
             gal_mass = galaxy.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
-                                                           critical_surface_density=critical_surface_density)
+                                                           redshift_source=1.0, cosmology=cosmology)
             assert mass == gal_mass
 
             mass = sie.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
-                                                   critical_surface_density=critical_surface_density)
+                                                   redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
+
             gal_mass = galaxy.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
-                                                          critical_surface_density=critical_surface_density)
+                                                        redshift_source=1.0, cosmology=cosmology)
             assert mass == gal_mass
 
         def test__no_mass_profile__returns_none(self):
