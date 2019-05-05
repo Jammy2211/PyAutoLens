@@ -346,23 +346,23 @@ class MockDimensionsProfile(dim.DimensionsProfile):
         self.mass_over_luminosity = mass_over_luminosity
 
     @dim.convert_units_to_input_units
-    def unit_length_calc(self, length_input : dim.Length, redshift_lens=None, cosmology=MockCosmology(),
-                         unit_length='arcsec'):
+    def unit_length_calc(self, length_input : dim.Length, redshift_profile=None, cosmology=MockCosmology(),
+                         unit_length='arcsec', **kwargs):
 
         return dim.Length(self.length + length_input, self.unit_length)
 
     @dim.convert_units_to_input_units
     def unit_luminosity_calc(self,
-                             luminosity_input : dim.Luminosity = None, redshift_lens=None, cosmology=MockCosmology(),
+                             luminosity_input : dim.Luminosity = None, redshift_profile=None, cosmology=MockCosmology(),
                              unit_luminosity='eps',
-                             exposure_time : float = None):
+                             exposure_time : float = None, **kwargs):
 
         return dim.Luminosity(self.luminosity + luminosity_input, self.unit_luminosity)
 
     @dim.convert_units_to_input_units
     def unit_mass_calc(self,
-                       mass_input : dim.Mass = None, redshift_lens=None, redshift_source=1.0, cosmology=MockCosmology(),
-                       unit_mass='angular'):
+                       mass_input : dim.Mass = None, redshift_profile=None, redshift_source=1.0, cosmology=MockCosmology(),
+                       unit_mass='angular', **kwargs):
 
         return dim.Mass(self.mass + mass_input, self.unit_mass)
 
@@ -765,7 +765,7 @@ class TestDimensionsProfile(object):
                 profile_solMass.new_profile_with_units_converted(unit_mass='angular')
 
 
-class TestUnitCheckConversionWwrapper(object):
+class TestUnitCheckConversionWrapper(object):
 
     def test__profile_length_units_calculations__profile_is_converted_for_calculation_if_different_to_input_units(self):
 
@@ -784,7 +784,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         length_input = dim.Length(1.0, 'kpc')
         length = profile.unit_length_calc(length_input=length_input, unit_length='arcsec',
-                                          redshift_lens=0.5, cosmology=cosmo)
+                                          redshift_profile=0.5, cosmology=cosmo)
         assert length.unit_length == 'arcsec'
         assert length == 3.5
 
@@ -792,7 +792,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         length_input = dim.Length(1.0, 'kpc')
         length = profile.unit_length_calc(length_input=length_input, unit_length='kpc',
-                                          redshift_lens=0.5, cosmology=cosmo)
+                                          redshift_profile=0.5, cosmology=cosmo)
         assert length.unit_length == 'kpc'
         assert length == 7.0
         
@@ -802,7 +802,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         length_input = dim.Length(1.0, 'kpc')
         length = profile.unit_length_calc(length_input=length_input, unit_length='kpc',
-                                          redshift_lens=0.5, cosmology=cosmo)
+                                          redshift_profile=0.5, cosmology=cosmo)
         assert length.unit_length == 'kpc'
         assert length == 4.0
 
@@ -810,7 +810,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         length_input = dim.Length(1.0, 'arcsec')
         length = profile.unit_length_calc(length_input=length_input, unit_length='kpc',
-                                          redshift_lens=0.5, cosmology=cosmo)
+                                          redshift_profile=0.5, cosmology=cosmo)
         assert length.unit_length == 'kpc'
         assert length == 5.0
 
@@ -818,7 +818,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         length_input = dim.Length(1.0, 'arcsec')
         length = profile.unit_length_calc(length_input=length_input, unit_length='arcsec',
-                                          redshift_lens=0.5, cosmology=cosmo)
+                                          redshift_profile=0.5, cosmology=cosmo)
         assert length.unit_length == 'arcsec'
         assert length == 2.5
 
@@ -839,7 +839,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         luminosity_input = dim.Luminosity(1.0, 'counts')
         luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='eps',
-                                                  redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
+                                                  redshift_profile=0.5, cosmology=cosmo, exposure_time=2.0)
         assert luminosity.unit_luminosity == 'eps'
         assert luminosity == 3.5
 
@@ -847,7 +847,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         luminosity_input = dim.Luminosity(1.0, 'counts')
         luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='counts',
-                                          redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
+                                          redshift_profile=0.5, cosmology=cosmo, exposure_time=2.0)
         assert luminosity.unit_luminosity == 'counts'
         assert luminosity == 7.0
 
@@ -857,7 +857,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         luminosity_input = dim.Luminosity(1.0, 'counts')
         luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='counts',
-                                          redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
+                                          redshift_profile=0.5, cosmology=cosmo, exposure_time=2.0)
         assert luminosity.unit_luminosity == 'counts'
         assert luminosity == 4.0
 
@@ -865,7 +865,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         luminosity_input = dim.Luminosity(1.0, 'eps')
         luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='counts',
-                                          redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
+                                          redshift_profile=0.5, cosmology=cosmo, exposure_time=2.0)
         assert luminosity.unit_luminosity == 'counts'
         assert luminosity == 5.0
 
@@ -873,7 +873,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         luminosity_input = dim.Luminosity(1.0, 'eps')
         luminosity = profile.unit_luminosity_calc(luminosity_input=luminosity_input, unit_luminosity='eps',
-                                          redshift_lens=0.5, cosmology=cosmo, exposure_time=2.0)
+                                          redshift_profile=0.5, cosmology=cosmo, exposure_time=2.0)
         assert luminosity.unit_luminosity == 'eps'
         assert luminosity == 2.5
 
@@ -887,7 +887,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         mass_input = dim.Mass(1.0, 'angular')
         mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='angular',
-                                      redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
+                                      redshift_profile=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'angular'
         assert mass == 4.0
 
@@ -895,7 +895,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         mass_input = dim.Mass(1.0, 'solMass')
         mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='angular',
-                                      redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
+                                      redshift_profile=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'angular'
         assert mass == 4.0
 
@@ -903,7 +903,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         mass_input = dim.Mass(1.0, 'solMass')
         mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='solMass',
-                                          redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
+                                          redshift_profile=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'solMass'
         assert mass == 7.0
 
@@ -913,7 +913,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         mass_input = dim.Mass(1.0, 'solMass')
         mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='solMass',
-                                          redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
+                                          redshift_profile=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'solMass'
         assert mass == 4.0
 
@@ -921,7 +921,7 @@ class TestUnitCheckConversionWwrapper(object):
 
         mass_input = dim.Mass(1.0, 'angular')
         mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='solMass',
-                                          redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
+                                          redshift_profile=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'solMass'
         assert mass == 5.0
 
@@ -929,6 +929,6 @@ class TestUnitCheckConversionWwrapper(object):
 
         mass_input = dim.Mass(1.0, 'angular')
         mass = profile.unit_mass_calc(mass_input=mass_input, unit_mass='angular',
-                                          redshift_lens=0.5, redshift_source=1.0, cosmology=cosmo)
+                                          redshift_profile=0.5, redshift_source=1.0, cosmology=cosmo)
         assert mass.unit_mass == 'angular'
         assert mass == 4.0

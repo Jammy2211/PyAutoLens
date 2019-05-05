@@ -47,6 +47,7 @@ def convert_units_to_input_units(func):
         redshift_profile = kwargs['redshift_profile'] if 'redshift_profile' in kwargs else None
         redshift_source = kwargs['redshift_source'] if 'redshift_source' in kwargs else None
         exposure_time = kwargs['exposure_time'] if 'exposure_time' in kwargs else None
+        redshift_of_cosmic_average_density = kwargs['redshift_of_cosmic_average_density'] if 'redshift_of_cosmic_average_density' in kwargs else 'profile'
 
         # Use cosmology and redshifts to compute conversion factors.
 
@@ -74,8 +75,16 @@ def convert_units_to_input_units(func):
         if redshift_profile is not None and cosmology is not None and unit_length is not None and \
                 unit_mass is not None and unit_mass is not 'angular':
 
+            if redshift_of_cosmic_average_density is 'profile':
+                redshift_calc = redshift_profile
+            elif redshift_of_cosmic_average_density is 'local':
+                redshift_calc = 0.0
+            else:
+                raise exc.UnitsException('The redshift of the cosmic average density haas been specified as an invalid '
+                                         'string. Must be (local | profile)')
+
             cosmic_average_density = \
-                cosmology_util.cosmic_average_density_from_redshift_and_cosmology(redshift=redshift_profile,
+                cosmology_util.cosmic_average_density_from_redshift_and_cosmology(redshift=redshift_calc,
                     cosmology=cosmology, unit_length=unit_length, unit_mass=unit_mass)
 
         else:
@@ -106,6 +115,7 @@ def convert_units_to_input_units(func):
                                             critical_surface_density=critical_surface_density)
 
             if isinstance(value, MassOverLength3):
+
                 kwargs[key] = value.convert(unit_length=unit_length, unit_mass=unit_mass,
                                             kpc_per_arcsec=kpc_per_arcsec,
                                             critical_surface_density=critical_surface_density)
@@ -185,6 +195,7 @@ class DimensionsProfile(object):
                 return value.unit_mass
 
         return None
+
 
 class Length(dimension_type.DimensionType):
 
@@ -346,6 +357,7 @@ Position = typing.Tuple[Length, Length]
 
 
 def convert_length(value, unit_current, unit_new, power, kpc_per_arcsec):
+
     if unit_current is not unit_new and kpc_per_arcsec is None:
         raise exc.UnitsException('The length for a value has been requested in new units without a '
                                  'kpc_per_arcsec conversion factor.')

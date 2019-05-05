@@ -863,6 +863,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     @dim.convert_units_to_input_units
     def rho_at_scale_radius_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
                                       cosmology=cosmo.Planck15, **kwargs):
+        """The Cosmic average density is defined at the redshift of the profile."""
 
         kpc_per_arcsec = kwargs['kpc_per_arcsec'] if 'kpc_per_arcsec' in kwargs else None
         critical_surface_density = kwargs['critical_surface_density'] if 'critical_surface_density' in kwargs else None
@@ -877,7 +878,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     @dim.convert_units_to_input_units
     def delta_concentration(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
-                            cosmology=cosmo.Planck15, **kwargs):
+                            redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
         cosmic_average_density = kwargs['cosmic_average_density'] if 'cosmic_average_density' in kwargs else None
 
@@ -890,11 +891,12 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     @dim.convert_units_to_input_units
     def concentration(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
-                      cosmology=cosmo.Planck15, **kwargs):
+                      redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
         delta_concentration = self.delta_concentration(
             redshift_profile=redshift_profile, redshift_source=redshift_source, unit_length=unit_length,
-            unit_mass=unit_mass, cosmology=cosmology, kwargs=kwargs)
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, unit_mass=unit_mass,
+            cosmology=cosmology, kwargs=kwargs)
 
         return fsolve(func=self.concentration_func, x0=10.0, args=(delta_concentration,))[0]
 
@@ -904,12 +906,14 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     @dim.convert_units_to_input_units
     def radius_at_200_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
-                                cosmology=cosmo.Planck15, **kwargs):
+                                redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
         kpc_per_arcsec = kwargs['kpc_per_arcsec'] if 'kpc_per_arcsec' in kwargs else None
 
         concentration = self.concentration(redshift_profile=redshift_profile, redshift_source=redshift_source,
-                                           unit_length=unit_length, unit_mass=unit_mass, cosmology=cosmology, kwargs=kwargs)
+                                           unit_length=unit_length, unit_mass=unit_mass,
+                                           redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
+                                           cosmology=cosmology, kwargs=kwargs)
 
         radius_at_200 = dim.Length(value=concentration * self.scale_radius, unit_length=unit_length)
 
@@ -917,13 +921,14 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     @dim.convert_units_to_input_units
     def mass_at_200_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
-                              cosmology=cosmo.Planck15, **kwargs):
+                              redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
         cosmic_average_density = kwargs['cosmic_average_density'] if 'cosmic_average_density' in kwargs else None
         critical_surface_density = kwargs['critical_surface_density'] if 'critical_surface_density' in kwargs else None
 
         radius_at_200 = self.radius_at_200_for_units(redshift_profile=redshift_profile, redshift_source=redshift_source,
                                                      unit_length=unit_length, unit_mass=unit_mass, cosmology=cosmology,
+                                                     redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
                                                      kwargs=kwargs)
 
         mass_at_200 = dim.Mass(200.0 * ((4.0 / 3.0) * np.pi) * cosmic_average_density * (radius_at_200 ** 3.0),
@@ -934,7 +939,8 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     @dim.convert_units_to_input_units
     def summary_in_units(self, radii,
                          unit_length='arcsec', unit_mass='solMass',
-                         redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+                         redshift_profile=None, redshift_source=None,
+                         redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
         summary = super().summary_in_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
@@ -942,23 +948,28 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
         rho_at_scale_radius = self.rho_at_scale_radius_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
         delta_concentration = self.delta_concentration(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
         concentration = self.concentration(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
         radius_at_200 = self.radius_at_200_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
         mass_at_200 = self.mass_at_200_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
         summary.append('Rho at scale radius = {:.2f}'.format(rho_at_scale_radius))
         summary.append('Delta concentration = {:.2f}'.format(delta_concentration))
@@ -1244,10 +1255,11 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
     @dim.convert_units_to_input_units
     def mass_at_truncation_radius(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
-                                  cosmology=cosmo.Planck15, **kwargs):
+                                  redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
         mass_at_200 = self.mass_at_200_for_units(redshift_profile=redshift_profile, redshift_source=redshift_source,
                                                  unit_length=unit_length, unit_mass=unit_mass,
+                                                 redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
                                                  cosmology=cosmology, kwargs=kwargs)
 
         return mass_at_200 * (self.tau ** 2.0 / (self.tau ** 2.0 + 1.0) ** 2.0) * \
@@ -1256,15 +1268,18 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
     @dim.convert_units_to_input_units
     def summary_in_units(self, radii,
                          unit_length='arcsec', unit_mass='solMass',
-                         redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+                         redshift_profile=None, redshift_source=None,
+                         redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
         summary = super().summary_in_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
         mass_at_truncation_radius = self.mass_at_truncation_radius(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
         summary.append('Mass at truncation radius = {:.2f} {}'.format(mass_at_truncation_radius, unit_mass))
         return summary
@@ -1278,26 +1293,34 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
                  kappa_s: float = 0.05,
                  scale_radius: dim.Length = 1.0):
 
-        self.kappa_s = kappa_s
-        self.scale_radius = dim.Length(scale_radius * 6.68549148608755, 'arcsec')
+        def solve_c(c, de_c):
+            '''
+            Equation need for solving concentration c for a given delta_c
+            '''
+            return 200.0 / 3.0 * (c * c * c / (np.log(1 + c) - c / (1 + c))) - de_c
 
-     #   critical_surface_density = dim.MassOverLength2(1940654909.4133248, 'arcsec', 'solMass')
-     #   cosmic_average_density = dim.MassOverLength3(262.30319684750657, 'arcsec', 'solMass')
-
-        truncation_radius = 2.0 * self.radius_at_200_for_units(redshift_profile=0.6, redshift_source=2.5,
-                                                               unit_length='arcsec', unit_mass='solMass')
+        kpc_per_arcsec = 6.68549148608755
+        scale_radius_kpc = scale_radius  * kpc_per_arcsec
+        cosmic_average_density = 262.30319684750657
+        critical_surface_density = 1940654909.413325
+        rho_s = kappa_s * critical_surface_density / scale_radius_kpc
+        de_c = rho_s / cosmic_average_density  # delta_c
+        concentration = fsolve(solve_c, 10.0, args=(de_c,))[0]
+        r200 = concentration * scale_radius_kpc / kpc_per_arcsec  # R_200
 
         super(SphericalTruncatedNFWChallenge, self).__init__(centre=centre, kappa_s=kappa_s, scale_radius=scale_radius,
-                                                             truncation_radius=truncation_radius)
+                                                             truncation_radius=2.0*r200)
 
     @dim.convert_units_to_input_units
     def summary_in_units(self, radii,
                          unit_length='arcsec', unit_mass='solMass',
-                         redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+                         redshift_profile=None, redshift_source=None,
+                         redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
         summary = super().summary_in_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
         return summary
 
