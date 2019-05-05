@@ -427,17 +427,18 @@ class TestCoredPowerLaw(object):
 
         cored_power_law = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, core_radius=0.0, slope=2.0)
 
-        summary_text = cored_power_law.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
-                                                          unit_length='arcsec', unit_mass='angular')
+        summary_text = cored_power_law.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], prefix='pl_',
+                                                          unit_length='arcsec', unit_mass='angular', whitespace=50)
 
         index = 0
 
         assert summary_text[index] == 'Mass Profile = SphericalCoredPowerLaw' ; index += 1
         assert summary_text[index] ==  '' ; index += 1
-        assert summary_text[index] == 'Mass within Einstein Radius = 3.1416e+00 angular' ; index += 1
-        assert summary_text[index] == 'Einstein Radius = 1.00 arcsec' ; index += 1
-        assert summary_text[index] == 'Mass within 10.00 arcsec = 3.1416e+01 angular' ; index += 1
-        assert summary_text[index] == 'Mass within 500.00 arcsec = 1.5708e+03 angular' ; index += 1
+        assert summary_text[index] == 'pl_einstein_radius                                1.00 arcsec' ; index += 1
+        assert summary_text[index] == 'pl_einstein_mass                                  3.1416e+00 angular' ; index += 1
+        assert summary_text[index] == 'pl_mass_within_10.00_arcsec                       3.1416e+01 angular' ; index += 1
+        assert summary_text[index] == 'pl_mass_within_500.00_arcsec                      1.5708e+03 angular' ; index += 1
+
 
 class TestPowerLaw(object):
 
@@ -1884,24 +1885,27 @@ class TestTruncatedNFW(object):
 
         nfw = mp.SphericalTruncatedNFW(kappa_s=0.5, scale_radius=5.0, truncation_radius=10.0)
 
-        summary_text = nfw.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], unit_length='kpc', unit_mass='solMass',
-                                   redshift_profile=0.6, redshift_source=2.5, redshift_of_cosmic_average_density='profile',
-                                   cosmology=cosmology)
+        summary_text = nfw.summarize_in_units(
+            radii=[dim.Length(10.0), dim.Length(500.0)], prefix='nfw_',
+            unit_length='kpc', unit_mass='solMass',
+            redshift_profile=0.6, redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+            whitespace=50, cosmology=cosmology)
 
         index = 0
 
         assert summary_text[index] == 'Mass Profile = SphericalTruncatedNFW' ; index += 1
         assert summary_text[index] == '' ; index += 1
-        assert summary_text[index] =='Mass within Einstein Radius = 1.4418e+12 solMass' ; index += 1
-        assert summary_text[index] == 'Einstein Radius = 15.38 kpc' ; index += 1
-        assert summary_text[index] == 'Mass within 10.00 kpc = 5.2061e+12 solMass' ; index += 1
-        assert summary_text[index] == 'Mass within 500.00 kpc = 7.3287e+12 solMass' ; index += 1
-        assert summary_text[index] == 'Rho at scale radius = 29027857.02' ; index += 1
-        assert summary_text[index] == 'Delta concentration = 110665.28' ; index += 1
-        assert summary_text[index] == 'Concentration = 14.40' ; index += 1
-        assert summary_text[index] == 'Radius at 200x cosmic average density = 481.41 kpc' ; index += 1
-        assert summary_text[index] == 'Mass at 200x cosmic average density = 2.4517e+13 solMass' ; index += 1
-        assert summary_text[index] == 'Mass at truncation radius = 1.3190e+13 solMass' ; index += 1
+        assert summary_text[index] == 'nfw_einstein_radius                               15.38 kpc' ; index += 1
+        assert summary_text[index] == 'nfw_einstein_mass                                 1.4418e+12 solMass' ; index += 1
+        assert summary_text[index] == 'nfw_mass_within_10.00_kpc                         5.2061e+12 solMass' ; index += 1
+        assert summary_text[index] == 'nfw_mass_within_500.00_kpc                        7.3287e+12 solMass' ; index += 1
+        assert summary_text[index] == 'nfw_rho_at_scale_radius                           29027857.02 solMass / kpc3' ; index += 1
+        print(summary_text[index])
+        assert summary_text[index] == 'nfw_delta_concentration                           110665.28' ; index += 1
+        assert summary_text[index] == 'nfw_concentration                                 14.40' ; index += 1
+        assert summary_text[index] == 'nfw_radius_at_200x_cosmic_density                 481.41 kpc' ; index += 1
+        assert summary_text[index] == 'nfw_mass_at_200x_cosmic_density                   2.4517e+13 solMass' ; index += 1
+        assert summary_text[index] == 'nfw_mass_at_truncation_radius                     1.3190e+13 solMass' ; index += 1
 
 
 class TestTruncatedNFWChallenge(object):

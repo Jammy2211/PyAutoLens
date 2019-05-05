@@ -132,9 +132,10 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         return 2 * np.pi * r * self.intensities_from_grid_radii(x)
 
     @dim.convert_units_to_input_units
-    def summarize_in_units(self, radii,
+    def summarize_in_units(self, radii, prefix='',
                            unit_length='arcsec', unit_luminosity='eps',
-                           exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
+                           exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15,
+                           whitespace=80, **kwargs):
 
         summary = super().summarize_in_units(
             radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
@@ -146,7 +147,9 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
                 unit_luminosity=unit_luminosity, radius=radius, redshift_profile=redshift_profile,
                 exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs)
 
-            summary.append('Luminosity within {:.2f} {} = {:.4e} {}'.format(radius, unit_length, luminosity, unit_luminosity))
+            param = prefix + 'luminosity_within_{:.2f}_{}'.format(radius, unit_length)
+            value = '{:.4e} {}'.format(luminosity, unit_luminosity)
+            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
 
         return summary
 
