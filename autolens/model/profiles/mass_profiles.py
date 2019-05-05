@@ -16,7 +16,6 @@ from autolens import decorator_util, dimensions as dim
 from autolens.data.array import grids
 from autolens.model.profiles import geometry_profiles
 
-
 def jit_integrand(integrand_function):
     jitted_function = decorator_util.jit(nopython=True, cache=True)(integrand_function)
     no_args = len(inspect.getfullargspec(integrand_function).args)
@@ -92,9 +91,10 @@ class MassProfile(object):
                               redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
         return NotImplementedError()
 
-    def summarize_in_units(self, radii,
+    def summarize_in_units(self, radii, prefix='',
                            unit_length='arcsec', unit_mass='solMass',
-                           redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+                           redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15,
+                           whitespace=80, **kwargs):
         return ["Mass Profile = {}".format(self.__class__.__name__), ""]
 
     @property
@@ -295,12 +295,12 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                                                 redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
     @dim.convert_units_to_input_units
-    def summarize_in_units(self, radii,
+    def summarize_in_units(self, radii, prefix='', whitespace=80,
                            unit_length='arcsec', unit_mass='solMass',
                            redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
 
         summary = super().summarize_in_units(
-            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+            radii=radii, prefix='', unit_length=unit_length, unit_mass=unit_mass,
             redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
         einstein_radius = self.einstein_radius_in_units(unit_length=unit_length,
@@ -309,8 +309,13 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass, redshift_profile=redshift_profile,
                                                     redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
-        summary.append('Mass within Einstein Radius = {:.4e} {}'.format(einstein_mass, unit_mass)),
-        summary.append('Einstein Radius = {:.2f} {}'.format(einstein_radius, unit_length))
+        param = prefix + 'einstein_radius'
+        value = '{:.2f} {}'.format(einstein_radius, unit_length)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'einstein_mass'
+        value = '{:.4e} {}'.format(einstein_mass, unit_mass)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
 
         for radius in radii:
 
@@ -318,7 +323,9 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                                                     redshift_source=redshift_source, cosmology=cosmology,
                                                     kwargs=kwargs)
 
-            summary.append('Mass within {:.2f} {} = {:.4e} {}'.format(radius, unit_length, mass, unit_mass))
+            param = prefix + 'mass_within_{:.2f}_{}'.format(radius, unit_length)
+            value = '{:.4e} {}'.format(mass, unit_mass)
+            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
 
         return summary
 
@@ -454,13 +461,15 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
 
     @dim.convert_units_to_input_units
-    def summarize_in_units(self, radii,
+    def summarize_in_units(self, radii, prefix='', whitespace=80,
                            unit_length='arcsec', unit_mass='solMass',
-                           redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+                           redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15,
+                           **kwargs):
 
         summary = super().summarize_in_units(
-            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            radii=radii, prefix=prefix, unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology,
+            whitespace=whitespace, kwargs=kwargs)
 
         return summary
 
@@ -936,14 +945,16 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         return mass_at_200.convert(unit_mass=unit_mass, critical_surface_density=critical_surface_density)
 
     @dim.convert_units_to_input_units
-    def summarize_in_units(self, radii,
+    def summarize_in_units(self, radii, prefix='', whitespace=80,
                            unit_length='arcsec', unit_mass='solMass',
                            redshift_profile=None, redshift_source=None,
-                           redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
+                           redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15,
+                        **kwargs):
 
         summary = super().summarize_in_units(
-            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            radii=radii, prefix=prefix, unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology,
+            whitespace=whitespace, kwargs=kwargs)
 
         rho_at_scale_radius = self.rho_at_scale_radius_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
@@ -970,11 +981,25 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        summary.append('Rho at scale radius = {:.2f}'.format(rho_at_scale_radius))
-        summary.append('Delta concentration = {:.2f}'.format(delta_concentration))
-        summary.append('Concentration = {:.2f}'.format(concentration))
-        summary.append('Radius at 200x cosmic average density = {:.2f} {}'.format(radius_at_200, unit_length))
-        summary.append('Mass at 200x cosmic average density = {:.4e} {}'.format(mass_at_200, unit_mass))
+        param = prefix + 'rho_at_scale_radius'
+        value = '{:.2f} {} / {}3'.format(rho_at_scale_radius, unit_mass, unit_length)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'delta_concentration'
+        value = '{:.2f}'.format(delta_concentration)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'concentration'
+        value = '{:.2f}'.format(concentration)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'radius_at_200x_cosmic_density'
+        value = '{:.2f} {}'.format(radius_at_200, unit_length)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'mass_at_200x_cosmic_density'
+        value = '{:.4e} {}'.format(mass_at_200, unit_mass)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
         return summary
 
     @property
@@ -1265,22 +1290,27 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
                (((self.tau ** 2.0 - 1) * np.log(self.tau)) + (self.tau * np.pi) - (self.tau ** 2.0 + 1))
 
     @dim.convert_units_to_input_units
-    def summarize_in_units(self, radii,
+    def summarize_in_units(self, radii, prefix='', whitespace=80,
                            unit_length='arcsec', unit_mass='solMass',
                            redshift_profile=None, redshift_source=None,
-                           redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
+                           redshift_of_cosmic_average_density='profile',
+                        cosmology=cosmo.Planck15, **kwargs):
 
         summary = super().summarize_in_units(
-            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+            radii=radii, prefix=prefix, whitespace=whitespace,
+            unit_length=unit_length, unit_mass=unit_mass,
             redshift_profile=redshift_profile, redshift_source=redshift_source,
-            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
+            cosmology=cosmology, kwargs=kwargs)
 
         mass_at_truncation_radius = self.mass_at_truncation_radius(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        summary.append('Mass at truncation radius = {:.4e} {}'.format(mass_at_truncation_radius, unit_mass))
+        param = prefix + 'mass_at_truncation_radius'
+        value = '{:.4e} {}'.format(mass_at_truncation_radius, unit_mass)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
         return summary
 
 

@@ -252,15 +252,15 @@ class TestSersic:
 
         sersic = lp.SphericalSersic(intensity=3.0, effective_radius=2.0, sersic_index=2.0)
 
-        summary_text = sersic.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
-                                                  unit_length='arcsec', unit_luminosity='eps')
+        summary_text = sersic.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], prefix='sersic_',
+                                                  unit_length='arcsec', unit_luminosity='eps', whitespace=50)
 
         index = 0
 
         assert summary_text[index] == 'Light Profile = SphericalSersic' ; index += 1
         assert summary_text[index] ==  ''  ; index += 1
-        assert summary_text[index] == 'Luminosity within 10.00 arcsec = 1.8854e+02 eps' ; index += 1
-        assert summary_text[index] == 'Luminosity within 500.00 arcsec = 1.9573e+02 eps' ; index += 1
+        assert summary_text[index] == 'sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps' ; index += 1
+        assert summary_text[index] == 'sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps' ; index += 1
 
 class TestExponential:
 
