@@ -235,6 +235,7 @@ class AbstractPlane(object):
                        unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
                             self.galaxies))))
 
+
 class AbstractGriddedPlane(AbstractPlane):
 
     def __init__(self, redshift, galaxies, grid_stack, border, compute_deflections, cosmology=cosmo.Planck15):
