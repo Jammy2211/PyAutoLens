@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.model import dimensions as dim
+from autolens import dimensions as dim
 from autolens.model.profiles import light_and_mass_profiles as lmp, light_profiles as lp, mass_profiles as mp
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])

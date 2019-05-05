@@ -5,7 +5,7 @@ import pytest
 
 from os import path
 from autofit import conf
-from autolens.model import dimensions as dim
+from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles as gp
 
 directory = path.dirname(path.realpath(__file__))

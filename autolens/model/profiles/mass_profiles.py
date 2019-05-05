@@ -12,9 +12,8 @@ from scipy.optimize import root_scalar
 from astropy import cosmology as cosmo
 
 from autofit.tools.dimension_type import map_types
-from autolens import decorator_util
+from autolens import decorator_util, dimensions as dim
 from autolens.data.array import grids
-from autolens.model import dimensions as dim
 from autolens.model.profiles import geometry_profiles
 
 
