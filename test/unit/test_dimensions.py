@@ -1,8 +1,6 @@
 import pytest
 
-from autolens import exc
-from autofit.tools.dimension_type import map_types
-from autolens.model import dimensions as dim
+from autolens import exc, dimensions as dim
 
 from test.unit.mock.mock_cosmology import MockCosmology
 

@@ -3,8 +3,7 @@ from itertools import count
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autolens import exc
-from autolens.model import dimensions as dim
+from autolens import exc, dimensions as dim
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 

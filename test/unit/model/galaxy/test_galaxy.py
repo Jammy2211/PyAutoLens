@@ -1,8 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens import exc
-from autolens.model import dimensions as dim
+from autolens import exc, dimensions as dim
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_and_mass_profiles as lmp, light_profiles as lp, mass_profiles as mp
 

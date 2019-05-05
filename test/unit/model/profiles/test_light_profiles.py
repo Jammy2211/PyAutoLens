@@ -7,7 +7,7 @@ import pytest
 import scipy.special
 
 from autofit import conf
-from autolens.model import dimensions as dim
+from autolens import dimensions as dim
 from autolens.model.profiles import light_profiles as lp
 
 from test.unit.mock.mock_cosmology import MockCosmology

@@ -2,7 +2,7 @@ import numpy as np
 from scipy.integrate import quad
 
 from autofit.tools.dimension_type import map_types
-from autolens.model import dimensions as dim
+from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles
 
 from astropy import cosmology as cosmo

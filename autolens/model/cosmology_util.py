@@ -1,6 +1,5 @@
 from astropy import constants
-from autolens import exc
-from autolens.model import dimensions as dim
+from autolens import exc, dimensions as dim
 import math
 
 def arcsec_per_kpc_from_redshift_and_cosmology(redshift, cosmology):

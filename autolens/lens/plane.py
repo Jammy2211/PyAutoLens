@@ -1,13 +1,10 @@
 import numpy as np
-from astropy import constants
 from astropy import cosmology as cosmo
-from functools import wraps
 
-from autolens import exc
+from autolens import exc, dimensions as dim
 from autolens.data.array import grids
 from autolens.data.array import scaled_array
 from autolens.lens.util import lens_util
-from autolens.model import dimensions as dim
 from autolens.model import cosmology_util
 from autolens.model.galaxy.util import galaxy_util
 
