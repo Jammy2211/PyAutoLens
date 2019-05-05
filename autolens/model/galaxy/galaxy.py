@@ -313,8 +313,72 @@ class Galaxy(object):
         else:
             return None
 
+    def summarize_light_profiles_in_units(self, radii,
+                                         unit_length='arcsec', unit_luminosity='eps',
+                                         redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+
+        summary = ['']
+        summary.append('GALAXY LIGHT')
+        summary.append('')
+
+        for radius in radii:
+            luminosity = self.luminosity_within_circle_in_units(unit_luminosity=unit_luminosity, radius=radius,
+                                                    redshift_source=redshift_source, cosmology=cosmology,
+                                                    kwargs=kwargs)
+
+            summary.append('Luminosity within {:.2f} {} = {:.4e} {}'.format(radius, unit_length, luminosity, unit_luminosity))
+
+        summary.append('')
+        summary.append('LIGHT PROFILES:')
+
+        for light_profile in self.light_profiles:
+            summary.append('')
+            summary += light_profile.summarize_in_units(radii=radii,
+                                                       unit_length=unit_length, unit_luminosity=unit_luminosity,
+                                                       redshift_profile=self.redshift,
+                                                       redshift_source=redshift_source, cosmology=cosmology,
+                                                       kwargs=kwargs)
+
+        return summary
+
+    def summarize_mass_profiles_in_units(self, radii,
+                                         unit_length='arcsec', unit_mass='solMass',
+                                         redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+
+        summary = ['']
+        summary.append('GALAXY MASS')
+        summary.append('')
+
+        einstein_radius = self.einstein_radius_in_units(unit_length=unit_length, cosmology=cosmology)
+
+        einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass, redshift_source=redshift_source,
+                                                    cosmology=cosmology, kwargs=kwargs)
+
+        summary.append('Mass within Einstein Radius = {:.4e} {}'.format(einstein_mass, unit_mass)),
+        summary.append('Einstein Radius = {:.2f} {}'.format(einstein_radius, unit_length))
+
+        for radius in radii:
+            mass = self.mass_within_circle_in_units(unit_mass=unit_mass, radius=radius,
+                                                    redshift_source=redshift_source, cosmology=cosmology,
+                                                    kwargs=kwargs)
+
+            summary.append('Mass within {:.2f} {} = {:.4e} {}'.format(radius, unit_length, mass, unit_mass))
+
+        summary.append('')
+        summary.append('MASS PROFILES:')
+
+        for mass_profile in self.mass_profiles:
+            summary.append('')
+            summary += mass_profile.summarize_in_units(radii=radii,
+                                                       unit_length=unit_length, unit_mass=unit_mass,
+                                                       redshift_profile=self.redshift,
+                                                       redshift_source=redshift_source, cosmology=cosmology,
+                                                       kwargs=kwargs)
+
+        return summary
+
     def summarize_in_units(self, radii,
-                          unit_length='arcsec', unit_mass='solMass',
+                          unit_length='arcsec', unit_luminosity='eps', unit_mass='solMass',
                           redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
 
         if hasattr(self, 'name'):
@@ -325,31 +389,16 @@ class Galaxy(object):
         summary.append('')
         summary.append('Redshift = {:.2f}'.format(self.redshift))
 
+        if self.has_light_profile:
+            summary += self.summarize_light_profiles_in_units(
+                radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
+                redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+
+
         if self.has_mass_profile:
-
-            einstein_radius = self.einstein_radius_in_units(unit_length=unit_length, cosmology=cosmology)
-
-            einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass, redshift_source=redshift_source,
-                                                        cosmology=cosmology, kwargs=kwargs)
-
-            summary.append('Mass within Einstein Radius = {:.4e} {}'.format(einstein_mass, unit_mass)),
-            summary.append('Einstein Radius = {:.2f} {}'.format(einstein_radius, unit_length))
-
-            for radius in radii:
-                mass = self.mass_within_circle_in_units(unit_mass=unit_mass, radius=radius,
-                                                        redshift_source=redshift_source, cosmology=cosmology,
-                                                        kwargs=kwargs)
-
-                summary.append('Mass within {:.2f} {} = {:.4e} {}'.format(radius, unit_length, mass, unit_mass))
-
-            summary.append('')
-            summary.append('MASS PROFILES:')
-
-            for mass_profile in self.mass_profiles:
-                summary.append('')
-                summary += mass_profile.summarize_in_units(radii=radii,
-                                                           unit_length=unit_length, unit_luminosity=unit_mass, redshift_profile=self.redshift,
-                                                           redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            summary += self.summarize_mass_profiles_in_units(
+                radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+                redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
         return summary
 
