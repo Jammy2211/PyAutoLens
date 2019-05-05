@@ -248,6 +248,17 @@ class TestSersic:
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
+    def test__summarize_in_units(self):
+
+        sersic = lp.SphericalSersic(intensity=3.0, effective_radius=2.0, sersic_index=2.0)
+
+        summary_text = sersic.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
+                                                  unit_length='arcsec', unit_luminosity='eps')
+
+        assert summary_text[0] == 'Light Profile = SphericalSersic'
+        assert summary_text[1] ==  ''
+        assert summary_text[2] == 'Luminosity within 10.00 arcsec = 1.8854e+02 eps'
+        assert summary_text[3] == 'Luminosity within 500.00 arcsec = 1.9573e+02 eps'
 
 class TestExponential:
 
@@ -704,8 +715,6 @@ class TestLuminosityWithinCircle(object):
         luminosity_kpc = sersic_arcsec.luminosity_within_circle_in_units(radius=radius, redshift_profile=0.5,
                                                                          unit_mass='angular', cosmology=cosmology)
         assert luminosity_arcsec == luminosity_kpc
-
-
 
 
 class TestLuminosityWithinEllipse(object):

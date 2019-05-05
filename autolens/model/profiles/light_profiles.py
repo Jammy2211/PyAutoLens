@@ -47,6 +47,10 @@ class LightProfile(object):
             exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         raise NotImplementedError()
 
+    def summarize_in_units(
+            self, radii, unit_length='arcsec', unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
+        return ["Light Profile = {}".format(self.__class__.__name__), ""]
 
 # noinspection PyAbstractClass
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
@@ -126,6 +130,25 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         The axis ratio is set to 1.0 for computing the luminosity within a circle"""
         r = x * axis_ratio
         return 2 * np.pi * r * self.intensities_from_grid_radii(x)
+
+    @dim.convert_units_to_input_units
+    def summarize_in_units(self, radii,
+                           unit_length='arcsec', unit_luminosity='eps',
+                           exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
+
+        summary = super().summarize_in_units(
+            radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
+            exposure_time=exposure_time, redshift_profile=redshift_profile, cosmology=cosmology, kwargs=kwargs)
+
+        for radius in radii:
+
+            luminosity = self.luminosity_within_circle_in_units(
+                unit_luminosity=unit_luminosity, radius=radius, redshift_profile=redshift_profile,
+                exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs)
+
+            summary.append('Luminosity within {:.2f} {} = {:.4e} {}'.format(radius, unit_length, luminosity, unit_luminosity))
+
+        return summary
 
 
 class EllipticalGaussian(EllipticalLightProfile):
