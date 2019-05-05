@@ -876,8 +876,8 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
                                            critical_surface_density=critical_surface_density)
 
     @dim.convert_units_to_input_units
-    def delta_concentration(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
-                            redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
+    def delta_concentration_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
+                                      redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
         cosmic_average_density = kwargs['cosmic_average_density'] if 'cosmic_average_density' in kwargs else None
 
@@ -889,10 +889,10 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         return rho_scale_radius / cosmic_average_density
 
     @dim.convert_units_to_input_units
-    def concentration(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
-                      redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
+    def concentration_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
+                                redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
-        delta_concentration = self.delta_concentration(
+        delta_concentration = self.delta_concentration_for_units(
             redshift_profile=redshift_profile, redshift_source=redshift_source, unit_length=unit_length,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, unit_mass=unit_mass,
             cosmology=cosmology, kwargs=kwargs)
@@ -909,10 +909,10 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
         kpc_per_arcsec = kwargs['kpc_per_arcsec'] if 'kpc_per_arcsec' in kwargs else None
 
-        concentration = self.concentration(redshift_profile=redshift_profile, redshift_source=redshift_source,
-                                           unit_length=unit_length, unit_mass=unit_mass,
-                                           redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
-                                           cosmology=cosmology, kwargs=kwargs)
+        concentration = self.concentration_for_units(redshift_profile=redshift_profile, redshift_source=redshift_source,
+                                                     unit_length=unit_length, unit_mass=unit_mass,
+                                                     redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
+                                                     cosmology=cosmology, kwargs=kwargs)
 
         radius_at_200 = dim.Length(value=concentration * self.scale_radius, unit_length=unit_length)
 
@@ -950,12 +950,12 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        delta_concentration = self.delta_concentration(
+        delta_concentration = self.delta_concentration_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        concentration = self.concentration(
+        concentration = self.concentration_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
@@ -974,7 +974,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         summary.append('Delta concentration = {:.2f}'.format(delta_concentration))
         summary.append('Concentration = {:.2f}'.format(concentration))
         summary.append('Radius at 200x cosmic average density = {:.2f} {}'.format(radius_at_200, unit_length))
-        summary.append('Mass at 200x cosmic average density = {:.2f} {}'.format(mass_at_200, unit_mass))
+        summary.append('Mass at 200x cosmic average density = {:.4e} {}'.format(mass_at_200, unit_mass))
         return summary
 
     @property
@@ -1280,7 +1280,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        summary.append('Mass at truncation radius = {:.2f} {}'.format(mass_at_truncation_radius, unit_mass))
+        summary.append('Mass at truncation radius = {:.4e} {}'.format(mass_at_truncation_radius, unit_mass))
         return summary
 
 
