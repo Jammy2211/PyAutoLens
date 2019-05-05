@@ -423,6 +423,23 @@ class TestCoredPowerLaw(object):
         assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
         assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
+    def test__summarize_in_units(self):
+
+        profile = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, core_radius=0.0, slope=2.0)
+
+        summary_text = "\n".join(
+            profile.summary_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
+                                     unit_length='arcsec', unit_mass='angular'))
+
+        expected_text = 'Mass Profile = SphericalCoredPowerLaw\n' \
+                        '\n' \
+                        'Mass within Einstein Radius = 3.1416e+00 angular\n' \
+                        'Einstein Radius = 1.00 arcsec\n' \
+                        'Mass within 10.00 arcsec = 3.1416e+01 angular\n' \
+                        'Mass within 500.00 arcsec = 1.5708e+03 angular' \
+
+        assert summary_text == expected_text
+
 
 class TestPowerLaw(object):
 
@@ -1209,18 +1226,18 @@ class TestAbstractNFW(object):
         cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
                                   cosmic_average_density=1.0)
 
-        delta_concentration = nfw.delta_concentration(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
-                                                      cosmology=cosmology)
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
+                                                                cosmology=cosmology)
         assert delta_concentration == pytest.approx(1.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
-        delta_concentration = nfw.delta_concentration(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
-                                                      cosmology=cosmology)
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
+                                                                cosmology=cosmology)
         assert delta_concentration == pytest.approx(3.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
-        delta_concentration = nfw.delta_concentration(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
-                                                      cosmology=cosmology)
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
+                                                                cosmology=cosmology)
         assert delta_concentration == pytest.approx(0.25, 1e-3)
 
         # cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
@@ -1255,7 +1272,7 @@ class TestAbstractNFW(object):
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
-        concentration = nfw.concentration(redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
+        concentration = nfw.concentration_for_units(redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
 
         assert concentration == pytest.approx(0.0074263, 1.0e-4)
 
@@ -1266,7 +1283,7 @@ class TestAbstractNFW(object):
 
         cosmology = MockCosmology(arcsec_per_kpc=0.2, kpc_per_arcsec=5.0)
 
-        concentration = nfw_arcsec.concentration(cosmology=cosmology, redshift_profile=0.5, redshift_source=1.0)
+        concentration = nfw_arcsec.concentration_for_units(cosmology=cosmology, redshift_profile=0.5, redshift_source=1.0)
 
         radius_200 = nfw_arcsec.radius_at_200_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
                                                         cosmology=cosmology)
@@ -1275,8 +1292,8 @@ class TestAbstractNFW(object):
 
         cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
 
-        concentration = nfw_arcsec.concentration(unit_length='kpc', cosmology=cosmology, redshift_profile=0.5,
-                                                 redshift_source=1.0)
+        concentration = nfw_arcsec.concentration_for_units(unit_length='kpc', cosmology=cosmology, redshift_profile=0.5,
+                                                           redshift_source=1.0)
 
         radius_200 = nfw_arcsec.radius_at_200_for_units(unit_length='kpc', redshift_profile=0.5, redshift_source=1.0,
                                                         cosmology=cosmology)
@@ -1289,8 +1306,8 @@ class TestAbstractNFW(object):
 
         cosmology = MockCosmology(arcsec_per_kpc=0.2, kpc_per_arcsec=5.0)
 
-        concentration = nfw_kpc.concentration(unit_length='kpc', redshift_profile=0.5, redshift_source=1.0,
-                                              cosmology=cosmology)
+        concentration = nfw_kpc.concentration_for_units(unit_length='kpc', redshift_profile=0.5, redshift_source=1.0,
+                                                        cosmology=cosmology)
 
         radius_200 = nfw_kpc.radius_at_200_for_units(unit_length='kpc', redshift_profile=0.5, redshift_source=1.0,
                                                      cosmology=cosmology)
@@ -1299,8 +1316,8 @@ class TestAbstractNFW(object):
 
         cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
 
-        concentration = nfw_kpc.concentration(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
-                                              cosmology=cosmology)
+        concentration = nfw_kpc.concentration_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
+                                                        cosmology=cosmology)
 
         radius_200 = nfw_kpc.radius_at_200_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
                                                      cosmology=cosmology)
@@ -1344,13 +1361,13 @@ class TestAbstractNFW(object):
         rho = nfw.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
                                                     redshift_source=2.5, cosmology=cosmology)
 
-        delta_concentration = nfw.delta_concentration(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
-                                                      unit_mass='solMass', redshift_of_cosmic_average_density='local',
-                                                      cosmology=cosmology)
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                                unit_mass='solMass', redshift_of_cosmic_average_density='local',
+                                                                cosmology=cosmology)
 
-        concentration = nfw.concentration(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
-                                          unit_mass='solMass', redshift_of_cosmic_average_density='local',
-                                          cosmology=cosmology)
+        concentration = nfw.concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                    unit_mass='solMass', redshift_of_cosmic_average_density='local',
+                                                    cosmology=cosmology)
 
         radius_at_200 = nfw.radius_at_200_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
                                                     redshift_source=2.5, redshift_of_cosmic_average_density='local',
@@ -1375,13 +1392,13 @@ class TestAbstractNFW(object):
         rho = nfw.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
                                                     redshift_source=2.5, cosmology=cosmology)
 
-        delta_concentration = nfw.delta_concentration(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
-                                                      unit_mass='solMass', redshift_of_cosmic_average_density='profile',
-                                                      cosmology=cosmology)
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                                unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                                cosmology=cosmology)
 
-        concentration = nfw.concentration(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
-                                          unit_mass='solMass', redshift_of_cosmic_average_density='profile',
-                                          cosmology=cosmology)
+        concentration = nfw.concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                    unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
 
         radius_at_200 = nfw.radius_at_200_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
                                                     redshift_source=2.5, redshift_of_cosmic_average_density='profile',
@@ -1408,13 +1425,13 @@ class TestAbstractNFW(object):
         rho = nfw.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
                                                     redshift_source=2.5, cosmology=cosmology)
 
-        delta_concentration = nfw.delta_concentration(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
-                                                      unit_mass='solMass', redshift_of_cosmic_average_density='profile',
-                                                      cosmology=cosmology)
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                                unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                                cosmology=cosmology)
 
-        concentration = nfw.concentration(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
-                                          unit_mass='solMass', redshift_of_cosmic_average_density='profile',
-                                          cosmology=cosmology)
+        concentration = nfw.concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                    unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
 
         radius_at_200 = nfw.radius_at_200_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
                                                     redshift_source=2.5, redshift_of_cosmic_average_density='profile',
@@ -1438,13 +1455,13 @@ class TestAbstractNFW(object):
         rho = nfw.rho_at_scale_radius_for_units(unit_length='arcsec', unit_mass='solMass', redshift_profile=0.6,
                                                 redshift_source=2.5, cosmology=cosmology)
 
-        delta_concentration = nfw.delta_concentration(redshift_profile=0.6, redshift_source=2.5, unit_length='arcsec',
-                                                      unit_mass='solMass', redshift_of_cosmic_average_density='profile',
-                                                      cosmology=cosmology)
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='arcsec',
+                                                                unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                                cosmology=cosmology)
 
-        concentration = nfw.concentration(redshift_profile=0.6, redshift_source=2.5, unit_length='arcsec',
-                                          unit_mass='solMass', redshift_of_cosmic_average_density='profile',
-                                          cosmology=cosmology)
+        concentration = nfw.concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='arcsec',
+                                                    unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
 
         radius_at_200 = nfw.radius_at_200_for_units(unit_length='arcsec', unit_mass='solMass', redshift_profile=0.6,
                                                     redshift_source=2.5, redshift_of_cosmic_average_density='profile',
@@ -1862,6 +1879,32 @@ class TestTruncatedNFW(object):
         #     unit_length='arcsec', unit_mass='solMass', cosmology=cosmology)
         #
         # assert mass_at_truncation_radius == pytest.approx(0.00033636625, 1.0e-4)
+
+    def test_summarize_in_units(self):
+
+        cosmology = cosmo.LambdaCDM(H0=70.0, Om0=0.3, Ode0=0.7)
+
+        nfw = mp.SphericalTruncatedNFW(kappa_s=0.5, scale_radius=5.0, truncation_radius=10.0)
+
+        summary_text = "\n".join(
+            nfw.summary_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], unit_length='kpc', unit_mass='solMass',
+                                     redshift_profile=0.6, redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                     cosmology=cosmology))
+
+        expected_text = 'Mass Profile = SphericalTruncatedNFW\n' \
+                        '\n' \
+                        'Mass within Einstein Radius = 1.4418e+12 solMass\n' \
+                        'Einstein Radius = 15.38 kpc\n' \
+                        'Mass within 10.00 kpc = 5.2061e+12 solMass\n' \
+                        'Mass within 500.00 kpc = 7.3287e+12 solMass\n' \
+                        'Rho at scale radius = 29027857.02\n' \
+                        'Delta concentration = 110665.28\n' \
+                        'Concentration = 14.40\n' \
+                        'Radius at 200x cosmic average density = 481.41 kpc\n' \
+                        'Mass at 200x cosmic average density = 2.4517e+13 solMass\n' \
+                        'Mass at truncation radius = 1.3190e+13 solMass'
+
+        assert summary_text == expected_text
 
 
 class TestTruncatedNFWChallenge(object):
@@ -3492,45 +3535,3 @@ class TestDensityBetweenAnnuli(object):
 
         assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
 
-
-class TestSummarize(object):
-
-    def test__spherical_isothermal(self):
-
-        profile = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
-
-        summary_text = "\n".join(
-            profile.summary_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
-                                     unit_length='arcsec', unit_mass='angular'))
-
-        expected_text = 'Mass Profile = SphericalIsothermal\n' \
-                        '\n' \
-                        'Mass within Einstein Radius = 3.1416e+00 angular\n' \
-                        'Einstein Radius = 1.00 arcsec\n' \
-                        'Mass within 10.00 arcsec = 3.1416e+01 angular\n' \
-                        'Mass within 500.00 arcsec = 1.5708e+03 angular' \
-
-        assert summary_text == expected_text
-
-    def test_truncated_nfw(self):
-
-        profile = mp.SphericalTruncatedNFW(kappa_s=6.0, scale_radius=10.0, truncation_radius=50.0)
-
-        summary_text = "\n".join(
-            profile.summary_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], unit_length='arcsec', unit_mass='solMass',
-                                     redshift_profile=0.6, redshift_source=2.5, redshift_of_cosmic_average_density='profile'))
-
-        expected_text = 'Mass Profile = SphericalTruncatedNFW\n' \
-                        '\n' \
-                        'Mass within Einstein Radius = 5.4714e+14 solMass\n' \
-                        'Einstein Radius = 44.10 arcsec\n' \
-                        'Mass within 10.00 arcsec = 1.9275e+14 solMass\n' \
-                        'Mass within 500.00 arcsec = 7.0546e+14 solMass\n' \
-                        'Rho at scale radius = 53740179936.30\n' \
-                        'Delta concentration = 661172.73\n' \
-                        'Concentration = 28.89\n' \
-                        'Radius at 200x cosmic average density = 288.89 arcsec\n' \
-                        'Mass at 200x cosmic average density = 1641656441216234.50 solMass\n' \
-                        'Mass at truncation radius = 1720246685726167.25 solMass'
-
-        assert summary_text == expected_text
