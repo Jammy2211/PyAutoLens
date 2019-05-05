@@ -284,7 +284,7 @@ class Galaxy(object):
         else:
             return None
 
-    def einstein_radius_in_units(self, unit_length='arcsec', cosmology=cosmo.Planck15):
+    def einstein_radius_in_units(self, unit_length='arcsec', cosmology=cosmo.Planck15, **kwargs):
         """The Einstein Radius of this galaxy, which is the sum of Einstein Radii of its mass profiles.
 
         If the galaxy is composed of multiple ellipitcal profiles with different axis-ratios, this Einstein Radius \
@@ -313,6 +313,45 @@ class Galaxy(object):
         else:
             return None
 
+    def summarize_in_units(self, radii,
+                          unit_length='arcsec', unit_mass='solMass',
+                          redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+
+        if hasattr(self, 'name'):
+            summary = ["Galaxy = {}".format(self.name)]
+        else:
+            summary = ["Galaxy"]
+
+        summary.append('')
+        summary.append('Redshift = {:.2f}'.format(self.redshift))
+
+        if self.has_mass_profile:
+
+            einstein_radius = self.einstein_radius_in_units(unit_length=unit_length, cosmology=cosmology)
+
+            einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass, redshift_source=redshift_source,
+                                                        cosmology=cosmology, kwargs=kwargs)
+
+            summary.append('Mass within Einstein Radius = {:.4e} {}'.format(einstein_mass, unit_mass)),
+            summary.append('Einstein Radius = {:.2f} {}'.format(einstein_radius, unit_length))
+
+            for radius in radii:
+                mass = self.mass_within_circle_in_units(unit_mass=unit_mass, radius=radius,
+                                                        redshift_source=redshift_source, cosmology=cosmology,
+                                                        kwargs=kwargs)
+
+                summary.append('Mass within {:.2f} {} = {:.4e} {}'.format(radius, unit_length, mass, unit_mass))
+
+            summary.append('')
+            summary.append('MASS PROFILES:')
+
+            for mass_profile in self.mass_profiles:
+                summary.append('')
+                summary += mass_profile.summarize_in_units(radii=radii,
+                                                           unit_length=unit_length, unit_luminosity=unit_mass, redshift_profile=self.redshift,
+                                                           redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+
+        return summary
 
 class HyperGalaxy(object):
     _ids = count()

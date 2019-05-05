@@ -475,6 +475,44 @@ class TestMassAndLightProfiles(object):
         assert 2 == len(gal.mass_profiles)
 
 
+class TestSummarizeInUnits(object):
+
+    def test__galaxy_with_two_mass_profiles(self):
+
+        sis_0 = mp.SphericalIsothermal(einstein_radius=1.0)
+        sis_1 = mp.SphericalIsothermal(einstein_radius=2.0)
+
+        gal = g.Galaxy(redshift=0.5, mass_profile_0=sis_0, mass_profile_1=sis_1)
+
+        summary_text = gal.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
+                                              unit_length='arcsec', unit_mass='angular')
+
+        print(summary_text)
+
+        assert summary_text[0] == 'Galaxy'
+        assert summary_text[1] ==  ''
+        assert summary_text[2] ==  'Redshift = 0.50'
+        assert summary_text[3] == 'Mass within Einstein Radius = 1.5708e+01 angular'
+        assert summary_text[4] == 'Einstein Radius = 3.00 arcsec'
+        assert summary_text[5] == 'Mass within 10.00 arcsec = 9.4248e+01 angular'
+        assert summary_text[6] == 'Mass within 500.00 arcsec = 4.7124e+03 angular'
+        assert summary_text[7] ==  ''
+        assert summary_text[8] ==  'MASS PROFILES:'
+        assert summary_text[9] ==  ''
+        assert summary_text[10] == 'Mass Profile = SphericalIsothermal'
+        assert summary_text[11] ==  ''
+        assert summary_text[12] == 'Mass within Einstein Radius = 3.1416e+00 angular'
+        assert summary_text[13] == 'Einstein Radius = 1.00 arcsec'
+        assert summary_text[14] == 'Mass within 10.00 arcsec = 3.1416e+01 angular'
+        assert summary_text[15] == 'Mass within 500.00 arcsec = 1.5708e+03 angular'
+        assert summary_text[16] ==  ''
+        assert summary_text[17] == 'Mass Profile = SphericalIsothermal'
+        assert summary_text[18] ==  ''
+        assert summary_text[19] == 'Mass within Einstein Radius = 1.2566e+01 angular'
+        assert summary_text[20] == 'Einstein Radius = 2.00 arcsec'
+        assert summary_text[21] == 'Mass within 10.00 arcsec = 6.2832e+01 angular'
+        assert summary_text[22] == 'Mass within 500.00 arcsec = 3.1416e+03 angular'
+
 class TestHyperGalaxy(object):
 
     class TestContributionMaps(object):
