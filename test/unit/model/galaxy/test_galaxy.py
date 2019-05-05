@@ -477,41 +477,66 @@ class TestMassAndLightProfiles(object):
 
 class TestSummarizeInUnits(object):
 
-    def test__galaxy_with_two_mass_profiles(self):
+    def test__galaxy_with_two_light_and_mass_profiles(self):
+    
+        sersic_0 = lp.SphericalSersic(intensity=1.0, effective_radius=2.0, sersic_index=2.0)
+        sersic_1 = lp.SphericalSersic(intensity=2.0, effective_radius=2.0, sersic_index=2.0)
+
 
         sis_0 = mp.SphericalIsothermal(einstein_radius=1.0)
         sis_1 = mp.SphericalIsothermal(einstein_radius=2.0)
 
-        gal = g.Galaxy(redshift=0.5, mass_profile_0=sis_0, mass_profile_1=sis_1)
+        gal = g.Galaxy(redshift=0.5, light_profile_0=sersic_0, light_profile_1=sersic_1, 
+                       mass_profile_0=sis_0, mass_profile_1=sis_1)
 
         summary_text = gal.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
-                                              unit_length='arcsec', unit_mass='angular')
+                                              unit_length='arcsec', unit_luminosity='eps', unit_mass='angular')
 
-        print(summary_text)
+        index = 0
 
-        assert summary_text[0] == 'Galaxy'
-        assert summary_text[1] ==  ''
-        assert summary_text[2] ==  'Redshift = 0.50'
-        assert summary_text[3] == 'Mass within Einstein Radius = 1.5708e+01 angular'
-        assert summary_text[4] == 'Einstein Radius = 3.00 arcsec'
-        assert summary_text[5] == 'Mass within 10.00 arcsec = 9.4248e+01 angular'
-        assert summary_text[6] == 'Mass within 500.00 arcsec = 4.7124e+03 angular'
-        assert summary_text[7] ==  ''
-        assert summary_text[8] ==  'MASS PROFILES:'
-        assert summary_text[9] ==  ''
-        assert summary_text[10] == 'Mass Profile = SphericalIsothermal'
-        assert summary_text[11] ==  ''
-        assert summary_text[12] == 'Mass within Einstein Radius = 3.1416e+00 angular'
-        assert summary_text[13] == 'Einstein Radius = 1.00 arcsec'
-        assert summary_text[14] == 'Mass within 10.00 arcsec = 3.1416e+01 angular'
-        assert summary_text[15] == 'Mass within 500.00 arcsec = 1.5708e+03 angular'
-        assert summary_text[16] ==  ''
-        assert summary_text[17] == 'Mass Profile = SphericalIsothermal'
-        assert summary_text[18] ==  ''
-        assert summary_text[19] == 'Mass within Einstein Radius = 1.2566e+01 angular'
-        assert summary_text[20] == 'Einstein Radius = 2.00 arcsec'
-        assert summary_text[21] == 'Mass within 10.00 arcsec = 6.2832e+01 angular'
-        assert summary_text[22] == 'Mass within 500.00 arcsec = 3.1416e+03 angular'
+        assert summary_text[index] == 'Galaxy' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] ==  'Redshift = 0.50' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] ==  'GALAXY LIGHT' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Luminosity within 10.00 arcsec = 1.8854e+02 eps' ; index += 1
+        assert summary_text[index] == 'Luminosity within 500.00 arcsec = 1.9573e+02 eps' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] ==  'LIGHT PROFILES:' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Light Profile = SphericalSersic' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Luminosity within 10.00 arcsec = 6.2848e+01 eps' ; index += 1
+        assert summary_text[index] == 'Luminosity within 500.00 arcsec = 6.5243e+01 eps' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Light Profile = SphericalSersic' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Luminosity within 10.00 arcsec = 1.2570e+02 eps' ; index += 1
+        assert summary_text[index] == 'Luminosity within 500.00 arcsec = 1.3049e+02 eps' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] ==  'GALAXY MASS' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Mass within Einstein Radius = 1.5708e+01 angular' ; index += 1
+        assert summary_text[index] == 'Einstein Radius = 3.00 arcsec' ; index += 1
+        assert summary_text[index] == 'Mass within 10.00 arcsec = 9.4248e+01 angular' ; index += 1
+        assert summary_text[index] == 'Mass within 500.00 arcsec = 4.7124e+03 angular' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] ==  'MASS PROFILES:' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Mass Profile = SphericalIsothermal' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Mass within Einstein Radius = 3.1416e+00 angular' ; index += 1
+        assert summary_text[index] == 'Einstein Radius = 1.00 arcsec' ; index += 1
+        assert summary_text[index] == 'Mass within 10.00 arcsec = 3.1416e+01 angular' ; index += 1
+        assert summary_text[index] == 'Mass within 500.00 arcsec = 1.5708e+03 angular' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Mass Profile = SphericalIsothermal' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Mass within Einstein Radius = 1.2566e+01 angular' ; index += 1
+        assert summary_text[index] == 'Einstein Radius = 2.00 arcsec' ; index += 1
+        assert summary_text[index] == 'Mass within 10.00 arcsec = 6.2832e+01 angular' ; index += 1
+        assert summary_text[index] == 'Mass within 500.00 arcsec = 3.1416e+03 angular' ; index += 1
 
 class TestHyperGalaxy(object):
 
