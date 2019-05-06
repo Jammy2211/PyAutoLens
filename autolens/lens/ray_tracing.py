@@ -237,29 +237,6 @@ class AbstractTracer(AbstractTracerCosmology):
     def regularizations_of_planes(self):
         return list(filter(None, [plane.regularization for plane in self.planes]))
 
-    def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
-
-        hyper_noise_maps = []
-
-        for plane in self.planes:
-            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
-            hyper_noise_maps.append(hyper_noise_map)
-
-        return hyper_noise_maps
-
-    def hyper_noise_map_from_noise_map(self, noise_map):
-
-        if self.has_hyper_galaxy:
-
-            hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
-            hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
-            return sum(hyper_noise_maps)
-
-        else:
-
-            return None
-        
-
     @property
     @check_tracer_for_mass_profile
     def convergence(self):
@@ -340,10 +317,64 @@ class AbstractTracer(AbstractTracerCosmology):
                 return new_grid_stack.regular
 
 
-class TracerImagePlane(AbstractTracer):
+class AbstractTracerData(AbstractTracer):
 
-    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15,
-                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
+    def __init__(self, planes, cosmology):
+        """Abstract Ray tracer for lens systems with any number of planes.
+
+        From the galaxies of the tracer's planes, their grid-stack(s) and the cosmology physically derived quantities \
+        (e.g. surface density, angular diameter distances, critical surface densities) can be computed.
+
+        Parameters
+        ----------
+        planes : [pl.Plane] or [pl.PlaneStack]
+            The list of the tracer's planes in ascending redshift order.
+        cosmology : astropy.cosmology
+            The cosmology of the ray-tracing calculation.
+        """
+        super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
+
+    def blurred_image_plane_images_1d_of_planes_from_convolver_image(self, convolver_image):
+
+        blurred_image_plane_images_1d = []
+
+        for plane in self.planes:
+            blurred_image_plane_image_1d = plane.blurred_image_plane_image_1d_from_convolver_image(convolver_image=convolver_image)
+            blurred_image_plane_images_1d.append(blurred_image_plane_image_1d)
+
+        return blurred_image_plane_images_1d
+
+    def blurred_image_plane_image_1d_from_convolver_image(self, convolver_image):
+
+        return convolver_image.convolve_image(image_array=self.image_plane_image_1d,
+                                              blurring_array=self.image_plane_blurring_image_1d)
+
+    def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
+
+        hyper_noise_maps = []
+
+        for plane in self.planes:
+            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            hyper_noise_maps.append(hyper_noise_map)
+
+        return hyper_noise_maps
+
+    def hyper_noise_map_from_noise_map(self, noise_map):
+
+        if self.has_hyper_galaxy:
+
+            hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
+            hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
+            return sum(hyper_noise_maps)
+
+        else:
+
+            return None
+
+
+class TracerImagePlane(AbstractTracerData):
+
+    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray tracer for a lens system with just an image-plane. 
         
         As there is only 1 plane, there are no ray-tracing calculations. This class is therefore only used for fitting \ 
@@ -376,7 +407,7 @@ class TracerImagePlane(AbstractTracer):
         return 0.0
 
 
-class TracerImageSourcePlanes(AbstractTracer):
+class TracerImageSourcePlanes(AbstractTracerData):
 
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray-tracer for a lens system with two planes, an image-plane and source-plane.
@@ -418,7 +449,7 @@ class TracerImageSourcePlanes(AbstractTracer):
         return self.einstein_mass_between_planes_in_units(i=0, j=1, unit_mass=unit_mass)
 
 
-class TracerMultiPlanes(AbstractTracer):
+class TracerMultiPlanes(AbstractTracerData):
 
     def __init__(self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray-tracer for a lens system with any number of planes.
@@ -482,7 +513,7 @@ class TracerMultiPlanes(AbstractTracer):
         super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
 
 
-class TracerMultiPlanesSliced(AbstractTracer):
+class TracerMultiPlanesSliced(AbstractTracerData):
 
     def __init__(self, lens_galaxies, line_of_sight_galaxies, source_galaxies, planes_between_lenses,
                  image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):

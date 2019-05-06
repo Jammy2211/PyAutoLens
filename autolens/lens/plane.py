@@ -452,7 +452,7 @@ class AbstractDataPlane(AbstractGriddedPlane):
             return None
 
 
-class Plane(AbstractGriddedPlane):
+class Plane(AbstractDataPlane):
 
     def __init__(self, galaxies, grid_stack, border=None, compute_deflections=True, cosmology=cosmo.Planck15):
         """A plane of galaxies where all galaxies are at the same redshift.
@@ -506,7 +506,7 @@ class Plane(AbstractGriddedPlane):
                 galaxy))
 
 
-class PlaneSlice(AbstractGriddedPlane):
+class PlaneSlice(AbstractDataPlane):
 
     def __init__(self, galaxies, grid_stack, redshift, border=None, compute_deflections=True, cosmology=cosmo.Planck15):
         """A plane of galaxies where the galaxies may be at different redshifts to the plane itself.

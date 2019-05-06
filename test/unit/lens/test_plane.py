@@ -1344,21 +1344,13 @@ def make_blurring_mask():
                                     [False, True, True, False],
                                     [False, False, False, False]]), pixel_scale=1.0)
 
-@pytest.fixture(name='convolver_no_blur')
-def make_convolver_no_blur(mask, blurring_mask):
-    psf = np.array([[0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0]])
-
-    return convolution.ConvolverImage(mask=mask, blurring_mask=blurring_mask, psf=psf)
-
-
 @pytest.fixture(name='convolver_blur')
 def make_convolver_blur(mask, blurring_mask):
     psf = np.array([[1.0, 1.0, 1.0],
                     [1.0, 1.0, 1.0],
                     [1.0, 1.0, 1.0]])
     return convolution.ConvolverImage(mask=mask, blurring_mask=blurring_mask, psf=psf)
+
 
 class TestAbstractDataPlane(object):
 
