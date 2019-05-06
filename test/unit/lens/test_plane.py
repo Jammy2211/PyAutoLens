@@ -446,9 +446,9 @@ class TestAbstractPlane(object):
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
-    class TestContributions:
+    class TestContributionMaps:
 
-        def test__contributions_are_same_as_hyper_galaxy_calculation(self):
+        def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
 
             hyper_model_image = np.array([[2.0, 4.0, 10.0]])
             hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
@@ -456,13 +456,13 @@ class TestAbstractPlane(object):
             hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
 
-            contributions_0 = hyper_galaxy_0.contributions_from_model_image_and_galaxy_image(model_image=hyper_model_image,
-                                                                                galaxy_image=hyper_galaxy_image,
-                                                                                minimum_value=0.0)
+            contribution_map_0 = hyper_galaxy_0.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image,
+                                                                                hyper_galaxy_image=hyper_galaxy_image,
+                                                                                hyper_minimum_value=0.0)
 
-            contributions_1 = hyper_galaxy_1.contributions_from_model_image_and_galaxy_image(model_image=hyper_model_image,
-                                                                                galaxy_image=hyper_galaxy_image,
-                                                                                minimum_value=0.0)
+            contribution_map_1 = hyper_galaxy_1.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image,
+                                                                                hyper_galaxy_image=hyper_galaxy_image,
+                                                                                hyper_minimum_value=0.0)
 
             galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
                               hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
@@ -472,36 +472,187 @@ class TestAbstractPlane(object):
 
             plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_0])
 
-            assert (plane.contributions_of_galaxies[0] == contributions_0).all()
+            assert (plane.contribution_maps_of_galaxies[0] == contribution_map_0).all()
 
             plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1])
 
-            assert (plane.contributions_of_galaxies[0] == contributions_1).all()
+            assert (plane.contribution_maps_of_galaxies[0] == contribution_map_1).all()
 
             plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1, galaxy_0])
 
-            assert (plane.contributions_of_galaxies[0] == contributions_1).all()
-            assert (plane.contributions_of_galaxies[1] == contributions_0).all()
+            assert (plane.contribution_maps_of_galaxies[0] == contribution_map_1).all()
+            assert (plane.contribution_maps_of_galaxies[1] == contribution_map_0).all()
 
-        def test__contriutions_are_none_for_galaxy_without_hyper_galaxy(self):
+        def test__contriution_maps_are_none_for_galaxy_without_hyper_galaxy(self):
 
             hyper_model_image = np.array([[2.0, 4.0, 10.0]])
             hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
 
             hyper_galaxy = g.HyperGalaxy(contribution_factor=5.0)
 
-            contributions = hyper_galaxy.contributions_from_model_image_and_galaxy_image(model_image=hyper_model_image,
-                                                                                galaxy_image=hyper_galaxy_image,
-                                                                                minimum_value=0.0)
+            contribution_map = hyper_galaxy.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image,
+                                                                            hyper_galaxy_image=hyper_galaxy_image,
+                                                                            hyper_minimum_value=0.0)
 
             galaxy = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy, hyper_model_image=hyper_model_image,
                               hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
 
             plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy, g.Galaxy(), g.Galaxy()])
 
-            assert (plane.contributions_of_galaxies[0] == contributions).all()
-            assert plane.contributions_of_galaxies[1] == None
-            assert plane.contributions_of_galaxies[2] == None
+            assert (plane.contribution_maps_of_galaxies[0] == contribution_map).all()
+            assert plane.contribution_maps_of_galaxies[1] == None
+            assert plane.contribution_maps_of_galaxies[2] == None
+
+    class TestHyperNoiseMap:
+
+        def test__hyper_noise_maps_are_same_as_hyper_galaxy_calculation(self):
+
+            noise_map = np.array([[5.0, 3.0, 1.0]])
+
+            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            contributions_0 = hyper_galaxy_0.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image,
+                                                                                hyper_galaxy_image=hyper_galaxy_image,
+                                                                                hyper_minimum_value=0.0)
+
+            contributions_1 = hyper_galaxy_1.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image,
+                                                                                hyper_galaxy_image=hyper_galaxy_image,
+                                                                                hyper_minimum_value=0.0)
+
+            hyper_noise_map_0 = hyper_galaxy_0.hyper_noise_map_from_contribution_map(noise_map=noise_map,
+                                                                                     contribution_map=contributions_0)
+
+            hyper_noise_map_1 = hyper_galaxy_1.hyper_noise_map_from_contribution_map(noise_map=noise_map,
+                                                                                     contribution_map=contributions_1)
+
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_0])
+
+            hyper_noise_maps = plane.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1])
+
+            hyper_noise_maps = plane.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+            assert (hyper_noise_maps[0] == hyper_noise_map_1).all()
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1, galaxy_0])
+
+            hyper_noise_maps = plane.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+            assert (hyper_noise_maps[0] == hyper_noise_map_1).all()
+            assert (hyper_noise_maps[1] == hyper_noise_map_0).all()
+
+        def test__hyper_noise_maps_are_none_for_galaxy_without_hyper_galaxy(self):
+
+            noise_map = np.array([[5.0, 3.0, 1.0]])
+
+            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            contributions_0 = hyper_galaxy_0.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image,
+                                                                                hyper_galaxy_image=hyper_galaxy_image,
+                                                                                hyper_minimum_value=0.0)
+
+            contributions_1 = hyper_galaxy_1.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image,
+                                                                                hyper_galaxy_image=hyper_galaxy_image,
+                                                                                hyper_minimum_value=0.0)
+
+            hyper_noise_map_0 = hyper_galaxy_0.hyper_noise_map_from_contribution_map(noise_map=noise_map,
+                                                                                     contribution_map=contributions_0)
+
+            hyper_noise_map_1 = hyper_galaxy_1.hyper_noise_map_from_contribution_map(noise_map=noise_map,
+                                                                                     contribution_map=contributions_1)
+
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_0, g.Galaxy()])
+
+            hyper_noise_maps = plane.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
+            assert hyper_noise_maps[1] == None
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[g.Galaxy(), galaxy_1])
+
+            hyper_noise_maps = plane.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+            assert hyper_noise_maps[0] == None
+            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[g.Galaxy(), galaxy_1, galaxy_0, g.Galaxy()])
+
+            hyper_noise_maps = plane.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+            assert hyper_noise_maps[0] == None
+            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
+            assert (hyper_noise_maps[2] == hyper_noise_map_0).all()
+            assert hyper_noise_maps[3] == None
+
+        def test__hyper_noise_map_from_noise_map__is_sum_of_galaxy_hyper_noise_maps__filters_nones(self):
+
+            noise_map = np.array([[5.0, 3.0, 1.0]])
+
+            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            contributions_0 = hyper_galaxy_0.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image,
+                                                                                hyper_galaxy_image=hyper_galaxy_image,
+                                                                                hyper_minimum_value=0.0)
+
+            contributions_1 = hyper_galaxy_1.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image,
+                                                                                hyper_galaxy_image=hyper_galaxy_image,
+                                                                                hyper_minimum_value=0.0)
+
+            hyper_noise_map_0 = hyper_galaxy_0.hyper_noise_map_from_contribution_map(noise_map=noise_map,
+                                                                                     contribution_map=contributions_0)
+
+            hyper_noise_map_1 = hyper_galaxy_1.hyper_noise_map_from_contribution_map(noise_map=noise_map,
+                                                                                     contribution_map=contributions_1)
+
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_0])
+
+            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            assert (hyper_noise_map == hyper_noise_map_0).all()
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1])
+
+            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            assert (hyper_noise_map == hyper_noise_map_1).all()
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1, galaxy_0])
+
+            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            assert (hyper_noise_map == hyper_noise_map_0 + hyper_noise_map_1).all()
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[g.Galaxy(), galaxy_1, galaxy_0, g.Galaxy()])
+
+            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            assert (hyper_noise_map == hyper_noise_map_0 + hyper_noise_map_1).all()
 
     class TestEinsteinRadiiAndMass:
 

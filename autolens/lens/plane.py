@@ -81,19 +81,48 @@ class AbstractPlane(object):
             raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
 
     @property
-    def contributions_of_galaxies(self):
+    def contribution_maps_of_galaxies(self):
 
-        contributions = []
+        contribution_maps = []
 
         for galaxy in self.galaxies:
             if galaxy.hyper_galaxy is not None:
-                contributions.append(galaxy.hyper_galaxy.contributions_from_model_image_and_galaxy_image(
-                    model_image=galaxy.hyper_model_image, galaxy_image=galaxy.hyper_galaxy_image,
-                    minimum_value=galaxy.hyper_minimum_value))
-            else:
-                contributions.append(None)
 
-        return contributions
+                contribution_map = galaxy.hyper_galaxy.contribution_map_from_hyper_images(
+                    hyper_model_image=galaxy.hyper_model_image, hyper_galaxy_image=galaxy.hyper_galaxy_image,
+                    hyper_minimum_value=galaxy.hyper_minimum_value)
+
+                contribution_maps.append(contribution_map)
+
+            else:
+
+                contribution_maps.append(None)
+
+        return contribution_maps
+
+    def hyper_noise_maps_of_galaxies_from_noise_map(self, noise_map):
+
+        hyper_noise_maps = []
+
+        for galaxy in self.galaxies:
+            if galaxy.hyper_galaxy is not None:
+
+                hyper_noise_map = galaxy.hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
+                    noise_map=noise_map, hyper_model_image=galaxy.hyper_model_image,
+                    hyper_galaxy_image=galaxy.hyper_galaxy_image, hyper_minimum_value=galaxy.hyper_minimum_value)
+
+                hyper_noise_maps.append(hyper_noise_map)
+
+            else:
+
+                hyper_noise_maps.append(None)
+
+        return hyper_noise_maps
+
+    def hyper_noise_map_from_noise_map(self, noise_map):
+        hyper_noise_maps = self.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+        hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
+        return sum(hyper_noise_maps)
 
     @property
     def centres_of_galaxy_mass_profiles(self):

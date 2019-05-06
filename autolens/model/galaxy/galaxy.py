@@ -450,12 +450,12 @@ class HyperGalaxy(object):
 
         self.component_number = next(self._ids)
 
-    def hyper_noise_from_model_image_galaxy_image_and_noise_map(self, model_image, galaxy_image, noise_map,
-                                                                minimum_value=0.0):
-        contributions = self.contributions_from_model_image_and_galaxy_image(model_image, galaxy_image, minimum_value)
-        return self.hyper_noise_from_contributions(noise_map, contributions)
+    def hyper_noise_map_from_hyper_images_and_noise_map(self, hyper_model_image, hyper_galaxy_image, noise_map,
+                                                        hyper_minimum_value=0.0):
+        contribution_map = self.contribution_map_from_hyper_images(hyper_model_image, hyper_galaxy_image, hyper_minimum_value)
+        return self.hyper_noise_map_from_contribution_map(noise_map, contribution_map)
 
-    def contributions_from_model_image_and_galaxy_image(self, model_image, galaxy_image, minimum_value=0.0):
+    def contribution_map_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, hyper_minimum_value=0.0):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that the \
         galaxy is attributed to contain, scaled to the *contribution_factor* hyper-parameter.
 
@@ -464,20 +464,20 @@ class HyperGalaxy(object):
 
         Parameters
         -----------
-        model_image : ndarray
+        hyper_model_image : ndarray
             The best-fit model image to the observed image from a previous analysis phase. This provides the \
             total light attributed to each image pixel by the model.
-        galaxy_image : ndarray
+        hyper_galaxy_image : ndarray
             A model image of the galaxy (from light profiles or an inversion) from a previous analysis phase.
-        minimum_value : float
+        hyper_minimum_value : float
             The minimum contribution value a pixel must contain to not be rounded to 0.
         """
-        contributions = np.divide(galaxy_image, np.add(model_image, self.contribution_factor))
-        contributions = np.divide(contributions, np.max(contributions))
-        contributions[contributions < minimum_value] = 0.0
-        return contributions
+        contribution_map = np.divide(hyper_galaxy_image, np.add(hyper_model_image, self.contribution_factor))
+        contribution_map = np.divide(contribution_map, np.max(contribution_map))
+        contribution_map[contribution_map < hyper_minimum_value] = 0.0
+        return contribution_map
 
-    def hyper_noise_from_contributions(self, noise_map, contributions):
+    def hyper_noise_map_from_contribution_map(self, noise_map, contribution_map):
         """Compute a scaled galaxy hyper noise-map from a baseline noise-map.
 
         This uses the galaxy contribution map and the *noise_factor* and *noise_power* hyper-parameters.
@@ -486,10 +486,10 @@ class HyperGalaxy(object):
         -----------
         noise_map : ndarray
             The observed noise-map (before scaling).
-        contributions : ndarray
+        contribution_map : ndarray
             The galaxy contribution map.
         """
-        return self.noise_factor * (noise_map * contributions) ** self.noise_power
+        return self.noise_factor * (noise_map * contribution_map) ** self.noise_power
 
     def __eq__(self, other):
         if isinstance(other, HyperGalaxy):

@@ -1472,9 +1472,9 @@ class HyperGalaxyPhase(Phase):
             return fit.figure_of_merit
 
         def fit_for_hyper_galaxy(self, hyper_galaxy):
-            hyper_noise = hyper_galaxy.hyper_noise_from_model_image_galaxy_image_and_noise_map(self.model_image,
-                                                                                               self.galaxy_image,
-                                                                                               self.lens_data.noise_map)
+            hyper_noise = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(self.model_image,
+                                                                                       self.galaxy_image,
+                                                                                       self.lens_data.noise_map)
             hyper_noise_map = self.lens_data.noise_map + hyper_noise
             return lens_fit.LensDataFit(image=self.lens_data.image, noise_map=hyper_noise_map,
                                         mask=np.full(self.lens_data.image.shape, False), model_image=self.model_image)
