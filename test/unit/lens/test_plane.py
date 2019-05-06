@@ -4,6 +4,7 @@ from astropy import cosmology as cosmo
 
 from autolens import exc, dimensions as dim
 from autolens.data import convolution
+from autolens.data import ccd
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.lens import plane as pl
@@ -1378,7 +1379,7 @@ class TestAbstractDataPlane(object):
                                          compute_deflections=False)
 
             blurred_images_1d_of_galaxies = \
-                plane.blurred_image_plane_image_1d_of_galaxies_from_convolver_image(convolver_image=convolver_blur)
+                plane.blurred_image_plane_images_1d_of_galaxies_from_convolver_image(convolver_image=convolver_blur)
 
             assert (blurred_images_1d_of_galaxies[0] == blurred_g0_image).all()
             assert (blurred_images_1d_of_galaxies[1] == blurred_g1_image).all()
@@ -1387,6 +1388,45 @@ class TestAbstractDataPlane(object):
                 plane.blurred_image_plane_image_1d_from_convolver_image(convolver_image=convolver_blur)
 
             assert blurred_image_1d == pytest.approx(blurred_g0_image + blurred_g1_image, 1.0e-4)
+
+    class TestUnmaskedBlurrerImagePlaneImage:
+
+        def test__unmasked_blurred_images_1d_of_galaxies(self):
+
+            psf = ccd.PSF(array=(np.array([[0.0, 3.0, 0.0],
+                                          [0.0, 1.0, 2.0],
+                                          [0.0, 0.0, 0.0]])), pixel_scale=1.0)
+
+            mask = msk.Mask(array=np.array([[True, True, True],
+                                            [True, False, True],
+                                            [True, True, True]]), pixel_scale=1.0)
+
+            padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
+                mask=mask, sub_grid_size=1, psf_shape=(3, 3))
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
+            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g0, g1], grid_stack=padded_grid_stack, border=None,
+                                         compute_deflections=False)
+
+            manual_blurred_image_0 = plane.image_plane_image_1d_of_galaxies[0]
+            manual_blurred_image_0 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_0)
+            manual_blurred_image_0 = psf.convolve(array=manual_blurred_image_0)
+
+            manual_blurred_image_1 = plane.image_plane_image_1d_of_galaxies[1]
+            manual_blurred_image_1 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_1)
+            manual_blurred_image_1 = psf.convolve(array=manual_blurred_image_1)
+
+            unmasked_blurred_image_plane_images = plane.unmasked_blurred_image_plane_images_of_galaxies_from_psf(psf=psf)
+
+            assert (unmasked_blurred_image_plane_images[0] == manual_blurred_image_0[1:4, 1:4]).all()
+            assert (unmasked_blurred_image_plane_images[1] == manual_blurred_image_1[1:4, 1:4]).all()
+
+            unmasked_blurred_image_plane_image = plane.unmasked_blurred_image_plane_image_from_psf(psf=psf)
+
+            assert unmasked_blurred_image_plane_image == \
+                   pytest.approx(manual_blurred_image_0[1:4, 1:4] + manual_blurred_image_1[1:4, 1:4], 1.0e-4)
 
     class TestContributionMaps:
 

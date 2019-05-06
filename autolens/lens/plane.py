@@ -319,8 +319,8 @@ class AbstractGriddedPlane(AbstractPlane):
     def image_plane_image_for_simulation(self):
         if not self.has_padded_grid_stack:
             raise exc.RayTracingException(
-                'To retrieve an image plane image for the simulation, the grid_stacks in the tracer_normal'
-                'must be padded grid_stacks')
+                'To retrieve an image plane image for a simulation, the grid stack in the plane'
+                'must be a padded grid stack')
         return self.grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=self.image_plane_image_1d)
 
     @property
@@ -408,16 +408,56 @@ class AbstractGriddedPlane(AbstractPlane):
 
 class AbstractDataPlane(AbstractGriddedPlane):
 
-    def blurred_image_plane_image_1d_of_galaxies_from_convolver_image(self, convolver_image):
+    def blurred_image_plane_image_1d_from_convolver_image(self, convolver_image):
+        return convolver_image.convolve_image(image_array=self.image_plane_image_1d,
+                                                blurring_array=self.image_plane_blurring_image_1d)
+
+    def blurred_image_plane_images_1d_of_galaxies_from_convolver_image(self, convolver_image):
 
         return list(map(lambda image_plane_image_1d, image_plane_blurring_image_1d :
                                convolver_image.convolve_image(image_array=image_plane_image_1d,
                                                          blurring_array=image_plane_blurring_image_1d),
                          self.image_plane_image_1d_of_galaxies, self.image_plane_blurring_image_1d_of_galaxies))
 
-    def blurred_image_plane_image_1d_from_convolver_image(self, convolver_image):
-        return convolver_image.convolve_image(image_array=self.image_plane_image_1d,
-                                                blurring_array=self.image_plane_blurring_image_1d)
+    def unmasked_blurred_image_plane_image_from_psf(self, psf):
+
+        if not self.has_padded_grid_stack:
+            raise exc.RayTracingException('To retrieve an unmasked image, the grid stack of a plane tracer'
+                                          'must be a padded grid stack')
+
+        if self.has_pixelization:
+            raise exc.RayTracingException('As unmasked blurred image plane image cannot be returned frmm a plane'
+                                          'with a pixelization')
+
+        return self.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf=psf, unmasked_image_1d=self.image_plane_image_1d)
+
+    def unmasked_blurred_image_plane_images_of_galaxies_from_psf(self, psf):
+
+        if not self.has_padded_grid_stack:
+            raise exc.RayTracingException('To retrieve an unmasked image, the grid stack of a plane tracer'
+                                          'must be a padded grid stack')
+
+        if self.has_pixelization:
+            raise exc.RayTracingException('As unmasked blurred image plane image cannot be returned frmm a plane'
+                                          'with a pixelization')
+
+        return list(map(lambda image_plane_image_1d :
+                        self.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+                            psf=psf, unmasked_image_1d=image_plane_image_1d),
+                        self.image_plane_image_1d_of_galaxies))
+
+    def hyper_noise_map_from_noise_map(self, noise_map):
+
+        if self.has_hyper_galaxy:
+
+            hyper_noise_maps = self.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+            hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
+            return sum(hyper_noise_maps)
+
+        else:
+
+            return None
 
     def hyper_noise_maps_of_galaxies_from_noise_map(self, noise_map):
         """For a contribution map and noise-map, use the model hyper galaxies to compute a scaled noise-map.
@@ -449,18 +489,6 @@ class AbstractDataPlane(AbstractGriddedPlane):
                 hyper_noise_maps.append(None)
 
         return hyper_noise_maps
-
-    def hyper_noise_map_from_noise_map(self, noise_map):
-
-        if self.has_hyper_galaxy:
-
-            hyper_noise_maps = self.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
-            hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
-            return sum(hyper_noise_maps)
-
-        else:
-
-            return None
 
 
 class Plane(AbstractDataPlane):
@@ -495,26 +523,6 @@ class Plane(AbstractDataPlane):
 
         super(Plane, self).__init__(redshift=galaxies[0].redshift, galaxies=galaxies, grid_stack=grid_stack,
                                     border=border, compute_deflections=compute_deflections, cosmology=cosmology)
-
-    def unmasked_blurred_image_of_galaxies_from_psf(self, padded_grid_stack, psf):
-        """This is a utility function for the function above, which performs the iteration over each plane's galaxies \
-        and computes each galaxy's unmasked blurred image.
-
-        Parameters
-        ----------
-        padded_grid_stack
-        psf : ccd.PSF
-            The PSF of the image used for convolution.
-        """
-        return [padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-            psf, image) if not galaxy.has_pixelization else None for galaxy, image in
-                zip(self.galaxies, self.image_plane_image_1d_of_galaxies)]
-
-    def unmasked_blurred_image_of_galaxy_with_grid_stack_psf(self, galaxy, padded_grid_stack, psf):
-        return padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-            psf,
-            self.image_plane_image_1d_of_galaxy(
-                galaxy))
 
 
 class PlaneSlice(AbstractDataPlane):

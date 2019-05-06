@@ -77,31 +77,21 @@ class LensTracerFit(LensDataFit):
 
     @property
     def unmasked_model_image(self):
-        if self.padded_tracer is not None and not self.padded_tracer.has_pixelization:
-            return self.padded_tracer.image_plane.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-                psf=self.psf,
-                unmasked_image_1d=self.padded_tracer.image_plane_image_1d)
+        return self.padded_tracer.unmasked_blurred_image_plane_image_from_psf(psf=self.psf)
 
     @property
     def unmasked_model_image_of_planes(self):
-        if self.padded_tracer is not None:
-            return util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(
-                planes=self.padded_tracer.planes, padded_grid_stack=self.padded_tracer.image_plane.grid_stack,
-                psf=self.psf)
+        return self.padded_tracer.unmasked_blurred_image_plane_images_of_planes_from_psf(psf=self.psf)
+
+    @property
+    def unmasked_model_image_of_planes_and_galaxies(self):
+        return self.padded_tracer.unmasked_blurred_image_plane_images_of_planes_and_galaxies_from_psf(psf=self.psf)
 
     def unmasked_model_image_for_galaxy(self, galaxy):
         plane = self.padded_tracer.plane_with_galaxy(galaxy)
         return plane.unmasked_blurred_image_of_galaxy_with_grid_stack_psf(galaxy,
                                                                           self.padded_tracer.image_plane.grid_stack,
                                                                           self.psf)
-
-    @property
-    def unmasked_model_image_of_planes_and_galaxies(self):
-        if self.padded_tracer is not None:
-            return util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(
-                planes=self.padded_tracer.planes, padded_grid_stack=self.padded_tracer.image_plane.grid_stack,
-                psf=self.psf)
-
 
 class LensProfileFit(LensTracerFit):
 
@@ -191,6 +181,8 @@ class LensInversionFit(InversionFit):
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
+
+        # TODO : Must use hper noise and write test for this.
 
         inversion = inversions.inversion_from_image_mapper_and_regularization(
             image_1d=lens_data.image_1d, noise_map_1d=lens_data.noise_map_1d,
