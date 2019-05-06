@@ -81,6 +81,21 @@ class AbstractPlane(object):
             raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
 
     @property
+    def contributions_of_galaxies(self):
+
+        contributions = []
+
+        for galaxy in self.galaxies:
+            if galaxy.hyper_galaxy is not None:
+                contributions.append(galaxy.hyper_galaxy.contributions_from_model_image_and_galaxy_image(
+                    model_image=galaxy.hyper_model_image, galaxy_image=galaxy.hyper_galaxy_image,
+                    minimum_value=galaxy.hyper_minimum_value))
+            else:
+                contributions.append(None)
+
+        return contributions
+
+    @property
     def centres_of_galaxy_mass_profiles(self):
 
         if self.has_mass_profile:

@@ -446,6 +446,63 @@ class TestAbstractPlane(object):
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
+    class TestContributions:
+
+        def test__contributions_are_same_as_hyper_galaxy_calculation(self):
+
+            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            contributions_0 = hyper_galaxy_0.contributions_from_model_image_and_galaxy_image(model_image=hyper_model_image,
+                                                                                galaxy_image=hyper_galaxy_image,
+                                                                                minimum_value=0.0)
+
+            contributions_1 = hyper_galaxy_1.contributions_from_model_image_and_galaxy_image(model_image=hyper_model_image,
+                                                                                galaxy_image=hyper_galaxy_image,
+                                                                                minimum_value=0.0)
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_0])
+
+            assert (plane.contributions_of_galaxies[0] == contributions_0).all()
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1])
+
+            assert (plane.contributions_of_galaxies[0] == contributions_1).all()
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1, galaxy_0])
+
+            assert (plane.contributions_of_galaxies[0] == contributions_1).all()
+            assert (plane.contributions_of_galaxies[1] == contributions_0).all()
+
+        def test__contriutions_are_none_for_galaxy_without_hyper_galaxy(self):
+
+            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy = g.HyperGalaxy(contribution_factor=5.0)
+
+            contributions = hyper_galaxy.contributions_from_model_image_and_galaxy_image(model_image=hyper_model_image,
+                                                                                galaxy_image=hyper_galaxy_image,
+                                                                                minimum_value=0.0)
+
+            galaxy = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy, g.Galaxy(), g.Galaxy()])
+
+            assert (plane.contributions_of_galaxies[0] == contributions).all()
+            assert plane.contributions_of_galaxies[1] == None
+            assert plane.contributions_of_galaxies[2] == None
+
     class TestEinsteinRadiiAndMass:
 
         def test__plane_has_galaxies_with_sis_profiles__einstein_radius_and_mass_sum_of_sis_profiles(self):

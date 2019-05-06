@@ -20,7 +20,8 @@ class Galaxy(object):
     @DynamicAttrs
     """
 
-    def __init__(self, redshift=None, pixelization=None, regularization=None, hyper_galaxy=None, **kwargs):
+    def __init__(self, redshift=None, pixelization=None, regularization=None, hyper_galaxy=None,
+                 hyper_model_image=None, hyper_galaxy_image=None, hyper_minimum_value=None, **kwargs):
         """Class representing a galaxy, which is composed of attributes used for fitting hyper (e.g. light profiles, \ 
         mass profiles, pixelizations, etc.).
         
@@ -58,6 +59,10 @@ class Galaxy(object):
             raise exc.GalaxyException('If the galaxy has a regularization, it must also have a pixelization.')
 
         self.hyper_galaxy = hyper_galaxy
+
+        self.hyper_model_image = hyper_model_image
+        self.hyper_galaxy_image = hyper_galaxy_image
+        self.hyper_minimum_value = hyper_minimum_value
 
     @property
     def light_profiles(self):
