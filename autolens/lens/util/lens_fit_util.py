@@ -2,20 +2,7 @@ import numpy as np
 
 
 def blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d, blurring_image_1d, convolver):
-    """For a 1D masked image and 1D blurring image (the regions outside the mask whose light blurs \
-    into the mask after PSF convolution), use both to compute the blurred image within the mask via PSF convolution.
 
-    The convolution uses each image's convolver (*See ccd.convolution*).
-
-    Parameters
-    ----------
-    unblurred_image_1d : ndarray
-        The 1D masked datas which is blurred.
-    blurring_image_1d : ndarray
-        The 1D masked blurring image which is used for blurring.
-    convolver : ccd.convolution.ConvolverImage
-        The image-convolver which performs the convolution in 1D.
-    """
     return convolver.convolve_image(image_array=unblurred_image_1d, blurring_array=blurring_image_1d)
 
 
@@ -64,51 +51,6 @@ def evidence_from_inversion_terms(chi_squared, regularization_term, log_curvatur
     """
     return -0.5 * (chi_squared + regularization_term + log_curvature_regularization_term - log_regularization_term
                    + noise_normalization)
-
-
-def blurred_image_of_planes_from_1d_images_and_convolver(total_planes, image_plane_image_1d_of_planes,
-                                                         image_plane_blurring_image_1d_of_planes, convolver,
-                                                         map_to_scaled_array):
-    """For a tracer, extract the image-plane image of every plane and blur it with the PSF.
-
-    If none of the galaxies in a plane have a light profie or pixelization (and thus don't have an image) a *None* \
-    is used.
-
-    Parameters
-    ----------
-    total_planes : int
-        The total number of planes that blurred images are computed for.
-    image_plane_image_1d_of_planes : [ndarray]
-        For every plane, the 1D image-plane image.
-    image_plane_blurring_image_1d_of_planes : [ndarray]
-        For every plane, the 1D image-plane blurring image.
-    convolver : hyper.ccd.convolution.ConvolverImage
-        Class which performs the PSF convolution of a masked image in 1D.
-    map_to_scaled_array : func
-        A function which maps a masked image from 1D to 2D.
-    """
-
-    blurred_image_of_planes = []
-
-    for plane_index in range(total_planes):
-
-        # If all entries are zero, there was no light profile / pixeization
-        if np.count_nonzero(image_plane_image_1d_of_planes[plane_index]) > 0:
-
-            blurred_image_1d_of_plane = blurred_image_1d_from_1d_unblurred_and_blurring_images(
-                unblurred_image_1d=image_plane_image_1d_of_planes[plane_index],
-                blurring_image_1d=image_plane_blurring_image_1d_of_planes[plane_index],
-                convolver=convolver)
-
-            blurred_image_of_plane = map_to_scaled_array(array_1d=blurred_image_1d_of_plane)
-
-            blurred_image_of_planes.append(blurred_image_of_plane)
-
-        else:
-
-            blurred_image_of_planes.append(None)
-
-    return blurred_image_of_planes
 
 
 def unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes, padded_grid_stack, psf):
@@ -172,54 +114,3 @@ def unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf
         The PSF of the image used for convolution.
     """
     return [plane.unmasked_blurred_image_of_galaxies_from_psf(padded_grid_stack, psf) for plane in planes]
-
-
-def contribution_maps_1d_from_hyper_images_and_galaxies(hyper_model_image_1d, hyper_galaxy_images_1d, hyper_galaxies,
-                                                        hyper_minimum_values):
-    """For a fitting hyper_galaxy_image, hyper_galaxy model image, list of hyper galaxies images and model hyper galaxies, compute
-    their contribution maps, which are used to compute a scaled-noise_map map. All quantities are masked 1D arrays.
-
-    The reason this is separate from the *contributions_from_fitting_hyper_images_and_hyper_galaxies* function is that
-    each hyper_galaxy image has a list of hyper galaxies images and associated hyper galaxies (one for each galaxy). Thus,
-    this function breaks down the calculation of each 1D masked contribution map and returns them in the same datas
-    structure (2 lists with indexes [image_index][contribution_map_index].
-
-    Parameters
-    ----------
-    hyper_model_image_1d : ndarray
-        The best-fit model image to the datas (e.g. from a previous analysis phase).
-    hyper_galaxy_images_1d : [ndarray]
-        The best-fit model image of each hyper galaxy to the datas (e.g. from a previous analysis phase).
-    hyper_galaxies : [galaxy.Galaxy]
-        The hyper galaxies which represent the model components used to scale the noise_map, which correspond to
-        individual galaxies in the image.
-    hyper_minimum_values : [float]
-        The minimum value of each hyper_galaxy-image contribution map, which ensure zero's don't impact the scaled noise-map.
-    """
-    # noinspection PyArgumentList
-    return list(map(lambda hyper_galaxy, hyper_galaxy_image_1d, hyper_minimum_value:
-                    hyper_galaxy.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image_1d,
-                                                                    hyper_galaxy_image=hyper_galaxy_image_1d,
-                                                                    hyper_minimum_value=hyper_minimum_value),
-                    hyper_galaxies, hyper_galaxy_images_1d, hyper_minimum_values))
-
-
-def scaled_noise_map_from_hyper_galaxies_and_contribution_maps(contribution_maps, hyper_galaxies, noise_map):
-    """For a contribution map and noise-map, use the model hyper galaxies to compute a scaled noise-map.
-
-    Parameters
-    -----------
-    contribution_maps : ndarray
-        The image's list of 1D masked contribution maps (e.g. one for each hyper galaxy)
-    hyper_galaxies : [galaxy.Galaxy]
-        The hyper galaxies which represent the model components used to scale the noise_map, which correspond to
-        individual galaxies in the image.
-    noise_map : ccd.NoiseMap or ndarray
-        An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
-        second.
-    """
-    scaled_noise_maps = list(map(lambda hyper_galaxy, contribution_map:
-                                 hyper_galaxy.hyper_noise_map_from_contribution_map(noise_map=noise_map,
-                                                                                    contribution_map=contribution_map),
-                                 hyper_galaxies, contribution_maps))
-    return noise_map + sum(scaled_noise_maps)
