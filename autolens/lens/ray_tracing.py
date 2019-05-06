@@ -334,6 +334,38 @@ class AbstractTracerData(AbstractTracer):
         """
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
 
+    def blurred_image_plane_images_of_planes_from_convolver_image(self, convolver_image):
+        """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
+        PSF using a convolver (see ccd.convolution) and then map them back to the 2D array of the original mask.
+
+        The blurred image of every plane is returned in 2D.
+
+        Parameters
+        ----------
+        convolver_image : hyper.ccd.convolution.ConvolverImage
+            Class which performs the PSF convolution of a masked image in 1D.
+        """
+        blurred_image_plane_images_of_planes_1d = \
+            self.blurred_image_plane_images_1d_of_planes_from_convolver_image(convolver_image=convolver_image)
+
+        return list(map(lambda blurred_image_plane_image_1d :
+                        self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=blurred_image_plane_image_1d),
+                        blurred_image_plane_images_of_planes_1d))
+
+    def blurred_image_plane_image_1d_from_convolver_image(self, convolver_image):
+        """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
+        PSF using a convolver (see ccd.convolution).
+
+        These are summed to give the tracer's overall blurred image-plane image in 1D.
+
+        Parameters
+        ----------
+        convolver_image : hyper.ccd.convolution.ConvolverImage
+            Class which performs the PSF convolution of a masked image in 1D.
+        """
+        return convolver_image.convolve_image(image_array=self.image_plane_image_1d,
+                                              blurring_array=self.image_plane_blurring_image_1d)
+
     def blurred_image_plane_images_1d_of_planes_from_convolver_image(self, convolver_image):
         """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
         PSF using a convolver (see ccd.convolution).
@@ -353,47 +385,24 @@ class AbstractTracerData(AbstractTracer):
 
         return blurred_image_plane_images_1d
 
-    def blurred_image_plane_image_1d_from_convolver_image(self, convolver_image):
-        """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
-        PSF using a convolver (see ccd.convolution).
+    def unmasked_blurred_image_plane_image_from_psf(self, psf):
 
-        These are summed to give the tracer's overall blurred image-plane image in 1D.
+        if not self.image_plane.has_padded_grid_stack:
+            raise exc.RayTracingException('To retrieve an unmasked image, the grid stack of a plane tracer'
+                                          'must be a padded grid stack')
 
-        Parameters
-        ----------
-        convolver_image : hyper.ccd.convolution.ConvolverImage
-            Class which performs the PSF convolution of a masked image in 1D.
-        """
-        return convolver_image.convolve_image(image_array=self.image_plane_image_1d,
-                                              blurring_array=self.image_plane_blurring_image_1d)
+        if self.has_pixelization:
+            raise exc.RayTracingException('As unmasked blurred image plane image cannot be returned frmm a tracer'
+                                          'with a pixelization')
 
-    def blurred_image_plane_images_of_planes_from_convolver_image(self, convolver_image):
-        """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
-        PSF using a convolver (see ccd.convolution) and then map them back to the 2D array of the original mask.
+        return self.image_plane.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf=psf, unmasked_image_1d=self.image_plane_image_1d)
 
-        The blurred image of every plane is returned in 2D.
+    def unmasked_blurred_image_plane_images_of_planes_from_psf(self, psf):
+        return [plane.unmasked_blurred_image_plane_image_from_psf(psf=psf) for plane in self.planes]
 
-        Parameters
-        ----------
-        convolver_image : hyper.ccd.convolution.ConvolverImage
-            Class which performs the PSF convolution of a masked image in 1D.
-        """
-        blurred_image_plane_images_of_planes_1d = \
-            self.blurred_image_plane_images_1d_of_planes_from_convolver_image(convolver_image=convolver_image)
-
-        return list(map(lambda blurred_image_plane_image_1d :
-                        self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=blurred_image_plane_image_1d),
-                        blurred_image_plane_images_of_planes_1d))
-
-    def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
-
-        hyper_noise_maps = []
-
-        for plane in self.planes:
-            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
-            hyper_noise_maps.append(hyper_noise_map)
-
-        return hyper_noise_maps
+    def unmasked_blurred_image_plane_images_of_planes_and_galaxies_from_psf(self, psf):
+        return [plane.unmasked_blurred_image_plane_images_of_galaxies_from_psf(psf=psf) for plane in self.planes]
 
     def hyper_noise_map_from_noise_map(self, noise_map):
 
@@ -406,6 +415,16 @@ class AbstractTracerData(AbstractTracer):
         else:
 
             return None
+
+    def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
+
+        hyper_noise_maps = []
+
+        for plane in self.planes:
+            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            hyper_noise_maps.append(hyper_noise_map)
+
+        return hyper_noise_maps
 
 
 class TracerImagePlane(AbstractTracerData):

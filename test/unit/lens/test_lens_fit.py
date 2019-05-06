@@ -251,7 +251,6 @@ class TestLensProfileFit:
             assert (fit.noise_map == 2.0*np.ones((3,4))).all()
             assert fit.likelihood == -0.5 * (4.0 + 2.0 * np.log(2 * np.pi * 2.0**2.0))
 
-
     class TestCompareToManual:
 
         def test___manual_image_and_psf(self, lens_data_manual):
@@ -271,9 +270,8 @@ class TestLensProfileFit:
 
             assert lens_data_manual.noise_map == pytest.approx(fit.noise_map, 1e-4)
 
-            model_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-                unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-                convolver=lens_data_manual.convolver_image)
+            model_image_1d = tracer.blurred_image_plane_image_1d_from_convolver_image(
+                convolver_image=lens_data_manual.convolver_image)
 
             model_image = lens_data_manual.map_to_scaled_array(array_1d=model_image_1d)
 
@@ -318,17 +316,13 @@ class TestLensProfileFit:
             assert (unmasked_blurred_image == fit.unmasked_model_image).all()
 
             unmasked_blurred_image_of_planes = \
-                util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(
-                    planes=padded_tracer.planes, padded_grid_stack=lens_data_manual.padded_grid_stack,
-                    psf=lens_data_manual.psf)
+                padded_tracer.unmasked_blurred_image_plane_images_of_planes_from_psf(psf=lens_data_manual.psf)
 
             assert (unmasked_blurred_image_of_planes[0] == fit.unmasked_model_image_of_planes[0]).all()
             assert (unmasked_blurred_image_of_planes[1] == fit.unmasked_model_image_of_planes[1]).all()
 
             unmasked_blurred_image_of_galaxies = \
-                util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(
-                    planes=padded_tracer.planes, padded_grid_stack=lens_data_manual.padded_grid_stack,
-                    psf=lens_data_manual.psf)
+                padded_tracer.unmasked_blurred_image_plane_images_of_planes_and_galaxies_from_psf(psf=lens_data_manual.psf)
 
             assert (unmasked_blurred_image_of_galaxies[0][0] == fit.unmasked_model_image_of_planes_and_galaxies[0][
                 0]).all()
