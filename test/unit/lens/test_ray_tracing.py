@@ -4,6 +4,7 @@ from astropy import cosmology as cosmo
 
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
+from autolens.data import convolution
 from autolens.lens import plane as pl
 from autolens.lens import ray_tracing
 from autolens.lens.util import lens_util
@@ -484,76 +485,6 @@ class TestAbstractTracer(object):
             assert tracer.regularizations_of_planes[0].value == 3
             assert tracer.regularizations_of_planes[1].value == 4
 
-    class TestHyperNoiseMap:
-
-        def test__hyper_noise_maps_of_planes__correspond_to_plane_noise_maps_including_nones(self, grid_stack):
-
-            noise_map = np.array([[5.0, 3.0, 1.0]])
-
-            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
-
-            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
-            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
-
-            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
-                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
-
-            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
-                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
-
-            plane_0 = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_0])
-            plane_1 = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1])
-            plane_2 = pl.AbstractPlane(redshift=1.0, galaxies=[g.Galaxy()])
-
-            hyper_noise_map_0 = plane_0.hyper_noise_map_from_noise_map(noise_map=noise_map)
-            hyper_noise_map_1 = plane_1.hyper_noise_map_from_noise_map(noise_map=noise_map)
-
-            tracer = ray_tracing.AbstractTracer(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
-
-            hyper_noise_maps = tracer.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
-
-            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
-            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
-            assert hyper_noise_maps[2] == None
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_0], source_galaxies=[galaxy_1],
-                                                         image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
-
-            hyper_noise_maps = tracer.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
-
-            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
-            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
-
-        def test__hyper_noise_map_is_the_sum_of_the_plane_hyper_noise_maps(self):
-
-            noise_map = np.array([[5.0, 3.0, 1.0]])
-
-            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
-
-            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
-            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
-
-            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
-                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
-
-            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
-                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
-
-            plane_0 = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_0])
-            plane_1 = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1])
-            plane_2 = pl.AbstractPlane(redshift=1.0, galaxies=[g.Galaxy()])
-
-            hyper_noise_map_0 = plane_0.hyper_noise_map_from_noise_map(noise_map=noise_map)
-            hyper_noise_map_1 = plane_1.hyper_noise_map_from_noise_map(noise_map=noise_map)
-
-            tracer = ray_tracing.AbstractTracer(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
-
-            hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
-
-            assert (hyper_noise_map == hyper_noise_map_0 + hyper_noise_map_1).all()
-
     class TestCosmology:
 
         def test__2_planes__z01_and_z1(self, grid_stack):
@@ -846,6 +777,153 @@ class TestAbstractTracer(object):
             assert tracer.einstein_mass_between_image_and_source_plane_in_units(unit_mass='solMass') == \
                    g0_mass + g1_mass
 
+
+@pytest.fixture(name='mask')
+def make_mask():
+    return msk.Mask(array=np.array([[True, True, True, True],
+                                    [True, False, False, True],
+                                    [True, False, False, True],
+                                    [True, True, True, True]]), pixel_scale=1.0)
+
+
+@pytest.fixture(name='blurring_mask')
+def make_blurring_mask():
+    return msk.Mask(array=np.array([[False, False, False, False],
+                                    [False, True, True, False],
+                                    [False, True, True, False],
+                                    [False, False, False, False]]), pixel_scale=1.0)
+
+@pytest.fixture(name='convolver_blur')
+def make_convolver_blur(mask, blurring_mask):
+    psf = np.array([[1.0, 1.0, 1.0],
+                    [1.0, 1.0, 1.0],
+                    [1.0, 1.0, 1.0]])
+    return convolution.ConvolverImage(mask=mask, blurring_mask=blurring_mask, psf=psf)
+
+class TestAbstractTracerData(object):
+    
+    class TestBlurredImages:
+
+        def test__blurred_image_plane_image_1d_of_planes(self, grid_stack, convolver_blur):
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+
+            plane_0 = pl.AbstractDataPlane(redshift=0.5, galaxies=[g0], grid_stack=grid_stack,
+                                         border=None, compute_deflections=False)
+            plane_1 = pl.AbstractDataPlane(redshift=0.5, galaxies=[g1], grid_stack=grid_stack,
+                                         border=None, compute_deflections=False)
+            plane_2 = pl.AbstractDataPlane(redshift=1.0, galaxies=[g.Galaxy()], grid_stack=grid_stack,
+                                         border=None, compute_deflections=False)
+
+            blurred_image_1d_0 = plane_0.blurred_image_plane_image_1d_from_convolver_image(convolver_image=convolver_blur)
+            blurred_image_1d_1 = plane_1.blurred_image_plane_image_1d_from_convolver_image(convolver_image=convolver_blur)
+
+            tracer = ray_tracing.AbstractTracerData(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
+
+            blurred_image_plane_images_1d = \
+                tracer.blurred_image_plane_images_1d_of_planes_from_convolver_image(convolver_image=convolver_blur)
+
+            assert (blurred_image_plane_images_1d[0] == blurred_image_1d_0).all()
+            assert (blurred_image_plane_images_1d[1] == blurred_image_1d_1).all()
+        #    assert blurred_image_1ds[2] == None
+
+            blurred_image_plane_image_1d = \
+                tracer.blurred_image_plane_image_1d_from_convolver_image(convolver_image=convolver_blur)
+
+            assert blurred_image_plane_image_1d == pytest.approx(blurred_image_1d_0 + blurred_image_1d_1, 1.0e-4)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
+
+            blurred_image_plane_images_1ds = \
+                tracer.blurred_image_plane_images_1d_of_planes_from_convolver_image(convolver_image=convolver_blur)
+
+            assert (blurred_image_plane_images_1ds[0] == blurred_image_1d_0).all()
+            assert (blurred_image_plane_images_1ds[1] == blurred_image_1d_1).all()
+
+        def test__blurred_image_1d_is_the_sum_of_the_plane_blurred_image_1ds(self):
+
+            convolver_image = np.array([[5.0, 3.0, 1.0]])
+
+            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            plane_0 = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0], grid_stack=None,
+                                         border=None, compute_deflections=False)
+            plane_1 = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_1], grid_stack=None,
+                                         border=None, compute_deflections=False)
+            plane_2 = pl.AbstractDataPlane(redshift=1.0, galaxies=[g.Galaxy()], grid_stack=None,
+                                         border=None, compute_deflections=False)
+
+            blurred_image_1d_0 = plane_0.blurred_image_1d_from_convolver_image(convolver_image=convolver_image)
+            blurred_image_1d_1 = plane_1.blurred_image_1d_from_convolver_image(convolver_image=convolver_image)
+
+            tracer = ray_tracing.AbstractTracerData(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
+
+            blurred_image_1d = tracer.blurred_image_1d_from_convolver_image(convolver_image=convolver_image)
+
+            assert (blurred_image_1d == blurred_image_1d_0 + blurred_image_1d_1).all()
+    
+    class TestHyperNoiseMap:
+
+        def test__hyper_noise_maps_of_planes(self, grid_stack):
+
+            noise_map = np.array([[5.0, 3.0, 1.0]])
+
+            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            plane_0 = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0], grid_stack=None,
+                                         border=None, compute_deflections=False)
+            plane_1 = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_1], grid_stack=None,
+                                         border=None, compute_deflections=False)
+            plane_2 = pl.AbstractDataPlane(redshift=1.0, galaxies=[g.Galaxy()], grid_stack=None,
+                                         border=None, compute_deflections=False)
+
+            hyper_noise_map_0 = plane_0.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            hyper_noise_map_1 = plane_1.hyper_noise_map_from_noise_map(noise_map=noise_map)
+
+            tracer = ray_tracing.AbstractTracerData(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
+
+            hyper_noise_maps = tracer.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
+
+            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
+            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
+            assert hyper_noise_maps[2] == None
+
+            hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
+
+            assert (hyper_noise_map == hyper_noise_map_0 + hyper_noise_map_1).all()
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_0], source_galaxies=[galaxy_1],
+                                                         image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
+
+            hyper_noise_maps = tracer.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
+
+            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
+            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
+
+
+    
 
 class TestTracerImagePlane(object):
     class TestImagePlaneImage:
