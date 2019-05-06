@@ -548,63 +548,69 @@ class TestHyperGalaxy(object):
             gal_image = np.ones((3,))
 
             hyp = g.HyperGalaxy(contribution_factor=0.0)
-            contributions = hyp.contributions_from_model_image_and_galaxy_image(model_image=gal_image,
-                                                                                galaxy_image=gal_image,
-                                                                                minimum_value=0.0)
+            contribution_map = hyp.contribution_map_from_hyper_images(hyper_model_image=gal_image,
+                                                                   hyper_galaxy_image=gal_image,
+                                                                   hyper_minimum_value=0.0)
 
-            assert (contributions == np.ones((3,))).all()
+            assert (contribution_map == np.ones((3,))).all()
 
         def test__different_values__factor_is_1__contributions_are_value_divided_by_factor_and_max(self):
             gal_image = np.array([0.5, 1.0, 1.5])
 
             hyp = g.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.contributions_from_model_image_and_galaxy_image(model_image=gal_image,
-                                                                                galaxy_image=gal_image,
-                                                                                minimum_value=0.0)
+            contribution_map = hyp.contribution_map_from_hyper_images(hyper_model_image=gal_image,
+                                                                   hyper_galaxy_image=gal_image,
+                                                                   hyper_minimum_value=0.0)
 
-            assert (contributions == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
+            assert (contribution_map == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
         def test__different_values__threshold_is_1_minimum_threshold_included__wipes_1st_value_to_0(self):
             gal_image = np.array([0.5, 1.0, 1.5])
 
             hyp = g.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.contributions_from_model_image_and_galaxy_image(model_image=gal_image,
-                                                                                galaxy_image=gal_image,
-                                                                                minimum_value=0.6)
+            contribution_map = hyp.contribution_map_from_hyper_images(hyper_model_image=gal_image,
+                                                                   hyper_galaxy_image=gal_image,
+                                                                   hyper_minimum_value=0.6)
 
-            assert (contributions == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
+            assert (contribution_map == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
-    class TestScaledNoise(object):
+    class TestHyperNoiseMap(object):
 
         def test__contribution_all_1s__noise_factor_2__noise_adds_double(self):
+
             noise = np.array([1.0, 2.0, 3.0])
             gal_contributions = np.ones((3, 1))
 
             hyp = g.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
 
-            scaled_noise = hyp.hyper_noise_from_contributions(noise_map=noise, contributions=gal_contributions)
+            hyper_noise_map = hyp.hyper_noise_map_from_contribution_map(noise_map=noise,
+                                                                        contribution_map=gal_contributions)
 
-            assert (scaled_noise == np.array([2.0, 4.0, 6.0])).all()
+            assert (hyper_noise_map == np.array([2.0, 4.0, 6.0])).all()
 
         def test__same_as_above_but_contributions_vary(self):
+
             noise = np.array([1.0, 2.0, 3.0])
             gal_contributions = np.array([[0.0, 0.5, 1.0]])
 
             hyp = g.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
 
-            scaled_noise = hyp.hyper_noise_from_contributions(noise_map=noise, contributions=gal_contributions)
+            hyper_noise_map = hyp.hyper_noise_map_from_contribution_map(noise_map=noise,
+                                                                        contribution_map=gal_contributions)
 
-            assert (scaled_noise == np.array([0.0, 2.0, 6.0])).all()
+            assert (hyper_noise_map == np.array([0.0, 2.0, 6.0])).all()
 
         def test__same_as_above_but_change_noise_scale_terms(self):
+
             noise = np.array([1.0, 2.0, 3.0])
             gal_contributions = np.array([[0.0, 0.5, 1.0]])
 
             hyp = g.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=2.0)
 
-            scaled_noise = hyp.hyper_noise_from_contributions(noise_map=noise, contributions=gal_contributions)
+            hyper_noise_map = hyp.hyper_noise_map_from_contribution_map(noise_map=noise,
+                                                                        contribution_map=gal_contributions)
 
-            assert (scaled_noise == np.array([0.0, 2.0, 18.0])).all()
+            assert (hyper_noise_map == np.array([0.0, 2.0, 18.0])).all()
 
 
 class TestBooleanProperties(object):

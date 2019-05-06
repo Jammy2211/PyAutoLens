@@ -81,7 +81,7 @@ class LensTracerFit(LensDataFit):
                         padded_tracer.image_plane.grid_stack,
                         psf)
                     hyper_galaxy = galaxy.hyper_galaxy
-                    hyper_noise = hyper_galaxy.hyper_noise_from_model_image_galaxy_image_and_noise_map(
+                    hyper_noise = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
                         unmasked_model_image,
                         unmasked_galaxy_image,
                         original_noise_map)

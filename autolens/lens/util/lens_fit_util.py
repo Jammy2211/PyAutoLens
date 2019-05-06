@@ -198,9 +198,9 @@ def contribution_maps_1d_from_hyper_images_and_galaxies(hyper_model_image_1d, hy
     """
     # noinspection PyArgumentList
     return list(map(lambda hyper_galaxy, hyper_galaxy_image_1d, hyper_minimum_value:
-                    hyper_galaxy.contributions_from_model_image_and_galaxy_image(model_image=hyper_model_image_1d,
-                                                                                 galaxy_image=hyper_galaxy_image_1d,
-                                                                                 minimum_value=hyper_minimum_value),
+                    hyper_galaxy.contribution_map_from_hyper_images(hyper_model_image=hyper_model_image_1d,
+                                                                    hyper_galaxy_image=hyper_galaxy_image_1d,
+                                                                    hyper_minimum_value=hyper_minimum_value),
                     hyper_galaxies, hyper_galaxy_images_1d, hyper_minimum_values))
 
 
@@ -219,7 +219,7 @@ def scaled_noise_map_from_hyper_galaxies_and_contribution_maps(contribution_maps
         second.
     """
     scaled_noise_maps = list(map(lambda hyper_galaxy, contribution_map:
-                                 hyper_galaxy.hyper_noise_from_contributions(noise_map=noise_map,
-                                                                             contributions=contribution_map),
+                                 hyper_galaxy.hyper_noise_map_from_contribution_map(noise_map=noise_map,
+                                                                                    contribution_map=contribution_map),
                                  hyper_galaxies, contribution_maps))
     return noise_map + sum(scaled_noise_maps)
