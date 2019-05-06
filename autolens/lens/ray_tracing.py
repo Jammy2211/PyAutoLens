@@ -182,6 +182,10 @@ class AbstractTracer(AbstractTracerCosmology):
         return any(list(map(lambda plane: plane.has_regularization, self.planes)))
 
     @property
+    def has_hyper_galaxy(self):
+        return any(list(map(lambda plane: plane.has_hyper_galaxy, self.planes)))
+
+    @property
     def has_padded_grids(self):
         return isinstance(self.planes[0].grids.regular, grids.PaddedRegularGrid)
 
@@ -232,6 +236,29 @@ class AbstractTracer(AbstractTracerCosmology):
     @property
     def regularizations_of_planes(self):
         return list(filter(None, [plane.regularization for plane in self.planes]))
+
+    def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
+
+        hyper_noise_maps = []
+
+        for plane in self.planes:
+            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            hyper_noise_maps.append(hyper_noise_map)
+
+        return hyper_noise_maps
+
+    def hyper_noise_map_from_noise_map(self, noise_map):
+
+        if self.has_hyper_galaxy:
+
+            hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
+            hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
+            return sum(hyper_noise_maps)
+
+        else:
+
+            return None
+        
 
     @property
     @check_tracer_for_mass_profile

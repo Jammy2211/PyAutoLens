@@ -65,27 +65,6 @@ class LensTracerFit(LensDataFit):
         map_to_scaled_array : func
             A function which maps the 1D lens hyper to its unmasked 2D array.
         """
-        # Add hyper noise if these is a padded tracer...
-        if padded_tracer is not None:
-            original_noise_map = noise_map.copy()
-            unmasked_model_image = padded_tracer.image_plane.grid_stack. \
-                unmasked_blurred_image_from_psf_and_unmasked_image(psf=psf,
-                                                                   unmasked_image_1d=padded_tracer.
-                                                                   image_plane_image_1d)
-            # ...to any galaxy with a corresponding HyperGalaxy
-            for galaxy in tracer.galaxies:
-                if galaxy.hyper_galaxy is not None:
-                    plane = padded_tracer.plane_with_galaxy(galaxy)
-                    unmasked_galaxy_image = plane.unmasked_blurred_image_of_galaxy_with_grid_stack_psf(
-                        galaxy,
-                        padded_tracer.image_plane.grid_stack,
-                        psf)
-                    hyper_galaxy = galaxy.hyper_galaxy
-                    hyper_noise = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
-                        unmasked_model_image,
-                        unmasked_galaxy_image,
-                        original_noise_map)
-                    noise_map += hyper_noise
         super().__init__(image=image, noise_map=noise_map, mask=mask, model_image=model_image)
         self.tracer = tracer
         self.padded_tracer = padded_tracer
@@ -143,15 +122,22 @@ class LensProfileFit(LensTracerFit):
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
+
+        hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=lens_data.noise_map)
+        if hyper_noise_map is not None:
+            noise_map = lens_data.noise_map + hyper_noise_map
+        else:
+            noise_map = lens_data.noise_map
+
         blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=lens_data.convolver_image)
-        super(LensProfileFit, self).__init__(
-            image=lens_data.image, noise_map=lens_data.noise_map,
-            mask=lens_data.mask, model_image=lens_data.map_to_scaled_array(
-                array_1d=blurred_profile_image_1d),
-            tracer=tracer, padded_tracer=padded_tracer, psf=lens_data.psf,
-            map_to_scaled_array=lens_data.map_to_scaled_array)
+        super(LensProfileFit, self).__init__(image=lens_data.image, noise_map=noise_map,
+                                             mask=lens_data.mask,
+                                             model_image=lens_data.map_to_scaled_array(
+                                             array_1d=blurred_profile_image_1d),
+                                             tracer=tracer, padded_tracer=padded_tracer, psf=lens_data.psf,
+                                             map_to_scaled_array=lens_data.map_to_scaled_array)
 
         self.convolver_image = lens_data.convolver_image
 
@@ -171,6 +157,7 @@ class LensProfileFit(LensTracerFit):
 
 class InversionFit(LensTracerFit):
     def __init__(self, lens_data, model_image, tracer, inversion, padded_tracer=None):
+
         super().__init__(image=lens_data.image, noise_map=lens_data.noise_map,
                          mask=lens_data.mask,
                          model_image=model_image,
@@ -178,6 +165,7 @@ class InversionFit(LensTracerFit):
                          tracer=tracer,
                          padded_tracer=padded_tracer,
                          map_to_scaled_array=lens_data.map_to_scaled_array)
+
         self.inversion = inversion
 
         self.likelihood_with_regularization = \

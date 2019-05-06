@@ -188,6 +188,23 @@ class TestAbstractTracer(object):
             assert ray_tracing.TracerImageSourcePlanes([gal_reg], [gal_lp],
                                                        image_plane_grid_stack=grid_stack).has_regularization is True
 
+        def test__has_galaxy_with_hyper_galaxy(self, grid_stack):
+
+            gal = g.Galaxy()
+            gal_lp = g.Galaxy(light_profile=lp.LightProfile())
+            gal_hyper = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
+
+            assert ray_tracing.TracerImageSourcePlanes([gal], [gal],
+                                                       image_plane_grid_stack=grid_stack).has_hyper_galaxy is False
+            assert ray_tracing.TracerImageSourcePlanes([gal_lp], [gal_lp],
+                                                       image_plane_grid_stack=grid_stack).has_hyper_galaxy is False
+            assert ray_tracing.TracerImageSourcePlanes([gal_hyper], [gal_hyper],
+                                                       image_plane_grid_stack=grid_stack).has_hyper_galaxy is True
+            assert ray_tracing.TracerImageSourcePlanes([gal_hyper], [gal],
+                                                       image_plane_grid_stack=grid_stack).has_hyper_galaxy is True
+            assert ray_tracing.TracerImageSourcePlanes([gal_hyper], [gal_lp],
+                                                       image_plane_grid_stack=grid_stack).has_hyper_galaxy is True
+
     class TestImages:
 
         def test__no_galaxy_has_light_profile__image_plane_is_returned_as_none(self, grid_stack):
@@ -466,6 +483,76 @@ class TestAbstractTracer(object):
 
             assert tracer.regularizations_of_planes[0].value == 3
             assert tracer.regularizations_of_planes[1].value == 4
+
+    class TestHyperNoiseMap:
+
+        def test__hyper_noise_maps_of_planes__correspond_to_plane_noise_maps_including_nones(self, grid_stack):
+
+            noise_map = np.array([[5.0, 3.0, 1.0]])
+
+            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            plane_0 = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_0])
+            plane_1 = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1])
+            plane_2 = pl.AbstractPlane(redshift=1.0, galaxies=[g.Galaxy()])
+
+            hyper_noise_map_0 = plane_0.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            hyper_noise_map_1 = plane_1.hyper_noise_map_from_noise_map(noise_map=noise_map)
+
+            tracer = ray_tracing.AbstractTracer(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
+
+            hyper_noise_maps = tracer.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
+
+            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
+            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
+            assert hyper_noise_maps[2] == None
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_0], source_galaxies=[galaxy_1],
+                                                         image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
+
+            hyper_noise_maps = tracer.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
+
+            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
+            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
+
+        def test__hyper_noise_map_is_the_sum_of_the_plane_hyper_noise_maps(self):
+
+            noise_map = np.array([[5.0, 3.0, 1.0]])
+
+            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
+                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+
+            plane_0 = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_0])
+            plane_1 = pl.AbstractPlane(redshift=0.5, galaxies=[galaxy_1])
+            plane_2 = pl.AbstractPlane(redshift=1.0, galaxies=[g.Galaxy()])
+
+            hyper_noise_map_0 = plane_0.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            hyper_noise_map_1 = plane_1.hyper_noise_map_from_noise_map(noise_map=noise_map)
+
+            tracer = ray_tracing.AbstractTracer(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
+
+            hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
+
+            assert (hyper_noise_map == hyper_noise_map_0 + hyper_noise_map_1).all()
 
     class TestCosmology:
 
