@@ -81,6 +81,10 @@ class AbstractPlane(object):
             raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
 
     @property
+    def has_hyper_galaxy(self):
+        return any(list(map(lambda galaxy: galaxy.has_hyper_galaxy, self.galaxies)))
+
+    @property
     def contribution_maps_of_galaxies(self):
 
         contribution_maps = []
@@ -99,30 +103,6 @@ class AbstractPlane(object):
                 contribution_maps.append(None)
 
         return contribution_maps
-
-    def hyper_noise_maps_of_galaxies_from_noise_map(self, noise_map):
-
-        hyper_noise_maps = []
-
-        for galaxy in self.galaxies:
-            if galaxy.hyper_galaxy is not None:
-
-                hyper_noise_map = galaxy.hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
-                    noise_map=noise_map, hyper_model_image=galaxy.hyper_model_image,
-                    hyper_galaxy_image=galaxy.hyper_galaxy_image, hyper_minimum_value=galaxy.hyper_minimum_value)
-
-                hyper_noise_maps.append(hyper_noise_map)
-
-            else:
-
-                hyper_noise_maps.append(None)
-
-        return hyper_noise_maps
-
-    def hyper_noise_map_from_noise_map(self, noise_map):
-        hyper_noise_maps = self.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
-        hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
-        return sum(hyper_noise_maps)
 
     @property
     def centres_of_galaxy_mass_profiles(self):
@@ -359,6 +339,13 @@ class AbstractGriddedPlane(AbstractPlane):
         return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.blurring, galaxies=self.galaxies)
 
     @property
+    def image_plane_blurring_image_1d_of_galaxies(self):
+        return list(map(self.image_plane_blurring_image_1d_of_galaxy, self.galaxies))
+
+    def image_plane_blurring_image_1d_of_galaxy(self, galaxy):
+        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.blurring, galaxies=[galaxy])
+
+    @property
     def convergence(self):
         convergence_1d = galaxy_util.convergence_of_galaxies_from_grid(
             grid=self.grid_stack.sub.unlensed_grid, galaxies=self.galaxies)
@@ -417,6 +404,52 @@ class AbstractGriddedPlane(AbstractPlane):
         """Compute the xticks labels of this grid_stack, used for plotting the x-axis ticks when visualizing an \
         image"""
         return np.linspace(np.amin(self.grid_stack.regular[:, 1]), np.amax(self.grid_stack.regular[:, 1]), 4)
+
+
+class AbstractDataPlane(AbstractGriddedPlane):
+
+    def blurred_image_plane_image_1d_of_galaxies_from_convolver_image(self, convolver_image):
+
+        return list(map(lambda image_plane_image_1d, image_plane_blurring_image_1d :
+                               convolver_image.convolve_image(image_array=image_plane_image_1d,
+                                                         blurring_array=image_plane_blurring_image_1d),
+                         self.image_plane_image_1d_of_galaxies, self.image_plane_blurring_image_1d_of_galaxies))
+
+    def blurred_image_plane_image_1d_from_convolver_image(self, convolver_image):
+        return convolver_image.convolve_image(image_array=self.image_plane_image_1d,
+                                                blurring_array=self.image_plane_blurring_image_1d)
+
+
+    def hyper_noise_maps_of_galaxies_from_noise_map(self, noise_map):
+
+        hyper_noise_maps = []
+
+        for galaxy in self.galaxies:
+            if galaxy.hyper_galaxy is not None:
+
+                hyper_noise_map = galaxy.hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
+                    noise_map=noise_map, hyper_model_image=galaxy.hyper_model_image,
+                    hyper_galaxy_image=galaxy.hyper_galaxy_image, hyper_minimum_value=galaxy.hyper_minimum_value)
+
+                hyper_noise_maps.append(hyper_noise_map)
+
+            else:
+
+                hyper_noise_maps.append(None)
+
+        return hyper_noise_maps
+
+    def hyper_noise_map_from_noise_map(self, noise_map):
+
+        if self.has_hyper_galaxy:
+
+            hyper_noise_maps = self.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+            hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
+            return sum(hyper_noise_maps)
+
+        else:
+
+            return None
 
 
 class Plane(AbstractGriddedPlane):

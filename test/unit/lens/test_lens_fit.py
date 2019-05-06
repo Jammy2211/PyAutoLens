@@ -144,9 +144,11 @@ class TestImageForGalaxy(object):
 
 
 class TestLensProfileFit:
+
     class TestLikelihood:
 
         def test__image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_normalization(self):
+
             psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],
                                            [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -164,7 +166,8 @@ class TestLensProfileFit:
             fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer, padded_tracer=tracer)
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
-        def test_hyper_galaxy_changes_fit(self):
+        def test_hyper_galaxy_changes_noise_above_from_1_to_2__reflected_in_likelihood(self):
+
             psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],
                                            [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -176,13 +179,17 @@ class TestLensProfileFit:
                                             [True, True, True]]), pixel_scale=1.0)
             lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
-            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0), hyper_galaxy=g.HyperGalaxy(1.0, 1.0))
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0),
+                          hyper_galaxy=g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0),
+                          hyper_model_image=np.ones((3,3)), hyper_galaxy_image=np.ones((3,3)), hyper_minimum_value=0.0)
+
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data.grid_stack)
 
             fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer, padded_tracer=tracer)
-            assert fit.likelihood < -0.5 * np.log(2 * np.pi * 1.0)
+            assert fit.likelihood == -0.5 * np.log(2 * np.pi * 2.0**2.0)
 
         def test__1x2_image__tracing_fits_data_with_chi_sq_5(self):
+
             psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],
                                            [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -210,6 +217,7 @@ class TestLensProfileFit:
     class TestCompareToManual:
 
         def test___manual_image_and_psf(self, lens_data_manual):
+
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
 
@@ -293,9 +301,11 @@ class TestLensProfileFit:
 
 
 class TestLensInversionFit:
+
     class TestCompareToManual:
 
         def test___manual_image_and_psf(self, lens_data_manual):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
             reg = regularization.Constant(coefficients=(1.0,))
 
