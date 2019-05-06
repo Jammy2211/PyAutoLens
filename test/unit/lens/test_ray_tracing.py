@@ -826,12 +826,22 @@ class TestAbstractTracerData(object):
 
             assert (blurred_image_plane_images_1d[0] == blurred_image_1d_0).all()
             assert (blurred_image_plane_images_1d[1] == blurred_image_1d_1).all()
-        #    assert blurred_image_1ds[2] == None
+            assert (blurred_image_plane_images_1d[2] == np.zeros(blurred_image_1d_0.shape)).all()
 
             blurred_image_plane_image_1d = \
                 tracer.blurred_image_plane_image_1d_from_convolver_image(convolver_image=convolver_blur)
 
             assert blurred_image_plane_image_1d == pytest.approx(blurred_image_1d_0 + blurred_image_1d_1, 1.0e-4)
+
+            blurred_image_plane_images = \
+                tracer.blurred_image_plane_images_of_planes_from_convolver_image(convolver_image=convolver_blur)
+
+            blurred_image_0 = grid_stack.scaled_array_2d_from_array_1d(array_1d=blurred_image_1d_0)
+            blurred_image_1 = grid_stack.scaled_array_2d_from_array_1d(array_1d=blurred_image_1d_1)
+
+            assert (blurred_image_plane_images[0] == blurred_image_0).all()
+            assert (blurred_image_plane_images[1] == blurred_image_1).all()
+            #    assert blurred_image_1ds[2] == None
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
@@ -842,37 +852,6 @@ class TestAbstractTracerData(object):
             assert (blurred_image_plane_images_1ds[0] == blurred_image_1d_0).all()
             assert (blurred_image_plane_images_1ds[1] == blurred_image_1d_1).all()
 
-        def test__blurred_image_1d_is_the_sum_of_the_plane_blurred_image_1ds(self):
-
-            convolver_image = np.array([[5.0, 3.0, 1.0]])
-
-            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
-
-            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
-            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
-
-            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
-                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
-
-            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
-                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
-
-            plane_0 = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0], grid_stack=None,
-                                         border=None, compute_deflections=False)
-            plane_1 = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_1], grid_stack=None,
-                                         border=None, compute_deflections=False)
-            plane_2 = pl.AbstractDataPlane(redshift=1.0, galaxies=[g.Galaxy()], grid_stack=None,
-                                         border=None, compute_deflections=False)
-
-            blurred_image_1d_0 = plane_0.blurred_image_1d_from_convolver_image(convolver_image=convolver_image)
-            blurred_image_1d_1 = plane_1.blurred_image_1d_from_convolver_image(convolver_image=convolver_image)
-
-            tracer = ray_tracing.AbstractTracerData(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
-
-            blurred_image_1d = tracer.blurred_image_1d_from_convolver_image(convolver_image=convolver_image)
-
-            assert (blurred_image_1d == blurred_image_1d_0 + blurred_image_1d_1).all()
     
     class TestHyperNoiseMap:
 

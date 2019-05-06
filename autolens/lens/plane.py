@@ -419,9 +419,20 @@ class AbstractDataPlane(AbstractGriddedPlane):
         return convolver_image.convolve_image(image_array=self.image_plane_image_1d,
                                                 blurring_array=self.image_plane_blurring_image_1d)
 
-
     def hyper_noise_maps_of_galaxies_from_noise_map(self, noise_map):
+        """For a contribution map and noise-map, use the model hyper galaxies to compute a scaled noise-map.
 
+        Parameters
+        -----------
+        contribution_maps : ndarray
+            The image's list of 1D masked contribution maps (e.g. one for each hyper galaxy)
+        hyper_galaxies : [galaxy.Galaxy]
+            The hyper galaxies which represent the model components used to scale the noise_map, which correspond to
+            individual galaxies in the image.
+        noise_map : ccd.NoiseMap or ndarray
+            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
+            second.
+        """
         hyper_noise_maps = []
 
         for galaxy in self.galaxies:

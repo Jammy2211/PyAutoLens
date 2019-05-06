@@ -16,6 +16,7 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.unit.mock.mock_imaging import MockBorders
 from test.unit.mock.mock_inversion import MockRegularization, MockPixelization
 from test.unit.mock.mock_cosmology import MockCosmology
+from test.unit.mock.mock_galaxy import MockHyperGalaxy
 
 planck = cosmo.Planck15
 
@@ -1389,6 +1390,33 @@ class TestAbstractDataPlane(object):
 
     class TestContributionMaps:
 
+        def test__x2_hyper_galaxy__use_numerical_values_for_noise_scaling(self):
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
+
+            hyper_model_image = np.array([0.5, 1.0, 1.5])
+
+            hyper_galaxy_image_0 = np.array([0.5, 1.0, 1.5])
+            hyper_galaxy_image_1 = np.array([0.5, 1.0, 1.5])
+
+            galaxy_0 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_0,
+                                hyper_model_image=hyper_model_image,
+                                hyper_galaxy_image=hyper_galaxy_image_0, hyper_minimum_value=0.5)
+
+            galaxy_1 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_1,
+                                hyper_model_image=hyper_model_image,
+                                hyper_galaxy_image=hyper_galaxy_image_1, hyper_minimum_value=0.6)
+
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0, galaxy_1], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            assert (plane.contribution_maps_of_galaxies[0] == np.array([1.0, 1.0, 1.0])).all()
+            assert (plane.contribution_maps_of_galaxies[1] == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
+
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
 
             hyper_model_image = np.array([[2.0, 4.0, 10.0]])
@@ -1449,6 +1477,36 @@ class TestAbstractDataPlane(object):
             assert plane.contribution_maps_of_galaxies[2] == None
 
     class TestHyperNoiseMap:
+
+        def test__x2_hyper_galaxy__use_numerical_values_of_hyper_noise_map_scaling(self):
+
+            noise_map = np.array([[1.0, 2.0, 3.0]])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=3.0, noise_factor=1.0, noise_power=2.0)
+
+            hyper_model_image = np.array([0.5, 1.0, 1.5])
+
+            hyper_galaxy_image_0 = np.array([0.5, 1.0, 1.5])
+            hyper_galaxy_image_1 = np.array([0.5, 1.0, 1.5])
+
+            galaxy_0 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_0,
+                                hyper_model_image=hyper_model_image,
+                                hyper_galaxy_image=hyper_galaxy_image_0, hyper_minimum_value=0.5)
+
+            galaxy_1 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_1,
+                                hyper_model_image=hyper_model_image,
+                                hyper_galaxy_image=hyper_galaxy_image_1, hyper_minimum_value=0.6)
+
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0, galaxy_1], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            hyper_noise_maps = plane.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
+            assert (hyper_noise_maps[0] == np.array([[1.0, 2.0, 3.0]])).all()
+            assert (hyper_noise_maps[1] == np.array([[0.0, (2.0*0.75)**2.0, 3.0**2.0]])).all()
 
         def test__hyper_noise_maps_are_same_as_hyper_galaxy_calculation(self):
 

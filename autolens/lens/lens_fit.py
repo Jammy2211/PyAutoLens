@@ -116,7 +116,7 @@ class LensProfileFit(LensTracerFit):
         -----------
         lens_data : lens_data.LensData
             The lens-image that is fitted.
-        tracer : ray_tracing.TracerNonStack
+        tracer : ray_tracing.AbstractTracerData
             The tracer, which describes the ray-tracing and strong lens configuration.
         padded_tracer : ray_tracing.Tracer or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
@@ -129,9 +129,9 @@ class LensProfileFit(LensTracerFit):
         else:
             noise_map = lens_data.noise_map
 
-        blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=lens_data.convolver_image)
+        blurred_profile_image_1d = \
+            tracer.blurred_image_plane_image_1d_from_convolver_image(convolver_image=lens_data.convolver_image)
+
         super(LensProfileFit, self).__init__(image=lens_data.image, noise_map=noise_map,
                                              mask=lens_data.mask,
                                              model_image=lens_data.map_to_scaled_array(
@@ -143,12 +143,7 @@ class LensProfileFit(LensTracerFit):
 
     @property
     def model_image_of_planes(self):
-        return util.blurred_image_of_planes_from_1d_images_and_convolver(
-            total_planes=self.tracer.total_planes,
-            image_plane_image_1d_of_planes=self.tracer.image_plane_image_1d_of_planes,
-            image_plane_blurring_image_1d_of_planes=self.tracer.image_plane_blurring_image_1d_of_planes,
-            convolver=self.convolver_image,
-            map_to_scaled_array=self.map_to_scaled_array)
+        return self.tracer.blurred_image_plane_images_of_planes_from_convolver_image(convolver_image=self.convolver_image)
 
     @property
     def figure_of_merit(self):
@@ -238,9 +233,8 @@ class LensProfileInversionFit(InversionFit):
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
-        blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=lens_data.convolver_image)
+        blurred_profile_image_1d = \
+            tracer.blurred_image_plane_image_1d_from_convolver_image(convolver_image=lens_data.convolver_image)
 
         blurred_profile_image = lens_data.map_to_scaled_array(array_1d=blurred_profile_image_1d)
         profile_subtracted_image_1d = lens_data.image_1d - blurred_profile_image_1d
