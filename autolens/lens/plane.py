@@ -1,13 +1,10 @@
 import numpy as np
-from astropy import constants
 from astropy import cosmology as cosmo
-from functools import wraps
 
-from autolens import exc
+from autolens import exc, dimensions as dim
 from autolens.data.array import grids
 from autolens.data.array import scaled_array
 from autolens.lens.util import lens_util
-from autolens.model import dimensions as dim
 from autolens.model import cosmology_util
 from autolens.model.galaxy.util import galaxy_util
 
@@ -134,7 +131,8 @@ class AbstractPlane(object):
 
             return None
 
-    def luminosities_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_luminosity='eps', exposure_time=None):
+    def luminosities_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_luminosity='eps',
+                                                         exposure_time=None):
         """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
 
         See *galaxy.light_within_circle* and *light_profiles.light_within_circle* for details \
@@ -150,8 +148,7 @@ class AbstractPlane(object):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         return list(map(lambda galaxy: galaxy.luminosity_within_circle_in_units(
-            radius=radius, unit_luminosity=unit_luminosity, kpc_per_arcsec=self.kpc_per_arcsec,
-            exposure_time=exposure_time),
+            radius=radius, unit_luminosity=unit_luminosity, exposure_time=exposure_time, cosmology=self.cosmology),
                         self.galaxies))
 
     def luminosities_of_galaxies_within_ellipses_in_units(self, major_axis : dim.Length, unit_luminosity='eps',
@@ -175,12 +172,10 @@ class AbstractPlane(object):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         return list(map(lambda galaxy: galaxy.luminosity_within_ellipse_in_units(
-            major_axis=major_axis, unit_luminosity=unit_luminosity, kpc_per_arcsec=self.kpc_per_arcsec,
-            exposure_time=exposure_time),
+            major_axis=major_axis, unit_luminosity=unit_luminosity, exposure_time=exposure_time, cosmology=self.cosmology),
                         self.galaxies))
 
-    def masses_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_mass='angular',
-                                                   critical_surface_density=None):
+    def masses_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_mass='solMass', redshift_source=None):
         """Compute the total mass of all galaxies in this plane within a circle of specified radius.
 
         See *galaxy.angular_mass_within_circle* and *mass_profiles.angular_mass_within_circle* for details
@@ -197,12 +192,11 @@ class AbstractPlane(object):
             units to physical units (e.g. solar masses).
         """
         return list(map(lambda galaxy: galaxy.mass_within_circle_in_units(
-                        radius=radius, unit_mass=unit_mass, kpc_per_arcsec=self.kpc_per_arcsec,
-                        critical_surface_density=critical_surface_density),
+                        radius=radius, unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
                         self.galaxies))
 
-    def masses_of_galaxies_within_ellipses_in_units(self, major_axis : dim.Length, unit_mass='angular',
-                                                    critical_surface_density=None):
+    def masses_of_galaxies_within_ellipses_in_units(self, major_axis : dim.Length, unit_mass='solMass',
+                                                    redshift_source=None):
         """Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
 
         See *galaxy.angular_mass_within_ellipse* and *mass_profiles.angular_mass_within_ellipse* for details \
@@ -218,25 +212,26 @@ class AbstractPlane(object):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         return list(map(lambda galaxy: galaxy.mass_within_ellipse_in_units(
-                        major_axis=major_axis, unit_mass=unit_mass, kpc_per_arcsec=self.kpc_per_arcsec,
-                        critical_surface_density=critical_surface_density),
+                        major_axis=major_axis, unit_mass=unit_mass, redshift_source=redshift_source,
+                        cosmology=self.cosmology),
                         self.galaxies))
 
-    def einstein_radius_in_units(self, unit_length='arcsec', kpc_per_arcsec=None):
+    def einstein_radius_in_units(self, unit_length='arcsec'):
 
         if self.has_mass_profile:
             return sum(filter(None,
                    list(map(lambda galaxy: galaxy.einstein_radius_in_units(
-                       unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec),
+                       unit_length=unit_length, cosmology=self.cosmology),
                             self.galaxies))))
 
-    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_density=None):
+    def einstein_mass_in_units(self, unit_mass='solMass', redshift_source=None):
 
         if self.has_mass_profile:
             return sum(filter(None,
                    list(map(lambda galaxy: galaxy.einstein_mass_in_units(
-                       unit_mass=unit_mass, critical_surface_density=critical_surface_density),
+                       unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
                             self.galaxies))))
+
 
 class AbstractGriddedPlane(AbstractPlane):
 

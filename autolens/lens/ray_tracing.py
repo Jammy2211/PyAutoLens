@@ -116,7 +116,7 @@ class AbstractTracerCosmology(object):
         return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=self.plane_redshifts[-1], cosmology=self.cosmology, unit_length=unit_length)
 
-    def critical_surface_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='angular'):
+    def critical_surface_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='solMass'):
         return cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
             redshift_0=self.plane_redshifts[i], redshift_1=self.plane_redshifts[j], cosmology=self.cosmology,
             unit_length=unit_length, unit_mass=unit_mass)
@@ -254,14 +254,10 @@ class AbstractTracer(AbstractTracerCosmology):
         return sum([plane.deflections_x for plane in self.planes])
 
     def einstein_radius_of_plane_in_units(self, i, unit_length='arcsec'):
-        kpc_per_arcsec = self.kpc_per_arcsec_proper_of_plane(i=i)
-        return self.planes[i].einstein_radius_in_units(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
+        return self.planes[i].einstein_radius_in_units(unit_length=unit_length)
 
-    def einstein_mass_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='angular'):
-        critical_suface_mass_density = self.critical_surface_density_between_planes_in_units(
-                i=i, j=j, unit_length=unit_length, unit_mass=unit_mass)
-        return self.planes[i].einstein_mass_in_units(unit_mass=unit_mass,
-                                                     critical_surface_density=critical_suface_mass_density)
+    def einstein_mass_between_planes_in_units(self, i, j, unit_mass='solMass'):
+        return self.planes[i].einstein_mass_in_units(unit_mass=unit_mass, redshift_source=self.plane_redshifts[j])
 
     def grid_at_redshift_from_image_plane_grid_and_redshift(self, image_plane_grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
@@ -319,8 +315,7 @@ class AbstractTracer(AbstractTracerCosmology):
 
 class TracerImagePlane(AbstractTracer):
 
-    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15,
-                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
+    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray tracer for a lens system with just an image-plane. 
         
         As there is only 1 plane, there are no ray-tracing calculations. This class is therefore only used for fitting \ 
@@ -349,7 +344,7 @@ class TracerImagePlane(AbstractTracer):
 
         super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
 
-    def critical_surface_density_between_planes_in_units(self, unit_length='arcsec', unit_mass='angular'):
+    def critical_surface_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='solMass'):
         return 0.0
 
 
@@ -391,8 +386,9 @@ class TracerImageSourcePlanes(AbstractTracer):
     def einstein_radius_of_image_plane_in_units(self, unit_length='arcsec'):
         return self.einstein_radius_of_plane_in_units(i=0, unit_length=unit_length)
 
-    def einstein_mass_between_image_and_source_plane_in_units(self, unit_length='arcsec', unit_mass='angular'):
-        return self.einstein_mass_between_planes_in_units(i=0, j=1, unit_length=unit_length, unit_mass=unit_mass)
+    def einstein_mass_between_image_and_source_plane_in_units(self, unit_mass='solMass'):
+        return self.einstein_mass_between_planes_in_units(i=0, j=1, unit_mass=unit_mass)
+
 
 class TracerMultiPlanes(AbstractTracer):
 

@@ -2,9 +2,10 @@ import numpy as np
 from scipy.integrate import quad
 
 from autofit.tools.dimension_type import map_types
-from autolens.model import dimensions as dim
+from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles
 
+from astropy import cosmology as cosmo
 
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
@@ -36,12 +37,20 @@ class LightProfile(object):
         """
         raise NotImplementedError("intensity_from_grid should be overridden")
 
-    def luminosity_within_circle_in_units(self, radius):
+    def luminosity_within_circle_in_units(
+            self, radius: dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         raise NotImplementedError()
 
-    def luminosity_within_ellipse_in_units(self, major_axis):
+    def luminosity_within_ellipse_in_units(
+            self, major_axis: dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         raise NotImplementedError()
 
+    def summarize_in_units(
+            self, radii, unit_length='arcsec', unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
+        return ["Light Profile = {}".format(self.__class__.__name__), ""]
 
 # noinspection PyAbstractClass
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
@@ -65,8 +74,10 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         """
         super(EllipticalLightProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
-    def luminosity_within_circle_in_units(self, radius: dim.Length, unit_luminosity='eps', kpc_per_arcsec=None,
-                                          exposure_time=None):
+    @dim.convert_units_to_input_units
+    def luminosity_within_circle_in_units(
+            self, radius: dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
         centred on the light profile's centre.
 
@@ -84,18 +95,14 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
+        luminosity = dim.Luminosity(value=quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0],
+                                    unit_luminosity=self.unit_luminosity)
+        return luminosity.convert(unit_luminosity=unit_luminosity, exposure_time=exposure_time)
 
-        if not isinstance(radius, dim.Length):
-            radius = dim.Length(value=radius, unit_length='arcsec')
-
-        profile = self.new_profile_with_units_converted(unit_length=radius.unit_length, unit_luminosity=unit_luminosity,
-                                                        kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time)
-
-        luminosity = quad(profile.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
-        return dim.Luminosity(luminosity, unit_luminosity)
-
-    def luminosity_within_ellipse_in_units(self, major_axis, unit_luminosity='eps', kpc_per_arcsec=None,
-                                           exposure_time=None):
+    @dim.convert_units_to_input_units
+    def luminosity_within_ellipse_in_units(
+            self, major_axis : dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
         This is centred on the light profile's centre.
 
@@ -113,14 +120,8 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-
-        if not isinstance(major_axis, dim.Length):
-            major_axis = dim.Length(major_axis, 'arcsec')
-
-        profile = self.new_profile_with_units_converted(unit_length=major_axis.unit_length,
-                                                        unit_luminosity=unit_luminosity,
-                                                        kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time)
-        luminosity = quad(profile.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+        luminosity = dim.Luminosity(value=quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
+                                    unit_luminosity=self.unit_luminosity)
         return dim.Luminosity(luminosity, unit_luminosity)
 
     def luminosity_integral(self, x, axis_ratio):
@@ -129,6 +130,28 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         The axis ratio is set to 1.0 for computing the luminosity within a circle"""
         r = x * axis_ratio
         return 2 * np.pi * r * self.intensities_from_grid_radii(x)
+
+    @dim.convert_units_to_input_units
+    def summarize_in_units(self, radii, prefix='',
+                           unit_length='arcsec', unit_luminosity='eps',
+                           exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15,
+                           whitespace=80, **kwargs):
+
+        summary = super().summarize_in_units(
+            radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
+            exposure_time=exposure_time, redshift_profile=redshift_profile, cosmology=cosmology, kwargs=kwargs)
+
+        for radius in radii:
+
+            luminosity = self.luminosity_within_circle_in_units(
+                unit_luminosity=unit_luminosity, radius=radius, redshift_profile=redshift_profile,
+                exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs)
+
+            param = prefix + 'luminosity_within_{:.2f}_{}'.format(radius, unit_length)
+            value = '{:.4e} {}'.format(luminosity, unit_luminosity)
+            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        return summary
 
 
 class EllipticalGaussian(EllipticalLightProfile):
@@ -283,14 +306,22 @@ class AbstractEllipticalSersic(EllipticalLightProfile):
 
 class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
 
-    @map_types
+    # @map_types
+    # def __init__(self,
+    #              centre: dim.Position = (0.0, 0.0),
+    #              axis_ratio: float = 1.0,
+    #              phi: float = 0.0,
+    #              intensity: dim.Luminosity = 0.1,
+    #              effective_radius: dim.Length = 0.6,
+    #              sersic_index: float = 4.0):
+
     def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 sersic_index: float = 4.0):
+                 centre=(0.0, 0.0),
+                 axis_ratio=1.0,
+                 phi=0.0,
+                 intensity=0.1,
+                 effective_radius=0.6,
+                 sersic_index=4.0):
         """ The elliptical Sersic light profile.
 
         Parameters
