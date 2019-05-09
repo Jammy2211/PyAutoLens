@@ -9,14 +9,12 @@ from scipy import special
 from scipy.integrate import quad
 from scipy.optimize import fsolve
 from scipy.optimize import root_scalar
+from astropy import cosmology as cosmo
 
 from autofit.tools.dimension_type import map_types
-from autolens import decorator_util
-from autolens import exc
+from autolens import decorator_util, dimensions as dim
 from autolens.data.array import grids
-from autolens.model import dimensions as dim
 from autolens.model.profiles import geometry_profiles
-
 
 def jit_integrand(integrand_function):
     jitted_function = decorator_util.jit(nopython=True, cache=True)(integrand_function)
@@ -78,22 +76,30 @@ class MassProfile(object):
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
-    def mass_within_circle_in_units(self, radius, unit_mass='angular', critical_surface_density=None):
+    def mass_within_circle_in_units(self, radius : dim.Length, redshift_profile=None, redshift_source=None,
+                                    unit_mass='solMass', cosmology=cosmo.Planck15, **kwargs):
         raise NotImplementedError()
 
-    def mass_within_ellipse_in_units(self, major_axis, unit_mass='angular', critical_surface_density=None):
+    def mass_within_ellipse_in_units(self, major_axis : dim.Length, redshift_profile=None, redshift_source=None,
+                                     unit_mass='solMass', cosmology=cosmo.Planck15, **kwargs):
         raise NotImplementedError()
 
-    def einstein_radius_in_units(self, unit_length: dim.Length, kpc_per_arcsec=None):
+    def einstein_radius_in_units(self, unit_length='arcsec', redshift_profile=None, cosmology=cosmo.Planck15):
         return NotImplementedError()
 
-    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_density=None):
+    def einstein_mass_in_units(self, unit_mass='solMass',
+                              redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
         return NotImplementedError()
 
-    def summary_in_units(self, radii, unit_length='arcsec', unit_mass='angular',
-                         kpc_per_arcsec=None, critical_surface_density=None, cosmic_average_density=None,
-                         *args, **kwargs):
+    def summarize_in_units(self, radii, prefix='',
+                           unit_length='arcsec', unit_mass='solMass',
+                           redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15,
+                           whitespace=80, **kwargs):
         return ["Mass Profile = {}".format(self.__class__.__name__), ""]
+
+    @property
+    def unit_mass(self):
+        return NotImplementedError()
 
 
 class PointMass(geometry_profiles.SphericalProfile, MassProfile):
@@ -132,8 +138,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     @map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0):
+                 axis_ratio : float = 1.0,
+                 phi : float = 0.0):
         """
         Abstract class for elliptical mass profiles.
 
@@ -150,32 +156,16 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    def check_units_of_radius_and_critical_surface_density(self, radius, critical_surface_density):
-
-        if not isinstance(radius, dim.Length):
-            raise exc.UnitsException('The radius input into the mass_wtihin_circle method must have dimensions of '
-                                     'length, using the dimensions.Length class')
-
-        if critical_surface_density is not None:
-
-            if not isinstance(critical_surface_density, dim.MassOverLength2):
-                raise exc.UnitsException(
-                    'The critical surface masss density input into a method must have dimensions of '
-                    'mass / length^2, using the dimensions.MassOverLuminosity2 class')
-
-            if radius.unit_length is not critical_surface_density.unit_length:
-                raise exc.UnitsException('The length units of the radius and critical_surface_density supplied to'
-                                         'this method are not the same. Use a convert method to conert one to another.')
-
-    def mass_within_circle_in_units(self, radius: dim.Length, unit_mass='angular', kpc_per_arcsec=None,
-                                    critical_surface_density=None):
+    @dim.convert_units_to_input_units
+    def mass_within_circle_in_units(self, radius: dim.Length, unit_mass='solMass',
+                                    redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
         """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
         specified radius. This is centred on the mass profile.
 
         The following units for mass can be specified and output:
 
-        - Dimensionless angular units (default) - 'angular'.
-        - Solar masses - 'angular' (multiplies the angular mass by the critical surface mass density).
+        - Dimensionless angular units (default) - 'solMass'.
+        - Solar masses - 'solMass' (multiplies the angular mass by the critical surface mass density).
 
         Parameters
         ----------
@@ -188,25 +178,23 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             units to phsical units (e.g. solar masses).
         """
 
-        self.check_units_of_radius_and_critical_surface_density(
-            radius=radius, critical_surface_density=critical_surface_density)
+        critical_surface_density = kwargs['critical_surface_density'] if 'critical_surface_density' in kwargs else None
 
-        profile = self.new_profile_with_units_converted(
-            unit_length=radius.unit_length, unit_mass='angular',
-            kpc_per_arcsec=kpc_per_arcsec, critical_surface_density=critical_surface_density)
+        mass = dim.Mass(value=quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0],
+                        unit_mass=self.unit_mass)
 
-        mass_angular = dim.Mass(value=quad(profile.mass_integral, a=0.0, b=radius, args=(1.0,))[0], unit_mass='angular')
-        return mass_angular.convert(unit_mass=unit_mass, critical_surface_density=critical_surface_density)
+        return mass.convert(unit_mass=unit_mass, critical_surface_density=critical_surface_density)
 
-    def mass_within_ellipse_in_units(self, major_axis, unit_mass='angular', kpc_per_arcsec=None,
-                                     critical_surface_density=None):
+    @dim.convert_units_to_input_units
+    def mass_within_ellipse_in_units(self, major_axis : dim.Length, unit_mass='solMass',
+                                     redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
         specified major axis. This is centred on the mass profile.
 
         The following units for mass can be specified and output:
 
-        - Dimensionless angular units (default) - 'angular'.
-        - Solar masses - 'angular' (multiplies the angular mass by the critical surface mass density)
+        - Dimensionless angular units (default) - 'solMass'.
+        - Solar masses - 'solMass' (multiplies the angular mass by the critical surface mass density)
 
         Parameters
         ----------
@@ -219,16 +207,12 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             units to phsical units (e.g. solar masses).
         """
 
-        self.check_units_of_radius_and_critical_surface_density(
-            radius=major_axis, critical_surface_density=critical_surface_density)
+        critical_surface_density = kwargs['critical_surface_density'] if 'critical_surface_density' in kwargs else None
 
-        profile = self.new_profile_with_units_converted(
-            unit_length=major_axis.unit_length, unit_mass='angular',
-            kpc_per_arcsec=kpc_per_arcsec, critical_surface_density=critical_surface_density)
+        mass = dim.Mass(value=quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
+                                   unit_mass=self.unit_mass)
 
-        mass_angular = dim.Mass(value=quad(profile.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
-                                unit_mass='angular')
-        return mass_angular.convert(unit_mass=unit_mass, critical_surface_density=critical_surface_density)
+        return mass.convert(unit_mass=unit_mass, critical_surface_density=critical_surface_density)
 
     def mass_integral(self, x, axis_ratio):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
@@ -236,7 +220,10 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         r = x * axis_ratio
         return 2 * np.pi * r * self.convergence_func(x)
 
-    def density_between_circular_annuli_in_angular_units(self, inner_annuli_radius, outer_annuli_radius):
+    def density_between_circular_annuli_in_angular_units(
+            self, inner_annuli_radius : dim.Length, outer_annuli_radius : dim.Length,
+            unit_length='arcsec', unit_mass='solMass',
+            redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
         """Calculate the mass between two circular annuli and compute the density by dividing by the annuli surface
         area.
 
@@ -252,11 +239,21 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             The radius of the outer annulus inside of which the density is estimated.
         """
         annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius ** 2.0)
-        return (self.mass_within_circle_in_units(radius=outer_annuli_radius) -
-                self.mass_within_circle_in_units(radius=inner_annuli_radius)) \
-               / annuli_area
 
-    def average_convergence_of_1_radius_in_units(self, unit_length='arcsec', kpc_per_arcsec=None):
+        outer_mass = self.mass_within_circle_in_units(radius=outer_annuli_radius, redshift_profile=redshift_profile,
+                                                      redshift_source=redshift_source, unit_mass=unit_mass,
+                                                      cosmology=cosmology, kwargs=kwargs)
+
+        inner_mass = self.mass_within_circle_in_units(radius=inner_annuli_radius, redshift_profile=redshift_profile,
+                                                      redshift_source=redshift_source, unit_mass=unit_mass,
+                                                      cosmology=cosmology, kwargs=kwargs)
+
+        return dim.MassOverLength2(value=(outer_mass - inner_mass) / annuli_area,
+                                   unit_length=unit_length, unit_mass=unit_mass)
+
+    @dim.convert_units_to_input_units
+    def average_convergence_of_1_radius_in_units(self, unit_length='arcsec',
+                                                 redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         """The radius a critical curve forms for this mass profile, e.g. where the mean convergence is equal to 1.0.
 
          In case of ellipitical mass profiles, the 'average' critical curve is used, whereby the convergence is \
@@ -266,48 +263,69 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
          mass profiles below.
          """
 
-        def func(radius):
-            radius = dim.Length(radius, unit_length=unit_length)
-            return self.mass_within_circle_in_units(radius=radius) - np.pi * radius ** 2.0
+        kpc_per_arcsec = kwargs['kpc_per_arcsec'] if 'kpc_per_arcsec' in kwargs else None
 
-        radius = self.ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
+        def func(radius, redshift_profile, cosmology):
+            radius = dim.Length(radius, unit_length=unit_length)
+            return self.mass_within_circle_in_units(unit_mass='angular', radius=radius,
+                                                    redshift_profile=redshift_profile, cosmology=cosmology) - \
+                   np.pi * radius ** 2.0
+
+        radius = self.ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0], args=(redshift_profile, cosmology)).root
         radius = dim.Length(radius, unit_length)
         return radius.convert(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
 
-    def einstein_radius_in_units(self, unit_length='arcsec', kpc_per_arcsec=None):
-        profile = self.new_profile_with_units_converted(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
-        einstein_radius = profile.average_convergence_of_1_radius_in_units(unit_length=unit_length,
-                                                                           kpc_per_arcsec=kpc_per_arcsec)
+    @dim.convert_units_to_input_units
+    def einstein_radius_in_units(self, unit_length='arcsec',
+                                 redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
+
+        einstein_radius = self.average_convergence_of_1_radius_in_units(
+            unit_length=unit_length, redshift_profile=redshift_profile, cosmology=cosmology, kwargs=kwargs)
+
         return dim.Length(einstein_radius, unit_length)
 
-    def einstein_mass_in_units(self, unit_mass='angular', kpc_per_arcsec=None, critical_surface_density=None):
+    @dim.convert_units_to_input_units
+    def einstein_mass_in_units(self, unit_mass='solMass',
+                               redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
 
-        einstein_radius = self.average_convergence_of_1_radius_in_units()
-        return self.mass_within_circle_in_units(radius=einstein_radius, unit_mass=unit_mass,
-                                                critical_surface_density=critical_surface_density)
+        einstein_radius = self.einstein_radius_in_units(unit_length=self.unit_length, redshift_profile=redshift_profile,
+                                                        cosmology=cosmology, kwargs=kwargs)
 
-    def summary_in_units(self, radii, unit_length='arcsec', unit_mass='angular',
-                         kpc_per_arcsec=None, critical_surface_density=None, cosmic_average_density=None,
-                         *args, **kwargs):
+        return self.mass_within_circle_in_units(radius=einstein_radius, unit_mass=unit_mass, redshift_profile=redshift_profile,
+                                                redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
-        summary = super().summary_in_units(
-            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            kpc_per_arcsec=kpc_per_arcsec, critical_surface_density=critical_surface_density,
-            cosmic_average_density=cosmic_average_density, **kwargs)
+    @dim.convert_units_to_input_units
+    def summarize_in_units(self, radii, prefix='', whitespace=80,
+                           unit_length='arcsec', unit_mass='solMass',
+                           redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
 
-        einstein_radius = self.einstein_radius_in_units(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
+        summary = super().summarize_in_units(
+            radii=radii, prefix='', unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
-        einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass,
-                                                    critical_surface_density=critical_surface_density)
+        einstein_radius = self.einstein_radius_in_units(unit_length=unit_length,
+                                                        redshift_profile=redshift_profile, cosmology=cosmology, kwargs=kwargs)
 
-        summary.append('Mass within Einstein Radius = {:.4e} {}'.format(einstein_mass, unit_mass)),
-        summary.append('Einstein Radius = {:.2f} {}'.format(einstein_radius, unit_length))
+        einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass, redshift_profile=redshift_profile,
+                                                    redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+
+        param = prefix + 'einstein_radius'
+        value = '{:.2f} {}'.format(einstein_radius, unit_length)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'einstein_mass'
+        value = '{:.4e} {}'.format(einstein_mass, unit_mass)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
 
         for radius in radii:
-            mass = self.mass_within_circle_in_units(unit_mass=unit_mass, radius=radius,
-                                                    critical_surface_density=critical_surface_density)
 
-            summary.append('Mass within {:.2f} {} = {:.4e} {}'.format(radius, unit_length, mass, unit_mass))
+            mass = self.mass_within_circle_in_units(unit_mass=unit_mass, radius=radius, redshift_profile=redshift_profile,
+                                                    redshift_source=redshift_source, cosmology=cosmology,
+                                                    kwargs=kwargs)
+
+            param = prefix + 'mass_within_{:.2f}_{}'.format(radius, unit_length)
+            value = '{:.4e} {}'.format(mass, unit_mass)
+            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
 
         return summary
 
@@ -442,15 +460,22 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
     def ellipticity_rescale(self):
         return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
 
-    def summary_in_units(self, radii, unit_length='arcsec', unit_mass='angular',
-                         kpc_per_arcsec=None, critical_surface_density=None, cosmic_average_density=None,
-                         **kwargs):
-        summary = super().summary_in_units(
-            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            kpc_per_arcsec=kpc_per_arcsec, critical_surface_density=critical_surface_density,
-            cosmic_average_density=cosmic_average_density, **kwargs)
+    @dim.convert_units_to_input_units
+    def summarize_in_units(self, radii, prefix='', whitespace=80,
+                           unit_length='arcsec', unit_mass='solMass',
+                           redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15,
+                           **kwargs):
+
+        summary = super().summarize_in_units(
+            radii=radii, prefix=prefix, unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology,
+            whitespace=whitespace, kwargs=kwargs)
 
         return summary
+
+    @property
+    def unit_mass(self):
+        return 'angular'
 
 
 class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
@@ -843,53 +868,43 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def coord_func_h(self, grid_radius):
         return np.log(grid_radius / 2.0) + self.coord_func_f(grid_radius=grid_radius)
 
-    def check_units_critical_surface_density_and_cosmic_average_density(self,
-                                                                        critical_surface_density: dim.MassOverLength2,
-                                                                        cosmic_average_density: dim.MassOverLength3):
+    @dim.convert_units_to_input_units
+    def rho_at_scale_radius_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
+                                      cosmology=cosmo.Planck15, **kwargs):
+        """The Cosmic average density is defined at the redshift of the profile."""
 
-        if critical_surface_density is not None:
-            if not isinstance(critical_surface_density, dim.MassOverLength2):
-                raise exc.UnitsException('The critical surface density input into a method must have dimensions of '
-                                         'mass / length^2, using the dimensions.MassOverLuminosity2 class')
+        kpc_per_arcsec = kwargs['kpc_per_arcsec'] if 'kpc_per_arcsec' in kwargs else None
+        critical_surface_density = kwargs['critical_surface_density'] if 'critical_surface_density' in kwargs else None
 
-        if cosmic_average_density is not None:
-            if not isinstance(cosmic_average_density, dim.MassOverLength3):
-                raise exc.UnitsException('The cosmic average mass density input into a method must have dimensions of '
-                                         'mass / length^3, using the dimensions.MassOverLuminosity3 class')
+        rho_at_scale_radius = self.kappa_s * critical_surface_density / self.scale_radius
 
-        if critical_surface_density is not None and cosmic_average_density is not None:
+        rho_at_scale_radius = dim.MassOverLength3(value=rho_at_scale_radius, unit_length=unit_length,
+                                                  unit_mass=unit_mass)
 
-            if critical_surface_density.unit_length is not cosmic_average_density.unit_length:
-                raise exc.UnitsException('The length units of the critical_surface_density and cosmic_average_density '
-                                         'supplied to a method are not the same')
+        return rho_at_scale_radius.convert(unit_length=unit_length, unit_mass=unit_mass, kpc_per_arcsec=kpc_per_arcsec,
+                                           critical_surface_density=critical_surface_density)
 
-            if critical_surface_density.unit_mass is not cosmic_average_density.unit_mass:
-                raise exc.UnitsException('The mass units of the critical_surface_density and cosmic_average_density '
-                                         'supplied to a method are not the same')
+    @dim.convert_units_to_input_units
+    def delta_concentration_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
+                                      redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
-    def rho_at_scale_radius(self,
-                            critical_surface_density: dim.MassOverLength2):
+        cosmic_average_density = kwargs['cosmic_average_density'] if 'cosmic_average_density' in kwargs else None
 
-        return self.kappa_s * critical_surface_density / self.scale_radius
-
-    def delta_concentration(self,
-                            critical_surface_density: dim.MassOverLength2,
-                            cosmic_average_density: dim.MassOverLength3):
-
-        self.check_units_critical_surface_density_and_cosmic_average_density(
-            critical_surface_density=critical_surface_density, cosmic_average_density=cosmic_average_density)
-
-        rho_scale_radius = self.rho_at_scale_radius(critical_surface_density=critical_surface_density)
+        rho_scale_radius = self.rho_at_scale_radius_for_units(unit_length=unit_length, unit_mass=unit_mass,
+                                                              redshift_profile=redshift_profile,
+                                                              redshift_source=redshift_source, cosmology=cosmology,
+                                                              kwargs=kwargs)
 
         return rho_scale_radius / cosmic_average_density
 
-    def concentration(self,
-                      critical_surface_density: dim.MassOverLength2,
-                      cosmic_average_density: dim.MassOverLength3):
+    @dim.convert_units_to_input_units
+    def concentration_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
+                                redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
-        delta_concentration = self.delta_concentration(
-            critical_surface_density=critical_surface_density,
-            cosmic_average_density=cosmic_average_density)
+        delta_concentration = self.delta_concentration_for_units(
+            redshift_profile=redshift_profile, redshift_source=redshift_source, unit_length=unit_length,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, unit_mass=unit_mass,
+            cosmology=cosmology, kwargs=kwargs)
 
         return fsolve(func=self.concentration_func, x0=10.0, args=(delta_concentration,))[0]
 
@@ -897,54 +912,99 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         return 200.0 / 3.0 * (concentration * concentration * concentration /
                               (np.log(1 + concentration) - concentration / (1 + concentration))) - delta_concentration
 
-    def radius_at_200(self,
-                      critical_surface_density: dim.MassOverLength2,
-                      cosmic_average_density: dim.MassOverLength3):
+    @dim.convert_units_to_input_units
+    def radius_at_200_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
+                                redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
-        concentration = self.concentration(critical_surface_density=critical_surface_density,
-                                           cosmic_average_density=cosmic_average_density)
+        kpc_per_arcsec = kwargs['kpc_per_arcsec'] if 'kpc_per_arcsec' in kwargs else None
 
-        return concentration * self.scale_radius
+        concentration = self.concentration_for_units(redshift_profile=redshift_profile, redshift_source=redshift_source,
+                                                     unit_length=unit_length, unit_mass=unit_mass,
+                                                     redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
+                                                     cosmology=cosmology, kwargs=kwargs)
 
-    def mass_at_200(self,
-                    critical_surface_density: dim.MassOverLength2,
-                    cosmic_average_density: dim.MassOverLength3):
+        radius_at_200 = dim.Length(value=concentration * self.scale_radius, unit_length=unit_length)
 
-        radius_at_200 = self.radius_at_200(critical_surface_density=critical_surface_density,
-                                           cosmic_average_density=cosmic_average_density)
-        return 200.0 * ((4.0 / 3.0) * np.pi) * cosmic_average_density * (radius_at_200 ** 3.0)
+        return radius_at_200.convert(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
 
-    def summary_in_units(self, radii, unit_length='arcsec', unit_mass='angular',
-                         kpc_per_arcsec=None, critical_surface_density=None, cosmic_average_density=None,
-                         *args, **kwargs):
+    @dim.convert_units_to_input_units
+    def mass_at_200_for_units(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
+                              redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
-        summary = super().summary_in_units(
+        cosmic_average_density = kwargs['cosmic_average_density'] if 'cosmic_average_density' in kwargs else None
+        critical_surface_density = kwargs['critical_surface_density'] if 'critical_surface_density' in kwargs else None
+
+        radius_at_200 = self.radius_at_200_for_units(redshift_profile=redshift_profile, redshift_source=redshift_source,
+                                                     unit_length=unit_length, unit_mass=unit_mass, cosmology=cosmology,
+                                                     redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
+                                                     kwargs=kwargs)
+
+        mass_at_200 = dim.Mass(200.0 * ((4.0 / 3.0) * np.pi) * cosmic_average_density * (radius_at_200 ** 3.0),
+                               unit_mass=unit_mass)
+
+        return mass_at_200.convert(unit_mass=unit_mass, critical_surface_density=critical_surface_density)
+
+    @dim.convert_units_to_input_units
+    def summarize_in_units(self, radii, prefix='', whitespace=80,
+                           unit_length='arcsec', unit_mass='solMass',
+                           redshift_profile=None, redshift_source=None,
+                           redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15,
+                        **kwargs):
+
+        summary = super().summarize_in_units(
+            radii=radii, prefix=prefix, unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology,
+            whitespace=whitespace, kwargs=kwargs)
+
+        rho_at_scale_radius = self.rho_at_scale_radius_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            kpc_per_arcsec=kpc_per_arcsec, critical_surface_density=critical_surface_density,
-            cosmic_average_density=cosmic_average_density, **kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        rho_at_scale_radius = \
-            self.rho_at_scale_radius(critical_surface_density=critical_surface_density)
+        delta_concentration = self.delta_concentration_for_units(
+            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        delta_concentration = \
-            self.delta_concentration(critical_surface_density=critical_surface_density,
-                                     cosmic_average_density=cosmic_average_density)
+        concentration = self.concentration_for_units(
+            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        concentration = self.concentration(critical_surface_density=critical_surface_density,
-                                           cosmic_average_density=cosmic_average_density)
+        radius_at_200 = self.radius_at_200_for_units(
+            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        radius_at_200 = self.radius_at_200(critical_surface_density=critical_surface_density,
-                                           cosmic_average_density=cosmic_average_density)
+        mass_at_200 = self.mass_at_200_for_units(
+            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        mass_at_200 = self.mass_at_200(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density)
+        param = prefix + 'rho_at_scale_radius'
+        value = '{:.2f} {} / {}3'.format(rho_at_scale_radius, unit_mass, unit_length)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
 
-        summary.append('Rho at scale radius = {:.2f}'.format(rho_at_scale_radius))
-        summary.append('Delta concentration = {:.2f}'.format(delta_concentration))
-        summary.append('Concentration = {:.2f}'.format(concentration))
-        summary.append('Radius at 200x cosmic average density = {:.2f} {}'.format(radius_at_200, unit_length))
-        summary.append('Mass at 200x cosmic average density = {:.2f} {}'.format(mass_at_200, unit_mass))
+        param = prefix + 'delta_concentration'
+        value = '{:.2f}'.format(delta_concentration)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'concentration'
+        value = '{:.2f}'.format(concentration)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'radius_at_200x_cosmic_density'
+        value = '{:.2f} {}'.format(radius_at_200, unit_length)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'mass_at_200x_cosmic_density'
+        value = '{:.4e} {}'.format(mass_at_200, unit_mass)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
         return summary
+
+    @property
+    def unit_mass(self):
+        return 'angular'
 
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
@@ -1151,7 +1211,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
                  centre: dim.Position = (0.0, 0.0),
                  kappa_s: float = 0.05,
                  scale_radius: dim.Length = 1.0,
-                 truncation_radius: dim.Length = 2.0):
+                 truncation_radius : dim.Length = 2.0):
         super(SphericalTruncatedNFW, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, kappa_s=kappa_s,
                                                     inner_slope=1.0, scale_radius=scale_radius)
 
@@ -1159,39 +1219,42 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         self.tau = self.truncation_radius / self.scale_radius
 
     def coord_func_k(self, grid_radius):
-        return np.log(np.divide(grid_radius, np.sqrt(np.square(grid_radius) + np.square(self.truncation_radius)) +
-                                self.truncation_radius))
+        return np.log(np.divide(grid_radius, np.sqrt(np.square(grid_radius) + np.square(self.tau)) +
+                                self.tau))
 
     def coord_func_l(self, grid_radius):
+
         f_r = self.coord_func_f(grid_radius=grid_radius)
         g_r = self.coord_func_g(grid_radius=grid_radius)
         k_r = self.coord_func_k(grid_radius=grid_radius)
 
-        return np.divide(self.truncation_radius ** 2.0, (self.truncation_radius ** 2.0 + 1.0) ** 2.0) * (
-                ((self.truncation_radius ** 2.0 + 1.0) * g_r) +
+        return np.divide(self.tau ** 2.0, (self.tau ** 2.0 + 1.0) ** 2.0) * (
+                ((self.tau ** 2.0 + 1.0) * g_r) +
                 (2 * f_r) -
-                (np.pi / (np.sqrt(self.truncation_radius ** 2.0 + grid_radius ** 2.0))) +
-                (((self.truncation_radius ** 2.0 - 1.0) / (self.truncation_radius *
+                (np.pi / (np.sqrt(self.tau ** 2.0 + grid_radius ** 2.0))) +
+                (((self.tau ** 2.0 - 1.0) / (self.tau *
                                                            (np.sqrt(
-                                                               self.truncation_radius ** 2.0 + grid_radius ** 2.0)))) * k_r))
+                                                               self.tau ** 2.0 + grid_radius ** 2.0)))) * k_r))
 
     def coord_func_m(self, grid_radius):
+
         f_r = self.coord_func_f(grid_radius=grid_radius)
         k_r = self.coord_func_k(grid_radius=grid_radius)
 
-        return (self.truncation_radius ** 2.0 / (self.truncation_radius ** 2.0 + 1.0) ** 2.0) * (
-                ((self.truncation_radius ** 2.0 + 2.0 * grid_radius ** 2.0 - 1.0) * f_r) +
-                (np.pi * self.truncation_radius) +
-                ((self.truncation_radius ** 2.0 - 1.0) * np.log(self.truncation_radius)) +
-                (np.sqrt(grid_radius ** 2.0 + self.truncation_radius ** 2.0) * (
-                        ((self.truncation_radius ** 2.0 - 1.0) / self.truncation_radius) * k_r - np.pi)))
+        return (self.tau ** 2.0 / (self.tau ** 2.0 + 1.0) ** 2.0) * (
+                ((self.tau ** 2.0 + 2.0 * grid_radius ** 2.0 - 1.0) * f_r) +
+                (np.pi * self.tau) +
+                ((self.tau ** 2.0 - 1.0) * np.log(self.tau)) +
+                (np.sqrt(grid_radius ** 2.0 + self.tau ** 2.0) * (
+                        ((self.tau ** 2.0 - 1.0) / self.tau) * k_r - np.pi)))
 
     def convergence_func(self, grid_radius):
         grid_radius = ((1.0 / self.scale_radius) * grid_radius) + 0j
         return np.real(2.0 * self.kappa_s * self.coord_func_l(grid_radius=grid_radius))
 
     def deflection_func_sph(self, grid_radius):
-        return self.coord_func_m(grid_radius=grid_radius)
+        grid_radius = grid_radius + 0j
+        return np.real(self.coord_func_m(grid_radius=grid_radius))
 
     def potential_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
@@ -1214,28 +1277,40 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
         return self.grid_to_grid_cartesian(grid, deflection_grid)
 
-    def mass_at_truncation_radius(self,
-                                  critical_surface_density: dim.MassOverLength2,
-                                  cosmic_average_density: dim.MassOverLength3):
-        mass_at_200 = self.mass_at_200(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density)
+    @dim.convert_units_to_input_units
+    def mass_at_truncation_radius(self, redshift_profile, redshift_source, unit_length='arcsec', unit_mass='solMass',
+                                  redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
+
+        mass_at_200 = self.mass_at_200_for_units(redshift_profile=redshift_profile, redshift_source=redshift_source,
+                                                 unit_length=unit_length, unit_mass=unit_mass,
+                                                 redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
+                                                 cosmology=cosmology, kwargs=kwargs)
 
         return mass_at_200 * (self.tau ** 2.0 / (self.tau ** 2.0 + 1.0) ** 2.0) * \
                (((self.tau ** 2.0 - 1) * np.log(self.tau)) + (self.tau * np.pi) - (self.tau ** 2.0 + 1))
 
-    def summary_in_units(self, radii, unit_length='arcsec', unit_mass='angular',
-                         kpc_per_arcsec=None, critical_surface_density=None, cosmic_average_density=None,
-                         **kwargs):
-        summary = super().summary_in_units(
-            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            kpc_per_arcsec=kpc_per_arcsec, critical_surface_density=critical_surface_density,
-            cosmic_average_density=cosmic_average_density, **kwargs)
+    @dim.convert_units_to_input_units
+    def summarize_in_units(self, radii, prefix='', whitespace=80,
+                           unit_length='arcsec', unit_mass='solMass',
+                           redshift_profile=None, redshift_source=None,
+                           redshift_of_cosmic_average_density='profile',
+                        cosmology=cosmo.Planck15, **kwargs):
+
+        summary = super().summarize_in_units(
+            radii=radii, prefix=prefix, whitespace=whitespace,
+            unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
+            cosmology=cosmology, kwargs=kwargs)
 
         mass_at_truncation_radius = self.mass_at_truncation_radius(
-            critical_surface_density=critical_surface_density,
-            cosmic_average_density=cosmic_average_density)
+            radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        summary.append('Mass at truncation radius = {:.2f} {}'.format(mass_at_truncation_radius, unit_mass))
+        param = prefix + 'mass_at_truncation_radius'
+        value = '{:.4e} {}'.format(mass_at_truncation_radius, unit_mass)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
         return summary
 
 
@@ -1246,28 +1321,35 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
                  centre: dim.Position = (0.0, 0.0),
                  kappa_s: float = 0.05,
                  scale_radius: dim.Length = 1.0):
-        self.kappa_s = kappa_s
-        self.scale_radius = dim.Length(scale_radius * 6.68549148608755, 'arcsec')
 
-        critical_surface_density = dim.MassOverLength2(1940654909.4133248, 'arcsec', 'solMass')
-        cosmic_average_density = dim.MassOverLength3(262.30319684750657, 'arcsec', 'solMass')
+        def solve_c(c, de_c):
+            '''
+            Equation need for solving concentration c for a given delta_c
+            '''
+            return 200.0 / 3.0 * (c * c * c / (np.log(1 + c) - c / (1 + c))) - de_c
 
-        truncation_radius = 2.0 * self.radius_at_200(critical_surface_density=critical_surface_density,
-                                                     cosmic_average_density=cosmic_average_density)
+        kpc_per_arcsec = 6.68549148608755
+        scale_radius_kpc = scale_radius  * kpc_per_arcsec
+        cosmic_average_density = 262.30319684750657
+        critical_surface_density = 1940654909.413325
+        rho_s = kappa_s * critical_surface_density / scale_radius_kpc
+        de_c = rho_s / cosmic_average_density  # delta_c
+        concentration = fsolve(solve_c, 10.0, args=(de_c,))[0]
+        r200 = concentration * scale_radius_kpc / kpc_per_arcsec  # R_200
 
         super(SphericalTruncatedNFWChallenge, self).__init__(centre=centre, kappa_s=kappa_s, scale_radius=scale_radius,
-                                                             truncation_radius=truncation_radius)
+                                                             truncation_radius=2.0*r200)
 
-    def summary_in_units(self, radii, unit_length='arcsec', unit_mass='angular',
-                         kpc_per_arcsec=None, critical_surface_density=None, cosmic_average_density=None,
-                         **kwargs):
-        critical_surface_density = dim.MassOverLength2(1940654909.4133248, 'arcsec', 'solMass')
-        cosmic_average_density = dim.MassOverLength3(262.30319684750657, 'arcsec', 'solMass')
+    @dim.convert_units_to_input_units
+    def summarize_in_units(self, radii,
+                           unit_length='arcsec', unit_mass='solMass',
+                           redshift_profile=None, redshift_source=None,
+                           redshift_of_cosmic_average_density='profile', cosmology=cosmo.Planck15, **kwargs):
 
-        summary = super().summary_in_units(
+        summary = super().summarize_in_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            kpc_per_arcsec=kpc_per_arcsec, critical_surface_density=critical_surface_density,
-            cosmic_average_density=cosmic_average_density, **kwargs)
+            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
         return summary
 
@@ -1553,6 +1635,10 @@ class AbstractEllipticalSersic(EllipticalMassProfile):
         The elliptical effective radius instead describes the major-axis radius of the ellipse containing \
         half the light, and may be more appropriate for highly flattened systems like disk galaxies."""
         return self.effective_radius / np.sqrt(self.axis_ratio)
+
+    @property
+    def unit_mass(self):
+        return self.mass_to_light_ratio.unit_mass
 
 
 class EllipticalSersic(AbstractEllipticalSersic):
@@ -1942,16 +2028,12 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
         super(ExternalShear, self).__init__(centre=(0.0, 0.0), phi=phi, axis_ratio=1.0)
         self.magnitude = magnitude
 
-    def mass_within_circle_in_units(self, radius, unit_mass='solMass', critical_surface_density=None):
+    def einstein_radius_in_units(self, unit_mass='solMass',
+                                 redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         return 0.0
 
-    def mass_within_ellipse_in_units(self, radius, unit_mass='solMass', critical_surface_density=None):
-        return 0.0
-
-    def einstein_radius_in_units(self, unit_length: dim.Length, kpc_per_arcsec=None):
-        return 0.0
-
-    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_density=None):
+    def einstein_mass_in_units(self, unit_mass='solMass',
+                               redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
         return 0.0
 
     def convergence_from_grid(self, grid):

@@ -2,13 +2,15 @@ import math
 
 import numpy as np
 import pytest
+from astropy import cosmology as cosmo
 
 from autofit import conf
-from autolens import exc
+from autolens import dimensions as dim
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
-from autolens.model import dimensions as dim
 from autolens.model.profiles import mass_profiles as mp
+
+from test.unit.mock.mock_cosmology import MockCosmology
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
@@ -420,6 +422,22 @@ class TestCoredPowerLaw(object):
 
         assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
         assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
+
+    def test__summarize_in_units(self):
+
+        cored_power_law = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, core_radius=0.0, slope=2.0)
+
+        summary_text = cored_power_law.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], prefix='pl_',
+                                                          unit_length='arcsec', unit_mass='angular', whitespace=50)
+
+        index = 0
+
+        assert summary_text[index] == 'Mass Profile = SphericalCoredPowerLaw' ; index += 1
+        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'pl_einstein_radius                                1.00 arcsec' ; index += 1
+        assert summary_text[index] == 'pl_einstein_mass                                  3.1416e+00 angular' ; index += 1
+        assert summary_text[index] == 'pl_mass_within_10.00_arcsec                       3.1416e+01 angular' ; index += 1
+        assert summary_text[index] == 'pl_mass_within_500.00_arcsec                      1.5708e+03 angular' ; index += 1
 
 
 class TestPowerLaw(object):
@@ -1038,6 +1056,435 @@ class TestIsothermal(object):
         assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
 
+class TestAbstractNFW(object):
+
+    def test__coord_function_f__correct_values(self):
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=3.0)
+
+        # r > 1
+
+        assert truncated_nfw.coord_func_f(grid_radius=np.array([2.0, 3.0])) == \
+               pytest.approx(np.array([0.604599, 0.435209]), 1.0e-4)
+
+        # r < 1
+        assert truncated_nfw.coord_func_f(grid_radius=np.array([0.5, 1.0 / 3.0])) == \
+               pytest.approx(1.52069, 1.86967, 1.0e-4)
+        #
+        # r == 1
+        assert (truncated_nfw.coord_func_f(grid_radius=np.array([1.0, 1.0])) == np.array([1.0, 1.0])).all()
+
+    def test__coord_function_g__correct_values(self):
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=3.0)
+
+        # r > 1
+
+        assert truncated_nfw.coord_func_g(grid_radius=np.array([2.0, 3.0])) == \
+               pytest.approx(np.array([0.13180, 0.070598]), 1.0e-4)
+
+        # r < 1
+
+        assert truncated_nfw.coord_func_g(grid_radius=np.array([0.5, 1.0 / 3.0])) == \
+               pytest.approx(np.array([0.69425, 0.97838]), 1.0e-4)
+
+        # r == 1
+        assert (truncated_nfw.coord_func_g(grid_radius=np.array([1.0, 1.0])) == np.array([1.0 / 3.0, 1.0 / 3.0])).all()
+
+    def test__coord_function_h__correct_values(self):
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=3.0)
+
+        assert truncated_nfw.coord_func_h(grid_radius=np.array([0.5, 3.0])) == \
+               pytest.approx(np.array([0.134395, 0.840674]), 1.0e-4)
+
+    def test__coord_function_k__correct_values(self):
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=2.0)
+
+        assert truncated_nfw.coord_func_k(grid_radius=np.array([2.0, 3.0])) == \
+               pytest.approx(np.array([-0.09983408, -0.06661738]), 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=4.0)
+
+        assert truncated_nfw.coord_func_k(grid_radius=np.array([2.0, 3.0])) == \
+               pytest.approx(np.array([-0.19869011, -0.1329414]), 1.0e-4)
+
+    def test__coord_function_l__correct_values(self):
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=2.0)
+
+        assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
+               pytest.approx(np.array([0.00080191, 0.00080191]), 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=3.0)
+
+        assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
+               pytest.approx(np.array([.00178711, 0.00178711]), 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=3.0)
+        assert truncated_nfw.coord_func_l(grid_radius=np.array([3.0, 3.0])) == \
+               pytest.approx(np.array([0.00044044, 0.00044044]), 1.0e-4)
+
+    def test__coord_function_m__correct_values(self):
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=2.0)
+
+        assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
+               pytest.approx(np.array([0.0398826, 0.0398826]), 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=3.0)
+
+        assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
+               pytest.approx(np.array([0.06726646, 0.06726646]), 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
+                                                 truncation_radius=3.0)
+
+        assert truncated_nfw.coord_func_m(grid_radius=np.array([3.0, 3.0])) == \
+               pytest.approx(np.array([0.06946888, 0.06946888]), 1.0e-4)
+
+    def test__rho_at_scale_radius__numerical_values_in_default_units(self):
+        cosmology = MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+        rho = nfw.rho_at_scale_radius_for_units(redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(1.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
+        rho = nfw.rho_at_scale_radius_for_units(redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(3.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
+        rho = nfw.rho_at_scale_radius_for_units(redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(0.25, 1e-3)
+
+    def test__rho_at_scale_radius__unit_conversions(self):
+        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0)
+
+        nfw_arcsec = mp.SphericalNFW(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
+                                     kappa_s=1.0,
+                                     scale_radius=dim.Length(1.0, 'arcsec'))
+
+        rho = nfw_arcsec.rho_at_scale_radius_for_units(unit_length='arcsec', unit_mass='solMass', redshift_profile=0.5,
+                                                       redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(2.0, 1e-3)
+
+        # When converting to kpc, the critical surface density is divided by kpc_per_arcsec**2.0 = 2.0**2.0
+        # The scale radius also becomes scale_radius*kpc_per_arcsec = 2.0
+
+        rho = nfw_arcsec.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.5,
+                                                       redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(0.5 / 2.0, 1e-3)
+
+        rho = nfw_arcsec.rho_at_scale_radius_for_units(unit_length='arcsec', unit_mass='angular', redshift_profile=0.5,
+                                                       redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(1.0, 1e-3)
+
+        # This will make the critical surface density 4.0, with the same conversions as above
+
+        cosmology = MockCosmology(arcsec_per_kpc=0.25, kpc_per_arcsec=4.0, critical_surface_density=2.0)
+
+        rho = nfw_arcsec.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.5,
+                                                       redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(0.5 / 4.0, 1e-3)
+
+        cosmology = MockCosmology(arcsec_per_kpc=0.25, kpc_per_arcsec=4.0, critical_surface_density=4.0)
+
+        rho = nfw_arcsec.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.5,
+                                                       redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(0.25 / 4.0, 1e-3)
+
+        nfw_kpc = mp.SphericalNFW(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
+                                  kappa_s=1.0,
+                                  scale_radius=dim.Length(1.0, 'kpc'))
+
+        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0)
+        rho = nfw_kpc.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.5,
+                                                    redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(0.5, 1e-3)
+
+        rho = nfw_kpc.rho_at_scale_radius_for_units(unit_length='arcsec', unit_mass='solMass', redshift_profile=0.5,
+                                                    redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(2.0 / 0.5, 1e-3)
+
+        rho = nfw_kpc.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='angular', redshift_profile=0.5,
+                                                    redshift_source=1.0, cosmology=cosmology)
+        assert rho == pytest.approx(1.0, 1e-3)
+
+    def test__delta_concentration_value_in_default_units(self):
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+
+        cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
+                                  cosmic_average_density=1.0)
+
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
+                                                                cosmology=cosmology)
+        assert delta_concentration == pytest.approx(1.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
+                                                                cosmology=cosmology)
+        assert delta_concentration == pytest.approx(3.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
+                                                                cosmology=cosmology)
+        assert delta_concentration == pytest.approx(0.25, 1e-3)
+
+        # cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
+        #                           cosmic_average_density=1.0)
+        #
+        # nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+        # delta_concentration = nfw.delta_concentration(unit_length='kpc', unit_mass='solMass', redshift_lens=0.5,
+        #                                               redshift_source=1.0, cosmology=cosmology)
+        # assert delta_concentration == pytest.approx(0.5, 1e-3)
+        #
+        # nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0)
+        # delta_concentration = nfw.delta_concentration(unit_length='kpc', unit_mass='solMass', redshift_lens=0.5, redshift_source=1.0,
+        #                                               cosmology=cosmology)
+        # assert delta_concentration == pytest.approx(1.0, 1e-3)
+        #
+        # nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=20.0)
+        # delta_concentration = nfw.delta_concentration(unit_length='kpc',  unit_mass='solMass', redshift_lens=0.5, redshift_source=1.0,
+        #                                               cosmology=cosmology)
+        # assert delta_concentration == pytest.approx(0.05, 1e-3)
+        #
+        # cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
+        #                           cosmic_average_density=2.0)
+        #
+        # nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+        # delta_concentration = nfw.delta_concentration(unit_length='kpc',  unit_mass='solMass', redshift_lens=0.5, redshift_source=1.0,
+        #                                               cosmology=cosmology)
+        # assert delta_concentration == pytest.approx(0.25, 1e-3)
+
+    def test__solve_concentration(self):
+        cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
+                                  cosmic_average_density=1.0)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+
+        concentration = nfw.concentration_for_units(redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
+
+        assert concentration == pytest.approx(0.0074263, 1.0e-4)
+
+    def test__radius_at_200__different_length_units_include_conversions(self):
+        nfw_arcsec = mp.SphericalNFW(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
+                                     kappa_s=1.0,
+                                     scale_radius=dim.Length(1.0, 'arcsec'))
+
+        cosmology = MockCosmology(arcsec_per_kpc=0.2, kpc_per_arcsec=5.0)
+
+        concentration = nfw_arcsec.concentration_for_units(cosmology=cosmology, redshift_profile=0.5, redshift_source=1.0)
+
+        radius_200 = nfw_arcsec.radius_at_200_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
+                                                        cosmology=cosmology)
+
+        assert radius_200 == concentration * 1.0
+
+        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
+
+        concentration = nfw_arcsec.concentration_for_units(unit_length='kpc', cosmology=cosmology, redshift_profile=0.5,
+                                                           redshift_source=1.0)
+
+        radius_200 = nfw_arcsec.radius_at_200_for_units(unit_length='kpc', redshift_profile=0.5, redshift_source=1.0,
+                                                        cosmology=cosmology)
+
+        assert radius_200 == 2.0 * concentration * 1.0
+
+        nfw_kpc = mp.SphericalNFW(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
+                                  kappa_s=1.0,
+                                  scale_radius=dim.Length(1.0, 'kpc'))
+
+        cosmology = MockCosmology(arcsec_per_kpc=0.2, kpc_per_arcsec=5.0)
+
+        concentration = nfw_kpc.concentration_for_units(unit_length='kpc', redshift_profile=0.5, redshift_source=1.0,
+                                                        cosmology=cosmology)
+
+        radius_200 = nfw_kpc.radius_at_200_for_units(unit_length='kpc', redshift_profile=0.5, redshift_source=1.0,
+                                                     cosmology=cosmology)
+
+        assert radius_200 == concentration * 1.0
+
+        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
+
+        concentration = nfw_kpc.concentration_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
+                                                        cosmology=cosmology)
+
+        radius_200 = nfw_kpc.radius_at_200_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
+                                                     cosmology=cosmology)
+
+        assert radius_200 == concentration * 1.0 / 2.0
+
+    def test__mass_at_200__unit_conversions_work(self):
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+
+        cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
+                                  cosmic_average_density=1.0)
+
+        radius_at_200 = nfw.radius_at_200_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
+                                                    cosmology=cosmology)
+
+        mass_at_200 = nfw.mass_at_200_for_units(cosmology=cosmology, redshift_profile=0.5, redshift_source=1.0,
+                                                unit_length='arcsec',
+                                                unit_mass='solMass')
+
+        mass_calc = 200.0 * ((4.0 / 3.0) * np.pi) * cosmology.cosmic_average_density * (radius_at_200 ** 3.0)
+        assert mass_at_200 == pytest.approx(mass_calc, 1.0e-5)
+
+        # cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
+        #                           cosmic_average_density=1.0)
+        #
+        # radius_at_200 = nfw.radius_at_200_for_units(unit_length='arcsec', redshift_lens=0.5, redshift_source=1.0,
+        #                                             cosmology=cosmology)
+        #
+        # mass_at_200 = nfw.mass_at_200(cosmology=cosmology, redshift_lens=0.5, redshift_source=1.0, unit_length='arcsec',
+        #                               unit_mass='solMass')
+        #
+        # mass_calc = 200.0 * ((4.0 / 3.0) * np.pi) * cosmology.cosmic_average_density * (radius_at_200 ** 3.0)
+        # assert mass_at_200 == pytest.approx(mass_calc, 1.0e-5)
+
+    def test__values_of_quantities_for_real_cosmology__include_unit_conversions(self):
+
+        cosmology = cosmo.LambdaCDM(H0=70.0, Om0=0.3, Ode0=0.7)
+
+        nfw = mp.SphericalTruncatedNFW(kappa_s=0.5, scale_radius=5.0, truncation_radius=10.0)
+
+        rho = nfw.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, cosmology=cosmology)
+
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                                unit_mass='solMass', redshift_of_cosmic_average_density='local',
+                                                                cosmology=cosmology)
+
+        concentration = nfw.concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                    unit_mass='solMass', redshift_of_cosmic_average_density='local',
+                                                    cosmology=cosmology)
+
+        radius_at_200 = nfw.radius_at_200_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, redshift_of_cosmic_average_density='local',
+                                                    cosmology=cosmology)
+
+        mass_at_200 = nfw.mass_at_200_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                redshift_source=2.5, redshift_of_cosmic_average_density='local',
+                                                cosmology=cosmology)
+
+        mass_at_truncation_radius = nfw.mass_at_truncation_radius(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, redshift_of_cosmic_average_density='local',
+                                                    cosmology=cosmology)
+
+        assert rho == pytest.approx(29027857.01622403, 1.0e-4)
+        assert delta_concentration == pytest.approx(213451.19421263796, 1.0e-4)
+        assert concentration == pytest.approx(18.6605624462417, 1.0e-4)
+        assert radius_at_200 == pytest.approx(623.7751567997697, 1.0e-4)
+        assert mass_at_200 == pytest.approx(27651532986258.375, 1.0e-4)
+        assert mass_at_truncation_radius == pytest.approx(14877085957074.299, 1.0e-4)
+        
+
+        rho = nfw.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, cosmology=cosmology)
+
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                                unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                                cosmology=cosmology)
+
+        concentration = nfw.concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                    unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
+
+        radius_at_200 = nfw.radius_at_200_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
+
+        mass_at_200 = nfw.mass_at_200_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                                cosmology=cosmology)
+
+        mass_at_truncation_radius = nfw.mass_at_truncation_radius(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
+
+        assert rho == pytest.approx(29027857.01622403, 1.0e-4)
+        assert delta_concentration == pytest.approx(110665.28111397651, 1.0e-4)
+        assert concentration == pytest.approx(14.401574489517804, 1.0e-4)
+        assert radius_at_200 == pytest.approx(481.40801817963467, 1.0e-4)
+        assert mass_at_200 == pytest.approx(24516707575366.09, 1.0e-4)
+        assert mass_at_truncation_radius == pytest.approx(13190486262169.797, 1.0e-4)
+
+        nfw = mp.SphericalTruncatedNFW(kappa_s=0.5, scale_radius=dim.Length(3.0, 'kpc'),
+                                      truncation_radius=dim.Length(7.0, 'kpc'))
+
+        rho = nfw.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, cosmology=cosmology)
+
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                                unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                                cosmology=cosmology)
+
+        concentration = nfw.concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='kpc',
+                                                    unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
+
+        radius_at_200 = nfw.radius_at_200_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
+
+        mass_at_200 = nfw.mass_at_200_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                                cosmology=cosmology)
+
+        mass_at_truncation_radius = nfw.mass_at_truncation_radius(unit_length='kpc', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
+
+        assert rho == pytest.approx(323442484.90222085, 1.0e-4)
+        assert delta_concentration == pytest.approx(1233086.3244882922, 1.0e-4)
+        assert concentration == pytest.approx(36.61521013005619, 1.0e-4)
+        assert radius_at_200 == pytest.approx(109.84563039016857, 1.0e-4)
+        assert mass_at_200 == pytest.approx(291253092446.923, 1.0e-4)
+        assert mass_at_truncation_radius == pytest.approx(177609204745.61484, 1.0e-4)
+        
+        rho = nfw.rho_at_scale_radius_for_units(unit_length='arcsec', unit_mass='solMass', redshift_profile=0.6,
+                                                redshift_source=2.5, cosmology=cosmology)
+
+        delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='arcsec',
+                                                                unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                                cosmology=cosmology)
+
+        concentration = nfw.concentration_for_units(redshift_profile=0.6, redshift_source=2.5, unit_length='arcsec',
+                                                    unit_mass='solMass', redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
+
+        radius_at_200 = nfw.radius_at_200_for_units(unit_length='arcsec', unit_mass='solMass', redshift_profile=0.6,
+                                                    redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
+
+        mass_at_200 = nfw.mass_at_200_for_units(unit_length='arcsec', unit_mass='solMass', redshift_profile=0.6,
+                                                redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                                cosmology=cosmology)
+
+        mass_at_truncation_radius = nfw.mass_at_truncation_radius(unit_length='arcsec', unit_mass='solMass',
+                                                                  redshift_profile=0.6,
+                                                    redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+                                                    cosmology=cosmology)
+
+        kpc_per_arcsec = 1.0 / cosmology.arcsec_per_kpc_proper(z=0.6).value
+
+        assert rho == pytest.approx(323442484.90222085 * kpc_per_arcsec**3.0, 1.0e-4)
+        assert delta_concentration == pytest.approx(1233086.3244882922, 1.0e-4)
+        assert concentration == pytest.approx(36.61521013005619, 1.0e-4)
+        assert radius_at_200 == pytest.approx(109.84563039016857 / kpc_per_arcsec, 1.0e-4)
+        assert mass_at_200 == pytest.approx(291253092446.923, 1.0e-4)
+        assert mass_at_truncation_radius == pytest.approx(177609204745.61484, 1.0e-4)
+
+
 class TestGeneralizedNFW(object):
 
     def test__constructor_and_units(self):
@@ -1270,165 +1717,6 @@ class TestTruncatedNFW(object):
         assert isinstance(truncated_nfw.truncation_radius, dim.Length)
         assert truncated_nfw.truncation_radius.unit_length == 'arcsec'
 
-    def test__coord_function_f__correct_values(self):
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=3.0)
-
-        # r > 1
-
-        assert truncated_nfw.coord_func_f(grid_radius=np.array([2.0, 3.0])) == \
-               pytest.approx(np.array([0.604599, 0.435209]), 1.0e-4)
-
-        # r < 1
-        assert truncated_nfw.coord_func_f(grid_radius=np.array([0.5, 1.0 / 3.0])) == \
-               pytest.approx(1.52069, 1.86967, 1.0e-4)
-        #
-        # r == 1
-        assert (truncated_nfw.coord_func_f(grid_radius=np.array([1.0, 1.0])) == np.array([1.0, 1.0])).all()
-
-    def test__coord_function_g__correct_values(self):
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=3.0)
-
-        # r > 1
-
-        assert truncated_nfw.coord_func_g(grid_radius=np.array([2.0, 3.0])) == \
-               pytest.approx(np.array([0.13180, 0.070598]), 1.0e-4)
-
-        # r < 1
-
-        assert truncated_nfw.coord_func_g(grid_radius=np.array([0.5, 1.0 / 3.0])) == \
-               pytest.approx(np.array([0.69425, 0.97838]), 1.0e-4)
-
-        # r == 1
-        assert (truncated_nfw.coord_func_g(grid_radius=np.array([1.0, 1.0])) == np.array([1.0 / 3.0, 1.0 / 3.0])).all()
-
-    def test__coord_function_h__correct_values(self):
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=3.0)
-
-        assert truncated_nfw.coord_func_h(grid_radius=np.array([0.5, 3.0])) == \
-               pytest.approx(np.array([0.134395, 0.840674]), 1.0e-4)
-
-    def test__coord_function_k__correct_values(self):
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=2.0)
-
-        assert truncated_nfw.coord_func_k(grid_radius=np.array([2.0, 3.0])) == \
-               pytest.approx(np.array([-0.88137, -0.62514]), 1.0e-4)
-
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=4.0)
-
-        assert truncated_nfw.coord_func_k(grid_radius=np.array([2.0, 3.0])) == \
-               pytest.approx(np.array([-1.44363, -1.09861]), 1.0e-4)
-
-    def test__coord_function_l__correct_values(self):
-        # f_r = self.coord_func_f(r=r)
-        # g_r = self.coord_func_g(r=r)
-        # k_r = self.coord_func_k(r=r)
-        #
-        # coeff = np.divide(self.truncation_radius**2.0, (self.truncation_radius**2.0 + 1.0)**2.0)
-        # term_1 = (self.truncation_radius**2.0 + 1.0)*g_r
-        # term_2 = 2*f_r
-        # term_3 = np.pi/(np.sqrt(self.truncation_radius ** 2.0 + r ** 2.0))
-        # term_4 = ((self.truncation_radius**2.0 - 1.0) /
-        #           (self.truncation_radius * (np.sqrt(self.truncation_radius ** 2.0 + r ** 2.0)))) * k_r
-
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=2.0)
-
-        coeff = 0.16
-        term_1 = 0.6590003532
-        term_2 = 1.20919957615
-        term_3 = 1.1107207345
-        term_4 = -0.4674189301
-
-        value = coeff * (term_1 + term_2 - term_3 + term_4)
-
-        assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
-
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=3.0)
-
-        coeff = 0.09
-        term_1 = 1.3180007
-        term_2 = 1.20919957615
-        term_3 = 0.87132
-        term_4 = -0.883647
-
-        value = coeff * (term_1 + term_2 - term_3 + term_4)
-
-        assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
-
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=3.0)
-        coeff = 0.09
-        term_1 = 0.705987
-        term_2 = 0.870419
-        term_3 = 0.74048
-        term_4 = -0.553977
-
-        value = coeff * (term_1 + term_2 - term_3 + term_4)
-
-        assert truncated_nfw.coord_func_l(grid_radius=np.array([3.0, 3.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
-
-    def test__coord_function_m__correct_values(self):
-        # f_r = self.coord_func_f(r=r)
-        # k_r = self.coord_func_k(r=r)
-        #
-        # coeff = (self.truncation_radius**2.0 / (self.truncation_radius**2.0 + 1.0) ** 2.0
-        # term_1 = ((self.truncation_radius**2.0 + 2.0*r**2.0 - 1.0)*f_r)
-        # term_2 = (np.pi*self.truncation_radius)
-        # term_3 = ((self.truncation_radius**2.0 - 1.0) * np.log(self.truncation_radius))
-        # term_4 = (np.sqrt(r**2.0 + self.truncation_radius**2.0)*((
-        # (self.truncation_radius**2.0 - 1.0)/self.truncation_radius)*k_r - np.pi))
-
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=2.0)
-
-        coeff = 0.16
-        term_1 = 6.650597
-        term_2 = 6.283185
-        term_3 = 2.079441
-        term_4 = -12.62511
-
-        value = coeff * (term_1 + term_2 + term_3 + term_4)
-
-        assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
-
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=3.0)
-
-        coeff = 0.09
-        term_1 = 9.673596
-        term_2 = 9.4247779
-        term_3 = 8.788898
-        term_4 = -22.81458
-
-        value = coeff * (term_1 + term_2 + term_3 + term_4)
-
-        assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
-
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
-                                                 truncation_radius=3.0)
-
-        coeff = 0.09
-        term_1 = 11.31545
-        term_2 = 9.4247779
-        term_3 = 8.788898
-        term_4 = -23.30025
-
-        value = coeff * (term_1 + term_2 + term_3 + term_4)
-
-        assert truncated_nfw.coord_func_m(grid_radius=np.array([3.0, 3.0])) == \
-               pytest.approx(np.array([value, value]), 1.0e-4)
-
     def test__convergence_correct_values(self):
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
@@ -1450,9 +1738,10 @@ class TestTruncatedNFW(object):
                                                  truncation_radius=2.0)
 
         assert truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == \
-               pytest.approx(6.0 * 0.7042266, 1.0e-4)
+               pytest.approx(1.51047026, 1.0e-4)
 
     def test__deflections_correct_values(self):
+
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
                                                  truncation_radius=2.0)
 
@@ -1489,11 +1778,11 @@ class TestTruncatedNFW(object):
 
         deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
 
-        factor = (4.0 * 1.0 * 4.0) / (2.0 / 4.0)
-        assert deflections[0, 0] == pytest.approx(factor * 0.116951813, 1.0e-4)
+        assert deflections[0, 0] == pytest.approx(2.1702661386, 1.0e-4)
         assert deflections[0, 1] == pytest.approx(0.0, 1.0e-4)
 
     def test__compare_nfw_and_truncated_nfw_with_large_truncation_radius__convergence_and_deflections_identical(self):
+
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0,
                                                  truncation_radius=50000.0)
 
@@ -1512,6 +1801,7 @@ class TestTruncatedNFW(object):
         assert truncated_nfw_deflections == pytest.approx(nfw_deflections, 1.0e-4)
 
     def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
+
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(-0.7, 0.5), kappa_s=1.0, scale_radius=8.0,
                                                  truncation_radius=2.0)
 
@@ -1546,48 +1836,109 @@ class TestTruncatedNFW(object):
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
                                                  truncation_radius=1.0)
 
-        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'solMass')
-        cosmic_average_density = dim.MassOverLength3(1.0, 'arcsec', 'solMass')
+        cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
+                                  cosmic_average_density=1.0)
 
-        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(
-            critical_surface_density=critical_surface_density, cosmic_average_density=cosmic_average_density)
+        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(redshift_profile=0.5, redshift_source=1.0,
+                                                                            unit_length='arcsec', unit_mass='solMass', cosmology=cosmology)
 
         assert mass_at_truncation_radius == pytest.approx(0.00009792581, 1.0e-5)
 
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
-                                                 truncation_radius=1.0)
+        # truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
+        #                                          truncation_radius=1.0)
+        #
+        # cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=2.0,
+        #                           cosmic_average_density=3.0)
+        #
+        # mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(redshift_lens=0.5, redshift_source=1.0,
+        #     unit_length='arcsec', unit_mass='solMass', cosmology=cosmology)
+        #
+        # assert mass_at_truncation_radius == pytest.approx(0.00008789978, 1.0e-5)
+        #
+        # truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=2.0,
+        #                                          truncation_radius=1.0)
+        #
+        # mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(redshift_lens=0.5, redshift_source=1.0,
+        #     unit_length='arcsec', unit_mass='solMass', cosmology=cosmology)
+        #
+        # assert mass_at_truncation_radius == pytest.approx(0.0000418378, 1.0e-5)
+        #
+        # truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=8.0,
+        #                                          truncation_radius=4.0)
+        #
+        # mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(redshift_lens=0.5, redshift_source=1.0,
+        #     unit_length='arcsec', unit_mass='solMass', cosmology=cosmology)
+        #
+        # assert mass_at_truncation_radius == pytest.approx(0.0000421512, 1.0e-4)
+        #
+        # truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=8.0,
+        #                                          truncation_radius=4.0)
+        #
+        # mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(redshift_lens=0.5, redshift_source=1.0,
+        #     unit_length='arcsec', unit_mass='solMass', cosmology=cosmology)
+        #
+        # assert mass_at_truncation_radius == pytest.approx(0.00033636625, 1.0e-4)
 
-        critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
-        cosmic_average_density = dim.MassOverLength3(3.0, 'arcsec', 'solMass')
+    def test_summarize_in_units(self):
 
-        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(
-            critical_surface_density=critical_surface_density, cosmic_average_density=cosmic_average_density)
+        cosmology = cosmo.LambdaCDM(H0=70.0, Om0=0.3, Ode0=0.7)
 
-        assert mass_at_truncation_radius == pytest.approx(0.00008789978, 1.0e-5)
+        nfw = mp.SphericalTruncatedNFW(kappa_s=0.5, scale_radius=5.0, truncation_radius=10.0)
 
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=2.0,
-                                                 truncation_radius=1.0)
+        summary_text = nfw.summarize_in_units(
+            radii=[dim.Length(10.0), dim.Length(500.0)], prefix='nfw_',
+            unit_length='kpc', unit_mass='solMass',
+            redshift_profile=0.6, redshift_source=2.5, redshift_of_cosmic_average_density='profile',
+            whitespace=50, cosmology=cosmology)
 
-        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(
-            critical_surface_density=critical_surface_density, cosmic_average_density=cosmic_average_density)
+        index = 0
 
-        assert mass_at_truncation_radius == pytest.approx(0.0000418378, 1.0e-5)
+        assert summary_text[index] == 'Mass Profile = SphericalTruncatedNFW' ; index += 1
+        assert summary_text[index] == '' ; index += 1
+        assert summary_text[index] == 'nfw_einstein_radius                               15.38 kpc' ; index += 1
+        assert summary_text[index] == 'nfw_einstein_mass                                 1.4418e+12 solMass' ; index += 1
+        assert summary_text[index] == 'nfw_mass_within_10.00_kpc                         5.2061e+12 solMass' ; index += 1
+        assert summary_text[index] == 'nfw_mass_within_500.00_kpc                        7.3287e+12 solMass' ; index += 1
+        assert summary_text[index] == 'nfw_rho_at_scale_radius                           29027857.02 solMass / kpc3' ; index += 1
+        print(summary_text[index])
+        assert summary_text[index] == 'nfw_delta_concentration                           110665.28' ; index += 1
+        assert summary_text[index] == 'nfw_concentration                                 14.40' ; index += 1
+        assert summary_text[index] == 'nfw_radius_at_200x_cosmic_density                 481.41 kpc' ; index += 1
+        assert summary_text[index] == 'nfw_mass_at_200x_cosmic_density                   2.4517e+13 solMass' ; index += 1
+        assert summary_text[index] == 'nfw_mass_at_truncation_radius                     1.3190e+13 solMass' ; index += 1
 
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=8.0,
-                                                 truncation_radius=4.0)
 
-        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(
-            critical_surface_density=critical_surface_density, cosmic_average_density=cosmic_average_density)
+class TestTruncatedNFWChallenge(object):
 
-        assert mass_at_truncation_radius == pytest.approx(0.0000421512, 1.0e-4)
+    def test__constructor_and_units(self):
 
-        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=8.0,
-                                                 truncation_radius=4.0)
+        truncated_nfw = mp.SphericalTruncatedNFWChallenge(centre=(1.0, 2.0), kappa_s=2.0, scale_radius=10.0)
 
-        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(
-            critical_surface_density=critical_surface_density, cosmic_average_density=cosmic_average_density)
+        assert truncated_nfw.centre == (1.0, 2.0)
+        assert isinstance(truncated_nfw.centre[0], dim.Length)
+        assert isinstance(truncated_nfw.centre[1], dim.Length)
+        assert truncated_nfw.centre[0].unit == 'arcsec'
+        assert truncated_nfw.centre[1].unit == 'arcsec'
 
-        assert mass_at_truncation_radius == pytest.approx(0.00033636625, 1.0e-4)
+        assert truncated_nfw.axis_ratio == 1.0
+        assert isinstance(truncated_nfw.axis_ratio, float)
+
+        assert truncated_nfw.phi == 0.0
+        assert isinstance(truncated_nfw.phi, float)
+
+        assert truncated_nfw.kappa_s == 2.0
+        assert isinstance(truncated_nfw.kappa_s, float)
+
+        assert truncated_nfw.inner_slope == 1.0
+        assert isinstance(truncated_nfw.inner_slope, float)
+
+        assert truncated_nfw.scale_radius == 10.0
+        assert isinstance(truncated_nfw.scale_radius, dim.Length)
+        assert truncated_nfw.scale_radius.unit_length == 'arcsec'
+
+        assert truncated_nfw.truncation_radius == pytest.approx(2.0*189.26967095554755, 1.0e-4)
+        assert isinstance(truncated_nfw.truncation_radius, dim.Length)
+        assert truncated_nfw.truncation_radius.unit_length == 'arcsec'
 
 
 class TestNFW(object):
@@ -1768,150 +2119,6 @@ class TestNFW(object):
 
         assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
         assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
-
-    def test__rho_scale_radius_value(self):
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=1.0) == pytest.approx(1.0, 1e-3)
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=1.0) == pytest.approx(3.0, 1e-3)
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=1.0) == pytest.approx(0.25, 1e-3)
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=5.0) == pytest.approx(5.0, 1e-3)
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=3.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=6.0) == pytest.approx(4.0, 1e-3)
-
-    def test__delta_concentration_value(self):
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-
-        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'solMass')
-        cosmic_average_density = dim.MassOverLength3(1.0, 'arcsec', 'solMass')
-
-        assert nfw.delta_concentration(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density) == pytest.approx(1.0, 1e-3)
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density) == pytest.approx(3.0, 1e-3)
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
-        assert nfw.delta_concentration(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density) == pytest.approx(0.25, 1e-3)
-
-        critical_surface_density = dim.MassOverLength2(5.0, 'arcsec', 'solMass')
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density) == pytest.approx(5.0, 1e-3)
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density) == pytest.approx(10.0, 1e-3)
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=20.0)
-        assert nfw.delta_concentration(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density) == pytest.approx(0.5, 1e-3)
-
-        cosmic_average_density = dim.MassOverLength3(2.0, 'arcsec', 'solMass')
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density) == pytest.approx(2.5, 1e-3)
-
-        cosmic_average_density = dim.MassOverLength3(5.0, 'arcsec', 'solMass')
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density) == pytest.approx(2.0, 1e-3)
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=20.0)
-        assert nfw.delta_concentration(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density) == pytest.approx(0.1, 1e-3)
-
-    def test__solve_concentration(self):
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-
-        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'solMass')
-        cosmic_average_density = dim.MassOverLength3(1.0, 'arcsec', 'solMass')
-
-        concentration = nfw.concentration(critical_surface_density=critical_surface_density,
-                                          cosmic_average_density=cosmic_average_density)
-
-        assert concentration == pytest.approx(0.0074263, 1.0e-4)
-
-    def test__radius_at_200_times_cosmic_average_density(self):
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-
-        critical_surface_density = dim.MassOverLength2(5.0, 'arcsec', 'solMass')
-        cosmic_average_density = dim.MassOverLength3(5.0, 'arcsec', 'solMass')
-
-        concentration = nfw.concentration(critical_surface_density=critical_surface_density,
-                                          cosmic_average_density=cosmic_average_density)
-
-        radius_200 = nfw.radius_at_200(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density)
-
-        assert radius_200 == concentration * 1.0
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=3.0)
-
-        cosmic_average_density = dim.MassOverLength3(8.0, 'arcsec', 'solMass')
-
-        concentration = nfw.concentration(critical_surface_density=critical_surface_density,
-                                          cosmic_average_density=cosmic_average_density)
-
-        radius_200 = nfw.radius_at_200(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density)
-
-        assert radius_200 == concentration * 3.0
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=6.0, scale_radius=2.0)
-
-        cosmic_average_density = dim.MassOverLength3(2.0, 'arcsec', 'solMass')
-
-        concentration = nfw.concentration(critical_surface_density=critical_surface_density,
-                                          cosmic_average_density=cosmic_average_density)
-
-        radius_200 = nfw.radius_at_200(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density)
-
-        assert radius_200 == concentration * 2.0
-
-    def test__mass_at_200(self):
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-
-        critical_surface_density = dim.MassOverLength2(5.0, 'arcsec', 'solMass')
-        cosmic_average_density = dim.MassOverLength3(8.0, 'arcsec', 'solMass')
-
-        mass_at_200 = nfw.mass_at_200(critical_surface_density=critical_surface_density,
-                                      cosmic_average_density=cosmic_average_density)
-
-        # radius_200 = 0.004658
-        # mass_200 = 200.0 * ((4*pi)/3)  * (0.004658 ** 3.0)
-
-        assert mass_at_200 == pytest.approx(0.00067757, 1.0e-5)
-
-        critical_surface_density = dim.MassOverLength2(50.0, 'arcsec', 'solMass')
-        cosmic_average_density = dim.MassOverLength3(4.0, 'arcsec', 'solMass')
-
-        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=4.0)
-
-        mass_at_200 = nfw.mass_at_200(critical_surface_density=critical_surface_density,
-                                      cosmic_average_density=cosmic_average_density)
-
-        # radius_200 = 0.004658
-        # mass_200 = 200.0 * ((4*pi)/3)  * (0.004658 ** 3.0)
-
-        assert mass_at_200 == pytest.approx(18.57133, 1.0e-5)
 
 
 class TestSersic(object):
@@ -2917,63 +3124,103 @@ class TestEinsteinRadiusMass(object):
 
     def test__radius_of_critical_curve_and_einstein_radius__radius_unit_conversions(self):
 
+        cosmology = MockCosmology(kpc_per_arcsec=2.0)
+
         sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
                                             einstein_radius=dim.Length(2.0, 'arcsec'))
-        
-        assert sis_arcsec.average_convergence_of_1_radius_in_units(unit_length='arcsec') == pytest.approx(2.0, 1e-4)
-        assert sis_arcsec.einstein_radius_in_units(unit_length='arcsec') == pytest.approx(2.0, 1e-4)
-        assert sis_arcsec.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == pytest.approx(4.0, 1e-4)
+
+        radius = sis_arcsec.average_convergence_of_1_radius_in_units(unit_length='arcsec', cosmology=cosmology)
+        assert radius == pytest.approx(2.0, 1e-4)
+
+        radius = sis_arcsec.einstein_radius_in_units(unit_length='arcsec')
+        assert radius == pytest.approx(2.0, 1e-4)
+
+        radius = sis_arcsec.einstein_radius_in_units(unit_length='kpc', redshift_profile=0.5, cosmology=cosmology)
+        assert radius == pytest.approx(4.0, 1e-4)
         
         sis_kpc = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
                                          einstein_radius=dim.Length(2.0, 'kpc'))
 
-        assert sis_kpc.average_convergence_of_1_radius_in_units(unit_length='kpc') == pytest.approx(2.0, 1e-4)
-        assert sis_kpc.einstein_radius_in_units(unit_length='kpc') == pytest.approx(2.0, 1e-4)
-        assert sis_kpc.einstein_radius_in_units(unit_length='arcsec', kpc_per_arcsec=2.0) == pytest.approx(1.0, 1e-4)
+        radius = sis_kpc.average_convergence_of_1_radius_in_units(unit_length='kpc')
+        assert radius == pytest.approx(2.0, 1e-4)
+
+        radius = sis_kpc.einstein_radius_in_units(unit_length='kpc')
+        assert radius == pytest.approx(2.0, 1e-4)
+
+        radius = sis_kpc.einstein_radius_in_units(unit_length='arcsec', redshift_profile=0.5, cosmology=cosmology)
+        assert radius == pytest.approx(1.0, 1e-4)
 
         nfw_arcsec = mp.SphericalNFW(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
                                      kappa_s=0.5, scale_radius=dim.Length(5.0, 'arcsec'))
-        assert nfw_arcsec.average_convergence_of_1_radius_in_units(unit_length='arcsec') == pytest.approx(2.76386, 1e-4)
-        assert nfw_arcsec.einstein_radius_in_units(unit_length='arcsec') == pytest.approx(2.76386, 1e-4)
-        assert nfw_arcsec.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == pytest.approx(2.0*2.76386, 1e-4)
-        
+
+        radius = nfw_arcsec.average_convergence_of_1_radius_in_units(unit_length='arcsec')
+        assert radius == pytest.approx(2.76386, 1e-4)
+
+        radius = nfw_arcsec.einstein_radius_in_units(unit_length='arcsec', cosmology=cosmology)
+        assert radius == pytest.approx(2.76386, 1e-4)
+
+        radius = nfw_arcsec.einstein_radius_in_units(unit_length='kpc', redshift_profile=0.5, cosmology=cosmology)
+        assert radius == pytest.approx(2.0*2.76386, 1e-4)
+
         nfw_kpc = mp.SphericalNFW(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
                                   kappa_s=0.5, scale_radius=dim.Length(5.0, 'kpc'))
-        assert nfw_kpc.average_convergence_of_1_radius_in_units(unit_length='kpc', kpc_per_arcsec=2.0) == pytest.approx(2.76386, 1e-4)
-        assert nfw_kpc.einstein_radius_in_units(unit_length='kpc') == pytest.approx(2.76386, 1e-4)
-        assert nfw_kpc.einstein_radius_in_units(unit_length='arcsec', kpc_per_arcsec=2.0) == pytest.approx(0.5*2.76386, 1e-4)
+
+        radius = nfw_kpc.average_convergence_of_1_radius_in_units(unit_length='kpc', redshift_profile=0.5, cosmology=cosmology)
+        assert radius == pytest.approx(2.76386, 1e-4)
+
+        radius = nfw_kpc.einstein_radius_in_units(unit_length='kpc')
+        assert radius == pytest.approx(2.76386, 1e-4)
+
+        radius = nfw_kpc.einstein_radius_in_units(unit_length='arcsec', redshift_profile=0.5, cosmology=cosmology)
+        assert radius == pytest.approx(0.5*2.76386, 1e-4)
 
     def test__einstein_mass__radius_unit_conversions(self):
-        
+
+        cosmology = MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
+
+
         sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
                                             einstein_radius=dim.Length(1.0, 'arcsec'))
 
-        critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
+        mass = sis_arcsec.einstein_mass_in_units(unit_mass='angular', cosmology=cosmology)
+        assert mass == pytest.approx(np.pi, 1e-4)
 
-        assert sis_arcsec.einstein_mass_in_units(unit_mass='angular') == pytest.approx(np.pi, 1e-4)
-        assert sis_arcsec.einstein_mass_in_units(unit_mass='solMass',
-                                                 critical_surface_density=critical_surface_density) == \
-               pytest.approx(2.0*np.pi, 1e-4)
+        mass = sis_arcsec.einstein_mass_in_units(unit_mass='solMass', redshift_profile=0.5, redshift_source=1.0,
+                                                 cosmology=cosmology)
+        assert mass == pytest.approx(2.0*np.pi, 1e-4)
 
-        # sis_kpc = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
-        #                                  einstein_mass=dim.Length(2.0, 'kpc'))
 
-        # assert sis_kpc.einstein_mass_in_units(unit_mass='angular') == pytest.approx(1.0, 1e-4)
-        # assert sis_kpc.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=2.0) == pytest.approx(2.0, 1e-4)
-        #
-        # nfw_angular = mp.SphericalNFW(centre=(dim.Length(0.0, 'angular'), dim.Length(0.0, 'angular')),
-        #                              kappa_s=0.5, scale_mass=dim.Length(5.0, 'angular'))
-        #
-        # assert nfw_angular.einstein_mass_in_units(unit_mass='angular') == pytest.approx(2.76386, 1e-4)
-        # assert nfw_angular.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=2.0) == pytest.approx(
-        #     2.0 * 2.76386, 1e-4)
-        #
-        # nfw_kpc = mp.SphericalNFW(centre=(dim.Length(0.0, 'solMass'), dim.Length(0.0, 'solMass')),
-        #                           kappa_s=0.5, scale_mass=dim.Length(5.0, 'solMass'))
-        # assert nfw_kpc.einstein_mass_in_units(unit_mass='angular') == pytest.approx(
-        #     0.5 * 2.76386, 1e-4)
-        # assert nfw_kpc.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=2.0) == pytest.approx(2.76386, 1e-4)
+        sis_kpc = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
+                                         einstein_radius=dim.Length(2.0, 'kpc'))
 
+        mass = sis_kpc.einstein_mass_in_units(unit_mass='angular', redshift_profile=0.5, cosmology=cosmology)
+        assert mass == pytest.approx(4.0*np.pi, 1e-4)
+
+        mass = sis_kpc.einstein_mass_in_units(unit_mass='solMass', redshift_profile=0.5, redshift_source=1.0,
+                                              cosmology=cosmology)
+        assert mass == pytest.approx(2.0*np.pi, 1e-4)
+
+
+        nfw_arcsec = mp.SphericalNFW(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
+                                     kappa_s=0.5, scale_radius=dim.Length(5.0, 'arcsec'))
+
+        mass = nfw_arcsec.einstein_mass_in_units(unit_mass='angular', cosmology=cosmology)
+        assert mass == pytest.approx(np.pi * 2.76386**2.0, 1e-4)
+
+        mass = nfw_arcsec.einstein_mass_in_units(unit_mass='solMass', redshift_profile=0.5, redshift_source=1.0,
+                                                 cosmology=cosmology)
+        assert mass == pytest.approx(2.0 * np.pi * 2.76386**2.0, 1e-4)
+
+
+        nfw_kpc = mp.SphericalNFW(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
+                                  kappa_s=0.5, scale_radius=dim.Length(5.0, 'kpc'))
+
+        mass = nfw_kpc.einstein_mass_in_units(unit_mass='angular', redshift_profile=0.5, cosmology=cosmology)
+        assert mass == pytest.approx(np.pi * 2.76386**2.0, 1e-4)
+
+        mass = nfw_kpc.einstein_mass_in_units(unit_mass='solMass', redshift_profile=0.5, redshift_source=1.0,
+                                              cosmology=cosmology)
+        assert mass == pytest.approx(0.5 * np.pi * 2.76386**2.0, 1e-4)
 
 
 def mass_within_radius_of_profile_from_grid_calculation(radius, profile):
@@ -3002,15 +3249,19 @@ class TestMassWithinCircle(object):
     def test__mass_in_angular_units__singular_isothermal_sphere__compare_to_analytic(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
+
         radius = dim.Length(2.0, 'arcsec')
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                               critical_surface_density=None)
+
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                               unit_mass='angular')
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         sis = mp.SphericalIsothermal(einstein_radius=4.0)
+
         radius = dim.Length(4.0, 'arcsec')
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                               critical_surface_density=None)
+
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                               unit_mass='angular')
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
     def test__mass_in_angular_units__singular_isothermal__compare_to_grid(self):
@@ -3021,29 +3272,41 @@ class TestMassWithinCircle(object):
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sis)
 
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                               critical_surface_density=None)
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                               unit_mass='angular')
 
         assert mass_grid == pytest.approx(mass, 0.02)
 
     def test__radius_units_conversions__mass_profile_updates_units_and_computes_correct_mass(self):
 
+        cosmology = MockCosmology(kpc_per_arcsec=2.0)
+
         # arcsec -> arcsec
 
         sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
                                             einstein_radius=dim.Length(2.0, 'arcsec'))
+
         radius = dim.Length(2.0, 'arcsec')
-        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                      critical_surface_density=None)
+        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                      unit_mass='angular')
         assert math.pi * sis_arcsec.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         # arcsec -> kpc
 
         radius = dim.Length(2.0, 'kpc')
-        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                      critical_surface_density=None,
-                                                      kpc_per_arcsec=2.0)
-        assert 2.0 * math.pi * sis_arcsec.einstein_radius * radius == pytest.approx(mass, 1e-3)
+        mass = sis_arcsec.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                      unit_mass='angular', cosmology=cosmology)
+        assert math.pi * sis_arcsec.einstein_radius * 1.0 == pytest.approx(mass, 1e-3)
+
+        # 2.0 arcsec = 4.0 kpc, same masses.
+
+        radius = dim.Length(2.0, 'arcsec')
+        mass_arcsec = sis_arcsec.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                             unit_mass='angular', cosmology=cosmology)
+        radius = dim.Length(4.0, 'kpc')
+        mass_kpc = sis_arcsec.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                          unit_mass='angular', cosmology=cosmology)
+        assert mass_arcsec == mass_kpc
 
         # kpc -> kpc
 
@@ -3051,54 +3314,45 @@ class TestMassWithinCircle(object):
                                          einstein_radius=dim.Length(2.0,'kpc'))
 
         radius = dim.Length(2.0, 'kpc')
-        mass = sis_kpc.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                   critical_surface_density=None)
+        mass = sis_kpc.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                   unit_mass='angular', cosmology=cosmology)
         assert math.pi * sis_kpc.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         # kpc -> arcsec
 
         radius = dim.Length(2.0, 'arcsec')
-        mass = sis_kpc.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                                   critical_surface_density=None,
-                                                   kpc_per_arcsec=2.0)
-        assert 0.5 * math.pi * sis_kpc.einstein_radius * radius == pytest.approx(mass, 1e-3)
+        mass = sis_kpc.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                   unit_mass='angular', cosmology=cosmology)
+        assert 2.0 * math.pi * sis_kpc.einstein_radius * radius == pytest.approx(mass, 1e-3)
+
+        # 2.0 arcsec = 4.0 kpc, same masses.
+
+        radius = dim.Length(2.0, 'arcsec')
+        mass_arcsec = sis_kpc.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                          unit_mass='angular', cosmology=cosmology)
+        radius = dim.Length(4.0, 'kpc')
+        mass_kpc = sis_kpc.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                       unit_mass='angular')
+        assert mass_arcsec == mass_kpc
 
     def test__mass_units_conversions__multiplies_by_critical_surface_density_factor(self):
 
+        cosmology = MockCosmology(critical_surface_density=2.0)
+
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         radius = dim.Length(2.0, 'arcsec')
 
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                               unit_mass='angular', cosmology=cosmology)
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
-        critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
-                                               critical_surface_density=critical_surface_density)
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                               unit_mass='solMass', cosmology=cosmology)
         assert 2.0 * math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
-    def test__unit_conversions_check_correctly_that_inputs_are_given(self):
-
-        sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
-                                            einstein_radius=dim.Length(2.0, 'arcsec'))
-
-        radius = dim.Length(2.0, 'arcsec')
-        sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular', critical_surface_density=None)
-
-        with pytest.raises(exc.UnitsException):
-            sis_arcsec.mass_within_circle_in_units(radius=0.5, unit_mass='solMass', critical_surface_density=None)
-            radius = dim.Length(2.0,'kpc')
-            sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular', kpc_per_arcsec=None)
-
-    def test__radius_and_critical_surface_density_different_length_units__raises_exception(self):
-
-        sis = mp.SphericalIsothermal(einstein_radius=2.0)
-        radius = dim.Length(2.0, 'arcsec')
-
-        critical_surface_density = dim.MassOverLength2(2.0, 'kpc', 'angular')
-
-        with pytest.raises(exc.UnitsException):
-            sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                               critical_surface_density=critical_surface_density)
+        mass = sis.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                               unit_mass='solMass', cosmology=cosmology)
+        assert 2.0 * math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
 
 class TestMassWithinEllipse(object):
@@ -3106,15 +3360,20 @@ class TestMassWithinEllipse(object):
     def test__mass_in_angular_units__singular_isothermal_sphere__compare_circle_and_ellipse(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
+
         radius = dim.Length(2.0)
-        mass_circle = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
-        mass_ellipse = sis.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+        mass_circle = sis.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                      unit_mass='angular')
+        mass_ellipse = sis.mass_within_ellipse_in_units(major_axis=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                        unit_mass='angular')
         assert mass_circle == mass_ellipse
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
         radius = dim.Length(2.0)
-        mass_circle = sie.mass_within_circle_in_units(radius=radius, unit_mass='angular')
-        mass_ellipse = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+        mass_circle = sie.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                      unit_mass='angular')
+        mass_ellipse = sie.mass_within_ellipse_in_units(major_axis=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                        unit_mass='angular')
         assert mass_circle == mass_ellipse * 2.0
 
     def test__mass_in_angular_units__singular_isothermal_ellipsoid__compare_to_grid(self):
@@ -3125,12 +3384,15 @@ class TestMassWithinEllipse(object):
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sie)
 
-        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                unit_mass='angular')
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert mass_grid == pytest.approx(mass, 0.1)
 
     def test__radius_units_conversions__mass_profile_updates_units_and_computes_correct_mass(self):
+
+        cosmology = MockCosmology(kpc_per_arcsec=2.0)
 
         # arcsec -> arcsec
 
@@ -3141,17 +3403,26 @@ class TestMassWithinEllipse(object):
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=major_axis, profile=sie_arcsec)
 
-        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
-                                                       critical_surface_density=None)
+        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, redshift_profile=0.5, redshift_source=1.0,
+                                                       unit_mass='angular')
         assert mass_grid == pytest.approx(mass, 0.1)
 
         # arcsec -> kpc
 
         major_axis = dim.Length(0.5, 'kpc')
-        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
-                                                       critical_surface_density=None,
-                                                       kpc_per_arcsec=2.0)
-        assert 2.0 * mass_grid == pytest.approx(mass, 0.1)
+        mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, redshift_profile=0.5, redshift_source=1.0,
+                                                       unit_mass='angular', cosmology=cosmology)
+        assert 0.5 * mass_grid == pytest.approx(mass, 0.1)
+
+        # 2.0 arcsec = 4.0 kpc, same masses.
+
+        radius = dim.Length(2.0, 'arcsec')
+        mass_arcsec = sie_arcsec.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                             unit_mass='angular', cosmology=cosmology)
+        radius = dim.Length(4.0, 'kpc')
+        mass_kpc = sie_arcsec.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                          unit_mass='angular', cosmology=cosmology)
+        assert mass_arcsec == mass_kpc
 
         # kpc -> kpc
 
@@ -3159,132 +3430,109 @@ class TestMassWithinEllipse(object):
                                          einstein_radius=dim.Length(2.0,'kpc'))
 
         major_axis = dim.Length(0.5, 'kpc')
-        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular', critical_surface_density=None)
+        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, redshift_profile=0.5, redshift_source=1.0,
+                                                    unit_mass='angular')
         assert mass_grid == pytest.approx(mass, 0.1)
 
         # kpc -> arcsec
 
         major_axis = dim.Length(0.5, 'arcsec')
-        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
-                                                    critical_surface_density=None,
-                                                    kpc_per_arcsec=2.0)
-        assert 0.5 * mass_grid == pytest.approx(mass, 0.1)
+        mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, redshift_profile=0.5, redshift_source=1.0,
+                                                    unit_mass='angular', cosmology=cosmology)
+        assert 2.0 * mass_grid == pytest.approx(mass, 0.1)
+
+        # 2.0 arcsec = 4.0 kpc, same masses.
+
+        radius = dim.Length(2.0, 'arcsec')
+        mass_arcsec = sie_kpc.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                          unit_mass='angular', cosmology=cosmology)
+        radius = dim.Length(4.0, 'kpc')
+        mass_kpc = sie_kpc.mass_within_circle_in_units(radius=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                       unit_mass='angular')
+        assert mass_arcsec == mass_kpc
 
     def test__mass_unit_conversions__compare_to_grid__mutliplies_by_critical_surface_density(self):
+
+        cosmology = MockCosmology(critical_surface_density=2.0)
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
 
         radius = dim.Length(2.0, 'arcsec')
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sie)
-
-        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                unit_mass='angular', cosmology=cosmology)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert mass_grid == pytest.approx(radius * sie.axis_ratio * mass, 0.1)
 
         critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
-        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='solMass',
-                                                critical_surface_density=critical_surface_density)
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, redshift_profile=0.5, redshift_source=1.0,
+                                                unit_mass='solMass', cosmology=cosmology)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert mass_grid == pytest.approx(0.5 * radius * sie.axis_ratio * mass, 0.1)
 
-    def test__unit_conversions_check_correctly_that_inputs_are_given(self):
-
-        sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
-                                            einstein_radius=dim.Length(2.0, 'arcsec'))
-
-        major_axis = dim.Length(2.0, 'arcsec')
-        sis_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular', critical_surface_density=None)
-
-        with pytest.raises(exc.UnitsException):
-            sis_arcsec.mass_within_ellipse_in_units(major_axis=0.5, unit_mass='solMass', critical_surface_density=None)
-            major_axis = dim.Length(2.0,'kpc')
-            sis_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular', kpc_per_arcsec=None)
-
-    def test__radius_and_critical_surface_density_different_length_units__raises_exception(self):
-
-        sis = mp.SphericalIsothermal(einstein_radius=2.0)
-        radius = dim.Length(2.0, 'arcsec')
-
-        critical_surface_density = dim.MassOverLength2(2.0, 'kpc', 'angular')
-
-        with pytest.raises(exc.UnitsException):
-            sis.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
-                                               critical_surface_density=critical_surface_density)
 
 class TestDensityBetweenAnnuli(object):
 
     def test__circular_annuli__sis__analyic_density_agrees(self):
 
-        einstein_radius = 1.0
-        sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=einstein_radius)
+        cosmology = MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
 
-        inner_annuli_radius = dim.Length(2.0)
+        einstein_radius = 1.0
+        sis_arcsec = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=einstein_radius)
+
+        inner_annuli_radius = dim.Length(2.0, 'arcsec')
+        outer_annuli_radius = dim.Length(3.0, 'arcsec')
+
         inner_mass = math.pi * einstein_radius * inner_annuli_radius
-        outer_annuli_radius = dim.Length(3.0)
         outer_mass = math.pi * einstein_radius * outer_annuli_radius
 
-        density_between_annuli = sis.density_between_circular_annuli_in_angular_units(
-            inner_annuli_radius=inner_annuli_radius, outer_annuli_radius=outer_annuli_radius)
+        density_between_annuli = sis_arcsec.density_between_circular_annuli_in_angular_units(
+            inner_annuli_radius=inner_annuli_radius, outer_annuli_radius=outer_annuli_radius,
+            unit_length='arcsec', unit_mass='angular', redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
 
         annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius ** 2.0)
 
         assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
 
-    def test__circular_annuli__nfw_profile__compare_to_manual_masss(self):
+        density_between_annuli = sis_arcsec.density_between_circular_annuli_in_angular_units(
+            inner_annuli_radius=inner_annuli_radius, outer_annuli_radius=outer_annuli_radius,
+            unit_length='arcsec', unit_mass='solMass', redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
+
+        annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius ** 2.0)
+
+        assert (2.0*outer_mass - 2.0*inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
+
+        density_between_annuli = sis_arcsec.density_between_circular_annuli_in_angular_units(
+            inner_annuli_radius=inner_annuli_radius, outer_annuli_radius=outer_annuli_radius,
+            unit_length='kpc', unit_mass='angular', redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
+
+        inner_mass = math.pi * 2.0 * einstein_radius * inner_annuli_radius
+        outer_mass = math.pi * 2.0 * einstein_radius * outer_annuli_radius
+
+        annuli_area = (np.pi * 2.0*outer_annuli_radius ** 2.0) - (np.pi * 2.0*inner_annuli_radius ** 2.0)
+
+        assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
+
+    def test__circular_annuli__nfw_profile__compare_to_manual_mass(self):
+
+        cosmology = MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
 
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
 
-        inner_mass = nfw.mass_within_circle_in_units(radius=dim.Length(1.0))
-        outer_mass = nfw.mass_within_circle_in_units(radius=dim.Length(2.0))
+        inner_mass = nfw.mass_within_circle_in_units(radius=dim.Length(1.0), redshift_profile=0.5, redshift_source=1.0,
+                                                     unit_mass='angular')
 
-        density_between_annuli = nfw.density_between_circular_annuli_in_angular_units(inner_annuli_radius=dim.Length(1.0),
-                                                                                      outer_annuli_radius=dim.Length(2.0))
+        outer_mass = nfw.mass_within_circle_in_units(radius=dim.Length(2.0), redshift_profile=0.5, redshift_source=1.0,
+                                                     unit_mass='angular')
+
+        density_between_annuli = nfw.density_between_circular_annuli_in_angular_units(
+            inner_annuli_radius=dim.Length(1.0), outer_annuli_radius=dim.Length(2.0),
+            unit_length='arcsec', unit_mass='angular', redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
 
         annuli_area = (np.pi * 2.0 ** 2.0) - (np.pi * 1.0 ** 2.0)
 
         assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
 
-
-class TestSummarize(object):
-
-    def test__spherical_isothermal(self):
-
-        profile = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
-
-        summary_text = "\n".join(
-            profile.summary_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
-                                     unit_length='arcsec', unit_mass='angular'))
-
-        expected_text = 'Mass Profile = SphericalIsothermal\n' \
-                        '\n' \
-                        'Mass within Einstein Radius = 3.1416e+00 angular\n' \
-                        'Einstein Radius = 1.00 arcsec\n' \
-                        'Mass within 10.00 arcsec = 3.1416e+01 angular\n' \
-                        'Mass within 500.00 arcsec = 1.5708e+03 angular' \
-
-        assert summary_text == expected_text
-
-    def test_truncated_nfw_challenge(self):
-
-        profile = mp.SphericalTruncatedNFWChallenge(centre=(0.0, 0.0), kappa_s=1.0)
-        summary_text = "\n".join(
-            profile.summary_in_units(radii=[dim.Length(10.0), dim.Length(500.0)],
-                                     unit_length='arcsec', unit_mass='angular'))
-
-        expected_text = 'Mass Profile = SphericalTruncatedNFWChallenge\n' \
-                        '\n' \
-                        'Mass within Einstein Radius = 4.8413e+00 angular\n' \
-                        'Einstein Radius = 1.24 arcsec\n' \
-                        'Mass within 10.00 arcsec = 2.2069e+01 angular\n' \
-                        'Mass within 500.00 arcsec = 6.2025e+01 angular\n' \
-                        'Rho at scale radius = 1940654909.41\n' \
-                        'Delta concentration = 7398517.95\n' \
-                        'Concentration = 71.53\n' \
-                        'Radius at 200x cosmic average density = 71.53 arcsec\n' \
-                        'Mass at 200x cosmic average density = 80422989967.45 angular\n' \
-                        'Mass at truncation radius = 414917555342.53 angular'
-
-        assert summary_text == expected_text

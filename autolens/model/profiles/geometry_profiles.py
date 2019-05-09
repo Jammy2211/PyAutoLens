@@ -3,7 +3,7 @@ from functools import wraps
 
 from autofit import conf
 from autofit.tools.dimension_type import map_types
-from autolens.model import dimensions as dim
+from autolens import dimensions as dim
 
 
 def transform_grid(func):

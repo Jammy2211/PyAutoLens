@@ -1,4 +1,4 @@
-from autolens.model import dimensions as dim
+from autolens import dimensions as dim
 from autolens.model.profiles import light_profiles, mass_profiles
 
 """

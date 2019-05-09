@@ -11,7 +11,7 @@ from autofit.tools.phase_property import PhaseProperty
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.data.plotters import ccd_plotters
-from autolens.lens import lens_data as li, lens_fit
+from autolens.lens import lens_data as ld, lens_fit
 from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
 from autolens.lens.plotters import sensitivity_fit_plotters, ray_tracing_plotters, lens_fit_plotters
@@ -468,7 +468,7 @@ class PhaseImaging(Phase):
             raise exc.PhaseException('You have specified for a phase to use positions, but not input positions to the '
                                      'pipeline when you ran it.')
 
-        lens_data = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
+        lens_data = ld.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
                                 image_psf_shape=self.image_psf_shape, positions=positions,
                                 interp_pixel_scale=self.interp_pixel_scale)
 
@@ -1431,6 +1431,7 @@ class SensitivityPhase(PhaseImaging):
 
 
 class HyperGalaxyPhase(Phase):
+
     class Analysis(non_linear.Analysis):
 
         def __init__(self, lens_data, model_image, galaxy_image):

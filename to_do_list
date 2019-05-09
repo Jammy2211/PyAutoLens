@@ -4,7 +4,8 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 
 9 Day Crash Course:
 
-- Units for critical surface mass density + mass calculations
+- Subhalo grid search on cosma
+- Make mass calculations faster.
 - Integration tests + pipelines for redshift feature.
 - classmethods using realistic lens units.
 - Lensing example test data suites.
@@ -21,8 +22,7 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 
 Rich:
 
-- Fix grid search bug.
-- Parallelize grid search.
+- Fix model mapper bug
 - Setup with unit test to get ideal output logging info.
 - New hyper phase stuff.
 - High level units stuff?
@@ -36,10 +36,7 @@ Big Picture:
 
 Small Picture:
 
-TURN LOGGING OFF
-
-- model.summary info output (arcsec only).
-
+- model.summary info output.
 - Sort out radial minima tests.
 - Extract square around mask, so no rectnagular pixels.
 - clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
@@ -48,13 +45,16 @@ TURN LOGGING OFF
 - Expand intepolation tests and write tutorial.
 - Challenge mass errors.
 
+Amy:
+
+- Magnification + Caustic + Critical curves
+
 Short term:
 
 - Add feature to remove astropy bug.
 
 Mid term:
 
-- Magnification + Caustic + Critical curves
 - Ray tracing refactor.
 - Include output of data for a simulation (galaxies, ccd settings, etc).
 - Write Adaptive Grid howtolens.

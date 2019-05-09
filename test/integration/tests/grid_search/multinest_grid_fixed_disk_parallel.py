@@ -12,7 +12,7 @@ from test.integration import integration_util
 from test.simulation import simulation_util
 
 test_type = 'grid_search'
-test_name = "multinest_grid_fixed_disk"
+test_name = "multinest_grid_fixed_disk_parallel"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
@@ -22,13 +22,14 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
-    integration_util.reset_paths(test_name=test_name, output_path=output_path)
+ #   integration_util.reset_paths(test_name=test_name, output_path=output_path)
     ccd_data = simulation_util.load_test_ccd_data(data_type='lens_only_dev_vaucouleurs', data_resolution='Euclid')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data, assert_optimizer_pickle_matches=False)
 
 
 def make_pipeline(test_name):
+
     class QuickPhase(ph.LensPlanePhase):
 
         def pass_priors(self, results):
@@ -50,14 +51,14 @@ def make_pipeline(test_name):
 
     phase1 = QuickPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                         lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
-                                                               disk=lp.EllipticalSersic)),
+                                                               disk=lp.EllipticalExponential)),
                         optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(autofit_ph.as_grid_search(ph.LensPlanePhase)):
+    class GridPhase(autofit_ph.as_grid_search(phase_class=ph.LensPlanePhase)):
 
         @property
         def grid_priors(self):
@@ -76,8 +77,8 @@ def make_pipeline(test_name):
 
     phase2 = GridPhase(phase_name='phase_2', phase_folders=[test_type, test_name],
                        lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
-                                                              disk=lp.EllipticalSersic)),
-                       number_of_steps=2, optimizer_class=nl.MultiNest)
+                                                              disk=lp.EllipticalExponential)),
+                       number_of_steps=6, optimizer_class=nl.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True
 
