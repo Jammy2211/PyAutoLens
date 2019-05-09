@@ -50,7 +50,9 @@ def make_pipeline(test_name):
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens_0 = results.from_phase('phase_1').constant.lens_0
+            self.lens_galaxies.lens_0 = results.from_phase('phase_1').\
+                constant.lens_galaxies.lens_0
+
             self.lens_galaxies.lens_1.sersic.centre_0 = 1.0
             self.lens_galaxies.lens_1.sersic.centre_1 = 1.0
 
@@ -67,8 +69,12 @@ def make_pipeline(test_name):
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens_0 = results.from_phase('phase_1').variable.lens_0
-            self.lens_galaxies.lens_1 = results.from_phase('phase_2').variable.lens_0
+            self.lens_galaxies.lens_0 = results.from_phase('phase_1').\
+                variable.lens_galaxies.lens_0
+
+            self.lens_galaxies.lens_1 = results.from_phase('phase_2').\
+                variable.lens_galaxies.lens_0
+
             self.lens_galaxies.lens_0.sersic.centre_0 = -1.0
             self.lens_galaxies.lens_0.sersic.centre_1 = -1.0
             self.lens_galaxies.lens_1.sersic.centre_0 = 1.0

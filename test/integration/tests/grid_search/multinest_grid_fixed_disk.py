@@ -25,7 +25,7 @@ def pipeline():
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
     ccd_data = simulation_util.load_test_ccd_data(data_type='lens_only_dev_vaucouleurs', data_resolution='Euclid')
     pipeline = make_pipeline(test_name=test_name)
-    pipeline.run(data=ccd_data)
+    pipeline.run(data=ccd_data, assert_optimizer_pickle_matches=False)
 
 
 def make_pipeline(test_name):
@@ -50,7 +50,7 @@ def make_pipeline(test_name):
 
     phase1 = QuickPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                         lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
-                                                               disk=lp.EllipticalExponential)),
+                                                               disk=lp.EllipticalSersic)),
                         optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
@@ -61,11 +61,11 @@ def make_pipeline(test_name):
 
         @property
         def grid_priors(self):
-            return [self.variable.lens.bulge.sersic_index]
+            return [self.variable.lens_galaxies.lens.bulge.sersic_index]
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.disk = results.from_phase('phase_1').constant.lens.disk
+            self.lens_galaxies.lens.disk = results.from_phase('phase_1').constant.lens_galaxies.lens.disk
 
             self.lens_galaxies.lens.bulge.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.bulge.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
@@ -76,7 +76,7 @@ def make_pipeline(test_name):
 
     phase2 = GridPhase(phase_name='phase_2', phase_folders=[test_type, test_name],
                        lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
-                                                              disk=lp.EllipticalExponential)),
+                                                              disk=lp.EllipticalSersic)),
                        number_of_steps=2, optimizer_class=nl.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True

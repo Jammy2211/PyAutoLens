@@ -62,11 +62,11 @@ def make_pipeline(test_name):
 
         @property
         def grid_priors(self):
-            return [self.variable.lens.bulge.sersic_index]
+            return [self.variable.lens_galaxies.lens.bulge.sersic_index]
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.disk = results.from_phase('phase_1').constant.lens.disk
+            self.lens_galaxies.lens.disk = results.from_phase('phase_1').constant.lens_galaxies.lens.disk
 
             self.lens_galaxies.lens.bulge.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.bulge.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
