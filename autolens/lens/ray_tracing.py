@@ -315,8 +315,7 @@ class AbstractTracer(AbstractTracerCosmology):
 
 class TracerImagePlane(AbstractTracer):
 
-    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15,
-                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
+    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray tracer for a lens system with just an image-plane. 
         
         As there is only 1 plane, there are no ray-tracing calculations. This class is therefore only used for fitting \ 
@@ -345,7 +344,7 @@ class TracerImagePlane(AbstractTracer):
 
         super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
 
-    def critical_surface_density_between_planes_in_units(self, unit_length='arcsec', unit_mass='solMass'):
+    def critical_surface_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='solMass'):
         return 0.0
 
 

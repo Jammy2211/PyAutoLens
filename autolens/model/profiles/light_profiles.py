@@ -306,14 +306,22 @@ class AbstractEllipticalSersic(EllipticalLightProfile):
 
 class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
 
-    @map_types
+    # @map_types
+    # def __init__(self,
+    #              centre: dim.Position = (0.0, 0.0),
+    #              axis_ratio: float = 1.0,
+    #              phi: float = 0.0,
+    #              intensity: dim.Luminosity = 0.1,
+    #              effective_radius: dim.Length = 0.6,
+    #              sersic_index: float = 4.0):
+
     def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 sersic_index: float = 4.0):
+                 centre=(0.0, 0.0),
+                 axis_ratio=1.0,
+                 phi=0.0,
+                 intensity=0.1,
+                 effective_radius=0.6,
+                 sersic_index=4.0):
         """ The elliptical Sersic light profile.
 
         Parameters

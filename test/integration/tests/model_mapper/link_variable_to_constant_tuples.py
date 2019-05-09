@@ -46,7 +46,8 @@ def make_pipeline(test_name):
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens = results.from_phase('phase_1').constant.lens
+            self.lens_galaxies.lens = results.from_phase('phase_1').\
+                constant.lens_galaxies.lens
 
     phase2 = MMPhase2(phase_name='phase_2', phase_folders=[test_type, test_name],
                       lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
