@@ -4,6 +4,7 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 
 9 Day Crash Course:
 
+- SUB GRID :(
 - Subhalo grid search on cosma
 - Make mass calculations faster.
 - Integration tests + pipelines for redshift feature.
