@@ -184,6 +184,7 @@ class TestRegularGridMasked(object):
 class TestSubGridMasked(object):
 
     def test__3x3_mask_with_one_pixel__2x2_sub_grid(self):
+
         mask = np.array([[True, True, True],
                          [True, False, True],
                          [True, True, True]])
