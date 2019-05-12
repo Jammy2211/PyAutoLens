@@ -36,7 +36,7 @@ def make_mask():
 
 @pytest.fixture(name="lens_data")
 def make_lens_ccd(ccd, mask):
-    return ld.LensData(ccd_data=ccd, mask=mask)
+    return ld.LensData(ccd_data=ccd, mask=mask, optimal_sub_grid=True)
 
 
 class TestLensData(object):
@@ -67,10 +67,10 @@ class TestLensData(object):
     def test__grid_stack(self, lens_data):
 
         assert (lens_data.grid_stack.regular == np.array([[1.5, -1.5], [1.5, 1.5], [-1.5, -1.5], [-1.5, 1.5]])).all()
-        assert (lens_data.grid_stack.sub == np.array([[2.0, -2.0], [2.0, -1.0], [1.0, -2.0], [1.0, -1.0],
-                                                     [2.0, 1.0], [2.0, 2.0], [1.0, 1.0], [1.0, 2.0],
-                                                     [-1.0, -2.0], [-1.0, -1.0], [-2.0, -2.0], [-2.0, -1.0],
-                                                     [-1.0, 1.0], [-1.0, 2.0], [-2.0, 1.0], [-2.0, 2.0]])).all()
+        assert (lens_data.grid_stack.sub == np.array([[2.25, -2.25], [2.25, -0.75], [0.75, -2.25], [0.75, -0.75],
+                                                     [2.25, 0.75], [2.25, 2.25], [0.75, 0.75], [0.75, 2.25],
+                                                     [-0.75, -2.25], [-0.75, -0.75], [-2.25, -2.25], [-2.25, -0.75],
+                                                     [-0.75, 0.75], [-0.75, 2.25], [-2.25, 0.75], [-2.25, 2.25]])).all()
         assert (lens_data.grid_stack.blurring == np.array([[4.5, -4.5], [4.5, -1.5], [4.5, 1.5], [4.5, 4.5],
                                                           [1.5, -4.5], [1.5, 4.5], [-1.5, -4.5], [-1.5, 4.5],
                                                           [-4.5, -4.5], [-4.5, -1.5], [-4.5, 1.5], [-4.5, 4.5]])).all()
@@ -84,7 +84,7 @@ class TestLensData(object):
         assert lens_data.padded_grid_stack.regular.image_shape == (6, 6)
         assert lens_data.padded_grid_stack.regular.padded_shape == (8, 8)
 
-        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
+        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=np.full((8, 8), False), pixel_scales=lens_data.image.pixel_scales,
             sub_grid_size=lens_data.grid_stack.sub.sub_grid_size)
 

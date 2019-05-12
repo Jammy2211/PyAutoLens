@@ -174,8 +174,19 @@ def regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask, pixel_scales,
 
     return regular_grid_1d
 
+def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size, origin=(0.0, 0.0),
+                                                                optimal_sub_grid=True):
+
+    if optimal_sub_grid:
+        return sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+            mask=mask, pixel_scales=pixel_scales, sub_grid_size=sub_grid_size, origin=origin)
+    else:
+        return sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
+            mask=mask, pixel_scales=pixel_scales, sub_grid_size=sub_grid_size, origin=origin)
+
 @decorator_util.jit()
-def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size, origin=(0.0, 0.0)):
+def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(mask, pixel_scales, sub_grid_size,
+                                                                                origin=(0.0, 0.0)):
     """ For the sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
     uniform grid of shape (sub_grid_size, sub_grid_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this grid.
