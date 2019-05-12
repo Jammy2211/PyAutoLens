@@ -48,10 +48,10 @@ class TestGalaxyFitData(object):
 
         assert (galaxy_data.grid_stack.regular == np.array([[1.5, -1.5], [1.5, 1.5],
                                                        [-1.5, -1.5], [-1.5, 1.5]])).all()
-        assert (galaxy_data.grid_stack.sub == np.array([[2.0, -2.0], [2.0, -1.0], [1.0, -2.0], [1.0, -1.0],
-                                                     [2.0, 1.0], [2.0, 2.0], [1.0, 1.0], [1.0, 2.0],
-                                                     [-1.0, -2.0], [-1.0, -1.0], [-2.0, -2.0], [-2.0, -1.0],
-                                                     [-1.0, 1.0], [-1.0, 2.0], [-2.0, 1.0], [-2.0, 2.0]])).all()
+        assert (galaxy_data.grid_stack.sub == np.array([[2.25, -2.25], [2.25, -0.75], [0.75, -2.25], [0.75, -0.75],
+                                                     [2.25, 0.75], [2.25, 2.25], [0.75, 0.75], [0.75, 2.25],
+                                                     [-0.75, -2.25], [-0.75, -0.75], [-2.25, -2.25], [-2.25, -0.75],
+                                                     [-0.75, 0.75], [-0.75, 2.25], [-2.25, 0.75], [-2.25, 2.25]])).all()
 
     def test__padded_grid_stack(self, galaxy_data):
 
@@ -62,7 +62,7 @@ class TestGalaxyFitData(object):
         assert galaxy_data.padded_grid_stack.regular.image_shape == (4, 4)
         assert galaxy_data.padded_grid_stack.regular.padded_shape == (4, 4)
 
-        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
+        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=np.full((4, 4), False), pixel_scales=galaxy_data.image.pixel_scales,
             sub_grid_size=galaxy_data.grid_stack.sub.sub_grid_size)
 

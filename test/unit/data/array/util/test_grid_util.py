@@ -189,7 +189,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [True, False, True],
                          [True, True, True]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(3.0, 6.0), sub_grid_size=2)
 
         assert (sub_grid[0:4] == np.array([[0.75, -1.5], [0.75, 1.5],
@@ -201,7 +201,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [False, False, False],
                          [True, True, True]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
         assert (sub_grid[0:4] == np.array([[0.75, -3.75], [0.75, -2.25],
@@ -219,7 +219,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [False, False, False],
                          [True, True, False]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
         assert (sub_grid == np.array([[3.75, 2.25], [3.75, 3.75], [2.25, 2.25], [2.25, 3.75],
@@ -234,7 +234,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [False, False, False],
                          [True, True, False]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(0.3, 0.3), sub_grid_size=2)
 
         sub_grid = np.round(sub_grid, decimals=3)
@@ -252,7 +252,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [True, False, True],
                          [True, True, True]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=3)
 
         assert (sub_grid == np.array([[[1.0, -1.0], [1.0, 0.], [1.0, 1.0], [0., -1.0], [0., 0.],
@@ -265,7 +265,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [True, False, False, True],
                          [True, True, True, False]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(2.0, 2.0), sub_grid_size=4)
 
         sub_grid = np.round(sub_grid, decimals=2)
@@ -298,7 +298,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [True, False, False],
                          [False, True, True]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
         assert (sub_grid == np.array([[2.25, -0.75], [2.25, 0.75], [0.75, -0.75], [0.75, 0.75],
@@ -312,7 +312,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [True, False, False, True],
                          [False, True, False, True]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
         assert (sub_grid == np.array([[3.75, 3.75], [3.75, 5.25], [2.25, 3.75], [2.25, 5.25],
@@ -327,7 +327,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [True, False, True],
                          [True, True, True]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(3.0, 6.0), sub_grid_size=2, origin=(1.0, 1.0))
 
         assert sub_grid[0:4] == pytest.approx(np.array([[1.75, -0.5], [1.75, 2.5],
@@ -339,7 +339,7 @@ class TestSubGridMaskedOptimalSpacing(object):
                          [True, False, True],
                          [True, True, False]])
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=3, origin=(1.0, -1.0))
 
         assert sub_grid == pytest.approx(np.array([[5.0, 1.], [5.0, 2.], [5.0, 3.],
