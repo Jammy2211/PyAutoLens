@@ -599,13 +599,13 @@ class SubGrid(RegularGrid):
 
     @property
     def unlensed_grid(self):
-        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
             mask=self.mask, pixel_scales=self.mask.pixel_scales, sub_grid_size=self.sub_grid_size),
             self.mask, self.sub_grid_size)
 
     @property
     def unlensed_unmasked_grid(self):
-        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
             mask=np.full(self.mask.shape, False), pixel_scales=self.mask.pixel_scales,
             sub_grid_size=self.sub_grid_size),
             mask=self.mask, sub_grid_size=self.sub_grid_size)
@@ -622,7 +622,7 @@ class SubGrid(RegularGrid):
         sub_grid_size : int
             The size (sub_grid_size x sub_grid_size) of each unmasked pixels sub-grid.
         """
-        sub_grid_masked = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid_masked = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
             mask=mask,
             pixel_scales=mask.pixel_scales,
             sub_grid_size=sub_grid_size)
@@ -646,9 +646,9 @@ class SubGrid(RegularGrid):
             The size (sub_grid_size x sub_grid_size) of each unmasked pixels sub-grid.
         """
         mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                         pixel_scales=mask.pixel_scales,
-                                                                                         sub_grid_size=sub_grid_size)
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(mask=mask,
+                                                                                                             pixel_scales=mask.pixel_scales,
+                                                                                                             sub_grid_size=sub_grid_size)
         return SubGrid(sub_grid, mask, sub_grid_size)
 
     def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
@@ -968,7 +968,7 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
 
         padded_shape = (mask.shape[0] + psf_shape[0] - 1, mask.shape[1] + psf_shape[1] - 1)
 
-        padded_sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        padded_sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
             mask=np.full(padded_shape, False), pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size)
 
         padded_mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=mask.pixel_scale)
