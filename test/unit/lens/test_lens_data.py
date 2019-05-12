@@ -84,7 +84,7 @@ class TestLensData(object):
         assert lens_data.padded_grid_stack.regular.image_shape == (6, 6)
         assert lens_data.padded_grid_stack.regular.padded_shape == (8, 8)
 
-        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
             mask=np.full((8, 8), False), pixel_scales=lens_data.image.pixel_scales,
             sub_grid_size=lens_data.grid_stack.sub.sub_grid_size)
 
