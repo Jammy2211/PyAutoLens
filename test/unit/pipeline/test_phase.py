@@ -71,14 +71,12 @@ class MockResult:
 class NLO(non_linear.NonLinearOptimizer):
     def fit(self, analysis):
         class Fitness(object):
-            def __init__(self, instance_from_physical_vector, constant):
+            def __init__(self, instance_from_physical_vector):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
-                self.constant = constant
 
             def __call__(self, vector):
                 instance = self.instance_from_physical_vector(vector)
-                instance += self.constant
 
                 likelihood = analysis.fit(instance)
                 self.result = MockResult(instance, likelihood)
@@ -86,7 +84,7 @@ class NLO(non_linear.NonLinearOptimizer):
                 # Return Chi squared
                 return -2 * likelihood
 
-        fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
+        fitness_function = Fitness(self.variable.instance_from_physical_vector)
         fitness_function(self.variable.prior_count * [0.8])
 
         return fitness_function.result
@@ -745,7 +743,6 @@ class TestPhase(object):
         instance = phase.optimizer.variable.instance_from_physical_vector(
             [0.01, 0.02, 0.23, 0.04, 0.05, 0.06, 0.87, 0.1, 0.2,
              0.4, 0.5, 0.5, 0.7, 0.8])
-        instance += phase.optimizer.constant
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.01
         assert instance.lens_galaxies[0].sis.centre[0] == 0.1
