@@ -2,7 +2,7 @@ from autofit.tools.pipeline import Pipeline
 
 
 class PipelineImaging(Pipeline):
-    def run(self, data, mask=None, positions=None, data_name=None, assert_optimizer_pickle_matches=True):
+    def run(self, data, mask=None, positions=None, data_name=None, assert_optimizer_pickle_matches=False):
         def runner(phase, results):
             return phase.run(data=data, results=results, mask=mask, positions=positions)
 

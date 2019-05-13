@@ -495,6 +495,11 @@ class TestAbstractTracer(object):
                                                                                 unit_mass='solMass') == \
                    pytest.approx(4.85e9, 1e-2)
 
+
+            assert tracer.critical_surface_density_between_image_and_source_plane_in_units(unit_length='kpc',
+                                                                                unit_mass='solMass') == \
+                   pytest.approx(4.85e9, 1e-2)
+
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
