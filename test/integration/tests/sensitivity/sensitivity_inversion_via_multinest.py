@@ -47,12 +47,13 @@ def make_pipeline(test_name):
             self.sensitive_galaxies.subhalo.mass.kappa_s = 0.1
             self.sensitive_galaxies.subhalo.mass.scale_radius = 5.0
 
-    phase1 = SensitivePhase(phase_name="phase1", phase_folders=[test_type, test_name],
-                            lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.SphericalIsothermal)),
-                            source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.Rectangular,
-                                                                       regularization=reg.Constant)),
-                            sensitive_galaxies=dict(subhalo=gm.GalaxyModel(mass=mp.SphericalNFW)),
-                            optimizer_class=nl.MultiNest)
+    phase1 = SensitivePhase(
+        phase_name="phase1", phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal)),
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.Rectangular,
+                                                   regularization=reg.Constant)),
+        sensitive_galaxies=dict(subhalo=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalNFW)),
+        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
 

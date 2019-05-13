@@ -26,7 +26,7 @@ def pipeline():
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
     ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
-    pipeline.run(data=ccd_data)# , assert_optimizer_pickle_matches=False)
+    pipeline.run(data=ccd_data)
 
 
 def make_pipeline(test_name):
@@ -49,10 +49,11 @@ def make_pipeline(test_name):
             self.source_galaxies.source.light.effective_radius = prior.UniformPrior(lower_limit=0.45, upper_limit=0.55)
             self.source_galaxies.source.light.sersic_index = prior.UniformPrior(lower_limit=0.9, upper_limit=1.1)
 
-    phase1 = QuickPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
-                        lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
-                        source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                        optimizer_class=nl.MultiNest)
+    phase1 = QuickPhase(
+        phase_name='phase_1', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+        source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
+        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
@@ -81,31 +82,31 @@ def make_pipeline(test_name):
 
             ### Source Light, Sersic -> Sersic ###
 
-            # self.source_galaxies.source.light.centre = results.from_phase('phase_1').\
-            #     variable_absolute(a=0.05).source_galaxies.source.light.centre
-            #
-            # self.source_galaxies.source.light.intensity = results.from_phase('phase_1').\
-            #     variable_relative(r=0.5).source_galaxies.source.light.intensity
-            #
-            # self.source_galaxies.source.light.effective_radius = results.from_phase('phase_1').\
-            #     variable_relative(r=0.5).source_galaxies.source.light.effective_radius
-            #
-            # self.source_galaxies.source.light.sersic_index = results.from_phase('phase_1').\
-            #     variable_relative(r=0.5).source_galaxies.source.light.sersic_index
-            #
-            # self.source_galaxies.source.light.axis_ratio = results.from_phase('phase_1').\
-            #     constant.source_galaxies.source.light.axis_ratio
-            #
-            # self.source_galaxies.source.light.phi = results.from_phase('phase_1').\
-            #     constant.source_galaxies.source.light.phi
+            self.source_galaxies.source.light.centre = results.from_phase('phase_1').\
+                variable_absolute(a=0.05).source_galaxies.source.light.centre
+
+            self.source_galaxies.source.light.intensity = results.from_phase('phase_1').\
+                variable_relative(r=0.5).source_galaxies.source.light.intensity
+
+            self.source_galaxies.source.light.effective_radius = results.from_phase('phase_1').\
+                variable_relative(r=0.5).source_galaxies.source.light.effective_radius
+
+            self.source_galaxies.source.light.sersic_index = results.from_phase('phase_1').\
+                variable_relative(r=0.5).source_galaxies.source.light.sersic_index
+
+            self.source_galaxies.source.light.axis_ratio = results.from_phase('phase_1').\
+                variable_absolute(a=0.1).source_galaxies.source.light.axis_ratio
+
+            self.source_galaxies.source.light.phi = results.from_phase('phase_1').\
+                variable_absolute(a=20.0).source_galaxies.source.light.phi
 
 
-    phase2 = GridPhase(phase_name='phase_2', phase_folders=[test_type, test_name],
-                       lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal),
-                                          subhalo=gm.GalaxyModel(mass=mp.SphericalTruncatedNFWChallenge)),
-                       source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                       optimizer_class=nl.MultiNest,
-                       number_of_steps=2)
+    phase2 = GridPhase(
+        phase_name='phase_2', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal),
+                           subhalo=gm.GalaxyModel(mass=mp.SphericalTruncatedNFWChallenge)),
+        source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
+        optimizer_class=nl.MultiNest, number_of_steps=2)
 
     phase2.optimizer.const_efficiency_mode = True
 

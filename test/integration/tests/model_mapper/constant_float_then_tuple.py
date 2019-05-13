@@ -36,9 +36,10 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.light.centre_0 = 1.0
             self.lens_galaxies.lens.light.centre_1 = 2.0
 
-    phase1 = MMPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
-                     lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                     optimizer_class=nl.MultiNest)
+    phase1 = MMPhase(
+        phase_name='phase_1', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 20
