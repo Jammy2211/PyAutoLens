@@ -63,18 +63,6 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         self.cosmology = cosmology
 
     @property
-    def constant(self):
-        """
-        Convenience method
-
-        Returns
-        -------
-        ModelInstance
-            A model instance comprising all the constant objects in this lens
-        """
-        return self.optimizer.constant
-
-    @property
     def variable(self):
         """
         Convenience method
