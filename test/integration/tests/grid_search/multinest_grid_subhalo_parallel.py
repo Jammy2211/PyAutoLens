@@ -70,8 +70,8 @@ def make_pipeline(test_name):
 
             ### Lens Mass, PL -> PL, Shear -> Shear ###
 
-            # self.lens_galaxies.lens = results.from_phase('phase_1').\
-            #     constant.lens_galaxies.lens
+            self.lens_galaxies.lens = results.from_phase('phase_1').\
+                constant.lens_galaxies.lens
 
             ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
 

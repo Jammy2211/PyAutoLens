@@ -25,7 +25,7 @@ def pipeline():
  #   integration_util.reset_paths(test_name=test_name, output_path=output_path)
     ccd_data = simulation_util.load_test_ccd_data(data_type='lens_only_dev_vaucouleurs', data_resolution='Euclid')
     pipeline = make_pipeline(test_name=test_name)
-    pipeline.run(data=ccd_data, assert_optimizer_pickle_matches=False)
+    pipeline.run(data=ccd_data)
 
 
 def make_pipeline(test_name):
