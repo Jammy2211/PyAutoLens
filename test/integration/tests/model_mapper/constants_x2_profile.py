@@ -30,6 +30,7 @@ def make_pipeline(test_name):
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, results):
+
             self.lens_galaxies.lens.light_0.axis_ratio = 0.2
             self.lens_galaxies.lens.light_0.phi = 90.0
             self.lens_galaxies.lens.light_0.centre_0 = 1.0
@@ -39,10 +40,10 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.light_1.centre_0 = 1.0
             self.lens_galaxies.lens.light_1.centre_1 = 2.0
 
-    phase1 = MMPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
-                     lens_galaxies=dict(lens=gm.GalaxyModel(light_0=lp.EllipticalSersic,
-                                                            light_1=lp.EllipticalSersic)),
-                     optimizer_class=nl.MultiNest)
+    phase1 = MMPhase(
+        phase_name='phase_1', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light_0=lp.EllipticalSersic, light_1=lp.EllipticalSersic)),
+        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 20

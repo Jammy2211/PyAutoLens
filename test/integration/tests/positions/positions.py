@@ -27,9 +27,10 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.PhasePositions(phase_name="phase1", phase_folders=[test_type, test_name],
-                               lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.SphericalIsothermal)),
-                               optimizer_class=nl.MultiNest)
+    phase1 = ph.PhasePositions(
+        phase_name="phase1", phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal)),
+        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 20

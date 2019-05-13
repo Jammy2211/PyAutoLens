@@ -1,6 +1,72 @@
 from autolens.pipeline import tagging
 
 
+class TestPipelineNameTag:
+
+    def test__pipeline_name_and_tag__mixture_of_values(self):
+
+        pipeline_name = tagging.pipeline_name_from_name_and_settings(
+            pipeline_name='pl', fix_lens_light=True)
+
+        assert pipeline_name == 'pl_fix_lens_light'
+
+        pipeline_name = tagging.pipeline_name_from_name_and_settings(
+            pipeline_name='pl2', fix_lens_light=True, align_bulge_disk_phi=True)
+
+        assert pipeline_name == 'pl2_fix_lens_light_bd_align_phi'
+
+    def test__pipeline_tag__mixture_of_values(self):
+
+        pipeline_tag = tagging.pipeline_tag_from_pipeline_settings(fix_lens_light=True)
+
+        assert pipeline_tag == '_fix_lens_light'
+
+        pipeline_tag = tagging.pipeline_tag_from_pipeline_settings(fix_lens_light=True, align_bulge_disk_phi=True)
+
+        assert pipeline_tag == '_fix_lens_light_bd_align_phi'
+
+class TestPipelineTaggers:
+
+    def test__fix_lens_light_tagger(self):
+        tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=False)
+        assert tag == ''
+        tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=True)
+        assert tag == '_fix_lens_light'
+
+    def test__align_bulge_disk_taggers(self):
+        tag = tagging.align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre=False)
+        assert tag == ''
+        tag = tagging.align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre=True)
+        assert tag == '_bd_align_centre'
+
+        tag = tagging.align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
+            align_bulge_disk_axis_ratio=False)
+        assert tag == ''
+        tag = tagging.align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(align_bulge_disk_axis_ratio=True)
+        assert tag == '_bd_align_axis_ratio'
+
+        tag = tagging.align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi=False)
+        assert tag == ''
+        tag = tagging.align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi=True)
+        assert tag == '_bd_align_phi'
+
+    def test__bulge_disk_tag(self):
+        tag = tagging.bulge_disk_tag_from_align_bulge_disks(
+            align_bulge_disk_centre=False, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False)
+        assert tag == ''
+
+        tag = tagging.bulge_disk_tag_from_align_bulge_disks(
+            align_bulge_disk_centre=True, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False)
+        assert tag == '_bd_align_centre'
+
+        tag = tagging.bulge_disk_tag_from_align_bulge_disks(
+            align_bulge_disk_centre=True, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=True)
+        assert tag == '_bd_align_centre_bd_align_phi'
+
+        tag = tagging.bulge_disk_tag_from_align_bulge_disks(
+            align_bulge_disk_centre=True, align_bulge_disk_axis_ratio=True, align_bulge_disk_phi=True)
+        assert tag == '_bd_align_centre_bd_align_axis_ratio_bd_align_phi'
+
 class TestPhaseTag:
 
     def test__mixture_of_values(self):
@@ -27,7 +93,7 @@ class TestPhaseTag:
         assert phase_tag == '_sub_1_bin_up_3_image_psf_2x2_inv_psf_3x3_interp_0.200'
 
 
-class TestTaggers:
+class TestPhaseTaggers:
 
     def test__positions_threshold_tagger(self):
 
@@ -96,45 +162,3 @@ class TestTaggers:
         assert tag == '_interp_0.250'
         tag = tagging.interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=0.234)
         assert tag == '_interp_0.234'
-
-    def test__fix_lens_light_tagger(self):
-
-        tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=False)
-        assert tag == ''
-        tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=True)
-        assert tag == '_fix_lens_light'
-
-    def test__align_bulge_disk_taggers(self):
-
-        tag = tagging.align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre=False)
-        assert tag == ''
-        tag = tagging.align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre=True)
-        assert tag == '_bd_align_centre'
-        
-        tag = tagging.align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(align_bulge_disk_axis_ratio=False)
-        assert tag == ''
-        tag = tagging.align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(align_bulge_disk_axis_ratio=True)
-        assert tag == '_bd_align_axis_ratio'
-        
-        tag = tagging.align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi=False)
-        assert tag == ''
-        tag = tagging.align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi=True)
-        assert tag == '_bd_align_phi'
-
-    def test__bulge_disk_tag(self):
-
-        tag = tagging.bulge_disk_tag_from_align_bulge_disks(
-            align_bulge_disk_centre=False, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False)
-        assert tag == ''
-
-        tag = tagging.bulge_disk_tag_from_align_bulge_disks(
-            align_bulge_disk_centre=True, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False)
-        assert tag == '_bd_align_centre'
-
-        tag = tagging.bulge_disk_tag_from_align_bulge_disks(
-            align_bulge_disk_centre=True, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=True)
-        assert tag == '_bd_align_centre_bd_align_phi'
-
-        tag = tagging.bulge_disk_tag_from_align_bulge_disks(
-            align_bulge_disk_centre=True, align_bulge_disk_axis_ratio=True, align_bulge_disk_phi=True)
-        assert tag == '_bd_align_centre_bd_align_axis_ratio_bd_align_phi'

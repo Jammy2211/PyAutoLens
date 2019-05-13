@@ -58,7 +58,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(autofit_ph.as_grid_search(phase_class=ph.LensPlanePhase)):
+    class GridPhase(autofit_ph.as_grid_search(phase_class=ph.LensPlanePhase, parallel=True)):
 
         @property
         def grid_priors(self):

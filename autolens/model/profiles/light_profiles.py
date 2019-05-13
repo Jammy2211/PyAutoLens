@@ -1,11 +1,11 @@
 import numpy as np
+from astropy import cosmology as cosmo
 from scipy.integrate import quad
 
 from autofit.tools.dimension_type import map_types
 from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles
 
-from astropy import cosmology as cosmo
 
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
@@ -51,6 +51,7 @@ class LightProfile(object):
             self, radii, unit_length='arcsec', unit_luminosity='eps',
             exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         return ["Light Profile = {}".format(self.__class__.__name__), ""]
+
 
 # noinspection PyAbstractClass
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
@@ -101,7 +102,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     @dim.convert_units_to_input_units
     def luminosity_within_ellipse_in_units(
-            self, major_axis : dim.Length, unit_luminosity='eps',
+            self, major_axis: dim.Length, unit_luminosity='eps',
             exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
         This is centred on the light profile's centre.
@@ -120,8 +121,9 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        luminosity = dim.Luminosity(value=quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
-                                    unit_luminosity=self.unit_luminosity)
+        luminosity = dim.Luminosity(
+            value=quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
+            unit_luminosity=self.unit_luminosity)
         return dim.Luminosity(luminosity, unit_luminosity)
 
     def luminosity_integral(self, x, axis_ratio):
@@ -136,13 +138,11 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
                            unit_length='arcsec', unit_luminosity='eps',
                            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15,
                            whitespace=80, **kwargs):
-
         summary = super().summarize_in_units(
             radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
             exposure_time=exposure_time, redshift_profile=redshift_profile, cosmology=cosmology, kwargs=kwargs)
 
         for radius in radii:
-
             luminosity = self.luminosity_within_circle_in_units(
                 unit_luminosity=unit_luminosity, radius=radius, redshift_profile=redshift_profile,
                 exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs)
@@ -306,22 +306,14 @@ class AbstractEllipticalSersic(EllipticalLightProfile):
 
 class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
 
-    # @map_types
-    # def __init__(self,
-    #              centre: dim.Position = (0.0, 0.0),
-    #              axis_ratio: float = 1.0,
-    #              phi: float = 0.0,
-    #              intensity: dim.Luminosity = 0.1,
-    #              effective_radius: dim.Length = 0.6,
-    #              sersic_index: float = 4.0):
-
+    @map_types
     def __init__(self,
-                 centre=(0.0, 0.0),
-                 axis_ratio=1.0,
-                 phi=0.0,
-                 intensity=0.1,
-                 effective_radius=0.6,
-                 sersic_index=4.0):
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0,
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6,
+                 sersic_index: float = 4.0):
         """ The elliptical Sersic light profile.
 
         Parameters

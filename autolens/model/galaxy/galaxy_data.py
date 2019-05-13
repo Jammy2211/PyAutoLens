@@ -76,12 +76,11 @@ class GalaxyFitData(object):
         self.mask_1d = mask.map_2d_array_to_masked_1d_array(array_2d=mask)
         self.sub_grid_size = sub_grid_size
 
-        self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                           sub_grid_size=sub_grid_size,
-                                                                                           psf_shape=(1, 1))
+        self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1), optimal_sub_grid=True)
 
         self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1), optimal_sub_grid=True)
 
         if all(not element for element in [use_intensities, use_convergence, use_potential,
                                            use_deflections_y, use_deflections_x]):
