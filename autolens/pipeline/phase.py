@@ -72,7 +72,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         ModelInstance
             A model instance comprising all the constant objects in this lens
         """
-        return self.optimizer.variable
+        return self.optimizer.constant
 
     @property
     def variable(self):
