@@ -47,8 +47,8 @@ def make_pipeline(test_name):
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens = results.from_phase('phase_1').\
-                constant.lens_galaxies.lens
+            self.lens_galaxies.lens.light.centre = results.from_phase('phase_1').\
+                constant.lens_galaxies.lens.light.centre
 
     phase2 = MMPhase2(
         phase_name='phase_2', phase_folders=[test_type, test_name],
