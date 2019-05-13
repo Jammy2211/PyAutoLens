@@ -13,7 +13,7 @@ from test.integration import integration_util
 from test.simulation import simulation_util
 
 test_type = 'grid_search'
-test_name = "multinest_grid_subhalo"
+test_name = "multinest_grid_subhalo_parallel"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
@@ -59,7 +59,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(autofit_ph.as_grid_search(ph.LensSourcePlanePhase)):
+    class GridPhase(autofit_ph.as_grid_search(ph.LensSourcePlanePhase, parallel=True)):
 
         @property
         def grid_priors(self):

@@ -31,12 +31,12 @@ def make_pipeline(test_name):
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, results):
-            self.lens_galaxies.lens.light.intensity = self.lens_galaxies.lens.mass.einstein_radius_in_units
+            self.lens_galaxies.lens.light.intensity = self.lens_galaxies.lens.mass.einstein_radius
 
-    phase1 = MMPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
-                     lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
-                                                            mass=mp.SphericalIsothermal)),
-                     optimizer_class=nl.MultiNest)
+    phase1 = MMPhase(
+        phase_name='phase_1', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic, mass=mp.SphericalIsothermal)),
+        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 20
