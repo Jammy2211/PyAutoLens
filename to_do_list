@@ -6,7 +6,7 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 
 - Subhalo grid search on cosma
 - Make mass calculations faster.
-- Integration tests + pipelines for redshift feature.
+- Integration tests + pipelines for redshift feature + summarize.
 - classmethods using realistic lens units.
 - Lensing example test data suites.
 - Aggregator use examples.

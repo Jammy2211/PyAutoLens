@@ -63,18 +63,6 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         self.cosmology = cosmology
 
     @property
-    def constant(self):
-        """
-        Convenience method
-
-        Returns
-        -------
-        ModelInstance
-            A model instance comprising all the constant objects in this lens
-        """
-        return self.optimizer.variable
-
-    @property
     def variable(self):
         """
         Convenience method
@@ -581,141 +569,60 @@ class PhaseImaging(Phase):
 
         def visualize(self, instance, image_path, during_analysis):
 
-            self.plot_count += 1
-
             mask = self.lens_data.mask if self.should_plot_mask else None
             positions = self.lens_data.positions if self.should_plot_positions else None
 
-            if self.plot_data_as_subplot:
-                ccd_plotters.plot_ccd_subplot(
-                    ccd_data=self.lens_data.ccd_data, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
-                    zoom_around_mask=self.zoom_around_mask, positions=positions,
-                    units=self.plot_units,
-                    output_path=image_path, output_format='png')
-
-            ccd_plotters.plot_ccd_individual(
-                ccd_data=self.lens_data.ccd_data, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
-                zoom_around_mask=self.zoom_around_mask, positions=positions,
+            ccd_plotters.plot_ccd_for_phase(
+                ccd_data=self.lens_data.ccd_data, mask=mask, positions=positions,
+                extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
+                units=self.plot_units,
+                should_plot_as_subplot=self.plot_data_as_subplot,
                 should_plot_image=self.plot_data_image,
                 should_plot_noise_map=self.plot_data_noise_map,
                 should_plot_psf=self.plot_data_psf,
                 should_plot_signal_to_noise_map=self.plot_data_signal_to_noise_map,
                 should_plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
                 should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
-                units=self.plot_units,
-                output_path=image_path, output_format='png')
+                visualize_path=image_path)
 
             tracer = self.tracer_for_instance(instance)
+
+            ray_tracing_plotters.plot_ray_tracing_for_phase(
+                tracer=tracer, during_analysis=during_analysis, mask=mask,
+                extract_array_from_mask=self.extract_array_from_mask,
+                zoom_around_mask=self.zoom_around_mask, positions=positions, units=self.plot_units,
+                should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
+                should_plot_all_at_end_png=self.plot_ray_tracing_all_at_end_png,
+                should_plot_all_at_end_fits=self.plot_ray_tracing_all_at_end_fits,
+                should_plot_image_plane_image=self.plot_ray_tracing_image_plane_image,
+                should_plot_source_plane=self.plot_ray_tracing_source_plane,
+                should_plot_convergence=self.plot_ray_tracing_convergence,
+                should_plot_potential=self.plot_ray_tracing_potential,
+                should_plot_deflections=self.plot_ray_tracing_deflections,
+                visualize_path=image_path)
+
             padded_tracer = self.padded_tracer_for_instance(instance)
-
-            if self.plot_ray_tracing_as_subplot:
-                ray_tracing_plotters.plot_ray_tracing_subplot(
-                    tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
-                    zoom_around_mask=self.zoom_around_mask, positions=positions,
-                    units=self.plot_units,
-                    output_path=image_path, output_format='png')
-
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
-            if self.plot_lens_fit_as_subplot:
-                lens_fit_plotters.plot_fit_subplot(
-                    fit=fit, should_plot_mask=self.should_plot_mask,
-                    extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
-                    positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
-                    units=self.plot_units,
-                    output_path=image_path, output_format='png')
-
-            if during_analysis:
-
-                ray_tracing_plotters.plot_ray_tracing_individual(
-                    tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
-                    zoom_around_mask=self.zoom_around_mask, positions=positions,
-                    should_plot_image_plane_image=self.plot_ray_tracing_image_plane_image,
-                    should_plot_source_plane=self.plot_ray_tracing_source_plane,
-                    should_plot_convergence=self.plot_ray_tracing_convergence,
-                    should_plot_potential=self.plot_ray_tracing_potential,
-                    should_plot_deflections=self.plot_ray_tracing_deflections,
-                    units=self.plot_units,
-                    output_path=image_path, output_format='png')
-
-                lens_fit_plotters.plot_fit_individuals(
-                    fit=fit, should_plot_mask=self.should_plot_mask,
-                    extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
-                    positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
-                    should_plot_image=self.plot_lens_fit_image,
-                    should_plot_noise_map=self.plot_lens_fit_noise_map,
-                    should_plot_signal_to_noise_map=self.plot_lens_fit_signal_to_noise_map,
-                    should_plot_lens_subtracted_image=self.plot_lens_fit_lens_subtracted_image,
-                    should_plot_model_image=self.plot_lens_fit_model_image,
-                    should_plot_lens_model_image=self.plot_lens_fit_lens_model_image,
-                    should_plot_source_model_image=self.plot_lens_fit_source_model_image,
-                    should_plot_source_plane_image=self.plot_lens_fit_source_plane_image,
-                    should_plot_residual_map=self.plot_lens_fit_residual_map,
-                    should_plot_chi_squared_map=self.plot_lens_fit_chi_squared_map,
-                    units=self.plot_units,
-                    output_path=image_path, output_format='png')
-
-            elif not during_analysis:
-
-                if self.plot_ray_tracing_all_at_end_png:
-                    ray_tracing_plotters.plot_ray_tracing_individual(
-                        tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
-                        zoom_around_mask=self.zoom_around_mask, positions=positions,
-                        should_plot_image_plane_image=True,
-                        should_plot_source_plane=True,
-                        should_plot_convergence=True,
-                        should_plot_potential=True,
-                        should_plot_deflections=True,
-                        units=self.plot_units,
-                        output_path=image_path, output_format='png')
-
-                if self.plot_ray_tracing_all_at_end_fits:
-                    ray_tracing_plotters.plot_ray_tracing_individual(
-                        tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
-                        zoom_around_mask=self.zoom_around_mask, positions=positions,
-                        should_plot_image_plane_image=True,
-                        should_plot_source_plane=True,
-                        should_plot_convergence=True,
-                        should_plot_potential=True,
-                        should_plot_deflections=True,
-                        output_path=image_path + 'fits/', output_format='fits')
-
-                if self.plot_lens_fit_all_at_end_png:
-                    lens_fit_plotters.plot_fit_individuals(
-                        fit=fit, should_plot_mask=self.should_plot_mask,
-                        extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
-                        positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
-                        should_plot_image=True,
-                        should_plot_noise_map=True,
-                        should_plot_signal_to_noise_map=True,
-                        should_plot_lens_subtracted_image=True,
-                        should_plot_model_image=True,
-                        should_plot_lens_model_image=True,
-                        should_plot_source_model_image=True,
-                        should_plot_source_plane_image=True,
-                        should_plot_residual_map=True,
-                        should_plot_chi_squared_map=True,
-                        units=self.plot_units,
-                        output_path=image_path, output_format='png')
-
-                if self.plot_lens_fit_all_at_end_fits:
-                    lens_fit_plotters.plot_fit_individuals(
-                        fit=fit, should_plot_mask=self.should_plot_mask,
-                        extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
-                        positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
-                        should_plot_image=True,
-                        should_plot_noise_map=True,
-                        should_plot_signal_to_noise_map=True,
-                        should_plot_lens_subtracted_image=True,
-                        should_plot_model_image=True,
-                        should_plot_lens_model_image=True,
-                        should_plot_source_model_image=True,
-                        should_plot_source_plane_image=True,
-                        should_plot_residual_map=True,
-                        should_plot_chi_squared_map=True,
-                        output_path=image_path + 'fits/', output_format='fits')
-
-            return fit
+            lens_fit_plotters.plot_lens_fit_for_phase(
+                fit=fit, during_analysis=during_analysis, should_plot_mask=self.should_plot_mask,
+                extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
+                positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
+                should_plot_as_subplot=self.plot_lens_fit_as_subplot,
+                should_plot_all_at_end_png=self.plot_lens_fit_all_at_end_png,
+                should_plot_all_at_end_fits=self.plot_lens_fit_all_at_end_fits,
+                should_plot_image=self.plot_lens_fit_image,
+                should_plot_noise_map=self.plot_lens_fit_noise_map,
+                should_plot_signal_to_noise_map=self.plot_lens_fit_signal_to_noise_map,
+                should_plot_lens_subtracted_image=self.plot_lens_fit_lens_subtracted_image,
+                should_plot_model_image=self.plot_lens_fit_model_image,
+                should_plot_lens_model_image=self.plot_lens_fit_lens_model_image,
+                should_plot_source_model_image=self.plot_lens_fit_source_model_image,
+                should_plot_source_plane_image=self.plot_lens_fit_source_plane_image,
+                should_plot_residual_map=self.plot_lens_fit_residual_map,
+                should_plot_chi_squared_map=self.plot_lens_fit_chi_squared_map,
+                units=self.plot_units,
+                visualize_path=image_path)
 
         def fit_for_tracers(self, tracer, padded_tracer):
             return lens_fit.LensDataFit.for_data_and_tracer(lens_data=self.lens_data, tracer=tracer,

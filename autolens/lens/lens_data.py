@@ -7,7 +7,7 @@ from autolens.model.inversion import convolution as inversion_convolution
 class LensData(object):
 
     def __init__(self, ccd_data, mask, sub_grid_size=2, image_psf_shape=None, inversion_psf_shape=None,
-                 positions=None, interp_pixel_scale=None):
+                 positions=None, interp_pixel_scale=None, optimal_sub_grid=True):
         """
         The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -70,11 +70,15 @@ class LensData(object):
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(
             self.mask, self.psf.resized_scaled_array_from_array(new_shape=self.inversion_psf_shape))
 
-        self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                              sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape)
+        self.optimal_sub_grid = optimal_sub_grid
 
-        self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                            sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape)
+        self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape,
+            optimal_sub_grid=self.optimal_sub_grid)
+
+        self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape,
+            optimal_sub_grid=self.optimal_sub_grid)
 
         self.interp_pixel_scale = interp_pixel_scale
 
@@ -96,7 +100,8 @@ class LensData(object):
 
         return LensData(ccd_data=ccd_data_with_modified_image, mask=self.mask, sub_grid_size=self.sub_grid_size,
                         image_psf_shape=self.image_psf_shape, inversion_psf_shape=self.inversion_psf_shape,
-                        positions=self.positions, interp_pixel_scale=self.interp_pixel_scale)
+                        positions=self.positions, interp_pixel_scale=self.interp_pixel_scale,
+                        optimal_sub_grid=self.optimal_sub_grid)
 
     def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
 
@@ -105,7 +110,8 @@ class LensData(object):
 
         return LensData(ccd_data=binned_up_ccd_data, mask=binned_up_mask, sub_grid_size=self.sub_grid_size,
                         image_psf_shape=self.image_psf_shape, inversion_psf_shape=self.inversion_psf_shape,
-                        positions=self.positions, interp_pixel_scale=self.interp_pixel_scale)
+                        positions=self.positions, interp_pixel_scale=self.interp_pixel_scale,
+                        optimal_sub_grid=self.optimal_sub_grid)
 
 
     @property
@@ -122,6 +128,7 @@ class LensData(object):
             self.image_1d = obj.image_1d
             self.noise_map_1d = obj.noise_map_1d
             self.mask_1d = obj.mask_1d
+            self.optimal_sub_grid = obj.optimal_sub_grid
             self.sub_grid_size = obj.sub_grid_size
             self.convolver_image = obj.convolver_image
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix

@@ -6,6 +6,92 @@ from autolens.lens.plotters import plane_plotters
 from autolens.model.inversion.plotters import inversion_plotters
 
 
+def plot_lens_fit_for_phase(
+        fit, during_analysis, extract_array_from_mask, zoom_around_mask, positions, units,
+        should_plot_mask,
+        should_plot_image_plane_pix,
+        should_plot_as_subplot,
+        should_plot_all_at_end_png,
+        should_plot_all_at_end_fits,
+        should_plot_image,
+        should_plot_noise_map,
+        should_plot_signal_to_noise_map,
+        should_plot_lens_subtracted_image,
+        should_plot_model_image,
+        should_plot_lens_model_image,
+        should_plot_source_model_image,
+        should_plot_source_plane_image,
+        should_plot_residual_map,
+        should_plot_chi_squared_map,
+        visualize_path):
+
+    output_path = visualize_path
+
+    if should_plot_as_subplot:
+        
+        plot_fit_subplot(
+            fit=fit, should_plot_mask=should_plot_mask,
+            extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+            positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
+            units=units,
+            output_path=output_path, output_format='png')
+
+    plot_fit_individuals(
+        fit=fit, should_plot_mask=should_plot_mask,
+        extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+        positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
+        should_plot_image=should_plot_image,
+        should_plot_noise_map=should_plot_noise_map,
+        should_plot_signal_to_noise_map=should_plot_signal_to_noise_map,
+        should_plot_lens_subtracted_image=should_plot_lens_subtracted_image,
+        should_plot_model_image=should_plot_model_image,
+        should_plot_lens_model_image=should_plot_lens_model_image,
+        should_plot_source_model_image=should_plot_source_model_image,
+        should_plot_source_plane_image=should_plot_source_plane_image,
+        should_plot_residual_map=should_plot_residual_map,
+        should_plot_chi_squared_map=should_plot_chi_squared_map,
+        units=units,
+        output_path=output_path, output_format='png')
+
+    if not during_analysis:
+
+        if should_plot_all_at_end_png:
+
+            plot_fit_individuals(
+                fit=fit, should_plot_mask=should_plot_mask,
+                extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+                positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
+                should_plot_image=True,
+                should_plot_noise_map=True,
+                should_plot_signal_to_noise_map=True,
+                should_plot_lens_subtracted_image=True,
+                should_plot_model_image=True,
+                should_plot_lens_model_image=True,
+                should_plot_source_model_image=True,
+                should_plot_source_plane_image=True,
+                should_plot_residual_map=True,
+                should_plot_chi_squared_map=True,
+                units=units,
+                output_path=output_path, output_format='png')
+
+        if should_plot_all_at_end_fits:
+
+            plot_fit_individuals(
+                fit=fit, should_plot_mask=should_plot_mask,
+                extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+                positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
+                should_plot_image=True,
+                should_plot_noise_map=True,
+                should_plot_signal_to_noise_map=True,
+                should_plot_lens_subtracted_image=True,
+                should_plot_model_image=True,
+                should_plot_lens_model_image=True,
+                should_plot_source_model_image=True,
+                should_plot_source_plane_image=True,
+                should_plot_residual_map=True,
+                should_plot_chi_squared_map=True,
+                output_path=output_path + 'fits/', output_format='fits')
+
 def plot_fit_subplot(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         should_plot_image_plane_pix=False, plot_mass_profile_centres=True,
