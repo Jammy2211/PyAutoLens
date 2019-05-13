@@ -583,7 +583,7 @@ class TestPhase(object):
 
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)
 
@@ -595,7 +595,7 @@ class TestPhase(object):
         phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                         cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)
 
@@ -613,7 +613,7 @@ class TestPhase(object):
         phase = ph.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7,
                                    phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)
 
@@ -634,7 +634,8 @@ class TestPhase(object):
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
                                   cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
+
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
@@ -648,7 +649,7 @@ class TestPhase(object):
                                         mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
                                         phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
@@ -777,7 +778,7 @@ class TestResult(object):
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
                                   cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
@@ -791,7 +792,7 @@ class TestResult(object):
                                         mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
                                         phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
