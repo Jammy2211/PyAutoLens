@@ -383,6 +383,10 @@ class TracerImageSourcePlanes(AbstractTracer):
 
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
+    def critical_surface_density_between_image_and_source_plane_in_units(self, unit_length='arcsec', unit_mass='solMass'):
+        return self.critical_surface_density_between_planes_in_units(i=0, j=1, unit_length=unit_length,
+                                                                     unit_mass=unit_mass)
+
     def einstein_radius_of_image_plane_in_units(self, unit_length='arcsec'):
         return self.einstein_radius_of_plane_in_units(i=0, unit_length=unit_length)
 
