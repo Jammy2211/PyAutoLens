@@ -501,8 +501,8 @@ class TestPhase(object):
         clean_images()
 
         phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
-                                        lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
-                                        source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+                                        lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
+                                        source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                         phase_name='test_phase')
         result = phase.run(data=ccd_data)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
@@ -531,7 +531,8 @@ class TestPhase(object):
         assert len(lens_data.image_1d) == 32
 
     def test_duplication(self):
-        phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel()], source_galaxies=[gm.GalaxyModel()],
+        phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel()),
+                                        source_galaxies=dict(source=gm.GalaxyModel()),
                                         phase_name='test_phase')
 
         ph.LensSourcePlanePhase(phase_name='test_phase')
@@ -551,7 +552,56 @@ class TestPhase(object):
         assert (analysis.lens_data.image == 20.0 * np.ones(shape=shape)).all()
         assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=32)).all()
 
+    def test__check_if_phase_uses_inversion(self):
+
+        phase = ph.LensPlanePhase(
+            phase_name='test_phase',
+            lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
+
+        assert phase.uses_inversion == False
+
+        phase = ph.LensPlanePhase(
+            phase_name='test_phase',
+            lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
+                                                   regularization=reg.Constant)))
+
+        assert phase.uses_inversion == True
+
+        phase = ph.LensSourcePlanePhase(
+            phase_name='test_phase',
+            lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
+            source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0)))
+
+        assert phase.uses_inversion == False
+
+        phase = ph.LensSourcePlanePhase(
+            phase_name='test_phase',
+            lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
+                                                   regularization=reg.Constant)),
+            source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0)))
+
+        assert phase.uses_inversion == True
+
+        phase = ph.LensSourcePlanePhase(
+            phase_name='test_phase',
+            lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
+            source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.Rectangular,
+                                                       regularization=reg.Constant)))
+
+        assert phase.uses_inversion == True
+
+    def test__phase_with_no_inversion__convolver_mapping_matrix_of_lens_data_is_none(self, ccd_data, mask):
+
+        phase = ph.LensPlanePhase(
+            phase_name='test_phase',
+            lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
+
+        analysis = phase.make_analysis(data=ccd_data)
+
+        assert analysis.lens_data.convolver_mapping_matrix is None
+
     def test__lens_data_is_binned_up(self, ccd_data, mask):
+
         binned_up_ccd_data = ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=2)
         binned_up_mask = mask.binned_up_mask_from_mask(bin_up_factor=2)
 
@@ -576,6 +626,7 @@ class TestPhase(object):
         assert (analysis.lens_data.noise_map_1d == binned_up_lens_data.noise_map_1d).all()
 
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
+
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
 
@@ -625,6 +676,7 @@ class TestPhase(object):
         assert padded_tracer.cosmology == cosmo.WMAP7
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
+
         lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
         source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
@@ -646,6 +698,7 @@ class TestPhase(object):
         phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                         mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
                                         phase_name='test_phase')
+        phase.uses_inversion = True
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
@@ -704,12 +757,11 @@ class TestPhase(object):
     #     assert g1_blurred_image == pytest.approx(unmasked_model_images[1], 1e-4)
 
     def test__phase_can_receive_list_of_galaxy_models(self):
-        phase = ph.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
-                                                                sis=mp.SphericalIsothermal,
-                                                                redshift=g.Redshift),
-                                                 gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                                redshift=g.Redshift)],
-                                  optimizer_class=non_linear.MultiNest, phase_name='test_phase')
+        phase = ph.LensPlanePhase(
+            lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic, sis=mp.SphericalIsothermal,
+                                                   redshift=g.Redshift),
+                               lens1=gm.GalaxyModel(sis=mp.SphericalIsothermal, redshift=g.Redshift)),
+            optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
             [0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.8, 0.1, 0.2, 0.3,
@@ -730,11 +782,10 @@ class TestPhase(object):
             def pass_models(self, results):
                 self.lens_galaxies[0].sis.einstein_radius = prior.Constant(10.0)
 
-        phase = LensPlanePhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
-                                                              sis=mp.SphericalIsothermal,
-                                                              redshift=g.Redshift),
-                                               gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                              redshift=g.Redshift)],
+        phase = LensPlanePhase2(
+            lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic, sis=mp.SphericalIsothermal,
+                                                 redshift=g.Redshift),
+                                lens1=gm.GalaxyModel(sis=mp.SphericalIsothermal, redshift=g.Redshift)),
                                 optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         # noinspection PyTypeChecker
@@ -788,6 +839,9 @@ class TestResult(object):
         phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                         mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
                                         phase_name='test_phase')
+
+        phase.uses_inversion = True
+
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
