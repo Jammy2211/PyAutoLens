@@ -136,6 +136,12 @@ class TestLensData(object):
         assert type(lens_data.convolver_image) == convolution.ConvolverImage
         assert type(lens_data.convolver_mapping_matrix) == inversion_convolution.ConvolverMappingMatrix
 
+    def test__uses_inversion__does_not_create_mapping_matrix_conovolver_if_false(self, ccd, mask):
+
+        lens_data = ld.LensData(ccd_data=ccd, mask=mask, optimal_sub_grid=True, uses_inversion=False)
+
+        assert lens_data.convolver_mapping_matrix == None
+
     def test__constructor_inputs(self):
 
         psf = ccd.PSF(np.ones((7, 7)), 1)
