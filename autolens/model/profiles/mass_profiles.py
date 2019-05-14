@@ -518,6 +518,37 @@ class EllipticalIsothermal(EllipticalPowerLaw):
             return self.grid_to_grid_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 
+class EllipticalIsothermalMass(EllipticalIsothermal):
+
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=0.9, phi=0.0, mass=):
+        """
+        Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
+        density distribution for the value slope=2.0
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The (y,x) arc-second coordinates of the profile centre.
+        axis_ratio : float
+            The elliptical mass profile's minor-to-major axis ratio (b/a).
+        phi : float
+            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis.
+        einstein_radius : float
+            The arc-second Einstein radius.
+        """
+
+        # 1) Change input variable from einstein radius to mass.
+        # 2) In EllipticalIsothermalMass.__init__ compute einstein radius from input einstein mass, e.g
+        #    (einstein_radius = something * einstein_mass).
+        # 3) Make mass an attribute of class.
+
+        mass = self.mass_within_circle(radius=einstein_radius, conversion_factor=1.0)
+
+
+        super(EllipticalIsothermalMass, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
+                                                       einstein_radius=einstein_radius)
+
+
 class SphericalIsothermal(EllipticalIsothermal):
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0):
