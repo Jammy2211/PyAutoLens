@@ -33,8 +33,8 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, g
 
                     image_plane_pix_grid = galaxy.pixelization.image_plane_pix_grid_from_regular_grid(
                         regular_grid=grid_stack.regular)
-                    return grid_stack.grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
-                                                                     regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
+                    return grid_stack.new_grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
+                                                                         regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
 
     return grid_stack
 
@@ -67,9 +67,12 @@ class ImagePlanePixelization(object):
         regular_grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
-        imagepixel_scale = regular_grid.mask.pixel_scale
-        pixel_scales = ((regular_grid.masked_shape_arcsec[0] + imagepixel_scale) / self.shape[0],
-                        (regular_grid.masked_shape_arcsec[1] + imagepixel_scale) / self.shape[1])
+
+        pixel_scale = regular_grid.mask.pixel_scale
+
+        pixel_scales = ((regular_grid.masked_shape_arcsec[0] + pixel_scale) / (self.shape[0]),
+                        (regular_grid.masked_shape_arcsec[1] + pixel_scale) / (self.shape[1]))
+
         return grids.SparseToRegularGrid(unmasked_sparse_grid_shape=self.shape, pixel_scales=pixel_scales,
                                          regular_grid=regular_grid, origin=regular_grid.mask.centre)
 
@@ -179,7 +182,7 @@ class Rectangular(Pixelization):
         ----------
         grid_stack : grids.GridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grids.RegularGridBorder
+        border : grids.RegularGridBorder | None
             The border of the grid-stack's regular-grid.
         """
 

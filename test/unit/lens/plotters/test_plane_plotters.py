@@ -26,12 +26,12 @@ def make_mask():
 
 @pytest.fixture(name='galaxy_light')
 def make_galaxy_light():
-    return g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+    return g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
 
 @pytest.fixture(name='galaxy_mass')
 def make_galaxy_mass():
-    return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+    return g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
 @pytest.fixture(name='grid_stack')
@@ -62,13 +62,13 @@ def test__plane_image_is_output(plane, positions, plane_plotter_path, plot_patch
     assert plane_plotter_path + 'plane_image.png' in plot_patch.paths
 
 
-def test__surface_density_is_output(plane, mask, plane_plotter_path, plot_patch):
+def test__convergence_is_output(plane, mask, plane_plotter_path, plot_patch):
 
-    plane_plotters.plot_surface_density(plane=plane, mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
-                                        cb_tick_values=[1.0], cb_tick_labels=['1.0'],
-                                        output_path=plane_plotter_path, output_format='png')
+    plane_plotters.plot_convergence(plane=plane, mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
+                                    cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                    output_path=plane_plotter_path, output_format='png')
 
-    assert plane_plotter_path + 'plane_surface_density.png' in plot_patch.paths
+    assert plane_plotter_path + 'plane_convergence.png' in plot_patch.paths
 
 
 def test__potential_is_output(plane, mask, plane_plotter_path, plot_patch):

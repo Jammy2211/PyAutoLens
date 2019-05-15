@@ -4,6 +4,7 @@ import numpy as np
 
 from autolens import exc
 from autolens.data.array.util import array_util, grid_util
+from skimage.transform import rescale
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -37,6 +38,7 @@ class ArrayGeometry(object):
     def xticks(self):
         """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
         return np.linspace(self.arc_second_minima[1], self.arc_second_maxima[1], 4)
+
 
 # noinspection PyUnresolvedReferences
 class RectangularArrayGeometry(ArrayGeometry):
@@ -198,6 +200,8 @@ class Array(np.ndarray):
         """
         arguments = vars(self)
         arguments.update({"array": array})
+        if 'centre' in arguments:
+            arguments.pop("centre")
         return self.__class__(**arguments)
 
     @classmethod
@@ -328,7 +332,7 @@ class ScaledSquarePixelArray(ScaledArray):
         except AttributeError:
             return super_result
 
-    def extract_scaled_array_around_mask(self, mask, buffer=1):
+    def zoomed_scaled_array_around_mask(self, mask, buffer=1):
         """Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
 
         This is used to extract and visualize only the region of an image that is used in an analysis.
@@ -340,10 +344,9 @@ class ScaledSquarePixelArray(ScaledArray):
         buffer : int
             The buffer of pixels around the extraction.
         """
-        region = mask.extraction_region
-        return self.new_with_array(array=array_util.extracted_array_2d_from_array_2d_and_coordinates(array_2d=self,
-                                                                                                     y0=region[0]-buffer, y1=region[1]+buffer,
-                                                                                                     x0=region[2]-buffer, x1=region[3]+buffer))
+        return self.new_with_array(array=array_util.extracted_array_2d_from_array_2d_and_coordinates(
+            array_2d=self,  y0=mask.zoom_region[0]-buffer, y1=mask.zoom_region[1]+buffer,
+            x0=mask.zoom_region[2]-buffer, x1=mask.zoom_region[3]+buffer))
 
     def resized_scaled_array_from_array(self, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
         """resized the array to a new shape and at a new origin.
@@ -361,14 +364,29 @@ class ScaledSquarePixelArray(ScaledArray):
         elif new_centre_pixels is None and new_centre_arcsec is not None:
             new_centre = self.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=new_centre_arcsec)
         else:
-            raise exc.ImagingException('You have supplied two centres (pixels and arc-seconds) to the resize scaled'
+            raise exc.DataException('You have supplied two centres (pixels and arc-seconds) to the resize scaled'
                                        'array function')
 
-        return self.new_with_array(array=array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=self, resized_shape=new_shape,
-                                                                                                     origin=new_centre))
+        return self.new_with_array(array=array_util.resized_array_2d_from_array_2d_and_resized_shape(
+            array_2d=self, resized_shape=new_shape, origin=new_centre))
 
-  #  def binned_up_array_from_array(self, bin_up_size):
+    def binned_up_array_from_array(self, bin_up_factor, method):
 
+        if method is 'mean':
+            return ScaledSquarePixelArray(array=array_util.bin_up_array_2d_using_mean(array_2d=self,
+                                                                                   bin_up_factor=bin_up_factor),
+                                          pixel_scale=self.pixel_scale*bin_up_factor)
+        elif method is 'quadrature':
+            return ScaledSquarePixelArray(array=array_util.bin_up_array_2d_using_quadrature(array_2d=self,
+                                                                                   bin_up_factor=bin_up_factor),
+                                          pixel_scale=self.pixel_scale*bin_up_factor)
+        elif method is 'sum':
+            return ScaledSquarePixelArray(array=array_util.bin_up_array_2d_using_sum(array_2d=self,
+                                                                                     bin_up_factor=bin_up_factor),
+                                          pixel_scale=self.pixel_scale*bin_up_factor)
+        else:
+            raise exc.DataException('The method used in binned_up_array_from_array is not a valid method '
+                                       '[mean | quadrature | sum]')
 
 
 class ScaledRectangularPixelArray(ScaledArray):

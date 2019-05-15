@@ -10,6 +10,7 @@ from astropy.coordinates import Angle
 from autolens import exc
 from autolens.data.array import scaled_array
 from autolens.data import ccd
+from autolens.data.array.util import array_util
 from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util
 
@@ -53,69 +54,72 @@ class TestCCDData:
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]])
 
-            exposure_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
 
-            ccd_simulated = ccd.CCDData.simulate_variable_arrays(array=image, exposure_time_map=exposure_map,
+            ccd_data_simulated = ccd.CCDData.simulate_variable_arrays(array=image, exposure_time_map=exposure_time_map,
                                                                  pixel_scale=0.1, add_noise=False)
 
-            assert (ccd_simulated.exposure_time_map == np.ones((3, 3))).all()
-            assert ccd_simulated.pixel_scale == 0.1
-            assert (ccd_simulated.image == np.array([[0.0, 0.0, 0.0],
+            assert (ccd_data_simulated.exposure_time_map == np.ones((3, 3))).all()
+            assert ccd_data_simulated.pixel_scale == 0.1
+            assert (ccd_data_simulated.image == np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])).all()
-            assert ccd_simulated.origin == (0.0, 0.0)
+            assert ccd_data_simulated.origin == (0.0, 0.0)
 
-        def test__setup_with_background_sky_on__noise_off__no_noise_in_image(self):
+        def test__setup_with_background_sky_on__noise_off__no_noise_in_image__noise_map_is_noise_value(self):
             image = np.array([[0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]])
 
-            exposure_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1,
+                                                                            shape=image.shape)
 
-            background_sky = scaled_array.ScaledSquarePixelArray.single_value(value=16.0, pixel_scale=0.1, shape=image.shape)
+            background_sky_map =  scaled_array.ScaledSquarePixelArray.single_value(value=16.0, pixel_scale=0.1,
+                                                                              shape=image.shape)
 
-            ccd_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
-                                                                 exposure_time_map=exposure_map,
-                                                                 background_sky_map=background_sky,
-                                                                 add_noise=False,
-                                                                 seed=1)
+            ccd_data_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
+                                                                 exposure_time_map=exposure_time_map,
+                                                                 background_sky_map=background_sky_map,
+                                                                 add_noise=False, noise_if_add_noise_false=0.2,
+                                                                 noise_seed=1)
 
-            assert (ccd_simulated.exposure_time_map == 1.0 * np.ones((3, 3))).all()
-            assert ccd_simulated.pixel_scale == 0.1
+            assert (ccd_data_simulated.exposure_time_map == 1.0 * np.ones((3, 3))).all()
+            assert ccd_data_simulated.pixel_scale == 0.1
 
-            assert (ccd_simulated.image == np.array([[0.0, 0.0, 0.0],
+            assert (ccd_data_simulated.image == np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])).all()
+            assert (ccd_data_simulated.noise_map == 0.2*np.ones((3,3)))
 
-            assert (ccd_simulated.background_noise_map == 4.0 * np.ones((3, 3))).all()
+            assert (ccd_data_simulated.background_noise_map == 4.0 * np.ones((3, 3))).all()
 
         def test__setup_with_background_sky_on__noise_on_so_background_adds_noise_to_image(self):
             image = np.array([[0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]])
 
-            exposure_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
 
-            background_sky = scaled_array.ScaledSquarePixelArray.single_value(value=16.0, pixel_scale=0.1, shape=image.shape)
+            background_sky_map =  scaled_array.ScaledSquarePixelArray.single_value(value=16.0, pixel_scale=0.1, shape=image.shape)
 
-            ccd_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
-                                                                 background_sky_map=background_sky,
-                                                                 exposure_time_map=exposure_map,
+            ccd_data_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
+                                                                 background_sky_map=background_sky_map,
+                                                                 exposure_time_map=exposure_time_map,
                                                                  add_noise=True,
-                                                                 seed=1)
+                                                                 noise_seed=1)
 
-            assert (ccd_simulated.exposure_time_map == 1.0 * np.ones((3, 3))).all()
-            assert ccd_simulated.pixel_scale == 0.1
+            assert (ccd_data_simulated.exposure_time_map == 1.0 * np.ones((3, 3))).all()
+            assert ccd_data_simulated.pixel_scale == 0.1
 
-            assert (ccd_simulated.image == np.array([[1.0, 5.0, 4.0],
+            assert (ccd_data_simulated.image == np.array([[1.0, 5.0, 4.0],
                                          [1.0, 2.0, 1.0],
                                          [5.0, 2.0, 7.0]])).all()
 
-            assert (ccd_simulated.poisson_noise_map == np.array([[np.sqrt(1.0), np.sqrt(5.0), np.sqrt(4.0)],
+            assert (ccd_data_simulated.poisson_noise_map == np.array([[np.sqrt(1.0), np.sqrt(5.0), np.sqrt(4.0)],
                                                            [np.sqrt(1.0), np.sqrt(2.0), np.sqrt(1.0)],
                                                            [np.sqrt(5.0), np.sqrt(2.0), np.sqrt(7.0)]])).all()
 
-            assert (ccd_simulated.background_noise_map == 4.0 * np.ones((3, 3))).all()
+            assert (ccd_data_simulated.background_noise_map == 4.0 * np.ones((3, 3))).all()
 
         def test__setup_with_psf_blurring_on__blurs_image_and_trims_psf_edge_off(self):
             image = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
@@ -128,17 +132,17 @@ class TestCCDData:
                                           [1.0, 2.0, 1.0],
                                           [0.0, 1.0, 0.0]]), pixel_scale=1.0)
 
-            exposure_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
 
-            ccd_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
-                                                                 exposure_time_map=exposure_map, psf=psf,
+            ccd_data_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
+                                                                 exposure_time_map=exposure_time_map, psf=psf,
                                                                  add_noise=False)
 
-            assert (ccd_simulated.image == np.array([[0.0, 1.0, 0.0],
+            assert (ccd_data_simulated.image == np.array([[0.0, 1.0, 0.0],
                                          [1.0, 2.0, 1.0],
                                          [0.0, 1.0, 0.0]])).all()
-            assert (ccd_simulated.exposure_time_map == np.ones((3, 3))).all()
-            assert ccd_simulated.pixel_scale == 0.1
+            assert (ccd_data_simulated.exposure_time_map == np.ones((3, 3))).all()
+            assert ccd_data_simulated.pixel_scale == 0.1
 
         def test__setup_with_background_sky_and_psf_on__psf_does_no_blurring__image_and_sky_both_trimmed(self):
             image = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
@@ -151,50 +155,50 @@ class TestCCDData:
                                           [0.0, 1.0, 0.0],
                                           [0.0, 0.0, 0.0]]), pixel_scale=1.0)
 
-            exposure_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
 
-            background_sky = scaled_array.ScaledSquarePixelArray.single_value(value=16.0, pixel_scale=0.1, shape=image.shape)
+            background_sky_map =  scaled_array.ScaledSquarePixelArray.single_value(value=16.0, pixel_scale=0.1, shape=image.shape)
 
-            ccd_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
-                                                                 exposure_time_map=exposure_map,
-                                                                 psf=psf, background_sky_map=background_sky,
-                                                                 add_noise=False, seed=1)
+            ccd_data_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
+                                                                 exposure_time_map=exposure_time_map,
+                                                                 psf=psf, background_sky_map=background_sky_map,
+                                                                 add_noise=False, noise_seed=1)
 
-            assert (ccd_simulated.exposure_time_map == 1.0 * np.ones((3, 3))).all()
-            assert ccd_simulated.pixel_scale == 0.1
+            assert (ccd_data_simulated.exposure_time_map == 1.0 * np.ones((3, 3))).all()
+            assert ccd_data_simulated.pixel_scale == 0.1
 
-            assert (ccd_simulated.image == np.array([[0.0, 0.0, 0.0],
+            assert (ccd_data_simulated.image == np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])).all()
 
-            assert (ccd_simulated.background_noise_map == 4.0 * np.ones((3, 3))).all()
+            assert (ccd_data_simulated.background_noise_map == 4.0 * np.ones((3, 3))).all()
 
         def test__setup_with_noise(self):
             image = np.array([[0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]])
 
-            exposure_map = scaled_array.ScaledSquarePixelArray.single_value(value=20.0, pixel_scale=0.1, shape=image.shape)
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(value=20.0, pixel_scale=0.1, shape=image.shape)
 
-            ccd_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
-                                                                 exposure_time_map=exposure_map,
-                                                                 add_noise=True, seed=1)
+            ccd_data_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
+                                                                 exposure_time_map=exposure_time_map,
+                                                                 add_noise=True, noise_seed=1)
 
-            assert (ccd_simulated.exposure_time_map == 20.0 * np.ones((3, 3))).all()
-            assert ccd_simulated.pixel_scale == 0.1
+            assert (ccd_data_simulated.exposure_time_map == 20.0 * np.ones((3, 3))).all()
+            assert ccd_data_simulated.pixel_scale == 0.1
 
-            assert ccd_simulated.image == pytest.approx(np.array([[0.0, 0.0, 0.0],
+            assert ccd_data_simulated.image == pytest.approx(np.array([[0.0, 0.0, 0.0],
                                                       [0.0, 1.05, 0.0],
                                                       [0.0, 0.0, 0.0]]), 1e-2)
 
             # Because of the regular value is 1.05, the estimated Poisson noise_map_1d is:
             # sqrt((1.05 * 20))/20 = 0.2291
 
-            assert ccd_simulated.poisson_noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
+            assert ccd_data_simulated.poisson_noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
                                                                         [0.0, 0.2291, 0.0],
                                                                         [0.0, 0.0, 0.0]]), 1e-2)
 
-            assert ccd_simulated.noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
+            assert ccd_data_simulated.noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
                                                                  [0.0, 0.2291, 0.0],
                                                                  [0.0, 0.0, 0.0]]), 1e-2)
 
@@ -209,16 +213,16 @@ class TestCCDData:
                                           [1.0, 2.0, 1.0],
                                           [0.0, 1.0, 0.0]]), pixel_scale=1.0)
 
-            exposure_map = scaled_array.ScaledSquarePixelArray.single_value(value=20.0, pixel_scale=0.1, shape=image.shape)
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(value=20.0, pixel_scale=0.1, shape=image.shape)
 
-            ccd_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
-                                                                 exposure_time_map=exposure_map,
+            ccd_data_simulated = ccd.CCDData.simulate_variable_arrays(array=image, pixel_scale=0.1,
+                                                                 exposure_time_map=exposure_time_map,
                                                                  psf=psf,
-                                                                 add_noise=True, seed=1)
+                                                                 add_noise=True, noise_seed=1)
 
-            assert (ccd_simulated.exposure_time_map == 20.0 * np.ones((3, 3))).all()
-            assert ccd_simulated.pixel_scale == 0.1
-            assert ccd_simulated.image == pytest.approx(np.array([[0.0, 1.05, 0.0],
+            assert (ccd_data_simulated.exposure_time_map == 20.0 * np.ones((3, 3))).all()
+            assert ccd_data_simulated.pixel_scale == 0.1
+            assert ccd_data_simulated.image == pytest.approx(np.array([[0.0, 1.05, 0.0],
                                                       [1.3, 2.35, 1.05],
                                                       [0.0, 1.05, 0.0]]), 1e-2)
 
@@ -227,7 +231,7 @@ class TestCCDData:
             # sqrt((1.3 * 20))/20 = 0.2549
             # sqrt((1.05 * 20))/20 = 0.2291
 
-            assert ccd_simulated.poisson_noise_map == pytest.approx(np.array([[0.0, 0.2291, 0.0],
+            assert ccd_data_simulated.poisson_noise_map == pytest.approx(np.array([[0.0, 0.2291, 0.0],
                                                                         [0.2549, 0.3427, 0.2291],
                                                                         [0.0, 0.2291, 0.0]]), 1e-2)
 
@@ -243,12 +247,12 @@ class TestCCDData:
                                           [0.0, 1.0, 0.0],
                                           [0.0, 0.0, 0.0]]), pixel_scale=1.0)
 
-            exposure_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
-            background_sky = scaled_array.ScaledSquarePixelArray.single_value(value=16.0, pixel_scale=0.1, shape=image.shape)
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1, shape=image.shape)
+            background_sky_map =  scaled_array.ScaledSquarePixelArray.single_value(value=16.0, pixel_scale=0.1, shape=image.shape)
             simulated_ccd_variable = ccd.CCDData.simulate_variable_arrays(array=image,
-                                                                          exposure_time_map=exposure_map, psf=psf,
-                                                                          background_sky_map=background_sky,
-                                                                          pixel_scale=0.1, add_noise=False, seed=1)
+                                                                          exposure_time_map=exposure_time_map, psf=psf,
+                                                                          background_sky_map=background_sky_map,
+                                                                          pixel_scale=0.1, add_noise=False, noise_seed=1)
 
             image = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                             [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -256,13 +260,31 @@ class TestCCDData:
                             [0.0, 0.0, 0.0, 0.0, 0.0],
                             [0.0, 0.0, 0.0, 0.0, 0.0]])
 
-            ccd_simulated = ccd.CCDData.simulate(array=image, pixel_scale=0.1, exposure_time=1.0,
-                                                 background_sky_level=16.0, psf=psf, seed=1)
+            ccd_data_simulated = ccd.CCDData.simulate(array=image, pixel_scale=0.1, exposure_time=1.0,
+                                                 background_sky_level=16.0, psf=psf, add_noise=False, noise_seed=1)
 
-            assert (simulated_ccd_variable.exposure_time_map == ccd_simulated.exposure_time_map).all()
-            assert simulated_ccd_variable.pixel_scale == ccd_simulated.pixel_scale
-            assert simulated_ccd_variable.image == pytest.approx(ccd_simulated.image, 1e-4)
-            assert (simulated_ccd_variable.background_noise_map == ccd_simulated.background_noise_map).all()
+            assert (simulated_ccd_variable.exposure_time_map == ccd_data_simulated.exposure_time_map).all()
+            assert simulated_ccd_variable.pixel_scale == ccd_data_simulated.pixel_scale
+            assert simulated_ccd_variable.image == pytest.approx(ccd_data_simulated.image, 1e-4)
+            assert (simulated_ccd_variable.background_noise_map == ccd_data_simulated.background_noise_map).all()
+
+        def test__noise_map_creates_nans_due_to_low_exposure_time__raises_error(self):
+
+            image = np.ones((9, 9))
+
+            psf = ccd.PSF.simulate_as_gaussian(shape=(3, 3), sigma=0.1, pixel_scale=0.2)
+
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1,
+                                                                            shape=image.shape)
+
+            background_sky_map =  scaled_array.ScaledSquarePixelArray.single_value(value=1.0, pixel_scale=0.1,
+                                                                              shape=image.shape)
+
+            with pytest.raises(exc.DataException):
+                ccd.CCDData.simulate_variable_arrays(array=image, psf=psf, pixel_scale=0.1,
+                                                                 exposure_time_map=exposure_time_map,
+                                                                 background_sky_map=background_sky_map,
+                                                                 add_noise=True, noise_seed=1)
 
         def test__target_signal_to_noise__no_background_sky(self):
             image = np.array([[0.01, 0.02, 0.01],
@@ -271,12 +293,12 @@ class TestCCDData:
 
             exposure_time = scaled_array.ScaledSquarePixelArray.single_value(value=20.0, pixel_scale=0.1, shape=image.shape)
 
-            ccd_simulated = ccd.CCDData.simulate_to_target_signal_to_noise(array=image, pixel_scale=0.1,
+            ccd_data_simulated = ccd.CCDData.simulate_to_target_signal_to_noise(array=image, pixel_scale=0.1,
                                                                            target_signal_to_noise=30.0,
                                                                            exposure_time_map=exposure_time,
                                                                            seed=1)
 
-            assert 29.3 < ccd_simulated.signal_to_noise_max < 30.7
+            assert 29.3 < ccd_data_simulated.signal_to_noise_max < 30.7
 
         def test__target_signal_to_noise__background_sky_and_poisson(self):
             image = np.array([[0.01, 0.02, 0.01],
@@ -284,15 +306,15 @@ class TestCCDData:
                             [0.01, 0.01, 0.01]])
 
             exposure_time = scaled_array.ScaledSquarePixelArray.single_value(value=2.0, pixel_scale=0.1, shape=image.shape)
-            background_sky = scaled_array.ScaledSquarePixelArray.single_value(value=20.0, pixel_scale=0.1, shape=image.shape)
+            background_sky_map =  scaled_array.ScaledSquarePixelArray.single_value(value=20.0, pixel_scale=0.1, shape=image.shape)
 
-            ccd_simulated = ccd.CCDData.simulate_to_target_signal_to_noise(array=image, pixel_scale=0.1,
+            ccd_data_simulated = ccd.CCDData.simulate_to_target_signal_to_noise(array=image, pixel_scale=0.1,
                                                                            target_signal_to_noise=30.0,
                                                                            exposure_time_map=exposure_time,
-                                                                           background_sky_map=background_sky,
+                                                                           background_sky_map=background_sky_map,
                                                                            seed=1)
 
-            assert 29.2 < ccd_simulated.signal_to_noise_max < 30.8
+            assert 29.2 < ccd_data_simulated.signal_to_noise_max < 30.8
 
     class TestSimulatePoissonNoise(object):
 
@@ -717,31 +739,81 @@ class TestCCDData:
                                                          [0.1, 1.0]])).all()
             assert ccd_data.signal_to_noise_max == 1.0
 
-    class testNewCCDModifiedImage:
 
-        def test__image_is_changed__other_components_are_not(self):
+        def test__same_as_above__but_image_has_negative_values__replaced_with_zeros(self):
 
-            image_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            image_array[3, 3] = 2.0
+            array = np.array([[-1.0, 2.0],
+                              [3.0, -4.0]])
 
-            noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            noise_map_array[3,3] = 3.0
+            noise = np.array([[10.0, 10.0],
+                              [30.0, 4.0]])
 
-            background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            background_noise_map_array[3,3] = 4.0
+            ccd_data = ccd.CCDData(image=array, pixel_scale=1.0,
+                                   psf=ccd.PSF(array=np.ones((2, 2)), pixel_scale=1.0), noise_map=noise)
 
-            exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            exposure_time_map_array[3,3] = 5.0
+            assert (ccd_data.signal_to_noise_map == np.array([[0.0, 0.2],
+                                                              [0.1, 0.0]])).all()
+            assert ccd_data.signal_to_noise_max == 0.2
 
-            background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            background_sky_map_array[3,3] = 6.0
+    class TestAbsoluteSignalToNoise:
+
+        def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(self):
+
+            array = np.array([[-1.0, 2.0],
+                              [3.0, -4.0]])
+
+            noise = np.array([[10.0, 10.0],
+                              [30.0, 4.0]])
+
+            ccd_data = ccd.CCDData(image=array, pixel_scale=1.0,
+                                   psf=ccd.PSF(array=np.ones((2, 2)), pixel_scale=1.0), noise_map=noise)
+
+            assert (ccd_data.absolute_signal_to_noise_map == np.array([[0.1, 0.2],
+                                                         [0.1, 1.0]])).all()
+            assert ccd_data.absolute_signal_to_noise_max == 1.0
+
+    class TestPotentialChiSquaredMap:
+
+        def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(self):
+
+            array = np.array([[-1.0, 2.0],
+                              [3.0, -4.0]])
+
+            noise = np.array([[10.0, 10.0],
+                              [30.0, 4.0]])
+
+            ccd_data = ccd.CCDData(image=array, pixel_scale=1.0,
+                                   psf=ccd.PSF(array=np.ones((2, 2)), pixel_scale=1.0), noise_map=noise)
+
+            assert (ccd_data.potential_chi_squared_map == np.array([[0.1**2.0, 0.2**2.0],
+                                                                    [0.1**2.0, 1.0**2.0]])).all()
+            assert ccd_data.potential_chi_squared_max == 1.0
+
+    class TestNewCCDModifiedImage:
+
+        def test__ccd_data_returns_with_modified_image(self):
+
+            image_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            image_array[2, 2] = 2.0
+
+            noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            noise_map_array[2,2] = 3.0
+
+            background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            background_noise_map_array[2,2] = 4.0
+
+            exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            exposure_time_map_array[2,2] = 5.0
+
+            background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            background_sky_map_array[2,2] = 6.0
 
             ccd_data = ccd.CCDData(image=image_array, pixel_scale=1.0, psf=ccd.PSF(np.zeros((3, 3)), pixel_scale=1.0),
                                    noise_map=noise_map_array, background_noise_map=background_noise_map_array,
                                    exposure_time_map=exposure_time_map_array, background_sky_map=background_sky_map_array)
 
-            modified_image = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            modified_image[3, 3] = 10.0
+            modified_image = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            modified_image[2, 2] = 10.0
 
             ccd_data = ccd_data.new_ccd_data_with_modified_image(modified_image=modified_image)
 
@@ -770,6 +842,61 @@ class TestCCDData:
 
             assert ccd_data.pixel_scale == 1.0
             assert (ccd_data.psf == np.zeros((3,3))).all()
+            assert ccd_data.origin == (0.0, 0.0)
+
+    class TestNewCCDBinnedUp:
+
+        def test__all_components_binned_up_correct(self):
+
+            image_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array[3:5, 3] = 2.0
+            binned_image_util = array_util.bin_up_array_2d_using_mean(array_2d=image_array, bin_up_factor=2)
+
+            noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            noise_map_array[3,3:5] = 3.0
+            binned_noise_map_util = array_util.bin_up_array_2d_using_quadrature(array_2d=noise_map_array,
+                                                                                      bin_up_factor=2)
+
+            background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            background_noise_map_array[3:5,3] = 4.0
+            binned_background_noise_map_util = array_util.bin_up_array_2d_using_quadrature(
+                array_2d=background_noise_map_array, bin_up_factor=2)
+
+            exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            exposure_time_map_array[3,3:5] = 5.0
+            binned_exposure_time_map_util = array_util.bin_up_array_2d_using_sum(array_2d=exposure_time_map_array,
+                                                                                       bin_up_factor=2)
+
+            background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            background_sky_map_array[3,3:5] = 6.0
+            binned_background_sky_map_util = array_util.bin_up_array_2d_using_mean(
+                array_2d=background_sky_map_array, bin_up_factor=2)
+
+            psf = ccd.PSF(array=np.ones((3,5)), pixel_scale=1.0)
+            psf_util = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5)
+
+            ccd_data = ccd.CCDData(image=image_array, pixel_scale=1.0, psf=psf,
+                                   noise_map=noise_map_array, background_noise_map=background_noise_map_array,
+                                   exposure_time_map=exposure_time_map_array, background_sky_map=background_sky_map_array)
+
+            ccd_data = ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=2)
+
+            assert (ccd_data.image == binned_image_util).all()
+            assert (ccd_data.psf == psf_util).all()
+            assert (ccd_data.noise_map == binned_noise_map_util).all()
+            assert (ccd_data.background_noise_map == binned_background_noise_map_util).all()
+            assert (ccd_data.exposure_time_map == binned_exposure_time_map_util).all()
+            assert (ccd_data.background_sky_map == binned_background_sky_map_util).all()
+            assert (ccd_data.poisson_noise_map == None)
+
+            assert ccd_data.pixel_scale == 2.0
+            assert ccd_data.image.pixel_scale == 2.0
+            assert ccd_data.psf.pixel_scale == pytest.approx(1.66666666666, 1.0e-4)
+            assert ccd_data.noise_map.pixel_scale == 2.0
+            assert ccd_data.background_noise_map.pixel_scale == 2.0
+            assert ccd_data.exposure_time_map.pixel_scale == 2.0
+            assert ccd_data.background_sky_map.pixel_scale == 2.0
+
             assert ccd_data.origin == (0.0, 0.0)
 
     class TestNewImageResize:
@@ -932,7 +1059,7 @@ class TestCCDData:
             image_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
             ccd_data = ccd.CCDData(image=image_array, pixel_scale=1.0, psf=ccd.PSF(np.zeros((3, 3)), pixel_scale=1.0))
 
-            with pytest.raises(exc.ImagingException):
+            with pytest.raises(exc.DataException):
                 ccd_data.new_ccd_data_with_resized_arrays(new_shape=(3, 3), new_centre_pixels=(3, 3),
                                                           new_centre_arcsec=(-0.5, 0.5))
 
@@ -1308,6 +1435,87 @@ class TestPSF(object):
 
             assert psf == pytest.approx(np.ones((3, 3)), 1e-3)
 
+    class TestBinnedUp(object):
+
+        def test__psf_is_even_x_even__rescaled_to_odd_x_odd__no_use_of_dimension_trimming(self):
+
+            array_2d = np.ones((6, 6))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == 2.0
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((9, 9))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.333333333333333, renormalize=True)
+            assert psf.pixel_scale == 3.0
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((18, 6))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == 2.0
+            assert psf == (1.0/27.0)*np.ones((9,3))
+
+            array_2d = np.ones((6, 18))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == 2.0
+            assert psf == (1.0/27.0)*np.ones((3,9))
+
+        def test__psf_is_even_x_even_after_binning_up__resized_to_odd_x_odd_with_shape_plus_one(self):
+
+            array_2d = np.ones((2,2))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=2.0, renormalize=True)
+            assert psf.pixel_scale == 0.4
+            assert psf == (1.0/25.0)*np.ones((5,5))
+
+            array_2d = np.ones((40, 40))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.1, renormalize=True)
+            assert psf.pixel_scale == 8.0
+            assert psf == (1.0/25.0)*np.ones((5,5))
+
+            array_2d = np.ones((2,4))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=2.0, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(0.4444444, 1.0e-4)
+            assert psf == (1.0/45.0)*np.ones((5,9))
+
+            array_2d = np.ones((4,2))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=2.0, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(0.4444444, 1.0e-4)
+            assert psf == (1.0/45.0)*np.ones((9,5))
+
+        def test__psf_is_odd_and_even_after_binning_up__resized_to_odd_and_odd_with_shape_plus_one(self):
+
+            array_2d = np.ones((6,4))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(2.0, 1.0e-4)
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((9, 12))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.33333333333, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(3.0, 1.0e-4)
+            assert psf == (1.0 / 15.0) * np.ones((3, 5))
+
+            array_2d = np.ones((4,6))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(2.0, 1.0e-4)
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((12, 9))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.33333333333, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(3.0, 1.0e-4)
+            assert psf == (1.0 / 15.0) * np.ones((5, 3))
+
+
     class TestNewRenormalizedPsf(object):
 
         def test__input_is_already_normalized__no_change(self):
@@ -1329,7 +1537,6 @@ class TestPSF(object):
             psf_new = psf.new_psf_with_renormalized_array()
 
             assert psf_new == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
-
 
     class TestConvolve(object):
 
@@ -2348,27 +2555,27 @@ class TestCCDFromFits(object):
 
     def test__no_noise_map_input__raises_imaging_exception(self):
 
-        with pytest.raises(exc.ImagingException):
+        with pytest.raises(exc.DataException):
             ccd.load_ccd_data_from_fits(image_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                         psf_path=test_data_dir + '3x3_twos.fits')
 
     def test__multiple_noise_map_options__raises_imaging_exception(self):
 
-        with pytest.raises(exc.ImagingException):
+        with pytest.raises(exc.DataException):
             ccd.load_ccd_data_from_fits(image_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                         psf_path=test_data_dir + '3x3_twos.fits',
                                         noise_map_path=test_data_dir + '3x3_threes.fits',
                                         convert_noise_map_from_inverse_noise_map=True,
                                         convert_noise_map_from_weight_map=True)
 
-        with pytest.raises(exc.ImagingException):
+        with pytest.raises(exc.DataException):
             ccd.load_ccd_data_from_fits(image_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                         psf_path=test_data_dir + '3x3_twos.fits',
                                         noise_map_path=test_data_dir + '3x3_threes.fits',
                                         convert_noise_map_from_inverse_noise_map=True,
                                         noise_map_from_image_and_background_noise_map=True)
 
-        with pytest.raises(exc.ImagingException):
+        with pytest.raises(exc.DataException):
             ccd.load_ccd_data_from_fits(image_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                         psf_path=test_data_dir + '3x3_twos.fits',
                                         noise_map_path=test_data_dir + '3x3_threes.fits',
@@ -2377,7 +2584,7 @@ class TestCCDFromFits(object):
 
     def test__exposure_time_and_exposure_time_map_included__raies_imaging_error(self):
 
-        with pytest.raises(exc.ImagingException):
+        with pytest.raises(exc.DataException):
             ccd.load_ccd_data_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                         psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                         noise_map_path=test_data_dir + '3x3_threes.fits',
@@ -2387,7 +2594,7 @@ class TestCCDFromFits(object):
     def test__noise_map_from_image_and_background_noise_map_exceptions(self):
 
         # need background noise_map map - raise error if not present
-        with pytest.raises(exc.ImagingException):
+        with pytest.raises(exc.DataException):
             ccd.load_ccd_data_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                         psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                         noise_map_path=test_data_dir + '3x3_threes.fits',
@@ -2404,7 +2611,7 @@ class TestCCDFromFits(object):
                                     convert_from_electrons=True)
 
         # Need gain if datas is in adus
-        with pytest.raises(exc.ImagingException):
+        with pytest.raises(exc.DataException):
             ccd.load_ccd_data_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                         psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                         noise_map_path=test_data_dir + '3x3_threes.fits',
@@ -2432,14 +2639,14 @@ class TestCCDFromFits(object):
                                     poisson_noise_map_from_image=True)
 
         # No exposure time - not load
-        with pytest.raises(exc.ImagingException):
+        with pytest.raises(exc.DataException):
             ccd.load_ccd_data_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                         psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                         poisson_noise_map_from_image=True,
                                         convert_from_electrons=True)
 
         # Need gain if datas in adus
-        with pytest.raises(exc.ImagingException):
+        with pytest.raises(exc.DataException):
             ccd.load_ccd_data_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                         psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                         noise_map_path=test_data_dir + '3x3_threes.fits',
@@ -2466,17 +2673,17 @@ class TestCCDFromFits(object):
         os.makedirs(output_data_dir)
 
         ccd.output_ccd_data_to_fits(ccd_data=ccd_data,
-                                    image_path=output_data_dir + 'regular.fits',
+                                    image_path=output_data_dir + 'image.fits',
                                     psf_path=output_data_dir + 'psf.fits',
-                                    noise_map_path=output_data_dir + 'noise_maps.fits',
+                                    noise_map_path=output_data_dir + 'noise_map.fits',
                                     background_noise_map_path=output_data_dir + 'background_noise_map.fits',
                                     poisson_noise_map_path=output_data_dir + 'poisson_noise_map.fits',
                                     exposure_time_map_path=output_data_dir + 'exposure_time_map.fits',
                                     background_sky_map_path=output_data_dir + 'background_sky_map.fits')
 
-        ccd_data = ccd.load_ccd_data_from_fits(image_path=output_data_dir + 'regular.fits', pixel_scale=0.1,
+        ccd_data = ccd.load_ccd_data_from_fits(image_path=output_data_dir + 'image.fits', pixel_scale=0.1,
                                                psf_path=output_data_dir + 'psf.fits',
-                                               noise_map_path=output_data_dir + 'noise_maps.fits',
+                                               noise_map_path=output_data_dir + 'noise_map.fits',
                                                background_noise_map_path=output_data_dir + 'background_noise_map.fits',
                                                poisson_noise_map_path=output_data_dir + 'poisson_noise_map.fits',
                                                exposure_time_map_path=output_data_dir + 'exposure_time_map.fits',
