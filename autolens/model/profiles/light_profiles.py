@@ -1,6 +1,9 @@
 import numpy as np
+from astropy import cosmology as cosmo
 from scipy.integrate import quad
 
+from autofit.tools.dimension_type import map_types
+from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles
 
 
@@ -19,7 +22,7 @@ class LightProfile(object):
         raise NotImplementedError("intensity_at_radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
-    def intensities_from_grid(self, grid):
+    def intensities_from_grid(self, grid, grid_radial_minimum=None):
         """
         Abstract method for obtaining intensity at a grid of Cartesian (y,x) coordinates.
 
@@ -34,18 +37,31 @@ class LightProfile(object):
         """
         raise NotImplementedError("intensity_from_grid should be overridden")
 
-    def luminosity_within_circle(self, radius):
+    def luminosity_within_circle_in_units(
+            self, radius: dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         raise NotImplementedError()
 
-    def luminosity_within_ellipse(self, major_axis):
+    def luminosity_within_ellipse_in_units(
+            self, major_axis: dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
         raise NotImplementedError()
+
+    def summarize_in_units(
+            self, radii, unit_length='arcsec', unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
+        return ["Light Profile = {}".format(self.__class__.__name__), ""]
 
 
 # noinspection PyAbstractClass
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0):
         """  Abstract class for an elliptical light-profile.
 
         Parameters
@@ -57,42 +73,58 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         phi : float
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalLightProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
-    def luminosity_within_circle(self, radius, conversion_factor=1.0):
-        """
-        Compute the light profiles's total luminosity within a circle of specified radius. This is performed via \
-        numerical integration and is centred on the light profile's centre.
+    @dim.convert_units_to_input_units
+    def luminosity_within_circle_in_units(
+            self, radius: dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
+        """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
+        centred on the light profile's centre.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
+        The following units for mass can be specified and output:
+
+        - Electrons per second (default) - 'eps'.
+        - Counts - 'counts' (multiplies the luminosity in electrons per second by the exposure time).
 
         Parameters
         ----------
         radius : float
-            The radius of the circle to compute the luminosity within.
-        conversion_factor : float
-            Factor which converts the computed dimensionless quantity to a physical one (e.g. a photometric zeropoint).
+            The radius of the circle to compute the dimensionless mass within.
+        unit_luminosity : str
+            The units the luminosity is returned in (eps | counts).
+        exposure_time : float or None
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        return conversion_factor*quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
+        luminosity = dim.Luminosity(value=quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0],
+                                    unit_luminosity=self.unit_luminosity)
+        return luminosity.convert(unit_luminosity=unit_luminosity, exposure_time=exposure_time)
 
-    def luminosity_within_ellipse(self, major_axis, conversion_factor=1.0):
-        """
-        Compute the light profiles's total luminosity within an ellipse of specified major axis. This is performed via\
-        numerical integration and is centred and oriented withthe ellipitical light profile.
+    @dim.convert_units_to_input_units
+    def luminosity_within_ellipse_in_units(
+            self, major_axis: dim.Length, unit_luminosity='eps',
+            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
+        """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
+        This is centred on the light profile's centre.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
+        The following units for mass can be specified and output:
+
+        - Electrons per second (default) - 'eps'.
+        - Counts - 'counts' (multiplies the luminosity in electrons per second by the exposure time).
 
         Parameters
         ----------
-        major_axis: float
-            The major-axis of the ellipse to compute the luminosity within.
-        conversion_factor : float
-            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
-            (e.g. a photometric zeropoint).
+        major_axis : float
+            The major-axis radius of the ellipse.
+        unit_luminosity : str
+            The units the luminosity is returned in (eps | counts).
+        exposure_time : float or None
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        return conversion_factor*quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+        luminosity = dim.Luminosity(
+            value=quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
+            unit_luminosity=self.unit_luminosity)
+        return dim.Luminosity(luminosity, unit_luminosity)
 
     def luminosity_integral(self, x, axis_ratio):
         """Routine to integrate the luminosity of an elliptical light profile.
@@ -101,10 +133,36 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         r = x * axis_ratio
         return 2 * np.pi * r * self.intensities_from_grid_radii(x)
 
+    @dim.convert_units_to_input_units
+    def summarize_in_units(self, radii, prefix='',
+                           unit_length='arcsec', unit_luminosity='eps',
+                           exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15,
+                           whitespace=80, **kwargs):
+        summary = super().summarize_in_units(
+            radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
+            exposure_time=exposure_time, redshift_profile=redshift_profile, cosmology=cosmology, kwargs=kwargs)
+
+        for radius in radii:
+            luminosity = self.luminosity_within_circle_in_units(
+                unit_luminosity=unit_luminosity, radius=radius, redshift_profile=redshift_profile,
+                exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs)
+
+            param = prefix + 'luminosity_within_{:.2f}_{}'.format(radius, unit_length)
+            value = '{:.4e} {}'.format(luminosity, unit_luminosity)
+            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        return summary
+
 
 class EllipticalGaussian(EllipticalLightProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, sigma=0.01):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0,
+                 intensity: dim.Luminosity = 0.1,
+                 sigma: dim.Length = 0.01):
         """ The elliptical Gaussian light profile.
 
         Parameters
@@ -118,9 +176,9 @@ class EllipticalGaussian(EllipticalLightProfile):
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         sigma : float
-            The full-width half-maximum of the Gaussian.
+            The sigma value of the Gaussian.
         """
-        super(EllipticalGaussian, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalGaussian, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
         self.intensity = intensity
         self.sigma = sigma
@@ -137,7 +195,8 @@ class EllipticalGaussian(EllipticalLightProfile):
                            np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))))
 
     @geometry_profiles.transform_grid
-    def intensities_from_grid(self, grid):
+    @geometry_profiles.move_grid_to_radial_minimum
+    def intensities_from_grid(self, grid, grid_radial_minimum=None):
         """
         Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
@@ -153,7 +212,11 @@ class EllipticalGaussian(EllipticalLightProfile):
 
 class SphericalGaussian(EllipticalGaussian):
 
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, sigma=0.01):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 intensity: dim.Luminosity = 0.1,
+                 sigma: dim.Length = 0.01):
         """ The spherical Gaussian light profile.
 
         Parameters
@@ -163,15 +226,22 @@ class SphericalGaussian(EllipticalGaussian):
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         sigma : float
-            The full-width half-maximum of the Gaussian.
+            The sigma value of the Gaussian.
         """
-        super(SphericalGaussian, self).__init__(centre, 1.0, 0.0, intensity, sigma)
+        super(SphericalGaussian, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                                sigma=sigma)
 
 
-class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
+class AbstractEllipticalSersic(EllipticalLightProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
-                 sersic_index=4.0):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0,
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6,
+                 sersic_index: float = 4.0):
         """ Abstract base class for an elliptical Sersic light profile, used for computing its effective radius and
         Sersic constant.
 
@@ -191,10 +261,17 @@ class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
             Controls the concentration of the of the profile (lower value -> less concentrated, \
             higher value -> more concentrated).
         """
-        super(AbstractEllipticalSersic, self).__init__(centre, axis_ratio, phi)
+        super(AbstractEllipticalSersic, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
         self.intensity = intensity
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
+
+    def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
+        self.units_distance = units_distance
+        self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.effective_radius = self.effective_radius.convert(unit_distance=units_distance,
+                                                              kpc_per_arcsec=kpc_per_arcsec)
+        return self
 
     @property
     def elliptical_effective_radius(self):
@@ -229,8 +306,14 @@ class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
 
 class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
-                 sersic_index=4.0):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0,
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6,
+                 sersic_index: float = 4.0):
         """ The elliptical Sersic light profile.
 
         Parameters
@@ -249,8 +332,8 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
             Controls the concentration of the of the profile (lower value -> less concentrated, \
             higher value -> more concentrated).
         """
-        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
-                                               sersic_index)
+        super(EllipticalSersic, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=intensity,
+                                               effective_radius=effective_radius, sersic_index=sersic_index)
 
     def intensities_from_grid_radii(self, grid_radii):
         """
@@ -267,7 +350,8 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
                         np.add(np.power(np.divide(grid_radii, self.effective_radius), 1. / self.sersic_index), -1))))
 
     @geometry_profiles.transform_grid
-    def intensities_from_grid(self, grid):
+    @geometry_profiles.move_grid_to_radial_minimum
+    def intensities_from_grid(self, grid, grid_radial_minimum=None):
         """ Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
@@ -282,7 +366,12 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
 
 class SphericalSersic(EllipticalSersic):
 
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6,
+                 sersic_index: float = 4.0):
         """ The spherical Sersic light profile.
 
         Parameters
@@ -296,12 +385,19 @@ class SphericalSersic(EllipticalSersic):
         sersic_index : Int
             Controls the concentration of the of the light profile.
         """
-        super(SphericalSersic, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index)
+        super(SphericalSersic, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                              effective_radius=effective_radius, sersic_index=sersic_index)
 
 
 class EllipticalExponential(EllipticalSersic):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0,
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6):
         """ The elliptical exponential profile.
 
         This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 1.0.
@@ -319,12 +415,17 @@ class EllipticalExponential(EllipticalSersic):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(EllipticalExponential, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
+        super(EllipticalExponential, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=intensity,
+                                                    effective_radius=effective_radius, sersic_index=1.0)
 
 
 class SphericalExponential(EllipticalExponential):
 
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6):
         """ The spherical exponential profile.
 
         This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 1.0.
@@ -338,12 +439,19 @@ class SphericalExponential(EllipticalExponential):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(SphericalExponential, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
+        super(SphericalExponential, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                                   effective_radius=effective_radius)
 
 
 class EllipticalDevVaucouleurs(EllipticalSersic):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0,
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6):
         """ The elliptical Dev Vaucouleurs light profile.
 
         This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 4.0.
@@ -361,12 +469,18 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(EllipticalDevVaucouleurs, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
+        super(EllipticalDevVaucouleurs, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
+                                                       intensity=intensity, effective_radius=effective_radius,
+                                                       sersic_index=4.0)
 
 
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6):
         """ The spherical Dev Vaucouleurs light profile.
 
         This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 1.0.
@@ -380,13 +494,24 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(SphericalDevVaucouleurs, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
+        super(SphericalDevVaucouleurs, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                                      effective_radius=effective_radius)
 
 
 class EllipticalCoreSersic(EllipticalSersic):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
-                 sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0,
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6,
+                 sersic_index: float = 4.0,
+                 radius_break: dim.Length = 0.01,
+                 intensity_break: dim.Luminosity = 0.05,
+                 gamma: float = 0.25,
+                 alpha: float = 3.0):
         """ The elliptical cored-Sersic light profile.
 
         Parameters
@@ -413,11 +538,20 @@ class EllipticalCoreSersic(EllipticalSersic):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(EllipticalCoreSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index)
+        super(EllipticalCoreSersic, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=intensity,
+                                                   effective_radius=effective_radius, sersic_index=sersic_index)
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha
         self.gamma = gamma
+
+    def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
+        self.units_distance = units_distance
+        self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.effective_radius = self.effective_radius.convert(unit_distance=units_distance,
+                                                              kpc_per_arcsec=kpc_per_arcsec)
+        self.radius_break = self.radius_break.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        return self
 
     @property
     def intensity_prime(self):
@@ -445,8 +579,16 @@ class EllipticalCoreSersic(EllipticalSersic):
 
 class SphericalCoreSersic(EllipticalCoreSersic):
 
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6,
-                 sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 intensity: dim.Luminosity = 0.1,
+                 effective_radius: dim.Length = 0.6,
+                 sersic_index: float = 4.0,
+                 radius_break: dim.Length = 0.01,
+                 intensity_break: dim.Luminosity = 0.05,
+                 gamma: float = 0.25,
+                 alpha: float = 3.0):
         """ The elliptical cored-Sersic light profile.
 
         Parameters
@@ -469,8 +611,10 @@ class SphericalCoreSersic(EllipticalCoreSersic):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(SphericalCoreSersic, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index,
-                                                  radius_break, intensity_break, gamma, alpha)
+        super(SphericalCoreSersic, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                                  effective_radius=effective_radius, sersic_index=sersic_index,
+                                                  radius_break=radius_break, intensity_break=intensity_break,
+                                                  gamma=gamma, alpha=alpha)
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha

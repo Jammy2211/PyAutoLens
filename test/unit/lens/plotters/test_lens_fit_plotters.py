@@ -60,14 +60,14 @@ def make_lens_image(image, mask):
 def make_fit_lens_only(lens_data, galaxy_light):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grid_stack=lens_data.grid_stack,
                                           cosmology=cosmo.Planck15)
-    return lens_fit.fit_lens_data_with_tracer(lens_data=lens_data, tracer=tracer)
+    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
 
 @pytest.fixture(name='fit_source_and_lens')
 def make_fit_source_and_lens(lens_data, galaxy_light, galaxy_mass):
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[galaxy_light],
                                                  image_plane_grid_stack=lens_data.grid_stack, cosmology=cosmo.Planck15)
-    return lens_fit.fit_lens_data_with_tracer(lens_data=lens_data, tracer=tracer)
+    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
 
 def test__fit_sub_plot_lens_only(fit_lens_only, lens_fit_plotter_path, plot_patch):
@@ -138,4 +138,38 @@ def test__fit_individuals__source_and_lens__depedent_on_input(fit_source_and_len
 
     assert lens_fit_plotter_path + 'fit_residual_map.png' not in plot_patch.paths
 
+    assert lens_fit_plotter_path + 'fit_chi_squared_map.png' in plot_patch.paths
+
+
+def test__lens_fit_for_phase__source_and_lens__depedent_on_input(fit_source_and_lens,
+                                                               lens_fit_plotter_path, plot_patch):
+
+    lens_fit_plotters.plot_lens_fit_for_phase(
+        fit=fit_source_and_lens, during_analysis=False, should_plot_mask=True, positions=None,
+        extract_array_from_mask=True, zoom_around_mask=True, units='arcsec',
+        should_plot_image_plane_pix=True,
+        should_plot_as_subplot=True,
+        should_plot_all_at_end_png=False,
+        should_plot_all_at_end_fits=False,
+        should_plot_image=True,
+        should_plot_noise_map=False,
+        should_plot_signal_to_noise_map=False,
+        should_plot_model_image=True,
+        should_plot_lens_model_image=False,
+        should_plot_lens_subtracted_image=True,
+        should_plot_source_model_image=True,
+        should_plot_source_plane_image=False,
+        should_plot_residual_map=False,
+        should_plot_chi_squared_map=True,
+        visualize_path=lens_fit_plotter_path)
+
+    assert lens_fit_plotter_path + 'lens_fit.png' in plot_patch.paths
+    assert lens_fit_plotter_path + 'fit_image.png' in plot_patch.paths
+    assert lens_fit_plotter_path + 'fit_noise_map.png' not in plot_patch.paths
+    assert lens_fit_plotter_path + 'fit_signal_to_noise_map.png' not in plot_patch.paths
+    assert lens_fit_plotter_path + 'fit_model_image.png' in plot_patch.paths
+    assert lens_fit_plotter_path + 'fit_lens_subtracted_image.png' in plot_patch.paths
+    assert lens_fit_plotter_path + 'fit_lens_plane_model_image.png' not in plot_patch.paths
+    assert lens_fit_plotter_path + 'fit_source_plane_model_image.png' in plot_patch.paths
+    assert lens_fit_plotter_path + 'fit_residual_map.png' not in plot_patch.paths
     assert lens_fit_plotter_path + 'fit_chi_squared_map.png' in plot_patch.paths

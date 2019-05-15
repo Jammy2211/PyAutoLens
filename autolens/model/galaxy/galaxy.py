@@ -1,9 +1,9 @@
 from itertools import count
 
-from scipy.optimize import root_scalar
 import numpy as np
+from astropy import cosmology as cosmo
 
-from autolens import exc
+from autolens import exc, dimensions as dim
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 
@@ -42,7 +42,7 @@ class Galaxy(object):
         pixelization : inversion.Pixelization
             The pixelization of the galaxy used to reconstruct an observed image using an inversion.
         regularization : inversion.Regularization
-            The imageization of the pixel-grid used to reconstruct an observed regular using an inversion.
+            The regularization of the pixel-grid used to reconstruct an observed regular using an inversion.
         """
         self.redshift = redshift
 
@@ -109,6 +109,14 @@ class Galaxy(object):
             string += "\nMass Profiles:\n{}".format("\n".join(map(str, self.mass_profiles)))
         return string
 
+    def __eq__(self, other):
+        return all((isinstance(other, Galaxy),
+                    self.pixelization == other.pixelization,
+                    self.redshift == other.redshift,
+                    self.hyper_galaxy == other.hyper_galaxy,
+                    self.light_profiles == other.light_profiles,
+                    self.mass_profiles == other.mass_profiles))
+
     def intensities_from_grid(self, grid):
         """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
@@ -127,53 +135,56 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-    def luminosity_within_circle(self, radius, conversion_factor=1.0):
-        """
-        Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
-
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
+    def luminosity_within_circle_in_units(self, radius: dim.Length, unit_luminosity='eps',
+                                          exposure_time=None, cosmology=cosmo.Planck15, **kwargs):
+        """Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
 
         See *light_profiles.luminosity_within_circle* for details of how this is performed.
 
         Parameters
         ----------
         radius : float
-            The radius of the circle to compute the luminosity within.
-        conversion_factor : float
-            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
-            (e.g. a photometric zeropoint).
+            The radius of the circle to compute the dimensionless mass within.
+        unit_luminosity : str
+            The units the luminosity is returned in (eps | counts).
+        exposure_time : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_circle(radius, conversion_factor), self.light_profiles))
+            return sum(map(lambda p: p.luminosity_within_circle_in_units(
+                radius=radius, unit_luminosity=unit_luminosity, redshift_profile=self.redshift,
+                exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs),
+                           self.light_profiles))
         else:
             return None
 
-    def luminosity_within_ellipse(self, major_axis, conversion_factor=1.0):
+    def luminosity_within_ellipse_in_units(self, major_axis : dim.Length, unit_luminosity='eps',
+                                           exposure_time=None, cosmology=cosmo.Planck15, **kwargs):
         """Compute the total luminosity of the galaxy's light profiles, within an ellipse of specified major axis. This 
         is performed via integration of each light profile and is centred, oriented and aligned with each light
         model's individual geometry.
-
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
 
         See *light_profiles.luminosity_within_ellipse* for details of how this is performed.
 
         Parameters
         ----------
-        major_axis: float
-            The major-axis of the ellipse to compute the luminosity within.
-        conversion_factor : float
-            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
-            (e.g. a photometric zeropoint).
+        major_axis : float
+            The major-axis radius of the ellipse.
+        unit_luminosity : str
+            The units the luminosity is returned in (eps | counts).
+        exposure_time : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_ellipse(major_axis, conversion_factor), self.light_profiles))
+            return sum(map(lambda p: p.luminosity_within_ellipse_in_units(
+                major_axis=major_axis, unit_luminosity=unit_luminosity, redshift_profile=self.redshift,
+                exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs),
+                           self.light_profiles))
         else:
             return None
 
-    def surface_density_from_grid(self, grid):
-        """Compute the summed surface density of the galaxy's mass profiles using a grid of Cartesian (y,x) \
+    def convergence_from_grid(self, grid):
+        """Compute the summed convergence of the galaxy's mass profiles using a grid of Cartesian (y,x) \
         coordinates.
 
         If the galaxy has no mass profiles, a grid of zeros is returned.
@@ -186,7 +197,7 @@ class Galaxy(object):
             The (y, x) coordinates in the original reference frame of the grid.
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.surface_density_from_grid(grid), self.mass_profiles))
+            return sum(map(lambda p: p.convergence_from_grid(grid), self.mass_profiles))
         else:
             return np.zeros((grid.shape[0],))
 
@@ -226,11 +237,9 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def mass_within_circle(self, radius, conversion_factor=1.0):
-        """Compute the total mass of the galaxy's mass profiles within a circle of specified radius.
-
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+    def mass_within_circle_in_units(self, radius : dim.Length, redshift_source=None,
+                                    unit_mass='solMass', cosmology=cosmo.Planck15, **kwargs):
+        """Compute the total angular mass of the galaxy's mass profiles within a circle of specified radius.
 
         See *profiles.mass_profiles.mass_within_circle* for details of how this is performed.
 
@@ -238,47 +247,172 @@ class Galaxy(object):
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        conversion_factor : float
-            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
-            mass density).
+        unit_mass : str
+            The units the mass is returned in (angular | solMass).
+        critical_surface_density : float
+            The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
+            units to physical units (e.g. solar masses).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_circle(radius, conversion_factor), self.mass_profiles))
+            return sum(map(lambda p: p.mass_within_circle_in_units(
+                radius=radius, redshift_profile=self.redshift, redshift_source=redshift_source,
+                unit_mass=unit_mass, cosmology=cosmology, kwargs=kwargs),
+                           self.mass_profiles))
         else:
             return None
 
-    def mass_within_ellipse(self, major_axis, conversion_factor=1.0):
-        """Compute the total mass of the galaxy's mass profiles within an ellipse of specified major_axis.
+    def mass_within_ellipse_in_units(self, major_axis : dim.Length, redshift_source=None,
+                                    unit_mass='solMass', cosmology=cosmo.Planck15, **kwargs):
+        """Compute the total angular mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
-
-        See *profiles.mass_profiles.mass_within_ellipses* for details of how this is performed.
+        See *profiles.mass_profiles.angualr_mass_within_ellipse* for details of how this is performed.
 
         Parameters
         ----------
         major_axis : float
-            The major axis of the ellipse
-        conversion_factor : float
-            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
-            mass density).
+            The major-axis radius of the ellipse.
+        units_luminosity : str
+            The units the luminosity is returned in (eps | counts).
+        exposure_time : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
+            return sum(map(lambda p: p.mass_within_ellipse_in_units(
+                major_axis=major_axis, redshift_profile=self.redshift, redshift_source=redshift_source,
+                unit_mass=unit_mass, cosmology=cosmology, kwargs=kwargs),
+                           self.mass_profiles))
         else:
             return None
 
-    @property
-    def einstein_radius(self):
+    def einstein_radius_in_units(self, unit_length='arcsec', cosmology=cosmo.Planck15, **kwargs):
         """The Einstein Radius of this galaxy, which is the sum of Einstein Radii of its mass profiles.
 
         If the galaxy is composed of multiple ellipitcal profiles with different axis-ratios, this Einstein Radius \
         may be inaccurate. This is because the differently oriented ellipses of each mass profile """
 
         if self.has_mass_profile:
-            return sum(map(lambda p: p.einstein_radius, self.mass_profiles))
+            return sum(map(lambda p: p.einstein_radius_in_units(
+                unit_length=unit_length, redshift_profile=self.redshift, cosmology=cosmology),
+                           self.mass_profiles))
         else:
             return None
+
+    def einstein_mass_in_units(self, unit_mass='solMass',
+                               redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+        """The Einstein Mass of this galaxy, which is the sum of Einstein Radii of its mass profiles.
+
+        If the galaxy is composed of multiple ellipitcal profiles with different axis-ratios, this Einstein Mass \
+        may be inaccurate. This is because the differently oriented ellipses of each mass profile """
+
+        if self.has_mass_profile:
+            return sum(
+                map(lambda p: p.einstein_mass_in_units(
+                    unit_mass=unit_mass, redshift_profile=self.redshift, redshift_source=redshift_source,
+                    cosmology=cosmology, kwargs=kwargs),
+                    self.mass_profiles))
+        else:
+            return None
+
+    def summarize_light_profiles_in_units(self, radii, whitespace=80, prefix='',
+                                         unit_length='arcsec', unit_luminosity='eps',
+                                         redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+
+        summary = ['']
+        summary.append('GALAXY LIGHT')
+        summary.append('')
+
+        for radius in radii:
+
+            luminosity = self.luminosity_within_circle_in_units(unit_luminosity=unit_luminosity, radius=radius,
+                                                    redshift_source=redshift_source, cosmology=cosmology,
+                                                    kwargs=kwargs)
+
+            param = prefix + 'luminosity_within_{:.2f}_{}'.format(radius, unit_length)
+            value = '{:.4e} {}'.format(luminosity, unit_luminosity)
+            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        summary.append('')
+        summary.append('LIGHT PROFILES:')
+
+        for light_profile in self.light_profiles:
+            summary.append('')
+            summary += light_profile.summarize_in_units(radii=radii, whitespace=whitespace,
+                                                       unit_length=unit_length, unit_luminosity=unit_luminosity,
+                                                       redshift_profile=self.redshift,
+                                                       redshift_source=redshift_source, cosmology=cosmology,
+                                                       kwargs=kwargs)
+
+        return summary
+
+    def summarize_mass_profiles_in_units(self, radii, whitespace=80, prefix='',
+                                         unit_length='arcsec', unit_mass='solMass',
+                                         redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+
+        summary = ['']
+        summary.append('GALAXY MASS')
+        summary.append('')
+
+        einstein_radius = self.einstein_radius_in_units(unit_length=unit_length, cosmology=cosmology)
+
+        einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass, redshift_source=redshift_source,
+                                                    cosmology=cosmology, kwargs=kwargs)
+
+        param = prefix + 'einstein_radius'
+        value = '{:.2f} {}'.format(einstein_radius, unit_length)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        param = prefix + 'einstein_mass'
+        value = '{:.4e} {}'.format(einstein_mass, unit_mass)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        for radius in radii:
+            mass = self.mass_within_circle_in_units(unit_mass=unit_mass, radius=radius,
+                                                    redshift_source=redshift_source, cosmology=cosmology,
+                                                    kwargs=kwargs)
+
+            param = prefix + 'mass_within_{:.2f}_{}'.format(radius, unit_length)
+            value = '{:.4e} {}'.format(mass, unit_mass)
+            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        summary.append('')
+        summary.append('MASS PROFILES:')
+
+        for mass_profile in self.mass_profiles:
+            summary.append('')
+            summary += mass_profile.summarize_in_units(radii=radii, whitespace=whitespace,
+                                                       unit_length=unit_length, unit_mass=unit_mass,
+                                                       redshift_profile=self.redshift,
+                                                       redshift_source=redshift_source, cosmology=cosmology,
+                                                       kwargs=kwargs)
+
+        return summary
+
+    def summarize_in_units(self, radii, whitespace=80,
+                          unit_length='arcsec', unit_luminosity='eps', unit_mass='solMass',
+                          redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+
+        if hasattr(self, 'name'):
+            summary = ["Galaxy = {}".format(self.name), '']
+            prefix_galaxy = self.name + '_'
+        else:
+            summary = ["Galaxy", '']
+            prefix_galaxy = ''
+
+        param = prefix_galaxy + 'redshift'
+        value = '{:.2f}'.format(self.redshift)
+        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+
+        if self.has_light_profile:
+            summary += self.summarize_light_profiles_in_units(whitespace=whitespace, prefix=prefix_galaxy,
+                radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
+                redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+
+        if self.has_mass_profile:
+            summary += self.summarize_mass_profiles_in_units(whitespace=whitespace, prefix=prefix_galaxy,
+                radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+                redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+
+        return summary
 
 
 class HyperGalaxy(object):
@@ -288,10 +422,10 @@ class HyperGalaxy(object):
         """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the image that the \
         galaxy is located will be scaled, to prevent over-fitting of the galaxy. 
         
-        This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
+        This is performed by first computing the hyper-galaxy's 'contribution-map', which determines the fraction of \
         flux in every pixel of the image that can be associated with this particular hyper-galaxy. This is computed \
-        using  hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of the \
-        galaxy's light from a previous analysis phase. 
+        using  hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of \
+        the galaxy's light from a previous analysis phase.
          
         The *HyperGalaxy* class contains the hyper-parameters which are associated with this galaxy for scaling the \
         noise-map.
@@ -311,7 +445,12 @@ class HyperGalaxy(object):
 
         self.component_number = next(self._ids)
 
-    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, hyper_minimum_value):
+    def hyper_noise_from_model_image_galaxy_image_and_noise_map(self, model_image, galaxy_image, noise_map,
+                                                                minimum_value=0.0):
+        contributions = self.contributions_from_model_image_and_galaxy_image(model_image, galaxy_image, minimum_value)
+        return self.hyper_noise_from_contributions(noise_map, contributions)
+
+    def contributions_from_model_image_and_galaxy_image(self, model_image, galaxy_image, minimum_value=0.0):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that the \
         galaxy is attributed to contain, scaled to the *contribution_factor* hyper-parameter.
 
@@ -320,17 +459,17 @@ class HyperGalaxy(object):
 
         Parameters
         -----------
-        hyper_model_image : ndarray
+        model_image : ndarray
             The best-fit model image to the observed image from a previous analysis phase. This provides the \
             total light attributed to each image pixel by the model.
-        hyper_galaxy_image : ndarray
+        galaxy_image : ndarray
             A model image of the galaxy (from light profiles or an inversion) from a previous analysis phase.
-        hyper_minimum_value : float
+        minimum_value : float
             The minimum contribution value a pixel must contain to not be rounded to 0.
         """
-        contributions = np.divide(hyper_galaxy_image, np.add(hyper_model_image, self.contribution_factor))
+        contributions = np.divide(galaxy_image, np.add(model_image, self.contribution_factor))
         contributions = np.divide(contributions, np.max(contributions))
-        contributions[contributions < hyper_minimum_value] = 0.0
+        contributions[contributions < minimum_value] = 0.0
         return contributions
 
     def hyper_noise_from_contributions(self, noise_map, contributions):
@@ -358,16 +497,9 @@ class HyperGalaxy(object):
         return "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()])
 
 
-class Redshift(object):
+class Redshift(float):
+    def __new__(cls, redshift):
+        return float.__new__(cls, redshift)
+
     def __init__(self, redshift):
-        self.redshift = redshift
-
-    @property
-    def value(self):
-        try:
-            return self.redshift.value
-        except AttributeError:
-            return self.redshift
-
-    def __str__(self):
-        return str(self.redshift)
+        float.__init__(redshift)

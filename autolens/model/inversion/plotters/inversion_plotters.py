@@ -1,10 +1,9 @@
-from autolens.data.array.plotters import array_plotters
-from autolens.data.array.plotters import plotter_util
+from autolens.plotters import plotter_util, array_plotters
 from autolens.model.inversion.plotters import mapper_plotters
 from autolens.model.inversion import mappers
 
 def plot_reconstructed_image(inversion, mask=None, positions=None, grid=None, as_subplot=False,
-                             units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                             units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
                              cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
                              title='Reconstructed CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -15,8 +14,8 @@ def plot_reconstructed_image(inversion, mask=None, positions=None, grid=None, as
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                               linthresh=linthresh, linscale=linscale,
-                              cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
-        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+                              cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                              cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
                               title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                               xyticksize=xyticksize,
                               output_path=output_path, output_format=output_format, output_filename=output_filename)
@@ -24,7 +23,7 @@ def plot_reconstructed_image(inversion, mask=None, positions=None, grid=None, as
 def plot_reconstructed_pixelization(inversion, plot_origin=True, positions=None, should_plot_centres=False,
                                     should_plot_grid=False, should_plot_border=False, image_pixels=None,
                                     source_pixels=None, as_subplot=False,
-                                    units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                                    units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
                                     cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
                                     linscale=0.01,
                                     cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
@@ -49,8 +48,8 @@ def plot_reconstructed_pixelization(inversion, plot_origin=True, positions=None,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                   cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                                   linthresh=linthresh, linscale=linscale,
-                                  cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
-        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+                                  cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                  cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
                                   title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                   xyticksize=xyticksize,
                                   output_filename=output_filename)

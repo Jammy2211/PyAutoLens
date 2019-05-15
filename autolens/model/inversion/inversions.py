@@ -66,7 +66,7 @@ class Inversion(object):
 
     @property
     def reconstructed_data(self):
-        return self.mapper.grid_stack.regular.scaled_array_from_array_1d(np.asarray(self.reconstructed_data_vector))
+        return self.mapper.grid_stack.regular.scaled_array_2d_from_array_1d(np.asarray(self.reconstructed_data_vector))
 
     @property
     def reconstructed_data_vector(self):

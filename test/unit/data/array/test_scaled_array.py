@@ -676,7 +676,7 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, True],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
             assert (array_extracted == np.array([[6.0,   7.0],
                                                  [10.0, 11.0]])).all()
 
@@ -685,7 +685,7 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, False],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
             assert (array_extracted == np.array([[6.0,   7.0,  8.0],
                                                  [10.0, 11.0, 12.0]])).all()
 
@@ -694,7 +694,7 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, True],
                                             [True,  True, False, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
             assert (array_extracted == np.array([[6.0,   7.0],
                                                  [10.0, 11.0],
                                                  [14.0, 15.0]])).all()
@@ -704,7 +704,8 @@ class TestScaledSquarePixelArray:
                                             [False, False, False, True],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
+            print(array_extracted)
             assert (array_extracted == np.array([[5.0,  6.0,  7.0],
                                                  [9.0, 10.0, 11.0]])).all()
 
@@ -713,7 +714,7 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, True],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
     
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
             assert (array_extracted == np.array([[2.0,   3.0],
                                                  [6.0,   7.0],
                                                  [10.0, 11.0]])).all()
@@ -723,16 +724,66 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, True],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=1)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=1)
             assert (array_extracted == np.array([[ 1.0,  2.0,  3.0,  4.0],
                                                  [ 5.0,  6.0,  7.0,  8.0],
                                                  [ 9.0, 10.0, 11.0, 12.0],
                                                  [13.0, 14.0, 15.0, 16.0]])).all()
 
-    # class TestBinnedUpArray:
-    #
-    #     def test__bin_up_size_is_1__returned_array_has_same_dimensions(self):
+    class TestBinUp:
 
+        def test__compare_all_extract_methods_to_array_util(self):
+
+            array_2d = np.array([[1.0, 6.0, 3.0, 7.0, 3.0, 2.0],
+                                 [2.0, 5.0, 3.0, 7.0, 7.0, 7.0],
+                                 [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]])
+
+            array_2d = scaled_array.ScaledSquarePixelArray(array=array_2d, pixel_scale=0.1)
+
+            binned_up_array_2d_util = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=4)
+            binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=4, method='mean')
+            assert (binned_up_array_2d_util == binned_up_scaled_array).all()
+
+            binned_up_array_2d_util = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=4)
+            binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=4, method='quadrature')
+            assert (binned_up_array_2d_util == binned_up_scaled_array).all()
+
+            binned_up_array_2d_util = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=4)
+            binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=4, method='sum')
+            assert (binned_up_array_2d_util == binned_up_scaled_array).all()
+
+        def test__pixel_scale_of_scaled_arrays_are_updated(self):
+
+            array_2d = np.array([[1.0, 6.0, 3.0, 7.0, 3.0, 2.0],
+                                 [2.0, 5.0, 3.0, 7.0, 7.0, 7.0],
+                                 [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]])
+
+            array_2d = scaled_array.ScaledSquarePixelArray(array=array_2d, pixel_scale=0.1)
+
+            binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=4, method='mean')
+            assert binned_up_scaled_array.pixel_scale == pytest.approx(0.4, 1.0e-4)
+            binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=6, method='mean')
+            assert binned_up_scaled_array.pixel_scale == pytest.approx(0.6, 1.0e-4)
+
+            binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=4, method='quadrature')
+            assert binned_up_scaled_array.pixel_scale == pytest.approx(0.4, 1.0e-4)
+            binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=6, method='quadrature')
+            assert binned_up_scaled_array.pixel_scale == pytest.approx(0.6, 1.0e-4)
+
+            binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=4, method='sum')
+            assert binned_up_scaled_array.pixel_scale == pytest.approx(0.4, 1.0e-4)
+            binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=6, method='sum')
+            assert binned_up_scaled_array.pixel_scale == pytest.approx(0.6, 1.0e-4)
+
+        def test__invalid_method__raises_exception(self):
+
+            array_2d = np.array([[1.0, 6.0, 3.0, 7.0, 3.0, 2.0],
+                                 [2.0, 5.0, 3.0, 7.0, 7.0, 7.0],
+                                 [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]])
+
+            array_2d = scaled_array.ScaledSquarePixelArray(array=array_2d, pixel_scale=0.1)
+            with pytest.raises(exc.DataException):
+                array_2d.binned_up_array_from_array(bin_up_factor=4, method='wrong')
 
 
 class TestScaledRectangularPixelArray:

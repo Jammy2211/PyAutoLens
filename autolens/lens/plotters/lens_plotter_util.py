@@ -1,12 +1,11 @@
 from autolens import exc
-from autolens.data.array.plotters import array_plotters
+from autolens.plotters import array_plotters
 
-import numpy as np
 
 def plot_image(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         image_plane_pix_grid=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -38,7 +37,7 @@ def plot_image(
 
 def plot_noise_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -69,7 +68,7 @@ def plot_noise_map(
 
 def plot_signal_to_noise_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Signal-to-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -99,8 +98,9 @@ def plot_signal_to_noise_map(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_model_data(
-        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
+        plot_mass_profile_centres=True, as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -117,9 +117,12 @@ def plot_model_data(
     image_index : int
         The index of the datas in the datas-set of which the model image is plotted.
     """
+
+    centres = get_mass_profile_centes(plot_mass_profile_centres=plot_mass_profile_centres, fit=fit)
+
     array_plotters.plot_array(
         array=fit.model_data, mask=mask, extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
+        zoom_around_mask=zoom_around_mask, positions=positions, centres=centres, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
@@ -130,7 +133,7 @@ def plot_model_data(
 
 def plot_lens_subtracted_image(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -171,8 +174,8 @@ def plot_lens_subtracted_image(
 
 def plot_model_image_of_planes(
         fit, plot_foreground=False, plot_source=False, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
-        positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        positions=None, plot_mass_profile_centres=True, as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -189,6 +192,8 @@ def plot_model_image_of_planes(
     plane_indexes : [int]
         The plane from which the model image is generated.
     """
+
+    centres = get_mass_profile_centes(plot_mass_profile_centres=plot_mass_profile_centres, fit=fit)
 
     if plot_foreground:
 
@@ -207,7 +212,7 @@ def plot_model_image_of_planes(
 
     array_plotters.plot_array(
         array=model_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
+        zoom_around_mask=zoom_around_mask, positions=positions, centres=centres, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
@@ -218,7 +223,7 @@ def plot_model_image_of_planes(
 
 def plot_residual_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Residuals', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -248,7 +253,7 @@ def plot_residual_map(
 
 def plot_chi_squared_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -278,7 +283,7 @@ def plot_chi_squared_map(
 
 def plot_contribution_maps(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Contributions', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -314,9 +319,9 @@ def plot_contribution_maps(
 
 def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
 
-    if hasattr(fit, 'mapper'):
-        if should_plot_image_plane_pix and fit.mapper.is_image_plane_pixelization:
-            return fit.tracer.image_plane.grids[0].pix
+    if hasattr(fit, 'inversion'):
+        if should_plot_image_plane_pix and fit.inversion.mapper.is_image_plane_pixelization:
+            return fit.tracer.image_plane.grid_stack.pix
     else:
         return None
 
@@ -332,5 +337,15 @@ def get_mask(fit, should_plot_mask):
     """
     if should_plot_mask:
         return fit.mask
+    else:
+        return None
+
+def get_mass_profile_centes(plot_mass_profile_centres, fit):
+
+    if not hasattr(fit, 'tracer'):
+        return None
+
+    if plot_mass_profile_centres:
+        return fit.tracer.image_plane.centres_of_galaxy_mass_profiles
     else:
         return None

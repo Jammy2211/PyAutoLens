@@ -1,16 +1,101 @@
 from matplotlib import pyplot as plt
 
-from autofit import conf
-from autolens.data.array.plotters import plotter_util
+from autolens.plotters import plotter_util
 from autolens.lens.plotters import lens_plotter_util
 from autolens.lens.plotters import plane_plotters
 from autolens.model.inversion.plotters import inversion_plotters
 
 
+def plot_lens_fit_for_phase(
+        fit, during_analysis, extract_array_from_mask, zoom_around_mask, positions, units,
+        should_plot_mask,
+        should_plot_image_plane_pix,
+        should_plot_as_subplot,
+        should_plot_all_at_end_png,
+        should_plot_all_at_end_fits,
+        should_plot_image,
+        should_plot_noise_map,
+        should_plot_signal_to_noise_map,
+        should_plot_lens_subtracted_image,
+        should_plot_model_image,
+        should_plot_lens_model_image,
+        should_plot_source_model_image,
+        should_plot_source_plane_image,
+        should_plot_residual_map,
+        should_plot_chi_squared_map,
+        visualize_path):
+
+    output_path = visualize_path
+
+    if should_plot_as_subplot:
+        
+        plot_fit_subplot(
+            fit=fit, should_plot_mask=should_plot_mask,
+            extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+            positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
+            units=units,
+            output_path=output_path, output_format='png')
+
+    plot_fit_individuals(
+        fit=fit, should_plot_mask=should_plot_mask,
+        extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+        positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
+        should_plot_image=should_plot_image,
+        should_plot_noise_map=should_plot_noise_map,
+        should_plot_signal_to_noise_map=should_plot_signal_to_noise_map,
+        should_plot_lens_subtracted_image=should_plot_lens_subtracted_image,
+        should_plot_model_image=should_plot_model_image,
+        should_plot_lens_model_image=should_plot_lens_model_image,
+        should_plot_source_model_image=should_plot_source_model_image,
+        should_plot_source_plane_image=should_plot_source_plane_image,
+        should_plot_residual_map=should_plot_residual_map,
+        should_plot_chi_squared_map=should_plot_chi_squared_map,
+        units=units,
+        output_path=output_path, output_format='png')
+
+    if not during_analysis:
+
+        if should_plot_all_at_end_png:
+
+            plot_fit_individuals(
+                fit=fit, should_plot_mask=should_plot_mask,
+                extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+                positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
+                should_plot_image=True,
+                should_plot_noise_map=True,
+                should_plot_signal_to_noise_map=True,
+                should_plot_lens_subtracted_image=True,
+                should_plot_model_image=True,
+                should_plot_lens_model_image=True,
+                should_plot_source_model_image=True,
+                should_plot_source_plane_image=True,
+                should_plot_residual_map=True,
+                should_plot_chi_squared_map=True,
+                units=units,
+                output_path=output_path, output_format='png')
+
+        if should_plot_all_at_end_fits:
+
+            plot_fit_individuals(
+                fit=fit, should_plot_mask=should_plot_mask,
+                extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+                positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
+                should_plot_image=True,
+                should_plot_noise_map=True,
+                should_plot_signal_to_noise_map=True,
+                should_plot_lens_subtracted_image=True,
+                should_plot_model_image=True,
+                should_plot_lens_model_image=True,
+                should_plot_source_model_image=True,
+                should_plot_source_plane_image=True,
+                should_plot_residual_map=True,
+                should_plot_chi_squared_map=True,
+                output_path=output_path + 'fits/', output_format='fits')
+
 def plot_fit_subplot(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
-        should_plot_image_plane_pix=False,
-        units='arcsec', figsize=None, aspect='equal',
+        should_plot_image_plane_pix=False, plot_mass_profile_centres=True,
+        units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -34,7 +119,7 @@ def plot_fit_subplot(
 
         plot_fit_subplot_lens_and_source_planes(
             fit=fit, should_plot_mask=should_plot_mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=positions,
-            should_plot_image_plane_pix=should_plot_image_plane_pix,
+            should_plot_image_plane_pix=should_plot_image_plane_pix, plot_mass_profile_centres=plot_mass_profile_centres,
             units=units, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
@@ -46,7 +131,7 @@ def plot_fit_subplot(
 def plot_fit_subplot_lens_plane_only(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         should_plot_image_plane_pix=False,
-        units='arcsec', figsize=None, aspect='equal',
+        units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -79,7 +164,7 @@ def plot_fit_subplot_lens_plane_only(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
@@ -160,8 +245,8 @@ def plot_fit_subplot_lens_plane_only(
 
 def plot_fit_subplot_lens_and_source_planes(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False,
-        should_plot_source_grid=False, positions=None, should_plot_image_plane_pix=False,
-        units='arcsec', figsize=None, aspect='equal',
+        should_plot_source_grid=False, positions=None, should_plot_image_plane_pix=False, plot_mass_profile_centres=True,
+        units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -193,7 +278,7 @@ def plot_fit_subplot_lens_and_source_planes(
 
     plt.figure(figsize=figsize)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
@@ -251,7 +336,8 @@ def plot_fit_subplot_lens_and_source_planes(
         plt.subplot(rows, columns, 5)
 
         lens_plotter_util.plot_model_image_of_planes(
-            fit=fit, plot_foreground=True, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
+            fit=fit, plot_foreground=True, mask=mask, extract_array_from_mask=extract_array_from_mask,
+            zoom_around_mask=zoom_around_mask, plot_mass_profile_centres=plot_mass_profile_centres, as_subplot=True,
             units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
@@ -263,7 +349,8 @@ def plot_fit_subplot_lens_and_source_planes(
     plt.subplot(rows, columns, 6)
 
     lens_plotter_util.plot_model_image_of_planes(
-        fit=fit, plot_source=True, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
+        fit=fit, plot_source=True, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, plot_mass_profile_centres=plot_mass_profile_centres, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
@@ -272,25 +359,37 @@ def plot_fit_subplot_lens_and_source_planes(
         xyticksize=xyticksize,
         output_path=output_path, output_filename='lens_subtracted_image', output_format=output_format)
 
-    plt.subplot(rows, columns, 7, aspect=1)
-
     if fit.total_inversions == 0:
+
+        plt.subplot(rows, columns, 7)
 
         plane_plotters.plot_plane_image(
             plane=fit.tracer.source_plane, positions=None, plot_grid=should_plot_source_grid, as_subplot=True,
-            units=units, figsize=figsize, aspect=1,
+            units=units, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+            cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
             titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
             grid_pointsize=grid_pointsize, position_pointsize=position_pointsize,
             output_path=output_path, output_filename='', output_format=output_format)
 
     elif fit.total_inversions == 1:
+        
+        ratio = float((fit.inversion.mapper.geometry.arc_second_maxima[1] - fit.inversion.mapper.geometry.arc_second_minima[1]) / \
+                (fit.inversion.mapper.geometry.arc_second_maxima[0] - fit.inversion.mapper.geometry.arc_second_minima[0]))
+
+        if aspect is 'square':
+            aspect_inv = ratio
+        elif aspect is 'auto':
+            aspect_inv = 1.0 / ratio
+        elif aspect is 'equal':
+            aspect_inv = 1.0
+
+        plt.subplot(rows, columns, 7, aspect=float(aspect_inv))
 
         inversion_plotters.plot_reconstructed_pixelization(
             inversion=fit.inversion, positions=None, should_plot_grid=False, should_plot_centres=False, as_subplot=True,
-            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=1,
+            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=None,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -301,9 +400,9 @@ def plot_fit_subplot_lens_and_source_planes(
 
     lens_plotter_util.plot_residual_map(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=None,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -314,7 +413,7 @@ def plot_fit_subplot_lens_and_source_planes(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -404,7 +503,7 @@ def plot_fit_individuals_lens_plane_only(
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
     if should_plot_image:
 
@@ -483,7 +582,7 @@ def plot_fit_individuals_lens_and_source_planes(
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
     if should_plot_image:
 
