@@ -479,6 +479,16 @@ class RegularGrid(np.ndarray):
                                                    pixel_scale=self.mask.pixel_scale,
                                                    origin=self.mask.origin)
 
+    def grid_2d_from_grid_1d(self, grid_1d):
+        """ The arc second-grid of (y,x) coordinates of every pixel.
+
+        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
+        value y value in arc seconds.
+        """
+        return grid_util.regular_grid_2d_from_shape_pixel_scales_and_origin(shape=self.shape,
+                                                                            pixel_scales=self.pixel_scales,
+                                                                            origin=self.origin)
+
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
         pickled_state = super(RegularGrid, self).__reduce__()
