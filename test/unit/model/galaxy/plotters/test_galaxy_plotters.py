@@ -46,14 +46,14 @@ def test__intensities_is_output(galaxy_light,grid_stack, mask, positions, galaxy
     assert galaxy_plotter_path + 'galaxy_intensities.png' in plot_patch.paths
 
 
-def test__surface_density_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+def test__convergence_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
-    galaxy_plotters.plot_surface_density(galaxy=galaxy_mass, grid=grid_stack.regular,
-                                         mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
-                                         positions=positions, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
-                                         output_path=galaxy_plotter_path, output_format='png')
+    galaxy_plotters.plot_convergence(galaxy=galaxy_mass, grid=grid_stack.regular,
+                                     mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
+                                     positions=positions, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                     output_path=galaxy_plotter_path, output_format='png')
     
-    assert galaxy_plotter_path + 'galaxy_surface_density.png' in plot_patch.paths
+    assert galaxy_plotter_path + 'galaxy_convergence.png' in plot_patch.paths
 
 
 def test__potential_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
@@ -96,14 +96,14 @@ def test__individual_intensities_is_output(galaxy_light,grid_stack, mask, positi
     assert galaxy_plotter_path + 'galaxy_individual_intensities.png' in plot_patch.paths
 
 
-def test__individual_surface_density_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+def test__individual_convergence_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
-    galaxy_plotters.plot_surface_density_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
+    galaxy_plotters.plot_convergence_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
                                                  mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
                                                  positions=positions, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                                  output_path=galaxy_plotter_path, output_format='png')
     
-    assert galaxy_plotter_path + 'galaxy_individual_surface_density.png' in plot_patch.paths
+    assert galaxy_plotter_path + 'galaxy_individual_convergence.png' in plot_patch.paths
 
 
 def test__individual_potential_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):

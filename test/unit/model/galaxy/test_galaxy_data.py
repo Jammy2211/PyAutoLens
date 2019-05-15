@@ -48,10 +48,10 @@ class TestGalaxyFitData(object):
 
         assert (galaxy_data.grid_stack.regular == np.array([[1.5, -1.5], [1.5, 1.5],
                                                        [-1.5, -1.5], [-1.5, 1.5]])).all()
-        assert (galaxy_data.grid_stack.sub == np.array([[2.0, -2.0], [2.0, -1.0], [1.0, -2.0], [1.0, -1.0],
-                                                     [2.0, 1.0], [2.0, 2.0], [1.0, 1.0], [1.0, 2.0],
-                                                     [-1.0, -2.0], [-1.0, -1.0], [-2.0, -2.0], [-2.0, -1.0],
-                                                     [-1.0, 1.0], [-1.0, 2.0], [-2.0, 1.0], [-2.0, 2.0]])).all()
+        assert (galaxy_data.grid_stack.sub == np.array([[2.25, -2.25], [2.25, -0.75], [0.75, -2.25], [0.75, -0.75],
+                                                     [2.25, 0.75], [2.25, 2.25], [0.75, 0.75], [0.75, 2.25],
+                                                     [-0.75, -2.25], [-0.75, -0.75], [-2.25, -2.25], [-2.25, -0.75],
+                                                     [-0.75, 0.75], [-0.75, 2.25], [-2.25, 0.75], [-2.25, 2.25]])).all()
 
     def test__padded_grid_stack(self, galaxy_data):
 
@@ -62,7 +62,7 @@ class TestGalaxyFitData(object):
         assert galaxy_data.padded_grid_stack.regular.image_shape == (4, 4)
         assert galaxy_data.padded_grid_stack.regular.padded_shape == (4, 4)
 
-        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=np.full((4, 4), False), pixel_scales=galaxy_data.image.pixel_scales,
             sub_grid_size=galaxy_data.grid_stack.sub.sub_grid_size)
 
@@ -97,18 +97,18 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(light=lp.SphericalSersic(intensity=1.0))
 
         intensities_gal = galaxy.intensities_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        intensities_gal = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=intensities_gal)
+        intensities_gal = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=intensities_gal)
 
         intensities_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                    sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (intensities_gal == intensities_gd).all()
 
-    def test__galaxy_data_surface_density(self, image, mask):
+    def test__galaxy_data_convergence(self, image, mask):
 
         galaxy_data = gd.GalaxyData(image=image, noise_map=2.0*np.ones((4, 4)), pixel_scale=3.0)
 
-        galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_surface_density=True)
+        galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_convergence=True)
 
         assert galaxy_fit_data.pixel_scale == 3.0
         assert (galaxy_fit_data.image == np.ones((4, 4))).all()
@@ -123,20 +123,20 @@ class TestGalaxyFitData(object):
 
         galaxy = MockGalaxy(value=1, shape=4)
 
-        surface_density = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+        convergence = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                     sub_grid=galaxy_fit_data.grid_stack.sub)
 
-        assert (surface_density == np.array([1.0, 1.0, 1.0, 1.0])).all()
+        assert (convergence == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
-        surface_density_gal = galaxy.surface_density_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        surface_density_gal = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=surface_density_gal)
+        convergence_gal = galaxy.convergence_from_grid(grid=galaxy_fit_data.grid_stack.sub)
+        convergence_gal = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=convergence_gal)
 
-        surface_density_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+        convergence_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                        sub_grid=galaxy_fit_data.grid_stack.sub)
 
-        assert (surface_density_gal == surface_density_gd).all()
+        assert (convergence_gal == convergence_gd).all()
         
     def test__galaxy_data_potential(self, image, mask):
 
@@ -165,7 +165,7 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         potential_gal = galaxy.potential_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        potential_gal = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=potential_gal)
+        potential_gal = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=potential_gal)
 
         potential_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                  sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -199,8 +199,8 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
-                                      galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
+        deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(deflections_gal[:, 0]),
+                                      galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(deflections_gal[:, 1])]).T
 
         deflections_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                    sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -234,8 +234,8 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
-                                      galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
+        deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(deflections_gal[:, 0]),
+                                      galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(deflections_gal[:, 1])]).T
 
         deflections_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                    sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -255,7 +255,7 @@ class TestGalaxyFitData(object):
 
         with pytest.raises(exc.GalaxyException):
             gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2,
-                             use_intensities=True, use_surface_density=True)
+                             use_intensities=True, use_convergence=True)
 
         with pytest.raises(exc.GalaxyException):
             gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2,
@@ -267,8 +267,8 @@ class TestGalaxyFitData(object):
 
         with pytest.raises(exc.GalaxyException):
             gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2,
-                             use_intensities=True, use_surface_density=True, use_potential=True)
+                             use_intensities=True, use_convergence=True, use_potential=True)
 
         with pytest.raises(exc.GalaxyException):
-                gd.GalaxyFitData(galaxy_data=galaxy_data,mask=mask, sub_grid_size=2,
-                                 use_intensities=True, use_surface_density=True, use_potential=True, use_deflections_x=True)
+                gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2,
+                                 use_intensities=True, use_convergence=True, use_potential=True, use_deflections_x=True)

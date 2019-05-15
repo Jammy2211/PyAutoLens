@@ -33,7 +33,7 @@ class TestGalaxyFit:
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
             galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=1,
-                                               use_surface_density=True)
+                                               use_convergence=True)
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
@@ -81,7 +81,7 @@ class TestGalaxyFit:
             assert fit.likelihood == -0.5 * ((25.0 / 4.0) + 2.0*np.log(2 * np.pi * 2.0**2))
 
             galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=1,
-                                               use_surface_density=True)
+                                               use_convergence=True)
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
             assert fit.chi_squared == (25.0 / 4.0)
@@ -138,7 +138,7 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_1d = galaxy.intensities_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=model_data_1d)
+            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=model_data_1d)
             model_data = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
             residual_map = fit_util.residual_map_from_data_mask_and_model_data(data=galaxy_fit_data.image, mask=galaxy_fit_data.mask,
                                                                                model_data=model_data)
@@ -164,7 +164,7 @@ class TestGalaxyFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-        def test__surface_density(self):
+        def test__convergence(self):
 
             image = sca.ScaledSquarePixelArray(array=np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                                             [0.0, 1.0, 2.0, 3.0, 0.0],
@@ -181,15 +181,15 @@ class TestGalaxyFit:
                                             [True, False, False, False, True],
                                             [True, True, True, True, True]]), pixel_scale=1.0)
 
-            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_surface_density=True)
+            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_convergence=True)
 
             galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 
             assert fit.model_galaxies == [galaxy]
 
-            model_data_1d = galaxy.surface_density_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=model_data_1d)
+            model_data_1d = galaxy.convergence_from_grid(grid=galaxy_fit_data.grid_stack.sub)
+            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=model_data_1d)
             model_data = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
             residual_map = fit_util.residual_map_from_data_mask_and_model_data(data=galaxy_fit_data.image, mask=galaxy_fit_data.mask,
                                                                                model_data=model_data)
@@ -242,7 +242,7 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_1d = galaxy.potential_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=model_data_1d)
+            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=model_data_1d)
             model_data = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
             residual_map = fit_util.residual_map_from_data_mask_and_model_data(data=galaxy_fit_data.image, mask=galaxy_fit_data.mask,
                                                                                model_data=model_data)
@@ -294,7 +294,7 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_1d = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=model_data_1d[:,0])
+            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=model_data_1d[:, 0])
             model_data = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
             residual_map = fit_util.residual_map_from_data_mask_and_model_data(data=galaxy_fit_data.image,
                                                                                mask=galaxy_fit_data.mask,
@@ -345,7 +345,7 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_1d = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=model_data_1d[:,1])
+            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=model_data_1d[:, 1])
             model_data = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
             residual_map = fit_util.residual_map_from_data_mask_and_model_data(data=galaxy_fit_data.image, mask=galaxy_fit_data.mask,
                                                                                model_data=model_data)

@@ -1,4 +1,6 @@
+import builtins
 import numpy as np
+import pytest
 
 from autofit.mapper import model_mapper
 from autofit.optimize import non_linear
@@ -23,25 +25,73 @@ class MockMask(object):
 
 class Optimizer(object):
     def __init__(self):
-        self.name = "dummy_phase"
+        self.phase_name = "dummy_phase"
 
 
 class DummyPhaseImaging(object):
-    def __init__(self, name):
+    def __init__(self, phase_name, phase_tag='', phase_path=None):
         self.data = None
         self.positions = None
-        self.previous_results = None
-        self.phase_name = name
+        self.results = None
+        self.phase_name = phase_name
+        self.phase_tag = phase_tag
+        self.phase_path = phase_path or phase_name
         self.mask = None
 
         self.optimizer = Optimizer()
 
-    def run(self, data, previous_results, mask=None, positions=None):
+    def run(self, data, results, mask=None, positions=None):
         self.data = data
-        self.previous_results = previous_results
+        self.results = results
         self.mask = mask
         self.positions = positions
         return non_linear.Result(model_mapper.ModelInstance(), 1)
+
+
+class MockCCDData(object):
+    pass
+
+
+class MockFile(object):
+    def __init__(self):
+        self.text = None
+        self.filename = None
+
+    def write(self, text):
+        self.text = text
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+
+@pytest.fixture(name="mock_files", autouse=True)
+def make_mock_file(monkeypatch):
+    files = []
+
+    def mock_open(filename, flag):
+        assert flag in ("w+", "w+b")
+        file = MockFile()
+        file.filename = filename
+        files.append(file)
+        return file
+
+    monkeypatch.setattr(builtins, 'open', mock_open)
+    return files
+
+
+class TestMetaData(object):
+    def test_files(self, mock_files):
+        pipeline = pl.PipelineImaging("pipeline_name", DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"))
+        pipeline.run(MockCCDData(), data_name="data_name")
+
+
+        assert "phase_name//.metadata" in mock_files[1].filename
+        assert mock_files[1].text == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
+
+        assert "phase_name//.optimizer.pickle" in mock_files[0].filename
 
 
 class TestPassMask(object):
@@ -50,7 +100,7 @@ class TestPassMask(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
-        pipeline.run(data=None, mask=mask)
+        pipeline.run(data=MockCCDData(), mask=mask)
 
         assert phase_1.mask is mask
         assert phase_2.mask is mask
@@ -62,7 +112,7 @@ class TestPassPositions(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
-        pipeline.run(data=None, positions=positions)
+        pipeline.run(data=MockCCDData(), positions=positions)
 
         assert phase_1.positions == positions
         assert phase_2.positions == positions
@@ -74,9 +124,9 @@ class TestPipelineImaging(object):
         phase_2 = DummyPhaseImaging("two")
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
 
-        pipeline.run(None)
+        pipeline.run(MockCCDData())
 
-        assert len(phase_2.previous_results) == 2
+        assert len(phase_2.results) == 2
 
     def test_addition(self):
         phase_1 = DummyPhaseImaging("one")
@@ -90,29 +140,31 @@ class TestPipelineImaging(object):
 
 
 class DummyPhasePositions(object):
-    def __init__(self, name):
+    def __init__(self, phase_name):
         self.positions = None
-        self.previous_results = None
+        self.results = None
         self.pixel_scale = None
-        self.phase_name = name
+        self.phase_name = phase_name
+        self.phase_tag = ''
+        self.phase_path = phase_name
         self.optimizer = Optimizer()
 
-    def run(self, positions, pixel_scale, previous_results):
+    def run(self, positions, pixel_scale, results):
         self.positions = positions
         self.pixel_scale = pixel_scale
-        self.previous_results = previous_results
+        self.results = results
         return non_linear.Result(model_mapper.ModelInstance(), 1)
 
 
 class TestPipelinePositions(object):
     def test_run_pipeline(self):
-        phase_1 = DummyPhasePositions("one")
-        phase_2 = DummyPhasePositions("two")
+        phase_1 = DummyPhasePositions(phase_name="one")
+        phase_2 = DummyPhasePositions(phase_name="two")
         pipeline = pl.PipelinePositions("", phase_1, phase_2)
 
         pipeline.run(None, None)
 
-        assert len(phase_2.previous_results) == 2
+        assert len(phase_2.results) == 2
 
     def test_addition(self):
         phase_1 = DummyPhasePositions("one")
@@ -123,3 +175,5 @@ class TestPipelinePositions(object):
         pipeline2 = pl.PipelinePositions("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
+
+

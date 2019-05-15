@@ -125,64 +125,64 @@ class TestIntensitiesFromGrid:
 
         assert (intensities == np.array([[0.0, 0.0]])).all()
 
-class TestSurfaceDensityFromGrid:
+class TestConvergenceFromGrid:
 
-    def test__no_galaxies__surface_density_returned_as_0s(self, grid_stack, galaxy_non):
+    def test__no_galaxies__convergence_returned_as_0s(self, grid_stack, galaxy_non):
         grid_stack.regular = np.array([[1.0, 1.0],
                                          [2.0, 2.0],
                                          [3.0, 3.0]])
 
-        surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_non])
+        convergence = galaxy_util.convergence_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_non])
 
-        assert (surface_density[0] == np.array([0.0, 0.0])).all()
-        assert (surface_density[1] == np.array([0.0, 0.0])).all()
-        assert (surface_density[2] == np.array([0.0, 0.0])).all()
+        assert (convergence[0] == np.array([0.0, 0.0])).all()
+        assert (convergence[1] == np.array([0.0, 0.0])).all()
+        assert (convergence[2] == np.array([0.0, 0.0])).all()
 
-    def test__galaxy_mass__surface_density_returned_as_correct_values(self, grid_stack, galaxy_mass):
+    def test__galaxy_mass__convergence_returned_as_correct_values(self, grid_stack, galaxy_mass):
         grid_stack.regular = np.array([[1.0, 1.0],
                                          [1.0, 0.0],
                                          [-1.0, 0.0]])
 
-        galaxy_surface_density = galaxy_mass.surface_density_from_grid(grid_stack.regular)
+        galaxy_convergence = galaxy_mass.convergence_from_grid(grid_stack.regular)
 
-        util_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular,
-                                                                                  galaxies=[galaxy_mass])
+        util_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid=grid_stack.regular,
+                                                                             galaxies=[galaxy_mass])
 
-        assert (galaxy_surface_density == util_surface_density).all()
+        assert (galaxy_convergence == util_convergence).all()
 
-    def test__galaxy_mass_x2__surface_density_double_from_above(self, grid_stack, galaxy_mass):
+    def test__galaxy_mass_x2__convergence_double_from_above(self, grid_stack, galaxy_mass):
         grid_stack.regular = np.array([[1.0, 1.0],
                                          [1.0, 0.0],
                                          [-1.0, 0.0]])
 
-        galaxy_surface_density = galaxy_mass.surface_density_from_grid(grid_stack.regular)
+        galaxy_convergence = galaxy_mass.convergence_from_grid(grid_stack.regular)
 
-        util_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular,
-                                                                                  galaxies=[galaxy_mass, galaxy_mass])
+        util_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid=grid_stack.regular,
+                                                                             galaxies=[galaxy_mass, galaxy_mass])
 
-        assert (2.0 * galaxy_surface_density == util_surface_density).all()
+        assert (2.0 * galaxy_convergence == util_convergence).all()
 
     def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper(self, grid_stack, galaxy_mass):
 
-        surface_density = galaxy_mass.surface_density_from_grid(grid_stack.sub)
+        convergence = galaxy_mass.convergence_from_grid(grid_stack.sub)
 
-        surface_density = (surface_density[0] + surface_density[1] + surface_density[2] +
-                        surface_density[3]) / 4.0
+        convergence = (convergence[0] + convergence[1] + convergence[2] +
+                        convergence[3]) / 4.0
 
-        util_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.sub,
-                                                                                  galaxies=[galaxy_mass])
+        util_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid=grid_stack.sub,
+                                                                             galaxies=[galaxy_mass])
 
-        assert util_surface_density[0] == surface_density
+        assert util_convergence[0] == convergence
 
     def test__no_galaxies__grid_shape_of_grid_returned(self, grid_stack):
 
-        surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[])
+        convergence = galaxy_util.convergence_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[])
 
-        assert (surface_density == np.array([[0.0, 0.0]])).all()
+        assert (convergence == np.array([[0.0, 0.0]])).all()
 
-        surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=[])
+        convergence = galaxy_util.convergence_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=[])
 
-        assert (surface_density == np.array([[0.0, 0.0]])).all()
+        assert (convergence == np.array([[0.0, 0.0]])).all()
 
 class TestPotentialFromGrid:
 

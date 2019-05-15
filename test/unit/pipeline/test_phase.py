@@ -14,7 +14,7 @@ from autolens import exc
 from autolens.data import ccd
 from autolens.data.array import grids, mask as msk
 from autolens.data.array import scaled_array
-from autolens.lens import lens_data as li
+from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix
@@ -32,8 +32,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
-    conf.instance = conf.Config(
-        '{}/../test_files/configs/phase'.format(directory))
+    conf.instance = conf.Config('{}/../test_files/configs/phase'.format(directory))
 
 
 shape = (10, 10)
@@ -60,25 +59,32 @@ class MockResults(object):
         self.optimizer = optimizer
 
 
+class MockResult:
+    def __init__(self, constant, figure_of_merit, variable=None):
+        self.constant = constant
+        self.figure_of_merit = figure_of_merit
+        self.variable = variable
+        self.previous_variable = variable
+        self.gaussian_tuples = None
+
+
 class NLO(non_linear.NonLinearOptimizer):
     def fit(self, analysis):
         class Fitness(object):
-            def __init__(self, instance_from_physical_vector, constant):
+            def __init__(self, instance_from_physical_vector):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
-                self.constant = constant
 
             def __call__(self, vector):
                 instance = self.instance_from_physical_vector(vector)
-                instance += self.constant
 
                 likelihood = analysis.fit(instance)
-                self.result = non_linear.Result(instance, likelihood)
+                self.result = MockResult(instance, likelihood)
 
                 # Return Chi squared
                 return -2 * likelihood
 
-        fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
+        fitness_function = Fitness(self.variable.instance_from_physical_vector)
         fitness_function(self.variable.prior_count * [0.8])
 
         return fitness_function.result
@@ -116,12 +122,17 @@ def make_ccd_data():
     return ccd.CCDData(image=image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map)
 
 
+@pytest.fixture(name='mask')
+def make_mask():
+    return msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=3.0)
+
+
 @pytest.fixture(name="lens_data")
-def make_lens_image():
+def make_lens_image(mask):
     ccd_data = ccd.CCDData(np.array(np.zeros(shape)), pixel_scale=1.0, psf=ccd.PSF(np.ones((3, 3)), pixel_scale=1.0),
                            noise_map=ccd.NoiseMap(np.ones(shape), pixel_scale=1.0))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=3.0)
-    return li.LensData(ccd_data=ccd_data, mask=mask)
+    return ld.LensData(ccd_data=ccd_data, mask=mask)
 
 
 @pytest.fixture(name="results")
@@ -137,92 +148,194 @@ def make_results_collection(results):
     return results_collection
 
 
-class TestAutomaticPriorPassing(object):
+class MockLensData(object):
+    def __init__(self, ccd_data, noise_map, mask):
+        self.ccd_data = ccd_data
+        self.image = ccd_data
+        self.noise_map = noise_map
+        self.mask = mask
 
-    def test_galaxy_model_dict(self, phase, galaxy_model):
-        phase.lens_galaxies = dict(galaxy_one=galaxy_model)
-        assert phase.galaxy_model_tuples == [("galaxy_one", galaxy_model)]
 
-    def test_match_galaxy_models_by_name(self, phase, galaxy_model, galaxy):
-        phase.lens_galaxies = dict(galaxy_one=galaxy_model)
-        instance = mm.ModelInstance()
-        instance.galaxy_one = galaxy
+@pytest.fixture(name="hyper_lens_data")
+def make_lens_data():
+    return MockLensData(np.ones(5), np.ones(5), np.full(5, True))
 
-        assert phase.match_instance_to_models(instance) == [("galaxy_one", galaxy, galaxy_model)]
 
-    def test_phase_property_collections(self, phase):
-        assert phase.phase_property_collections == [phase.lens_galaxies, phase.source_galaxies]
+@pytest.fixture(name="hyper_galaxy")
+def make_hyper_galaxy():
+    return g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0)
 
-    # noinspection PyUnresolvedReferences
-    def test_fit_priors(self, phase, galaxy_model, galaxy):
-        argument_tuples = []
 
-        new_galaxy_model = gm.GalaxyModel()
+@pytest.fixture(name="hyper_phase")
+def make_hyper_phase():
+    return ph.HyperGalaxyPhase("hyper_galaxy_phase")
 
-        def fitting_function(best_fit_galaxy, initial_galaxy_model):
-            argument_tuples.append((best_fit_galaxy, initial_galaxy_model))
-            return new_galaxy_model
 
-        phase.lens_galaxies = dict(galaxy_one=galaxy_model)
-        assert phase.lens_galaxies.galaxy_one is not None
+class TestRedshift(object):
+    def test_lens_phase(self):
+        phase = ph.LensPlanePhase("lens phase")
+        phase.lens_galaxies = [g.Galaxy(), gm.GalaxyModel()]
 
-        instance = mm.ModelInstance()
-        instance.galaxy_one = galaxy
+        assert phase.lens_galaxies[0].redshift == 0.5
+        assert phase.lens_galaxies[1].redshift == 0.5
 
-        phase.fit_priors(instance, fitting_function)
+    def test_lens_source_phase(self):
+        phase = ph.LensSourcePlanePhase("lens source phase")
+        phase.lens_galaxies = [g.Galaxy(), gm.GalaxyModel()]
+        phase.source_galaxies = [g.Galaxy(), gm.GalaxyModel()]
 
-        assert phase.lens_galaxies.galaxy_one == new_galaxy_model
-        assert argument_tuples == [(galaxy, galaxy_model)]
+        assert phase.lens_galaxies[0].redshift == 0.5
+        assert phase.lens_galaxies[1].redshift == 0.5
 
-    def test_model_instance_sum_priority(self):
-        instance_1 = mm.ModelInstance()
-        galaxy_1 = g.Galaxy()
-        instance_1.galaxy = galaxy_1
+        assert phase.source_galaxies[0].redshift == 1.0
+        assert phase.source_galaxies[1].redshift == 1.0
 
-        instance_2 = mm.ModelInstance()
-        galaxy_2 = g.Galaxy()
-        instance_2.galaxy = galaxy_2
+    def test_truthy_not_overridden(self):
+        phase = ph.LensSourcePlanePhase("lens source phase")
+        phase.lens_galaxies = [g.Galaxy(redshift=0.1), gm.GalaxyModel()]
+        phase.source_galaxies = [g.Galaxy(), gm.GalaxyModel(redshift=2.0)]
 
-        assert (instance_1 + instance_2).galaxy == galaxy_2
+        assert phase.lens_galaxies[0].redshift == 0.1
+        assert phase.lens_galaxies[1].redshift == 0.5
 
-    # noinspection PyUnresolvedReferences
-    def test_fit_priors_with_results(self, phase):
-        argument_tuples = []
+        assert phase.source_galaxies[0].redshift == 1.0
+        assert phase.source_galaxies[1].redshift == 2.0
 
-        galaxy_model_one = gm.GalaxyModel()
-        galaxy_model_two = gm.GalaxyModel()
 
-        new_galaxy_model_one = gm.GalaxyModel()
-        new_galaxy_model_two = gm.GalaxyModel()
+class TestHyperGalaxyPhase(object):
+    def test_analysis(self, hyper_lens_data, hyper_galaxy):
+        analysis = ph.HyperGalaxyPhase.Analysis(hyper_lens_data, np.ones(5), np.ones(5))
+        result = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
 
-        new_galaxy_models = {galaxy_model_one: new_galaxy_model_one, galaxy_model_two: new_galaxy_model_two}
+        assert isinstance(result, lens_fit.LensDataFit)
 
-        def fitting_function(best_fit_galaxy, initial_galaxy_model):
-            argument_tuples.append((best_fit_galaxy, initial_galaxy_model))
-            return new_galaxy_models[initial_galaxy_model]
+    def test_run(self, hyper_galaxy, hyper_phase, hyper_lens_data):
+        class Instance(object):
+            def __init__(self):
+                self.hyper_galaxy = "hyper_galaxy"
+                self.one = g.Galaxy()
+                self.two = g.Galaxy()
+                self.three = g.Galaxy()
 
-        phase.lens_galaxies = dict(galaxy_one=galaxy_model_one, galaxy_two=galaxy_model_two)
+            @staticmethod
+            def name_instance_tuples_for_class(cls):
+                return [("one", None), ("two", None), ("three", None)]
 
-        instance_one = mm.ModelInstance()
-        galaxy_one = g.Galaxy()
-        instance_one.galaxy_one = galaxy_one
-        instance_one.galaxy_two = g.Galaxy()
-        results_one = MockResults(constant=instance_one)
+        class MockOptimizer(object):
+            def __init__(self):
+                self.extensions = []
+                self.constant = Instance()
+                self.variable = Instance()
 
-        instance_two = mm.ModelInstance()
-        galaxy_two = g.Galaxy()
-        instance_two.galaxy_two = galaxy_two
-        results_two = MockResults(constant=instance_two)
+            @classmethod
+            def fit(cls, analysis):
+                instance = mm.ModelInstance()
+                instance.hyper_galaxy = hyper_galaxy
+                return analysis.fit(instance)
 
-        assert phase.lens_galaxies.galaxy_one == galaxy_model_one
-        assert phase.lens_galaxies.galaxy_two == galaxy_model_two
+            def copy_with_name_extension(self, name):
+                self.extensions.append(name)
+                return self
 
-        phase.fit_priors_with_results([results_one, results_two], fitting_function)
+        optimizer = MockOptimizer()
+        hyper_phase.optimizer = optimizer
 
-        assert phase.lens_galaxies.galaxy_one == new_galaxy_model_one
-        assert phase.lens_galaxies.galaxy_two == new_galaxy_model_two
-        assert argument_tuples == [(galaxy_one, galaxy_model_one),
-                                   (galaxy_two, galaxy_model_two)]
+        class Result(object):
+            def __init__(self):
+                self.constant \
+                    = Instance()
+                self.variable = Instance()
+
+            def unmasked_image_for_galaxy(self, galaxy):
+                return np.ones(5)
+
+            @property
+            def unmasked_model_image(self):
+                return np.ones(5)
+
+        class PreviousResults(object):
+            @property
+            def last(self):
+                return Result()
+
+        results = hyper_phase.run(hyper_lens_data, PreviousResults())
+
+        assert isinstance(results, Result)
+        assert optimizer.extensions == ["one", "two", "three"]
+        assert results.variable.one.hyper_galaxy == g.HyperGalaxy
+        assert results.constant.one.hyper_galaxy == "hyper_galaxy"
+
+    def test__figure_of_merit_of_fit__noise_factor_0_so_no_noise_scaling(self, hyper_phase):
+        hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.zeros(3)).all()
+        assert (fit.chi_squared_map == np.zeros(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map).all()
+
+        chi_squared = 0.0
+        noise_normalization = 3.0 * np.log(2 * np.pi * 1.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
+
+        hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=2.0 * np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.zeros(3)).all()
+        assert (fit.chi_squared_map == np.zeros(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map).all()
+
+        chi_squared = 0.0
+        noise_normalization = 3.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
+
+        hyper_lens_data = MockLensData(ccd_data=2.0 * np.ones(3), noise_map=2.0 * np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.ones(3)).all()
+        assert (fit.chi_squared_map == 0.25 * np.ones(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map).all()
+
+        chi_squared = 0.75
+        noise_normalization = 3.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
+
+    def test__figure_of_merit_of_fit__hyper_galaxy_params_scale_noise_as_expected(self, hyper_phase):
+        hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.zeros(3)).all()
+        assert (fit.chi_squared_map == np.zeros(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map + np.ones(3)).all()
+
+        chi_squared = 0.0
+        noise_normalization = 3.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
+
+        hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=2.0 * np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=2.0 * np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.zeros(3)).all()
+        assert (fit.chi_squared_map == np.zeros(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map + ((2.0 * np.ones(3)) ** 2.0)).all()
+
+        chi_squared = 0.0
+        noise_normalization = 3.0 * np.log(2 * np.pi * 6.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
 
 
 def clean_images():
@@ -239,13 +352,11 @@ class TestPhase(object):
 
     def test_set_constants(self, phase, galaxy):
         phase.lens_galaxies = [galaxy]
-        assert phase.optimizer.constant.lens_galaxies == [galaxy]
-        assert phase.optimizer.variable.lens_galaxies == []
+        assert phase.optimizer.variable.lens_galaxies == [galaxy]
 
     def test_set_variables(self, phase, galaxy_model):
         phase.lens_galaxies = [galaxy_model]
         assert phase.optimizer.variable.lens_galaxies == [galaxy_model]
-        assert phase.optimizer.constant.lens_galaxies == []
 
     def test_make_analysis(self, phase, ccd_data, lens_data):
         analysis = phase.make_analysis(data=ccd_data)
@@ -289,7 +400,7 @@ class TestPhase(object):
         # If an input mask is supplied and there is no mask function, we use mask input.
 
         phase.mask_function = None
-        phase.inner_circular_mask_radii = 1.0
+        phase.inner_mask_radii = 1.0
 
         mask_input = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=2.0)
 
@@ -327,30 +438,43 @@ class TestPhase(object):
         assert (analysis.lens_data.mask == mask_default).all()
 
     def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase, ccd_data):
-        # If use positions is true and positions are input, make the positions part of the lens data.
+        # If position threshold is input (not None) and positions are input, make the positions part of the lens data.
 
-        phase.use_positions = True
+        phase.positions_threshold = 0.2
 
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert (analysis.lens_data.positions[0][0] == np.array([1.0, 1.0])).all()
         assert (analysis.lens_data.positions[0][1] == np.array([2.0, 2.0])).all()
 
-        # If use positions is true but no positions are supplied, raise an error
+        # If position threshold is input (not None) and but no positions are supplied, raise an error
 
         with pytest.raises(exc.PhaseException):
             phase.make_analysis(data=ccd_data, positions=None)
             phase.make_analysis(data=ccd_data)
 
-        # If use positions is False, positions should always be None.
+        # If positions threshold is None, positions should always be None.
 
-        phase.use_positions = False
+        phase.positions_threshold = None
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert analysis.lens_data.positions is None
+
+    def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(self, phase, ccd_data):
+        # If use positions is true and positions are input, make the positions part of the lens data.
+
+        phase.interp_pixel_scale = 0.1
+
+        analysis = phase.make_analysis(data=ccd_data)
+        assert analysis.lens_data.interp_pixel_scale == 0.1
+        assert hasattr(analysis.lens_data.grid_stack.regular, 'interpolator')
+        assert hasattr(analysis.lens_data.grid_stack.sub, 'interpolator')
+        assert hasattr(analysis.lens_data.grid_stack.blurring, 'interpolator')
+        assert hasattr(analysis.lens_data.padded_grid_stack.regular, 'interpolator')
+        assert hasattr(analysis.lens_data.padded_grid_stack.sub, 'interpolator')
 
     def test__make_analysis__phase_info_is_made(self, phase, ccd_data):
         phase.make_analysis(data=ccd_data)
 
-        file_phase_info = "{}/{}/{}".format(conf.instance.output_path, phase.optimizer.name, 'phase.info')
+        file_phase_info = "{}/{}".format(phase.optimizer.phase_output_path, 'phase.info')
 
         phase_info = open(file_phase_info, 'r')
 
@@ -358,7 +482,6 @@ class TestPhase(object):
         sub_grid_size = phase_info.readline()
         image_psf_shape = phase_info.readline()
         pixelization_psf_shape = phase_info.readline()
-        use_positions = phase_info.readline()
         positions_threshold = phase_info.readline()
         cosmology = phase_info.readline()
         auto_link_priors = phase_info.readline()
@@ -369,8 +492,7 @@ class TestPhase(object):
         assert sub_grid_size == 'Sub-grid size = 2 \n'
         assert image_psf_shape == 'Image PSF shape = None \n'
         assert pixelization_psf_shape == 'Pixelization PSF shape = None \n'
-        assert use_positions == 'Use positions = False \n'
-        assert positions_threshold == 'Positions Threshold = 0.5 \n'
+        assert positions_threshold == 'Positions Threshold = None \n'
         assert cosmology == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, ' \
                             'Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n'
         assert auto_link_priors == 'Auto Link Priors = False \n'
@@ -388,9 +510,9 @@ class TestPhase(object):
 
     def test_customize(self, results, results_collection, ccd_data):
         class MyPlanePhaseAnd(ph.LensSourcePlanePhase):
-            def pass_priors(self, previous_results):
-                self.lens_galaxies = previous_results.last.constant.lens_galaxies
-                self.source_galaxies = previous_results.last.variable.source_galaxies
+            def pass_priors(self, results):
+                self.lens_galaxies = results.last.constant.lens_galaxies
+                self.source_galaxies = results.last.variable.source_galaxies
 
         galaxy = g.Galaxy()
         galaxy_model = gm.GalaxyModel()
@@ -399,13 +521,13 @@ class TestPhase(object):
         setattr(results.variable, "source_galaxies", [galaxy_model])
 
         phase = MyPlanePhaseAnd(optimizer_class=NLO, phase_name='test_phase')
-        phase.make_analysis(data=ccd_data, previous_results=results_collection)
+        phase.make_analysis(data=ccd_data, results=results_collection)
 
         assert phase.lens_galaxies == [galaxy]
         assert phase.source_galaxies == [galaxy_model]
 
     def test_default_mask_function(self, phase, ccd_data):
-        lens_data = li.LensData(ccd_data=ccd_data, mask=phase.mask_function(ccd_data.image))
+        lens_data = ld.LensData(ccd_data=ccd_data, mask=phase.mask_function(ccd_data.image))
         assert len(lens_data.image_1d) == 32
 
     def test_duplication(self):
@@ -419,7 +541,7 @@ class TestPhase(object):
 
     def test_modify_image(self, ccd_data):
         class MyPhase(ph.PhaseImaging):
-            def modify_image(self, image, previous_results):
+            def modify_image(self, image, results):
                 assert ccd_data.image.shape == image.shape
                 image = 20.0 * np.ones(shape=shape)
                 return image
@@ -429,13 +551,37 @@ class TestPhase(object):
         assert (analysis.lens_data.image == 20.0 * np.ones(shape=shape)).all()
         assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=32)).all()
 
+    def test__lens_data_is_binned_up(self, ccd_data, mask):
+        binned_up_ccd_data = ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=2)
+        binned_up_mask = mask.binned_up_mask_from_mask(bin_up_factor=2)
+
+        phase = ph.PhaseImaging(phase_name='phase', bin_up_factor=2)
+        analysis = phase.make_analysis(data=ccd_data)
+        assert (analysis.lens_data.image == binned_up_ccd_data.image).all()
+        assert (analysis.lens_data.psf == binned_up_ccd_data.psf).all()
+        assert (analysis.lens_data.noise_map == binned_up_ccd_data.noise_map).all()
+
+        assert (analysis.lens_data.mask == binned_up_mask).all()
+
+        lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
+        binned_up_lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(bin_up_factor=2)
+
+        assert (analysis.lens_data.image == binned_up_lens_data.image).all()
+        assert (analysis.lens_data.psf == binned_up_lens_data.psf).all()
+        assert (analysis.lens_data.noise_map == binned_up_lens_data.noise_map).all()
+
+        assert (analysis.lens_data.mask == binned_up_lens_data.mask).all()
+
+        assert (analysis.lens_data.image_1d == binned_up_lens_data.image_1d).all()
+        assert (analysis.lens_data.noise_map_1d == binned_up_lens_data.noise_map_1d).all()
+
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
 
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)
 
@@ -447,7 +593,7 @@ class TestPhase(object):
         phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                         cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)
 
@@ -464,8 +610,8 @@ class TestPhase(object):
 
         phase = ph.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7,
                                    phase_name='test_phase')
-        analysis = phase.make_analysis(ccd_data)
-        instance = phase.constant
+        analysis = phase.make_analysis(data=ccd_data)
+        instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)
 
@@ -486,11 +632,12 @@ class TestPhase(object):
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
                                   cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
+
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
-        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
+        lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
@@ -500,11 +647,11 @@ class TestPhase(object):
                                         mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
                                         phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
-        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
+        lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = lens_fit.LensProfileInversionFit(lens_data=lens_data, tracer=tracer)
 
@@ -559,9 +706,9 @@ class TestPhase(object):
     def test__phase_can_receive_list_of_galaxy_models(self):
         phase = ph.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                                 sis=mp.SphericalIsothermal,
-                                                                variable_redshift=True),
+                                                                redshift=g.Redshift),
                                                  gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                                variable_redshift=True)],
+                                                                redshift=g.Redshift)],
                                   optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
@@ -580,14 +727,14 @@ class TestPhase(object):
 
         class LensPlanePhase2(ph.LensPlanePhase):
             # noinspection PyUnusedLocal
-            def pass_models(self, previous_results):
+            def pass_models(self, results):
                 self.lens_galaxies[0].sis.einstein_radius = prior.Constant(10.0)
 
         phase = LensPlanePhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                               sis=mp.SphericalIsothermal,
-                                                              variable_redshift=True),
+                                                              redshift=g.Redshift),
                                                gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                              variable_redshift=True)],
+                                                              redshift=g.Redshift)],
                                 optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         # noinspection PyTypeChecker
@@ -596,7 +743,6 @@ class TestPhase(object):
         instance = phase.optimizer.variable.instance_from_physical_vector(
             [0.01, 0.02, 0.23, 0.04, 0.05, 0.06, 0.87, 0.1, 0.2,
              0.4, 0.5, 0.5, 0.7, 0.8])
-        instance += phase.optimizer.constant
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.01
         assert instance.lens_galaxies[0].sis.centre[0] == 0.1
@@ -619,12 +765,7 @@ class TestResult(object):
 
         result = phase.run(data=ccd_data)
 
-        assert hasattr(result, "most_likely_tracer")
-        assert hasattr(result, "most_likely_padded_tracer")
-        assert hasattr(result, "most_likely_fit")
-        assert hasattr(result, "unmasked_model_image")
-        assert hasattr(result, "unmasked_model_image_of_planes")
-        assert hasattr(result, "unmasked_model_image_of_planes_and_galaxies")
+        assert isinstance(result, ph.AbstractPhase.Result)
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
         lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
@@ -634,11 +775,11 @@ class TestResult(object):
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
                                   cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
-        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
+        lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
@@ -648,11 +789,11 @@ class TestResult(object):
                                         mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
                                         phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
-        instance = phase.constant
+        instance = phase.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
-        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
+        lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = lens_fit.LensProfileInversionFit(lens_data=lens_data, tracer=tracer)
 

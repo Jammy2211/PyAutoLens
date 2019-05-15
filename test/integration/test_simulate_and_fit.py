@@ -36,7 +36,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
                                          add_noise=False)
     ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
 
-    path = "{}/data/simulate_and_fit".format(
+    path = "{}/data_temp/simulate_and_fit".format(
         os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
 
     try:
@@ -66,6 +66,12 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     assert fitter.chi_squared == 0.0
 
+    path = "{}/data_temp".format(
+        os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
+
+    if os.path.exists(path) == True:
+        shutil.rmtree(path)
+
 
 def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
@@ -85,7 +91,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
                                          add_noise=False)
     ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
 
-    path = "{}/data/simulate_and_fit".format(
+    path = "{}/data_temp/simulate_and_fit".format(
         os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
 
     try:
@@ -114,3 +120,9 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     fitter = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
     assert fitter.chi_squared == pytest.approx(0.0, 1e-4)
+
+    path = "{}/data_temp".format(
+        os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
+
+    if os.path.exists(path) == True:
+        shutil.rmtree(path)

@@ -9,7 +9,7 @@ from autolens.lens import ray_tracing
 from autolens.lens import lens_fit
 from autolens.lens.util import lens_fit_util
 
-from test.profiling import tools
+from test.simulation import simulation_util
 
 repeats = 10
 
@@ -32,14 +32,14 @@ lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=60.0,
                                                    intensity=0.4, effective_radius=0.5, sersic_index=1.0))
 
-for image_type in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
+for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
 
-    ccd_data = tools.load_profiling_ccd_data(image_type=image_type, lens_name='lens_and_source_smooth',
-                                             psf_shape=psf_shape)
+    ccd_data = simulation_util.load_test_ccd_data(data_type='lens_and_source_smooth', data_resolution=data_resolution,
+                                                  psf_shape=psf_shape)
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
-    print('Light profile fit run times for image type ' + image_type + '\n')
+    print('Light profile fit run times for image type ' + data_resolution + '\n')
     print('Number of points = ' + str(lens_data.grid_stack.sub.shape[0]) + '\n')
 
     start_overall = time.time()

@@ -47,4 +47,6 @@ test/integration/hyper/
 test/integration/image/
 test/integration/hyper/
 workspace/runners/cosma/
-workspace_amy
+workspace
+test/integration/data_temp/
+

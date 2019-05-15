@@ -678,6 +678,7 @@ class TestMaskEllipticalAnnular(object):
                                   [True, True, True, False, True],
                                   [True, True, True, False, True]])).all()
 
+
 class TestMaskBlurring(object):
 
     def test__size__3x3_small_mask(self):
@@ -1003,6 +1004,80 @@ class TestGridToMaskedPixel(object):
                                            [3, 2]])).all()
 
 
+class TestSubGridToMaskedSubPixel(object):
+
+    def test__setup_3x3_image_one_pixel__sub_grid_size_1_2_and_3(self):
+
+        mask = np.array([[True, True, True],
+                         [True, False, True],
+                         [True, True, True]])
+
+        sub_grid_to_sub_pixel = mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask=mask,
+                                                                                                   sub_grid_size=1)
+
+        assert (sub_grid_to_sub_pixel == np.array([[1, 1]])).all()
+
+        sub_grid_to_sub_pixel = mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask=mask,
+                                                                                                   sub_grid_size=2)
+
+        assert (sub_grid_to_sub_pixel == np.array([[2, 2], [2, 3],
+                                                   [3, 2], [3, 3]])).all()
+
+        sub_grid_to_sub_pixel = mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask=mask,
+                                                                                                   sub_grid_size=3)
+
+        assert (sub_grid_to_sub_pixel == np.array([[3, 3], [3, 4], [3, 5],
+                                                   [4, 3], [4, 4], [4, 5],
+                                                   [5, 3], [5, 4], [5, 5]])).all()
+
+    def test__setup_3x3_image__five_pixels__sub_grid_size_1_and_2(self):
+
+        mask = np.array([[True, False, True],
+                         [False, False, False],
+                         [True, False, True]])
+
+        sub_grid_to_sub_pixel = mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask=mask,
+                                                                                                   sub_grid_size=1)
+
+        assert (sub_grid_to_sub_pixel == np.array([[0, 1],
+                                          [1, 0], [1, 1], [1, 2],
+                                                  [2, 1]])).all()
+
+        sub_grid_to_sub_pixel = mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask=mask,
+                                                                                                   sub_grid_size=2)
+
+        assert (sub_grid_to_sub_pixel == np.array([[0, 2], [0, 3], [1, 2], [1, 3],
+                                                   [2, 0], [2, 1], [3, 0], [3, 1],
+                                                   [2, 2], [2, 3], [3, 2], [3, 3],
+                                                   [2, 4], [2, 5], [3, 4], [3, 5],
+                                                   [4, 2], [4, 3], [5, 2], [5, 3]])).all()
+
+    def test__setup_3x4_image__two_pixels__sub_grid_size_2(self):
+
+        mask = np.array([[True, True, True, True],
+                         [False, True, True, True],
+                         [True, False, True, True]])
+
+        sub_grid_to_sub_pixel = mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask=mask,
+                                                                                                   sub_grid_size=2)
+
+        assert (sub_grid_to_sub_pixel == np.array([[2, 0], [2, 1], [3, 0], [3,1],
+                                                   [4, 2], [4, 3], [5, 2], [5, 3]])).all()
+
+    def test__setup_4x3_image__two_pixels__sub_grid_size_2(self):
+
+        mask = np.array([[True, True, True],
+                         [True, False, True],
+                         [True, True, True],
+                         [True, True, False]])
+
+        sub_grid_to_sub_pixel = mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask=mask,
+                                                                                                   sub_grid_size=2)
+
+        assert (sub_grid_to_sub_pixel == np.array([[2, 2], [2,3], [3,2], [3,3],
+                                                   [6, 4], [6,5], [7,4], [7,5]])).all()
+
+
 class TestEdgePixels(object):
 
     def test__7x7_mask_one_central_pixel__is_entire_edge(self):
@@ -1217,3 +1292,92 @@ class TestBorderPixels(object):
 
         assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
                                            26, 27, 28, 29, 30, 31])).all()
+
+
+class TestBinUpMask2d:
+
+    def test__mask_4x4_to_2x2__creates_correct_binned_up_mask(self):
+        mask_2d = np.array([[True, False, True, True],
+                            [True, True, True, True],
+                            [True, True, False, False],
+                            [False, True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
+
+        assert (binned_mask_2d == np.array([[False, True],
+                                            [False, False]])).all()
+
+        mask_2d = np.array([[True, True, True, True],
+                            [True, True, True, True],
+                            [True, True, False, False],
+                            [True, True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
+
+        assert (binned_mask_2d == np.array([[True, True],
+                                            [True, False]])).all()
+
+    def test__mask_6x3_to_2x1_and_3x6_to_1x2__sets_up_correct_mask(self):
+        mask_2d = np.array([[True, True, True],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+
+        assert (binned_mask_2d == np.array([[True],
+                                            [True]])).all()
+
+        mask_2d = np.array([[True, True, True],
+                            [True, True, False],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+        assert (binned_mask_2d == np.array([[False],
+                                            [True]])).all()
+
+        mask_2d = np.array([[True, True, True, True, True, True],
+                            [True, True, True, True, True, True],
+                            [True, True, True, True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+        assert (binned_mask_2d == np.array([[True, True]])).all()
+
+        mask_2d = np.array([[True, True, True, True, True, True],
+                            [True, True, True, True, True, True],
+                            [True, True, True, True, True, False]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+        assert (binned_mask_2d == np.array([[True, False]])).all()
+
+    def test__bin_includes_padding_image_with_zeros(self):
+        # Padded mask:
+
+        # [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 2.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
+
+        mask_2d = np.full(shape=(4, 4), fill_value=True)
+        mask_2d[1, 1] = False
+        mask_2d[3, 3] = False
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+        assert (binned_mask_2d == np.array([[False, True],
+                                            [True, False]])).all()
+
+        # Padded Array:
+
+        # np.array([[0.0, 1.0, 1.0, 1.0],
+        #           [0.0, 1.0, 2.0, 1.0]]
+
+        mask_2d = np.full(shape=(2, 3), fill_value=True)
+        mask_2d[1, 2] = False
+        binned_2d_mask = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
+        assert (binned_2d_mask == np.array([[True, False]])).all()
