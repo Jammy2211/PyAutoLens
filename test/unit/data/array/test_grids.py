@@ -407,6 +407,47 @@ class TestSubGrid(object):
         assert scaled_array_2d.pixel_scales == (3.0, 3.0)
         assert scaled_array_2d.origin == (0.0, 0.0)
 
+    def test__sub_grid_2d_from_sub_grid_1d__use_real_mask_and_grid(self):
+
+        mask = np.array([[False, True],
+                         [False, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
+                                [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        sub_grid_2d = sub_grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+        assert (sub_grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
+                                         [[3.0, 3.0], [4.0,4.0], [0.0, 0.0], [0.0, 0.0]],
+                                         [[9.0, 9.0],  [10.0, 10.0], [13.0, 13.0], [14.0, 14.0]],
+                                         [[11.0, 11.0], [12.0, 12.0], [15.0, 15.0], [16.0, 16.0]]])).all()
+
+    def test__sub_grid_2d_from_sub_grid_1d__use_2x3_mask(self):
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+                                 [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0],
+                                 [3.0, 3.0], [3.0, 3.0], [3.0, 3.0], [3.0, 3.0],
+                                 [4.0, 4.0], [4.0, 4.0], [4.0, 4.0], [4.0, 4.0]])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+
+        sub_grid_2d = sub_grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+        assert (sub_grid_2d == np.array([[[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
+                                          [[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
+                                          [[3.0, 3.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [4.0, 4.0], [4.0, 4.0]],
+                                          [[3.0, 3.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [4.0, 4.0], [4.0, 4.0]]])).all()
+
     def test__map_to_2d__compare_to_util(self):
         mask = np.array([[True, True, False, False],
                          [True, False, True, True],
