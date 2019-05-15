@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autolens import exc
-from autolens.data.array.util import mapping_util, array_util, mask_util
+from autolens.data.array.util import grid_util, mapping_util, array_util, mask_util
 from autolens.data.array import scaled_array
 
 logging.basicConfig()
@@ -16,7 +16,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     """
 
     # noinspection PyUnusedLocal
-    def __init__(self, array, pixel_scale, centre=(0.0, 0.0), origin=(0.0, 0.0)):
+    def __init__(self, array, pixel_scale, origin=(0.0, 0.0)):
         """ A mask, which is applied to a 2D array of hyper to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
         
@@ -34,14 +34,13 @@ class Mask(scaled_array.ScaledSquarePixelArray):
             The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
         """
         # noinspection PyArgumentList
-        self.centre = centre
         super(Mask, self).__init__(array=array, pixel_scale=pixel_scale, origin=origin)
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "pixel_scale"):
             self.pixel_scale = obj.pixel_scale
-        if hasattr(obj, "centre"):
-            self.centre = obj.centre
+        if hasattr(obj, 'origin'):
+            self.origin = obj.origin
         if hasattr(obj, 'origin'):
             self.origin = obj.origin
 
@@ -84,7 +83,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         mask = mask_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec,
                                                                          centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     @classmethod
     def circular_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0., 0.),
@@ -108,7 +107,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         mask = mask_util.mask_circular_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
                                                                                 outer_radius_arcsec, centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     @classmethod
     def circular_anti_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, outer_radius_2_arcsec,
@@ -140,7 +139,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
                                                                                      outer_radius_arcsec,
                                                                                      outer_radius_2_arcsec, centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     @classmethod
     def elliptical(cls, shape, pixel_scale, major_axis_radius_arcsec, axis_ratio, phi, centre=(0., 0.),
@@ -166,7 +165,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         mask = mask_util.mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_axis_radius_arcsec,
                                                                           axis_ratio, phi, centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     @classmethod
     def elliptical_annular(cls, shape, pixel_scale,inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
@@ -202,7 +201,18 @@ class Mask(scaled_array.ScaledSquarePixelArray):
                            inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
                            outer_major_axis_radius_arcsec, outer_axis_ratio, outer_phi, centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
+
+    def binned_up_mask_from_mask(self, bin_up_factor):
+        return Mask(array=mask_util.bin_up_mask_2d(mask_2d=self, bin_up_factor=bin_up_factor),
+                    pixel_scale=self.pixel_scale*bin_up_factor, origin=self.origin)
+
+    @property
+    @array_util.Memoizer()
+    def centre(self):
+        centre_y = (np.max(self.masked_grid_1d[:,0]) + np.min(self.masked_grid_1d[:,0]))/2.0
+        centre_x = (np.max(self.masked_grid_1d[:,1]) + np.min(self.masked_grid_1d[:,1]))/2.0
+        return (centre_y, centre_x)
 
     @property
     def pixels_in_mask(self):
@@ -212,6 +222,11 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     def masked_grid_index_to_pixel(self):
         """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
         return mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(self).astype('int')
+
+    def masked_sub_grid_index_to_sub_pixel(self, sub_grid_size):
+        """A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates."""
+        return mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(
+            self, sub_grid_size=sub_grid_size).astype('int')
 
     def map_2d_array_to_masked_1d_array(self, array_2d):
         """For a 2D array (e.g. an image, noise_map, etc.) map it to a masked 1D array of valuees using this mask.
@@ -259,10 +274,35 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return mask_util.border_pixels_from_mask(self).astype('int')
 
     @property
-    def extraction_region(self):
-        """The rectangular region corresponding to the rectangle encompassing all unmasked values.
+    def masked_grid_1d(self):
+        return grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=self,
+                                                                                  pixel_scales=self.pixel_scales,
+                                                                                  origin=self.origin)
 
-        This is used to extract and visualize only the region of an image that is used in an analysis."""
+    @property
+    def zoom_centre(self):
+        extraction_grid_1d = self.grid_arcsec_to_grid_pixels(grid_arcsec=self.masked_grid_1d)
+        y_pixels_max = np.max(extraction_grid_1d[:,0])
+        y_pixels_min = np.min(extraction_grid_1d[:,0])
+        x_pixels_max = np.max(extraction_grid_1d[:,1])
+        x_pixels_min = np.min(extraction_grid_1d[:,1])
+        return (((y_pixels_max + y_pixels_min - 1.0) / 2.0), ((x_pixels_max + x_pixels_min - 1.0) / 2.0))
+
+    @property
+    def zoom_offset_pixels(self):
+        return (self.zoom_centre[0] - self.central_pixel_coordinates[0],
+                self.zoom_centre[1] - self.central_pixel_coordinates[1])
+
+    @property
+    def zoom_offset_arcsec(self):
+        return (-self.pixel_scale*self.zoom_offset_pixels[0], self.pixel_scale*self.zoom_offset_pixels[1])
+
+    @property
+    def zoom_region(self):
+        """The zoomed rectangular region corresponding to the square encompassing all unmasked values.
+
+        This is used to zoom in on the region of an image that is used in an analysis for visualization."""
+
         # Have to convert mask to bool for invert function to work.
         where = np.array(np.where(np.invert(self.astype('bool'))))
         y0, x0 = np.amin(where, axis=1)

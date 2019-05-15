@@ -15,7 +15,6 @@ When two or more galaxies are aligned perfectly down our line-of-sight, the back
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits a lens galaxy's light, mass and a source galaxy.
 
 ```python
-from autofit import conf
 from autofit.optimize import non_linear as nl
 from autolens.pipeline import phase as ph
 from autolens.data.array import mask as msk
@@ -23,7 +22,6 @@ from autolens.model.galaxy import galaxy_model as gm
 from autolens.data import ccd
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.plotters import ccd_plotters
 from autolens.lens.plotters import lens_fit_plotters
 
 import os
@@ -40,7 +38,7 @@ ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + lens_name + 
                                        noise_map_path=path+'/data/'+lens_name+'/noise_map.fits', 
                                        pixel_scale=0.1)
 
-# Create a mask for the data, which we setup below as a 3.0" circle.
+# Create a mask for the data, which we setup as a 3.0" circle.
 mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0)
 
 # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) and our source galaxy 
@@ -49,27 +47,26 @@ mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale,
 lens_mass_profile = mp.EllipticalIsothermal
 source_light_profile = lp.EllipticalSersic
 
-# To setup our model galaxies, we use the GalaxyModel class, representing a galaxy the parameters of 
-# which are variable and fitted for by the analysis.
-lens_galaxy_model = gm.GalaxyModel(mass=lens_mass_profile)
-source_galaxy_model = gm.GalaxyModel(light=source_light_profile)
+# To setup our model galaxies, we use the GalaxyModel class, which represents a galaxy whose parameters 
+# are variable and fitted for by the analysis. The galaxies are also assigned redshifts.
+lens_galaxy_model = gm.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
+source_galaxy_model = gm.GalaxyModel(redshsift=1.0, light=source_light_profile)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search 
 # (in this case, MultiNest).
 phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                 source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                                optimizer_class=nl.MultiNest, phase_name='example/phase_example')
+                                phase_name='example/phase_example', optimizer_class=nl.MultiNest)
 
 # We run the phase on the ccd data, print the results and plot the fit.
 result = phase.run(data=ccd_data)
 lens_fit_plotters.plot_fit_subplot(fit=result.most_likely_fit)
-
 ```
 
 ## Slack
 
-We're building a **PyAutoLens** community on Slack, so you should contact us on our [Slack channel](https://pyautolens.slack.com/) before getting started. Here, I can introduce you to the community, give you the latest update on the software and discuss how best to use **PyAutoLens** for your science case.
+We're building a **PyAutoLens** community on Slack, so you should contact us on our [Slack channel](https://pyautolens.slack.com/) before getting started. Here, I will give you the latest updates on the software and discuss how best to use **PyAutoLens** for your science case.
 
 Unfortunately, Slack is invitation-only, so first send me an [email](https://github.com/Jammy2211) requesting an invite.
 
@@ -79,12 +76,12 @@ Unfortunately, Slack is invitation-only, so first send me an [email](https://git
 
 - **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
 - **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
-- **Adaption** - (February 2019) - Adapt the lensing analysis to the features of the observed strong lens imaging.
-- **Multi-Plane** - (April 2019) Model multi-plane lenses, including systems with multiple lensed source galaxies.
+- **Adaption** - (Summer 2019) - Adapt the lensing analysis to the features of the observed strong lens imaging.
+- **Multi-Plane** - (Summer 2019) - Model multi-plane lenses, including systems with multiple lensed source galaxies.
 
 ## HowToLens
 
-Included with **PyAutoLens** is the **HowToLens** eBook, which provides an introduction to strong gravitational lens modeling with **PyAutoLens**. It can be found in the workspace and consists of 4 chapters:
+Included with **PyAutoLens** is the **HowToLens** lecture series, which provides an introduction to strong gravitational lens modeling with **PyAutoLens**. It can be found in the workspace and consists of 4 chapters:
 
 - **Introduction** - An introduction to strong gravitational lensing and **PyAutolens**.
 - **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
@@ -93,20 +90,18 @@ Included with **PyAutoLens** is the **HowToLens** eBook, which provides an intro
 
 ## Workspace
 
-**PyAutoLens** comes with a workspace, which includes the following:
+**PyAutoLens** comes with a workspace, which can be found [here](https://github.com/Jammy2211/autolens_workspace) and which includes the following:
 
 - **Config** - Configuration files which customize the **PyAutoLens** analysis.
 - **Data** - Your data folder, including example data-sets distributed with **PyAutoLens**.
-- **HowToLens** - The **HowToLens** eBook.
+- **HowToLens** - The **HowToLens** lecture series.
 - **Output** - Where the **PyAutoLens** analysis and visualization are output.
-- **Pipelines** - Example pipelines to model a strong lens or use a template for your own pipeline.
+- **Pipelines** - Example pipelines for modeling strong lenses or to use a template for your own pipeline.
 - **Plotting** - Scripts enabling customized figures and images.
-- **Runners** - Scripts for running a **PyAutoLens** pipeline and analysis.
+- **Runners** - Scripts for running a **PyAutoLens** pipeline.
 - **Tools** - Tools for simulating strong lens data, creating masks and using many other **PyAutoLens** features.
 
-If you install **PyAutoLens** with conda or pip the workspace will be included and the latest workspace can be found on the master branch of this git repository.
-
-If you install **PyAutoLens** with Docker a workspace will be generated for you in the home directory the first time you run the image. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
+If you install **PyAutoLens** with conda or pip, you will need to download the workspace from the [autolens_workspace](https://github.com/Jammy2211/autolens_workspace) repository, which is described in the installation instructions below.
 
 ## Depedencies
 
@@ -142,6 +137,23 @@ Install autolens:
 pip install autolens
 ```
 
+Clone autolens workspace and set WORKSPACE enviroment variable:
+```
+cd /path/where/you/want/autolens_workspace
+git clone https://github.com/Jammy2211/autolens_workspace
+export WORKSPACE=/path/to/autolens_workspace/
+```
+
+Set PYTHONPATH to include the autolens_workspace directory:
+```
+export PYTHONPATH=/path/to/autolens_workspace/
+```
+
+You can test everything is working by running the example pipeline runner in the autolens_workspace
+```
+python3 /path/to/autolens_workspace/runners/runner.py
+```
+
 ## Installation with pip
 
 Installation is also available via pip, however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
@@ -150,29 +162,22 @@ Installation is also available via pip, however there are reported issues with i
 $ pip install autolens
 ```
 
-## Installation with Docker
-
-An alternative to conda and pip is Docker, which makes installation easier by containerising the project.
-
-If you don't have Docker then you can install it by following the guide [here](https://docs.docker.com/install/).
-
-Once you have Docker installed you can download the **PyAutoLens** Docker project with the command:
-
+Clone autolens workspace and set WORKSPACE enviroment variable:
 ```
-docker pull autolens/autolens
+cd /path/where/you/want/autolens_workspace
+git clone https://github.com/Jammy2211/autolens_workspace
+export WORKSPACE=/path/to/autolens_workspace/
 ```
 
-This command can also be used to update the project.
-
-The project can be run using:
-
+Set PYTHONPATH to include the autolens_workspace directory:
 ```
-docker run -it -e LOCAL_USER_ID=`id -u $USER` -h autolens -p 8888:8888 -p 6006:6006 -v $HOME/autolens_workspace:/home/user/workspace autolens/autolens
+export PYTHONPATH=/path/to/autolens_workspace/
 ```
 
-Once the project is running Docker will provide you with a URL. Copy and paste this URL into your browser, making sure you replace '(PyAutoLens or 127.0.0.1)' with '127.0.0.1'. This will bring up a Jupyter notebook including the 'howtolens' directory which is full of tutorials.
-
-Any changes you make inside the Docker workspace will be saved in the autolens_workspace in your home directory.
+You can test everything is working by running the example pipeline runner in the autolens_workspace
+```
+python3 /path/to/autolens_workspace/runners/simple/runner_lens_mass_and_source.py
+```
 
 ## Support & Discussion
 
@@ -186,9 +191,13 @@ If you have any suggestions or would like to contribute please get in touch.
 
 The following papers use **PyAutoLens**:
 
+[The molecular-gas properties in the gravitationally lensed merger HATLAS J142935.3-002836](https://arxiv.org/abs/1904.00307)
+
 [Galaxy structure with strong gravitational lensing: decomposing the internal mass distribution of massive elliptical galaxies](https://arxiv.org/abs/1901.07801)
 
 [Novel Substructure and Superfluid Dark Matter](https://arxiv.org/abs/1901.03694)
+
+[CO, H2O, H2O+ line and dust emission in a z = 3.63 strongly lensed starburst merger at sub-kiloparsec scales](https://arxiv.org/abs/1903.00273)
 
 ## Credits
 

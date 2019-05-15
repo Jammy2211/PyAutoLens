@@ -1,15 +1,13 @@
 from matplotlib import pyplot as plt
 
 from autolens import exc
-from autofit import conf
-from autolens.model.galaxy import galaxy_data as gd
-from autolens.data.array.plotters import plotter_util, array_plotters
+from autolens.plotters import plotter_util, array_plotters
 from autolens.lens.plotters import lens_plotter_util
 
 
 def plot_fit_subplot(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
-        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -77,7 +75,7 @@ def plot_fit_subplot(
         output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
 
@@ -135,7 +133,7 @@ def plot_fit_individuals(
 
 def plot_galaxy_data_array(
         galaxy_data, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -144,8 +142,8 @@ def plot_galaxy_data_array(
 
     if galaxy_data.use_intensities:
         title='Galaxy Data Intensities'
-    elif galaxy_data.use_surface_density:
-        title='Galaxy Data Surface Density'
+    elif galaxy_data.use_convergence:
+        title='Galaxy Data Convergence'
     elif galaxy_data.use_potential:
         title='Galaxy Data Potential'
     elif galaxy_data.use_deflections_y:

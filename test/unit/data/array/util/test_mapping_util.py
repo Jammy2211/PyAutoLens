@@ -220,6 +220,46 @@ class TestMapMasked1DArrayTo2d(object):
                                       [-1.0, -2.0, 0.0, -3.0]])).all()
 
 
+class TestMapMasked1DGridTo2d(object):
+
+    def test__2d_grid_is_2x2__is_not_masked__maps_correctly(self):
+        
+        grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+        one_to_two = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+        shape = (2, 2)
+
+        grid_2d = mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(grid_1d, shape, one_to_two)
+
+        assert (grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0]],
+                                     [[3.0, 3.0], [4.0, 4.0]]])).all()
+
+    def test__2d_grid_is_2x2__is_masked__maps_correctly(self):
+
+        grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 4.0]])
+
+        one_to_two = np.array([[0, 0], [0, 1], [1, 0]])
+        shape = (2, 2)
+
+        grid_2d = mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(grid_1d, shape, one_to_two)
+
+        assert (grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0]],
+                                      [[3.0, 4.0], [0.0, 0.0]]])).all()
+
+    def test__different_shape_and_mappings(self):
+
+        grid_1d = np.array([[1.0, -1.0], [2.0, -2.0], [3.0, -3.0], [-1.0, 1.0], [-2.0, 2.0], [-3.0, 3.0]])
+
+        one_to_two = np.array([[0, 0], [0, 1], [1, 0], [2, 0], [2, 1], [2, 3]])
+        shape = (3, 4)
+
+        grid_2d = mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(grid_1d, shape, one_to_two)
+
+        assert (grid_2d == np.array([[[1.0, -1.0], [2.0, -2.0], [0.0, 0.0], [0.0, 0.0]],
+                                      [[3.0, -3.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                                      [[-1.0, 1.0], [-2.0, 2.0], [0.0, 0.0], [-3.0, 3.0]]])).all()
+
+
 class TestMapUnmasked1dArrayTo2d(object):
 
     def test__1d_array_in__maps_it_to_4x4_2d_array(self):

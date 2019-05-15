@@ -3,15 +3,26 @@ from __future__ import division, print_function
 import numpy as np
 import pytest
 
+from os import path
+from autofit import conf
+from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles as gp
+
+directory = path.dirname(path.realpath(__file__))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def do_something():
+    conf.instance = conf.Config(config_path='{}/../../test_files/configs/radial_min'.format(directory))
 
 
 class TestMemoize(object):
+
     def test_add_to_cache(self):
         class MyProfile(object):
             # noinspection PyMethodMayBeStatic
             @gp.cache
-            def my_method(self, grid):
+            def my_method(self, grid, grid_radial_minimum=None):
                 return grid
 
         profile = MyProfile()
@@ -35,26 +46,26 @@ class TestMemoize(object):
                 self.count = 0
 
             @gp.cache
-            def my_method(self, grid):
+            def my_method(self, grid, grid_radial_minimum=None):
                 self.count += 1
                 return self.count
 
         profile = CountingProfile()
 
-        assert profile.my_method(np.array([0])) == 1
-        assert profile.my_method(np.array([1])) == 2
-        assert profile.my_method(np.array([2])) == 3
-        assert profile.my_method(np.array([0])) == 1
-        assert profile.my_method(np.array([1])) == 2
+        assert profile.my_method(grid=np.array([0]), grid_radial_minimum=None) == 1
+        assert profile.my_method(grid=np.array([1]), grid_radial_minimum=None) == 2
+        assert profile.my_method(grid=np.array([2]), grid_radial_minimum=None) == 3
+        assert profile.my_method(grid=np.array([0]), grid_radial_minimum=None) == 1
+        assert profile.my_method(grid=np.array([1]), grid_radial_minimum=None) == 2
 
     def test_multiple_cached_methods(self):
         class MultiMethodProfile(object):
             @gp.cache
-            def method_one(self, grid):
+            def method_one(self, grid, grid_radial_minimum=None):
                 return grid
 
             @gp.cache
-            def method_two(self, grid):
+            def method_two(self, grid, grid_radial_minimum=None):
                 return grid
 
         profile = MultiMethodProfile()
@@ -65,7 +76,39 @@ class TestMemoize(object):
         assert profile.method_two(np.array([0])) is not array
 
 
+class TestGeometryProfile(object):
+
+    def test__constructor_and_units(self):
+        
+        profile = gp.GeometryProfile(centre=(1.0, 2.0))
+
+        assert profile.centre == (1.0, 2.0)
+        assert isinstance(profile.centre[0], dim.Length)
+        assert isinstance(profile.centre[1], dim.Length)
+        assert profile.centre[0].unit == 'arcsec'
+        assert profile.centre[1].unit == 'arcsec'
+
+
 class TestEllipticalProfile(object):
+
+    class TestConstuctorUnits(object):
+
+        def test__constructor_and_units(self):
+
+            profile = gp.EllipticalProfile(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0)
+
+            assert profile.centre == (1.0, 2.0)
+            assert isinstance(profile.centre[0], dim.Length)
+            assert isinstance(profile.centre[1], dim.Length)
+            assert profile.centre[0].unit == 'arcsec'
+            assert profile.centre[1].unit == 'arcsec'
+
+            assert profile.axis_ratio == 0.5
+            assert isinstance(profile.axis_ratio, float)
+
+            assert profile.phi == 45.0
+            assert isinstance(profile.phi, float)
+
     class TestAnglesFromXAxis(object):
 
         def test__profile_angle_phi_is_0__cosine_and_sin_of_phi_is_1_and_0(self):
@@ -285,6 +328,18 @@ class TestEllipticalProfile(object):
 
 
 class TestSphericalProfile(object):
+
+    class TestConstuctorUnits(object):
+
+        def test__constructor_and_unit_conversions(self):
+            profile = gp.SphericalProfile(centre=(1.0, 2.0))
+
+            assert profile.centre == (1.0, 2.0)
+            assert isinstance(profile.centre[0], dim.Length)
+            assert isinstance(profile.centre[1], dim.Length)
+            assert profile.centre[0].unit == 'arcsec'
+            assert profile.centre[1].unit == 'arcsec'
+
     class TestCoordinatesMovement(object):
 
         def test__profile_cenre_y_0_x_0__grid_y_1_x_1__no_coordinate_movement_so_y_1_x_1(self):
@@ -339,3 +394,44 @@ class TestSphericalProfile(object):
 
             assert transformed_grid[0, 0] == pytest.approx(grid_original[0, 0], 1e-5)
             assert transformed_grid[0, 1] == pytest.approx(grid_original[0, 1], 1e-5)
+
+
+class MockGridRadialMinimum(object):
+
+    def __init__(self):
+        pass
+
+    def grid_to_grid_radii(self, grid):
+        return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
+
+    @gp.move_grid_to_radial_minimum
+    def deflections_from_grid(self, grid):
+        return grid
+
+
+# class TestGridRadialMinimum(object):
+#
+#     def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(self):
+#         grid = np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
+#         mock_profile = MockGridRadialMinimum()
+#
+#         deflections = mock_profile.deflections_from_grid(grid=grid)
+#         assert (deflections == grid).all()
+#
+#     def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(self):
+#         grid = np.array([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
+#         mock_profile = MockGridRadialMinimum()
+#
+#         deflections = mock_profile.deflections_from_grid(grid=grid)
+#
+#         assert (deflections == np.array([[2.5, 0.0], [2.5, 0.0], [6.0, 0.0]])).all()
+#
+#     def test__mock_profile__same_as_above_but_diagonal_coordinates(self):
+#         grid = np.array([[np.sqrt(2.0), np.sqrt(2.0)], [1.0, np.sqrt(8.0)], [np.sqrt(8.0), np.sqrt(8.0)]])
+#
+#         mock_profile = MockGridRadialMinimum()
+#
+#         deflections = mock_profile.deflections_from_grid(grid=grid)
+#
+#         assert deflections == pytest.approx(np.array([[1.7677, 1.7677], [1.0, np.sqrt(8.0)],
+#                                                       [np.sqrt(8), np.sqrt(8.0)]]), 1.0e-4)
