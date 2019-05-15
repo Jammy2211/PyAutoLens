@@ -174,6 +174,42 @@ class TestRegularGrid:
 
         assert (grid_2d_util == grid_2d).all()
 
+    def test__map_to_1d__compare_to_util(self):
+
+        array_2d = np.array([[1, 2, 3, 4],
+                             [5, 6, 7, 8],
+                             [9, 10, 11, 12]])
+
+        mask = np.array([[True, False, True, True],
+                         [False, False, False, True],
+                         [True, False, True, False]])
+
+        array_1d_util = mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=array_2d, mask=mask)
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        array_1d = regular_grid.array_1d_from_array_2d(array_2d=array_2d)
+
+        assert (array_1d_util == array_1d).all()
+        
+    def test__map_grid_to_1d__compare_to_util(self):
+
+        grid_2d = np.array([[[1,1], [2,2], [3,3], [4,4]],
+                             [[5,5], [6,6], [7,7], [8,8]],
+                             [[9,9], [10,10], [11,11], [12,12]]])
+
+        mask = np.array([[True, False, True, True],
+                         [False, False, False, True],
+                         [True, False, True, False]])
+
+        grid_1d_util = mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        grid_1d = regular_grid.grid_1d_from_grid_2d(grid_2d=grid_2d)
+
+        assert (grid_1d_util == grid_1d).all()
+
     def test__new_grid_with_interpolator__returns_grid_with_interpolator(self):
 
         mask = np.array([[True, True, False, False],
