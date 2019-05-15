@@ -502,10 +502,10 @@ class TestSubGrid(object):
         assert array_2d_grid.pixel_scale == 2.0
         assert array_2d_grid.origin == (0.0, 0.0)
 
-    def test_sub_data_to_image(self, sub_grid):
+    def test__sub_data_to_image(self, sub_grid):
         assert (sub_grid.regular_data_1d_from_sub_data_1d(np.array(range(5))) == np.array(range(5))).all()
 
-    def test_sub_to_image__compare_to_array_util(self):
+    def test__sub_to_image__compare_to_array_util(self):
         mask = np.array([[True, False, True],
                          [False, False, False],
                          [True, False, False]])
@@ -519,6 +519,31 @@ class TestSubGrid(object):
         assert sub_grid.sub_grid_fraction == (1.0 / 4.0)
         assert (sub_grid.sub_to_regular == sub_to_image_util).all()
 
+    def test__sub_mask__is_mask_at_sub_grid_resolution(self):
+
+        mask = np.array([[False, True],
+                         [False, False]])
+
+        mask = msk.Mask(array=mask, pixel_scale=3.0)
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        assert (sub_grid.sub_mask == np.array([[False, False, True, True],
+                                                [False, False, True, True],
+                                                [False, False, False, False],
+                                                [False, False, False, False]])).all()
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+
+        assert (sub_grid.sub_mask == np.array([[False, False, False, False, True, True],
+                                              [False, False, False, False, True, True],
+                                              [False, False, True, True, False, False],
+                                              [False, False, True, True, False, False]])).all()
 
 class TestPixGrid:
 

@@ -637,6 +637,12 @@ class SubGrid(RegularGrid):
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
 
     @property
+    def sub_mask(self):
+        sub_shape = (self.mask.shape[0] * self.sub_grid_size, self.mask.shape[1] * self.sub_grid_size)
+        sub_one_to_two = self.mask.masked_sub_grid_index_to_sub_pixel(sub_grid_size=self.sub_grid_size)
+        return mask_util.mask_from_shape_and_one_to_two(shape=sub_shape, one_to_two=sub_one_to_two)
+
+    @property
     def unlensed_grid(self):
         return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=self.mask, pixel_scales=self.mask.pixel_scales, sub_grid_size=self.sub_grid_size),
