@@ -116,6 +116,7 @@ class TestRegularGrid:
         assert (blurring_grid.mask.masked_grid_index_to_pixel == blurring_mask.masked_grid_index_to_pixel).all()
 
     def test__map_to_2d__compare_to_util(self):
+
         mask = np.array([[True, True, False, False],
                          [True, False, True, True],
                          [True, True, False, False]])
@@ -133,17 +134,20 @@ class TestRegularGrid:
         assert array_2d_grid.origin == (0.0, 0.0)
 
     def test__scaled_array_from_array_1d__compare_to_util(self):
+
         mask = np.array([[True, True, False, False],
                          [True, False, True, True],
                          [True, True, False, False]])
+
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
         one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
+
         array_2d_util = mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
             array_1d=array_1d, shape=(3, 4), one_to_two=one_to_two)
 
         mask = msk.Mask(array=mask, pixel_scale=3.0)
-        regular_grid = grids.RegularGrid.from_mask(mask)
-        scaled_array_2d = regular_grid.scaled_array_2d_from_array_1d(array_1d)
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        scaled_array_2d = regular_grid.scaled_array_2d_from_array_1d(array_1d=array_1d)
 
         assert (scaled_array_2d == array_2d_util).all()
         assert (scaled_array_2d.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
@@ -151,6 +155,24 @@ class TestRegularGrid:
         assert scaled_array_2d.shape_arcsec == (9.0, 12.0)
         assert scaled_array_2d.pixel_scale == 3.0
         assert scaled_array_2d.origin == (0.0, 0.0)
+
+    def test__map_grid_to_2d__compare_to_util(self):
+
+        mask = np.array([[True, True, False, False],
+                         [True, False, True, True],
+                         [True, True, False, False]])
+
+        grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
+        one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
+
+        grid_2d_util = mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
+            grid_1d=grid_1d, shape=(3, 4), one_to_two=one_to_two)
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        grid_2d = regular_grid.grid_2d_from_grid_1d(grid_1d=grid_1d)
+
+        assert (grid_2d_util == grid_2d).all()
 
     def test__new_grid_with_interpolator__returns_grid_with_interpolator(self):
 

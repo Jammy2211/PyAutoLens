@@ -456,7 +456,9 @@ class RegularGrid(np.ndarray):
         return self
 
     def array_2d_from_array_1d(self, array_1d):
-        """ Map a 1D array the same dimension as the grid to its original masked 2D array.
+        """ Map a 1D array the same dimension as the grid to its original 2D array. 
+        
+        Values which were masked in the mapping to the 1D array are returned as zeros.
 
         Parameters
         -----------
@@ -480,15 +482,18 @@ class RegularGrid(np.ndarray):
                                                    origin=self.mask.origin)
 
     def grid_2d_from_grid_1d(self, grid_1d):
-        """ The arc second-grid of (y,x) coordinates of every pixel.
-
-        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
-        value y value in arc seconds.
+        """Map a 1D grid the same dimension as the grid to its original 2D grid. 
+        
+        Values which were masked in the mapping to the 1D array are returned as zeros.
+        
+        Parameters
+        -----------
+        grid_1d : ndarray
+            The 1D grid which is mapped to its masked 2D array.
         """
-        return grid_util.regular_grid_2d_from_shape_pixel_scales_and_origin(shape=self.shape,
-                                                                            pixel_scales=self.pixel_scales,
-                                                                            origin=self.origin)
-
+        return mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
+            grid_1d=grid_1d, shape=self.mask.shape, one_to_two=self.mask.masked_grid_index_to_pixel)
+    
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
         pickled_state = super(RegularGrid, self).__reduce__()
