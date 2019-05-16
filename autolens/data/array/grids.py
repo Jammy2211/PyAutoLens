@@ -215,6 +215,12 @@ class GridStack(object):
             blurring = np.array([[0.0, 0.0]])
         return GridStack(regular=regular, sub=sub, blurring=blurring, pix=self.pix)
 
+        if self.blurring.shape != (1, 2):
+            blurring = self.blurring.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+        else:
+            blurring = np.array([[0.0, 0.0]])
+        return GridStack(regular=regular, sub=sub, blurring=blurring, pix=self.pix)
+
     def new_grid_stack_with_pix_grid_added(self, pix_grid, regular_to_nearest_pix):
         """Setup a grid-stack of grid_stack using an existing grid-stack.
         
