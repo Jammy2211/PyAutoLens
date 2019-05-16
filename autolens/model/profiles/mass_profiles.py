@@ -296,14 +296,54 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def deflections_via_potential_from_grid(self, grid):
 
-        grid_2d = grids.RegularGrid.grid_2d_from_grid_1d(grid_1d=grid)
+        grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid)
 
         potential_1d = self.potential_from_grid(grid=grid)
 
-        potential_2d = grids.RegularGrid.array_2d_from_array_1d(array_1d=potential_1d)
+        potential_2d = grid.array_2d_from_array_1d(array_1d=potential_1d)
 
-        alpha_x = np.gradient(potential_2d, grid_2d[0,:,1], axis=1)
-        alpha_y = np.gradient(potential_2d, grid_2d[:,1,0], axis=0)
+        alpha_x_2d = np.gradient(potential_2d, grid_2d[0,:,1], axis=1)
+        alpha_y_2d = np.gradient(potential_2d, grid_2d[:,0,0], axis=0)
+
+        alpha_x_1d = grid.array_1d_from_array_2d(array_2d=alpha_x_2d)
+        alpha_y_1d = grid.array_1d_from_array_2d(array_2d=alpha_y_2d)
+
+        return np.stack((alpha_y_1d, alpha_x_1d), axis=-1)
+
+    def lensing_jacobian_from_grid(self, grid):
+
+        grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid)
+
+        alpha_1d = self.deflections_from_grid(grid=grid)
+
+        alpha_x_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 1])
+        alpha_y_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 0])
+
+        A11_2d = 1 - np.gradient(alpha_x_2d, grid_2d[0, :, 1], axis=1)
+        A12_2d = - np.gradient(alpha_x_2d, grid_2d[:, 0, 0], axis=0)
+        A21_2d = - np.gradient(alpha_y_2d, grid_2d[0, :, 1], axis=1)
+        A22_2d = 1 - np.gradient(alpha_y_2d, grid_2d[:, 0, 0], axis=0)
+
+        A11_1d = grid.array_1d_from_array_2d(array_2d=A11_2d)
+        A12_1d = grid.array_1d_from_array_2d(array_2d=A12_2d)
+        A21_1d = grid.array_1d_from_array_2d(array_2d=A21_2d)
+        A22_1d = grid.array_1d_from_array_2d(array_2d=A22_2d)
+
+        return np.array([[A11_1d, A12_1d], [A21_1d, A22_1d]])
+
+    def magnitude_from_grid(self, grid):
+
+        jacobian = self.lensing_jacobian_from_grid(grid=grid)
+
+        det_jacobian = jacobian[0,0] * jacobian[1,1] - jacobian[0,1] * jacobian[1,0]
+
+        return 1 / det_jacobian
+
+
+
+
+
+
 
 
 

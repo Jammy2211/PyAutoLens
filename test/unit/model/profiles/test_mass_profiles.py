@@ -3546,18 +3546,53 @@ class TestDeflectionsViaPotential(object):
 
         deflections_via_calculation = sis.deflections_from_grid(grid=grid)
 
-        deflections_via_potential = sis.deflection_via_potential_from_grid(grid=grid)
+        deflections_via_potential = sis.deflections_via_potential_from_grid(grid=grid)
 
-        assert deflections_via_calculation == pytest.approx(deflections_via_potential, 1.0e-4)
+        mean_error = np.mean(deflections_via_potential - deflections_via_calculation)
+
+        assert mean_error < 1e-4
 
     def test__compare_sie_at_phi_45__deflections_via_potential_and_calculation(self):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = 'Grid with sufficient resolution for gradient operator'
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
 
         deflections_via_calculation = sie.deflections_from_grid(grid=grid)
 
-        deflections_via_potential = sie.deflection_via_potential_from_grid(grid=grid)
+        deflections_via_potential = sie.deflections_via_potential_from_grid(grid=grid)
 
-        assert deflections_via_calculation == pytest.approx(deflections_via_potential, 1.0e-4)
+        mean_error = np.mean(deflections_via_potential - deflections_via_calculation)
+
+        assert mean_error < 1e-4
+
+    def test__compare_sie_at_phi_0__deflections_via_potential_and_calculation(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
+
+        deflections_via_calculation = sie.deflections_from_grid(grid=grid)
+
+        deflections_via_potential = sie.deflections_via_potential_from_grid(grid=grid)
+
+        mean_error = np.mean(deflections_via_potential - deflections_via_calculation)
+
+        assert mean_error < 1e-4
+
+
+    def test__compare_sis_convergence_via_jacobian_and_calculation(self):
+
+        sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
+
+        convergence_via_calculation = sis.convergence_from_grid(grid=grid)
+
+        jacobian = sis.lensing_jacobian_from_grid(grid=grid)
+
+        convergence_via_jacobian = 1 - 0.5 * (jacobian[0,0] + jacobian[1,1])
+
+        mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+        assert mean_error < 1e-2
