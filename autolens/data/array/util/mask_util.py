@@ -251,6 +251,15 @@ def masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask, sub_grid_size
     return sub_grid_to_sub_pixel
 
 @decorator_util.jit()
+def mask_from_shape_and_one_to_two(shape, one_to_two):
+    mask = np.ones(shape)
+
+    for index in range(len(one_to_two)):
+        mask[one_to_two[index, 0], one_to_two[index, 1]] = False
+
+    return mask
+
+@decorator_util.jit()
 def total_edge_pixels_from_mask(mask):
     """Compute the total number of borders-pixels in a masks."""
 
