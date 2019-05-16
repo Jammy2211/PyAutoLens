@@ -215,6 +215,12 @@ class GridStack(object):
             blurring = np.array([[0.0, 0.0]])
         return GridStack(regular=regular, sub=sub, blurring=blurring, pix=self.pix)
 
+        if self.blurring.shape != (1, 2):
+            blurring = self.blurring.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+        else:
+            blurring = np.array([[0.0, 0.0]])
+        return GridStack(regular=regular, sub=sub, blurring=blurring, pix=self.pix)
+
     def new_grid_stack_with_pix_grid_added(self, pix_grid, regular_to_nearest_pix):
         """Setup a grid-stack of grid_stack using an existing grid-stack.
         
@@ -493,6 +499,32 @@ class RegularGrid(np.ndarray):
         """
         return mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
             grid_1d=grid_1d, shape=self.mask.shape, one_to_two=self.mask.masked_grid_index_to_pixel)
+
+    def array_1d_from_array_2d(self, array_2d):
+        """ Map a 2D array to its masked 1D array.. 
+
+        Values which are masked in the mapping to the 1D array are returned as zeros.
+
+        Parameters
+        -----------
+        array_1d : ndarray
+            The 1D array which is mapped to its masked 2D array.
+        """
+        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(
+            array_2d=array_2d, mask=self.mask)
+
+    def grid_1d_from_grid_2d(self, grid_2d):
+        """ Map a 2D grid to its masked 1D grid.. 
+
+        Values which are masked in the mapping to the 1D grid are returned as zeros.
+
+        Parameters
+        -----------
+        grid_1d : ndgrid
+            The 1D grid which is mapped to its masked 2D grid.
+        """
+        return mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(
+            grid_2d=grid_2d, mask=self.mask)
     
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -609,6 +641,12 @@ class SubGrid(RegularGrid):
         self.sub_grid_size = sub_grid_size
         self.sub_grid_length = int(sub_grid_size ** 2.0)
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
+
+    @property
+    def sub_mask(self):
+        sub_shape = (self.mask.shape[0] * self.sub_grid_size, self.mask.shape[1] * self.sub_grid_size)
+        sub_one_to_two = self.mask.masked_sub_grid_index_to_sub_pixel(sub_grid_size=self.sub_grid_size)
+        return mask_util.mask_from_shape_and_one_to_two(shape=sub_shape, one_to_two=sub_one_to_two)
 
     @property
     def unlensed_grid(self):

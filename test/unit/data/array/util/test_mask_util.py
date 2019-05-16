@@ -1078,6 +1078,40 @@ class TestSubGridToMaskedSubPixel(object):
                                                    [6, 4], [6,5], [7,4], [7,5]])).all()
 
 
+class TestMaskFromShapeAndOneToTwo(object):
+    
+    def test__2d_array_is_2x2__is_not_masked__maps_correctly(self):
+
+        one_to_two = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+        shape = (2, 2)
+
+        mask_2d = mask_util.mask_from_shape_and_one_to_two(shape=shape, one_to_two=one_to_two)
+
+        assert (mask_2d == np.array([[False, False],
+                                      [False, False]])).all()
+
+    def test__2d_mask_is_2x2__is_masked__maps_correctly(self):
+
+        one_to_two = np.array([[0, 0], [0, 1], [1, 0]])
+        shape = (2, 2)
+
+        mask_2d = mask_util.mask_from_shape_and_one_to_two(shape=shape, one_to_two=one_to_two)
+
+        assert (mask_2d == np.array([[False, False],
+                                      [False, True]])).all()
+
+    def test__different_shape_and_masks(self):
+
+        one_to_two = np.array([[0, 0], [0, 1], [1, 0], [2, 0], [2, 1], [2, 3]])
+        shape = (3, 4)
+
+        mask_2d = mask_util.mask_from_shape_and_one_to_two(shape=shape, one_to_two=one_to_two)
+
+        assert (mask_2d == np.array([[False, False, True, True],
+                                      [False, True, True, True],
+                                      [False, False, True, False]])).all()
+
+
 class TestEdgePixels(object):
 
     def test__7x7_mask_one_central_pixel__is_entire_edge(self):
