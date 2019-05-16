@@ -456,7 +456,9 @@ class RegularGrid(np.ndarray):
         return self
 
     def array_2d_from_array_1d(self, array_1d):
-        """ Map a 1D array the same dimension as the grid to its original masked 2D array.
+        """ Map a 1D array the same dimension as the grid to its original 2D array. 
+        
+        Values which were masked in the mapping to the 1D array are returned as zeros.
 
         Parameters
         -----------
@@ -479,6 +481,19 @@ class RegularGrid(np.ndarray):
                                                    pixel_scale=self.mask.pixel_scale,
                                                    origin=self.mask.origin)
 
+    def grid_2d_from_grid_1d(self, grid_1d):
+        """Map a 1D grid the same dimension as the grid to its original 2D grid. 
+        
+        Values which were masked in the mapping to the 1D array are returned as zeros.
+        
+        Parameters
+        -----------
+        grid_1d : ndarray
+            The 1D grid which is mapped to its masked 2D array.
+        """
+        return mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
+            grid_1d=grid_1d, shape=self.mask.shape, one_to_two=self.mask.masked_grid_index_to_pixel)
+    
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
         pickled_state = super(RegularGrid, self).__reduce__()
@@ -686,6 +701,20 @@ class SubGrid(RegularGrid):
         return scaled_array.ScaledSquarePixelArray(array=self.array_2d_from_array_1d(array_1d=array_1d),
                                                    pixel_scale=self.mask.pixel_scale,
                                                    origin=self.mask.origin)
+
+    def sub_grid_2d_from_sub_grid_1d(self, sub_grid_1d):
+        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub grid.
+
+        Parameters
+        -----------
+        sub_grid_1d : ndgrid
+            The 1D sub_grid which is mapped to its masked 2D sub-grid.
+        """
+        sub_shape = (self.mask.shape[0] * self.sub_grid_size, self.mask.shape[1] * self.sub_grid_size)
+        sub_one_to_two = self.mask.masked_sub_grid_index_to_sub_pixel(sub_grid_size=self.sub_grid_size)
+        return mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
+            grid_1d=sub_grid_1d, shape=sub_shape, one_to_two=sub_one_to_two)
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
