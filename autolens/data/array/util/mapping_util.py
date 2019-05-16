@@ -194,6 +194,57 @@ def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
 
 
 @decorator_util.jit()
+def map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(mask, grid_2d):
+    """For a 2D grid and mask, map the values of all unmasked pixels to a 1D grid.
+
+    The pixel coordinate origin is at the top left corner of the 2D grid and goes right-wards and downwards, such
+    that for an grid of shape (3,3) where all pixels are unmasked:
+
+    - pixel [0,0] of the 2D grid will correspond to index 0 of the 1D grid.
+    - pixel [0,1] of the 2D grid will correspond to index 1 of the 1D grid.
+    - pixel [1,0] of the 2D grid will correspond to index 4 of the 1D grid.
+
+    Parameters
+     ----------
+    mask : ndgrid
+        A 2D grid of bools, where *False* values mean unmasked and are included in the mapping.
+    grid_2d : ndgrid
+        The 2D grid of values which are mapped to a 1D grid.
+
+    Returns
+    --------
+    ndgrid
+        A 1D grid of values mapped from the 2D grid with dimensions (total_unmasked_pixels).
+
+    Examples
+    --------
+    mask = np.grid([[True, False, True],
+                     [False, False, False]
+                     [True, False, True]])
+
+    grid_2d = np.grid([[1.0, 2.0, 3.0],
+                          [4.0, 5.0, 6.0],
+                          [7.0, 8.0, 9.0]])
+
+    grid_1d = map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(mask=mask, grid_2d=grid_2d)
+    """
+
+    total_image_pixels = mask_util.total_regular_pixels_from_mask(mask=mask)
+
+    grid_1d = np.zeros(shape=(total_image_pixels, 2))
+    index = 0
+
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                grid_1d[index, 0] = grid_2d[y, x, 0]
+                grid_1d[index, 1] = grid_2d[y, x, 1]
+                index += 1
+
+    return grid_1d
+
+
+@decorator_util.jit()
 def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d, shape, one_to_two):
     """For a 1D array that was computed by mapping unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.

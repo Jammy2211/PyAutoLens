@@ -294,6 +294,23 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return self.mass_within_circle_in_units(radius=einstein_radius, unit_mass=unit_mass, redshift_profile=redshift_profile,
                                                 redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
+    def deflections_via_potential_from_grid(self, grid):
+
+        grid_2d = grids.RegularGrid.grid_2d_from_grid_1d(grid_1d=grid)
+
+        potential_1d = self.potential_from_grid(grid=grid)
+
+        potential_2d = grids.RegularGrid.array_2d_from_array_1d(array_1d=potential_1d)
+
+        alpha_x = np.gradient(potential_2d, grid_2d[0,:,1], axis=1)
+        alpha_y = np.gradient(potential_2d, grid_2d[:,1,0], axis=0)
+
+
+
+
+
+        # TODO : Map delfections from 2d to 1d before returning
+
     @dim.convert_units_to_input_units
     def summarize_in_units(self, radii, prefix='', whitespace=80,
                            unit_length='arcsec', unit_mass='solMass',
@@ -714,38 +731,6 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         deflection_y = np.arctanh(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
         deflection_x = np.arctan(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
         return self.rotate_grid_from_profile(np.multiply(factor, np.vstack((deflection_y, deflection_x)).T))
-
-
-class EllipticalIsothermalMass(EllipticalIsothermal):
-
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=0.9, phi=0.0, mass=):
-        """
-        Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
-        density distribution for the value slope=2.0
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The (y,x) arc-second coordinates of the profile centre.
-        axis_ratio : float
-            The elliptical mass profile's minor-to-major axis ratio (b/a).
-        phi : float
-            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis.
-        einstein_radius : float
-            The arc-second Einstein radius.
-        """
-
-        # 1) Change input variable from einstein radius to mass.
-        # 2) In EllipticalIsothermalMass.__init__ compute einstein radius from input einstein mass, e.g
-        #    (einstein_radius = something * einstein_mass).
-        # 3) Make mass an attribute of class.
-
-        mass = self.mass_within_circle(radius=einstein_radius, conversion_factor=1.0)
-
-
-        super(EllipticalIsothermalMass, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
-                                                       einstein_radius=einstein_radius)
-
 
 class SphericalIsothermal(EllipticalIsothermal):
 
