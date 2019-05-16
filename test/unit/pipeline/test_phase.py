@@ -69,9 +69,13 @@ class MockResult:
 
 
 class NLO(non_linear.NonLinearOptimizer):
+
     def fit(self, analysis):
+
         class Fitness(object):
+
             def __init__(self, instance_from_physical_vector):
+
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
 
@@ -819,6 +823,7 @@ class TestResult(object):
         assert isinstance(result, ph.AbstractPhase.Result)
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
+
         lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
         source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
