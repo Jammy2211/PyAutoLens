@@ -176,7 +176,7 @@ class EllipticalGaussian(EllipticalLightProfile):
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         sigma : float
-            The full-width half-maximum of the Gaussian.
+            The sigma value of the Gaussian.
         """
         super(EllipticalGaussian, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
@@ -226,7 +226,7 @@ class SphericalGaussian(EllipticalGaussian):
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         sigma : float
-            The full-width half-maximum of the Gaussian.
+            The sigma value of the Gaussian.
         """
         super(SphericalGaussian, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
                                                 sigma=sigma)

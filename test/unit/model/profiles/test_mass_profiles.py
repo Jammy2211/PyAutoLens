@@ -3536,31 +3536,3 @@ class TestDensityBetweenAnnuli(object):
 
         assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
 
-
-class TestDeflectionsViaPotential(object):
-
-    def test__compare_sis_deflections_via_potential_and_calculation(self):
-
-        sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
-
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
-
-        deflections_via_calculation = sis.deflections_from_grid(grid=grid)
-
-
-
-        deflections_via_potential = sis.deflection_via_potential_from_grid(grid=grid)
-
-        assert deflections_via_calculation == pytest.approx(deflections_via_potential, 1.0e-4)
-
-    def test__compare_sie_at_phi_45__deflections_via_potential_and_calculation(self):
-
-        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0)
-
-        grid = 'Grid with sufficient resolution for gradient operator'
-
-        deflections_via_calculation = sie.deflections_from_grid(grid=grid)
-
-        deflections_via_potential = sie.deflection_via_potential_from_grid(grid=grid)
-
-        assert deflections_via_calculation == pytest.approx(deflections_via_potential, 1.0e-4)
