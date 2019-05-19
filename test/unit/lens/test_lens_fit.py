@@ -126,22 +126,6 @@ def make_li_hyper_manual(hyper):
                             hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=1)
 
 
-class TestImageForGalaxy(object):
-    def test_basic(self, lens_data_manual):
-        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-        g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-
-        tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
-                                                     image_plane_grid_stack=lens_data_manual.grid_stack)
-
-        padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
-                                                            image_plane_grid_stack=lens_data_manual.padded_grid_stack)
-
-        fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_manual, tracer=tracer,
-                                                       padded_tracer=padded_tracer)
-
-        assert fit.unmasked_model_image_of_planes_and_galaxies[0][0] == fit.unmasked_model_image_for_galaxy(g0)
-
 
 class TestLensProfileFit:
 
@@ -406,6 +390,7 @@ class TestLensProfileInversionFit:
     class TestCompareToManual:
 
         def test___manual_image_and_psf(self, lens_data_manual):
+
             galaxy_light = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
 
             pix = pixelizations.Rectangular(shape=(3, 3))
@@ -418,11 +403,10 @@ class TestLensProfileInversionFit:
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_manual, tracer=tracer)
 
-            blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-                unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-                convolver=lens_data_manual.convolver_image)
+            model_image_1d = tracer.blurred_image_plane_image_1d_from_convolver_image(
+                convolver_image=lens_data_manual.convolver_image)
 
-            blurred_profile_image = lens_data_manual.map_to_scaled_array(array_1d=blurred_profile_image_1d)
+            blurred_profile_image = lens_data_manual.map_to_scaled_array(array_1d=model_image_1d)
 
             assert blurred_profile_image == pytest.approx(fit.blurred_profile_image, 1e-4)
 
@@ -430,11 +414,7 @@ class TestLensProfileInversionFit:
 
             assert profile_subtracted_image == pytest.approx(fit.profile_subtracted_image)
 
-            blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-                unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-                convolver=lens_data_manual.convolver_image)
-
-            profile_subtracted_image_1d = lens_data_manual.image_1d - blurred_profile_image_1d
+            profile_subtracted_image_1d = lens_data_manual.image_1d - model_image_1d
 
             mapper = pix.mapper_from_grid_stack_and_border(grid_stack=lens_data_manual.grid_stack, border=None)
 

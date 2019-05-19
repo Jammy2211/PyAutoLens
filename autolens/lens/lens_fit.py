@@ -87,11 +87,6 @@ class LensTracerFit(LensDataFit):
     def unmasked_model_image_of_planes_and_galaxies(self):
         return self.padded_tracer.unmasked_blurred_image_plane_images_of_planes_and_galaxies_from_psf(psf=self.psf)
 
-    def unmasked_model_image_for_galaxy(self, galaxy):
-        plane = self.padded_tracer.plane_with_galaxy(galaxy)
-        return plane.unmasked_blurred_image_of_galaxy_with_grid_stack_psf(galaxy,
-                                                                          self.padded_tracer.image_plane.grid_stack,
-                                                                          self.psf)
 
 class LensProfileFit(LensTracerFit):
 

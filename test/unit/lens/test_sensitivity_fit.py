@@ -8,7 +8,6 @@ from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.inversion import inversions as inv
-from autolens.lens.util import lens_fit_util as util
 from autolens.lens import lens_data as ld
 from autolens.lens import sensitivity_fit
 from autolens.lens import ray_tracing
@@ -58,9 +57,8 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal.image == lens_data_blur.image).all()
         assert (fit.fit_normal.noise_map == lens_data_blur.noise_map).all()
 
-        model_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=lens_data_blur.convolver_image)
+        model_image_1d = tracer.blurred_image_plane_image_1d_from_convolver_image(
+            convolver_image=lens_data_blur.convolver_image)
 
         model_image = lens_data_blur.map_to_scaled_array(array_1d=model_image_1d)
 
@@ -108,9 +106,8 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal.image == lens_data_blur.image).all()
         assert (fit.fit_normal.noise_map == lens_data_blur.noise_map).all()
 
-        model_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer_normal.image_plane_image_1d, blurring_image_1d=tracer_normal.image_plane_blurring_image_1d,
-            convolver=lens_data_blur.convolver_image)
+        model_image_1d = tracer_normal.blurred_image_plane_image_1d_from_convolver_image(
+            convolver_image=lens_data_blur.convolver_image)
 
         model_image = lens_data_blur.map_to_scaled_array(array_1d=model_image_1d)
 
@@ -129,10 +126,8 @@ class TestSensitivityProfileFit:
         assert (fit.fit_sensitive.image == lens_data_blur.image).all()
         assert (fit.fit_sensitive.noise_map == lens_data_blur.noise_map).all()
         
-        model_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer_sensitive.image_plane_image_1d,
-            blurring_image_1d=tracer_sensitive.image_plane_blurring_image_1d,
-            convolver=lens_data_blur.convolver_image)
+        model_image_1d = tracer_sensitive.blurred_image_plane_image_1d_from_convolver_image(
+            convolver_image=lens_data_blur.convolver_image)
 
         model_image = lens_data_blur.map_to_scaled_array(array_1d=model_image_1d)
         
