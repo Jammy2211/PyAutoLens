@@ -9,7 +9,7 @@ def plot_reconstructed_image(inversion, mask=None, positions=None, grid=None, as
                              title='Reconstructed CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                              output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
 
-    array_plotters.plot_array(array=inversion.reconstructed_data, mask=mask, positions=positions, grid=grid,
+    array_plotters.plot_array(array=inversion.reconstructed_data_2d, mask=mask, positions=positions, grid=grid,
                               as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,

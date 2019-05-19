@@ -472,7 +472,7 @@ class PhaseImaging(Phase):
                                 image_psf_shape=self.image_psf_shape, positions=positions,
                                 interp_pixel_scale=self.interp_pixel_scale)
 
-        modified_image = self.modify_image(image=lens_data.image, results=results)
+        modified_image = self.modify_image(image=lens_data.unmasked_image, results=results)
         lens_data = lens_data.new_lens_data_with_modified_image(modified_image=modified_image)
 
         if self.bin_up_factor is not None:
@@ -1322,6 +1322,7 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class SensitivityPhase(PhaseImaging):
+
     lens_galaxies = PhaseProperty("lens_galaxies")
     source_galaxies = PhaseProperty("source_galaxies")
     sensitive_galaxies = PhaseProperty("sensitive_galaxies")
@@ -1472,12 +1473,15 @@ class HyperGalaxyPhase(Phase):
             return fit.figure_of_merit
 
         def fit_for_hyper_galaxy(self, hyper_galaxy):
-            hyper_noise = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(self.model_image,
-                                                                                       self.galaxy_image,
-                                                                                       self.lens_data.noise_map)
-            hyper_noise_map = self.lens_data.noise_map + hyper_noise
-            return lens_fit.LensDataFit(image=self.lens_data.image, noise_map=hyper_noise_map,
-                                        mask=np.full(self.lens_data.image.shape, False), model_image=self.model_image)
+
+            hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
+                hyper_model_image=self.model_image, hyper_galaxy_image=self.galaxy_image,
+                hyper_minimum_value=0.0)
+
+            hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
+            return lens_fit.LensDataFit(image_1d=self.lens_data.image_1d, noise_map_1d=hyper_noise_map_1d,
+                                        mask_1d=self.lens_data.mask_1d, model_image_1d=self.model_image,
+                                        map_to_scaled_array=lens_data.map_to_scaled_array)
 
         @classmethod
         def describe(cls, instance):
