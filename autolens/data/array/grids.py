@@ -517,8 +517,7 @@ class RegularGrid(np.ndarray):
         grid_1d : ndgrid
             The 1D grid which is mapped to its masked 2D grid.
         """
-        return mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(
-            grid_2d=grid_2d, mask=self.mask)
+        return mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=self.mask)
     
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
