@@ -925,19 +925,19 @@ class TestAbstractTracerData(object):
 
         def test__hyper_noise_maps_of_planes(self, grid_stack):
 
-            noise_map = np.array([[5.0, 3.0, 1.0]])
+            noise_map_1d = np.array([5.0, 3.0, 1.0])
 
-            hyper_model_image = np.array([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = np.array([[1.0, 5.0, 8.0]])
+            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
 
             hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
 
-            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image=hyper_model_image,
-                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
 
-            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image=hyper_model_image,
-                              hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=0.0)
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
 
             plane_0 = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0], grid_stack=None,
                                          border=None, compute_deflections=False)
@@ -946,28 +946,28 @@ class TestAbstractTracerData(object):
             plane_2 = pl.AbstractDataPlane(redshift=1.0, galaxies=[g.Galaxy()], grid_stack=None,
                                          border=None, compute_deflections=False)
 
-            hyper_noise_map_0 = plane_0.hyper_noise_map_from_noise_map(noise_map=noise_map)
-            hyper_noise_map_1 = plane_1.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            hyper_noise_map_1d_0 = plane_0.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            hyper_noise_map_1d_1 = plane_1.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
 
             tracer = ray_tracing.AbstractTracerData(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
 
-            hyper_noise_maps = tracer.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
+            hyper_noise_maps_1d = tracer.hyper_noise_maps_1d_of_planes_from_noise_map_1d(noise_map_1d=noise_map_1d)
 
-            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
-            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
-            assert hyper_noise_maps[2] == None
+            assert (hyper_noise_maps_1d[0] == hyper_noise_map_1d_0).all()
+            assert (hyper_noise_maps_1d[1] == hyper_noise_map_1d_1).all()
+            assert hyper_noise_maps_1d[2] == None
 
-            hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
+            hyper_noise_map_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
 
-            assert (hyper_noise_map == hyper_noise_map_0 + hyper_noise_map_1).all()
+            assert (hyper_noise_map_1d == hyper_noise_map_1d_0 + hyper_noise_map_1d_1).all()
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_0], source_galaxies=[galaxy_1],
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
 
-            hyper_noise_maps = tracer.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
+            hyper_noise_maps_1d = tracer.hyper_noise_maps_1d_of_planes_from_noise_map_1d(noise_map_1d=noise_map_1d)
 
-            assert (hyper_noise_maps[0] == hyper_noise_map_0).all()
-            assert (hyper_noise_maps[1] == hyper_noise_map_1).all()
+            assert (hyper_noise_maps_1d[0] == hyper_noise_map_1d_0).all()
+            assert (hyper_noise_maps_1d[1] == hyper_noise_map_1d_1).all()
 
 
 class TestTracerImagePlane(object):

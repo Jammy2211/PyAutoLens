@@ -404,27 +404,27 @@ class AbstractTracerData(AbstractTracer):
     def unmasked_blurred_image_plane_images_of_planes_and_galaxies_from_psf(self, psf):
         return [plane.unmasked_blurred_image_plane_images_of_galaxies_from_psf(psf=psf) for plane in self.planes]
 
-    def hyper_noise_map_from_noise_map(self, noise_map):
+    def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
 
         if self.has_hyper_galaxy:
 
-            hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map)
-            hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
-            return sum(hyper_noise_maps)
+            hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_planes_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if hyper_noise_map is not None]
+            return sum(hyper_noise_maps_1d)
 
         else:
 
             return None
 
-    def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
+    def hyper_noise_maps_1d_of_planes_from_noise_map_1d(self, noise_map_1d):
 
-        hyper_noise_maps = []
+        hyper_noise_maps_1d = []
 
         for plane in self.planes:
-            hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
-            hyper_noise_maps.append(hyper_noise_map)
+            hyper_noise_map = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            hyper_noise_maps_1d.append(hyper_noise_map)
 
-        return hyper_noise_maps
+        return hyper_noise_maps_1d
 
 
 class TracerImagePlane(AbstractTracerData):

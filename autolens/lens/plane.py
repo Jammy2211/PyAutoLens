@@ -85,24 +85,25 @@ class AbstractPlane(object):
         return any(list(map(lambda galaxy: galaxy.has_hyper_galaxy, self.galaxies)))
 
     @property
-    def contribution_maps_of_galaxies(self):
+    def contribution_maps_1d_of_galaxies(self):
 
-        contribution_maps = []
+        contribution_maps_1d = []
 
         for galaxy in self.galaxies:
+
             if galaxy.hyper_galaxy is not None:
 
                 contribution_map = galaxy.hyper_galaxy.contribution_map_from_hyper_images(
-                    hyper_model_image=galaxy.hyper_model_image, hyper_galaxy_image=galaxy.hyper_galaxy_image,
+                    hyper_model_image=galaxy.hyper_model_image_1d, hyper_galaxy_image=galaxy.hyper_galaxy_image_1d,
                     hyper_minimum_value=galaxy.hyper_minimum_value)
 
-                contribution_maps.append(contribution_map)
+                contribution_maps_1d.append(contribution_map)
 
             else:
 
-                contribution_maps.append(None)
+                contribution_maps_1d.append(None)
 
-        return contribution_maps
+        return contribution_maps_1d
 
     @property
     def centres_of_galaxy_mass_profiles(self):
@@ -447,19 +448,19 @@ class AbstractDataPlane(AbstractGriddedPlane):
                             psf=psf, unmasked_image_1d=image_plane_image_1d),
                         self.image_plane_image_1d_of_galaxies))
 
-    def hyper_noise_map_from_noise_map(self, noise_map):
+    def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
 
         if self.has_hyper_galaxy:
 
-            hyper_noise_maps = self.hyper_noise_maps_of_galaxies_from_noise_map(noise_map=noise_map)
-            hyper_noise_maps = [hyper_noise_map for hyper_noise_map in hyper_noise_maps if hyper_noise_map is not None]
-            return sum(hyper_noise_maps)
+            hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if hyper_noise_map is not None]
+            return sum(hyper_noise_maps_1d)
 
         else:
 
             return None
 
-    def hyper_noise_maps_of_galaxies_from_noise_map(self, noise_map):
+    def hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(self, noise_map_1d):
         """For a contribution map and noise-map, use the model hyper galaxies to compute a scaled noise-map.
 
         Parameters
@@ -469,26 +470,26 @@ class AbstractDataPlane(AbstractGriddedPlane):
         hyper_galaxies : [galaxy.Galaxy]
             The hyper galaxies which represent the model components used to scale the noise_map, which correspond to
             individual galaxies in the image.
-        noise_map : ccd.NoiseMap or ndarray
+        noise_map_1d : ccd.NoiseMap or ndarray
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """
-        hyper_noise_maps = []
+        hyper_noise_maps_1d = []
 
         for galaxy in self.galaxies:
             if galaxy.hyper_galaxy is not None:
 
-                hyper_noise_map = galaxy.hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
-                    noise_map=noise_map, hyper_model_image=galaxy.hyper_model_image,
-                    hyper_galaxy_image=galaxy.hyper_galaxy_image, hyper_minimum_value=galaxy.hyper_minimum_value)
+                hyper_noise_map_1d = galaxy.hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
+                    noise_map=noise_map_1d, hyper_model_image=galaxy.hyper_model_image_1d,
+                    hyper_galaxy_image=galaxy.hyper_galaxy_image_1d, hyper_minimum_value=galaxy.hyper_minimum_value)
 
-                hyper_noise_maps.append(hyper_noise_map)
+                hyper_noise_maps_1d.append(hyper_noise_map_1d)
 
             else:
 
-                hyper_noise_maps.append(None)
+                hyper_noise_maps_1d.append(None)
 
-        return hyper_noise_maps
+        return hyper_noise_maps_1d
 
 
 class Plane(AbstractDataPlane):

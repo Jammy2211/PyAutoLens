@@ -65,13 +65,13 @@ class Inversion(object):
         self.solution_vector = np.linalg.solve(self.curvature_reg_matrix, self.data_vector)
 
     @property
-    def reconstructed_data(self):
-        return self.mapper.grid_stack.regular.scaled_array_2d_from_array_1d(np.asarray(self.reconstructed_data_vector))
+    def reconstructed_data_2d(self):
+        return self.mapper.grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=np.asarray(self.reconstructed_data_1d))
 
     @property
-    def reconstructed_data_vector(self):
+    def reconstructed_data_1d(self):
         return inversion_util.reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
-            self.blurred_mapping_matrix, self.solution_vector)
+            blurred_mapping_matrix=self.blurred_mapping_matrix, solution_vector=self.solution_vector)
 
     @property
     def regularization_term(self):

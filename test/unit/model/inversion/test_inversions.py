@@ -172,10 +172,10 @@ class TestReconstructedDataVectorAndImage:
         # CCD pixel 1 maps to 3 pixs pixxels -> value is 3.0
         # CCD pixel 2 maps to 1 pixs pixxels -> value is 1.0
 
-        assert (inv.reconstructed_data_vector == np.array([4.0, 3.0, 1.0])).all()
-        assert (inv.reconstructed_data == np.array([[0.0, 0.0, 0.0],
-                                                    [4.0, 3.0, 1.0],
-                                                    [0.0, 0.0, 0.0]]))
+        assert (inv.reconstructed_data_1d == np.array([4.0, 3.0, 1.0])).all()
+        assert (inv.reconstructed_data_2d == np.array([[0.0, 0.0, 0.0],
+                                                       [4.0, 3.0, 1.0],
+                                                       [0.0, 0.0, 0.0]]))
 
     def test__solution_different_values__simple_blurred_mapping_matrix__correct_reconstructed_image(self):
 
@@ -201,7 +201,7 @@ class TestReconstructedDataVectorAndImage:
         # # CCD pixel 1 maps to 3 pixs pixxels -> value is 1.0 + 3.0 + 4.0
         # # CCD pixel 2 maps to 1 pixs pixxels -> value is 1.0
 
-        assert (inv.reconstructed_data_vector == np.array([10.0, 8.0, 1.0])).all()
-        assert (inv.reconstructed_data == np.array([[0.0, 0.0, 0.0],
-                                                    [10.0, 8.0, 1.0],
-                                                    [0.0, 0.0, 0.0]]))
+        assert (inv.reconstructed_data_1d == np.array([10.0, 8.0, 1.0])).all()
+        assert (inv.reconstructed_data_2d == np.array([[0.0, 0.0, 0.0],
+                                                       [10.0, 8.0, 1.0],
+                                                       [0.0, 0.0, 0.0]]))
