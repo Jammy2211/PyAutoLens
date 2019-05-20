@@ -3,6 +3,8 @@ import pytest
 from astropy import cosmology as cosmo
 
 from autolens import exc, dimensions as dim
+from autolens.data import convolution
+from autolens.data import ccd
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.lens import plane as pl
@@ -15,6 +17,7 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.unit.mock.mock_imaging import MockBorders
 from test.unit.mock.mock_inversion import MockRegularization, MockPixelization
 from test.unit.mock.mock_cosmology import MockCosmology
+from test.unit.mock.mock_galaxy import MockHyperGalaxy
 
 planck = cosmo.Planck15
 
@@ -185,6 +188,19 @@ class TestAbstractPlane(object):
 
             plane = pl.AbstractPlane(galaxies=[galaxy_pix, g.Galaxy()], redshift=None)
             assert plane.has_regularization is True
+
+        def test__has_hyper_galaxy(self):
+
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            assert plane.has_hyper_galaxy is False
+
+            galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
+
+            plane = pl.AbstractPlane(galaxies=[galaxy], redshift=None)
+            assert plane.has_hyper_galaxy is True
+
+            plane = pl.AbstractPlane(galaxies=[galaxy, g.Galaxy()], redshift=None)
+            assert plane.has_hyper_galaxy is True
 
     class TestRegularization:
 
@@ -603,6 +619,7 @@ class TestAbstractPlane(object):
 
 
 class TestAbstractPlaneGridded(object):
+
     class TestGridLensing:
 
         def test__grid_stack_setup_for_regular_sub_and_blurring__no_deflections(self, grid_stack, galaxy_mass):
@@ -795,6 +812,7 @@ class TestAbstractPlaneGridded(object):
             assert (plane.image_plane_image_for_simulation[2, 3] == lp_image_pixel_11).all()
 
         def test__plane_has_no_galaxies__image_is_zeros_size_of_unlensed_regular_grid(self, grid_stack):
+            
             plane = pl.AbstractGriddedPlane(galaxies=[], grid_stack=grid_stack, border=None,
                                             compute_deflections=False, redshift=None)
 
@@ -841,6 +859,7 @@ class TestAbstractPlaneGridded(object):
             assert (plane.image_plane_blurring_image_1d == galaxy_image).all()
 
         def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack):
+
             # Overwrite one value so intensity in each pixel is different
             grid_stack.blurring[1] = np.array([2.0, 2.0])
 
@@ -854,6 +873,23 @@ class TestAbstractPlaneGridded(object):
                                             compute_deflections=False, redshift=None)
 
             assert (plane.image_plane_blurring_image_1d == g0_image + g1_image).all()
+
+        def test__image_plane_blurring_image_1d_of_galaxies(self, grid_stack):
+
+            # Overwrite one value so intensity in each pixel is different
+            grid_stack.blurring[1] = np.array([2.0, 2.0])
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+
+            g0_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g0])
+            g1_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g1])
+
+            plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack, border=None,
+                                            compute_deflections=False, redshift=None)
+
+            assert (plane.image_plane_blurring_image_1d_of_galaxies[0] == g0_image).all()
+            assert (plane.image_plane_blurring_image_1d_of_galaxies[1] == g1_image).all()
 
     class TestConvergence:
 
@@ -1293,6 +1329,393 @@ class TestAbstractPlaneGridded(object):
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack, compute_deflections=False,
                                             border=None, redshift=None)
             assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (4, 4)
+
+
+@pytest.fixture(name='mask')
+def make_mask():
+    return msk.Mask(array=np.array([[True, True, True, True],
+                                    [True, False, False, True],
+                                    [True, False, False, True],
+                                    [True, True, True, True]]), pixel_scale=1.0)
+
+
+@pytest.fixture(name='blurring_mask')
+def make_blurring_mask():
+    return msk.Mask(array=np.array([[False, False, False, False],
+                                    [False, True, True, False],
+                                    [False, True, True, False],
+                                    [False, False, False, False]]), pixel_scale=1.0)
+
+@pytest.fixture(name='convolver_blur')
+def make_convolver_blur(mask, blurring_mask):
+    psf = np.array([[1.0, 1.0, 1.0],
+                    [1.0, 1.0, 1.0],
+                    [1.0, 1.0, 1.0]])
+    return convolution.ConvolverImage(mask=mask, blurring_mask=blurring_mask, psf=psf)
+
+
+class TestAbstractDataPlane(object):
+
+    class TestBlurredImagePlaneImage:
+
+        def test__blurred_images_1d_of_galaxies(self, grid_stack, convolver_blur):
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+
+            g0_image_1d = galaxy_util.intensities_of_galaxies_from_grid(galaxies=[g0], grid=grid_stack.sub)
+            g0_blurring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(galaxies=[g0], grid=grid_stack.blurring)
+
+            g1_image_1d = galaxy_util.intensities_of_galaxies_from_grid(galaxies=[g1], grid=grid_stack.sub)
+            g1_blurring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(galaxies=[g1], grid=grid_stack.blurring)
+
+            blurred_g0_image = convolver_blur.convolve_image(image_array=g0_image_1d,
+                                                             blurring_array=g0_blurring_image_1d)
+
+            blurred_g1_image = convolver_blur.convolve_image(image_array=g1_image_1d,
+                                                             blurring_array=g1_blurring_image_1d)
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g0, g1], grid_stack=grid_stack, border=None,
+                                         compute_deflections=False)
+
+            blurred_images_1d_of_galaxies = \
+                plane.blurred_image_plane_images_1d_of_galaxies_from_convolver_image(convolver_image=convolver_blur)
+
+            assert (blurred_images_1d_of_galaxies[0] == blurred_g0_image).all()
+            assert (blurred_images_1d_of_galaxies[1] == blurred_g1_image).all()
+
+            blurred_image_1d= \
+                plane.blurred_image_plane_image_1d_from_convolver_image(convolver_image=convolver_blur)
+
+            assert blurred_image_1d == pytest.approx(blurred_g0_image + blurred_g1_image, 1.0e-4)
+
+    class TestUnmaskedBlurrerImagePlaneImage:
+
+        def test__unmasked_blurred_images_1d_of_galaxies(self):
+
+            psf = ccd.PSF(array=(np.array([[0.0, 3.0, 0.0],
+                                          [0.0, 1.0, 2.0],
+                                          [0.0, 0.0, 0.0]])), pixel_scale=1.0)
+
+            mask = msk.Mask(array=np.array([[True, True, True],
+                                            [True, False, True],
+                                            [True, True, True]]), pixel_scale=1.0)
+
+            padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
+                mask=mask, sub_grid_size=1, psf_shape=(3, 3))
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
+            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g0, g1], grid_stack=padded_grid_stack, border=None,
+                                         compute_deflections=False)
+
+            manual_blurred_image_0 = plane.image_plane_image_1d_of_galaxies[0]
+            manual_blurred_image_0 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_0)
+            manual_blurred_image_0 = psf.convolve(array=manual_blurred_image_0)
+
+            manual_blurred_image_1 = plane.image_plane_image_1d_of_galaxies[1]
+            manual_blurred_image_1 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_1)
+            manual_blurred_image_1 = psf.convolve(array=manual_blurred_image_1)
+
+            unmasked_blurred_image_plane_images = plane.unmasked_blurred_image_plane_images_of_galaxies_from_psf(psf=psf)
+
+            assert (unmasked_blurred_image_plane_images[0] == manual_blurred_image_0[1:4, 1:4]).all()
+            assert (unmasked_blurred_image_plane_images[1] == manual_blurred_image_1[1:4, 1:4]).all()
+
+            unmasked_blurred_image_plane_image = plane.unmasked_blurred_image_plane_image_from_psf(psf=psf)
+
+            assert unmasked_blurred_image_plane_image == \
+                   pytest.approx(manual_blurred_image_0[1:4, 1:4] + manual_blurred_image_1[1:4, 1:4], 1.0e-4)
+
+    class TestContributionMaps:
+
+        def test__x2_hyper_galaxy__use_numerical_values_for_noise_scaling(self):
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
+
+            hyper_model_image_1d = np.array([0.5, 1.0, 1.5])
+
+            hyper_galaxy_image_0 = np.array([0.5, 1.0, 1.5])
+            hyper_galaxy_image_1 = np.array([0.5, 1.0, 1.5])
+
+            galaxy_0 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_0,
+                                hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_0, hyper_minimum_value=0.5)
+
+            galaxy_1 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_1,
+                                hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1, hyper_minimum_value=0.6)
+
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0, galaxy_1], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            assert (plane.contribution_maps_1d_of_galaxies[0] == np.array([1.0, 1.0, 1.0])).all()
+            assert (plane.contribution_maps_1d_of_galaxies[1] == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
+
+        def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
+
+            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            contribution_map_1d_0 = hyper_galaxy_0.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_model_image_1d, hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_minimum_value=0.0)
+
+            contribution_map_1d_1 = hyper_galaxy_1.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_model_image_1d, hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_minimum_value=0.0)
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            assert (plane.contribution_maps_1d_of_galaxies[0] == contribution_map_1d_0).all()
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_1], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            assert (plane.contribution_maps_1d_of_galaxies[0] == contribution_map_1d_1).all()
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_1, galaxy_0], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            assert (plane.contribution_maps_1d_of_galaxies[0] == contribution_map_1d_1).all()
+            assert (plane.contribution_maps_1d_of_galaxies[1] == contribution_map_1d_0).all()
+
+        def test__contriution_maps_are_none_for_galaxy_without_hyper_galaxy(self):
+
+            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+
+            hyper_galaxy = g.HyperGalaxy(contribution_factor=5.0)
+
+            contribution_map_1d = hyper_galaxy.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_model_image_1d, hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_minimum_value=0.0)
+
+            galaxy = g.Galaxy(redshift=0.5,
+                              hyper_galaxy=hyper_galaxy, hyper_model_image_1d=hyper_model_image_1d,
+                              hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy, g.Galaxy(), g.Galaxy()], grid_stack=None,
+                                         border=None, compute_deflections=False)
+
+            assert (plane.contribution_maps_1d_of_galaxies[0] == contribution_map_1d).all()
+            assert plane.contribution_maps_1d_of_galaxies[1] == None
+            assert plane.contribution_maps_1d_of_galaxies[2] == None
+
+    class TestHyperNoiseMap:
+
+        def test__x2_hyper_galaxy__use_numerical_values_of_hyper_noise_map_scaling(self):
+
+            noise_map_1d = np.array([1.0, 2.0, 3.0])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=3.0, noise_factor=1.0, noise_power=2.0)
+
+            hyper_model_image_1d = np.array([0.5, 1.0, 1.5])
+
+            hyper_galaxy_image_1d_0 = np.array([0.5, 1.0, 1.5])
+            hyper_galaxy_image_1d_1 = np.array([0.5, 1.0, 1.5])
+
+            galaxy_0 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_0,
+                                hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d_0, hyper_minimum_value=0.5)
+
+            galaxy_1 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_1,
+                                hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d_1, hyper_minimum_value=0.6)
+
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0, galaxy_1], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert (hyper_noise_maps_1d[0] == np.array([1.0, 2.0, 3.0])).all()
+            assert (hyper_noise_maps_1d[1] == np.array([0.0, (2.0*0.75)**2.0, 3.0**2.0])).all()
+
+        def test__hyper_noise_maps_1d_are_same_as_hyper_galaxy_calculation(self):
+
+            noise_map_1d = np.array([5.0, 3.0, 1.0])
+
+            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            contribution_map_1d_0 = hyper_galaxy_0.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_model_image_1d, hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_minimum_value=0.0)
+
+            contribution_map_1d_1 = hyper_galaxy_1.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_model_image_1d, hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_minimum_value=0.0)
+
+            hyper_noise_map_1d_0 = hyper_galaxy_0.hyper_noise_map_from_contribution_map(
+                noise_map=noise_map_1d, contribution_map=contribution_map_1d_0)
+
+            hyper_noise_map_1d_1 = hyper_galaxy_1.hyper_noise_map_from_contribution_map(
+                noise_map=noise_map_1d, contribution_map=contribution_map_1d_1)
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert (hyper_noise_maps_1d[0] == hyper_noise_map_1d_0).all()
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_1], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert (hyper_noise_maps_1d[0] == hyper_noise_map_1d_1).all()
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_1, galaxy_0], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert (hyper_noise_maps_1d[0] == hyper_noise_map_1d_1).all()
+            assert (hyper_noise_maps_1d[1] == hyper_noise_map_1d_0).all()
+
+        def test__hyper_noise_maps_1d_are_none_for_galaxy_without_hyper_galaxy(self):
+
+            noise_map_1d = np.array([5.0, 3.0, 1.0])
+
+            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            contribution_map_1d_0 = hyper_galaxy_0.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_model_image_1d, hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_minimum_value=0.0)
+
+            contribution_map_1d_1 = hyper_galaxy_1.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_model_image_1d, hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_minimum_value=0.0)
+
+            hyper_noise_map_1d_0 = hyper_galaxy_0.hyper_noise_map_from_contribution_map(
+                noise_map=noise_map_1d, contribution_map=contribution_map_1d_0)
+
+            hyper_noise_map_1d_1 = hyper_galaxy_1.hyper_noise_map_from_contribution_map(
+                noise_map=noise_map_1d, contribution_map=contribution_map_1d_1)
+
+            galaxy_0 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_0, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0, g.Galaxy()], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert (hyper_noise_maps_1d[0] == hyper_noise_map_1d_0).all()
+            assert hyper_noise_maps_1d[1] == None
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(), galaxy_1], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert hyper_noise_maps_1d[0] == None
+            assert (hyper_noise_maps_1d[1] == hyper_noise_map_1d_1).all()
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(), galaxy_1, galaxy_0, g.Galaxy()],
+                                         grid_stack=None, border=None, compute_deflections=False)
+
+            hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert hyper_noise_maps_1d[0] == None
+            assert (hyper_noise_maps_1d[1] == hyper_noise_map_1d_1).all()
+            assert (hyper_noise_maps_1d[2] == hyper_noise_map_1d_0).all()
+            assert hyper_noise_maps_1d[3] == None
+
+        def test__hyper_noise_map_from_noise_map__is_sum_of_galaxy_hyper_noise_maps_1d__filters_nones(self):
+
+            noise_map_1d = np.array([5.0, 3.0, 1.0])
+
+            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+
+            hyper_galaxy_0 = g.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = g.HyperGalaxy(contribution_factor=10.0)
+
+            contribution_map_1d_0 = hyper_galaxy_0.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_model_image_1d, hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_minimum_value=0.0)
+
+            contribution_map_1d_1 = hyper_galaxy_1.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_model_image_1d, hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_minimum_value=0.0)
+
+            hyper_noise_map_1d_0 = hyper_galaxy_0.hyper_noise_map_from_contribution_map(
+                noise_map=noise_map_1d, contribution_map=contribution_map_1d_0)
+
+            hyper_noise_map_1d_1 = hyper_galaxy_1.hyper_noise_map_from_contribution_map(
+                noise_map=noise_map_1d, contribution_map=contribution_map_1d_1)
+
+
+            galaxy_0 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_0, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
+
+            galaxy_1 = g.Galaxy(redshift=0.5,
+                                hyper_galaxy=hyper_galaxy_1, hyper_model_image_1d=hyper_model_image_1d,
+                                hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
+
+            plane = pl.AbstractDataPlane(redshift=0.5,
+                                         galaxies=[galaxy_0], grid_stack=None, border=None, compute_deflections=False)
+
+            hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert (hyper_noise_map_1d == hyper_noise_map_1d_0).all()
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_1], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert (hyper_noise_map_1d == hyper_noise_map_1d_1).all()
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_1, galaxy_0], grid_stack=None, border=None,
+                                         compute_deflections=False)
+
+            hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert (hyper_noise_map_1d == hyper_noise_map_1d_0 + hyper_noise_map_1d_1).all()
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(), galaxy_1, galaxy_0, g.Galaxy()],
+                                         grid_stack=None, border=None, compute_deflections=False)
+
+            hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert (hyper_noise_map_1d == hyper_noise_map_1d_0 + hyper_noise_map_1d_1).all()
+
+        def test__plane_has_no_hyper_galaxies__hyper_noise_map_function_returns_none(self):
+
+            noise_map_1d = np.array([5.0, 3.0, 1.0])
+
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy()], grid_stack=None, border=None,
+                                         compute_deflections=False)
+            hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            assert hyper_noise_map_1d == None
 
 
 class TestPlane(object):

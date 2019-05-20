@@ -66,14 +66,14 @@ class GalaxyFitData(object):
             Grids of padded (y,x) Cartesian coordinates which map over the every fit data array's pixel in 1D and a \
             padded regioon to include edge's for accurate PSF convolution (includes an regular-grid, sub-grid, etc.)
         """
-        self.image = galaxy_data.image
+        self.unmasked_image = galaxy_data.image
         self.pixel_scale = galaxy_data.pixel_scale
-        self.noise_map = galaxy_data.noise_map
-        self.mask = mask
+        self.unmasked_noise_map = galaxy_data.noise_map
 
-        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=self.image)
-        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=self.noise_map)
+        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=self.unmasked_image)
+        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=self.unmasked_noise_map)
         self.mask_1d = mask.map_2d_array_to_masked_1d_array(array_2d=mask)
+
         self.sub_grid_size = sub_grid_size
 
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
@@ -81,6 +81,10 @@ class GalaxyFitData(object):
 
         self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
             mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1), optimal_sub_grid=True)
+
+        self.mask_2d = mask
+        self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
+        self.noise_map_2d = self.map_to_scaled_array(array_1d=self.noise_map_1d)
 
         if all(not element for element in [use_intensities, use_convergence, use_potential,
                                            use_deflections_y, use_deflections_x]):
@@ -99,10 +103,10 @@ class GalaxyFitData(object):
     def __array_finalize__(self, obj):
         super(GalaxyFitData, self).__array_finalize__(obj)
         if isinstance(obj, GalaxyFitData):
-            self.image = obj.image
+            self.unmasked_image = obj.unmasked_image
             self.pixel_scale = obj.pixel_scale
-            self.mask = obj.mask
-            self.noise_map = obj.noise_map
+            self.mask_2d = obj.mask_2d
+            self.unmasked_noise_map = obj.unmasked_noise_map
             self.image_1d = obj.image_1d
             self.noise_map_1d = obj.noise_map_1d
             self.mask_1d = obj.mask_1d

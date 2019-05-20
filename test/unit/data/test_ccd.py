@@ -62,8 +62,8 @@ class TestCCDData:
             assert (ccd_data_simulated.exposure_time_map == np.ones((3, 3))).all()
             assert ccd_data_simulated.pixel_scale == 0.1
             assert (ccd_data_simulated.image == np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])).all()
+                                                             [0.0, 1.0, 0.0],
+                                                             [0.0, 0.0, 0.0]])).all()
             assert ccd_data_simulated.origin == (0.0, 0.0)
 
         def test__setup_with_background_sky_on__noise_off__no_noise_in_image__noise_map_is_noise_value(self):
@@ -87,8 +87,8 @@ class TestCCDData:
             assert ccd_data_simulated.pixel_scale == 0.1
 
             assert (ccd_data_simulated.image == np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])).all()
+                                                             [0.0, 1.0, 0.0],
+                                                             [0.0, 0.0, 0.0]])).all()
             assert (ccd_data_simulated.noise_map == 0.2*np.ones((3,3)))
 
             assert (ccd_data_simulated.background_noise_map == 4.0 * np.ones((3, 3))).all()
@@ -112,8 +112,8 @@ class TestCCDData:
             assert ccd_data_simulated.pixel_scale == 0.1
 
             assert (ccd_data_simulated.image == np.array([[1.0, 5.0, 4.0],
-                                         [1.0, 2.0, 1.0],
-                                         [5.0, 2.0, 7.0]])).all()
+                                                             [1.0, 2.0, 1.0],
+                                                             [5.0, 2.0, 7.0]])).all()
 
             assert (ccd_data_simulated.poisson_noise_map == np.array([[np.sqrt(1.0), np.sqrt(5.0), np.sqrt(4.0)],
                                                            [np.sqrt(1.0), np.sqrt(2.0), np.sqrt(1.0)],
@@ -139,8 +139,8 @@ class TestCCDData:
                                                                  add_noise=False)
 
             assert (ccd_data_simulated.image == np.array([[0.0, 1.0, 0.0],
-                                         [1.0, 2.0, 1.0],
-                                         [0.0, 1.0, 0.0]])).all()
+                                                             [1.0, 2.0, 1.0],
+                                                             [0.0, 1.0, 0.0]])).all()
             assert (ccd_data_simulated.exposure_time_map == np.ones((3, 3))).all()
             assert ccd_data_simulated.pixel_scale == 0.1
 
@@ -168,8 +168,8 @@ class TestCCDData:
             assert ccd_data_simulated.pixel_scale == 0.1
 
             assert (ccd_data_simulated.image == np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])).all()
+                                                             [0.0, 1.0, 0.0],
+                                                             [0.0, 0.0, 0.0]])).all()
 
             assert (ccd_data_simulated.background_noise_map == 4.0 * np.ones((3, 3))).all()
 
@@ -188,8 +188,8 @@ class TestCCDData:
             assert ccd_data_simulated.pixel_scale == 0.1
 
             assert ccd_data_simulated.image == pytest.approx(np.array([[0.0, 0.0, 0.0],
-                                                      [0.0, 1.05, 0.0],
-                                                      [0.0, 0.0, 0.0]]), 1e-2)
+                                                                          [0.0, 1.05, 0.0],
+                                                                          [0.0, 0.0, 0.0]]), 1e-2)
 
             # Because of the regular value is 1.05, the estimated Poisson noise_map_1d is:
             # sqrt((1.05 * 20))/20 = 0.2291
@@ -223,8 +223,8 @@ class TestCCDData:
             assert (ccd_data_simulated.exposure_time_map == 20.0 * np.ones((3, 3))).all()
             assert ccd_data_simulated.pixel_scale == 0.1
             assert ccd_data_simulated.image == pytest.approx(np.array([[0.0, 1.05, 0.0],
-                                                      [1.3, 2.35, 1.05],
-                                                      [0.0, 1.05, 0.0]]), 1e-2)
+                                                                          [1.3, 2.35, 1.05],
+                                                                          [0.0, 1.05, 0.0]]), 1e-2)
 
             # The estimated Poisson noises are:
             # sqrt((2.35 * 20))/20 = 0.3427
@@ -818,9 +818,9 @@ class TestCCDData:
             ccd_data = ccd_data.new_ccd_data_with_modified_image(modified_image=modified_image)
 
             assert (ccd_data.image == np.array([[1.0, 1.0, 1.0, 1.0],
-                                    [1.0, 1.0, 1.0, 1.0],
-                                    [1.0, 1.0, 10.0, 1.0],
-                                    [1.0, 1.0, 1.0, 1.0]])).all()
+                                                   [1.0, 1.0, 1.0, 1.0],
+                                                   [1.0, 1.0, 10.0, 1.0],
+                                                   [1.0, 1.0, 1.0, 1.0]])).all()
             assert (ccd_data.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 3.0, 1.0],
@@ -925,9 +925,9 @@ class TestCCDData:
             ccd_data = ccd_data.new_ccd_data_with_resized_arrays(new_shape=(4, 4))
 
             assert (ccd_data.image == np.array([[1.0, 1.0, 1.0, 1.0],
-                                    [1.0, 1.0, 1.0, 1.0],
-                                    [1.0, 1.0, 2.0, 1.0],
-                                    [1.0, 1.0, 1.0, 1.0]])).all()
+                                                   [1.0, 1.0, 1.0, 1.0],
+                                                   [1.0, 1.0, 2.0, 1.0],
+                                                   [1.0, 1.0, 1.0, 1.0]])).all()
             assert (ccd_data.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 3.0, 1.0],
@@ -959,7 +959,7 @@ class TestCCDData:
 
             ccd_data = ccd_data.new_ccd_data_with_resized_psf(new_shape=(1, 1))
 
-            assert (ccd_data.image == np.ones((6,6))).all()
+            assert (ccd_data.image == np.ones((6, 6))).all()
             assert ccd_data.pixel_scale == 1.0
             assert (ccd_data.psf == np.zeros((1,1))).all()
             assert ccd_data.origin == (0.0, 0.0)
@@ -988,8 +988,8 @@ class TestCCDData:
             ccd_data = ccd_data.new_ccd_data_with_resized_arrays(new_shape=(3, 3), new_centre_pixels=(3, 3))
 
             assert (ccd_data.image == np.array([[1.0, 1.0, 1.0],
-                                    [1.0, 2.0, 1.0],
-                                    [1.0, 1.0, 1.0]])).all()
+                                                   [1.0, 2.0, 1.0],
+                                                   [1.0, 1.0, 1.0]])).all()
             assert (ccd_data.noise_map ==  np.array([[1.0, 1.0, 1.0],
                                                [1.0, 3.0, 1.0],
                                                [1.0, 1.0, 1.0]])).all()
@@ -1033,8 +1033,8 @@ class TestCCDData:
             ccd_data = ccd_data.new_ccd_data_with_resized_arrays(new_shape=(3, 3), new_centre_arcsec=(-0.5, 0.5))
 
             assert (ccd_data.image == np.array([[1.0, 1.0, 1.0],
-                                    [1.0, 2.0, 1.0],
-                                    [1.0, 1.0, 1.0]])).all()
+                                                   [1.0, 2.0, 1.0],
+                                                   [1.0, 1.0, 1.0]])).all()
             assert (ccd_data.noise_map ==  np.array([[1.0, 1.0, 1.0],
                                                [1.0, 3.0, 1.0],
                                                [1.0, 1.0, 1.0]])).all()
@@ -1080,7 +1080,7 @@ class TestCCDData:
 
             ccd_data = ccd_data.new_ccd_data_converted_from_electrons()
 
-            assert (ccd_data.image == 2.0*np.ones((3,3))).all()
+            assert (ccd_data.image == 2.0 * np.ones((3, 3))).all()
             assert (ccd_data.noise_map == 4.0*np.ones((3,3))).all()
             assert (ccd_data.background_noise_map == 6.0*np.ones((3,3))).all()
             assert ccd_data.poisson_noise_map == None
@@ -1102,7 +1102,7 @@ class TestCCDData:
 
             ccd_data = ccd_data.new_ccd_data_converted_from_adus(gain=2.0)
 
-            assert (ccd_data.image == 2.0*2.0*np.ones((3,3))).all()
+            assert (ccd_data.image == 2.0 * 2.0 * np.ones((3, 3))).all()
             assert (ccd_data.noise_map == 2.0*4.0*np.ones((3,3))).all()
             assert (ccd_data.background_noise_map == 2.0*6.0*np.ones((3,3))).all()
             assert ccd_data.poisson_noise_map == None
@@ -1866,7 +1866,7 @@ class TestCCDFromFits(object):
                                                noise_map_path=test_data_dir + '3x3_threes.fits',
                                                renormalize_psf=False)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3))).all()
         assert ccd_data.background_noise_map == None
@@ -1889,7 +1889,7 @@ class TestCCDFromFits(object):
                                                background_sky_map_path=test_data_dir + '3x3_sevens.fits',
                                                renormalize_psf=False)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3))).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3))).all()
@@ -1922,7 +1922,7 @@ class TestCCDFromFits(object):
                                                renormalize_psf=False)
 
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3))).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3))).all()
@@ -2099,7 +2099,7 @@ class TestCCDFromFits(object):
 
         noise_map_converted = ccd.NoiseMap.from_weight_map(weight_map=3.0 * np.ones((3, 3)), pixel_scale=0.1)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == noise_map_converted).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3))).all()
@@ -2130,7 +2130,7 @@ class TestCCDFromFits(object):
         noise_map_converted = ccd.NoiseMap.from_inverse_noise_map(inverse_noise_map=3.0 * np.ones((3, 3)),
                                                                   pixel_scale=0.1)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == noise_map_converted).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3))).all()
@@ -2161,7 +2161,7 @@ class TestCCDFromFits(object):
                                                                                background_noise_map=ccd_data.background_noise_map,
                                                                                gain=2.0, exposure_time_map=ccd_data.exposure_time_map)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == noise_map_converted).all()
         assert (ccd_data.noise_map == (np.sqrt((24.0)**2.0 + (6.0))/(6.0))*np.ones((3,3)))
@@ -2196,7 +2196,7 @@ class TestCCDFromFits(object):
 
         noise_map_converted = noise_map_converted / 6.0
 
-        assert (ccd_data.image == np.ones((3,3)) / 6.0).all()
+        assert (ccd_data.image == np.ones((3, 3)) / 6.0).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == noise_map_converted).all()
         assert (ccd_data.noise_map == np.sqrt(17.0)*np.ones((3,3)) / 6.0).all()
@@ -2231,7 +2231,7 @@ class TestCCDFromFits(object):
 
         noise_map_converted = 2.0 * noise_map_converted / 6.0
 
-        assert (ccd_data.image == 2.0*np.ones((3,3)) / 6.0).all()
+        assert (ccd_data.image == 2.0 * np.ones((3, 3)) / 6.0).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == noise_map_converted).all()
         assert (ccd_data.noise_map == np.sqrt(66.0)*np.ones((3,3)) / 6.0).all()
@@ -2262,7 +2262,7 @@ class TestCCDFromFits(object):
 
         background_noise_map_converted = ccd.NoiseMap.from_weight_map(weight_map=4.0 * np.ones((3, 3)), pixel_scale=0.1)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3))).all()
         assert (ccd_data.background_noise_map == background_noise_map_converted).all()
@@ -2293,7 +2293,7 @@ class TestCCDFromFits(object):
         background_noise_map_converted = ccd.NoiseMap.from_inverse_noise_map(inverse_noise_map=4.0 * np.ones((3, 3)),
                                                                              pixel_scale=0.1)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3))).all()
         assert (ccd_data.background_noise_map == background_noise_map_converted).all()
@@ -2324,7 +2324,7 @@ class TestCCDFromFits(object):
         poisson_noise_map_converted = ccd.PoissonNoiseMap.from_image_and_exposure_time_map(pixel_scale=0.1,
                                                                                            image=np.ones((3,3)), exposure_time_map=ccd_data.exposure_time_map, gain=None)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3))).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3))).all()
@@ -2358,7 +2358,7 @@ class TestCCDFromFits(object):
 
         poisson_noise_map_converted = poisson_noise_map_counts / 6.0
 
-        assert (ccd_data.image == np.ones((3,3)) / 6.0).all()
+        assert (ccd_data.image == np.ones((3, 3)) / 6.0).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3)) / 6.0).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3)) / 6.0).all()
@@ -2392,7 +2392,7 @@ class TestCCDFromFits(object):
 
         poisson_noise_map_converted = 2.0 * poisson_noise_map_counts / 6.0
 
-        assert (ccd_data.image == 2.0*np.ones((3,3)) / 6.0).all()
+        assert (ccd_data.image == 2.0 * np.ones((3, 3)) / 6.0).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 2.0*3.0*np.ones((3,3)) / 6.0).all()
         assert (ccd_data.background_noise_map == 2.0*4.0*np.ones((3,3)) / 6.0).all()
@@ -2423,7 +2423,7 @@ class TestCCDFromFits(object):
 
         poisson_noise_map_converted = ccd.NoiseMap.from_weight_map(weight_map=5.0 * np.ones((3, 3)), pixel_scale=0.1)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3))).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3))).all()
@@ -2481,7 +2481,7 @@ class TestCCDFromFits(object):
                                                background_sky_map_path=test_data_dir + '3x3_sevens.fits',
                                                renormalize_psf=True)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert ccd_data.psf == pytest.approx((1.0/9.0)*np.ones((3,3)), 1e-2)
         assert (ccd_data.noise_map == 3.0*np.ones((3,3))).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3))).all()
@@ -2509,7 +2509,7 @@ class TestCCDFromFits(object):
                                                renormalize_psf=False,
                                                convert_from_electrons=True)
 
-        assert (ccd_data.image == np.ones((3,3)) / 6.0).all()
+        assert (ccd_data.image == np.ones((3, 3)) / 6.0).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3)) / 6.0).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3)) / 6.0).all()
@@ -2537,7 +2537,7 @@ class TestCCDFromFits(object):
                                                renormalize_psf=False,
                                                gain=2.0, convert_from_adus=True)
 
-        assert (ccd_data.image == 2.0*np.ones((3,3)) / 6.0).all()
+        assert (ccd_data.image == 2.0 * np.ones((3, 3)) / 6.0).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 2.0*3.0*np.ones((3,3)) / 6.0).all()
         assert (ccd_data.background_noise_map == 2.0*4.0*np.ones((3,3)) / 6.0).all()
@@ -2690,7 +2690,7 @@ class TestCCDFromFits(object):
                                                background_sky_map_path=output_data_dir + 'background_sky_map.fits',
                                                renormalize_psf=False)
 
-        assert (ccd_data.image == np.ones((3,3))).all()
+        assert (ccd_data.image == np.ones((3, 3))).all()
         assert (ccd_data.psf == 2.0*np.ones((3,3))).all()
         assert (ccd_data.noise_map == 3.0*np.ones((3,3))).all()
         assert (ccd_data.background_noise_map == 4.0*np.ones((3,3))).all()
