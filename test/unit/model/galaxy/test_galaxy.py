@@ -539,6 +539,7 @@ class TestSummarizeInUnits(object):
         assert summary_text[index] == 'mass_within_10.00_arcsec                          6.2832e+01 angular' ; index += 1
         assert summary_text[index] == 'mass_within_500.00_arcsec                         3.1416e+03 angular' ; index += 1
 
+
 class TestHyperGalaxy(object):
 
     class TestContributionMaps(object):

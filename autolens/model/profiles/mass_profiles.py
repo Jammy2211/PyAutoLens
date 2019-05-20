@@ -10,6 +10,7 @@ from scipy.integrate import quad
 from scipy.optimize import fsolve
 from scipy.optimize import root_scalar
 from astropy import cosmology as cosmo
+from skimage import measure
 
 from autofit.tools.dimension_type import map_types
 from autolens import decorator_util, dimensions as dim
@@ -296,42 +297,66 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def deflections_via_potential_from_grid(self, grid):
 
-        grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid)
-
         potential_1d = self.potential_from_grid(grid=grid)
 
-        potential_2d = grid.array_2d_from_array_1d(array_1d=potential_1d)
+        if isinstance(grid, grids.RegularGrid):
+            grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid)
+            potential_2d = grid.array_2d_from_array_1d(array_1d=potential_1d)
+        elif isinstance(grid, grids.SubGrid):
+            grid_2d = grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=grid)
+            potential_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=potential_1d)
 
         alpha_x_2d = np.gradient(potential_2d, grid_2d[0,:,1], axis=1)
         alpha_y_2d = np.gradient(potential_2d, grid_2d[:,0,0], axis=0)
 
-        alpha_x_1d = grid.array_1d_from_array_2d(array_2d=alpha_x_2d)
-        alpha_y_1d = grid.array_1d_from_array_2d(array_2d=alpha_y_2d)
+        if isinstance(grid, grids.RegularGrid):
+            alpha_x_1d = grid.array_1d_from_array_2d(array_2d=alpha_x_2d)
+            alpha_y_1d = grid.array_1d_from_array_2d(array_2d=alpha_y_2d)
+        elif isinstance(grid, grids.SubGrid):
+            alpha_x_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=alpha_x_2d)
+            alpha_y_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=alpha_y_2d)
 
         return np.stack((alpha_y_1d, alpha_x_1d), axis=-1)
 
     def lensing_jacobian_from_grid(self, grid):
 
-        grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid)
-
         alpha_1d = self.deflections_from_grid(grid=grid)
 
-        alpha_x_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 1])
-        alpha_y_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 0])
+        if isinstance(grid, grids.RegularGrid):
+            grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid)
+            alpha_x_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 1])
+            alpha_y_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 0])
+        elif isinstance(grid, grids.SubGrid):
+            grid_2d = grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=grid)
+            alpha_x_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=alpha_1d[:, 1])
+            alpha_y_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=alpha_1d[:, 0])
+
 
         A11_2d = 1 - np.gradient(alpha_x_2d, grid_2d[0, :, 1], axis=1)
         A12_2d = - np.gradient(alpha_x_2d, grid_2d[:, 0, 0], axis=0)
         A21_2d = - np.gradient(alpha_y_2d, grid_2d[0, :, 1], axis=1)
         A22_2d = 1 - np.gradient(alpha_y_2d, grid_2d[:, 0, 0], axis=0)
 
-        A11_1d = grid.array_1d_from_array_2d(array_2d=A11_2d)
-        A12_1d = grid.array_1d_from_array_2d(array_2d=A12_2d)
-        A21_1d = grid.array_1d_from_array_2d(array_2d=A21_2d)
-        A22_1d = grid.array_1d_from_array_2d(array_2d=A22_2d)
+        if isinstance(grid, grids.RegularGrid):
+            A11_1d = grid.array_1d_from_array_2d(array_2d=A11_2d)
+            A12_1d = grid.array_1d_from_array_2d(array_2d=A12_2d)
+            A21_1d = grid.array_1d_from_array_2d(array_2d=A21_2d)
+            A22_1d = grid.array_1d_from_array_2d(array_2d=A22_2d)
+        elif isinstance(grid, grids.SubGrid):
+            A11_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A11_2d)
+            A12_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A12_2d)
+            A21_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A21_2d)
+            A22_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A22_2d)
 
         return np.array([[A11_1d, A12_1d], [A21_1d, A22_1d]])
 
-    def magnitude_from_grid(self, grid):
+    def convergence_from_jacobian(self, grid):
+
+        jacobian = self.lensing_jacobian_from_grid(grid=grid)
+
+        return 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
+
+    def magnification_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(grid=grid)
 
@@ -339,17 +364,24 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return 1 / det_jacobian
 
+    def critical_curves_from_grid(self, grid):
+
+        mag_1d = self.magnification_from_grid(grid=grid)
+
+        if isinstance(grid, grids.RegularGrid):
+            mag_2d = grid.array_2d_from_array_1d(array_1d=mag_1d)
+        elif isinstance(grid, grids.SubGrid):
+            mag_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=mag_1d)
+
+        inv_mag = 1 / mag_2d
+        critical_curves_indices = measure.find_contours(inv_mag, 0)
+        Ncrit = len(critical_curves_indices)
 
 
 
 
 
 
-
-
-
-
-        # TODO : Map delfections from 2d to 1d before returning
 
     @dim.convert_units_to_input_units
     def summarize_in_units(self, radii, prefix='', whitespace=80,
