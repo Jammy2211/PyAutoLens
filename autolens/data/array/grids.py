@@ -51,7 +51,7 @@ def sub_to_image_grid(func):
         result = func(grid, galaxies, *args, *kwargs)
 
         if isinstance(grid, SubGrid):
-            return grid.regular_data_1d_from_sub_data_1d(result)
+            return grid.regular_array_1d_from_binned_up_sub_array_1d(result)
         else:
             return result
 
@@ -523,8 +523,7 @@ class RegularGrid(np.ndarray):
         grid_1d : ndgrid
             The 1D grid which is mapped to its masked 2D grid.
         """
-        return mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(
-            grid_2d=grid_2d, mask=self.mask)
+        return mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=self.mask)
     
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -649,13 +648,13 @@ class SubGrid(RegularGrid):
         return mask_util.mask_from_shape_and_one_to_two(shape=sub_shape, one_to_two=sub_one_to_two)
 
     @property
-    def unlensed_grid(self):
+    def unlensed_sub_grid(self):
         return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=self.mask, pixel_scales=self.mask.pixel_scales, sub_grid_size=self.sub_grid_size),
             self.mask, self.sub_grid_size)
 
     @property
-    def unlensed_unmasked_grid(self):
+    def unlensed_unmasked_sub_grid(self):
         return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
             mask=np.full(self.mask.shape, False), pixel_scales=self.mask.pixel_scales,
             sub_grid_size=self.sub_grid_size),
@@ -735,7 +734,7 @@ class SubGrid(RegularGrid):
         sub_array_1d : ndarray
             The 1D sub-array of which is mapped to a 2D scaled sub-array the dimensions.
         """
-        array_1d = self.regular_data_1d_from_sub_data_1d(sub_array_1d=sub_array_1d)
+        array_1d = self.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=sub_array_1d)
         return scaled_array.ScaledSquarePixelArray(array=self.array_2d_from_array_1d(array_1d=array_1d),
                                                    pixel_scale=self.mask.pixel_scale,
                                                    origin=self.mask.origin)
@@ -762,7 +761,7 @@ class SubGrid(RegularGrid):
             self.sub_grid_fraction = obj.sub_grid_fraction
             self.mask = obj.mask
 
-    def regular_data_1d_from_sub_data_1d(self, sub_array_1d):
+    def regular_array_1d_from_binned_up_sub_array_1d(self, sub_array_1d):
         """For an input sub-gridded array, map its hyper-values from the sub-gridded values to a 1D regular grid of \
         values by summing each set of each set of sub-pixels values and dividing by the total number of sub-pixels.
 
@@ -773,6 +772,19 @@ class SubGrid(RegularGrid):
             a 1d regular array.
         """
         return np.multiply(self.sub_grid_fraction, sub_array_1d.reshape(-1, self.sub_grid_length).sum(axis=1))
+
+    def sub_array_1d_from_sub_array_2d(self, sub_array_2d):
+        """ Map a 2D sub-array to its masked 1D sub-array.
+
+        Values which are masked in the mapping to the 1D array are returned as zeros.
+
+        Parameters
+        -----------
+        su_array_2d : ndarray
+            The 2D sub-array which is mapped to its masked 1D sub-array.
+        """
+        return mapping_util.map_2d_sub_array_to_masked_1d_sub_array_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, mask=self.mask, sub_grid_size=self.sub_grid_size)
 
     @property
     @array_util.Memoizer()
