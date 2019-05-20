@@ -860,7 +860,7 @@ class TestAbstractPlaneGridded(object):
         def test__convergence_from_plane__same_as_its_mass_profile(self, grid_stack, galaxy_mass):
             mass_profile = galaxy_mass.mass_profiles[0]
 
-            mp_sub_convergence = mass_profile.convergence_from_grid(grid_stack.sub.unlensed_grid)
+            mp_sub_convergence = mass_profile.convergence_from_grid(grid_stack.sub.unlensed_sub_grid)
 
             # Perform sub gridding average manually
             mp_convergence_pixel_0 = (mp_sub_convergence[0] + mp_sub_convergence[1] +
@@ -885,8 +885,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_convergence = mp0.convergence_from_grid(grid=grid_stack.sub.unlensed_grid)
-            mp1_sub_convergence = mp1.convergence_from_grid(grid=grid_stack.sub.unlensed_grid)
+            mp0_sub_convergence = mp0.convergence_from_grid(grid=grid_stack.sub.unlensed_sub_grid)
+            mp1_sub_convergence = mp1.convergence_from_grid(grid=grid_stack.sub.unlensed_sub_grid)
 
             # Perform sub gridding average manually
             mp0_convergence_pixel_0 = (mp0_sub_convergence[0] + mp0_sub_convergence[1] +
@@ -907,8 +907,8 @@ class TestAbstractPlaneGridded(object):
                                                             mp1_convergence_pixel_1, 1.0e-4)
 
         def test__convergence__same_as_its_galaxy(self, grid_stack, galaxy_mass):
-            galaxy_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
-                                                                                   galaxies=[galaxy_mass])
+            galaxy_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid,
+                                                                               galaxies=[galaxy_mass])
 
             galaxy_convergence = grid_stack.regular.scaled_array_2d_from_array_1d(galaxy_convergence)
 
@@ -921,10 +921,10 @@ class TestAbstractPlaneGridded(object):
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
-                                                                               galaxies=[g0])
-            g1_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
-                                                                               galaxies=[g1])
+            g0_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid,
+                                                                           galaxies=[g0])
+            g1_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid,
+                                                                           galaxies=[g1])
 
             g0_convergence = grid_stack.regular.scaled_array_2d_from_array_1d(g0_convergence)
             g1_convergence = grid_stack.regular.scaled_array_2d_from_array_1d(g1_convergence)
@@ -938,7 +938,7 @@ class TestAbstractPlaneGridded(object):
                                                                                               galaxy_mass):
             mass_profile = galaxy_mass.mass_profiles[0]
 
-            mp_sub_convergence = mass_profile.convergence_from_grid(padded_grid_stack.sub.unlensed_grid)
+            mp_sub_convergence = mass_profile.convergence_from_grid(padded_grid_stack.sub.unlensed_sub_grid)
 
             # The padded sub-grid adds 5 pixels around the mask from the top-left which we skip over, thus our
             # first sub-pixel index is 20.
@@ -967,7 +967,7 @@ class TestAbstractPlaneGridded(object):
         def test__potential_from_plane__same_as_its_mass_profile(self, grid_stack, galaxy_mass):
             mass_profile = galaxy_mass.mass_profiles[0]
 
-            mp_sub_potential = mass_profile.potential_from_grid(grid_stack.sub.unlensed_grid)
+            mp_sub_potential = mass_profile.potential_from_grid(grid_stack.sub.unlensed_sub_grid)
 
             # Perform sub gridding average manually
             mp_potential_pixel_0 = (mp_sub_potential[0] + mp_sub_potential[1] + mp_sub_potential[2] + mp_sub_potential[
@@ -984,7 +984,7 @@ class TestAbstractPlaneGridded(object):
 
         def test__same_as_above__use_multiple_galaxies(self, grid_stack):
             # Overwrite one value so intensity in each pixel is different
-            grid_stack.sub.unlensed_grid[5] = np.array([2.0, 2.0])
+            grid_stack.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
@@ -992,8 +992,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_potential = mp0.potential_from_grid(grid_stack.sub.unlensed_grid)
-            mp1_sub_potential = mp1.potential_from_grid(grid_stack.sub.unlensed_grid)
+            mp0_sub_potential = mp0.potential_from_grid(grid_stack.sub.unlensed_sub_grid)
+            mp1_sub_potential = mp1.potential_from_grid(grid_stack.sub.unlensed_sub_grid)
 
             # Perform sub gridding average manually
             mp0_potential_pixel_0 = (mp0_sub_potential[0] + mp0_sub_potential[1] +
@@ -1014,7 +1014,7 @@ class TestAbstractPlaneGridded(object):
                                                           mp1_potential_pixel_1, 1.0e-4)
 
         def test__potential__same_as_its_galaxy(self, grid_stack, galaxy_mass):
-            galaxy_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
+            galaxy_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid,
                                                                            galaxies=[galaxy_mass])
 
             galaxy_potential = grid_stack.regular.scaled_array_2d_from_array_1d(galaxy_potential)
@@ -1026,13 +1026,13 @@ class TestAbstractPlaneGridded(object):
 
         def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack):
             # Overwrite one value so intensity in each pixel is different
-            grid_stack.sub.unlensed_grid[5] = np.array([2.0, 2.0])
+            grid_stack.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g0])
-            g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g1])
+            g0_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid, galaxies=[g0])
+            g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid, galaxies=[g1])
 
             g0_potential = grid_stack.regular.scaled_array_2d_from_array_1d(g0_potential)
             g1_potential = grid_stack.regular.scaled_array_2d_from_array_1d(g1_potential)
@@ -1046,7 +1046,7 @@ class TestAbstractPlaneGridded(object):
                                                                                         galaxy_mass):
             mass_profile = galaxy_mass.mass_profiles[0]
 
-            mp_sub_image = mass_profile.potential_from_grid(padded_grid_stack.sub.unlensed_grid)
+            mp_sub_image = mass_profile.potential_from_grid(padded_grid_stack.sub.unlensed_sub_grid)
 
             # The padded sub-grid adds 5 pixels around the mask from the top-left which we skip over, thus our
             # first sub-pixel index is 20.
@@ -1073,7 +1073,7 @@ class TestAbstractPlaneGridded(object):
         def test__deflections_from_plane__same_as_its_mass_profile(self, grid_stack, galaxy_mass):
             mp = galaxy_mass.mass_profiles[0]
 
-            mp_sub_image = mp.deflections_from_grid(grid_stack.sub.unlensed_grid)
+            mp_sub_image = mp.deflections_from_grid(grid_stack.sub.unlensed_sub_grid)
 
             # Perform sub gridding average manually
             mp_image_pixel_0x = (mp_sub_image[0, 0] + mp_sub_image[1, 0] + mp_sub_image[2, 0] + mp_sub_image[3, 0]) / 4
@@ -1098,7 +1098,7 @@ class TestAbstractPlaneGridded(object):
 
         def test__same_as_above__use_multiple_galaxies(self, grid_stack):
             # Overwrite one value so intensity in each pixel is different
-            grid_stack.sub.unlensed_grid[5] = np.array([2.0, 2.0])
+            grid_stack.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
@@ -1106,8 +1106,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.deflections_from_grid(grid_stack.sub.unlensed_grid)
-            mp1_sub_image = mp1.deflections_from_grid(grid_stack.sub.unlensed_grid)
+            mp0_sub_image = mp0.deflections_from_grid(grid_stack.sub.unlensed_sub_grid)
+            mp1_sub_image = mp1.deflections_from_grid(grid_stack.sub.unlensed_sub_grid)
 
             # Perform sub gridding average manually
             mp0_image_pixel_0x = (mp0_sub_image[0, 0] + mp0_sub_image[1, 0] +
@@ -1141,7 +1141,7 @@ class TestAbstractPlaneGridded(object):
                     grid_stack.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 1])).all()
 
         def test__deflections__same_as_its_galaxy(self, grid_stack, galaxy_mass):
-            galaxy_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
+            galaxy_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_sub_grid,
                                                                                galaxies=[galaxy_mass])
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy_mass], grid_stack=grid_stack, border=None,
@@ -1155,14 +1155,14 @@ class TestAbstractPlaneGridded(object):
 
         def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack):
             # Overwrite one value so intensity in each pixel is different
-            grid_stack.sub.unlensed_grid[5] = np.array([2.0, 2.0])
+            grid_stack.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
+            g0_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_sub_grid,
                                                                            galaxies=[g0])
-            g1_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
+            g1_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_sub_grid,
                                                                            galaxies=[g1])
 
             plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack, border=None,

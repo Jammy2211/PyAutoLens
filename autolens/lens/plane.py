@@ -317,12 +317,12 @@ class AbstractGriddedPlane(AbstractPlane):
     @property
     def convergence(self):
         convergence_1d = galaxy_util.convergence_of_galaxies_from_grid(
-            grid=self.grid_stack.sub.unlensed_grid, galaxies=self.galaxies)
+            grid=self.grid_stack.sub.unlensed_sub_grid, galaxies=self.galaxies)
         return self.grid_stack.scaled_array_2d_from_array_1d(array_1d=convergence_1d)
 
     @property
     def potential(self):
-        potential_1d = galaxy_util.potential_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_grid,
+        potential_1d = galaxy_util.potential_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid,
                                                                    galaxies=self.galaxies)
         return self.grid_stack.scaled_array_2d_from_array_1d(array_1d=potential_1d)
 
@@ -336,7 +336,7 @@ class AbstractGriddedPlane(AbstractPlane):
 
     @property
     def deflections_1d(self):
-        return galaxy_util.deflections_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_grid,
+        return galaxy_util.deflections_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid,
                                                              galaxies=self.galaxies)
 
     @property
