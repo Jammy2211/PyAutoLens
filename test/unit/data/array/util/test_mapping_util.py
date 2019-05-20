@@ -244,6 +244,110 @@ class TestMap2DGridTo1d(object):
         assert (grid_1d == np.array([[2,2], [4,4], [5,5], [6,6], [8,8]])).all()
 
 
+class TestMap2DSubArrayTo1D(object):
+    
+    def test__setup_3x3_data__sub_grid_size_1(self):
+
+        sub_array_2d = np.array([[1, 2, 3],
+                                 [4, 5, 6],
+                                 [7, 8, 9]])
+
+        mask = np.array([[True, True, True],
+                         [True, False, True],
+                         [True, True, True]])
+
+        sub_array_1d = mapping_util.map_2d_sub_array_to_masked_1d_sub_array_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=1)
+
+        assert (sub_array_1d == np.array([5])).all()
+
+    def test__setup_3x3_data__sub_grid_size_2(self):
+
+        sub_array_2d = np.array([[1,  2,  3,   4,  5,  6],
+                                 [7,  8,  9,  10, 11, 12],
+                                 [13, 14, 15, 16, 17, 18],
+                                 [1,   2,  3,  4,  5,  6],
+                                 [7,   8,  9, 10, 11, 12],
+                                 [13, 14, 15, 16, 17, 18]])
+
+        mask = np.array([[True, True, True],
+                         [True, False, True],
+                         [True, True, True]])
+
+        sub_array_1d = mapping_util.map_2d_sub_array_to_masked_1d_sub_array_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
+
+        assert (sub_array_1d == np.array([15, 16, 3, 4])).all()
+
+        mask = np.array([[True, False, True],
+                         [True, False, True],
+                         [True, True, False]])
+
+        sub_array_1d = mapping_util.map_2d_sub_array_to_masked_1d_sub_array_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
+
+        assert (sub_array_1d == np.array([3, 4, 9, 10, 15, 16, 3, 4, 11, 12, 17, 18])).all()
+
+
+    def test__setup_3x4_sub_array(self):
+
+        sub_array_2d = np.array([[1,  2,  3,   4,  5,  6, 7, 7, 7],
+                                 [7,  8,  9,  10, 11, 12, 7, 7, 7],
+                                 [13, 14, 15, 16, 17, 18, 7, 7, 7],
+                                 [1,   2,  3,  4,  5,  6, 7, 7, 7],
+                                 [7,   8,  9, 10, 11, 12, 7, 7, 7],
+                                 [13, 14, 15, 16, 17, 18, 7, 7, 7]])
+
+        mask = np.array([[True, False, True, True],
+                         [False, False, False, True],
+                         [True, False, True, False]])
+
+        sub_array_1d = mapping_util.map_2d_sub_array_to_masked_1d_sub_array_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
+
+        assert (sub_array_1d == np.array([3, 4, 9, 10, 13, 14, 1, 2, 15, 16, 3, 4, 17, 18, 5, 6, 9, 10, 15, 16, 7, 7, 7, 7])).all()
+
+    def test__setup_4x3_sub_array__five_now_in_mask(self):
+
+        sub_array_2d = np.array([[1,  2,  3,   4,  5,  6],
+                                 [7,  8,  9,  10, 11, 12],
+                                 [13, 14, 15, 16, 17, 18],
+                                 [1,   2,  3,  4,  5,  6],
+                                 [7,   8,  9, 10, 11, 12],
+                                 [13, 14, 15, 16, 17, 18],
+                                 [7,   7,  7,  7,  7,  7],
+                                 [7,   7,  7,  7,  7,  7]])
+
+        mask = np.array([[True, False, True],
+                         [False, False, False],
+                         [True, False, True],
+                         [True, True, True]])
+
+        sub_array_1d = mapping_util.map_2d_sub_array_to_masked_1d_sub_array_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
+
+        assert (sub_array_1d == np.array([3, 4, 9, 10, 13, 14, 1, 2, 15, 16, 3, 4, 17, 18, 5, 6, 9, 10, 15, 16])).all()
+
+
+    def test__setup_2x2_data__sub_grid_size_3(self):
+
+        sub_array_2d = np.array([[1,  2,  3,   4,  5,  6],
+                                 [7,  8,  9,  10, 11, 12],
+                                 [13, 14, 15, 16, 17, 18],
+                                 [1,   2,  3,  4,  5,  6],
+                                 [7,   8,  9, 10, 11, 12],
+                                 [13, 14, 15, 16, 17, 18]])
+
+        mask = np.array([[False, True],
+                         [True, False]])
+
+        sub_array_1d = mapping_util.map_2d_sub_array_to_masked_1d_sub_array_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=3)
+
+        assert (sub_array_1d == np.array([1, 2, 3, 7, 8, 9, 13, 14, 15, 4, 5, 6, 10, 11, 12, 16, 17, 18])).all()
+
+
+
 class TestMapMasked1DArrayTo2d(object):
 
     def test__2d_array_is_2x2__is_not_masked__maps_correctly(self):
