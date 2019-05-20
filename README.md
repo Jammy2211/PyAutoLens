@@ -1,6 +1,6 @@
 # PyAutoLens
 
-When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy is strongly lensed and appears multiple times or as an Einstein ring of light. **PyAutoLens** makes it simple to model strong gravitational lenses, like this one: 
+When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy appears multiple times. This is called strong gravitational lensing, and **PyAutoLens** makes it simple to model strong gravitational lenses, like this one: 
 
 ![alt text](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/gitimage.png)
 
@@ -12,7 +12,7 @@ When two or more galaxies are aligned perfectly down our line-of-sight, the back
 
 ## Python Example
 
-With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits a lens galaxy's light, mass and a source galaxy.
+With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits the foreground lens galaxy's mass and the background source galaxy's light.
 
 ```python
 from autofit.optimize import non_linear as nl
@@ -26,7 +26,7 @@ from autolens.lens.plotters import lens_fit_plotters
 
 import os
 
-# In this example, we'll generate a phase which fits a simple lens + source plane system.
+# In this example, we'll fit a simple lens galaxy + source galaxy system.
 
 # Get the relative path to the data in our workspace and load the ccd imaging data.
 path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
@@ -48,7 +48,7 @@ lens_mass_profile = mp.EllipticalIsothermal
 source_light_profile = lp.EllipticalSersic
 
 # To setup our model galaxies, we use the GalaxyModel class, which represents a galaxy whose parameters 
-# are variable and fitted for by the analysis. The galaxies are also assigned redshifts.
+# are variable and fitted for by PyAutoLens. The galaxies are also assigned redshifts.
 lens_galaxy_model = gm.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
 source_galaxy_model = gm.GalaxyModel(redshsift=1.0, light=source_light_profile)
 
@@ -59,7 +59,7 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.E
                                 source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                 phase_name='example/phase_example', optimizer_class=nl.MultiNest)
 
-# We run the phase on the ccd data, print the results and plot the fit.
+# We pass the ccd data to the phase, thereby fitting it with the lens model above and plot the resulting fit.
 result = phase.run(data=ccd_data)
 lens_fit_plotters.plot_fit_subplot(fit=result.most_likely_fit)
 ```
@@ -151,7 +151,7 @@ export PYTHONPATH=/path/to/autolens_workspace/
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 ```
-python3 /path/to/autolens_workspace/runners/runner.py
+python3 /path/to/autolens_workspace/runners/simple/runner_lens_mass_and_source.py
 ```
 
 ## Installation with pip

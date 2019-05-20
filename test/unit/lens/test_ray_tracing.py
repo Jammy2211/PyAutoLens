@@ -233,12 +233,12 @@ class TestAbstractTracer(object):
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
             g2 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
-            g0_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
-                                                                               galaxies=[g0])
-            g1_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
-                                                                               galaxies=[g1])
-            g2_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
-                                                                               galaxies=[g2])
+            g0_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid,
+                                                                           galaxies=[g0])
+            g1_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid,
+                                                                           galaxies=[g1])
+            g2_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid,
+                                                                           galaxies=[g2])
 
             g0_convergence = grid_stack.regular.scaled_array_2d_from_array_1d(g0_convergence)
             g1_convergence = grid_stack.regular.scaled_array_2d_from_array_1d(g1_convergence)
@@ -294,9 +294,9 @@ class TestAbstractTracer(object):
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
             g2 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
-            g0_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g0])
-            g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g1])
-            g2_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g2])
+            g0_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid, galaxies=[g0])
+            g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid, galaxies=[g1])
+            g2_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid, galaxies=[g2])
 
             g0_potential = grid_stack.regular.scaled_array_2d_from_array_1d(g0_potential)
             g1_potential = grid_stack.regular.scaled_array_2d_from_array_1d(g1_potential)
@@ -353,11 +353,11 @@ class TestAbstractTracer(object):
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
             g2 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
-            g0_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
+            g0_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_sub_grid,
                                                                            galaxies=[g0])
-            g1_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
+            g1_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_sub_grid,
                                                                            galaxies=[g1])
-            g2_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
+            g2_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_sub_grid,
                                                                            galaxies=[g2])
 
             g0_deflections_y = grid_stack.regular.scaled_array_2d_from_array_1d(g0_deflections[:, 0])
