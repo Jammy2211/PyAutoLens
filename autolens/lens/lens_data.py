@@ -69,7 +69,7 @@ class LensData(object):
         if uses_inversion:
 
             self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(
-                 self.mask, self.psf.resized_scaled_array_from_array(new_shape=self.inversion_psf_shape))
+                 mask=mask, psf=self.psf.resized_scaled_array_from_array(new_shape=self.inversion_psf_shape))
 
         else:
 

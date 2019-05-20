@@ -555,7 +555,7 @@ class TestPhase(object):
 
         phase = MyPhase(phase_name='phase')
         analysis = phase.make_analysis(data=ccd_data)
-        assert (analysis.lens_data.image_2d == 20.0 * np.ones(shape=shape)).all()
+        assert (analysis.lens_data.unmasked_image == 20.0 * np.ones(shape=shape)).all()
         assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=32)).all()
 
     def test__check_if_phase_uses_inversion(self):
@@ -615,7 +615,7 @@ class TestPhase(object):
         analysis = phase.make_analysis(data=ccd_data)
         assert (analysis.lens_data.image_2d == binned_up_ccd_data.image).all()
         assert (analysis.lens_data.psf == binned_up_ccd_data.psf).all()
-        assert (analysis.lens_data.noise_map_2d == binned_up_ccd_data.noise_map).all()
+        assert (analysis.lens_data.unmasked_noise_map == binned_up_ccd_data.noise_map).all()
 
         assert (analysis.lens_data.mask_2d == binned_up_mask).all()
 
@@ -629,7 +629,7 @@ class TestPhase(object):
         assert (analysis.lens_data.mask_2d == binned_up_lens_data.mask_2d).all()
 
         assert (analysis.lens_data.image_1d == binned_up_lens_data.image_1d).all()
-        assert (analysis.lens_data.noise_map_2d_1d == binned_up_lens_data.noise_map_2d_1d).all()
+        assert (analysis.lens_data.noise_map_1d == binned_up_lens_data.noise_map_1d).all()
 
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
 
