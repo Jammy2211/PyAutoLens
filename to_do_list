@@ -2,45 +2,24 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
-TOMORRROW MORNING:
-
-- Email Deborar
-- Helsinki
-
-9 Day Crash Course:
-
-- Subhalo grid search on cosma
-- Make mass calculations faster.
-- Integration tests + pipelines for redshift feature + summarize.
-- classmethods using realistic lens units.
-- Lensing example test data suites.
-- Aggregator use examples.
-- Integration tests + pipelines for noise scaling.
-- RJLens pipeline.
-- Units for images, grids.
-- Implment weighted kmeans (day before Rich if psosible)
-- Multinest MPI.
-- Memory lite.
-
-- CTI model runs, generate results for papers.
-- CTI images, reqirements, via aggregator.
-
-Rich:
-
-- Fix model mapper bug
-- Setup with unit test to get ideal output logging info.
-- New hyper phase stuff.
-- High level units stuff?
-
 Big Picture:
 
 - RJLens pipelines.
-- Requirements errors.
-- CTI Results images / requirement code.
 - CTI Results section.
 
 Small Picture:
 
+- 2d Grid mappings and arrays
+- Fully imeplement redshifts as defaullt, including summarize method
+- classmethods using realistic lens units.
+- Lensing example test data suites.
+- Aggregator use examples.
+- Integration tests + pipelines for noise scaling.
+- Units for images, grids.
+- Implment weighted kmeans (day before Rich if psosible)
+- Multinest MPI.
+- Memory lite.
+- Make mass calculations faster.
 - model.summary info output.
 - Sort out radial minima tests.
 - Extract square around mask, so no rectnagular pixels.
@@ -49,6 +28,13 @@ Small Picture:
 - positions still plotting wrong?
 - Expand intepolation tests and write tutorial.
 - Challenge mass errors.
+
+Rich:
+
+- Fix model mapper bug
+- Setup with unit test to get ideal output logging info.
+- New hyper phase stuff.
+- High level units stuff?
 
 Amy:
 
@@ -64,10 +50,6 @@ Mid term:
 - Include output of data for a simulation (galaxies, ccd settings, etc).
 - Write Adaptive Grid howtolens.
 - CCD loading sanity checks
-- Elegent handling of model image generation in lens_fit module, by building model image generation into
-  lens_fit_util, in an analogous fashion to unmasked image generation. The key point here is we can make it so
-  the fit module does not 'know' whether it is a lens + source plane system, or a multi-plane system. It should
-  just generate lists of model images across all planes and for all galaxies.
 
 Long Term:
 
