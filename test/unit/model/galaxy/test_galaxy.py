@@ -440,7 +440,7 @@ class TestMassProfiles(object):
             sis_0 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
             sis_1 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.5)
 
-            galaxy = g.Galaxy(mass_0=sis_0, mass_1=sis_1)
+            galaxy = g.Galaxy(redshift=0.5, mass_0=sis_0, mass_1=sis_1)
 
             assert galaxy.einstein_radius_in_units(unit_length='arcsec') == 1.5
             assert galaxy.einstein_mass_in_units(unit_mass='angular') == np.pi*(1.0 + 0.5**2.0)
@@ -450,7 +450,7 @@ class TestMassProfiles(object):
             sis_0 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
             shear = mp.ExternalShear()
 
-            galaxy = g.Galaxy(mass_0=sis_0, shear=shear)
+            galaxy = g.Galaxy(redshift=0.5, mass_0=sis_0, shear=shear)
 
             assert galaxy.einstein_radius_in_units(unit_length='arcsec') == 1.0
             assert galaxy.einstein_mass_in_units(unit_mass='angular') == np.pi
@@ -463,14 +463,14 @@ class TestMassAndLightProfiles(object):
         return lmp.EllipticalSersicRadialGradient()
 
     def test_single_profile(self, mass_and_light):
-        gal = g.Galaxy(profile=mass_and_light)
+        gal = g.Galaxy(redshift=0.5, profile=mass_and_light)
         assert 1 == len(gal.light_profiles)
         assert 1 == len(gal.mass_profiles)
         assert gal.mass_profiles[0] == mass_and_light
         assert gal.light_profiles[0] == mass_and_light
 
     def test_multiple_profile(self, mass_and_light, sersic_0, sie_0):
-        gal = g.Galaxy(profile=mass_and_light, light=sersic_0, sie=sie_0)
+        gal = g.Galaxy(redshift=0.5, profile=mass_and_light, light=sersic_0, sie=sie_0)
         assert 2 == len(gal.light_profiles)
         assert 2 == len(gal.mass_profiles)
 
@@ -619,43 +619,41 @@ class TestHyperGalaxy(object):
 class TestBooleanProperties(object):
 
     def test_has_profile(self):
-        assert g.Galaxy().has_profile is False
-        assert g.Galaxy(light_profile=lp.LightProfile()).has_profile is True
-        assert g.Galaxy(mass_profile=mp.MassProfile()).has_profile is True
+        assert g.Galaxy(redshift=0.5).has_profile is False
+        assert g.Galaxy(redshift=0.5, light_profile=lp.LightProfile()).has_profile is True
+        assert g.Galaxy(redshift=0.5, mass_profile=mp.MassProfile()).has_profile is True
 
     def test_has_light_profile(self):
-        assert g.Galaxy().has_light_profile is False
-        assert g.Galaxy(light_profile=lp.LightProfile()).has_light_profile is True
-        assert g.Galaxy(mass_profile=mp.MassProfile()).has_light_profile is False
+        assert g.Galaxy(redshift=0.5).has_light_profile is False
+        assert g.Galaxy(redshift=0.5, light_profile=lp.LightProfile()).has_light_profile is True
+        assert g.Galaxy(redshift=0.5, mass_profile=mp.MassProfile()).has_light_profile is False
 
     def test_has_mass_profile(self):
-        assert g.Galaxy().has_mass_profile is False
-        assert g.Galaxy(light_profile=lp.LightProfile()).has_mass_profile is False
-        assert g.Galaxy(mass_profile=mp.MassProfile()).has_mass_profile is True
+        assert g.Galaxy(redshift=0.5).has_mass_profile is False
+        assert g.Galaxy(redshift=0.5, light_profile=lp.LightProfile()).has_mass_profile is False
+        assert g.Galaxy(redshift=0.5, mass_profile=mp.MassProfile()).has_mass_profile is True
 
     def test_has_redshift(self):
 
-        assert g.Galaxy().has_redshift is False
-        assert g.Galaxy(light_profile=lp.LightProfile()).has_redshift is False
         assert g.Galaxy(redshift=0.1).has_redshift is True
 
     def test_has_pixelization(self):
-        assert g.Galaxy().has_pixelization is False
-        assert g.Galaxy(pixelization=object(), regularization=object()).has_pixelization is True
+        assert g.Galaxy(redshift=0.5).has_pixelization is False
+        assert g.Galaxy(redshift=0.5, pixelization=object(), regularization=object()).has_pixelization is True
 
     def test_has_regularization(self):
-        assert g.Galaxy().has_regularization is False
-        assert g.Galaxy(pixelization=object(), regularization=object()).has_regularization is True
+        assert g.Galaxy(redshift=0.5).has_regularization is False
+        assert g.Galaxy(redshift=0.5, pixelization=object(), regularization=object()).has_regularization is True
 
     def test_has_hyper_galaxy(self):
-        assert g.Galaxy().has_pixelization is False
-        assert g.Galaxy(hyper_galaxy=object()).has_hyper_galaxy is True
+        assert g.Galaxy(redshift=0.5).has_pixelization is False
+        assert g.Galaxy(redshift=0.5, hyper_galaxy=object()).has_hyper_galaxy is True
 
     def test__only_pixelization_raises_error(self):
         with pytest.raises(exc.GalaxyException):
-            g.Galaxy(pixelization=object())
+            g.Galaxy(redshift=0.5, pixelization=object())
 
     def test__only_regularization_raises_error(self):
         with pytest.raises(exc.GalaxyException):
-            g.Galaxy(regularization=object())
+            g.Galaxy(redshift=0.5, regularization=object())
 

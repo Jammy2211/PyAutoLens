@@ -52,7 +52,7 @@ def make_convolver_blur(mask, blurring_mask):
 
 @pytest.fixture(name="galaxy_light")
 def make_galaxy_light():
-    return g.Galaxy(light_profile=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=1.0, phi=0.0, intensity=1.0,
+    return g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                       effective_radius=0.6, sersic_index=4.0))
 
 

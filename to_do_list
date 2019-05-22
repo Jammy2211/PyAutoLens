@@ -73,6 +73,7 @@ Possible:
 Bugs:
 
 - Rectangular plots of source recons are still skewing.
+- Different colorbar scales for parametric source and pixelization source.
 
 
 Notes:

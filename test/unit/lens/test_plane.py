@@ -64,24 +64,24 @@ def make_padded_grid_stack():
 
 @pytest.fixture(name='galaxy_non', scope='function')
 def make_galaxy_non():
-    return g.Galaxy()
+    return g.Galaxy(redshift=0.5)
 
 
 @pytest.fixture(name="galaxy_light")
 def make_galaxy_light():
-    return g.Galaxy(light_profile=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=1.0, phi=0.0, intensity=1.0,
+    return g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                       effective_radius=0.6, sersic_index=4.0))
 
 
 @pytest.fixture(name="galaxy_mass")
 def make_galaxy_mass():
-    return g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+    return g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
 @pytest.fixture(name='galaxy_mass_x2')
 def make_galaxy_mass_x2():
-    return g.Galaxy(sis_0=mp.SphericalIsothermal(einstein_radius=1.0),
-                    sis_1=mp.SphericalIsothermal(einstein_radius=1.0))
+    return g.Galaxy(redshift=0.5, sis_0=mp.SphericalIsothermal(einstein_radius=1.0),
+                                  sis_1=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
 class TestAbstractPlane(object):
@@ -142,93 +142,93 @@ class TestAbstractPlane(object):
     class TestProperties:
 
         def test__has_light_profile(self):
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_light_profile is False
 
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy(light_profile=lp.LightProfile())], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5, light_profile=lp.LightProfile())], redshift=None)
             assert plane.has_light_profile is True
 
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy(light_profile=lp.LightProfile()), g.Galaxy()],
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5, light_profile=lp.LightProfile()), g.Galaxy(redshift=0.5)],
                                      redshift=None)
             assert plane.has_light_profile is True
 
         def test__has_mass_profile(self):
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_mass_profile is False
 
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy(light_profile=mp.MassProfile())], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5, light_profile=mp.MassProfile())], redshift=None)
             assert plane.has_mass_profile is True
 
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy(light_profile=mp.MassProfile()), g.Galaxy()],
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5, light_profile=mp.MassProfile()), g.Galaxy(redshift=0.5)],
                                      redshift=None)
             assert plane.has_mass_profile is True
 
         def test__has_pixelization(self):
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_pixelization is False
 
-            galaxy_pix = g.Galaxy(pixelization=pixelizations.Pixelization(),
+            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=pixelizations.Pixelization(),
                                   regularization=regularization.Regularization())
 
             plane = pl.AbstractPlane(galaxies=[galaxy_pix], redshift=None)
             assert plane.has_pixelization is True
 
-            plane = pl.AbstractPlane(galaxies=[galaxy_pix, g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[galaxy_pix, g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_pixelization is True
 
         def test__has_regularization(self):
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_regularization is False
 
-            galaxy_pix = g.Galaxy(pixelization=pixelizations.Pixelization(),
+            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=pixelizations.Pixelization(),
                                   regularization=regularization.Regularization())
 
             plane = pl.AbstractPlane(galaxies=[galaxy_pix], redshift=None)
             assert plane.has_regularization is True
 
-            plane = pl.AbstractPlane(galaxies=[galaxy_pix, g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[galaxy_pix, g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_regularization is True
 
         def test__has_hyper_galaxy(self):
 
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_hyper_galaxy is False
 
-            galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
+            galaxy = g.Galaxy(redshift=0.5, hyper_galaxy=g.HyperGalaxy())
 
             plane = pl.AbstractPlane(galaxies=[galaxy], redshift=None)
             assert plane.has_hyper_galaxy is True
 
-            plane = pl.AbstractPlane(galaxies=[galaxy, g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[galaxy, g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_hyper_galaxy is True
 
     class TestRegularization:
 
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self):
-            galaxy_no_pix = g.Galaxy()
+            galaxy_no_pix = g.Galaxy(redshift=0.5)
 
             plane = pl.AbstractPlane(galaxies=[galaxy_no_pix], redshift=None)
 
             assert plane.regularization is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self):
-            galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
+            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
             plane = pl.AbstractPlane(galaxies=[galaxy_pix], redshift=None)
 
             assert plane.regularization.value == 0
 
         def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self):
-            galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
-            galaxy_no_pix = g.Galaxy()
+            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
+            galaxy_no_pix = g.Galaxy(redshift=0.5)
 
             plane = pl.AbstractPlane(galaxies=[galaxy_no_pix, galaxy_pix], redshift=None)
 
             assert plane.regularization.value == 0
 
         def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self):
-            galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
-            galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
+            galaxy_pix_0 = g.Galaxy(redshift=0.5, pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
+            galaxy_pix_1 = g.Galaxy(redshift=0.5, pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
             plane = pl.AbstractPlane(galaxies=[galaxy_pix_0, galaxy_pix_1], redshift=None)
 
@@ -498,9 +498,9 @@ class TestAbstractPlane(object):
 
         def test__include_galaxy_with_no_mass_profile__does_not_impact_einstein_radius_or_mass(self):
 
-            sis_0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
-            sis_1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
-            g0 = g.Galaxy()
+            sis_0 = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
+            sis_1 = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0))
+            g0 = g.Galaxy(redshift=0.5)
 
             plane = pl.AbstractPlane(galaxies=[sis_0, g0], redshift=0.5)
 
@@ -519,7 +519,7 @@ class TestAbstractPlane(object):
 
         def test__only_galaxies_without_mass_profiles__einstein_radius_and_mass_are_none(self):
             
-            g0 = g.Galaxy()
+            g0 = g.Galaxy(redshift=0.5)
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=0.5)
 
@@ -535,12 +535,12 @@ class TestAbstractPlane(object):
 
         def test__extract_centres_of_all_mass_profiles_of_all_galaxies(self):
 
-            g0 = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 1.0)))
-            g1 = g.Galaxy(mass=mp.SphericalIsothermal(centre=(2.0, 2.0)))
-            g2 = g.Galaxy(mass0=mp.SphericalIsothermal(centre=(3.0, 3.0)),
+            g0 = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(centre=(1.0, 1.0)))
+            g1 = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(centre=(2.0, 2.0)))
+            g2 = g.Galaxy(redshift=0.5, mass0=mp.SphericalIsothermal(centre=(3.0, 3.0)),
                           mass1=mp.SphericalIsothermal(centre=(4.0, 4.0)))
 
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.centres_of_galaxy_mass_profiles == None
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
@@ -555,20 +555,20 @@ class TestAbstractPlane(object):
             plane = pl.AbstractPlane(galaxies=[g1, g0], redshift=None)
             assert plane.centres_of_galaxy_mass_profiles == [[(2.0, 2.0)], [(1.0, 1.0)]]
 
-            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(redshift=0.5), g1, g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.centres_of_galaxy_mass_profiles == [[(1.0, 1.0)], [(2.0, 2.0)]]
 
-            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy(), g2], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(redshift=0.5), g1, g.Galaxy(redshift=0.5), g2], redshift=None)
             assert plane.centres_of_galaxy_mass_profiles == [[(1.0, 1.0)], [(2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]]
 
         def test__extracts_axis_ratio_of_all_mass_profiles_of_all_galaxies(self):
 
-            g0 = g.Galaxy(mass=mp.EllipticalIsothermal(axis_ratio=0.9))
-            g1 = g.Galaxy(mass=mp.EllipticalIsothermal(axis_ratio=0.8))
-            g2 = g.Galaxy(mass0=mp.EllipticalIsothermal(axis_ratio=0.7),
+            g0 = g.Galaxy(redshift=0.5, mass=mp.EllipticalIsothermal(axis_ratio=0.9))
+            g1 = g.Galaxy(redshift=0.5, mass=mp.EllipticalIsothermal(axis_ratio=0.8))
+            g2 = g.Galaxy(redshift=0.5, mass0=mp.EllipticalIsothermal(axis_ratio=0.7),
                           mass1=mp.EllipticalIsothermal(axis_ratio=0.6))
 
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.axis_ratios_of_galaxy_mass_profiles == None
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
@@ -583,20 +583,20 @@ class TestAbstractPlane(object):
             plane = pl.AbstractPlane(galaxies=[g1, g0], redshift=None)
             assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.8], [0.9]]
 
-            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(redshift=0.5), g1, g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.9], [0.8]]
 
-            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy(), g2], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(redshift=0.5), g1, g.Galaxy(redshift=0.5), g2], redshift=None)
             assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.9], [0.8], [0.7, 0.6]]
             
         def test__extracts_phi_of_all_mass_profiles_of_all_galaxies(self):
 
-            g0 = g.Galaxy(mass=mp.EllipticalIsothermal(phi=0.9))
-            g1 = g.Galaxy(mass=mp.EllipticalIsothermal(phi=0.8))
-            g2 = g.Galaxy(mass0=mp.EllipticalIsothermal(phi=0.7),
+            g0 = g.Galaxy(redshift=0.5, mass=mp.EllipticalIsothermal(phi=0.9))
+            g1 = g.Galaxy(redshift=0.5, mass=mp.EllipticalIsothermal(phi=0.8))
+            g2 = g.Galaxy(redshift=0.5, mass0=mp.EllipticalIsothermal(phi=0.7),
                           mass1=mp.EllipticalIsothermal(phi=0.6))
 
-            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.phis_of_galaxy_mass_profiles == None
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
@@ -611,10 +611,10 @@ class TestAbstractPlane(object):
             plane = pl.AbstractPlane(galaxies=[g1, g0], redshift=None)
             assert plane.phis_of_galaxy_mass_profiles == [[0.8], [0.9]]
 
-            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy()], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(redshift=0.5), g1, g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.phis_of_galaxy_mass_profiles == [[0.9], [0.8]]
 
-            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy(), g2], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(redshift=0.5), g1, g.Galaxy(redshift=0.5), g2], redshift=None)
             assert plane.phis_of_galaxy_mass_profiles == [[0.9], [0.8], [0.7, 0.6]]
 
 
@@ -716,7 +716,7 @@ class TestAbstractPlaneGridded(object):
             assert plane.image_plane_image == pytest.approx(image_plane_image, 1.0e-4)
 
         def test_single_multiple_intensity(self, grid_stack):
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack, border=None,
                                             compute_deflections=False, redshift=None)
             assert (plane.image_plane_image_1d_of_galaxies[0] == plane.image_plane_image_1d_of_galaxy(g0)).all()
@@ -725,8 +725,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.sub[5] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0))
 
             lp0 = g0.light_profiles[0]
             lp1 = g1.light_profiles[0]
@@ -759,8 +759,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.sub[5] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0))
 
             g0_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g0])
             g1_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g1])
@@ -836,8 +836,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.blurring[1] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0))
 
             lp0 = g0.light_profiles[0]
             lp1 = g1.light_profiles[0]
@@ -863,8 +863,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.blurring[1] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0))
 
             g0_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g0])
             g1_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g1])
@@ -879,8 +879,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.blurring[1] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0))
 
             g0_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g0])
             g1_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g1])
@@ -915,8 +915,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.sub[5] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0, centre=(1.0, 0.0)))
-            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0, centre=(1.0, 1.0)))
+            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0, centre=(1.0, 0.0)))
+            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0, centre=(1.0, 1.0)))
 
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
@@ -954,8 +954,8 @@ class TestAbstractPlaneGridded(object):
             assert (plane.convergence == galaxy_convergence).all()
 
         def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack):
-            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
             g0_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid,
                                                                            galaxies=[g0])
@@ -1022,8 +1022,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
@@ -1064,8 +1064,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
             g0_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid, galaxies=[g0])
             g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_sub_grid, galaxies=[g1])
@@ -1136,8 +1136,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
@@ -1193,8 +1193,8 @@ class TestAbstractPlaneGridded(object):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
-            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
             g0_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_sub_grid,
                                                                            galaxies=[g0])
@@ -1229,7 +1229,7 @@ class TestAbstractPlaneGridded(object):
     class TestMapper:
 
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, grid_stack):
-            galaxy_no_pix = g.Galaxy()
+            galaxy_no_pix = g.Galaxy(redshift=0.5)
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy_no_pix], grid_stack=grid_stack, border=[MockBorders()],
                                             compute_deflections=False, redshift=None)
@@ -1237,7 +1237,7 @@ class TestAbstractPlaneGridded(object):
             assert plane.mapper is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, grid_stack):
-            galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
+            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy_pix], grid_stack=grid_stack, border=[MockBorders()],
                                             compute_deflections=False, redshift=None)
@@ -1245,8 +1245,8 @@ class TestAbstractPlaneGridded(object):
             assert plane.mapper == 1
 
         def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, grid_stack):
-            galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
-            galaxy_no_pix = g.Galaxy()
+            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
+            galaxy_no_pix = g.Galaxy(redshift=0.5)
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy_no_pix, galaxy_pix], grid_stack=grid_stack,
                                             border=[MockBorders()], compute_deflections=False, redshift=None)
@@ -1254,8 +1254,8 @@ class TestAbstractPlaneGridded(object):
             assert plane.mapper == 1
 
         def test__plane_has_no_border__still_returns_mapper(self, grid_stack):
-            galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
-            galaxy_no_pix = g.Galaxy()
+            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
+            galaxy_no_pix = g.Galaxy(redshift=0.5)
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy_no_pix, galaxy_pix], grid_stack=grid_stack, border=None,
                                             compute_deflections=False, redshift=None)
@@ -1263,8 +1263,8 @@ class TestAbstractPlaneGridded(object):
             assert plane.mapper == 1
 
         def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, grid_stack):
-            galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
-            galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
+            galaxy_pix_0 = g.Galaxy(redshift=0.5, pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
+            galaxy_pix_1 = g.Galaxy(redshift=0.5, pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy_pix_0, galaxy_pix_1], grid_stack=grid_stack,
                                             border=[MockBorders()], compute_deflections=False, redshift=None)
@@ -1288,7 +1288,7 @@ class TestAbstractPlaneGridded(object):
         def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self, grid_stack):
             grid_stack.regular[1] = np.array([2.0, 2.0])
 
-            galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+            galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy], grid_stack=grid_stack, compute_deflections=False,
                                             border=None, redshift=None)
@@ -1308,24 +1308,24 @@ class TestAbstractPlaneGridded(object):
 
             grid_stack.regular = grids.RegularGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask)
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack, compute_deflections=False,
                                             border=None, redshift=None)
 
             assert plane.plane_image.shape == (5, 5)
             assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (0, 0)
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack, compute_deflections=False,
                                             border=None, redshift=None)
             assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (0, 4)
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack, compute_deflections=False,
                                             border=None, redshift=None)
             assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (4, 0)
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack, compute_deflections=False,
                                             border=None, redshift=None)
             assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (4, 4)
@@ -1360,8 +1360,8 @@ class TestAbstractDataPlane(object):
 
         def test__blurred_images_1d_of_galaxies(self, grid_stack, convolver_blur):
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0))
 
             g0_image_1d = galaxy_util.intensities_of_galaxies_from_grid(galaxies=[g0], grid=grid_stack.sub)
             g0_blurring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(galaxies=[g0], grid=grid_stack.blurring)
@@ -1404,8 +1404,8 @@ class TestAbstractDataPlane(object):
             padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
                 mask=mask, sub_grid_size=1, psf_shape=(3, 3))
 
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=0.1))
+            g1 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=0.2))
 
             plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g0, g1], grid_stack=padded_grid_stack, border=None,
                                          compute_deflections=False)
@@ -1510,8 +1510,8 @@ class TestAbstractDataPlane(object):
                               hyper_galaxy=hyper_galaxy, hyper_model_image_1d=hyper_model_image_1d,
                               hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
 
-            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy, g.Galaxy(), g.Galaxy()], grid_stack=None,
-                                         border=None, compute_deflections=False)
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy, g.Galaxy(redshift=0.5), g.Galaxy(redshift=0.5)],
+                                         grid_stack=None, border=None, compute_deflections=False)
 
             assert (plane.contribution_maps_1d_of_galaxies[0] == contribution_map_1d).all()
             assert plane.contribution_maps_1d_of_galaxies[1] == None
@@ -1628,21 +1628,21 @@ class TestAbstractDataPlane(object):
             galaxy_1 = g.Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy_1, hyper_model_image_1d=hyper_model_image_1d,
                                 hyper_galaxy_image_1d=hyper_galaxy_image_1d, hyper_minimum_value=0.0)
 
-            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0, g.Galaxy()], grid_stack=None, border=None,
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[galaxy_0, g.Galaxy(redshift=0.5)], grid_stack=None, border=None,
                                          compute_deflections=False)
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
             assert (hyper_noise_maps_1d[0] == hyper_noise_map_1d_0).all()
             assert hyper_noise_maps_1d[1] == None
 
-            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(), galaxy_1], grid_stack=None, border=None,
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(redshift=0.5), galaxy_1], grid_stack=None, border=None,
                                          compute_deflections=False)
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
             assert hyper_noise_maps_1d[0] == None
             assert (hyper_noise_maps_1d[1] == hyper_noise_map_1d_1).all()
 
-            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(), galaxy_1, galaxy_0, g.Galaxy()],
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(redshift=0.5), galaxy_1, galaxy_0, g.Galaxy(redshift=0.5)],
                                          grid_stack=None, border=None, compute_deflections=False)
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
@@ -1702,7 +1702,7 @@ class TestAbstractDataPlane(object):
             hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
             assert (hyper_noise_map_1d == hyper_noise_map_1d_0 + hyper_noise_map_1d_1).all()
 
-            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(), galaxy_1, galaxy_0, g.Galaxy()],
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(redshift=0.5), galaxy_1, galaxy_0, g.Galaxy(redshift=0.5)],
                                          grid_stack=None, border=None, compute_deflections=False)
 
             hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
@@ -1712,7 +1712,7 @@ class TestAbstractDataPlane(object):
 
             noise_map_1d = np.array([5.0, 3.0, 1.0])
 
-            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy()], grid_stack=None, border=None,
+            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(redshift=0.5)], grid_stack=None, border=None,
                                          compute_deflections=False)
             hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
             assert hyper_noise_map_1d == None
@@ -1736,23 +1736,9 @@ class TestPlane(object):
             assert plane.redshift == 1.0
             assert plane.galaxy_redshifts == [1.0, 1.0, 1.0]
 
-        def test__galaxy_has_no_redshift__returns_none(self):
-            g0 = g.Galaxy()
-
-            plane = pl.Plane(galaxies=[g0], grid_stack=None, compute_deflections=False)
-
-            assert plane.redshift is None
-
-        def test__galaxy_has_no_redshift__cosmology_input__raises_exception(self):
-            g0 = g.Galaxy()
-            g1 = g.Galaxy(redshift=1.0)
-
-            with pytest.raises(exc.RayTracingException):
-                pl.Plane(galaxies=[g0, g1], grid_stack=None, compute_deflections=False)
-
         def test__galaxies_entered_all_have_no_redshifts__no_exception_raised(self):
-            g0 = g.Galaxy()
-            g1 = g.Galaxy()
+            g0 = g.Galaxy(redshift=0.5)
+            g1 = g.Galaxy(redshift=0.5)
 
             pl.Plane(galaxies=[g0, g1], grid_stack=None, compute_deflections=False)
 
@@ -1764,7 +1750,7 @@ class TestPlane(object):
 
         def test__1_galaxy_has_redshift_other_does_not__exception_is_raised(self):
             g0 = g.Galaxy(redshift=0.1)
-            g1 = g.Galaxy()
+            g1 = g.Galaxy(redshift=0.5)
 
             with pytest.raises(exc.RayTracingException):
                 pl.Plane(galaxies=[g0, g1], grid_stack=None, compute_deflections=False)

@@ -51,9 +51,9 @@ def make_lens_image(ccd, mask):
 
 @pytest.fixture(name='fit')
 def make_fit(lens_data):
-    lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
-    lens_subhalo = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=0.1), redshift=1.0)
-    source_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0), redshift=2.0)
+    lens_galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
+    lens_subhalo = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=0.1))
+    source_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
     tracer_normal = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                         image_plane_grid_stack=lens_data.grid_stack,

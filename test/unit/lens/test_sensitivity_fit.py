@@ -19,7 +19,7 @@ def make_sersic():
 
 @pytest.fixture(name="galaxy_light", scope='function')
 def make_galaxy_light(sersic):
-    return g.Galaxy(light_profile=sersic)
+    return g.Galaxy(redshift=0.5, light_profile=sersic)
 
 @pytest.fixture(name='ld_blur')
 def make_ld_blur():
@@ -45,8 +45,8 @@ class TestSensitivityProfileFit:
 
     def test__tracer_and_tracer_sensitive_are_identical__added__likelihood_is_noise_term(self, ld_blur):
 
-        g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-        g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+        g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+        g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=2.0))
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                      image_plane_grid_stack=ld_blur.grid_stack)
@@ -93,9 +93,9 @@ class TestSensitivityProfileFit:
 
     def test__tracers_are_different__likelihood_is_non_zero(self, ld_blur):
 
-        g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-        g0_subhalo = g.Galaxy(subhalo=mp.SphericalIsothermal(einstein_radius=0.1))
-        g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+        g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+        g0_subhalo = g.Galaxy(redshift=0.5, subhalo=mp.SphericalIsothermal(einstein_radius=0.1))
+        g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=2.0))
 
         tracer_normal = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                             image_plane_grid_stack=ld_blur.grid_stack)
@@ -172,8 +172,8 @@ class TestSensitivityInversionFit:
         pixelization = pix.Rectangular(shape=(3, 3))
         regularization = reg.Constant(coefficients=(1.0,))
 
-        g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-        g1 = g.Galaxy(pixelization=pixelization, regularization=regularization)
+        g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+        g1 = g.Galaxy(redshift=1.0, pixelization=pixelization, regularization=regularization)
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                      image_plane_grid_stack=ld_blur.grid_stack)
@@ -222,9 +222,9 @@ class TestSensitivityInversionFit:
         pixelization = pix.Rectangular(shape=(3, 3))
         regularization = reg.Constant(coefficients=(1.0,))
 
-        g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-        g0_subhalo = g.Galaxy(subhalo=mp.SphericalIsothermal(einstein_radius=0.1))
-        g1 = g.Galaxy(pixelization=pixelization, regularization=regularization)
+        g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+        g0_subhalo = g.Galaxy(redshift=0.5, subhalo=mp.SphericalIsothermal(einstein_radius=0.1))
+        g1 = g.Galaxy(redshift=1.0, pixelization=pixelization, regularization=regularization)
 
         tracer_normal = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                             image_plane_grid_stack=ld_blur.grid_stack)

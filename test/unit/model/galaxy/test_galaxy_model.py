@@ -67,13 +67,13 @@ def make_galaxy_prior(mapper, ):
 
 class TestMassAndLightProfiles(object):
     def test_constant_profile(self, mass_and_light):
-        prior = gp.GalaxyModel(profile=mass_and_light)
+        prior = gp.GalaxyModel(redshift=0.5, profile=mass_and_light)
 
         assert 1 == len(prior.constant_light_profiles)
         assert 1 == len(prior.constant_mass_profiles)
 
     def test_make_galaxy_from_constant_profile(self, mass_and_light):
-        prior = gp.GalaxyModel(profile=mass_and_light)
+        prior = gp.GalaxyModel(redshift=0.5, profile=mass_and_light)
 
         galaxy = prior.instance_for_arguments({})
 
@@ -81,7 +81,7 @@ class TestMassAndLightProfiles(object):
         assert galaxy.mass_profiles[0] == mass_and_light
 
     def test_make_galaxy_from_variable_profile(self):
-        galaxy_prior = gp.GalaxyModel(profile=light_and_mass_profiles.EllipticalSersic)
+        galaxy_prior = gp.GalaxyModel(redshift=0.5, profile=light_and_mass_profiles.EllipticalSersic)
 
         arguments = {
             galaxy_prior.profile.centre.centre_0: 1.0,
@@ -300,7 +300,7 @@ class TestRegularization(object):
 
 class TestHyperGalaxy(object):
     def test_hyper_galaxy(self, ):
-        galaxy_prior = gp.GalaxyModel(hyper_galaxy=g.HyperGalaxy, redshift=g.Redshift)
+        galaxy_prior = gp.GalaxyModel(redshift=g.Redshift, hyper_galaxy=g.HyperGalaxy)
 
         arguments = {galaxy_prior.redshift.redshift: 0.2,
                      galaxy_prior.hyper_galaxy.contribution_factor: 1,

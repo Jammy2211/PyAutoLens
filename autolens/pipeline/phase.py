@@ -929,9 +929,10 @@ class MultiPlanePhase(PhaseImaging):
 
 
 class GalaxyFitPhase(AbstractPhase):
+
     galaxies = PhaseProperty("galaxies")
 
-    def __init__(self, phase_name, phase_tagging=True, phase_folders=None, galaxies=None, use_intensities=False,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None, use_intensities=False,
                  use_convergence=False,
                  use_potential=False,
                  use_deflections=False, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
@@ -948,7 +949,7 @@ class GalaxyFitPhase(AbstractPhase):
             The side length of the subgrid
         """
 
-        super(GalaxyFitPhase, self).__init__(phase_name=phase_name, phase_tagging=phase_tagging,
+        super(GalaxyFitPhase, self).__init__(phase_name=phase_name, tag_phases=tag_phases,
                                              phase_folders=phase_folders,
                                              optimizer_class=optimizer_class, cosmology=cosmology)
         self.use_intensities = use_intensities
