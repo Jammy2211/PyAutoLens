@@ -2017,6 +2017,9 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
         """
         An external shear term, to model the line-of-sight contribution of other galaxies / satellites.
 
+        The shear angle phi is defined in the direction of stretching of the image. Therefore, if an object located \
+        outside the lens is responsible for the shear, it will be offset 90 degrees from the value of phi.
+
         Parameters
         ----------
         magnitude : float

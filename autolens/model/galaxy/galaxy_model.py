@@ -64,7 +64,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
                 prior_model.flat_prior_model_tuples]
 
-    def __init__(self, align_centres=False, align_axis_ratios=False, align_orientations=False, redshift=None,
+    def __init__(self, redshift, align_centres=False, align_axis_ratios=False, align_orientations=False,
                  pixelization=None, regularization=None, hyper_galaxy=None, **kwargs):
         """Class to produce Galaxy instances from sets of profile classes and other model-fitting attributes (e.g. \
          pixelizations, regularization schemes, hyper-galaxyes) using the model mapper.

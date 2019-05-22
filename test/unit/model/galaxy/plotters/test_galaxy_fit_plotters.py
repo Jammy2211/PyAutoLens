@@ -15,7 +15,7 @@ def make_galaxy_fitting_plotter_setup():
 
 @pytest.fixture(name='galaxy')
 def make_galaxy():
-    return g.Galaxy(light=lp.SphericalSersic(intensity=1.0), mass=mp.SphericalIsothermal(einstein_radius=1.0))
+    return g.Galaxy(redshift=0.5, light=lp.SphericalSersic(intensity=1.0), mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 @pytest.fixture(name='positions')
 def make_positions():

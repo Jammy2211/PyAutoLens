@@ -114,7 +114,7 @@ class TestImagePlanePixelization:
         grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
                                                                                       psf_shape=(1, 1))
 
-        galaxy = g.Galaxy()
+        galaxy = g.Galaxy(redshift=0.5)
 
         image_plane_pix_grids = \
             pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
@@ -131,7 +131,7 @@ class TestImagePlanePixelization:
         grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
                                                                                       psf_shape=(1, 1))
 
-        galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3,3)),
+        galaxy = g.Galaxy(redshift=0.5, pixelization=pixelizations.Rectangular(shape=(3,3)),
                           regularization=regularization.Constant())
 
 
@@ -150,7 +150,7 @@ class TestImagePlanePixelization:
         grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
                                                                                              psf_shape=(1, 1))
 
-        galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
+        galaxy = g.Galaxy(redshift=0.5, pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                           regularization=regularization.Constant())
 
         image_plane_pix_grids = \
@@ -168,7 +168,7 @@ class TestImagePlanePixelization:
         grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
                                                                                       psf_shape=(1, 1))
 
-        galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
+        galaxy = g.Galaxy(redshift=0.5, pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                           regularization=regularization.Constant())
 
         image_plane_pix_grids = \

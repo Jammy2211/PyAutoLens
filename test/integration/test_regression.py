@@ -72,7 +72,7 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
 class TestAdvancedModelMapper(object):
     def test_fully_qualified_paramnames(self):
         mapper = mm.ModelMapper()
-        galaxy_model = gm.GalaxyModel(light_profile=lp.EllipticalLightProfile)
+        galaxy_model = gm.GalaxyModel(redshift=0.5, light_profile=lp.EllipticalLightProfile)
         light_profile = galaxy_model.light_profile
         mapper.galaxy_model = galaxy_model
 
@@ -95,7 +95,7 @@ class TestPhaseModelMapper(object):
         sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=1.0, effective_radius=1.3,
                                      sersic_index=3.0)
 
-        lens_galaxy = galaxy.Galaxy(light_profile=sersic)
+        lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
                                    source_galaxies=[], target_signal_to_noise=10.0)
@@ -113,7 +113,7 @@ class TestPhaseModelMapper(object):
             def pass_priors(self, results):
                 self.lens_galaxies.lens.sersic.intensity = self.lens_galaxies.lens.sersic.axis_ratio
 
-        phase = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
+        phase = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)),
                         optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
         initial_total_priors = phase.variable.prior_count
@@ -145,7 +145,7 @@ class TestPhaseModelMapper(object):
         sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=1.0, effective_radius=1.3,
                                      sersic_index=3.0)
 
-        lens_galaxy = galaxy.Galaxy(light_profile=sersic)
+        lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
                                    source_galaxies=[], target_signal_to_noise=10.0)
@@ -166,7 +166,7 @@ class TestPhaseModelMapper(object):
                 self.lens_galaxies.lens.sersic.effective_radius = 1.3
                 self.lens_galaxies.lens.sersic.sersic_index = 3.0
 
-        phase = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
+        phase = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)),
                         optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(name))
 
         phase.optimizer.n_live_points = 20

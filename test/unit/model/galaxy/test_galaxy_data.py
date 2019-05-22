@@ -118,7 +118,7 @@ class TestGalaxyFitData(object):
 
         assert (intensities == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        galaxy = g.Galaxy(light=lp.SphericalSersic(intensity=1.0))
+        galaxy = g.Galaxy(redshift=0.5, light=lp.SphericalSersic(intensity=1.0))
 
         intensities_gal = galaxy.intensities_from_grid(grid=galaxy_fit_data.grid_stack.sub)
         intensities_gal = galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=intensities_gal)
@@ -152,7 +152,7 @@ class TestGalaxyFitData(object):
 
         assert (convergence == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+        galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         convergence_gal = galaxy.convergence_from_grid(grid=galaxy_fit_data.grid_stack.sub)
         convergence_gal = galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=convergence_gal)
@@ -186,7 +186,7 @@ class TestGalaxyFitData(object):
 
         assert (potential == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+        galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         potential_gal = galaxy.potential_from_grid(grid=galaxy_fit_data.grid_stack.sub)
         potential_gal = galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=potential_gal)
@@ -220,7 +220,7 @@ class TestGalaxyFitData(object):
 
         assert (deflections_y == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+        galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid_stack.sub)
         deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(deflections_gal[:, 0]),
@@ -255,7 +255,7 @@ class TestGalaxyFitData(object):
 
         assert (deflections_x == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+        galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid_stack.sub)
         deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(deflections_gal[:, 0]),

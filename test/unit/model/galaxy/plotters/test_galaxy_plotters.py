@@ -8,12 +8,12 @@ import numpy as np
 
 @pytest.fixture(name='galaxy_light')
 def make_galaxy_light():
-    return g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+    return g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
 
 @pytest.fixture(name='galaxy_mass')
 def make_galaxy_mass():
-    return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+    return g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
 @pytest.fixture(name='positions')

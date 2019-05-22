@@ -132,7 +132,7 @@ class TestGalaxyFit:
 
             galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_intensities=True)
 
-            galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(1.0, 2.0), intensity=1.0))
+            galaxy = g.Galaxy(redshift=0.5, light=lp.SphericalSersic(centre=(1.0, 2.0), intensity=1.0))
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 
             assert fit.model_galaxies == [galaxy]
@@ -180,7 +180,7 @@ class TestGalaxyFit:
 
             galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_convergence=True)
 
-            galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
+            galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 
             assert fit.model_galaxies == [galaxy]
@@ -228,7 +228,7 @@ class TestGalaxyFit:
 
             galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_potential=True)
 
-            galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
+            galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
 
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 
@@ -277,7 +277,7 @@ class TestGalaxyFit:
                                             [True, False, False, False, True],
                                             [True, True, True, True, True]]), pixel_scale=1.0)
 
-            galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
+            galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
             galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2,
                                                use_deflections_y=True)
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
@@ -326,7 +326,7 @@ class TestGalaxyFit:
                                             [True, False, False, False, True],
                                             [True, True, True, True, True]]), pixel_scale=1.0)
 
-            galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
+            galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
             galaxy_fit_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_deflections_x=True)
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 

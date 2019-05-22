@@ -20,7 +20,7 @@ class Galaxy(object):
     @DynamicAttrs
     """
 
-    def __init__(self, redshift=None, pixelization=None, regularization=None, hyper_galaxy=None,
+    def __init__(self, redshift, pixelization=None, regularization=None, hyper_galaxy=None,
                  hyper_model_image_1d=None, hyper_galaxy_image_1d=None, hyper_minimum_value=None, **kwargs):
         """Class representing a galaxy, which is composed of attributes used for fitting hyper (e.g. light profiles, \ 
         mass profiles, pixelizations, etc.).

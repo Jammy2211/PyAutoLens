@@ -50,20 +50,21 @@ def make_padded_grid_stack():
 
 @pytest.fixture(name='galaxy_non', scope='function')
 def make_galaxy_non():
-    return g.Galaxy()
+    return g.Galaxy(redshift=0.5)
 
 @pytest.fixture(name="galaxy_light")
 def make_galaxy_light():
-    return g.Galaxy(light_profile=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=1.0, phi=0.0, intensity=1.0,
+    return g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                       effective_radius=0.6, sersic_index=4.0))
 
 @pytest.fixture(name="galaxy_mass")
 def make_galaxy_mass():
-    return g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+    return g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
 
 @pytest.fixture(name='galaxy_mass_x2')
 def make_galaxy_mass_x2():
-    return g.Galaxy(sis_0=mp.SphericalIsothermal(einstein_radius=1.0),
+    return g.Galaxy(redshift=0.5,
+                    sis_0=mp.SphericalIsothermal(einstein_radius=1.0),
                     sis_1=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
