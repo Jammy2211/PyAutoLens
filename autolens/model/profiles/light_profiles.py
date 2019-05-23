@@ -51,7 +51,7 @@ class LightProfile(object):
     def summarize_in_units(
             self, radii, unit_length='arcsec', unit_luminosity='eps',
             exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15, **kwargs):
-        return ["Light Profile = {}".format(self.__class__.__name__), ""]
+        return ["Light Profile = {}\n".format(self.__class__.__name__)]
 
 
 # noinspection PyAbstractClass

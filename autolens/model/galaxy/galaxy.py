@@ -3,6 +3,8 @@ from itertools import count
 import numpy as np
 from astropy import cosmology as cosmo
 
+from autofit.tools import text_util as af_text_util
+from autolens import text_util
 from autolens import exc, dimensions as dim
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
@@ -318,34 +320,60 @@ class Galaxy(object):
         else:
             return None
 
+    def summarize_in_units(self, radii, whitespace=80,
+                          unit_length='arcsec', unit_luminosity='eps', unit_mass='solMass',
+                          redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
+
+        if hasattr(self, 'name'):
+            summary = ["Galaxy = {}\n".format(self.name)]
+            prefix_galaxy = self.name + '_'
+        else:
+            summary = ['Galaxy\n']
+            prefix_galaxy = ''
+
+        summary += [af_text_util.label_and_value_string(
+            label=prefix_galaxy+'redshift', value=self.redshift, whitespace=whitespace, format_str='{:.2f}')]
+
+        if self.has_light_profile:
+
+            summary += self.summarize_light_profiles_in_units(whitespace=whitespace, prefix=prefix_galaxy,
+                radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
+                redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+
+        if self.has_mass_profile:
+
+            summary += self.summarize_mass_profiles_in_units(whitespace=whitespace, prefix=prefix_galaxy,
+                radii=radii, unit_length=unit_length, unit_mass=unit_mass,
+                redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+
+        return summary
+
     def summarize_light_profiles_in_units(self, radii, whitespace=80, prefix='',
                                          unit_length='arcsec', unit_luminosity='eps',
                                          redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
 
-        summary = ['']
-        summary.append('GALAXY LIGHT')
-        summary.append('')
+        summary = ['\nGALAXY LIGHT\n\n']
 
         for radius in radii:
 
-            luminosity = self.luminosity_within_circle_in_units(unit_luminosity=unit_luminosity, radius=radius,
-                                                    redshift_source=redshift_source, cosmology=cosmology,
-                                                    kwargs=kwargs)
+            luminosity = self.luminosity_within_circle_in_units(
+                unit_luminosity=unit_luminosity, radius=radius, redshift_source=redshift_source, cosmology=cosmology,
+                kwargs=kwargs)
 
-            param = prefix + 'luminosity_within_{:.2f}_{}'.format(radius, unit_length)
-            value = '{:.4e} {}'.format(luminosity, unit_luminosity)
-            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+            summary += [text_util.within_radius_label_value_and_unit_string(
+                prefix=prefix+'luminosity', radius=radius, unit_length=unit_length, value=luminosity,
+                unit_value=unit_luminosity, whitespace=whitespace, format_str_value='{:.4e}')]
 
-        summary.append('')
-        summary.append('LIGHT PROFILES:')
+        summary.append('\nLIGHT PROFILES:\n\n')
 
         for light_profile in self.light_profiles:
-            summary.append('')
-            summary += light_profile.summarize_in_units(radii=radii, whitespace=whitespace,
-                                                       unit_length=unit_length, unit_luminosity=unit_luminosity,
-                                                       redshift_profile=self.redshift,
-                                                       redshift_source=redshift_source, cosmology=cosmology,
-                                                       kwargs=kwargs)
+
+            summary += light_profile.summarize_in_units(
+                radii=radii, whitespace=whitespace, unit_length=unit_length, unit_luminosity=unit_luminosity,
+                redshift_profile=self.redshift, redshift_source=redshift_source, cosmology=cosmology,
+                kwargs=kwargs)
+
+            summary += '\n'
 
         return summary
 
@@ -353,69 +381,39 @@ class Galaxy(object):
                                          unit_length='arcsec', unit_mass='solMass',
                                          redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
 
-        summary = ['']
-        summary.append('GALAXY MASS')
-        summary.append('')
+        summary = ['\nGALAXY MASS\n\n']
 
         einstein_radius = self.einstein_radius_in_units(unit_length=unit_length, cosmology=cosmology)
+
+        summary += [af_text_util.label_value_and_unit_string(label=prefix+'einstein_radius', value=einstein_radius,
+                                                        unit=unit_length, whitespace=whitespace, format_str='{:.2f}')]
 
         einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass, redshift_source=redshift_source,
                                                     cosmology=cosmology, kwargs=kwargs)
 
-        param = prefix + 'einstein_radius'
-        value = '{:.2f} {}'.format(einstein_radius, unit_length)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
-
-        param = prefix + 'einstein_mass'
-        value = '{:.4e} {}'.format(einstein_mass, unit_mass)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+        summary += [af_text_util.label_value_and_unit_string(label=prefix+'einstein_mass', value=einstein_mass,
+                                                        unit=unit_mass, whitespace=whitespace, format_str='{:.4e}')]
 
         for radius in radii:
-            mass = self.mass_within_circle_in_units(unit_mass=unit_mass, radius=radius,
-                                                    redshift_source=redshift_source, cosmology=cosmology,
-                                                    kwargs=kwargs)
 
-            param = prefix + 'mass_within_{:.2f}_{}'.format(radius, unit_length)
-            value = '{:.4e} {}'.format(mass, unit_mass)
-            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+            mass = self.mass_within_circle_in_units(unit_mass=unit_mass, radius=radius, redshift_source=redshift_source,
+                                                    cosmology=cosmology, kwargs=kwargs)
 
-        summary.append('')
-        summary.append('MASS PROFILES:')
+            summary += [text_util.within_radius_label_value_and_unit_string(
+                prefix=prefix+'mass', radius=radius, unit_length=unit_length, value=mass,
+                unit_value=unit_mass, whitespace=whitespace, format_str_value='{:.4e}')]
+
+        summary += ['\nMASS PROFILES:\n\n']
 
         for mass_profile in self.mass_profiles:
-            summary.append('')
+
             summary += mass_profile.summarize_in_units(radii=radii, whitespace=whitespace,
                                                        unit_length=unit_length, unit_mass=unit_mass,
                                                        redshift_profile=self.redshift,
                                                        redshift_source=redshift_source, cosmology=cosmology,
                                                        kwargs=kwargs)
 
-        return summary
-
-    def summarize_in_units(self, radii, whitespace=80,
-                          unit_length='arcsec', unit_luminosity='eps', unit_mass='solMass',
-                          redshift_source=None, cosmology=cosmo.Planck15, **kwargs):
-
-        if hasattr(self, 'name'):
-            summary = ["Galaxy = {}".format(self.name), '']
-            prefix_galaxy = self.name + '_'
-        else:
-            summary = ["Galaxy", '']
-            prefix_galaxy = ''
-
-        param = prefix_galaxy + 'redshift'
-        value = '{:.2f}'.format(self.redshift)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
-
-        if self.has_light_profile:
-            summary += self.summarize_light_profiles_in_units(whitespace=whitespace, prefix=prefix_galaxy,
-                radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
-                redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
-
-        if self.has_mass_profile:
-            summary += self.summarize_mass_profiles_in_units(whitespace=whitespace, prefix=prefix_galaxy,
-                radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-                redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
+            summary += '\n'
 
         return summary
 

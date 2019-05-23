@@ -97,7 +97,7 @@ class MassProfile(object):
                            unit_length='arcsec', unit_mass='solMass',
                            redshift_profile=None, redshift_source=None, cosmology=cosmo.Planck15,
                            whitespace=80, **kwargs):
-        return ["Mass Profile = {}".format(self.__class__.__name__), ""]
+        return ["Mass Profile = {}\n".format(self.__class__.__name__)]
 
     @property
     def unit_mass(self):

@@ -495,49 +495,38 @@ class TestSummarizeInUnits(object):
 
         index = 0
 
-        assert summary_text[index] == 'Galaxy' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == 'Galaxy\n' ; index += 1
         assert summary_text[index] ==  'redshift                                          0.50' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
-        assert summary_text[index] ==  'GALAXY LIGHT' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] ==  '\nGALAXY LIGHT\n\n' ; index += 1
         assert summary_text[index] == 'luminosity_within_10.00_arcsec                    1.8854e+02 eps' ; index += 1
         assert summary_text[index] == 'luminosity_within_500.00_arcsec                   1.9573e+02 eps' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
-        assert summary_text[index] ==  'LIGHT PROFILES:' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
-        assert summary_text[index] == 'Light Profile = SphericalSersic' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] ==  '\nLIGHT PROFILES:\n\n' ; index += 1
+        assert summary_text[index] == 'Light Profile = SphericalSersic\n' ; index += 1
         assert summary_text[index] == 'luminosity_within_10.00_arcsec                    6.2848e+01 eps' ; index += 1
         assert summary_text[index] == 'luminosity_within_500.00_arcsec                   6.5243e+01 eps' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
-        assert summary_text[index] == 'Light Profile = SphericalSersic' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == '\n' ; index += 1
+        assert summary_text[index] == 'Light Profile = SphericalSersic\n' ; index += 1
         assert summary_text[index] == 'luminosity_within_10.00_arcsec                    1.2570e+02 eps' ; index += 1
         assert summary_text[index] == 'luminosity_within_500.00_arcsec                   1.3049e+02 eps' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
-        assert summary_text[index] ==  'GALAXY MASS' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == '\n' ; index += 1
+        assert summary_text[index] ==  '\nGALAXY MASS\n\n' ; index += 1
         assert summary_text[index] == 'einstein_radius                                   3.00 arcsec' ; index += 1
         assert summary_text[index] == 'einstein_mass                                     1.5708e+01 angular' ; index += 1
         assert summary_text[index] == 'mass_within_10.00_arcsec                          9.4248e+01 angular' ; index += 1
         assert summary_text[index] == 'mass_within_500.00_arcsec                         4.7124e+03 angular' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
-        assert summary_text[index] ==  'MASS PROFILES:' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
-        assert summary_text[index] == 'Mass Profile = SphericalIsothermal' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] ==  '\nMASS PROFILES:\n\n' ; index += 1
+        assert summary_text[index] == 'Mass Profile = SphericalIsothermal\n' ; index += 1
         assert summary_text[index] == 'einstein_radius                                   1.00 arcsec' ; index += 1
         assert summary_text[index] == 'einstein_mass                                     3.1416e+00 angular' ; index += 1
         assert summary_text[index] == 'mass_within_10.00_arcsec                          3.1416e+01 angular' ; index += 1
         assert summary_text[index] == 'mass_within_500.00_arcsec                         1.5708e+03 angular' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
-        assert summary_text[index] == 'Mass Profile = SphericalIsothermal' ; index += 1
-        assert summary_text[index] ==  '' ; index += 1
+        assert summary_text[index] == '\n' ; index += 1
+        assert summary_text[index] == 'Mass Profile = SphericalIsothermal\n' ; index += 1
         assert summary_text[index] == 'einstein_radius                                   2.00 arcsec' ; index += 1
         assert summary_text[index] == 'einstein_mass                                     1.2566e+01 angular' ; index += 1
         assert summary_text[index] == 'mass_within_10.00_arcsec                          6.2832e+01 angular' ; index += 1
         assert summary_text[index] == 'mass_within_500.00_arcsec                         3.1416e+03 angular' ; index += 1
+        assert summary_text[index] == '\n' ; index += 1
 
 
 class TestHyperGalaxy(object):
