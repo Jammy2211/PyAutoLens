@@ -257,8 +257,7 @@ class TestSersic:
 
         index = 0
 
-        assert summary_text[index] == 'Light Profile = SphericalSersic' ; index += 1
-        assert summary_text[index] ==  ''  ; index += 1
+        assert summary_text[index] == 'Light Profile = SphericalSersic\n' ; index += 1
         assert summary_text[index] == 'sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps' ; index += 1
         assert summary_text[index] == 'sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps' ; index += 1
 
