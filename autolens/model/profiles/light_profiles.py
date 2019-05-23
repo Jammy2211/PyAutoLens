@@ -2,6 +2,7 @@ import numpy as np
 from astropy import cosmology as cosmo
 from scipy.integrate import quad
 
+from autolens import text_util
 from autofit.tools.dimension_type import map_types
 from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles
@@ -138,18 +139,20 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
                            unit_length='arcsec', unit_luminosity='eps',
                            exposure_time=None, redshift_profile=None, cosmology=cosmo.Planck15,
                            whitespace=80, **kwargs):
+
         summary = super().summarize_in_units(
             radii=radii, unit_length=unit_length, unit_luminosity=unit_luminosity,
             exposure_time=exposure_time, redshift_profile=redshift_profile, cosmology=cosmology, kwargs=kwargs)
 
         for radius in radii:
+
             luminosity = self.luminosity_within_circle_in_units(
                 unit_luminosity=unit_luminosity, radius=radius, redshift_profile=redshift_profile,
                 exposure_time=exposure_time, cosmology=cosmology, kwargs=kwargs)
 
-            param = prefix + 'luminosity_within_{:.2f}_{}'.format(radius, unit_length)
-            value = '{:.4e} {}'.format(luminosity, unit_luminosity)
-            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+            summary += [text_util.within_radius_label_value_and_unit_string(
+                prefix=prefix+'luminosity', radius=radius, unit_length=unit_length, value=luminosity,
+                unit_value=unit_luminosity, whitespace=whitespace, format_str_value='{:.4e}')]
 
         return summary
 

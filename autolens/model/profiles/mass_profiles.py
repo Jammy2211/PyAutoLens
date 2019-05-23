@@ -11,7 +11,9 @@ from scipy.optimize import fsolve
 from scipy.optimize import root_scalar
 from astropy import cosmology as cosmo
 
+from autofit.tools import text_util as af_text_util
 from autofit.tools.dimension_type import map_types
+from autolens import text_util
 from autolens import decorator_util, dimensions as dim
 from autolens.data.array import grids
 from autolens.model.profiles import geometry_profiles
@@ -304,18 +306,16 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             redshift_profile=redshift_profile, redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
         einstein_radius = self.einstein_radius_in_units(unit_length=unit_length,
-                                                        redshift_profile=redshift_profile, cosmology=cosmology, kwargs=kwargs)
+                                             redshift_profile=redshift_profile, cosmology=cosmology, kwargs=kwargs)
+
+        summary += [af_text_util.label_value_and_unit_string(label=prefix+'einstein_radius', value=einstein_radius,
+                                                        unit=unit_length, whitespace=whitespace, format_str='{:.2f}')]
 
         einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass, redshift_profile=redshift_profile,
                                                     redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
-        param = prefix + 'einstein_radius'
-        value = '{:.2f} {}'.format(einstein_radius, unit_length)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
-
-        param = prefix + 'einstein_mass'
-        value = '{:.4e} {}'.format(einstein_mass, unit_mass)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+        summary += [af_text_util.label_value_and_unit_string(label=prefix+'einstein_mass', value=einstein_mass,
+                                                        unit=unit_mass, whitespace=whitespace, format_str='{:.4e}')]
 
         for radius in radii:
 
@@ -323,9 +323,9 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                                                     redshift_source=redshift_source, cosmology=cosmology,
                                                     kwargs=kwargs)
 
-            param = prefix + 'mass_within_{:.2f}_{}'.format(radius, unit_length)
-            value = '{:.4e} {}'.format(mass, unit_mass)
-            summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+            summary += [text_util.within_radius_label_value_and_unit_string(
+                prefix=prefix+'mass', radius=radius, unit_length=unit_length, value=mass,
+                unit_value=unit_mass, whitespace=whitespace, format_str_value='{:.4e}')]
 
         return summary
 
@@ -961,45 +961,44 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
+        summary += [af_text_util.label_value_and_unit_string(
+            label=prefix+'rho_at_scale_radius', value=rho_at_scale_radius, unit=unit_mass + '/' + unit_length +'3',
+            whitespace=whitespace, format_str='{:.2f}')]
+
         delta_concentration = self.delta_concentration_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
+
+        summary += [af_text_util.label_and_value_string(
+            label=prefix+'delta_concentration', value=delta_concentration, whitespace=whitespace, format_str='{:.2f}')]
 
         concentration = self.concentration_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
+        summary += [af_text_util.label_and_value_string(
+            label=prefix+'concentration', value=concentration, whitespace=whitespace, format_str='{:.2f}')]
+
         radius_at_200 = self.radius_at_200_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
+
+        summary += [af_text_util.label_value_and_unit_string(
+            label=prefix+'radius_at_200x_cosmic_density', value=radius_at_200, unit=unit_length, whitespace=whitespace,
+            format_str='{:.2f}')]
 
         mass_at_200 = self.mass_at_200_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        param = prefix + 'rho_at_scale_radius'
-        value = '{:.2f} {} / {}3'.format(rho_at_scale_radius, unit_mass, unit_length)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+        summary += [af_text_util.label_value_and_unit_string(
+            label=prefix+'mass_at_200x_cosmic_density', value=mass_at_200, unit=unit_mass, whitespace=whitespace,
+            format_str='{:.4e}')]
 
-        param = prefix + 'delta_concentration'
-        value = '{:.2f}'.format(delta_concentration)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
-
-        param = prefix + 'concentration'
-        value = '{:.2f}'.format(concentration)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
-
-        param = prefix + 'radius_at_200x_cosmic_density'
-        value = '{:.2f} {}'.format(radius_at_200, unit_length)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
-
-        param = prefix + 'mass_at_200x_cosmic_density'
-        value = '{:.4e} {}'.format(mass_at_200, unit_mass)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
         return summary
 
     @property
@@ -1308,9 +1307,10 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
             redshift_profile=redshift_profile, redshift_source=redshift_source,
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density, cosmology=cosmology, kwargs=kwargs)
 
-        param = prefix + 'mass_at_truncation_radius'
-        value = '{:.4e} {}'.format(mass_at_truncation_radius, unit_mass)
-        summary.append(param + value.rjust(whitespace - len(param) + len(value)))
+        summary += [af_text_util.label_value_and_unit_string(
+            label=prefix+'mass_at_truncation_radius', value=mass_at_truncation_radius, unit=unit_mass,
+            whitespace=whitespace, format_str='{:.4e}')]
+
         return summary
 
 
