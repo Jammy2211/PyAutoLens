@@ -120,7 +120,7 @@ class GridStack(object):
         return self.regular.scaled_array_2d_from_array_1d(array_1d=blurred_image_1d)
 
     @classmethod
-    def grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape, optimal_sub_grid=True):
+    def grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         """Setup a grid-stack of grid_stack from a mask, sub-grid size and psf-shape.
 
         Parameters
@@ -133,13 +133,12 @@ class GridStack(object):
             the shape of the PSF used in the analysis, which defines the mask's blurring-region.
         """
         regular_grid = RegularGrid.from_mask(mask=mask)
-        sub_grid = SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size,
-                                                       optimal_sub_grid=optimal_sub_grid)
+        sub_grid = SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
         blurring_grid = RegularGrid.blurring_grid_from_mask_and_psf_shape(mask=mask, psf_shape=psf_shape)
         return GridStack(regular_grid, sub_grid, blurring_grid)
 
     @classmethod
-    def from_shape_pixel_scale_and_sub_grid_size(cls, shape, pixel_scale, sub_grid_size=2, optimal_sub_grid=True):
+    def from_shape_pixel_scale_and_sub_grid_size(cls, shape, pixel_scale, sub_grid_size=2):
         """Setup a grid-stack of grid_stack from a 2D array shape, a pixel scale and a sub-grid size.
         
         This grid corresponds to a fully unmasked 2D array.
@@ -155,13 +154,12 @@ class GridStack(object):
         """
         regular_grid = RegularGrid.from_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
         sub_grid = SubGrid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=shape, pixel_scale=pixel_scale, sub_grid_size=sub_grid_size, optimal_sub_grid=optimal_sub_grid)
+            shape=shape, pixel_scale=pixel_scale, sub_grid_size=sub_grid_size)
         blurring_grid = np.array([[0.0, 0.0]])
         return GridStack(regular_grid, sub_grid, blurring_grid)
 
     @classmethod
-    def padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape,
-                                                                optimal_sub_grid=True):
+    def padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         """Setup a grid-stack of masked grid_stack from a mask,  sub-grid size and psf-shape.
 
         Parameters
@@ -176,13 +174,13 @@ class GridStack(object):
         regular_padded_grid = PaddedRegularGrid.padded_grid_from_shape_psf_shape_and_pixel_scale(
             shape=mask.shape, psf_shape=psf_shape, pixel_scale=mask.pixel_scale)
         sub_padded_grid = PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=psf_shape, optimal_sub_grid=optimal_sub_grid)
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
         # TODO : The blurring grid is not used when the grid mapper is called, the 0.0 0.0 stops errors inr ayT_racing
         # TODO : implement a more explicit solution
         return GridStack(regular=regular_padded_grid, sub=sub_padded_grid, blurring=np.array([[0.0, 0.0]]))
 
     @classmethod
-    def grid_stack_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=2, optimal_sub_grid=True):
+    def grid_stack_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=2):
         """Setup a grid-stack of grid_stack for simulating an image of a strong lens, whereby the grid's use \
         padded-grid_stack to ensure that the PSF blurring in the simulation routine (*ccd.PrepatoryImage.simulate*) \
         is not degraded due to edge effects.
@@ -201,7 +199,7 @@ class GridStack(object):
         """
         return cls.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
             mask=msk.Mask(array=np.full(shape, False), pixel_scale=pixel_scale), sub_grid_size=sub_grid_size,
-            psf_shape=psf_shape, optimal_sub_grid=optimal_sub_grid)
+            psf_shape=psf_shape)
 
     def new_grid_stack_with_interpolator_added_to_each_grid(self, interp_pixel_scale):
         regular = self.regular.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
@@ -643,19 +641,19 @@ class SubGrid(RegularGrid):
 
     @property
     def unlensed_sub_grid(self):
-        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=self.mask, pixel_scales=self.mask.pixel_scales, sub_grid_size=self.sub_grid_size),
             self.mask, self.sub_grid_size)
 
     @property
     def unlensed_unmasked_sub_grid(self):
-        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full(self.mask.shape, False), pixel_scales=self.mask.pixel_scales,
             sub_grid_size=self.sub_grid_size),
             mask=self.mask, sub_grid_size=self.sub_grid_size)
 
     @classmethod
-    def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1, optimal_sub_grid=True):
+    def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
 
@@ -667,11 +665,11 @@ class SubGrid(RegularGrid):
             The size (sub_grid_size x sub_grid_size) of each unmasked pixels sub-grid.
         """
         sub_grid_masked = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size, optimal_sub_grid=optimal_sub_grid)
+            mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size)
         return SubGrid(sub_grid_masked, mask, sub_grid_size)
 
     @classmethod
-    def from_shape_pixel_scale_and_sub_grid_size(cls, shape, pixel_scale, sub_grid_size, optimal_sub_grid=True):
+    def from_shape_pixel_scale_and_sub_grid_size(cls, shape, pixel_scale, sub_grid_size):
         """Setup a sub-grid from a 2D array shape and pixel scale. Here, the center of every pixel on the 2D \
         array gives the grid's (y,x) arc-second coordinates, where each pixel has sub-pixels specified by the \
         sub-grid size.
@@ -689,7 +687,7 @@ class SubGrid(RegularGrid):
         """
         mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
         sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size, optimal_sub_grid=optimal_sub_grid)
+            mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size)
         return SubGrid(sub_grid, mask, sub_grid_size)
 
     def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
@@ -1018,7 +1016,7 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
         self.image_shape = image_shape
 
     @classmethod
-    def padded_grid_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape, optimal_sub_grid=True):
+    def padded_grid_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         """Setup an *PaddedSubGrid* for an input mask, sub-grid size and psf-shape.
 
         The center of every sub-pixel is used to setup the grid's (y,x) arc-second coordinates, including \
@@ -1037,8 +1035,7 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
         padded_shape = (mask.shape[0] + psf_shape[0] - 1, mask.shape[1] + psf_shape[1] - 1)
 
         padded_sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=np.full(padded_shape, False), pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size,
-            optimal_sub_grid=optimal_sub_grid)
+            mask=np.full(padded_shape, False), pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size)
 
         padded_mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=mask.pixel_scale)
 

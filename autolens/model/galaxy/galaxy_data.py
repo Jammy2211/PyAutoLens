@@ -33,8 +33,8 @@ class GalaxyData(object):
 
 class GalaxyFitData(object):
 
-    def __init__(self, galaxy_data, mask, sub_grid_size=2, use_intensities=False, use_convergence=False,
-                 use_potential=False, use_deflections_y=False, use_deflections_x=False):
+    def __init__(self, galaxy_data, mask, sub_grid_size=2, interp_pixel_scale=None, use_intensities=False,
+                 use_convergence=False, use_potential=False, use_deflections_y=False, use_deflections_x=False):
         """ A galaxy-fit data is a collection of fit data components which are used to fit a galaxy to another galaxy. \
         This is where a component of a galaxy's light profiles (e.g. intensities) or mass profiles (e.g. surface \
         density, potential or deflection angles) are fitted to one another.

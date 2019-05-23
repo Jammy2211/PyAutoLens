@@ -256,40 +256,25 @@ class TestSubGrid(object):
 
     def test__unlensed_sub_grid_compare_to_array_util(self, mask):
 
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=1, optimal_sub_grid=True)
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=1)
 
         assert type(sub_grid) == grids.SubGrid
         assert sub_grid.unlensed_sub_grid == \
                pytest.approx(np.array([[1, 0], [0, -1], [0, 0], [0, 1], [-1, 0]]), 1e-4)
 
-        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1)
 
         assert type(sub_grid) == grids.SubGrid
         assert sub_grid.unlensed_unmasked_sub_grid == pytest.approx(sub_grid_util, 1e-4)
 
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2, optimal_sub_grid=True)
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
 
-        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=2)
 
         assert type(sub_grid) == grids.SubGrid
         assert sub_grid.unlensed_unmasked_sub_grid == pytest.approx(sub_grid_util, 1e-4)
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=1, optimal_sub_grid=False)
-
-        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
-            mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1)
-
-        assert type(sub_grid) == grids.SubGrid
-        assert sub_grid.unlensed_unmasked_sub_grid == pytest.approx(sub_grid_util, 1e-4)
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2, optimal_sub_grid=False)
-
-        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
-            mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=2)
-
-        assert type(sub_grid) == grids.SubGrid
 
     def test_sub_to_pixel(self, sub_grid):
         assert (sub_grid.sub_to_regular == np.array(range(5))).all()
@@ -302,17 +287,10 @@ class TestSubGrid(object):
 
         mask = msk.Mask(mask, pixel_scale=3.0)
 
-        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2, optimal_sub_grid=True)
-
-        assert sub_grid == pytest.approx(sub_grid_util, 1e-4)
-
-        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
-            mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2)
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2, optimal_sub_grid=False)
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
 
         assert sub_grid == pytest.approx(sub_grid_util, 1e-4)
 
@@ -322,19 +300,11 @@ class TestSubGrid(object):
                          [False, False, False],
                          [False, False, False]])
 
-        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
         sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(3, 3), pixel_scale=3.0,
-                                                                          sub_grid_size=2, optimal_sub_grid=True)
-
-        assert sub_grid == pytest.approx(sub_grid_util, 1e-4)
-
-        sub_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
-            mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2)
-
-        sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(3, 3), pixel_scale=3.0,
-                                                                          sub_grid_size=2, optimal_sub_grid=False)
+                                                                          sub_grid_size=2)
 
         assert sub_grid == pytest.approx(sub_grid_util, 1e-4)
 
@@ -915,58 +885,24 @@ class TestPaddedGrids:
 
         def test__sub_padded_grid_coordinates__match_grid_2d_after_padding(self):
 
-            mask = msk.Mask(array=np.full((4, 4), False), pixel_scale=3.0)
-
-            sub_padded_grid = grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
-                mask=mask, sub_grid_size=3, psf_shape=(3, 3), optimal_sub_grid=False)
-
-            sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
-                mask=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_grid_size=3)
-
-            assert sub_padded_grid == pytest.approx(sub_padded_grid_util, 1e-4)
-
-            mask = msk.Mask(array=np.full((4, 5), False), pixel_scale=2.0)
-
-            sub_padded_grid = grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
-                mask=mask, sub_grid_size=1, psf_shape=(3, 3), optimal_sub_grid=False)
-
-            sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
-                mask=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_grid_size=1)
-
-            assert sub_padded_grid == pytest.approx(sub_padded_grid_util, 1e-4)
-
             mask = msk.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
 
             sub_padded_grid = grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
-                mask=mask, sub_grid_size=2, psf_shape=(3, 3), optimal_sub_grid=False)
+                mask=mask, sub_grid_size=2, psf_shape=(3, 3))
 
-            sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
+            sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
                 mask=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_grid_size=2)
 
             assert sub_padded_grid == pytest.approx(sub_padded_grid_util, 1e-4)
-
-            sub_padded_grid = grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
-                mask=mask, sub_grid_size=2, psf_shape=(3, 3), optimal_sub_grid=True)
-
-            sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
-                mask=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_grid_size=2)
 
             assert sub_padded_grid == pytest.approx(sub_padded_grid_util, 1e-4)
 
             mask = msk.Mask(array=np.full((2, 5), False), pixel_scale=8.0)
 
             sub_padded_grid = grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
-                mask=mask, sub_grid_size=4, psf_shape=(5, 5), optimal_sub_grid=False)
+                mask=mask, sub_grid_size=4, psf_shape=(5, 5))
 
-            sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
-                mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_grid_size=4)
-
-            assert sub_padded_grid == pytest.approx(sub_padded_grid_util, 1e-4)
-
-            sub_padded_grid = grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
-                mask=mask, sub_grid_size=4, psf_shape=(5, 5), optimal_sub_grid=True)
-
-            sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+            sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
                 mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_grid_size=4)
 
             assert sub_padded_grid == pytest.approx(sub_padded_grid_util, 1e-4)
@@ -1206,32 +1142,9 @@ class TestGridStack(object):
         mask = msk.Mask(mask, pixel_scale=1.0)
 
         padded_grids = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask, sub_grid_size=2, psf_shape=(3, 3), optimal_sub_grid=False)
+            mask, sub_grid_size=2, psf_shape=(3, 3))
 
-        regular_padded_grid_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
-            mask=np.full((4, 4), False),
-            pixel_scales=(1.0, 1.0))
-
-        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
-            mask=np.full((4, 4), False),
-            pixel_scales=(1.0, 1.0), sub_grid_size=2)
-
-        assert (padded_grids.regular == regular_padded_grid_util).all()
-        assert padded_grids.regular.image_shape == (2, 2)
-        assert padded_grids.regular.padded_shape == (4, 4)
-
-        assert padded_grids.sub == pytest.approx(sub_padded_grid_util, 1e-4)
-        assert padded_grids.sub.image_shape == (2, 2)
-        assert padded_grids.sub.padded_shape == (4, 4)
-
-        assert (padded_grids.blurring == np.array([0.0, 0.0])).all()
-
-        assert (padded_grids.pix == np.array([[0.0, 0.0]])).all()
-
-        padded_grids = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask, sub_grid_size=2, psf_shape=(3, 3), optimal_sub_grid=True)
-
-        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((4, 4), False),
             pixel_scales=(1.0, 1.0), sub_grid_size=2)
 
@@ -1246,32 +1159,9 @@ class TestGridStack(object):
     def test__for_simulation(self):
 
         padded_grids = grids.GridStack.grid_stack_for_simulation(shape=(2, 2), pixel_scale=1.0, sub_grid_size=2,
-                                                                 psf_shape=(3, 3), optimal_sub_grid=False)
+                                                                 psf_shape=(3, 3))
 
-        regular_padded_grid_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
-            mask=np.full((4, 4), False),
-            pixel_scales=(1.0, 1.0))
-
-        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_non_optimal_spacing(
-            mask=np.full((4, 4), False),
-            pixel_scales=(1.0, 1.0), sub_grid_size=2)
-
-        assert (padded_grids.regular == regular_padded_grid_util).all()
-        assert padded_grids.regular.image_shape == (2, 2)
-        assert padded_grids.regular.padded_shape == (4, 4)
-
-        assert padded_grids.sub == pytest.approx(sub_padded_grid_util, 1e-4)
-        assert padded_grids.sub.image_shape == (2, 2)
-        assert padded_grids.sub.padded_shape == (4, 4)
-
-        assert (padded_grids.blurring == np.array([0.0, 0.0])).all()
-
-        assert (padded_grids.pix == np.array([[0.0, 0.0]])).all()
-
-        padded_grids = grids.GridStack.grid_stack_for_simulation(shape=(2, 2), pixel_scale=1.0, sub_grid_size=2,
-                                                                 psf_shape=(3, 3), optimal_sub_grid=True)
-
-        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((4, 4), False),
             pixel_scales=(1.0, 1.0), sub_grid_size=2)
 
@@ -1391,7 +1281,6 @@ class TestGridStack(object):
         grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
                         mask=mask, sub_grid_size=2, psf_shape=(3, 3))
 
-        print(grid_stack.blurring)
         new_grid_stack = grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
 
         regular_grid_manual = grids.RegularGrid.from_mask(mask=mask)
@@ -1400,8 +1289,6 @@ class TestGridStack(object):
 
         assert (new_grid_stack.regular == regular_grid_manual).all()
         np.testing.assert_almost_equal(new_grid_stack.sub, sub_grid_manual)
-
-        print(new_grid_stack.blurring)
 
         assert (new_grid_stack.blurring == blurring_grid_manual).all()
 
