@@ -935,7 +935,8 @@ class GalaxyFitPhase(AbstractPhase):
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None, use_intensities=False,
                  use_convergence=False,
                  use_potential=False,
-                 use_deflections=False, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
+                 use_deflections=False, optimizer_class=non_linear.MultiNest,
+                 sub_grid_size=2, interp_pixel_scale=None,
                  mask_function=None, cosmology=cosmo.Planck15):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
@@ -958,6 +959,7 @@ class GalaxyFitPhase(AbstractPhase):
         self.use_deflections = use_deflections
         self.galaxies = galaxies
         self.sub_grid_size = sub_grid_size
+        self.interp_pixel_scale = interp_pixel_scale
         self.mask_function = mask_function
 
     def run(self, galaxy_data, results=None, mask=None):

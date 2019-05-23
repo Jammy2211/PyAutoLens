@@ -74,7 +74,7 @@ class TestGalaxyFitData(object):
         assert galaxy_data.padded_grid_stack.regular.image_shape == (4, 4)
         assert galaxy_data.padded_grid_stack.regular.padded_shape == (4, 4)
 
-        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size_optimal_spacing(
+        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
              mask=np.full((4, 4), False), pixel_scales=galaxy_data.unmasked_image.pixel_scales,
             sub_grid_size=galaxy_data.grid_stack.sub.sub_grid_size)
 
