@@ -77,10 +77,10 @@ class GalaxyFitData(object):
         self.sub_grid_size = sub_grid_size
 
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1), optimal_sub_grid=True)
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))
 
         self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1), optimal_sub_grid=True)
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))
 
         self.mask_2d = mask
         self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)

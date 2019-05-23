@@ -36,7 +36,7 @@ def make_mask():
 
 @pytest.fixture(name="lens_data")
 def make_lens_ccd(ccd, mask):
-    return ld.LensData(ccd_data=ccd, mask=mask, optimal_sub_grid=True)
+    return ld.LensData(ccd_data=ccd, mask=mask)
 
 
 class TestLensData(object):
@@ -159,7 +159,7 @@ class TestLensData(object):
 
     def test__uses_inversion__does_not_create_mapping_matrix_conovolver_if_false(self, ccd, mask):
 
-        lens_data = ld.LensData(ccd_data=ccd, mask=mask, optimal_sub_grid=True, uses_inversion=False)
+        lens_data = ld.LensData(ccd_data=ccd, mask=mask, uses_inversion=False)
 
         assert lens_data.convolver_mapping_matrix == None
 
