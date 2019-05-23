@@ -77,10 +77,20 @@ class GalaxyFitData(object):
         self.sub_grid_size = sub_grid_size
 
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(3, 3))
 
         self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(3, 3))
+
+        self.interp_pixel_scale = interp_pixel_scale
+
+        if interp_pixel_scale is not None:
+
+            self.grid_stack = self.grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
+                interp_pixel_scale=interp_pixel_scale)
+
+            self.padded_grid_stack = self.padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
+                interp_pixel_scale=interp_pixel_scale)
 
         self.mask_2d = mask
         self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
@@ -111,6 +121,7 @@ class GalaxyFitData(object):
             self.noise_map_1d = obj.noise_map_1d
             self.mask_1d = obj.mask_1d
             self.sub_grid_size = obj.sub_grid_size
+            self.interp_pixel_scale = obj.interp_pixel_scale
             self.grid_stack = obj.grid_stack
             self.padded_grid_stack = obj.padded_grid_stack
             self.use_intensities = obj.use_intensities

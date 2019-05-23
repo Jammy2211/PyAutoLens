@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from autolens import exc
+from autolens.data.array import grids
 from autolens.data.array.util import grid_util
 from autolens.data.array import mask as msk, scaled_array as sca
 from autolens.model.galaxy import galaxy as g, galaxy_data as gd
@@ -68,19 +69,56 @@ class TestGalaxyFitData(object):
     def test__padded_grid_stack(self, galaxy_data):
 
         padded_image_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
-            mask=np.full((4, 4), False),  pixel_scales=galaxy_data.unmasked_image.pixel_scales)
+            mask=np.full((6, 6), False),  pixel_scales=galaxy_data.unmasked_image.pixel_scales)
 
         assert (galaxy_data.padded_grid_stack.regular == padded_image_util).all()
         assert galaxy_data.padded_grid_stack.regular.image_shape == (4, 4)
-        assert galaxy_data.padded_grid_stack.regular.padded_shape == (4, 4)
+        assert galaxy_data.padded_grid_stack.regular.padded_shape == (6, 6)
 
         padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-             mask=np.full((4, 4), False), pixel_scales=galaxy_data.unmasked_image.pixel_scales,
+             mask=np.full((6,6), False), pixel_scales=galaxy_data.unmasked_image.pixel_scales,
             sub_grid_size=galaxy_data.grid_stack.sub.sub_grid_size)
 
         assert galaxy_data.padded_grid_stack.sub == pytest.approx(padded_sub_util, 1e-4)
         assert galaxy_data.padded_grid_stack.sub.image_shape == (4, 4)
-        assert galaxy_data.padded_grid_stack.sub.padded_shape == (4, 4)
+        assert galaxy_data.padded_grid_stack.sub.padded_shape == (6, 6)
+
+    def test__interp_pixel_scale(self, image, mask):
+
+        noise_map = sca.ScaledSquarePixelArray(array=2.0 * np.ones((4, 4)), pixel_scale=3.0)
+        galaxy_data = gd.GalaxyData(image=image, noise_map=noise_map, pixel_scale=3.0)
+        galaxy_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, interp_pixel_scale=1.0, use_intensities=True)
+
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+                        mask=mask, sub_grid_size=2, psf_shape=(3, 3))
+        new_grid_stack = grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
+
+        assert (galaxy_data.grid_stack.regular == new_grid_stack.regular).all()
+        assert (galaxy_data.grid_stack.regular.interpolator.vtx == new_grid_stack.regular.interpolator.vtx).all()
+        assert (galaxy_data.grid_stack.regular.interpolator.wts == new_grid_stack.regular.interpolator.wts).all()
+
+        assert (galaxy_data.grid_stack.sub == new_grid_stack.sub).all()
+        assert (galaxy_data.grid_stack.sub.interpolator.vtx == new_grid_stack.sub.interpolator.vtx).all()
+        assert (galaxy_data.grid_stack.sub.interpolator.wts == new_grid_stack.sub.interpolator.wts).all()
+
+        assert (galaxy_data.grid_stack.blurring == new_grid_stack.blurring).all()
+        assert (galaxy_data.grid_stack.blurring.interpolator.vtx == new_grid_stack.blurring.interpolator.vtx).all()
+        assert (galaxy_data.grid_stack.blurring.interpolator.wts == new_grid_stack.blurring.interpolator.wts).all()
+
+        padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
+            mask=mask, sub_grid_size=2, psf_shape=(3, 3))
+        new_padded_grid_stack = \
+            padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
+
+        assert (galaxy_data.padded_grid_stack.regular == new_padded_grid_stack.regular).all()
+        assert (
+                    galaxy_data.padded_grid_stack.regular.interpolator.vtx == new_padded_grid_stack.regular.interpolator.vtx).all()
+        assert (
+                    galaxy_data.padded_grid_stack.regular.interpolator.wts == new_padded_grid_stack.regular.interpolator.wts).all()
+
+        assert (galaxy_data.padded_grid_stack.sub == new_padded_grid_stack.sub).all()
+        assert (galaxy_data.padded_grid_stack.sub.interpolator.vtx == new_padded_grid_stack.sub.interpolator.vtx).all()
+        assert (galaxy_data.padded_grid_stack.sub.interpolator.wts == new_padded_grid_stack.sub.interpolator.wts).all()
 
     def test__galaxy_data_intensities(self, image, mask):
 
