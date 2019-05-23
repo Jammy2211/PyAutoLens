@@ -1159,8 +1159,6 @@ class Interpolator(object):
 
     def __init__(self, grid, interp_grid):
 
-        print(grid)
-
         self.grid = grid
         self.interp_grid = interp_grid
 

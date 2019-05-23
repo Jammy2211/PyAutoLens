@@ -1011,6 +1011,7 @@ class GalaxyFitPhase(AbstractPhase):
         if self.use_intensities or self.use_convergence or self.use_potential:
 
             galaxy_data = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask, sub_grid_size=self.sub_grid_size,
+                                           interp_pixel_scale=self.interp_pixel_scale,
                                            use_intensities=self.use_intensities,
                                            use_convergence=self.use_convergence,
                                            use_potential=self.use_potential,
@@ -1024,12 +1025,14 @@ class GalaxyFitPhase(AbstractPhase):
         elif self.use_deflections:
 
             galaxy_data_y = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask, sub_grid_size=self.sub_grid_size,
+                                             interp_pixel_scale=self.interp_pixel_scale,
                                              use_intensities=self.use_intensities,
                                              use_convergence=self.use_convergence,
                                              use_potential=self.use_potential,
                                              use_deflections_y=self.use_deflections, use_deflections_x=False)
 
             galaxy_data_x = gd.GalaxyFitData(galaxy_data=galaxy_data[1], mask=mask, sub_grid_size=self.sub_grid_size,
+                                             interp_pixel_scale=self.interp_pixel_scale,
                                              use_intensities=self.use_intensities,
                                              use_convergence=self.use_convergence,
                                              use_potential=self.use_potential,
