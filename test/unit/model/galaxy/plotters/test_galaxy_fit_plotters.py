@@ -24,15 +24,15 @@ def make_positions():
 
 @pytest.fixture(name='image')
 def make_image():
-    return scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=3.0)
+    return scaled_array.ScaledSquarePixelArray(array=np.ones((7, 7)), pixel_scale=3.0)
 
 @pytest.fixture(name='noise_map')
 def make_noise_map():
-    return scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=3.0)
+    return scaled_array.ScaledSquarePixelArray(array=np.ones((7, 7)), pixel_scale=3.0)
 
 @pytest.fixture(name='mask')
 def make_mask():
-    return msk.Mask.circular(shape=((3, 3)), pixel_scale=0.1, radius_arcsec=0.1)
+    return msk.Mask.circular(shape=((7, 7)), pixel_scale=0.1, radius_arcsec=0.1)
 
 @pytest.fixture(name='galaxy_data')
 def make_galaxy_data(image, noise_map):
