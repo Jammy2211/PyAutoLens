@@ -265,6 +265,9 @@ class PhasePositions(AbstractPhase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, results=results)
+
+        self.assert_and_save_pickle()
+
         result = self.run_analysis(analysis)
         return self.make_result(result, analysis)
 
@@ -420,6 +423,8 @@ class PhaseImaging(Phase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(data=data, results=results, mask=mask, positions=positions)
+
+        self.assert_and_save_pickle()
 
         result = self.run_analysis(analysis)
 
@@ -979,6 +984,9 @@ class GalaxyFitPhase(AbstractPhase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(galaxy_data=galaxy_data, results=results, mask=mask)
+
+        self.assert_and_save_pickle()
+
         result = self.run_analysis(analysis)
 
         return self.make_result(result, analysis)
