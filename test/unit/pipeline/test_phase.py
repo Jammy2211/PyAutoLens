@@ -481,7 +481,7 @@ class TestPhase(object):
                                             lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
                                         source_galaxies=dict(
                                             source=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
-                                        phase_name='test_phase')
+                                        phase_name='test_phase_test_fit')
         result = phase.run(data=ccd_data)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
         assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
