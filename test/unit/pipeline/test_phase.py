@@ -48,6 +48,9 @@ class MockAnalysis(object):
     def galaxy_images_for_model(self, model):
         return self.number_galaxies * [np.array([self.value])]
 
+    def fit(self, instance):
+        return 1
+
 
 class MockResults(object):
     def __init__(self, model_image=None, galaxy_images=(), constant=None, analysis=None, optimizer=None):
@@ -71,11 +74,9 @@ class MockResult:
 class NLO(non_linear.NonLinearOptimizer):
 
     def fit(self, analysis):
-
         class Fitness(object):
 
             def __init__(self, instance_from_physical_vector):
-
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
 
@@ -332,7 +333,6 @@ class TestPhase(object):
         assert phase.optimizer.variable.lens_galaxies == [galaxy_model]
 
     def test_make_analysis(self, phase, ccd_data, lens_data):
-
         analysis = phase.make_analysis(data=ccd_data)
 
         assert analysis.last_results is None
@@ -476,8 +476,10 @@ class TestPhase(object):
         clean_images()
 
         phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
-                                        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
-                                        source_galaxies=dict(source=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+                                        lens_galaxies=dict(
+                                            lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+                                        source_galaxies=dict(
+                                            source=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
                                         phase_name='test_phase')
         result = phase.run(data=ccd_data)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
@@ -528,7 +530,6 @@ class TestPhase(object):
         assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=32)).all()
 
     def test__check_if_phase_uses_inversion(self):
-
         phase = ph.LensPlanePhase(
             phase_name='test_phase',
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
@@ -566,7 +567,6 @@ class TestPhase(object):
         assert phase.uses_inversion == True
 
     def test__phase_with_no_inversion__convolver_mapping_matrix_of_lens_data_is_none(self, ccd_data, mask):
-
         phase = ph.LensPlanePhase(
             phase_name='test_phase',
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
@@ -576,7 +576,6 @@ class TestPhase(object):
         assert analysis.lens_data.convolver_mapping_matrix is None
 
     def test__lens_data_is_binned_up(self, ccd_data, mask):
-
         binned_up_ccd_data = ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=2)
         binned_up_mask = mask.binned_up_mask_from_mask(bin_up_factor=2)
 
@@ -601,7 +600,6 @@ class TestPhase(object):
         assert (analysis.lens_data.noise_map_1d == binned_up_lens_data.noise_map_1d).all()
 
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
-
         lens_galaxy = g.Galaxy(redshift=0.5)
         source_galaxy = g.Galaxy(redshift=0.5)
 
@@ -651,7 +649,6 @@ class TestPhase(object):
         assert padded_tracer.cosmology == cosmo.WMAP7
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
-
         lens_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=0.1))
         source_galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
@@ -759,9 +756,9 @@ class TestPhase(object):
 
         phase = LensPlanePhase2(
             lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic, sis=mp.SphericalIsothermal,
-                                                 redshift=g.Redshift),
-                                lens1=gm.GalaxyModel(sis=mp.SphericalIsothermal, redshift=g.Redshift)),
-                                optimizer_class=non_linear.MultiNest, phase_name='test_phase')
+                                                   redshift=g.Redshift),
+                               lens1=gm.GalaxyModel(sis=mp.SphericalIsothermal, redshift=g.Redshift)),
+            optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         # noinspection PyTypeChecker
         phase.pass_models(None)
@@ -794,7 +791,6 @@ class TestResult(object):
         assert isinstance(result, ph.AbstractPhase.Result)
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
-
         lens_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=0.1))
         source_galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
@@ -828,3 +824,44 @@ class TestResult(object):
         fit = lens_fit.LensProfileInversionFit(lens_data=lens_data, tracer=tracer)
 
         assert fit.evidence == fit_figure_of_merit
+
+
+class TestPhasePickle(object):
+    def test_assertion_failure(self):
+        def make_analysis(*args, **kwargs):
+            return MockAnalysis(1, 1)
+
+        phase = ph.LensPlanePhase(
+            phase_name="phase_name",
+            optimizer_class=NLO,
+            lens_galaxies=dict(lens=g.Galaxy(light=lp.EllipticalLightProfile, redshift=1))
+        )
+
+        phase.make_analysis = make_analysis
+        result = phase.run(None, None, None, None)
+        assert result is not None
+
+        phase = ph.LensPlanePhase(
+            phase_name="phase_name",
+            optimizer_class=NLO,
+            lens_galaxies=dict(lens=g.Galaxy(light=lp.EllipticalLightProfile, redshift=1))
+        )
+
+        print(phase.make_optimizer_pickle_path())
+
+        phase.make_analysis = make_analysis
+        result = phase.run(None, None, None, None)
+        assert result is not None
+
+        class CustomPhase(ph.LensPlanePhase):
+            def pass_priors(self, results):
+                self.lens_galaxies.lens.light.phi = 1.0
+
+        phase = CustomPhase(
+            phase_name="phase_name",
+            optimizer_class=NLO,
+            lens_galaxies=dict(lens=g.Galaxy(light=lp.EllipticalLightProfile, redshift=1))
+        )
+
+        with pytest.raises(AssertionError):
+            phase.run(None, None, None, None)
