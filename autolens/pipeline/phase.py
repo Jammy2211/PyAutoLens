@@ -695,11 +695,6 @@ class LensPlanePhase(PhaseImaging):
 
         uses_inversion = False
 
-        if isinstance(lens_galaxies, dict):
-            for key, galaxy_model in lens_galaxies.items():
-                if galaxy_model.pixelization is not None:
-                    uses_inversion = True
-
         super(LensPlanePhase, self).__init__(phase_name=phase_name,
                                              tag_phases=tag_phases,
                                              phase_folders=phase_folders,
@@ -720,8 +715,12 @@ class LensPlanePhase(PhaseImaging):
 
     @lens_galaxies.setter
     @set_defaults("lens_default")
-    def lens_galaxies(self, new_value):
-        self._lens_galaxies = new_value
+    def lens_galaxies(self, lens_galaxies):
+        if isinstance(lens_galaxies, dict):
+            for key, galaxy_model in lens_galaxies.items():
+                if galaxy_model.pixelization is not None:
+                    self.uses_inversion = True
+        self._lens_galaxies = lens_galaxies
 
     class Analysis(PhaseImaging.Analysis):
         def figure_of_merit_for_fit(self, tracer):
