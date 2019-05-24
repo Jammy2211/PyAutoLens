@@ -26,44 +26,53 @@ def make_lens_galaxies(lens_galaxy):
     return lens_galaxies
 
 
+@pytest.fixture(name="lens_result")
+def make_lens_result(lens_galaxies):
+    instance = model.ModelInstance()
+    instance.lens_galaxies = lens_galaxies
+
+    return ph.LensPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
+                                    ph.LensPlanePhase.Analysis(lens_data=None, cosmology=cosmo.Planck15,
+                                                               positions_threshold=1.0), None)
+
+
+@pytest.fixture(name="lens_source_result")
+def make_lens_source_result(source_galaxy, lens_galaxy):
+    source_galaxies = model.ModelInstance()
+    lens_galaxies = model.ModelInstance()
+    source_galaxies.source = source_galaxy
+    lens_galaxies.lens = lens_galaxy
+
+    instance = model.ModelInstance()
+    instance.source_galaxies = source_galaxies
+    instance.lens_galaxies = lens_galaxies
+
+    return ph.LensSourcePlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
+                                          ph.LensSourcePlanePhase.Analysis(lens_data=None,
+                                                                           cosmology=cosmo.Planck15,
+                                                                           positions_threshold=1.0), None)
+
+
+@pytest.fixture(name="multi_plane_result")
+def make_multi_plane_result(lens_galaxy, source_galaxy):
+    instance = model.ModelInstance()
+    galaxies = model.ModelInstance()
+    galaxies.lens = lens_galaxy
+    galaxies.source = source_galaxy
+    instance.galaxies = galaxies
+
+    return ph.MultiPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
+                                     ph.MultiPlanePhase.Analysis(lens_data=None,
+                                                                 cosmology=cosmo.Planck15,
+                                                                 positions_threshold=1.0), None)
+
+
 class TestImagePassing(object):
-    def test_lens_galaxy_dict(self, lens_galaxy, lens_galaxies):
-        instance = model.ModelInstance()
-        instance.lens_galaxies = lens_galaxies
+    def test_lens_galaxy_dict(self, lens_result, lens_galaxy):
+        assert lens_result.name_galaxy_tuples == [("lens", lens_galaxy)]
 
-        result = ph.LensPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
-                                          ph.LensPlanePhase.Analysis(lens_data=None, cosmology=cosmo.Planck15,
-                                                                     positions_threshold=1.0), None)
+    def test_lens_source_galaxy_dict(self, lens_source_result, lens_galaxy, source_galaxy):
+        assert lens_source_result.name_galaxy_tuples == [("lens", lens_galaxy), ("source", source_galaxy)]
 
-        assert result.name_galaxy_tuples == [("lens", lens_galaxy)]
-
-    def test_lens_source_galaxy_dict(self, lens_galaxy, source_galaxy):
-        source_galaxies = model.ModelInstance()
-        lens_galaxies = model.ModelInstance()
-        source_galaxies.source = source_galaxy
-        lens_galaxies.lens = lens_galaxy
-
-        instance = model.ModelInstance()
-        instance.source_galaxies = source_galaxies
-        instance.lens_galaxies = lens_galaxies
-
-        result = ph.LensSourcePlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
-                                                ph.LensSourcePlanePhase.Analysis(lens_data=None,
-                                                                                 cosmology=cosmo.Planck15,
-                                                                                 positions_threshold=1.0), None)
-
-        assert result.name_galaxy_tuples == [("lens", lens_galaxy), ("source", source_galaxy)]
-
-    def test_multi_plane_galaxy_dict(self, lens_galaxy, source_galaxy):
-        instance = model.ModelInstance()
-        galaxies = model.ModelInstance()
-        galaxies.lens = lens_galaxy
-        galaxies.source = source_galaxy
-        instance.galaxies = galaxies
-
-        result = ph.MultiPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
-                                           ph.MultiPlanePhase.Analysis(lens_data=None,
-                                                                       cosmology=cosmo.Planck15,
-                                                                       positions_threshold=1.0), None)
-
-        assert result.name_galaxy_tuples == [("lens", lens_galaxy), ("source", source_galaxy)]
+    def test_multi_plane_galaxy_dict(self, multi_plane_result, lens_galaxy, source_galaxy):
+        assert multi_plane_result.name_galaxy_tuples == [("lens", lens_galaxy), ("source", source_galaxy)]
