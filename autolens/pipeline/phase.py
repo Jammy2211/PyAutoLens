@@ -234,7 +234,6 @@ class Phase(AbstractPhase):
 
 
 class PhasePositions(AbstractPhase):
-
     lens_galaxies = PhaseProperty("lens_galaxies")
 
     @property
@@ -473,8 +472,6 @@ class PhaseImaging(Phase):
 
         if self.bin_up_factor is not None:
             lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(bin_up_factor=self.bin_up_factor)
-
-
 
         self.output_phase_info()
 
@@ -935,7 +932,6 @@ class MultiPlanePhase(PhaseImaging):
 
 
 class GalaxyFitPhase(AbstractPhase):
-
     galaxies = PhaseProperty("galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None, use_intensities=False,
@@ -1015,8 +1011,6 @@ class GalaxyFitPhase(AbstractPhase):
 
         mask = setup_phase_mask(data=galaxy_data[0], mask=mask, mask_function=self.mask_function,
                                 inner_mask_radii=None)
-
-
 
         if self.use_intensities or self.use_convergence or self.use_potential:
 
@@ -1269,7 +1263,6 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class SensitivityPhase(PhaseImaging):
-
     lens_galaxies = PhaseProperty("lens_galaxies")
     source_galaxies = PhaseProperty("source_galaxies")
     sensitive_galaxies = PhaseProperty("sensitive_galaxies")
@@ -1379,7 +1372,6 @@ class SensitivityPhase(PhaseImaging):
 
 
 class HyperGalaxyPhase(Phase):
-
     class Analysis(non_linear.Analysis):
 
         def __init__(self, lens_data, model_image, galaxy_image):
@@ -1420,7 +1412,6 @@ class HyperGalaxyPhase(Phase):
             return fit.figure_of_merit
 
         def fit_for_hyper_galaxy(self, hyper_galaxy):
-
             hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
                 hyper_model_image=self.model_image, hyper_galaxy_image=self.galaxy_image,
                 hyper_minimum_value=0.0)
