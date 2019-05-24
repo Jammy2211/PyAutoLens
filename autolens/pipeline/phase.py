@@ -341,7 +341,7 @@ class PhaseImaging(Phase):
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  inversion_psf_shape=None, positions_threshold=None, mask_function=None, inner_mask_radii=None,
-                 interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False, uses_inversion=True):
+                 interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False):
 
         """
 
@@ -382,7 +382,10 @@ class PhaseImaging(Phase):
         self.mask_function = mask_function
         self.inner_mask_radii = inner_mask_radii
         self.interp_pixel_scale = interp_pixel_scale
-        self.uses_inversion = uses_inversion
+
+    @property
+    def uses_inversion(self) -> bool:
+        return False
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, results):
@@ -697,8 +700,6 @@ class LensPlanePhase(PhaseImaging):
                  image_psf_shape=None, mask_function=None, inner_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
 
-        uses_inversion = False
-
         super(LensPlanePhase, self).__init__(phase_name=phase_name,
                                              tag_phases=tag_phases,
                                              phase_folders=phase_folders,
@@ -709,21 +710,23 @@ class LensPlanePhase(PhaseImaging):
                                              mask_function=mask_function,
                                              inner_mask_radii=inner_mask_radii,
                                              cosmology=cosmology,
-                                             auto_link_priors=auto_link_priors,
-                                             uses_inversion=uses_inversion)
+                                             auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
 
     @property
     def lens_galaxies(self):
         return self._lens_galaxies
 
+    @property
+    def uses_inversion(self):
+        for galaxy_model in self.lens_galaxies:
+            if galaxy_model.pixelization is not None:
+                return True
+        return False
+
     @lens_galaxies.setter
     @set_defaults("lens_default")
     def lens_galaxies(self, lens_galaxies):
-        if isinstance(lens_galaxies, dict):
-            for key, galaxy_model in lens_galaxies.items():
-                if galaxy_model.pixelization is not None:
-                    self.uses_inversion = True
         self._lens_galaxies = lens_galaxies
 
     class Analysis(PhaseImaging.Analysis):
@@ -800,19 +803,6 @@ class LensSourcePlanePhase(PhaseImaging):
         sub_grid_size: int
             The side length of the subgrid
         """
-
-        uses_inversion = False
-
-        if isinstance(lens_galaxies, dict):
-            for key, galaxy_model in lens_galaxies.items():
-                if galaxy_model.pixelization is not None:
-                    uses_inversion = True
-
-        if isinstance(source_galaxies, dict):
-            for key, galaxy_model in source_galaxies.items():
-                if galaxy_model.pixelization is not None:
-                    uses_inversion = True
-
         super(LensSourcePlanePhase, self).__init__(phase_name=phase_name,
                                                    tag_phases=tag_phases,
                                                    phase_folders=phase_folders,
@@ -825,10 +815,20 @@ class LensSourcePlanePhase(PhaseImaging):
                                                    interp_pixel_scale=interp_pixel_scale,
                                                    inner_mask_radii=inner_mask_radii,
                                                    cosmology=cosmology,
-                                                   auto_link_priors=auto_link_priors,
-                                                   uses_inversion=uses_inversion)
+                                                   auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
+
+    @property
+    def uses_inversion(self):
+        for galaxy_model in self.lens_galaxies:
+            if galaxy_model.pixelization is not None:
+                return True
+
+        for galaxy_model in self.source_galaxies:
+            if galaxy_model.pixelization is not None:
+                return True
+        return False
 
     class Analysis(PhaseImaging.Analysis):
         def figure_of_merit_for_fit(self, tracer):
@@ -869,10 +869,6 @@ class MultiPlanePhase(PhaseImaging):
 
     galaxies = PhaseProperty("galaxies")
 
-    @property
-    def phase_property_collections(self):
-        return [self.galaxies]
-
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
                  optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None,
@@ -902,9 +898,15 @@ class MultiPlanePhase(PhaseImaging):
                                               mask_function=mask_function,
                                               inner_mask_radii=inner_mask_radii,
                                               cosmology=cosmology,
-                                              auto_link_priors=auto_link_priors,
-                                              uses_inversion=True)
+                                              auto_link_priors=auto_link_priors)
         self.galaxies = galaxies
+
+    @property
+    def uses_inversion(self):
+        for galaxy in self.galaxies:
+            if galaxy.pixelization is not None:
+                return True
+        return False
 
     class Analysis(PhaseImaging.Analysis):
 
