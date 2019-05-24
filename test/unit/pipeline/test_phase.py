@@ -785,7 +785,7 @@ class TestResult(object):
 
         phase = ph.LensPlanePhase(optimizer_class=NLO,
                                   lens_galaxies=[g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))],
-                                  phase_name='test_phase')
+                                  phase_name='test_phase_2')
 
         result = phase.run(data=ccd_data)
 
@@ -829,7 +829,7 @@ class TestResult(object):
 
 class TestPhasePickle(object):
     # noinspection PyTypeChecker
-    def test_assertion_failure(self):
+    def test_assertion_failure(self, ccd_data):
         def make_analysis(*args, **kwargs):
             return MockAnalysis(1, 1)
 
@@ -840,7 +840,7 @@ class TestPhasePickle(object):
         )
 
         phase.make_analysis = make_analysis
-        result = phase.run(None, None, None, None)
+        result = phase.run(ccd_data, None, None, None)
         assert result is not None
 
         phase = ph.LensPlanePhase(
@@ -852,12 +852,12 @@ class TestPhasePickle(object):
         print(phase.make_optimizer_pickle_path())
 
         phase.make_analysis = make_analysis
-        result = phase.run(None, None, None, None)
+        result = phase.run(ccd_data, None, None, None)
         assert result is not None
 
         class CustomPhase(ph.LensPlanePhase):
             def pass_priors(self, results):
-                self.lens_galaxies.lens.light.phi = 1.0
+                self.lens_galaxies.lens.light = lp.EllipticalLightProfile()
 
         phase = CustomPhase(
             phase_name="phase_name",
@@ -867,4 +867,4 @@ class TestPhasePickle(object):
         phase.make_analysis = make_analysis
 
         with pytest.raises(PipelineException):
-            phase.run(None, None, None, None)
+            phase.run(ccd_data, None, None, None)

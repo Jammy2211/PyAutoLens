@@ -266,6 +266,7 @@ class PhasePositions(AbstractPhase):
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, results=results)
 
+        self.pass_priors(results)
         self.assert_and_save_pickle()
 
         result = self.run_analysis(analysis)
@@ -288,7 +289,7 @@ class PhasePositions(AbstractPhase):
         lens: Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        self.pass_priors(results)
+
         analysis = self.__class__.Analysis(positions=positions, pixel_scale=pixel_scale, cosmology=self.cosmology,
                                            results=results)
         return analysis
@@ -424,6 +425,7 @@ class PhaseImaging(Phase):
         """
         analysis = self.make_analysis(data=data, results=results, mask=mask, positions=positions)
 
+        self.pass_priors(results)
         self.assert_and_save_pickle()
 
         result = self.run_analysis(analysis)
@@ -472,7 +474,7 @@ class PhaseImaging(Phase):
         if self.bin_up_factor is not None:
             lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(bin_up_factor=self.bin_up_factor)
 
-        self.pass_priors(results)
+
 
         self.output_phase_info()
 
@@ -985,6 +987,7 @@ class GalaxyFitPhase(AbstractPhase):
         """
         analysis = self.make_analysis(galaxy_data=galaxy_data, results=results, mask=mask)
 
+        self.pass_priors(results)
         self.assert_and_save_pickle()
 
         result = self.run_analysis(analysis)
@@ -1013,7 +1016,7 @@ class GalaxyFitPhase(AbstractPhase):
         mask = setup_phase_mask(data=galaxy_data[0], mask=mask, mask_function=self.mask_function,
                                 inner_mask_radii=None)
 
-        self.pass_priors(results)
+
 
         if self.use_intensities or self.use_convergence or self.use_potential:
 
@@ -1425,7 +1428,7 @@ class HyperGalaxyPhase(Phase):
             hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
             return lens_fit.LensDataFit(image_1d=self.lens_data.image_1d, noise_map_1d=hyper_noise_map_1d,
                                         mask_1d=self.lens_data.mask_1d, model_image_1d=self.model_image,
-                                        map_to_scaled_array=lens_data.map_to_scaled_array)
+                                        map_to_scaled_array=self.lens_data.map_to_scaled_array)
 
         @classmethod
         def describe(cls, instance):
