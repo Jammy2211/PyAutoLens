@@ -2,6 +2,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 from autofit.mapper import model
+from autofit.mapper import model_mapper as mm
 from autolens.model import galaxy as g
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -30,7 +31,7 @@ class TestImagePassing(object):
         instance = model.ModelInstance()
         instance.lens_galaxies = lens_galaxies
 
-        result = ph.LensPlanePhase.Result(instance, 1.0, None, None,
+        result = ph.LensPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
                                           ph.LensPlanePhase.Analysis(lens_data=None, cosmology=cosmo.Planck15,
                                                                      positions_threshold=1.0), None)
 
@@ -46,7 +47,7 @@ class TestImagePassing(object):
         instance.source_galaxies = source_galaxies
         instance.lens_galaxies = lens_galaxies
 
-        result = ph.LensSourcePlanePhase.Result(instance, 1.0, None, None,
+        result = ph.LensSourcePlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
                                                 ph.LensSourcePlanePhase.Analysis(lens_data=None,
                                                                                  cosmology=cosmo.Planck15,
                                                                                  positions_threshold=1.0), None)
@@ -60,7 +61,7 @@ class TestImagePassing(object):
         galaxies.source = source_galaxy
         instance.galaxies = galaxies
 
-        result = ph.MultiPlanePhase.Result(instance, 1.0, None, None,
+        result = ph.MultiPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
                                            ph.MultiPlanePhase.Analysis(lens_data=None,
                                                                        cosmology=cosmo.Planck15,
                                                                        positions_threshold=1.0), None)
