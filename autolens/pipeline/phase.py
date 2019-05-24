@@ -710,6 +710,10 @@ class LensPlanePhase(PhaseImaging):
         def unmasked_lens_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[0]
 
+        @property
+        def name_galaxy_tuples(self):
+            return self.constant.lens_galaxies.name_instance_tuples_for_class(g.Galaxy)
+
 
 class LensSourcePlanePhase(PhaseImaging):
     """
