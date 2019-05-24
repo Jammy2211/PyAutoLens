@@ -657,10 +657,6 @@ class LensPlanePhase(PhaseImaging):
 
     lens_galaxies = PhaseProperty("lens_galaxies")
 
-    @property
-    def phase_property_collections(self):
-        return [self.lens_galaxies]
-
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, lens_galaxies=None,
                  optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, bin_up_factor=None,
@@ -792,7 +788,6 @@ class LensSourcePlanePhase(PhaseImaging):
                 instance.lens_galaxies, instance.source_galaxies)
 
     class Result(PhaseImaging.Result):
-
         @property
         def unmasked_lens_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[0]
@@ -800,6 +795,11 @@ class LensSourcePlanePhase(PhaseImaging):
         @property
         def unmasked_source_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[1]
+
+        @property
+        def name_galaxy_tuples(self):
+            return (self.constant.lens_galaxies.name_instance_tuples_for_class(g.Galaxy) +
+                    self.constant.source_galaxies.name_instance_tuples_for_class(g.Galaxy))
 
 
 class MultiPlanePhase(PhaseImaging):
