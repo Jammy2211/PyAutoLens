@@ -4,6 +4,7 @@ from astropy import cosmology as cosmo
 
 from autofit.mapper import model
 from autofit.mapper import model_mapper as mm
+from autolens.data import convolution
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.model import galaxy as g
@@ -14,10 +15,12 @@ from test.unit.mock.mock_imaging import MockBorders
 
 
 class MockData:
-    def __init__(self, grid_stack, padded_grid_stack, border):
+    def __init__(self, grid_stack, padded_grid_stack, border, noise_map_1d, convolver_image):
         self.grid_stack = grid_stack
         self.padded_grid_stack = padded_grid_stack
         self.border = border
+        self.noise_map_1d = noise_map_1d
+        self.convolver_image = convolver_image
 
 
 @pytest.fixture(name="lens_data")
@@ -28,11 +31,20 @@ def make_lens_data():
 
     grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=2,
                                                                                   psf_shape=(3, 3))
-    mask = msk.Mask(np.array([[True, False]]), pixel_scale=3.0)
+
     padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask, 2, (3, 3))
     border = MockBorders()
+    noise_map_1d = np.array([5.0, 3.0, 1.0])
 
-    return MockData(grid_stack, padded_grid_stack, border)
+    psf = np.array([[1.0, 1.0, 1.0],
+                    [1.0, 1.0, 1.0],
+                    [1.0, 1.0, 1.0]])
+    blurring_mask = msk.Mask(array=np.array([[False, False, False, False],
+                                             [False, True, True, False],
+                                             [False, True, True, False]]), pixel_scale=1.0)
+    convolver_image = convolution.ConvolverImage(mask=mask, blurring_mask=blurring_mask, psf=psf)
+
+    return MockData(grid_stack, padded_grid_stack, border, noise_map_1d, convolver_image)
 
 
 @pytest.fixture(name="lens_galaxy")
@@ -42,7 +54,7 @@ def make_lens_galaxy():
 
 @pytest.fixture(name="source_galaxy")
 def make_source_galaxy():
-    return g.Galaxy(light=lp.EllipticalLightProfile(), redshift=2.0)
+    return g.Galaxy(light=lp.EllipticalCoreSersic(), redshift=2.0)
 
 
 @pytest.fixture(name="lens_galaxies")
