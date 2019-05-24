@@ -500,6 +500,7 @@ class TestPhase(object):
 
         phase = MyPlanePhaseAnd(optimizer_class=NLO, phase_name='test_phase')
         phase.make_analysis(data=ccd_data, results=results_collection)
+        phase.pass_priors(results_collection)
 
         assert phase.lens_galaxies == [galaxy]
         assert phase.source_galaxies == [galaxy_model]
