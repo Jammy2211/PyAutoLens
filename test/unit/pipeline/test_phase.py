@@ -11,6 +11,7 @@ from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
 from autofit.optimize import non_linear
 from autolens import exc
+from autofit.exc import PipelineException
 from autolens.data import ccd
 from autolens.data.array import grids, mask as msk
 from autolens.data.array import scaled_array
@@ -827,6 +828,7 @@ class TestResult(object):
 
 
 class TestPhasePickle(object):
+    # noinspection PyTypeChecker
     def test_assertion_failure(self):
         def make_analysis(*args, **kwargs):
             return MockAnalysis(1, 1)
@@ -862,6 +864,7 @@ class TestPhasePickle(object):
             optimizer_class=NLO,
             lens_galaxies=dict(lens=g.Galaxy(light=lp.EllipticalLightProfile, redshift=1))
         )
+        phase.make_analysis = make_analysis
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(PipelineException):
             phase.run(None, None, None, None)
