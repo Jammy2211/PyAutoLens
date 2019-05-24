@@ -13,6 +13,11 @@ def make_lens_galaxy():
     return g.Galaxy(mass=mp.EllipticalMassProfile(), redshift=1.0)
 
 
+@pytest.fixture(name="source_galaxy")
+def make_source_galaxy():
+    return g.Galaxy(light=lp.EllipticalLightProfile(), redshift=2.0)
+
+
 @pytest.fixture(name="lens_galaxies")
 def make_lens_galaxies(lens_galaxy):
     lens_galaxies = model.ModelInstance()
@@ -31,10 +36,9 @@ class TestImagePassing(object):
 
         assert result.name_galaxy_tuples == [("lens", lens_galaxy)]
 
-    def test_lens_source_galaxy_dict(self, lens_galaxy):
+    def test_lens_source_galaxy_dict(self, lens_galaxy, source_galaxy):
         source_galaxies = model.ModelInstance()
         lens_galaxies = model.ModelInstance()
-        source_galaxy = g.Galaxy(light=lp.EllipticalLightProfile(), redshift=1.0)
         source_galaxies.source = source_galaxy
         lens_galaxies.lens = lens_galaxy
 
@@ -46,5 +50,19 @@ class TestImagePassing(object):
                                                 ph.LensSourcePlanePhase.Analysis(lens_data=None,
                                                                                  cosmology=cosmo.Planck15,
                                                                                  positions_threshold=1.0), None)
+
+        assert result.name_galaxy_tuples == [("lens", lens_galaxy), ("source", source_galaxy)]
+
+    def test_multi_plane_galaxy_dict(self, lens_galaxy, source_galaxy):
+        instance = model.ModelInstance()
+        galaxies = model.ModelInstance()
+        galaxies.lens = lens_galaxy
+        galaxies.source = source_galaxy
+        instance.galaxies = galaxies
+
+        result = ph.MultiPlanePhase.Result(instance, 1.0, None, None,
+                                           ph.MultiPlanePhase.Analysis(lens_data=None,
+                                                                       cosmology=cosmo.Planck15,
+                                                                       positions_threshold=1.0), None)
 
         assert result.name_galaxy_tuples == [("lens", lens_galaxy), ("source", source_galaxy)]

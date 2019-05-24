@@ -872,6 +872,11 @@ class MultiPlanePhase(PhaseImaging):
         def describe(cls, instance):
             return "\nRunning multi-plane for... \n\nGalaxies:\n{}\n\n".format(instance.galaxies)
 
+    class Result(PhaseImaging.Result):
+        @property
+        def name_galaxy_tuples(self):
+            return self.constant.galaxies.name_instance_tuples_for_class(g.Galaxy)
+
 
 class GalaxyFitPhase(AbstractPhase):
     galaxies = PhaseProperty("galaxies")
