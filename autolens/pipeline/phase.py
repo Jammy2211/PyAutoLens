@@ -188,6 +188,14 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         def unmasked_image_for_galaxy(self, galaxy):
             return self.most_likely_fit.unmasked_model_image_for_galaxy(galaxy)
 
+        @property
+        def name_galaxy_tuples(self) -> [(str, g.Galaxy)]:
+            raise NotImplementedError()
+
+        @property
+        def image_dict(self) -> {str: g.Galaxy}:
+            return {name: self.unmasked_image_for_galaxy(galaxy) for name, galaxy in self.name_galaxy_tuples}
+
 
 class Phase(AbstractPhase):
 
