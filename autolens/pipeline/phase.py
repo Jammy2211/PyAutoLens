@@ -1,6 +1,5 @@
 import copy
 
-import functools
 import numpy as np
 from astropy import cosmology as cosmo
 
@@ -19,8 +18,6 @@ from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.pipeline import tagging as tag
 
-
-# from autolens.lens.summary import tracer_summary
 
 def default_mask_function(image):
     return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
@@ -653,42 +650,12 @@ class PhaseImaging(Phase):
             return self.lens_data.mask.map_2d_array_to_masked_1d_array(data)
 
 
-def set_defaults(key):
-    """
-    Load a default value for redshift from config and set it as the redshift for source or lens galaxies that have
-    falsey redshifts
-
-    Parameters
-    ----------
-    key: str
-
-    Returns
-    -------
-    decorator
-        A decorator that wraps the setter function to set defaults
-    """
-
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(phase, new_value):
-            new_value = new_value or []
-            for item in new_value:
-                # noinspection PyTypeChecker
-                galaxy = new_value[item] if isinstance(item, str) else item
-                galaxy.redshift = galaxy.redshift or conf.instance.general.get("redshift", key, float)
-            return func(phase, new_value)
-
-        return wrapper
-
-    return decorator
-
-
 class LensPlanePhase(PhaseImaging):
     """
     Fit only the lens galaxy light.
     """
 
-    _lens_galaxies = PhaseProperty("lens_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
 
     @property
     def phase_property_collections(self):
@@ -714,20 +681,11 @@ class LensPlanePhase(PhaseImaging):
         self.lens_galaxies = lens_galaxies
 
     @property
-    def lens_galaxies(self):
-        return self._lens_galaxies
-
-    @property
     def uses_inversion(self):
         for galaxy_model in self.lens_galaxies:
             if galaxy_model.pixelization is not None:
                 return True
         return False
-
-    @lens_galaxies.setter
-    @set_defaults("lens_default")
-    def lens_galaxies(self, lens_galaxies):
-        self._lens_galaxies = lens_galaxies
 
     class Analysis(PhaseImaging.Analysis):
         def figure_of_merit_for_fit(self, tracer):
@@ -758,30 +716,8 @@ class LensSourcePlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    _lens_galaxies = PhaseProperty("lens_galaxies")
-    _source_galaxies = PhaseProperty("source_galaxies")
-
-    @property
-    def lens_galaxies(self):
-        return self._lens_galaxies
-
-    @lens_galaxies.setter
-    @set_defaults("lens_default")
-    def lens_galaxies(self, new_value):
-        self._lens_galaxies = new_value
-
-    @property
-    def source_galaxies(self):
-        return self._source_galaxies
-
-    @source_galaxies.setter
-    @set_defaults("source_default")
-    def source_galaxies(self, new_value):
-        self._source_galaxies = new_value
-
-    @property
-    def phase_property_collections(self):
-        return [self.lens_galaxies, self.source_galaxies]
+    lens_galaxies = PhaseProperty("lens_galaxies")
+    source_galaxies = PhaseProperty("source_galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None,
                  lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
