@@ -1,6 +1,5 @@
 import copy
 
-import functools
 import numpy as np
 from astropy import cosmology as cosmo
 
@@ -19,8 +18,6 @@ from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.pipeline import tagging as tag
 
-
-# from autolens.lens.summary import tracer_summary
 
 def default_mask_function(image):
     return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
@@ -191,6 +188,14 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         def unmasked_image_for_galaxy(self, galaxy):
             return self.most_likely_fit.unmasked_model_image_for_galaxy(galaxy)
 
+        @property
+        def name_galaxy_tuples(self) -> [(str, g.Galaxy)]:
+            raise NotImplementedError()
+
+        @property
+        def image_dict(self) -> {str: g.Galaxy}:
+            return {name: self.unmasked_image_for_galaxy(galaxy) for name, galaxy in self.name_galaxy_tuples}
+
 
 class Phase(AbstractPhase):
 
@@ -234,7 +239,6 @@ class Phase(AbstractPhase):
 
 
 class PhasePositions(AbstractPhase):
-
     lens_galaxies = PhaseProperty("lens_galaxies")
 
     @property
@@ -265,6 +269,10 @@ class PhasePositions(AbstractPhase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, results=results)
+
+        self.pass_priors(results)
+        self.assert_and_save_pickle()
+
         result = self.run_analysis(analysis)
         return self.make_result(result, analysis)
 
@@ -285,7 +293,7 @@ class PhasePositions(AbstractPhase):
         lens: Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        self.pass_priors(results)
+
         analysis = self.__class__.Analysis(positions=positions, pixel_scale=pixel_scale, cosmology=self.cosmology,
                                            results=results)
         return analysis
@@ -338,7 +346,7 @@ class PhaseImaging(Phase):
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  inversion_psf_shape=None, positions_threshold=None, mask_function=None, inner_mask_radii=None,
-                 interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False, uses_inversion=True):
+                 interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False):
 
         """
 
@@ -379,7 +387,10 @@ class PhaseImaging(Phase):
         self.mask_function = mask_function
         self.inner_mask_radii = inner_mask_radii
         self.interp_pixel_scale = interp_pixel_scale
-        self.uses_inversion = uses_inversion
+
+    @property
+    def uses_inversion(self) -> bool:
+        return False
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, results):
@@ -420,6 +431,9 @@ class PhaseImaging(Phase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(data=data, results=results, mask=mask, positions=positions)
+
+        self.pass_priors(results)
+        self.assert_and_save_pickle()
 
         result = self.run_analysis(analysis)
 
@@ -466,8 +480,6 @@ class PhaseImaging(Phase):
 
         if self.bin_up_factor is not None:
             lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(bin_up_factor=self.bin_up_factor)
-
-        self.pass_priors(results)
 
         self.output_phase_info()
 
@@ -646,59 +658,18 @@ class PhaseImaging(Phase):
             return self.lens_data.mask.map_2d_array_to_masked_1d_array(data)
 
 
-def set_defaults(key):
-    """
-    Load a default value for redshift from config and set it as the redshift for source or lens galaxies that have
-    falsey redshifts
-
-    Parameters
-    ----------
-    key: str
-
-    Returns
-    -------
-    decorator
-        A decorator that wraps the setter function to set defaults
-    """
-
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(phase, new_value):
-            new_value = new_value or []
-            for item in new_value:
-                # noinspection PyTypeChecker
-                galaxy = new_value[item] if isinstance(item, str) else item
-                galaxy.redshift = galaxy.redshift or conf.instance.general.get("redshift", key, float)
-            return func(phase, new_value)
-
-        return wrapper
-
-    return decorator
-
-
 class LensPlanePhase(PhaseImaging):
     """
     Fit only the lens galaxy light.
     """
 
-    _lens_galaxies = PhaseProperty("lens_galaxies")
-
-    @property
-    def phase_property_collections(self):
-        return [self.lens_galaxies]
+    lens_galaxies = PhaseProperty("lens_galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, lens_galaxies=None,
                  optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, bin_up_factor=None,
                  image_psf_shape=None, mask_function=None, inner_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
-
-        uses_inversion = False
-
-        if isinstance(lens_galaxies, dict):
-            for key, galaxy_model in lens_galaxies.items():
-                if galaxy_model.pixelization is not None:
-                    uses_inversion = True
 
         super(LensPlanePhase, self).__init__(phase_name=phase_name,
                                              tag_phases=tag_phases,
@@ -710,18 +681,15 @@ class LensPlanePhase(PhaseImaging):
                                              mask_function=mask_function,
                                              inner_mask_radii=inner_mask_radii,
                                              cosmology=cosmology,
-                                             auto_link_priors=auto_link_priors,
-                                             uses_inversion=uses_inversion)
+                                             auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
 
     @property
-    def lens_galaxies(self):
-        return self._lens_galaxies
-
-    @lens_galaxies.setter
-    @set_defaults("lens_default")
-    def lens_galaxies(self, new_value):
-        self._lens_galaxies = new_value
+    def uses_inversion(self):
+        for galaxy_model in self.lens_galaxies:
+            if galaxy_model.pixelization is not None:
+                return True
+        return False
 
     class Analysis(PhaseImaging.Analysis):
         def figure_of_merit_for_fit(self, tracer):
@@ -746,36 +714,18 @@ class LensPlanePhase(PhaseImaging):
         def unmasked_lens_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[0]
 
+        @property
+        def name_galaxy_tuples(self):
+            return self.constant.lens_galaxies.name_instance_tuples_for_class(g.Galaxy)
+
 
 class LensSourcePlanePhase(PhaseImaging):
     """
     Fit a simple source and lens system.
     """
 
-    _lens_galaxies = PhaseProperty("lens_galaxies")
-    _source_galaxies = PhaseProperty("source_galaxies")
-
-    @property
-    def lens_galaxies(self):
-        return self._lens_galaxies
-
-    @lens_galaxies.setter
-    @set_defaults("lens_default")
-    def lens_galaxies(self, new_value):
-        self._lens_galaxies = new_value
-
-    @property
-    def source_galaxies(self):
-        return self._source_galaxies
-
-    @source_galaxies.setter
-    @set_defaults("source_default")
-    def source_galaxies(self, new_value):
-        self._source_galaxies = new_value
-
-    @property
-    def phase_property_collections(self):
-        return [self.lens_galaxies, self.source_galaxies]
+    lens_galaxies = PhaseProperty("lens_galaxies")
+    source_galaxies = PhaseProperty("source_galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None,
                  lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
@@ -797,19 +747,6 @@ class LensSourcePlanePhase(PhaseImaging):
         sub_grid_size: int
             The side length of the subgrid
         """
-
-        uses_inversion = False
-
-        if isinstance(lens_galaxies, dict):
-            for key, galaxy_model in lens_galaxies.items():
-                if galaxy_model.pixelization is not None:
-                    uses_inversion = True
-
-        if isinstance(source_galaxies, dict):
-            for key, galaxy_model in source_galaxies.items():
-                if galaxy_model.pixelization is not None:
-                    uses_inversion = True
-
         super(LensSourcePlanePhase, self).__init__(phase_name=phase_name,
                                                    tag_phases=tag_phases,
                                                    phase_folders=phase_folders,
@@ -822,10 +759,20 @@ class LensSourcePlanePhase(PhaseImaging):
                                                    interp_pixel_scale=interp_pixel_scale,
                                                    inner_mask_radii=inner_mask_radii,
                                                    cosmology=cosmology,
-                                                   auto_link_priors=auto_link_priors,
-                                                   uses_inversion=uses_inversion)
+                                                   auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
+
+    @property
+    def uses_inversion(self):
+        for galaxy_model in self.lens_galaxies:
+            if galaxy_model.pixelization is not None:
+                return True
+
+        for galaxy_model in self.source_galaxies:
+            if galaxy_model.pixelization is not None:
+                return True
+        return False
 
     class Analysis(PhaseImaging.Analysis):
         def figure_of_merit_for_fit(self, tracer):
@@ -849,7 +796,6 @@ class LensSourcePlanePhase(PhaseImaging):
                 instance.lens_galaxies, instance.source_galaxies)
 
     class Result(PhaseImaging.Result):
-
         @property
         def unmasked_lens_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[0]
@@ -858,6 +804,11 @@ class LensSourcePlanePhase(PhaseImaging):
         def unmasked_source_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[1]
 
+        @property
+        def name_galaxy_tuples(self):
+            return (self.constant.lens_galaxies.name_instance_tuples_for_class(g.Galaxy) +
+                    self.constant.source_galaxies.name_instance_tuples_for_class(g.Galaxy))
+
 
 class MultiPlanePhase(PhaseImaging):
     """
@@ -865,10 +816,6 @@ class MultiPlanePhase(PhaseImaging):
     """
 
     galaxies = PhaseProperty("galaxies")
-
-    @property
-    def phase_property_collections(self):
-        return [self.galaxies]
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
                  optimizer_class=non_linear.MultiNest,
@@ -899,9 +846,15 @@ class MultiPlanePhase(PhaseImaging):
                                               mask_function=mask_function,
                                               inner_mask_radii=inner_mask_radii,
                                               cosmology=cosmology,
-                                              auto_link_priors=auto_link_priors,
-                                              uses_inversion=True)
+                                              auto_link_priors=auto_link_priors)
         self.galaxies = galaxies
+
+    @property
+    def uses_inversion(self):
+        for galaxy in self.galaxies:
+            if galaxy.pixelization is not None:
+                return True
+        return False
 
     class Analysis(PhaseImaging.Analysis):
 
@@ -927,9 +880,13 @@ class MultiPlanePhase(PhaseImaging):
         def describe(cls, instance):
             return "\nRunning multi-plane for... \n\nGalaxies:\n{}\n\n".format(instance.galaxies)
 
+    class Result(PhaseImaging.Result):
+        @property
+        def name_galaxy_tuples(self):
+            return self.constant.galaxies.name_instance_tuples_for_class(g.Galaxy)
+
 
 class GalaxyFitPhase(AbstractPhase):
-
     galaxies = PhaseProperty("galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None, use_intensities=False,
@@ -980,6 +937,10 @@ class GalaxyFitPhase(AbstractPhase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(galaxy_data=galaxy_data, results=results, mask=mask)
+
+        self.pass_priors(results)
+        self.assert_and_save_pickle()
+
         result = self.run_analysis(analysis)
 
         return self.make_result(result, analysis)
@@ -1005,8 +966,6 @@ class GalaxyFitPhase(AbstractPhase):
 
         mask = setup_phase_mask(data=galaxy_data[0], mask=mask, mask_function=self.mask_function,
                                 inner_mask_radii=None)
-
-        self.pass_priors(results)
 
         if self.use_intensities or self.use_convergence or self.use_potential:
 
@@ -1259,7 +1218,6 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class SensitivityPhase(PhaseImaging):
-
     lens_galaxies = PhaseProperty("lens_galaxies")
     source_galaxies = PhaseProperty("source_galaxies")
     sensitive_galaxies = PhaseProperty("sensitive_galaxies")
@@ -1369,7 +1327,6 @@ class SensitivityPhase(PhaseImaging):
 
 
 class HyperGalaxyPhase(Phase):
-
     class Analysis(non_linear.Analysis):
 
         def __init__(self, lens_data, model_image, galaxy_image):
@@ -1410,7 +1367,6 @@ class HyperGalaxyPhase(Phase):
             return fit.figure_of_merit
 
         def fit_for_hyper_galaxy(self, hyper_galaxy):
-
             hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
                 hyper_model_image=self.model_image, hyper_galaxy_image=self.galaxy_image,
                 hyper_minimum_value=0.0)
@@ -1418,7 +1374,7 @@ class HyperGalaxyPhase(Phase):
             hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
             return lens_fit.LensDataFit(image_1d=self.lens_data.image_1d, noise_map_1d=hyper_noise_map_1d,
                                         mask_1d=self.lens_data.mask_1d, model_image_1d=self.model_image,
-                                        map_to_scaled_array=lens_data.map_to_scaled_array)
+                                        map_to_scaled_array=self.lens_data.map_to_scaled_array)
 
         @classmethod
         def describe(cls, instance):
