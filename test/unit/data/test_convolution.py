@@ -423,6 +423,7 @@ class TestFrameLengths(object):
 
         assert (convolver.blurring_frame_lengths == np.array([5, 5, 5, 5])).all()
 
+
 class TestConvolution(object):
 
     def test_cross_mask_with_blurring_entries(self, cross_mask):
