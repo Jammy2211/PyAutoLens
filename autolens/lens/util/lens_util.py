@@ -137,7 +137,7 @@ def compute_deflections_at_next_plane(plane_index, total_planes):
     else:
         raise exc.RayTracingException('A galaxy was not correctly allocated its previous / next redshifts')
 
-def scaled_deflection_stack_from_plane_and_scaling_factor(plane, scaling_factor):
+def scaled_deflections_stack_from_plane_and_scaling_factor(plane, scaling_factor):
     """Given a plane and scaling factor, compute a set of scaled deflections.
 
     Parameters
@@ -152,19 +152,19 @@ def scaled_deflection_stack_from_plane_and_scaling_factor(plane, scaling_factor)
     def scale(grid):
         return np.multiply(scaling_factor, grid)
 
-    if plane.deflection_stack is not None:
-        return plane.deflection_stack.apply_function(scale)
+    if plane.deflections_stack is not None:
+        return plane.deflections_stack.apply_function(scale)
     else:
         return None
 
-def grid_stack_from_deflection_stack(grid_stack, deflection_stack):
+def grid_stack_from_deflections_stack(grid_stack, deflections_stack):
     """For a deflection stack, comput a new grid stack but subtracting the deflections"""
 
-    if deflection_stack is not None:
+    if deflections_stack is not None:
         def minus(grid, deflections):
             return grid - deflections
 
-        return grid_stack.map_function(minus, deflection_stack)
+        return grid_stack.map_function(minus, deflections_stack)
 
 def traced_collection_for_deflections(grid_stack, deflections):
 
