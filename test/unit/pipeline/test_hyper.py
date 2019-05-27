@@ -15,46 +15,63 @@ from test.unit.mock.mock_imaging import MockBorders
 
 
 class MockData:
-    def __init__(self, grid_stack, padded_grid_stack, border, noise_map_1d, convolver_image):
+    def __init__(self, grid_stack, padded_grid_stack, border, image_1d, noise_map_1d, mask_1d, mask_2d, psf,
+                 convolver_image, map_to_scaled_array):
         self.grid_stack = grid_stack
         self.padded_grid_stack = padded_grid_stack
         self.border = border
+        self.image_1d = image_1d
         self.noise_map_1d = noise_map_1d
+        self.mask_1d = mask_1d
+        self.mask_2d = mask_2d
+        self.psf = psf
         self.convolver_image = convolver_image
+        self.map_to_scaled_array = map_to_scaled_array
 
 
 @pytest.fixture(name="lens_data")
 def make_lens_data():
-    mask = msk.Mask(np.array([[True, True, True, True],
-                              [True, False, False, True],
-                              [True, True, True, True]]), pixel_scale=6.0)
+    mask = msk.Mask(np.array([[True, True,  True,  True, True, True],
+                              [True, True,  True,  True, True, True],
+                              [True, True, False, False, True, True],
+                              [True, True,  True,  True, True, True],
+                              [True, True,  True,  True, True, True],
+                              [True, True,  True,  True, True, True]]), pixel_scale=6.0)
 
     grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=2,
                                                                                   psf_shape=(3, 3))
 
     padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask, 2, (3, 3))
     border = MockBorders()
-    noise_map_1d = np.array([5.0, 3.0, 1.0])
+    image_1d = np.array([1.0, 1.0])
+    noise_map_1d = np.array([5.0, 3.0])
+    mask_1d = np.array([False, False])
 
     psf = np.array([[1.0, 1.0, 1.0],
                     [1.0, 1.0, 1.0],
                     [1.0, 1.0, 1.0]])
-    blurring_mask = msk.Mask(array=np.array([[False, False, False, False],
-                                             [False, True, True, False],
-                                             [False, True, True, False]]), pixel_scale=1.0)
+    blurring_mask = msk.Mask(array=np.array([[True,  True,   True,  True,  True, True],
+                                              [True, False, False, False, False, True],
+                                              [True, False,  True,  True, False, True],
+                                              [True, False, False, False, False, True],
+                                              [True,  True,  True,  True,  True, True],
+                                              [True,  True,  True,  True,  True, True]]), pixel_scale=1.0)
+
     convolver_image = convolution.ConvolverImage(mask=mask, blurring_mask=blurring_mask, psf=psf)
 
-    return MockData(grid_stack, padded_grid_stack, border, noise_map_1d, convolver_image)
+    return MockData(grid_stack=grid_stack, padded_grid_stack=padded_grid_stack, border=border, image_1d=image_1d,
+                    noise_map_1d=noise_map_1d, mask_1d=mask_1d, mask_2d=mask, psf=psf, convolver_image=convolver_image,
+                    map_to_scaled_array=grid_stack.scaled_array_2d_from_array_1d)
 
 
 @pytest.fixture(name="lens_galaxy")
 def make_lens_galaxy():
-    return g.Galaxy(mass=mp.EllipticalCoredPowerLaw(), redshift=1.0)
+    return g.Galaxy(redshift=1.0, light=lp.SphericalSersic(), mass=mp.EllipticalCoredPowerLaw())
 
 
 @pytest.fixture(name="source_galaxy")
 def make_source_galaxy():
-    return g.Galaxy(light=lp.EllipticalCoreSersic(), redshift=2.0)
+    return g.Galaxy(redshift=2.0, light=lp.EllipticalCoreSersic())
 
 
 @pytest.fixture(name="lens_galaxies")
@@ -106,6 +123,7 @@ def make_multi_plane_result(lens_galaxy, source_galaxy, lens_data):
 
 
 class TestImagePassing(object):
+
     def test_lens_galaxy_dict(self, lens_result, lens_galaxy):
         assert lens_result.name_galaxy_tuples == [("lens", lens_galaxy)]
 

@@ -84,7 +84,7 @@ class AbstractTracerCosmology(object):
 
         Parameters
         ----------
-        plane_redshifts : [pl.Plane] or [pl.PlaneStack]
+        plane_redshifts : [pl.Plane]
             The list of the tracer's planes in ascending redshift order.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
@@ -140,7 +140,7 @@ class AbstractTracer(AbstractTracerCosmology):
 
         Parameters
         ----------
-        planes : [pl.Plane] or [pl.PlaneStack]
+        planes : [pl.Plane]
             The list of the tracer's planes in ascending redshift order.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
@@ -301,12 +301,12 @@ class AbstractTracer(AbstractTracerCosmology):
                             redshift_0=tracer.plane_redshifts[previous_plane_index], redshift_1=redshift,
                             redshift_final=tracer.plane_redshifts[-1], cosmology=tracer.cosmology)
 
-                        scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                        scaled_deflections_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(
                             plane=tracer.planes[previous_plane_index], scaling_factor=scaling_factor)
 
                         new_grid_stack = \
-                            lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
-                                                                       deflection_stack=scaled_deflection_stack)
+                            lens_util.grid_stack_from_deflections_stack(grid_stack=new_grid_stack,
+                                                                        deflections_stack=scaled_deflections_stack)
 
                 # If redshift is before the first plane, no change to image pllane coordinates.
 
@@ -327,7 +327,7 @@ class AbstractTracerData(AbstractTracer):
 
         Parameters
         ----------
-        planes : [pl.Plane] or [pl.PlaneStack]
+        planes : [pl.Plane]
             The list of the tracer's planes in ascending redshift order.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
@@ -453,8 +453,8 @@ class TracerImagePlane(AbstractTracerData):
         if not lens_galaxies:
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
-        image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border,
-                               compute_deflections=True, cosmology=cosmology)
+        image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, deflections_stack=None,
+                               border=border, cosmology=cosmology)
 
         super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
 
@@ -487,13 +487,15 @@ class TracerImageSourcePlanes(AbstractTracerData):
         image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
             galaxies=source_galaxies, grid_stack=image_plane_grid_stack)
 
-        image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border,
-                               compute_deflections=True, cosmology=cosmology)
+        image_plane = pl.Plane.deflections_from_galaxies(
+            galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border, compute_deflections=True,
+            cosmology=cosmology)
 
         source_plane_grid_stack = image_plane.trace_grid_stack_to_next_plane()
 
-        source_plane = pl.Plane(galaxies=source_galaxies, grid_stack=source_plane_grid_stack, border=border,
-                                compute_deflections=False, cosmology=cosmology)
+        source_plane = pl.Plane.deflections_from_galaxies(
+            galaxies=source_galaxies, grid_stack=source_plane_grid_stack, border=border,
+            compute_deflections=False, cosmology=cosmology)
 
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
@@ -559,15 +561,16 @@ class TracerMultiPlanes(AbstractTracerData):
                         redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
                         redshift_final=plane_redshifts[-1], cosmology=cosmology)
 
-                    scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                    scaled_deflections_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(
                         plane=planes[previous_plane_index], scaling_factor=scaling_factor)
 
                     new_grid_stack = \
-                        lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
-                                                                   deflection_stack=scaled_deflection_stack)
+                        lens_util.grid_stack_from_deflections_stack(grid_stack=new_grid_stack,
+                                                                    deflections_stack=scaled_deflections_stack)
 
-            planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack,
-                                   border=border, compute_deflections=compute_deflections, cosmology=cosmology))
+            planes.append(pl.Plane.deflections_from_galaxies(
+                galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack, border=border,
+                compute_deflections=compute_deflections, cosmology=cosmology))
 
         super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
 
@@ -635,16 +638,16 @@ class TracerMultiPlanesSliced(AbstractTracerData):
                         redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
                         redshift_final=plane_redshifts[-1], cosmology=cosmology)
 
-                    scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                    scaled_deflections_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(
                         plane=planes[previous_plane_index], scaling_factor=scaling_factor)
 
                     new_grid_stack = \
-                        lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
-                                                                   deflection_stack=scaled_deflection_stack)
+                        lens_util.grid_stack_from_deflections_stack(grid_stack=new_grid_stack,
+                                                                    deflections_stack=scaled_deflections_stack)
 
-            planes.append(pl.PlaneSlice(redshift=plane_redshifts[plane_index], galaxies=galaxies_in_planes[plane_index],
-                                        grid_stack=new_grid_stack, border=border,
-                                        compute_deflections=compute_deflections, cosmology=cosmology))
+            planes.append(pl.Plane.deflections_from_galaxies(
+                redshift=plane_redshifts[plane_index], galaxies=galaxies_in_planes[plane_index],
+                grid_stack=new_grid_stack, border=border, compute_deflections=compute_deflections, cosmology=cosmology))
 
         super(TracerMultiPlanesSliced, self).__init__(planes=planes, cosmology=cosmology)
 

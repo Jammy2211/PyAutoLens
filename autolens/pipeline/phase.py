@@ -582,7 +582,7 @@ class PhaseImaging(Phase):
 
         def visualize(self, instance, image_path, during_analysis):
 
-            mask = self.lens_data.mask if self.should_plot_mask else None
+            mask = self.lens_data.mask_2d if self.should_plot_mask else None
             positions = self.lens_data.positions if self.should_plot_positions else None
 
             ccd_plotters.plot_ccd_for_phase(
@@ -710,6 +710,7 @@ class LensPlanePhase(PhaseImaging):
             return "\nRunning lens lens for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies)
 
     class Result(PhaseImaging.Result):
+
         @property
         def unmasked_lens_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[0]
