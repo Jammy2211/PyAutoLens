@@ -8,6 +8,7 @@ from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
 from autofit.mapper import prior_model as pm
 from autofit.optimize import non_linear as nl
+from autolens.data import simulated_ccd as sim_ccd
 from autolens.data import ccd
 from autolens.data.array import grids
 from autolens.data.array.util import array_util
@@ -32,7 +33,7 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
-    psf = ccd.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale)
+    psf = ccd.PSF.from_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale)
 
     grid_stack = grids.GridStack.grid_stack_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
                                                            sub_grid_size=1, psf_shape=psf_shape)
@@ -50,12 +51,9 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    ccd_simulated = ccd.CCDData.simulate_to_target_signal_to_noise(array=tracer.image_plane_image_for_simulation,
-                                                                   pixel_scale=pixel_scale,
-                                                                   target_signal_to_noise=target_signal_to_noise,
-                                                                   exposure_time_map=np.ones(image_shape),
-                                                                   background_sky_map=10.0 * np.ones(image_shape),
-                                                                   psf=psf, seed=1)
+    ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
+        image=tracer.image_plane_image_for_simulation, pixel_scale=pixel_scale, exposure_time=100.0,
+        background_sky_level=10.0, psf=psf, noise_seed=1)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
