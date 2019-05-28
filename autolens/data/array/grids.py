@@ -180,6 +180,14 @@ class GridStack(object):
         return GridStack(regular=regular_padded_grid, sub=sub_padded_grid, blurring=np.array([[0.0, 0.0]]))
 
     @classmethod
+    def from_unmasked_grid_2d(cls, grid_2d):
+
+        regular_grid = RegularGrid.from_unmasked_grid_2d(grid_2d=grid_2d)
+        sub_grid = SubGrid.from_unmasked_grid_2d(grid_2d=grid_2d)
+
+        return GridStack(regular=regular_grid, sub=sub_grid, blurring=np.array([[0.0, 0.0]]))
+
+    @classmethod
     def grid_stack_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=2):
         """Setup a grid-stack of grid_stack for simulating an image of a strong lens, whereby the grid's use \
         padded-grid_stack to ensure that the PSF blurring in the simulation routine (*ccd.PrepatoryImage.simulate*) \
@@ -445,6 +453,13 @@ class RegularGrid(np.ndarray):
         blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape)
         return RegularGrid.from_mask(blurring_mask)
 
+    @classmethod
+    def from_unmasked_grid_2d(cls, grid_2d):
+        mask_shape = (grid_2d.shape[0], grid_2d.shape[1])
+        mask = np.full(fill_value=False, shape=mask_shape)
+        grid_1d = mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
+        return RegularGrid(arr=grid_1d, mask=mask)
+
     def new_grid_with_interpolator(self, interp_pixel_scale):
         # noinspection PyAttributeOutsideInit
         # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
@@ -689,6 +704,13 @@ class SubGrid(RegularGrid):
         sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size)
         return SubGrid(sub_grid, mask, sub_grid_size)
+
+    @classmethod
+    def from_unmasked_grid_2d(cls, grid_2d):
+        mask_shape = (grid_2d.shape[0], grid_2d.shape[1])
+        mask = np.full(fill_value=False, shape=mask_shape)
+        grid_1d = mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
+        return SubGrid(grid_1d, mask=mask, sub_grid_size=1)
 
     def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked

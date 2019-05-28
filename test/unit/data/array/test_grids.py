@@ -89,6 +89,20 @@ class TestRegularGrid:
         assert regular_grid.pixel_scale == 2.0
         assert (regular_grid.mask.masked_grid_index_to_pixel == mask.masked_grid_index_to_pixel).all()
 
+    def test__from_unmasked_grid_2d(self):
+
+        grid_2d = np.array([[[2., -1.], [2., 0.], [2., 1.]],
+                            [[0., -1.], [0., 0.], [0., 1.]],
+                            [[-2., -1.], [-2., 0.], [-2., 1.]]])
+
+        regular_grid = grids.RegularGrid.from_unmasked_grid_2d(grid_2d=grid_2d)
+
+        assert (regular_grid == np.array([[2., -1.], [2., 0.], [2., 1.],
+                                          [0., -1.], [0., 0.], [0., 1.],
+                                          [-2., -1.], [-2., 0.], [-2., 1.]])).all()
+
+        assert (regular_grid.mask == np.full(fill_value=False, shape=(3,3))).all()
+
     def test__blurring_grid_from_mask__compare_to_array_util(self):
         mask = np.array([[True, True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True, True],
@@ -307,6 +321,22 @@ class TestSubGrid(object):
                                                                           sub_grid_size=2)
 
         assert sub_grid == pytest.approx(sub_grid_util, 1e-4)
+
+    def test__from_unmasked_grid_2d(self):
+
+        grid_2d = np.array([[[2., -1.], [2., 0.], [2., 1.]],
+                            [[0., -1.], [0., 0.], [0., 1.]],
+                            [[-2., -1.], [-2., 0.], [-2., 1.]]])
+
+        sub_grid = grids.SubGrid.from_unmasked_grid_2d(grid_2d=grid_2d)
+
+        assert (sub_grid == np.array([[2., -1.], [2., 0.], [2., 1.],
+                                          [0., -1.], [0., 0.], [0., 1.],
+                                          [-2., -1.], [-2., 0.], [-2., 1.]])).all()
+
+        assert (sub_grid.mask == np.full(fill_value=False, shape=(3,3))).all()
+
+        assert (sub_grid.sub_grid_size == 1)
 
     def test__mapping__sub_array_2d_from_sub_array_1d__use_real_mask_and_grid(self):
 
@@ -1133,6 +1163,22 @@ class TestGridStack(object):
         assert (grid_stack_mask.regular == grid_stack_shape.regular).all()
         assert (grid_stack_mask.sub == grid_stack_shape.sub).all()
         assert (grid_stack_mask.pix == np.array([[0.0, 0.0]])).all()
+
+    def test__from_unmasked_grid_2d(self):
+
+        grid_2d = np.array([[[2., -1.], [2., 0.], [2., 1.]],
+                            [[0., -1.], [0., 0.], [0., 1.]],
+                            [[-2., -1.], [-2., 0.], [-2., 1.]]])
+
+        regular_grid = grids.RegularGrid.from_unmasked_grid_2d(grid_2d=grid_2d)
+        sub_grid = grids.SubGrid.from_unmasked_grid_2d(grid_2d=grid_2d)
+        grid_stack = grids.GridStack.from_unmasked_grid_2d(grid_2d=grid_2d)
+
+        assert (regular_grid == grid_stack.regular).all()
+        assert (regular_grid.mask == grid_stack.regular.mask).all()
+        assert (sub_grid == grid_stack.sub).all()
+        assert (sub_grid.mask == grid_stack.sub.mask).all()
+        assert (sub_grid.sub_grid_size == grid_stack.sub.sub_grid_size)
 
     def test__padded_grids(self):
 
