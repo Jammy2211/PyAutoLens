@@ -453,7 +453,7 @@ class TracerImagePlane(AbstractTracerData):
         if not lens_galaxies:
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
-        image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, deflections_stack=None,
+        image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, compute_deflections=False,
                                border=border, cosmology=cosmology)
 
         super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
@@ -487,14 +487,12 @@ class TracerImageSourcePlanes(AbstractTracerData):
         image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
             galaxies=source_galaxies, grid_stack=image_plane_grid_stack)
 
-        image_plane = pl.Plane.deflections_from_galaxies(
-            galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border, compute_deflections=True,
-            cosmology=cosmology)
+        image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border,
+                               compute_deflections=True, cosmology=cosmology)
 
         source_plane_grid_stack = image_plane.trace_grid_stack_to_next_plane()
 
-        source_plane = pl.Plane.deflections_from_galaxies(
-            galaxies=source_galaxies, grid_stack=source_plane_grid_stack, border=border,
+        source_plane = pl.Plane(galaxies=source_galaxies, grid_stack=source_plane_grid_stack, border=border,
             compute_deflections=False, cosmology=cosmology)
 
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
@@ -568,9 +566,8 @@ class TracerMultiPlanes(AbstractTracerData):
                         lens_util.grid_stack_from_deflections_stack(grid_stack=new_grid_stack,
                                                                     deflections_stack=scaled_deflections_stack)
 
-            planes.append(pl.Plane.deflections_from_galaxies(
-                galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack, border=border,
-                compute_deflections=compute_deflections, cosmology=cosmology))
+            planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack, border=border,
+                                    compute_deflections=compute_deflections, cosmology=cosmology))
 
         super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
 
@@ -632,7 +629,6 @@ class TracerMultiPlanesSliced(AbstractTracerData):
             new_grid_stack = image_plane_grid_stack
 
             if plane_index > 0:
-                print()
                 for previous_plane_index in range(plane_index):
                     scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
                         redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
@@ -645,8 +641,7 @@ class TracerMultiPlanesSliced(AbstractTracerData):
                         lens_util.grid_stack_from_deflections_stack(grid_stack=new_grid_stack,
                                                                     deflections_stack=scaled_deflections_stack)
 
-            planes.append(pl.Plane.deflections_from_galaxies(
-                redshift=plane_redshifts[plane_index], galaxies=galaxies_in_planes[plane_index],
+            planes.append(pl.Plane(redshift=plane_redshifts[plane_index], galaxies=galaxies_in_planes[plane_index],
                 grid_stack=new_grid_stack, border=border, compute_deflections=compute_deflections, cosmology=cosmology))
 
         super(TracerMultiPlanesSliced, self).__init__(planes=planes, cosmology=cosmology)

@@ -41,7 +41,7 @@ def make_grid_stack():
 
 @pytest.fixture(name='plane')
 def make_plane(galaxy_light, grid_stack):
-    return pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack, deflections_stack=None)
+    return pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack, compute_deflections=False)
 
 
 def test__image_plane_image_is_output(plane, mask, positions, plane_plotter_path, plot_patch):

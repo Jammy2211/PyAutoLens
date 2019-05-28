@@ -355,7 +355,7 @@ class TestScaledDeflections:
 
     def test__deflection_stack_is_scaled_by_scaling_factor(self, grid_stack, galaxy_mass):
 
-        plane = pl.Plane.deflections_from_galaxies(galaxies=[galaxy_mass], grid_stack=grid_stack)
+        plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack)
 
         scaled_deflection_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(plane=plane,
                                                                                                    scaling_factor=1.0)
@@ -376,7 +376,7 @@ class TestGridStackDeflections:
 
     def test__grid_stack_has_deflections_subtracted_from_it(self, grid_stack, galaxy_mass):
 
-        plane = pl.Plane.deflections_from_galaxies(galaxies=[galaxy_mass], grid_stack=grid_stack)
+        plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack)
 
         deflection_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(plane=plane,
                                                                                             scaling_factor=3.0)
