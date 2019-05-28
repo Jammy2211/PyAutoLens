@@ -260,7 +260,7 @@ class AbstractPlane(object):
 
 class AbstractGriddedPlane(AbstractPlane):
 
-    def __init__(self, redshift, galaxies, grid_stack, deflections_stack, border, cosmology=cosmo.Planck15):
+    def __init__(self, redshift, galaxies, grid_stack, border, compute_deflections, cosmology=cosmo.Planck15):
         """An abstract plane which represents a set of galaxies that are close to one another in redshift-space and \
         have an associated grid on which lensing calcuations are performed.
 
@@ -287,8 +287,22 @@ class AbstractGriddedPlane(AbstractPlane):
         super(AbstractGriddedPlane, self).__init__(redshift=redshift, galaxies=galaxies, cosmology=cosmology)
 
         self.grid_stack = grid_stack
-        self.deflections_stack = deflections_stack
         self.border = border
+
+        if compute_deflections:
+
+            def calculate_deflections(grid):
+
+                if galaxies:
+                    return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
+                else:
+                    return np.full((grid.shape[0], 2), 0.0)
+
+            self.deflections_stack = grid_stack.apply_function(calculate_deflections)
+
+        else:
+
+            self.deflections_stack = None
 
     def trace_grid_stack_to_next_plane(self):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
@@ -480,7 +494,8 @@ class AbstractDataPlane(AbstractGriddedPlane):
 
 class Plane(AbstractDataPlane):
 
-    def __init__(self, galaxies, grid_stack, deflections_stack, redshift=None, border=None, cosmology=cosmo.Planck15):
+    def __init__(self, galaxies, grid_stack, redshift=None, border=None, compute_deflections=True,
+                 cosmology=cosmo.Planck15):
         """A plane of galaxies where all galaxies are at the same redshift.
 
         Parameters
@@ -513,30 +528,10 @@ class Plane(AbstractDataPlane):
             else:
                 redshift = galaxies[0].redshift
 
+
+
         super(Plane, self).__init__(redshift=redshift, galaxies=galaxies, grid_stack=grid_stack,
-                                    deflections_stack=deflections_stack, border=border, cosmology=cosmology)
-
-    @classmethod
-    def deflections_from_galaxies(cls, galaxies, grid_stack, redshift=None, border=None, compute_deflections=True,
-                                  cosmology=cosmo.Planck15):
-
-        if compute_deflections:
-
-            def calculate_deflections(grid):
-
-                if galaxies:
-                    return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
-                else:
-                    return np.full((grid.shape[0], 2), 0.0)
-
-            deflection_stack = grid_stack.apply_function(calculate_deflections)
-
-        else:
-
-            deflection_stack = None
-
-        return Plane(galaxies=galaxies, grid_stack=grid_stack, deflections_stack=deflection_stack, redshift=redshift,
-                     border=border, cosmology=cosmology)
+                                    border=border, compute_deflections=compute_deflections, cosmology=cosmology)
 
 
 class PlanePositions(object):
