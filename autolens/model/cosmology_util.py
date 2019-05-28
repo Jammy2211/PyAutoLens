@@ -8,7 +8,7 @@ def arcsec_per_kpc_from_redshift_and_cosmology(redshift, cosmology):
 def kpc_per_arcsec_from_redshift_and_cosmology(redshift, cosmology):
     return 1.0 / cosmology.arcsec_per_kpc_proper(z=redshift).value
 
-def angular_diameter_distance_to_earth_from_redshift_and_cosmology(redshift, cosmology, unit_length='arcsec'):
+def angular_diameter_distance_to_earth_from_redshift_and_cosmology(redshift, cosmology, unit_length='kpc'):
 
     angular_diameter_distance_kpc = cosmology.angular_diameter_distance(z=redshift).to('kpc')
 
