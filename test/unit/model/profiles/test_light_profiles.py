@@ -255,11 +255,11 @@ class TestSersic:
         summary_text = sersic.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], prefix='sersic_',
                                                   unit_length='arcsec', unit_luminosity='eps', whitespace=50)
 
-        index = 0
+        i = 0
 
-        assert summary_text[index] == 'Light Profile = SphericalSersic\n' ; index += 1
-        assert summary_text[index] == 'sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps' ; index += 1
-        assert summary_text[index] == 'sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps' ; index += 1
+        assert summary_text[i] == 'Light Profile = SphericalSersic\n' ; i += 1
+        assert summary_text[i] == 'sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps' ; i += 1
+        assert summary_text[i] == 'sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps' ; i += 1
 
 class TestExponential:
 
