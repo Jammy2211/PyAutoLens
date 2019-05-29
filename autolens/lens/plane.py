@@ -1,6 +1,8 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
+from autofit.tools import text_util as af_text_util
+from autolens import text_util
 from autolens import exc, dimensions as dim
 from autolens.data.array import grids
 from autolens.data.array import scaled_array
@@ -257,6 +259,32 @@ class AbstractPlane(object):
                        unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
                             self.galaxies))))
 
+    def summarize_in_units(self, radii, whitespace=80,
+                           unit_length='arcsec', unit_luminosity='eps', unit_mass='solMass',
+                           redshift_source=None, **kwargs):
+
+        summary = ['Plane\n']
+        prefix_plane = ''
+
+        summary += [af_text_util.label_and_value_string(
+            label=prefix_plane+'redshift', value=self.redshift, whitespace=whitespace, format_str='{:.2f}')]
+
+        summary += [af_text_util.label_and_value_string(
+            label=prefix_plane+'kpc_per_arcsec', value=self.kpc_per_arcsec, whitespace=whitespace, format_str='{:.2f}')]
+
+        angular_diameter_distance_to_earth = self.angular_diameter_distance_to_earth_in_units(unit_length=unit_length)
+
+        summary += [af_text_util.label_and_value_string(
+            label=prefix_plane+'angular_diameter_distance_to_earth', value=angular_diameter_distance_to_earth, whitespace=whitespace,
+            format_str='{:.2f}')]
+
+        for galaxy in self.galaxies:
+            summary += ['\n']
+            summary += galaxy.summarize_in_units(radii=radii, whitespace=whitespace, unit_length=unit_length,
+                                                  unit_luminosity=unit_luminosity, unit_mass=unit_mass,
+                                                  redshift_source=redshift_source, cosmology=self.cosmology)
+
+        return summary
 
 class AbstractGriddedPlane(AbstractPlane):
 

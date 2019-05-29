@@ -617,6 +617,87 @@ class TestAbstractPlane(object):
             plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(redshift=0.5), g1, g.Galaxy(redshift=0.5), g2], redshift=None)
             assert plane.phis_of_galaxy_mass_profiles == [[0.9], [0.8], [0.7, 0.6]]
 
+    class TestSummarize:
+
+        def test__plane_x2_galaxies__summarize_is_correct(self):
+
+            sersic_0 = lp.SphericalSersic(intensity=1.0, effective_radius=2.0, sersic_index=2.0)
+            sersic_1 = lp.SphericalSersic(intensity=2.0, effective_radius=2.0, sersic_index=2.0)
+
+            sis_0 = mp.SphericalIsothermal(einstein_radius=1.0)
+            sis_1 = mp.SphericalIsothermal(einstein_radius=2.0)
+
+            g0 = g.Galaxy(redshift=0.5, light_profile_0=sersic_0, light_profile_1=sersic_1,
+                           mass_profile_0=sis_0, mass_profile_1=sis_1)
+
+            g1 = g.Galaxy(redshift=0.6, light_profile_0=sersic_0, mass_profile_0=sis_0)
+
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=0.6)
+
+            summary_text = plane.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], whitespace=50,
+                                                  unit_length='arcsec', unit_luminosity='eps', unit_mass='angular')
+
+            i = 0
+            assert summary_text[i] == 'Plane\n' ; i += 1
+            assert summary_text[i] == 'redshift                                          0.60' ; i += 1
+            assert summary_text[i] == 'kpc_per_arcsec                                    6.88' ; i += 1
+            assert summary_text[i] == 'angular_diameter_distance_to_earth                206264.81' ; i += 1
+            assert summary_text[i] == '\n' ; i += 1
+            assert summary_text[i] == 'Galaxy\n' ; i += 1
+            assert summary_text[i] == 'redshift                                          0.50' ; i += 1
+            assert summary_text[i] == '\nGALAXY LIGHT\n\n' ; i += 1
+            assert summary_text[i] == 'luminosity_within_10.00_arcsec                    1.8854e+02 eps' ; i += 1
+            assert summary_text[i] == 'luminosity_within_500.00_arcsec                   1.9573e+02 eps' ; i += 1
+            assert summary_text[i] == '\nLIGHT PROFILES:\n\n' ; i += 1
+            assert summary_text[i] == 'Light Profile = SphericalSersic\n' ; i += 1
+            assert summary_text[i] == 'luminosity_within_10.00_arcsec                    6.2848e+01 eps' ; i += 1
+            assert summary_text[i] == 'luminosity_within_500.00_arcsec                   6.5243e+01 eps' ; i += 1
+            assert summary_text[i] == '\n' ; i += 1
+            assert summary_text[i] == 'Light Profile = SphericalSersic\n' ; i += 1
+            assert summary_text[i] == 'luminosity_within_10.00_arcsec                    1.2570e+02 eps' ; i += 1
+            assert summary_text[i] == 'luminosity_within_500.00_arcsec                   1.3049e+02 eps' ; i += 1
+            assert summary_text[i] == '\n' ; i += 1
+            assert summary_text[i] == '\nGALAXY MASS\n\n' ; i += 1
+            assert summary_text[i] == 'einstein_radius                                   3.00 arcsec' ; i += 1
+            assert summary_text[i] == 'einstein_mass                                     1.5708e+01 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_10.00_arcsec                          9.4248e+01 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_500.00_arcsec                         4.7124e+03 angular' ; i += 1
+            assert summary_text[i] ==  '\nMASS PROFILES:\n\n' ; i += 1
+            assert summary_text[i] == 'Mass Profile = SphericalIsothermal\n' ; i += 1
+            assert summary_text[i] == 'einstein_radius                                   1.00 arcsec' ; i += 1
+            assert summary_text[i] == 'einstein_mass                                     3.1416e+00 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_10.00_arcsec                          3.1416e+01 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_500.00_arcsec                         1.5708e+03 angular' ; i += 1
+            assert summary_text[i] == '\n' ; i += 1
+            assert summary_text[i] == 'Mass Profile = SphericalIsothermal\n' ; i += 1
+            assert summary_text[i] == 'einstein_radius                                   2.00 arcsec' ; i += 1
+            assert summary_text[i] == 'einstein_mass                                     1.2566e+01 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_10.00_arcsec                          6.2832e+01 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_500.00_arcsec                         3.1416e+03 angular' ; i += 1
+            assert summary_text[i] == '\n' ; i += 1
+            assert summary_text[i] == '\n' ; i += 1
+            assert summary_text[i] == 'Galaxy\n' ; i += 1
+            assert summary_text[i] ==  'redshift                                          0.60' ; i += 1
+            assert summary_text[i] ==  '\nGALAXY LIGHT\n\n' ; i += 1
+            assert summary_text[i] == 'luminosity_within_10.00_arcsec                    6.2848e+01 eps' ; i += 1
+            assert summary_text[i] == 'luminosity_within_500.00_arcsec                   6.5243e+01 eps' ; i += 1
+            assert summary_text[i] ==  '\nLIGHT PROFILES:\n\n' ; i += 1
+            assert summary_text[i] == 'Light Profile = SphericalSersic\n' ; i += 1
+            assert summary_text[i] == 'luminosity_within_10.00_arcsec                    6.2848e+01 eps' ; i += 1
+            assert summary_text[i] == 'luminosity_within_500.00_arcsec                   6.5243e+01 eps' ; i += 1
+            assert summary_text[i] == '\n' ; i += 1
+            assert summary_text[i] ==  '\nGALAXY MASS\n\n' ; i += 1
+            assert summary_text[i] == 'einstein_radius                                   1.00 arcsec' ; i += 1
+            assert summary_text[i] == 'einstein_mass                                     3.1416e+00 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_10.00_arcsec                          3.1416e+01 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_500.00_arcsec                         1.5708e+03 angular' ; i += 1
+            assert summary_text[i] ==  '\nMASS PROFILES:\n\n' ; i += 1
+            assert summary_text[i] == 'Mass Profile = SphericalIsothermal\n' ; i += 1
+            assert summary_text[i] == 'einstein_radius                                   1.00 arcsec' ; i += 1
+            assert summary_text[i] == 'einstein_mass                                     3.1416e+00 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_10.00_arcsec                          3.1416e+01 angular' ; i += 1
+            assert summary_text[i] == 'mass_within_500.00_arcsec                         1.5708e+03 angular' ; i += 1
+            assert summary_text[i] == '\n' ; i += 1
 
 class TestAbstractPlaneGridded(object):
     
