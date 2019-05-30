@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens.model.inversion.util import mapper_util
-from test.unit.mock.mock_imaging import MockSubGrid, MockGridStack
+from test.unit.mock.mock_grids import MockSubGrid, MockGridStack
 
 @pytest.fixture(name="three_pixels")
 def make_three_pixels():

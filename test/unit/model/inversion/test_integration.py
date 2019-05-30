@@ -4,7 +4,7 @@ import pytest
 from autolens.data.array import grids, mask as msk
 from autolens.model.inversion import mappers as pm
 from autolens.model.inversion import pixelizations, regularization
-from test.unit.mock.mock_imaging import MockSubGrid, MockGridStack
+from test.unit.mock.mock_grids import MockSubGrid, MockGridStack
 
 
 class TestRectangular:

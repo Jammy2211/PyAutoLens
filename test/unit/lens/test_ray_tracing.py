@@ -14,7 +14,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from test.unit.mock.mock_imaging import MockBorders
+from test.unit.mock.mock_grids import MockBorders
 from test.unit.mock.mock_inversion import MockRegularization, MockPixelization
 
 
