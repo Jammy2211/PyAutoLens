@@ -10,6 +10,7 @@ from autolens.data.array import grids
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import inversions as inv
 
 
 def check_tracer_for_light_profile(func):
@@ -390,11 +391,22 @@ class AbstractTracerData(AbstractTracer):
         return self.image_plane.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
             psf=psf, unmasked_image_1d=self.profile_image_plane_image_1d)
 
-    def unmasked_blurred_profile_image_plane_images_of_planes_from_psf(self, psf):
+    def unmasked_blurred_profile_image_plane_image_of_planes_from_psf(self, psf):
         return [plane.unmasked_blurred_profile_image_plane_image_from_psf(psf=psf) for plane in self.planes]
 
-    def unmasked_blurred_profile_image_plane_images_of_planes_and_galaxies_from_psf(self, psf):
+    def unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(self, psf):
         return [plane.unmasked_blurred_profile_image_plane_images_of_galaxies_from_psf(psf=psf) for plane in self.planes]
+
+    def inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(self, image_1d, noise_map_1d,
+                                                                          convolver_mapping_matrix):
+
+        if len(self.mappers_of_planes) > 1:
+            raise exc.RayTracingException('PyAutoLens does not currently support more than one mapper, reglarization and'
+                                          'therefore inversion per tracer.')
+
+        return inv.inversion_from_image_mapper_and_regularization(
+            image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver_mapping_matrix,
+            mapper=self.mappers_of_planes[0], regularization=self.regularizations_of_planes[0])
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
 

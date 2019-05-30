@@ -3,7 +3,6 @@ import numpy as np
 from autofit.tools import fit
 from autolens import exc
 from autolens.lens.util import lens_fit_util as util
-from autolens.model.inversion import inversions
 
 
 class LensDataFit(fit.DataFit1D):
@@ -109,15 +108,15 @@ class LensTracerFit(LensDataFit):
 
     @property
     def unmasked_blurred_image_plane_image(self):
-        return self.padded_tracer.unmasked_blurred_image_plane_image_from_psf(psf=self.psf)
+        return self.padded_tracer.unmasked_blurred_profile_image_plane_image_from_psf(psf=self.psf)
 
     @property
     def unmasked_blurred_image_plane_image_of_planes(self):
-        return self.padded_tracer.unmasked_blurred_image_plane_images_of_planes_from_psf(psf=self.psf)
+        return self.padded_tracer.unmasked_blurred_profile_image_plane_image_of_planes_from_psf(psf=self.psf)
 
     @property
     def unmasked_blurred_image_plane_image_of_planes_and_galaxies(self):
-        return self.padded_tracer.unmasked_blurred_image_plane_images_of_planes_and_galaxies_from_psf(psf=self.psf)
+        return self.padded_tracer.unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(psf=self.psf)
 
 
 class LensProfileFit(LensTracerFit):
@@ -201,7 +200,7 @@ class LensInversionFit(InversionFit):
         -----------
         lens_data : lens_data.LensData
             The lens-image that is fitted.
-        tracer : ray_tracing.Tracer
+        tracer : ray_tracing.AbstractTracerData
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
 
@@ -212,9 +211,9 @@ class LensInversionFit(InversionFit):
         else:
             noise_map_1d = lens_data.noise_map_1d
 
-        inversion = inversions.inversion_from_image_mapper_and_regularization(
-            image_1d=lens_data.image_1d, noise_map_1d=noise_map_1d, convolver=lens_data.convolver_mapping_matrix,
-            mapper=tracer.mappers_of_planes[-1], regularization=tracer.regularizations_of_planes[-1])
+        inversion = tracer.inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
+            image_1d=lens_data.image_1d, noise_map_1d=noise_map_1d,
+            convolver_mapping_matrix=lens_data.convolver_mapping_matrix)
 
         super().__init__(lens_data=lens_data, noise_map_1d=noise_map_1d, model_image_1d=inversion.reconstructed_data_1d,
                          tracer=tracer, inversion=inversion)
@@ -263,10 +262,9 @@ class LensProfileInversionFit(InversionFit):
 
         self.profile_subtracted_image_1d = lens_data.image_1d - self.blurred_profile_image_1d
 
-        inversion = inversions.inversion_from_image_mapper_and_regularization(
+        inversion = tracer.inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
             image_1d=self.profile_subtracted_image_1d, noise_map_1d=noise_map_1d,
-            convolver=lens_data.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
-            regularization=tracer.regularizations_of_planes[-1])
+            convolver_mapping_matrix=lens_data.convolver_mapping_matrix)
 
         model_image = self.blurred_profile_image_1d + inversion.reconstructed_data_1d
 

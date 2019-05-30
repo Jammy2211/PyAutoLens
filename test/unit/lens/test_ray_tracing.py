@@ -890,7 +890,7 @@ class TestAbstractTracerData(object):
                                   manual_blurred_image_2[1:4, 1:4] + manual_blurred_image_3[1:4, 1:4], 1.0e-4)
 
             unmasked_blurred_image_of_planes = \
-                tracer.unmasked_blurred_profile_image_plane_images_of_planes_from_psf(psf=psf)
+                tracer.unmasked_blurred_profile_image_plane_image_of_planes_from_psf(psf=psf)
 
             assert unmasked_blurred_image_of_planes[0] == \
                     pytest.approx(manual_blurred_image_0[1:4, 1:4] + manual_blurred_image_1[1:4, 1:4], 1.0e-4)
@@ -898,7 +898,7 @@ class TestAbstractTracerData(object):
                     pytest.approx(manual_blurred_image_2[1:4, 1:4] + manual_blurred_image_3[1:4, 1:4], 1.0e-4)
 
             unmasked_blurred_image_of_planes_and_galaxies = \
-                tracer.unmasked_blurred_profile_image_plane_images_of_planes_and_galaxies_from_psf(psf=psf)
+                tracer.unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(psf=psf)
 
             assert (unmasked_blurred_image_of_planes_and_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
             assert (unmasked_blurred_image_of_planes_and_galaxies[0][1] == manual_blurred_image_1[1:4, 1:4]).all()

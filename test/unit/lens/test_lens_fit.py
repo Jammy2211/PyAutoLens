@@ -371,13 +371,13 @@ class TestLensProfileFit:
             assert (unmasked_blurred_image == fit.unmasked_blurred_image_plane_image).all()
 
             unmasked_blurred_image_of_planes = \
-                padded_tracer.unmasked_blurred_profile_image_plane_images_of_planes_from_psf(psf=ld_manual.psf)
+                padded_tracer.unmasked_blurred_profile_image_plane_image_of_planes_from_psf(psf=ld_manual.psf)
 
             assert (unmasked_blurred_image_of_planes[0] == fit.unmasked_blurred_image_plane_image_of_planes[0]).all()
             assert (unmasked_blurred_image_of_planes[1] == fit.unmasked_blurred_image_plane_image_of_planes[1]).all()
 
             unmasked_blurred_image_of_galaxies = \
-                padded_tracer.unmasked_blurred_profile_image_plane_images_of_planes_and_galaxies_from_psf(psf=ld_manual.psf)
+                padded_tracer.unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(psf=ld_manual.psf)
 
             assert (unmasked_blurred_image_of_galaxies[0][0] ==
                     fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies[0][0]).all()
