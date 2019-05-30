@@ -14,6 +14,9 @@ from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+
+from test.unit.mock.mock_mask import MockMask
+from test.unit.mock import mock_ccd
 from test.unit.mock.mock_grids import MockBorders
 from test.unit.mock.mock_inversion import MockRegularization, MockPixelization
 
@@ -906,20 +909,26 @@ class TestAbstractTracerData(object):
             assert (unmasked_blurred_image_of_planes_and_galaxies[1][0] == manual_blurred_image_2[1:4, 1:4]).all()
             assert (unmasked_blurred_image_of_planes_and_galaxies[1][1] == manual_blurred_image_3[1:4, 1:4]).all()
 
-    # class TestInversion:
-    #
-    #     def test__x1_inversion_in_tracer__performs_inversion_correctly(self, grid_stack):
-    #
-    #         pix = pixelizations.Rectangular(shape=(3, 3))
-    #         reg = regularization.Constant(coefficients=(1.0,))
-    #
-    #         g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
-    #
-    #         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g0],
-    #                                                      image_plane_grid_stack=grid_stack, border=None)
-    #
-    #         inversion = tracer.inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
-    #             image_1d=np.ones(9))
+    class TestInversion:
+
+        def test__x1_inversion_in_tracer__performs_inversion_correctly(self):
+
+            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+                mask=MockMask(), sub_grid_size=2, psf_shape=(3, 3))
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            reg = regularization.Constant(coefficients=(0.0,))
+
+            g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g0],
+                                                         image_plane_grid_stack=grid_stack, border=None)
+
+            inversion = tracer.inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
+                image_1d=mock_ccd.MockImage1D(), noise_map_1d=mock_ccd.MockNoiseMap1D(),
+                convolver_mapping_matrix=mock_ccd.MockConvolverMappingMatrix())
+
+            assert inversion.reconstructed_data_2d == pytest.approx(mock_ccd.MockImage(), 1.0e-2)
 
     class TestHyperNoiseMap:
 
