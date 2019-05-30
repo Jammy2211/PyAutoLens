@@ -108,15 +108,15 @@ class LensTracerFit(LensDataFit):
         return len(self.tracer.mappers_of_planes)
 
     @property
-    def unmasked_model_image(self):
+    def unmasked_blurred_image_plane_image(self):
         return self.padded_tracer.unmasked_blurred_image_plane_image_from_psf(psf=self.psf)
 
     @property
-    def unmasked_model_image_of_planes(self):
+    def unmasked_blurred_image_plane_image_of_planes(self):
         return self.padded_tracer.unmasked_blurred_image_plane_images_of_planes_from_psf(psf=self.psf)
 
     @property
-    def unmasked_model_image_of_planes_and_galaxies(self):
+    def unmasked_blurred_image_plane_image_of_planes_and_galaxies(self):
         return self.padded_tracer.unmasked_blurred_image_plane_images_of_planes_and_galaxies_from_psf(psf=self.psf)
 
 
@@ -148,7 +148,7 @@ class LensProfileFit(LensTracerFit):
             noise_map_1d = lens_data.noise_map_1d
 
         blurred_profile_image_1d = \
-            tracer.blurred_image_plane_image_1d_from_convolver_image(convolver_image=lens_data.convolver_image)
+            tracer.blurred_profile_image_plane_image_1d_from_convolver_image(convolver_image=lens_data.convolver_image)
 
         super(LensProfileFit, self).__init__(
             image_1d=lens_data.image_1d, noise_map_1d=noise_map_1d, mask_1d=lens_data.mask_1d,
@@ -159,7 +159,7 @@ class LensProfileFit(LensTracerFit):
 
     @property
     def model_image_2d_of_planes(self):
-        return self.tracer.blurred_image_plane_images_of_planes_from_convolver_image(convolver_image=self.convolver_image)
+        return self.tracer.blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(convolver_image=self.convolver_image)
 
     @property
     def figure_of_merit(self):
@@ -259,7 +259,7 @@ class LensProfileInversionFit(InversionFit):
             noise_map_1d = lens_data.noise_map_1d
 
         self.blurred_profile_image_1d = \
-            tracer.blurred_image_plane_image_1d_from_convolver_image(convolver_image=lens_data.convolver_image)
+            tracer.blurred_profile_image_plane_image_1d_from_convolver_image(convolver_image=lens_data.convolver_image)
 
         self.profile_subtracted_image_1d = lens_data.image_1d - self.blurred_profile_image_1d
 

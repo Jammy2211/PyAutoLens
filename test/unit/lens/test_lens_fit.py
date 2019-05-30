@@ -254,7 +254,7 @@ class TestLensProfileFit:
             assert ld_manual.noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert ld_manual.noise_map_2d == pytest.approx(fit.noise_map_2d, 1e-4)
 
-            model_image_1d = tracer.blurred_image_plane_image_1d_from_convolver_image(
+            model_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=ld_manual.convolver_image)
             model_image_2d = ld_manual.map_to_scaled_array(array_1d=model_image_1d)
 
@@ -311,7 +311,7 @@ class TestLensProfileFit:
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map_2d, 1e-4)
 
-            model_image_1d = tracer.blurred_image_plane_image_1d_from_convolver_image(
+            model_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=ld_manual.convolver_image)
 
             model_image_2d = ld_manual.map_to_scaled_array(array_1d=model_image_1d)
@@ -360,29 +360,29 @@ class TestLensProfileFit:
                                                            padded_tracer=padded_tracer)
 
             blurred_image_2d_of_planes = \
-                tracer.blurred_image_plane_images_of_planes_from_convolver_image(convolver_image=ld_manual.convolver_image)
+                tracer.blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(convolver_image=ld_manual.convolver_image)
 
             assert (blurred_image_2d_of_planes[0] == fit.model_image_2d_of_planes[0]).all()
             assert (blurred_image_2d_of_planes[1] == fit.model_image_2d_of_planes[1]).all()
 
             unmasked_blurred_image = ld_manual.padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-                    psf=ld_manual.psf, unmasked_image_1d=padded_tracer.image_plane_image_1d)
+                    psf=ld_manual.psf, unmasked_image_1d=padded_tracer.profile_image_plane_image_1d)
 
-            assert (unmasked_blurred_image == fit.unmasked_model_image).all()
+            assert (unmasked_blurred_image == fit.unmasked_blurred_image_plane_image).all()
 
             unmasked_blurred_image_of_planes = \
-                padded_tracer.unmasked_blurred_image_plane_images_of_planes_from_psf(psf=ld_manual.psf)
+                padded_tracer.unmasked_blurred_profile_image_plane_images_of_planes_from_psf(psf=ld_manual.psf)
 
-            assert (unmasked_blurred_image_of_planes[0] == fit.unmasked_model_image_of_planes[0]).all()
-            assert (unmasked_blurred_image_of_planes[1] == fit.unmasked_model_image_of_planes[1]).all()
+            assert (unmasked_blurred_image_of_planes[0] == fit.unmasked_blurred_image_plane_image_of_planes[0]).all()
+            assert (unmasked_blurred_image_of_planes[1] == fit.unmasked_blurred_image_plane_image_of_planes[1]).all()
 
             unmasked_blurred_image_of_galaxies = \
-                padded_tracer.unmasked_blurred_image_plane_images_of_planes_and_galaxies_from_psf(psf=ld_manual.psf)
+                padded_tracer.unmasked_blurred_profile_image_plane_images_of_planes_and_galaxies_from_psf(psf=ld_manual.psf)
 
             assert (unmasked_blurred_image_of_galaxies[0][0] ==
-                    fit.unmasked_model_image_of_planes_and_galaxies[0][0]).all()
+                    fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies[0][0]).all()
             assert (unmasked_blurred_image_of_galaxies[1][0] ==
-                    fit.unmasked_model_image_of_planes_and_galaxies[1][0]).all()
+                    fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies[1][0]).all()
 
 
 class TestLensInversionFit:
@@ -546,9 +546,9 @@ class TestLensInversionFit:
             assert inversion.reconstructed_data_2d == pytest.approx(fit.model_image_2d_of_planes[1], 1.0e-4)
 
             with pytest.raises(Exception):
-                fit.unmasked_model_image
-                fit.unmasked_model_image_of_planes
-                fit.unmasked_model_image_of_planes_and_galaxies
+                fit.unmasked_blurred_image_plane_image
+                fit.unmasked_blurred_image_plane_image_of_planes
+                fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
 
 
 class TestLensProfileInversionFit:
@@ -569,7 +569,7 @@ class TestLensProfileInversionFit:
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=ld_manual, tracer=tracer)
 
-            blurred_profile_image_1d = tracer.blurred_image_plane_image_1d_from_convolver_image(
+            blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=ld_manual.convolver_image)
 
             blurred_profile_image_2d = ld_manual.map_to_scaled_array(array_1d=blurred_profile_image_1d)
@@ -660,7 +660,7 @@ class TestLensProfileInversionFit:
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map_2d, 1e-4)
 
-            blurred_profile_image_1d = tracer.blurred_image_plane_image_1d_from_convolver_image(
+            blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=ld_manual.convolver_image)
 
             blurred_profile_image_2d = ld_manual.map_to_scaled_array(array_1d=blurred_profile_image_1d)
@@ -742,7 +742,7 @@ class TestLensProfileInversionFit:
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=ld_manual, tracer=tracer)
 
-            blurred_profile_image_1d = tracer.blurred_image_plane_image_1d_from_convolver_image(
+            blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=ld_manual.convolver_image)
 
             blurred_profile_image_2d = ld_manual.map_to_scaled_array(array_1d=blurred_profile_image_1d)
@@ -757,7 +757,6 @@ class TestLensProfileInversionFit:
 
             assert blurred_profile_image_2d == pytest.approx(fit.model_image_2d_of_planes[0], 1.0e-4)
             assert inversion.reconstructed_data_2d == pytest.approx(fit.model_image_2d_of_planes[1], 1.0e-4)
-
 
 
 class MockTracerPositions:

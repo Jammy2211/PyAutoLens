@@ -199,35 +199,35 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @property
     @check_tracer_for_light_profile
-    def image_plane_image(self):
-        return self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=self.image_plane_image_1d)
+    def profile_image_plane_image_2d(self):
+        return self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=self.profile_image_plane_image_1d)
 
     @property
     @check_tracer_for_light_profile
-    def image_plane_image_for_simulation(self):
-        return sum(self.image_plane_image_of_planes_for_simulation)
+    def profile_image_plane_image_2d_for_simulation(self):
+        return sum(self.profile_image_plane_image_2d_of_planes_for_simulation)
 
     @property
-    def image_plane_image_of_planes_for_simulation(self):
-        return [plane.image_plane_image_for_simulation for plane in self.planes]
-
-    @property
-    @check_tracer_for_light_profile
-    def image_plane_image_1d(self):
-        return sum(self.image_plane_image_1d_of_planes)
-
-    @property
-    def image_plane_image_1d_of_planes(self):
-        return [plane.image_plane_image_1d for plane in self.planes]
+    def profile_image_plane_image_2d_of_planes_for_simulation(self):
+        return [plane.profile_image_plane_image_2d_for_simulation for plane in self.planes]
 
     @property
     @check_tracer_for_light_profile
-    def image_plane_blurring_image_1d(self):
-        return sum(self.image_plane_blurring_image_1d_of_planes)
+    def profile_image_plane_image_1d(self):
+        return sum(self.profile_image_plane_image_1d_of_planes)
 
     @property
-    def image_plane_blurring_image_1d_of_planes(self):
-        return [plane.image_plane_blurring_image_1d for plane in self.planes]
+    def profile_image_plane_image_1d_of_planes(self):
+        return [plane.profile_image_plane_image_1d for plane in self.planes]
+
+    @property
+    @check_tracer_for_light_profile
+    def profile_image_plane_blurring_image_1d(self):
+        return sum(self.profile_image_plane_blurring_image_1d_of_planes)
+
+    @property
+    def profile_image_plane_blurring_image_1d_of_planes(self):
+        return [plane.profile_image_plane_blurring_image_1d for plane in self.planes]
 
     @property
     def mappers_of_planes(self):
@@ -334,7 +334,7 @@ class AbstractTracerData(AbstractTracer):
         """
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
 
-    def blurred_image_plane_images_of_planes_from_convolver_image(self, convolver_image):
+    def blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(self, convolver_image):
         """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
         PSF using a convolver (see ccd.convolution) and then map them back to the 2D array of the original mask.
 
@@ -345,14 +345,15 @@ class AbstractTracerData(AbstractTracer):
         convolver_image : hyper.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
-        blurred_image_plane_images_of_planes_1d = \
-            self.blurred_image_plane_images_1d_of_planes_from_convolver_image(convolver_image=convolver_image)
 
-        return list(map(lambda blurred_image_plane_image_1d :
-                        self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=blurred_image_plane_image_1d),
-                        blurred_image_plane_images_of_planes_1d))
+        blurred_profile_image_plane_images_of_planes_1d = \
+            self.blurred_profile_image_plane_image_1d_of_planes_from_convolver_image(convolver_image=convolver_image)
 
-    def blurred_image_plane_image_1d_from_convolver_image(self, convolver_image):
+        return list(map(lambda blurred_profile_image_plane_image_1d :
+                        self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=blurred_profile_image_plane_image_1d),
+                        blurred_profile_image_plane_images_of_planes_1d))
+
+    def blurred_profile_image_plane_image_1d_from_convolver_image(self, convolver_image):
         """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
         PSF using a convolver (see ccd.convolution).
 
@@ -363,10 +364,10 @@ class AbstractTracerData(AbstractTracer):
         convolver_image : hyper.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
-        return convolver_image.convolve_image(image_array=self.image_plane_image_1d,
-                                              blurring_array=self.image_plane_blurring_image_1d)
+        return convolver_image.convolve_image(image_array=self.profile_image_plane_image_1d,
+                                              blurring_array=self.profile_image_plane_blurring_image_1d)
 
-    def blurred_image_plane_images_1d_of_planes_from_convolver_image(self, convolver_image):
+    def blurred_profile_image_plane_image_1d_of_planes_from_convolver_image(self, convolver_image):
         """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
         PSF using a convolver (see ccd.convolution).
 
@@ -377,32 +378,23 @@ class AbstractTracerData(AbstractTracer):
         convolver_image : hyper.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
-        blurred_image_plane_images_1d = []
+        return [plane.blurred_profile_image_plane_image_1d_from_convolver_image(convolver_image=convolver_image)
+                for plane in self.planes]
 
-        for plane in self.planes:
-            blurred_image_plane_image_1d = plane.blurred_image_plane_image_1d_from_convolver_image(convolver_image=convolver_image)
-            blurred_image_plane_images_1d.append(blurred_image_plane_image_1d)
-
-        return blurred_image_plane_images_1d
-
-    def unmasked_blurred_image_plane_image_from_psf(self, psf):
+    def unmasked_blurred_profile_image_plane_image_from_psf(self, psf):
 
         if not self.image_plane.has_padded_grid_stack:
             raise exc.RayTracingException('To retrieve an unmasked image, the grid stack of a plane tracer'
                                           'must be a padded grid stack')
 
-        if self.has_pixelization:
-            raise exc.RayTracingException('As unmasked blurred image plane image cannot be returned frmm a tracer'
-                                          'with a pixelization')
-
         return self.image_plane.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-            psf=psf, unmasked_image_1d=self.image_plane_image_1d)
+            psf=psf, unmasked_image_1d=self.profile_image_plane_image_1d)
 
-    def unmasked_blurred_image_plane_images_of_planes_from_psf(self, psf):
-        return [plane.unmasked_blurred_image_plane_image_from_psf(psf=psf) for plane in self.planes]
+    def unmasked_blurred_profile_image_plane_images_of_planes_from_psf(self, psf):
+        return [plane.unmasked_blurred_profile_image_plane_image_from_psf(psf=psf) for plane in self.planes]
 
-    def unmasked_blurred_image_plane_images_of_planes_and_galaxies_from_psf(self, psf):
-        return [plane.unmasked_blurred_image_plane_images_of_galaxies_from_psf(psf=psf) for plane in self.planes]
+    def unmasked_blurred_profile_image_plane_images_of_planes_and_galaxies_from_psf(self, psf):
+        return [plane.unmasked_blurred_profile_image_plane_images_of_galaxies_from_psf(psf=psf) for plane in self.planes]
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
 
@@ -417,14 +409,7 @@ class AbstractTracerData(AbstractTracer):
             return None
 
     def hyper_noise_maps_1d_of_planes_from_noise_map_1d(self, noise_map_1d):
-
-        hyper_noise_maps_1d = []
-
-        for plane in self.planes:
-            hyper_noise_map = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
-            hyper_noise_maps_1d.append(hyper_noise_map)
-
-        return hyper_noise_maps_1d
+        return [plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d) for plane in self.planes]
 
 
 class TracerImagePlane(AbstractTracerData):

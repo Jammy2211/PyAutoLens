@@ -14,7 +14,7 @@ def plot_image_plane_image(
         output_path=None, output_format='show', output_filename='plane_image_plane_image'):
 
     array_plotters.plot_array(
-        array=plane.image_plane_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=plane.profile_image_plane_image_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions, grid=grid, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
