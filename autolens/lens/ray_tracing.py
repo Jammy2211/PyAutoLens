@@ -404,7 +404,7 @@ class AbstractTracerData(AbstractTracer):
             raise exc.RayTracingException('PyAutoLens does not currently support more than one mapper, reglarization and'
                                           'therefore inversion per tracer.')
 
-        return inv.inversion_from_image_mapper_and_regularization(
+        return inv.Inversion.from_data_1d_mapper_and_regularization(
             image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver_mapping_matrix,
             mapper=self.mappers_of_planes[0], regularization=self.regularizations_of_planes[0])
 
