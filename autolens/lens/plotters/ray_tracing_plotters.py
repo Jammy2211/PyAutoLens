@@ -257,7 +257,7 @@ def plot_image_plane_image(
         output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 
     array_plotters.plot_array(
-        array=tracer.image_plane_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=tracer.profile_image_plane_image_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions,
         as_subplot=as_subplot,
         units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,

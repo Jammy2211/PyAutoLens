@@ -175,15 +175,15 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def unmasked_model_image(self):
-            return self.most_likely_fit.unmasked_model_image
+            return self.most_likely_fit.unmasked_blurred_image_plane_image
 
         @property
         def unmasked_model_image_of_planes(self):
-            return self.most_likely_fit.unmasked_model_image_of_planes
+            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes
 
         @property
         def unmasked_model_image_of_planes_and_galaxies(self):
-            return self.most_likely_fit.unmasked_model_image_of_planes_and_galaxies
+            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
 
         def unmasked_image_for_galaxy(self, galaxy):
             return self.most_likely_fit.unmasked_model_image_for_galaxy(galaxy)
@@ -713,7 +713,7 @@ class LensPlanePhase(PhaseImaging):
 
         @property
         def unmasked_lens_plane_model_image(self):
-            return self.most_likely_fit.unmasked_model_image_of_planes[0]
+            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes[0]
 
         @property
         def name_galaxy_tuples(self):
@@ -799,11 +799,11 @@ class LensSourcePlanePhase(PhaseImaging):
     class Result(PhaseImaging.Result):
         @property
         def unmasked_lens_plane_model_image(self):
-            return self.most_likely_fit.unmasked_model_image_of_planes[0]
+            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes[0]
 
         @property
         def unmasked_source_plane_model_image(self):
-            return self.most_likely_fit.unmasked_model_image_of_planes[1]
+            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes[1]
 
         @property
         def name_galaxy_tuples(self):
@@ -1399,7 +1399,7 @@ class HyperGalaxyPhase(Phase):
         results: HyperGalaxyResults
             A collection of results, with one item per a galaxy
         """
-        model_image = results.last.unmasked_model_image
+        model_image = results.last.unmasked_blurred_image_plane_image
         galaxy_tuples = results.last.constant.name_instance_tuples_for_class(g.Galaxy)
 
         results_copy = copy.copy(results.last)

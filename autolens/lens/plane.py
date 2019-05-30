@@ -286,6 +286,7 @@ class AbstractPlane(object):
 
         return summary
 
+
 class AbstractGriddedPlane(AbstractPlane):
 
     def __init__(self, redshift, galaxies, grid_stack, border, compute_deflections, cosmology=cosmo.Planck15):
@@ -341,37 +342,37 @@ class AbstractGriddedPlane(AbstractPlane):
         return self.grid_stack.map_function(minus, self.deflections_stack)
 
     @property
-    def image_plane_image(self):
-        return self.grid_stack.scaled_array_2d_from_array_1d(self.image_plane_image_1d)
+    def profile_image_plane_image_2d(self):
+        return self.grid_stack.scaled_array_2d_from_array_1d(self.profile_image_plane_image_1d)
 
     @property
-    def image_plane_image_for_simulation(self):
+    def profile_image_plane_image_2d_for_simulation(self):
         if not self.has_padded_grid_stack:
             raise exc.RayTracingException(
                 'To retrieve an image plane image for a simulation, the grid stack in the plane'
                 'must be a padded grid stack')
-        return self.grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=self.image_plane_image_1d)
+        return self.grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=self.profile_image_plane_image_1d)
 
     @property
-    def image_plane_image_1d(self):
+    def profile_image_plane_image_1d(self):
         return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=self.galaxies)
 
     @property
-    def image_plane_image_1d_of_galaxies(self):
-        return list(map(self.image_plane_image_1d_of_galaxy, self.galaxies))
+    def profile_image_plane_image_1d_of_galaxies(self):
+        return list(map(self.profile_image_plane_image_1d_of_galaxy, self.galaxies))
 
-    def image_plane_image_1d_of_galaxy(self, galaxy):
+    def profile_image_plane_image_1d_of_galaxy(self, galaxy):
         return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy])
 
     @property
-    def image_plane_blurring_image_1d(self):
+    def profile_image_plane_blurring_image_1d(self):
         return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.blurring, galaxies=self.galaxies)
 
     @property
-    def image_plane_blurring_image_1d_of_galaxies(self):
-        return list(map(self.image_plane_blurring_image_1d_of_galaxy, self.galaxies))
+    def profile_image_plane_blurring_image_1d_of_galaxies(self):
+        return list(map(self.profile_image_plane_blurring_image_1d_of_galaxy, self.galaxies))
 
-    def image_plane_blurring_image_1d_of_galaxy(self, galaxy):
+    def profile_image_plane_blurring_image_1d_of_galaxy(self, galaxy):
         return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.blurring, galaxies=[galaxy])
 
     @property
@@ -437,31 +438,27 @@ class AbstractGriddedPlane(AbstractPlane):
 
 class AbstractDataPlane(AbstractGriddedPlane):
 
-    def blurred_image_plane_image_1d_from_convolver_image(self, convolver_image):
-        return convolver_image.convolve_image(image_array=self.image_plane_image_1d,
-                                                blurring_array=self.image_plane_blurring_image_1d)
+    def blurred_profile_image_plane_image_1d_from_convolver_image(self, convolver_image):
+        return convolver_image.convolve_image(image_array=self.profile_image_plane_image_1d,
+                                              blurring_array=self.profile_image_plane_blurring_image_1d)
 
-    def blurred_image_plane_images_1d_of_galaxies_from_convolver_image(self, convolver_image):
+    def blurred_profile_image_plane_images_1d_of_galaxies_from_convolver_image(self, convolver_image):
 
-        return list(map(lambda image_plane_image_1d, image_plane_blurring_image_1d :
-                               convolver_image.convolve_image(image_array=image_plane_image_1d,
-                                                         blurring_array=image_plane_blurring_image_1d),
-                         self.image_plane_image_1d_of_galaxies, self.image_plane_blurring_image_1d_of_galaxies))
+        return list(map(lambda profile_image_plane_image_1d, profile_image_plane_blurring_image_1d :
+                               convolver_image.convolve_image(image_array=profile_image_plane_image_1d,
+                                                              blurring_array=profile_image_plane_blurring_image_1d),
+                        self.profile_image_plane_image_1d_of_galaxies, self.profile_image_plane_blurring_image_1d_of_galaxies))
 
-    def unmasked_blurred_image_plane_image_from_psf(self, psf):
+    def unmasked_blurred_profile_image_plane_image_from_psf(self, psf):
 
         if not self.has_padded_grid_stack:
             raise exc.RayTracingException('To retrieve an unmasked image, the grid stack of a plane tracer'
                                           'must be a padded grid stack')
 
-        if self.has_pixelization:
-            raise exc.RayTracingException('As unmasked blurred image plane image cannot be returned frmm a plane'
-                                          'with a pixelization')
-
         return self.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-            psf=psf, unmasked_image_1d=self.image_plane_image_1d)
+            psf=psf, unmasked_image_1d=self.profile_image_plane_image_1d)
 
-    def unmasked_blurred_image_plane_images_of_galaxies_from_psf(self, psf):
+    def unmasked_blurred_profile_image_plane_images_of_galaxies_from_psf(self, psf):
 
         if not self.has_padded_grid_stack:
             raise exc.RayTracingException('To retrieve an unmasked image, the grid stack of a plane tracer'
@@ -474,7 +471,7 @@ class AbstractDataPlane(AbstractGriddedPlane):
         return list(map(lambda image_plane_image_1d :
                         self.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
                             psf=psf, unmasked_image_1d=image_plane_image_1d),
-                        self.image_plane_image_1d_of_galaxies))
+                        self.profile_image_plane_image_1d_of_galaxies))
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
 
