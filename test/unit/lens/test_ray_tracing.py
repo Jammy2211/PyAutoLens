@@ -20,6 +20,7 @@ from test.unit.mock.mock_inversion import MockRegularization, MockPixelization
 
 @pytest.fixture(name="grid_stack")
 def make_grid_stack():
+
     mask = msk.Mask(np.array([[True, True, True, True],
                               [True, False, False, True],
                               [True, True, True, True]]), pixel_scale=6.0)
@@ -788,7 +789,7 @@ def make_convolver_blur(mask, blurring_mask):
 
 class TestAbstractTracerData(object):
     
-    class TestBlurredImages:
+    class TestBlurredProfileImages:
 
         def test__blurred_image_plane_image_1d_of_planes(self, grid_stack, convolver_blur):
 
@@ -838,7 +839,7 @@ class TestAbstractTracerData(object):
             assert (blurred_image_plane_images_1ds[0] == blurred_image_1d_0).all()
             assert (blurred_image_plane_images_1ds[1] == blurred_image_1d_1).all()
 
-    class TestUnmaskedBlurredImages:
+    class TestUnmaskedBlurredProfileImages:
 
         def test__unmasked_images_of_tracer_planes_and_galaxies(self):
 
@@ -905,6 +906,21 @@ class TestAbstractTracerData(object):
             assert (unmasked_blurred_image_of_planes_and_galaxies[1][0] == manual_blurred_image_2[1:4, 1:4]).all()
             assert (unmasked_blurred_image_of_planes_and_galaxies[1][1] == manual_blurred_image_3[1:4, 1:4]).all()
 
+    # class TestInversion:
+    #
+    #     def test__x1_inversion_in_tracer__performs_inversion_correctly(self, grid_stack):
+    #
+    #         pix = pixelizations.Rectangular(shape=(3, 3))
+    #         reg = regularization.Constant(coefficients=(1.0,))
+    #
+    #         g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+    #
+    #         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g0],
+    #                                                      image_plane_grid_stack=grid_stack, border=None)
+    #
+    #         inversion = tracer.inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
+    #             image_1d=np.ones(9))
+
     class TestHyperNoiseMap:
 
         def test__hyper_noise_maps_of_planes(self, grid_stack):
@@ -952,6 +968,7 @@ class TestAbstractTracerData(object):
 
             assert (hyper_noise_maps_1d[0] == hyper_noise_map_1d_0).all()
             assert (hyper_noise_maps_1d[1] == hyper_noise_map_1d_1).all()
+
 
 
 class TestTracerImagePlane(object):
