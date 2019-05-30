@@ -4,7 +4,7 @@ import pytest
 from autolens.data.array.util import mapping_util
 from autolens.model.inversion import mappers
 from autolens.model.inversion import pixelizations
-from test.unit.mock.mock_imaging import MockSubGrid, MockGridStack
+from test.unit.mock.mock_grids import MockSubGrid, MockGridStack
 from test.unit.mock.mock_inversion import MockGeometry
 
 
