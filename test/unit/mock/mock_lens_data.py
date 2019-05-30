@@ -5,9 +5,8 @@ from autolens.data import convolution
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from test.unit.mock.mock_grids import MockBorders
-from autolens.model.inversion import convolution as inversion_convolution
 
-from test.unit.mock.mock_ccd import MockImage, MockNoiseMap, MockPSF
+from test.unit.mock import mock_ccd
 from test.unit.mock.mock_mask import MockMask, MockBlurringMask
 
 class MockLensData(object):
@@ -17,9 +16,9 @@ class MockLensData(object):
         self.pixel_scale = 2.0
 
         self.mask_2d = MockMask()
-        self.image_2d = MockImage()
-        self.noise_map_2d = MockNoiseMap()
-        self.psf = MockPSF()
+        self.image_2d = mock_ccd.MockImage()
+        self.noise_map_2d = mock_ccd.MockNoiseMap()
+        self.psf = mock_ccd.MockPSF()
 
         self.sub_grid_size = 2
 
@@ -30,17 +29,13 @@ class MockLensData(object):
             mask=self.mask_2d, sub_grid_size=self.sub_grid_size, psf_shape=self.psf.shape)
 
         self.border = MockBorders()
-
-        self.image_1d = self.mask_2d.map_2d_array_to_masked_1d_array(array_2d=self.image_2d)
-        self.noise_map_1d = self.mask_2d.map_2d_array_to_masked_1d_array(array_2d=self.noise_map_2d)
-        self.mask_1d = self.mask_2d.map_2d_array_to_masked_1d_array(array_2d=self.mask_2d)
-
         self.blurring_mask = MockBlurringMask()
+        self.convolver_image = mock_ccd.MockConvolverImage()
+        self.convolver_mapping_matrix = mock_ccd.MockConvolverMappingMatrix()
 
-        self.convolver_image = convolution.ConvolverImage(mask=self.mask_2d, blurring_mask=self.blurring_mask,
-                                                          psf=self.psf)
-
-        self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(mask=self.mask_2d, psf=self.psf)
+        self.image_1d = mock_ccd.MockImage1D()
+        self.noise_map_1d = mock_ccd.MockNoiseMap1D()
+        self.mask_1d = self.mask_2d.map_2d_array_to_masked_1d_array(array_2d=self.mask_2d)
 
     @property
     def map_to_scaled_array(self):
