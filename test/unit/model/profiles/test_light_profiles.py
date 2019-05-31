@@ -10,7 +10,7 @@ from autofit import conf
 from autolens import dimensions as dim
 from autolens.model.profiles import light_profiles as lp
 
-from test.unit.mock.mock_cosmology import MockCosmology
+from test.unit.mock import mock_cosmology
 
 @pytest.fixture(autouse=True)
 def reset_config():
@@ -79,8 +79,7 @@ class TestGaussian:
         gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=2.0,sigma=1.0)
         assert gaussian.intensities_from_grid_radii(grid_radii=1.0) == pytest.approx(2.0 * 0.24197, 1e-2)
 
-        gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                         sigma=2.0)
+        gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=2.0)
         assert gaussian.intensities_from_grid_radii(grid_radii=1.0) == pytest.approx(0.1760, 1e-2)
 
         gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -656,7 +655,7 @@ class TestLuminosityWithinCircle(object):
 
     def test__radius_units_conversions__light_profile_updates_units_and_computes_correct_luminosity(self):
 
-        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
 
         sersic_arcsec = lp.SphericalSersic(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')), 
                                     intensity=dim.Luminosity(3.0, 'eps'), 

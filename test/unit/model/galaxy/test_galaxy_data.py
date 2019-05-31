@@ -8,7 +8,8 @@ from autolens.data.array import mask as msk, scaled_array as sca
 from autolens.model.galaxy import galaxy as g, galaxy_data as gd
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from test.unit.mock.mock_galaxy import MockGalaxy
+
+from test.unit.mock import mock_galaxy
 
 @pytest.fixture(name='image')
 def make_image():
@@ -149,7 +150,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0* np.ones(4)).all()
         assert (galaxy_fit_data.mask_1d == np.array([False, False, False, False])).all()
 
-        galaxy = MockGalaxy(value=1, shape=4)
+        galaxy = mock_galaxy.MockGalaxy(value=1, shape=4)
 
         intensities = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                 sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -183,7 +184,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0* np.ones(4)).all()
         assert (galaxy_fit_data.mask_1d == np.array([False, False, False, False])).all()
 
-        galaxy = MockGalaxy(value=1, shape=4)
+        galaxy = mock_galaxy.MockGalaxy(value=1, shape=4)
 
         convergence = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                     sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -217,7 +218,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0* np.ones(4)).all()
         assert (galaxy_fit_data.mask_1d == np.array([False, False, False, False])).all()
 
-        galaxy = MockGalaxy(value=1, shape=4)
+        galaxy = mock_galaxy.MockGalaxy(value=1, shape=4)
 
         potential = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                               sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -251,7 +252,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0* np.ones(4)).all()
         assert (galaxy_fit_data.mask_1d == np.array([False, False, False, False])).all()
 
-        galaxy = MockGalaxy(value=1, shape=4)
+        galaxy = mock_galaxy.MockGalaxy(value=1, shape=4)
 
         deflections_y = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                   sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -286,7 +287,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0* np.ones(4)).all()
         assert (galaxy_fit_data.mask_1d == np.array([False, False, False, False])).all()
 
-        galaxy = MockGalaxy(value=1, shape=4)
+        galaxy = mock_galaxy.MockGalaxy(value=1, shape=4)
 
         deflections_x = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                   sub_grid=galaxy_fit_data.grid_stack.sub)
