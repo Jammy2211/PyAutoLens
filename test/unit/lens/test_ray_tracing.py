@@ -15,7 +15,8 @@ from autolens.model.inversion import pixelizations, regularization
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 from test.unit.mock.data import mock_ccd, mock_grids, mock_mask
-from test.unit.mock import mock_inversion as mock_inv
+from test.unit.mock.model import mock_inversion as mock_inv
+
 
 @pytest.fixture(name="grid_stack")
 def make_grid_stack():

@@ -8,7 +8,7 @@ from autolens.model import galaxy as g
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.pipeline import phase as ph
-from test.unit.mock.mock_lens_data import MockLensData
+from test.unit.mock.lens.mock_lens_data import MockLensData
 
 
 @pytest.fixture(name="lens_galaxy")

@@ -10,7 +10,7 @@ from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 
-from test.unit.mock import mock_cosmology
+from test.unit.mock.model import mock_cosmology
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
@@ -1223,7 +1223,7 @@ class TestAbstractNFW(object):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
         cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
-                                  cosmic_average_density=1.0)
+                                                 cosmic_average_density=1.0)
 
         delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
                                                                 cosmology=cosmology)
@@ -1267,7 +1267,7 @@ class TestAbstractNFW(object):
 
     def test__solve_concentration(self):
         cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
-                                  cosmic_average_density=1.0)
+                                                 cosmic_average_density=1.0)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
@@ -1327,7 +1327,7 @@ class TestAbstractNFW(object):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
         cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
-                                  cosmic_average_density=1.0)
+                                                 cosmic_average_density=1.0)
 
         radius_at_200 = nfw.radius_at_200_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
                                                     cosmology=cosmology)
@@ -1837,7 +1837,7 @@ class TestTruncatedNFW(object):
                                                  truncation_radius=1.0)
 
         cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
-                                  cosmic_average_density=1.0)
+                                                 cosmic_average_density=1.0)
 
         mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(redshift_profile=0.5, redshift_source=1.0,
                                                                             unit_length='arcsec', unit_mass='solMass', cosmology=cosmology)

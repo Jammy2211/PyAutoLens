@@ -5,7 +5,7 @@ from autolens.data.array.util import mapping_util
 from autolens.model.inversion import mappers
 from autolens.model.inversion import pixelizations
 from test.unit.mock.data.mock_grids import MockPixSubGrid, MockPixGridStack
-from test.unit.mock.mock_inversion import MockGeometry
+from test.unit.mock.model.mock_inversion import MockGeometry
 
 
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):

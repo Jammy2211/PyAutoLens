@@ -1,19 +1,11 @@
 import numpy as np
 import pytest
-from astropy import cosmology as cosmo
 
-from autolens.data import ccd as im, convolution
-from autolens.data.array import grids
+from autolens.data import convolution
 from autolens.data.array import mask as msk
-from autolens.data.array import scaled_array
-from autolens.lens import ray_tracing
 from autolens.lens.util import lens_fit_util as util
 from autolens.model.galaxy import galaxy as g
-from autolens.model.galaxy.util import galaxy_util
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles as lp
-from test.unit.mock.mock_galaxy import MockHyperGalaxy
 
 
 @pytest.fixture(name='mask')

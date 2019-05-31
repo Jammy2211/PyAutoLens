@@ -10,7 +10,8 @@ from autofit import conf
 from autolens import dimensions as dim
 from autolens.model.profiles import light_profiles as lp
 
-from test.unit.mock import mock_cosmology
+from test.unit.mock.model import mock_cosmology
+
 
 @pytest.fixture(autouse=True)
 def reset_config():
