@@ -1,13 +1,8 @@
-import numpy as np
-
-from autolens.data import ccd
-from autolens.data import convolution
 from autolens.data.array import grids
-from autolens.data.array import mask as msk
-from test.unit.mock.mock_grids import MockBorders
+from test.unit.mock.data.mock_grids import MockBorders
 
-from test.unit.mock import mock_ccd
-from test.unit.mock.mock_mask import MockMask, MockBlurringMask
+from test.unit.mock.data import mock_ccd
+from test.unit.mock.data.mock_mask import MockMask, MockBlurringMask
 
 class MockLensData(object):
 

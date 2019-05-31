@@ -776,13 +776,13 @@ class SubGrid(RegularGrid):
             self.mask = obj.mask
 
     def regular_array_1d_from_binned_up_sub_array_1d(self, sub_array_1d):
-        """For an input sub-gridded array, map its hyper-values from the sub-gridded values to a 1D regular grid of \
-        values by summing each set of each set of sub-pixels values and dividing by the total number of sub-pixels.
+        """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
+        values and dividing by the total number of sub-pixels.
 
         Parameters
         -----------
         sub_array_1d : ndarray
-            A 1D sub-gridded array of values (e.g. the intensities, surface-densities, potential) which is mapped to
+            A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
             a 1d regular array.
         """
         return np.multiply(self.sub_grid_fraction, sub_array_1d.reshape(-1, self.sub_grid_length).sum(axis=1))
@@ -1000,13 +1000,13 @@ class PaddedRegularGrid(RegularGrid):
         padded_array_1d : ndarray
             A 1D array of values which were computed using the *PaddedRegularGrid*.
         """
-        padded_array_2d = self.map_to_2d_keep_padded(padded_array_1d)
+        padded_array_2d = self.padded_array_2d_from_padded_array_1d(padded_array_1d)
         pad_size_0 = self.mask.shape[0] - self.image_shape[0]
         pad_size_1 = self.mask.shape[1] - self.image_shape[1]
         return (padded_array_2d[pad_size_0 // 2:self.mask.shape[0] - pad_size_0 // 2,
                 pad_size_1 // 2:self.mask.shape[1] - pad_size_1 // 2])
 
-    def map_to_2d_keep_padded(self, padded_array_1d):
+    def padded_array_2d_from_padded_array_1d(self, padded_array_1d):
         """ Map a padded 1D array of values to its padded 2D array.
 
         Parameters

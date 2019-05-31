@@ -23,11 +23,6 @@ def reset_config():
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
 
-@pytest.fixture(name='elliptical')
-def elliptical_sersic():
-    return lp.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                               sersic_index=4.0)
-
 class TestGaussian:
 
     def test__constructor_and_units(self):
@@ -260,6 +255,7 @@ class TestSersic:
         assert summary_text[i] == 'Light Profile = SphericalSersic\n' ; i += 1
         assert summary_text[i] == 'sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps' ; i += 1
         assert summary_text[i] == 'sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps' ; i += 1
+
 
 class TestExponential:
 
@@ -750,10 +746,16 @@ class TestLuminosityWithinEllipse(object):
 
 class TestGrids(object):
 
-    def test__grid_to_eccentric_radius(self, elliptical):
+    def test__grid_to_eccentric_radius(self):
+
+        elliptical = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0)
+
         assert elliptical.grid_to_eccentric_radii(np.array([[1, 1]])) == pytest.approx(
             elliptical.grid_to_eccentric_radii(np.array([[-1, -1]])), 1e-10)
 
-    def test__intensity_from_grid(self, elliptical):
+    def test__intensity_from_grid(self):
+
+        elliptical = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0)
+
         assert elliptical.intensities_from_grid(np.array([[1, 1]])) == \
                pytest.approx(elliptical.intensities_from_grid(np.array([[-1, -1]])), 1e-4)

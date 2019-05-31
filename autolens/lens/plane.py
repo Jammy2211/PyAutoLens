@@ -351,7 +351,7 @@ class AbstractGriddedPlane(AbstractPlane):
             raise exc.RayTracingException(
                 'To retrieve an image plane image for a simulation, the grid stack in the plane'
                 'must be a padded grid stack')
-        return self.grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=self.profile_image_plane_image_1d)
+        return self.grid_stack.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=self.profile_image_plane_image_1d)
 
     @property
     def profile_image_plane_image_1d(self):
@@ -402,7 +402,7 @@ class AbstractGriddedPlane(AbstractPlane):
 
     @property
     def has_padded_grid_stack(self):
-        return isinstance(self.grid_stack.regular, grids.PaddedRegularGrid)
+        return issubclass(type(self.grid_stack.regular), grids.PaddedRegularGrid)
 
     @property
     def plane_image(self):

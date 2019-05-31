@@ -5,126 +5,87 @@ from autolens import exc, dimensions as dim
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_and_mass_profiles as lmp, light_profiles as lp, mass_profiles as mp
 
-from test.unit.mock.mock_cosmology import MockCosmology
+from test.unit.mock import mock_cosmology
 
-@pytest.fixture(name="sersic_0")
-def make_sersic_0():
-    return lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0)
-
-
-@pytest.fixture(name="sersic_1")
-def make_sersic_1():
-    return lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=2.0, effective_radius=0.4, sersic_index=2.0)
-
-
-@pytest.fixture(name="gal_sersic_x1")
-def make_gal_sersic_x1(sersic_0):
-    return g.Galaxy(redshift=0.5, lp0=sersic_0)
-
-
-@pytest.fixture(name="gal_sersic_x2")
-def make_gal_sersic_x2(sersic_0, sersic_1):
-    return g.Galaxy(redshift=0.5, lp0=sersic_0, lp1=sersic_1)
+from test.unit.fixtures.model.profiles import lp_0, lp_1, mp_0, mp_1, lmp_0
+from test.unit.fixtures.model.galaxy import gal_x1_lp, gal_x2_lp, gal_x1_mp, gal_x2_mp
 
 
 class TestLightProfiles(object):
 
     class TestIntensity:
 
-        def test__one_profile_gal__intensity_is_same_individual_profile(self, sersic_0, gal_sersic_x1, sersic_1, gal_sersic_x2):
+        def test__galaxies_with_x1_and_x2_light_profiles__intensities_is_sum_of_profiles(self, lp_0, lp_1, 
+                                                                                         gal_x1_lp, gal_x2_lp):
 
-            sersic_intensity = sersic_0.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_intensity = lp_0.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
 
-            gal_sersic_intensity = gal_sersic_x1.intensities_from_grid(np.array([[1.05, -0.55]]))
+            gal_lp_intensity = gal_x1_lp.intensities_from_grid(np.array([[1.05, -0.55]]))
 
-            assert sersic_intensity == gal_sersic_intensity
+            assert lp_intensity == gal_lp_intensity
 
-            intensity = sersic_0.intensities_from_grid(np.array([[1.05, -0.55]]))
-            intensity += sersic_1.intensities_from_grid(np.array([[1.05, -0.55]]))
+            intensity = lp_0.intensities_from_grid(np.array([[1.05, -0.55]]))
+            intensity += lp_1.intensities_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_intensity = gal_sersic_x2.intensities_from_grid(np.array([[1.05, -0.55]]))
+            gal_intensity = gal_x2_lp.intensities_from_grid(np.array([[1.05, -0.55]]))
 
             assert intensity == gal_intensity
 
     class TestLuminosityWithin:
 
-        def test__in_eps__two_profile_galaxy__is_sum_of_individual_profiles(self):
-
-            sersic_0 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                           effective_radius=2.0, sersic_index=1.0)
-
-            sersic_1 = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=7.0,
-                                           effective_radius=3.0, sersic_index=2.0)
-
-            gal_sersic = g.Galaxy(redshift=0.5, light_profile_0=sersic_0, light_profile_1=sersic_1)
+        def test__two_profile_galaxy__is_sum_of_individual_profiles(self, lp_0, lp_1, gal_x1_lp, gal_x2_lp):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            luminosity = sersic_0.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps')
-            luminosity += sersic_1.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps')
+            lp_luminosity = lp_0.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps')
+            gal_luminosity = gal_x1_lp.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps')
 
-            gal_luminosity = gal_sersic.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps')
+            assert lp_luminosity == gal_luminosity
 
-            assert luminosity == gal_luminosity
+            lp_luminosity = lp_0.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps')
+            lp_luminosity += lp_1.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps')
 
-            luminosity = sersic_0.luminosity_within_ellipse_in_units(major_axis=radius,
-                                                                     unit_luminosity='eps')
-            luminosity += sersic_1.luminosity_within_ellipse_in_units(major_axis=radius,
-                                                                      unit_luminosity='eps')
+            gal_luminosity = gal_x2_lp.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps')
 
-            gal_sersic = g.Galaxy(redshift=0.5, light_profile_0=sersic_0, light_profile_1=sersic_1)
+            assert lp_luminosity == gal_luminosity
 
-            gal_luminosity = gal_sersic.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps')
+        def test__radius_unit_conversions__multiply_by_kpc_per_arcsec(self, lp_0, gal_x1_lp):
 
-            assert luminosity == gal_luminosity
-
-        def test__radius_unit_conversions__multiply_by_kpc_per_arcsec(self):
-
-            cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
-
-            sersic = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                           sersic_index=1.0)
-
-            galaxy_arcsec = g.Galaxy(redshift=0.5, light_profile=sersic)
+            cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
 
             radius = dim.Length(0.5, 'arcsec')
 
-            luminosity = sersic.luminosity_within_circle_in_units(radius=radius)
+            lp_luminosity_arcsec = lp_0.luminosity_within_circle_in_units(radius=radius)
+            gal_luminosity_arcsec = gal_x1_lp.luminosity_within_circle_in_units(radius=radius)
 
-            g_luminosity_arcsec = galaxy_arcsec.luminosity_within_circle_in_units(radius=radius)
-
-            assert luminosity == g_luminosity_arcsec
+            assert lp_luminosity_arcsec == gal_luminosity_arcsec
 
             radius = dim.Length(0.5, 'kpc')
 
-            luminosity = sersic.luminosity_within_circle_in_units(radius=radius, redshift_profile=0.5,
-                                                                  cosmology=cosmology)
+            lp_luminosity_kpc = lp_0.luminosity_within_circle_in_units(
+                radius=radius, redshift_profile=0.5,cosmology=cosmology)
+            gal_luminosity_kpc = gal_x1_lp.luminosity_within_circle_in_units(radius=radius, cosmology=cosmology)
 
-            g_luminosity_kpc = galaxy_arcsec.luminosity_within_circle_in_units(radius=radius, cosmology=cosmology)
+            assert lp_luminosity_kpc == gal_luminosity_kpc
 
-            assert luminosity == g_luminosity_kpc
-
-        def test__luminosity_unit_conversions__multiply_by_exposure_time(self):
-
-            sersic = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0, sersic_index=1.0)
-
-            galaxy = g.Galaxy(redshift=0.5, light_profile=sersic)
+        def test__luminosity_unit_conversions__multiply_by_exposure_time(self, lp_0, gal_x1_lp):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            luminosity = sersic.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps',
+            lp_luminosity_eps = lp_0.luminosity_within_ellipse_in_units(
+                major_axis=radius, unit_luminosity='eps', exposure_time=2.0)
+            gal_luminosity_eps = gal_x1_lp.luminosity_within_ellipse_in_units(
+                major_axis=radius, unit_luminosity='eps',exposure_time=2.0)
 
-                                                                   exposure_time=2.0)
-            gal_luminosity = galaxy.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps',
-                                                                       exposure_time=2.0)
-            assert luminosity == gal_luminosity
+            assert lp_luminosity_eps == gal_luminosity_eps
 
-            luminosity = sersic.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts',
-                                                                  exposure_time=2.0)
+            lp_luminosity_counts = lp_0.luminosity_within_circle_in_units(
+                radius=radius, unit_luminosity='counts', exposure_time=2.0)
 
-            gal_luminosity = galaxy.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts',
-                                                                      exposure_time=2.0)
-            assert luminosity == gal_luminosity
+            gal_luminosity_counts = gal_x1_lp.luminosity_within_circle_in_units(
+                radius=radius, unit_luminosity='counts', exposure_time=2.0)
+
+            assert lp_luminosity_counts == gal_luminosity_counts
 
         def test__no_light_profile__returns_none(self):
 
@@ -136,205 +97,169 @@ class TestLightProfiles(object):
     class TestSymmetricProfiles(object):
 
         def test_1d_symmetry(self):
-            sersic_0 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                           effective_radius=0.6,
-                                           sersic_index=4.0)
 
-            sersic_1 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                           effective_radius=0.6,
-                                           sersic_index=4.0, centre=(100, 0))
+            lp_0 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0)
 
-            gal_sersic = g.Galaxy(redshift=0.5, light_profile_0=sersic_0, light_profile_1=sersic_1)
+            lp_1 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0,
+                                       centre=(100, 0))
 
-            assert gal_sersic.intensities_from_grid(
-                np.array([[0.0, 0.0]])) == gal_sersic.intensities_from_grid(np.array([[100.0, 0.0]]))
-            assert gal_sersic.intensities_from_grid(
-                np.array([[49.0, 0.0]])) == gal_sersic.intensities_from_grid(np.array([[51.0, 0.0]]))
+            gal_x2_lp = g.Galaxy(redshift=0.5, light_profile_0=lp_0, light_profile_1=lp_1)
+
+            assert gal_x2_lp.intensities_from_grid(
+                np.array([[0.0, 0.0]])) == gal_x2_lp.intensities_from_grid(np.array([[100.0, 0.0]]))
+            assert gal_x2_lp.intensities_from_grid(
+                np.array([[49.0, 0.0]])) == gal_x2_lp.intensities_from_grid(np.array([[51.0, 0.0]]))
 
         def test_2d_symmetry(self):
-            sersic_0 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                           effective_radius=0.6,
-                                           sersic_index=4.0)
 
-            sersic_1 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                           effective_radius=0.6,
-                                           sersic_index=4.0, centre=(100, 0))
+            lp_0 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,effective_radius=0.6, sersic_index=4.0)
 
-            sersic_3 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                           effective_radius=0.6,
-                                           sersic_index=4.0, centre=(0, 100))
+            lp_1 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0,
+                                       centre=(100, 0))
 
-            sersic_4 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                           effective_radius=0.6,
-                                           sersic_index=4.0, centre=(100, 100))
+            lp_2 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0,
+                                       centre=(0, 100))
 
-            gal_sersic = g.Galaxy(redshift=0.5, light_profile_0=sersic_0, light_profile_1=sersic_1,
-                                  light_profile_3=sersic_3, light_profile_4=sersic_4)
+            lp_3 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0,
+                                       centre=(100, 100))
 
-            assert gal_sersic.intensities_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                gal_sersic.intensities_from_grid(np.array([[51.0, 0.0]])), 1e-5)
+            gal_x4_lp = g.Galaxy(redshift=0.5, light_profile_0=lp_0, light_profile_1=lp_1,
+                                  light_profile_3=lp_2, light_profile_4=lp_3)
 
-            assert gal_sersic.intensities_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                gal_sersic.intensities_from_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert gal_x4_lp.intensities_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_x4_lp.intensities_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert gal_sersic.intensities_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                gal_sersic.intensities_from_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert gal_x4_lp.intensities_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                gal_x4_lp.intensities_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert gal_sersic.intensities_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                gal_sersic.intensities_from_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert gal_x4_lp.intensities_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                gal_x4_lp.intensities_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-
-@pytest.fixture(name="sie_0")
-def make_sie_0():
-    return mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
-
-
-@pytest.fixture(name="sie_1")
-def make_sie_1():
-    return mp.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
-
-
-@pytest.fixture(name="gal_sie_x1")
-def make_gal_sie_x1(sie_0):
-    return g.Galaxy(redshift=0.5, mass_profile_0=sie_0)
-
-
-@pytest.fixture(name="gal_sie_x2")
-def make_gal_sie_x2(sie_0, sie_1):
-    return g.Galaxy(redshift=0.5, mass_profile_0=sie_0, mass_profile_1=sie_1)
+            assert gal_x4_lp.intensities_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                gal_x4_lp.intensities_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
 
 class TestMassProfiles(object):
 
     class TestConvergence:
 
-        def test__convergence_is_same_individual_profiles(self, sie_0, gal_sie_x1, sie_1, gal_sie_x2):
+        def test__galaxies_with_x1_and_x2_mass_profiles__convergence_is_same_individual_profiles(self, mp_0, gal_x1_mp, 
+                                                                                                 mp_1, gal_x2_mp):
             
-            sie_convergence = sie_0.convergence_from_grid(np.array([[1.05, -0.55]]))
+            mp_convergence = mp_0.convergence_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_sie_convergence = gal_sie_x1.convergence_from_grid(np.array([[1.05, -0.55]]))
+            gal_mp_convergence = gal_x1_mp.convergence_from_grid(np.array([[1.05, -0.55]]))
 
-            assert sie_convergence == gal_sie_convergence
+            assert mp_convergence == gal_mp_convergence
 
-            convergence = sie_0.convergence_from_grid(np.array([[1.05, -0.55]]))
-            convergence += sie_1.convergence_from_grid(np.array([[1.05, -0.55]]))
+            mp_convergence = mp_0.convergence_from_grid(np.array([[1.05, -0.55]]))
+            mp_convergence += mp_1.convergence_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_convergence = gal_sie_x2.convergence_from_grid(np.array([[1.05, -0.55]]))
+            gal_convergence = gal_x2_mp.convergence_from_grid(np.array([[1.05, -0.55]]))
 
-            assert convergence == gal_convergence
+            assert mp_convergence == gal_convergence
 
     class TestPotential:
 
-        def test__potential_is_same_individual_profiles(self, sie_0, gal_sie_x1, sie_1, gal_sie_x2):
+        def test__galaxies_with_x1_and_x2_mass_profiles__potential_is_same_individual_profiles(self, mp_0, gal_x1_mp, 
+                                                                                               mp_1, gal_x2_mp):
 
-            sie_potential = sie_0.potential_from_grid(np.array([[1.05, -0.55]]))
+            mp_potential = mp_0.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_sie_potential = gal_sie_x1.potential_from_grid(np.array([[1.05, -0.55]]))
+            gal_mp_potential = gal_x1_mp.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            assert sie_potential == gal_sie_potential
+            assert mp_potential == gal_mp_potential
 
-            potential = sie_0.potential_from_grid(np.array([[1.05, -0.55]]))
-            potential += sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
+            mp_potential = mp_0.potential_from_grid(np.array([[1.05, -0.55]]))
+            mp_potential += mp_1.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_potential = gal_sie_x2.potential_from_grid(np.array([[1.05, -0.55]]))
+            gal_potential = gal_x2_mp.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            assert potential == gal_potential
+            assert mp_potential == gal_potential
 
     class TestDeflectionAngles:
 
-        def test__deflection_angles_same_as_individual_profiles(self, sie_0, gal_sie_x1, sie_1, gal_sie_x2):
+        def test__galaxies_with_x1_and_x2_mass_profiles__deflection_same_as_individual_profiles(self, mp_0, gal_x1_mp, 
+                                                                                                mp_1, gal_x2_mp):
 
-            sie_deflection_angles = sie_0.deflections_from_grid(np.array([[1.05, -0.55]]))
+            mp_deflections = mp_0.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_sie_deflection_angles = gal_sie_x1.deflections_from_grid(np.array([[1.05, -0.55]]))
+            gal_mp_deflections = gal_x1_mp.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            assert sie_deflection_angles[0, 0] == gal_sie_deflection_angles[0, 0]
-            assert sie_deflection_angles[0, 1] == gal_sie_deflection_angles[0, 1]
+            assert mp_deflections[0, 0] == gal_mp_deflections[0, 0]
+            assert mp_deflections[0, 1] == gal_mp_deflections[0, 1]
 
-            deflection_angles_0 = sie_0.deflections_from_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_1 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
+            mp_deflections_0 = mp_0.deflections_from_grid(np.array([[1.05, -0.55]]))
+            mp_deflections_1 = mp_1.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            deflection_angles = deflection_angles_0 + deflection_angles_1
+            mp_deflections = mp_deflections_0 + mp_deflections_1
 
-            gal_deflection_angles = gal_sie_x2.deflections_from_grid(np.array([[1.05, -0.55]]))
+            gal_mp_deflections = gal_x2_mp.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            assert deflection_angles[0, 0] == gal_deflection_angles[0, 0]
-            assert deflection_angles[0, 1] == gal_deflection_angles[0, 1]
+            assert mp_deflections[0, 0] == gal_mp_deflections[0, 0]
+            assert mp_deflections[0, 1] == gal_mp_deflections[0, 1]
 
     class TestMassWithin:
 
-        def test__within_circle_in_angular_units__two_profile_gal__is_sum_of_individual_profiles(self):
-
-            sie_0 = mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
-            sie_1 = mp.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
+        def test__two_profile_galaxy__is_sum_of_individual_profiles(self, mp_0, gal_x1_mp, mp_1, gal_x2_mp):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            mass = sie_0.mass_within_circle_in_units(radius=radius, unit_mass='angular')
-            mass += sie_1.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+            mp_mass = mp_0.mass_within_circle_in_units(radius=radius, unit_mass='angular')
 
-            gal_sie = g.Galaxy(redshift=0.5, mass_profile_0=sie_0, mass_profile_1=sie_1)
+            gal_mass = gal_x1_mp.mass_within_circle_in_units(radius=radius, unit_mass='angular')
 
-            gal_mass = gal_sie.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+            assert mp_mass == gal_mass
 
-            assert mass == gal_mass
+            mp_mass = mp_0.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+            mp_mass += mp_1.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
 
-            mass = sie_0.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
-            mass += sie_1.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+            gal_mass = gal_x2_mp.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
 
-            gal_mass = gal_sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+            assert mp_mass == gal_mass
 
-            assert mass == gal_mass
+        def test__radius_unit_conversions__multiply_by_kpc_per_arcsec(self, mp_0, gal_x1_mp):
 
-        def test__radius_unit_conversions__multiply_by_kpc_per_arcsec(self):
-
-            cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=1.0)
-
-            sie = mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
-
-            galaxy_arcsec = g.Galaxy(redshift=0.5, mass_profile=sie)
+            cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=1.0)
 
             radius = dim.Length(0.5, 'arcsec')
 
-            mass = sie.mass_within_circle_in_units(radius=radius, unit_mass='solMass', redshift_profile=0.5,
+            mp_mass_arcsec = mp_0.mass_within_circle_in_units(radius=radius, unit_mass='solMass', redshift_profile=0.5,
                                                    redshift_source=1.0, cosmology=cosmology)
 
-            g_mass_arcsec = galaxy_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+            gal_mass_arcsec = gal_x1_mp.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
                                                                       redshift_source=1.0, cosmology=cosmology)
-            assert mass == g_mass_arcsec
+            assert mp_mass_arcsec == gal_mass_arcsec
 
             radius = dim.Length(0.5, 'kpc')
 
-            mass = sie.mass_within_circle_in_units(radius=radius, unit_mass='solMass', redshift_profile=0.5,
+            mp_mass_kpc = mp_0.mass_within_circle_in_units(radius=radius, unit_mass='solMass', redshift_profile=0.5,
                                                    redshift_source=1.0, cosmology=cosmology)
 
-            g_mass_kpc = galaxy_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+            gal_mass_kpc = gal_x1_mp.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
                                                                    redshift_source=1.0, cosmology=cosmology)
-            assert mass == g_mass_kpc
+            assert mp_mass_kpc == gal_mass_kpc
 
-        def test__mass_unit_conversions__same_as_individual_profile(self):
+        def test__mass_unit_conversions__same_as_individual_profile(self, mp_0, gal_x1_mp):
 
-            cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=2.0)
-
-            sie = mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
-
-            galaxy = g.Galaxy(redshift=0.5, mass_profile=sie)
-
+            cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, 
+                                                     critical_surface_density=2.0)
+            
             radius = dim.Length(0.5, 'arcsec')
 
-            mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
+            mp_mass_angular = mp_0.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
                                                     redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
 
-            gal_mass = galaxy.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
+            gal_mass_angular = gal_x1_mp.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
                                                            redshift_source=1.0, cosmology=cosmology)
-            assert mass == gal_mass
+            assert mp_mass_angular == gal_mass_angular
 
-            mass = sie.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+            mp_mass_sol = mp_0.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
                                                    redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
 
-            gal_mass = galaxy.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+            gal_mass_sol = gal_x1_mp.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
                                                         redshift_source=1.0, cosmology=cosmology)
-            assert mass == gal_mass
+            assert mp_mass_sol == gal_mass_sol
 
         def test__no_mass_profile__returns_none(self):
 
@@ -346,148 +271,144 @@ class TestMassProfiles(object):
     class TestSymmetricProfiles:
 
         def test_1d_symmetry(self):
-            isothermal_1 = mp.EllipticalIsothermal(axis_ratio=0.5, phi=45.0,
+            
+            mp_0 = mp.EllipticalIsothermal(axis_ratio=0.5, phi=45.0,
                                                    einstein_radius=1.0)
 
-            isothermal_2 = mp.EllipticalIsothermal(centre=(100, 0), axis_ratio=0.5, phi=45.0,
+            mp_1 = mp.EllipticalIsothermal(centre=(100, 0), axis_ratio=0.5, phi=45.0,
                                                    einstein_radius=1.0)
 
-            gal_isothermal = g.Galaxy(redshift=0.5, mass_profile_0=isothermal_1, mass_profile_1=isothermal_2)
+            gal_x4_mp = g.Galaxy(redshift=0.5, mass_profile_0=mp_0, mass_profile_1=mp_1)
 
-            assert gal_isothermal.convergence_from_grid(
-                np.array([[1.0, 0.0]])) == gal_isothermal.convergence_from_grid(np.array([[99.0, 0.0]]))
+            assert gal_x4_mp.convergence_from_grid(
+                np.array([[1.0, 0.0]])) == gal_x4_mp.convergence_from_grid(np.array([[99.0, 0.0]]))
 
-            assert gal_isothermal.convergence_from_grid(
-                np.array([[49.0, 0.0]])) == gal_isothermal.convergence_from_grid(np.array([[51.0, 0.0]]))
+            assert gal_x4_mp.convergence_from_grid(
+                np.array([[49.0, 0.0]])) == gal_x4_mp.convergence_from_grid(np.array([[51.0, 0.0]]))
 
-            assert gal_isothermal.potential_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
-                gal_isothermal.potential_from_grid(np.array([[99.0, 0.0]])), 1e-6)
+            assert gal_x4_mp.potential_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
+                gal_x4_mp.potential_from_grid(np.array([[99.0, 0.0]])), 1e-6)
 
-            assert gal_isothermal.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                gal_isothermal.potential_from_grid(np.array([[51.0, 0.0]])), 1e-6)
+            assert gal_x4_mp.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_x4_mp.potential_from_grid(np.array([[51.0, 0.0]])), 1e-6)
 
-            assert gal_isothermal.deflections_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[99.0, 0.0]])), 1e-6)
+            assert gal_x4_mp.deflections_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[99.0, 0.0]])), 1e-6)
 
-            assert gal_isothermal.deflections_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[51.0, 0.0]])), 1e-6)
+            assert gal_x4_mp.deflections_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[51.0, 0.0]])), 1e-6)
 
         def test_2d_symmetry(self):
-            isothermal_1 = mp.SphericalIsothermal(einstein_radius=1.0)
 
-            isothermal_2 = mp.SphericalIsothermal(centre=(100, 0), einstein_radius=1.0)
+            mp_0 = mp.SphericalIsothermal(einstein_radius=1.0)
 
-            isothermal_3 = mp.SphericalIsothermal(centre=(0, 100), einstein_radius=1.0)
+            mp_1 = mp.SphericalIsothermal(centre=(100, 0), einstein_radius=1.0)
 
-            isothermal_4 = mp.SphericalIsothermal(centre=(100, 100), einstein_radius=1.0)
+            mp_2 = mp.SphericalIsothermal(centre=(0, 100), einstein_radius=1.0)
 
-            gal_isothermal = g.Galaxy(redshift=0.5,
-                                      mass_profile_0=isothermal_1, mass_profile_1=isothermal_2,
-                                      mass_profile_2=isothermal_3, mass_profile_3=isothermal_4)
+            mp_3 = mp.SphericalIsothermal(centre=(100, 100), einstein_radius=1.0)
 
-            assert gal_isothermal.convergence_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                gal_isothermal.convergence_from_grid(np.array([[51.0, 0.0]])), 1e-5)
+            gal_x4_mp = g.Galaxy(redshift=0.5,
+                                      mass_profile_0=mp_0, mass_profile_1=mp_1,
+                                      mass_profile_2=mp_2, mass_profile_3=mp_3)
 
-            assert gal_isothermal.convergence_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                gal_isothermal.convergence_from_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert gal_x4_mp.convergence_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_x4_mp.convergence_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert gal_isothermal.convergence_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                gal_isothermal.convergence_from_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert gal_x4_mp.convergence_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                gal_x4_mp.convergence_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert gal_isothermal.convergence_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                gal_isothermal.convergence_from_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert gal_x4_mp.convergence_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                gal_x4_mp.convergence_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert gal_isothermal.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                gal_isothermal.potential_from_grid(np.array([[51.0, 0.0]])), 1e-5)
+            assert gal_x4_mp.convergence_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                gal_x4_mp.convergence_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
-            assert gal_isothermal.potential_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                gal_isothermal.potential_from_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert gal_x4_mp.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_x4_mp.potential_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert gal_isothermal.potential_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                gal_isothermal.potential_from_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert gal_x4_mp.potential_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                gal_x4_mp.potential_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert gal_isothermal.potential_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                gal_isothermal.potential_from_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert gal_x4_mp.potential_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                gal_x4_mp.potential_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 0] == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 0], 1e-5)
+            assert gal_x4_mp.potential_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                gal_x4_mp.potential_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
-            assert 1.0 * gal_isothermal.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 0] == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 0], 1e-5)
+            assert -1.0 * gal_x4_mp.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 0] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 0], 1e-5)
 
-            assert 1.0 * gal_isothermal.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 0] == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 0], 1e-5)
+            assert 1.0 * gal_x4_mp.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 0] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 0], 1e-5)
 
-            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 0] == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 0], 1e-5)
+            assert 1.0 * gal_x4_mp.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 0] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 0], 1e-5)
 
-            assert 1.0 * gal_isothermal.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 1] == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 1], 1e-5)
+            assert -1.0 * gal_x4_mp.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 0] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 0], 1e-5)
 
-            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 1] == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 1], 1e-5)
+            assert 1.0 * gal_x4_mp.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 1] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 1], 1e-5)
 
-            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 1] == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 1], 1e-5)
+            assert -1.0 * gal_x4_mp.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 1] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 1], 1e-5)
 
-            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 1] == pytest.approx(
-                gal_isothermal.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 1], 1e-5)
+            assert -1.0 * gal_x4_mp.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 1] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 1], 1e-5)
+
+            assert -1.0 * gal_x4_mp.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 1] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 1], 1e-5)
 
     class TestEinsteinRadiiMass:
 
         def test__x2_sis_different_einstein_radii_and_mass__einstein_radii_and_mass_are_sum(self):
 
-            sis_0 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
-            sis_1 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.5)
+            mp_0 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+            mp_1 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.5)
 
-            galaxy = g.Galaxy(redshift=0.5, mass_0=sis_0, mass_1=sis_1)
+            gal_x2_mp = g.Galaxy(redshift=0.5, mass_0=mp_0, mass_1=mp_1)
 
-            assert galaxy.einstein_radius_in_units(unit_length='arcsec') == 1.5
-            assert galaxy.einstein_mass_in_units(unit_mass='angular') == np.pi*(1.0 + 0.5**2.0)
+            assert gal_x2_mp.einstein_radius_in_units(unit_length='arcsec') == 1.5
+            assert gal_x2_mp.einstein_mass_in_units(unit_mass='angular') == np.pi*(1.0 + 0.5**2.0)
 
         def test__includes_shear__does_not_impact_values(self):
 
-            sis_0 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+            mp_0 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
             shear = mp.ExternalShear()
 
-            galaxy = g.Galaxy(redshift=0.5, mass_0=sis_0, shear=shear)
+            gal_shear = g.Galaxy(redshift=0.5, mass_0=mp_0, shear=shear)
 
-            assert galaxy.einstein_radius_in_units(unit_length='arcsec') == 1.0
-            assert galaxy.einstein_mass_in_units(unit_mass='angular') == np.pi
+            assert gal_shear.einstein_radius_in_units(unit_length='arcsec') == 1.0
+            assert gal_shear.einstein_mass_in_units(unit_mass='angular') == np.pi
 
 
 class TestMassAndLightProfiles(object):
 
-    @pytest.fixture(name="mass_and_light")
-    def make_mass_and_light_profile(self):
-        return lmp.EllipticalSersicRadialGradient()
+    def test_single_profile(self, lmp_0):
 
-    def test_single_profile(self, mass_and_light):
-        gal = g.Galaxy(redshift=0.5, profile=mass_and_light)
-        assert 1 == len(gal.light_profiles)
-        assert 1 == len(gal.mass_profiles)
-        assert gal.mass_profiles[0] == mass_and_light
-        assert gal.light_profiles[0] == mass_and_light
+        gal_x1_lmp = g.Galaxy(redshift=0.5, profile=lmp_0)
 
-    def test_multiple_profile(self, mass_and_light, sersic_0, sie_0):
-        gal = g.Galaxy(redshift=0.5, profile=mass_and_light, light=sersic_0, sie=sie_0)
-        assert 2 == len(gal.light_profiles)
-        assert 2 == len(gal.mass_profiles)
+        assert 1 == len(gal_x1_lmp.light_profiles)
+        assert 1 == len(gal_x1_lmp.mass_profiles)
+
+        assert gal_x1_lmp.mass_profiles[0] == lmp_0
+        assert gal_x1_lmp.light_profiles[0] == lmp_0
+
+    def test_multiple_profile(self, lmp_0, lp_0, mp_0):
+
+        gal_multi_profiles = g.Galaxy(redshift=0.5, profile=lmp_0, light=lp_0, sie=mp_0)
+
+        assert 2 == len(gal_multi_profiles.light_profiles)
+        assert 2 == len(gal_multi_profiles.mass_profiles)
 
 
 class TestSummarizeInUnits(object):
 
-    def test__galaxy_with_two_light_and_mass_profiles(self):
-    
-        sersic_0 = lp.SphericalSersic(intensity=1.0, effective_radius=2.0, sersic_index=2.0)
-        sersic_1 = lp.SphericalSersic(intensity=2.0, effective_radius=2.0, sersic_index=2.0)
+    def test__galaxy_with_two_light_and_mass_profiles(self, lp_0, lp_1, mp_0, mp_1):
 
-
-        sis_0 = mp.SphericalIsothermal(einstein_radius=1.0)
-        sis_1 = mp.SphericalIsothermal(einstein_radius=2.0)
-
-        gal = g.Galaxy(redshift=0.5, light_profile_0=sersic_0, light_profile_1=sersic_1, 
-                       mass_profile_0=sis_0, mass_profile_1=sis_1)
+        gal = g.Galaxy(redshift=0.5, light_profile_0=lp_0, light_profile_1=lp_1,
+                       mass_profile_0=mp_0, mass_profile_1=mp_1)
 
 
         summary_text = gal.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], whitespace=50,
@@ -555,7 +476,6 @@ class TestHyperGalaxy(object):
 
             assert (contribution_map == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
-
         def test__different_values__threshold_is_1_minimum_threshold_included__wipes_1st_value_to_0(self):
             hyper_image = np.array([0.5, 1.0, 1.5])
 
@@ -608,6 +528,7 @@ class TestHyperGalaxy(object):
 class TestBooleanProperties(object):
 
     def test_has_profile(self):
+
         assert g.Galaxy(redshift=0.5).has_profile is False
         assert g.Galaxy(redshift=0.5, light_profile=lp.LightProfile()).has_profile is True
         assert g.Galaxy(redshift=0.5, mass_profile=mp.MassProfile()).has_profile is True

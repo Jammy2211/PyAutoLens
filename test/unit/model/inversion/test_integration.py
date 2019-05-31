@@ -4,7 +4,7 @@ import pytest
 from autolens.data.array import grids, mask as msk
 from autolens.model.inversion import mappers as pm
 from autolens.model.inversion import pixelizations, regularization
-from test.unit.mock.mock_grids import MockSubGrid, MockGridStack
+from test.unit.mock.data.mock_grids import MockPixSubGrid, MockPixGridStack
 
 
 class TestRectangular:
@@ -16,9 +16,9 @@ class TestRectangular:
 
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        grid_stack = MockGridStack(regular=regular_grid,
-                                   sub=MockSubGrid(sub_grid=sub_grid,
-                                                           sub_to_regular=sub_to_regular, sub_grid_size=1))
+        grid_stack = MockPixGridStack(regular=regular_grid,
+                                      sub=MockPixSubGrid(sub_grid=sub_grid,
+                                                      sub_to_regular=sub_to_regular, sub_grid_size=1))
 
         # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
@@ -72,9 +72,9 @@ class TestRectangular:
 
         sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
-        grid_stack = MockGridStack(regular=regular_grid,
-                                   sub=MockSubGrid(sub_grid, sub_to_regular,
-                                                   sub_grid_size=1))
+        grid_stack = MockPixGridStack(regular=regular_grid,
+                                      sub=MockPixSubGrid(sub_grid, sub_to_regular,
+                                                      sub_grid_size=1))
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
@@ -130,8 +130,8 @@ class TestRectangular:
 
         sub_to_regular = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
-        grid_stack = MockGridStack(regular=regular_grid,
-                                   sub=MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=2))
+        grid_stack = MockPixGridStack(regular=regular_grid,
+                                      sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=2))
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
@@ -171,9 +171,9 @@ class TestRectangular:
 
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        grid_stack = MockGridStack(regular=regular_grid,
-                                   sub=MockSubGrid(sub_grid, sub_to_regular,
-                                                   sub_grid_size=1))
+        grid_stack = MockPixGridStack(regular=regular_grid,
+                                      sub=MockPixSubGrid(sub_grid, sub_to_regular,
+                                                      sub_grid_size=1))
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
@@ -223,13 +223,13 @@ class TestImagePlanePixelization:
         sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
-        sub_grid = MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
+        sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
 
-        grid_stack = MockGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                   regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
+                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
@@ -280,13 +280,13 @@ class TestImagePlanePixelization:
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
-        sub_grid = MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
+        sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
 
-        grid_stack = MockGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                   regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
+                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
@@ -332,13 +332,13 @@ class TestImagePlanePixelization:
         sub_to_regular = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
-        sub_grid = MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=2)
+        sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=2)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
 
-        grid_stack = MockGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                   regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
+                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
@@ -383,13 +383,13 @@ class TestImagePlanePixelization:
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
-        sub_grid = MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
+        sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
 
-        grid_stack = MockGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                   regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
+                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
@@ -428,10 +428,10 @@ class TestAdaptiveMagnification:
 
         regular_to_sparse = np.array([0, 1, 2, 3, 4])
 
-        grid_stack = MockGridStack(regular=regular_grid,
-                                   sub=MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
-                                   pix=regular_grid,
-                                   regular_to_nearest_pix=regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid,
+                                      sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
+                                      pix=regular_grid,
+                                      regular_to_nearest_pix=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
@@ -482,10 +482,10 @@ class TestAdaptiveMagnification:
 
         regular_to_sparse = np.array([0, 1, 2, 3, 4])
 
-        grid_stack = MockGridStack(regular=regular_grid,
-                                   sub=MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
-                                   pix=regular_grid,
-                                   regular_to_nearest_pix=regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid,
+                                      sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
+                                      pix=regular_grid,
+                                      regular_to_nearest_pix=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
@@ -519,13 +519,13 @@ class TestAdaptiveMagnification:
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
-        sub_grid = MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
+        sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
 
-        grid_stack = MockGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                   regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
+                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
@@ -571,9 +571,9 @@ class TestAdaptiveMagnification:
         sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
         regular_to_sparse = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
 
-        grid_stack = MockGridStack(regular=regular_grid,
-                                   sub=MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
-                                   pix=pixel_centers, regular_to_nearest_pix=regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid,
+                                      sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
+                                      pix=pixel_centers, regular_to_nearest_pix=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
@@ -628,11 +628,11 @@ class TestAdaptiveMagnification:
 
         regular_to_sparse = np.array([0, 1, 2, 3, 4])
 
-        grid_stack = MockGridStack(regular=regular_grid,
-                                   sub=MockSubGrid(sub_grid, sub_to_regular,
-                                                   sub_grid_size=2),
-                                   pix=pixel_centers,
-                                   regular_to_nearest_pix=regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid,
+                                      sub=MockPixSubGrid(sub_grid, sub_to_regular,
+                                                      sub_grid_size=2),
+                                      pix=pixel_centers,
+                                      regular_to_nearest_pix=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
@@ -674,9 +674,9 @@ class TestAdaptiveMagnification:
 
         regular_to_sparse = np.array([0, 1, 2, 3, 4])
 
-        grid_stack = MockGridStack(regular=regular_grid,
-                                   sub=MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
-                                   pix=pix_grid, regular_to_nearest_pix=regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid,
+                                      sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
+                                      pix=pix_grid, regular_to_nearest_pix=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
