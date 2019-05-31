@@ -13,8 +13,8 @@ from autolens.model.inversion import pixelizations
 from autolens.model.inversion import regularization
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from test.unit.mock.mock_profiles import MockLightProfile
-from test.unit.mock.mock_lens_data import MockLensData
+from test.unit.mock.model.mock_profiles import MockLightProfile
+from test.unit.mock.lens.mock_lens_data import MockLensData
 
 class TestLensProfileFit:
 

@@ -4,7 +4,7 @@ import pytest
 from autolens import exc
 from autolens.data.array import grids, mask
 from autolens.model.inversion import inversions
-from test.unit.mock.mock_inversion import MockConvolver
+from test.unit.mock.model.mock_inversion import MockConvolver
 
 
 class MockGeometry(object):

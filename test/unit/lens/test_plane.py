@@ -14,8 +14,8 @@ from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.unit.mock.data import mock_ccd, mock_grids
-from test.unit.mock.mock_inversion import MockRegularization, MockPixelization
-from test.unit.mock.mock_cosmology import MockCosmology
+from test.unit.mock.model.mock_inversion import MockRegularization, MockPixelization
+from test.unit.mock.model.mock_cosmology import MockCosmology
 
 planck = cosmo.Planck15
 

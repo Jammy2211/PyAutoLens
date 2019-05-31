@@ -3,12 +3,9 @@ import pytest
 
 from autolens import exc, dimensions as dim
 from autolens.model.galaxy import galaxy as g
-from autolens.model.profiles import light_and_mass_profiles as lmp, light_profiles as lp, mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
-from test.unit.mock import mock_cosmology
-
-from test.unit.fixtures.model.fix_profiles import lp_0, lp_1, mp_0, mp_1, lmp_0
-from test.unit.fixtures.model.fix_galaxy import gal_x1_lp, gal_x2_lp, gal_x1_mp, gal_x2_mp
+from test.unit.mock.model import mock_cosmology
 
 
 class TestLightProfiles(object):

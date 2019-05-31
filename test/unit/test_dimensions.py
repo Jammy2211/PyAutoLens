@@ -2,7 +2,7 @@ import pytest
 
 from autolens import exc, dimensions as dim
 
-from test.unit.mock.mock_cosmology import MockCosmology
+from test.unit.mock.model.mock_cosmology import MockCosmology
 
 
 class TestLength(object):
