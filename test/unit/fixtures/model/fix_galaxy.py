@@ -1,5 +1,5 @@
 from autolens.model.galaxy import galaxy as g
-from test.unit.fixtures.model.profiles import lp_0, lp_1, mp_0, mp_1
+from test.unit.fixtures.model.fix_profiles import lp_0, lp_1, mp_0, mp_1
 
 import pytest
 

@@ -7,15 +7,15 @@ from autolens.model.profiles import light_and_mass_profiles as lmp, light_profil
 
 from test.unit.mock import mock_cosmology
 
-from test.unit.fixtures.model.profiles import lp_0, lp_1, mp_0, mp_1, lmp_0
-from test.unit.fixtures.model.galaxy import gal_x1_lp, gal_x2_lp, gal_x1_mp, gal_x2_mp
+from test.unit.fixtures.model.fix_profiles import lp_0, lp_1, mp_0, mp_1, lmp_0
+from test.unit.fixtures.model.fix_galaxy import gal_x1_lp, gal_x2_lp, gal_x1_mp, gal_x2_mp
 
 
 class TestLightProfiles(object):
 
     class TestIntensity:
 
-        def test__galaxies_with_x1_and_x2_light_profiles__intensities_is_sum_of_profiles(self, lp_0, lp_1, 
+        def test__galaxies_with_x1_and_x2_light_profiles__intensities_is_sum_of_profiles(self, lp_0, lp_1,
                                                                                          gal_x1_lp, gal_x2_lp):
 
             lp_intensity = lp_0.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
@@ -89,10 +89,10 @@ class TestLightProfiles(object):
 
         def test__no_light_profile__returns_none(self):
 
-            gal = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal())
+            gal_no_lp = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal())
 
-            assert gal.luminosity_within_circle_in_units(radius=1.0) == None
-            assert gal.luminosity_within_ellipse_in_units(major_axis=1.0) == None
+            assert gal_no_lp.luminosity_within_circle_in_units(radius=1.0) == None
+            assert gal_no_lp.luminosity_within_ellipse_in_units(major_axis=1.0) == None
 
     class TestSymmetricProfiles(object):
 
@@ -143,9 +143,9 @@ class TestMassProfiles(object):
 
     class TestConvergence:
 
-        def test__galaxies_with_x1_and_x2_mass_profiles__convergence_is_same_individual_profiles(self, mp_0, gal_x1_mp, 
+        def test__galaxies_with_x1_and_x2_mass_profiles__convergence_is_same_individual_profiles(self, mp_0, gal_x1_mp,
                                                                                                  mp_1, gal_x2_mp):
-            
+
             mp_convergence = mp_0.convergence_from_grid(np.array([[1.05, -0.55]]))
 
             gal_mp_convergence = gal_x1_mp.convergence_from_grid(np.array([[1.05, -0.55]]))
@@ -161,7 +161,7 @@ class TestMassProfiles(object):
 
     class TestPotential:
 
-        def test__galaxies_with_x1_and_x2_mass_profiles__potential_is_same_individual_profiles(self, mp_0, gal_x1_mp, 
+        def test__galaxies_with_x1_and_x2_mass_profiles__potential_is_same_individual_profiles(self, mp_0, gal_x1_mp,
                                                                                                mp_1, gal_x2_mp):
 
             mp_potential = mp_0.potential_from_grid(np.array([[1.05, -0.55]]))
@@ -179,7 +179,7 @@ class TestMassProfiles(object):
 
     class TestDeflectionAngles:
 
-        def test__galaxies_with_x1_and_x2_mass_profiles__deflection_same_as_individual_profiles(self, mp_0, gal_x1_mp, 
+        def test__galaxies_with_x1_and_x2_mass_profiles__deflection_same_as_individual_profiles(self, mp_0, gal_x1_mp,
                                                                                                 mp_1, gal_x2_mp):
 
             mp_deflections = mp_0.deflections_from_grid(np.array([[1.05, -0.55]]))
@@ -242,9 +242,9 @@ class TestMassProfiles(object):
 
         def test__mass_unit_conversions__same_as_individual_profile(self, mp_0, gal_x1_mp):
 
-            cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, 
+            cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0,
                                                      critical_surface_density=2.0)
-            
+
             radius = dim.Length(0.5, 'arcsec')
 
             mp_mass_angular = mp_0.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
@@ -263,15 +263,15 @@ class TestMassProfiles(object):
 
         def test__no_mass_profile__returns_none(self):
 
-            gal = g.Galaxy(redshift=0.5, light=lp.SphericalSersic())
+            gal_no_mp = g.Galaxy(redshift=0.5, light=lp.SphericalSersic())
 
-            assert gal.mass_within_circle_in_units(radius=1.0, critical_surface_density=1.0) == None
-            assert gal.mass_within_ellipse_in_units(major_axis=1.0, critical_surface_density=1.0) == None
+            assert gal_no_mp.mass_within_circle_in_units(radius=1.0, critical_surface_density=1.0) == None
+            assert gal_no_mp.mass_within_ellipse_in_units(major_axis=1.0, critical_surface_density=1.0) == None
 
     class TestSymmetricProfiles:
 
         def test_1d_symmetry(self):
-            
+
             mp_0 = mp.EllipticalIsothermal(axis_ratio=0.5, phi=45.0,
                                                    einstein_radius=1.0)
 
@@ -407,11 +407,11 @@ class TestSummarizeInUnits(object):
 
     def test__galaxy_with_two_light_and_mass_profiles(self, lp_0, lp_1, mp_0, mp_1):
 
-        gal = g.Galaxy(redshift=0.5, light_profile_0=lp_0, light_profile_1=lp_1,
+        gal_summarize = g.Galaxy(redshift=0.5, light_profile_0=lp_0, light_profile_1=lp_1,
                        mass_profile_0=mp_0, mass_profile_1=mp_1)
 
 
-        summary_text = gal.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], whitespace=50,
+        summary_text = gal_summarize.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], whitespace=50,
                                               unit_length='arcsec', unit_luminosity='eps', unit_mass='angular')
 
         i = 0

@@ -10,7 +10,7 @@ from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 
-from test.unit.mock.mock_cosmology import MockCosmology
+from test.unit.mock import mock_cosmology
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
@@ -81,19 +81,20 @@ class TestPointMass(object):
         assert deflections[0, 1] == pytest.approx(0.5, 1e-3)
 
     def test__deflections__change_geometry(self):
+        
         point_mass_0 = mp.PointMass(centre=(0.0, 0.0))
         point_mass_1 = mp.PointMass(centre=(1.0, 1.0))
-        defls_0 = point_mass_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
-        defls_1 = point_mass_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
-        assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
+        deflections_0 = point_mass_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        deflections_1 = point_mass_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert deflections_0[0, 0] == pytest.approx(-deflections_1[0, 0], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(-deflections_1[0, 1], 1e-5)
 
         point_mass_0 = mp.PointMass(centre=(0.0, 0.0))
         point_mass_1 = mp.PointMass(centre=(0.0, 0.0))
-        defls_0 = point_mass_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        defls_1 = point_mass_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+        deflections_0 = point_mass_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = point_mass_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
 
     def test__multiple_coordinates_in__multiple_coordinates_out(self):
         point_mass = mp.PointMass(centre=(1.0, 2.0), einstein_radius=1.0)
@@ -259,16 +260,16 @@ class TestCoredPowerLaw(object):
 
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0,
                                                      einstein_radius=1.3, slope=1.8, core_radius=0.2)
-        defls = cored_power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.9869, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.54882, 1e-3)
+        deflections = cored_power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.9869, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.54882, 1e-3)
 
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.2, -0.2), axis_ratio=0.6, phi=120.0,
                                                      einstein_radius=0.5, slope=2.4, core_radius=0.5)
 
-        defls = cored_power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.01111, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.11403, 1e-3)
+        deflections = cored_power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.01111, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.11403, 1e-3)
 
     def test__surfce_density__change_geometry(self):
         cored_power_law_0 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
@@ -305,24 +306,24 @@ class TestCoredPowerLaw(object):
     def test__deflections__change_geometry(self):
         cored_power_law_0 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
         cored_power_law_1 = mp.SphericalCoredPowerLaw(centre=(1.0, 1.0))
-        defls_0 = cored_power_law_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
-        defls_1 = cored_power_law_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
-        assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
+        deflections_0 = cored_power_law_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        deflections_1 = cored_power_law_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert deflections_0[0, 0] == pytest.approx(-deflections_1[0, 0], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(-deflections_1[0, 1], 1e-5)
 
         cored_power_law_0 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
         cored_power_law_1 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
-        defls_0 = cored_power_law_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        defls_1 = cored_power_law_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+        deflections_0 = cored_power_law_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = cored_power_law_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
 
         cored_power_law_0 = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
         cored_power_law_1 = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-        defls_0 = cored_power_law_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        defls_1 = cored_power_law_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+        deflections_0 = cored_power_law_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = cored_power_law_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
 
     def test__multiple_coordinates_in__multiple_quantities_out(self):
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0,
@@ -342,11 +343,11 @@ class TestCoredPowerLaw(object):
 
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0,
                                                      einstein_radius=1.3, slope=1.8, core_radius=0.2)
-        defls = cored_power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625], [0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.9869, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.54882, 1e-3)
-        assert defls[1, 0] == pytest.approx(0.9869, 1e-3)
-        assert defls[1, 1] == pytest.approx(-0.54882, 1e-3)
+        deflections = cored_power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625], [0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.9869, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.54882, 1e-3)
+        assert deflections[1, 0] == pytest.approx(0.9869, 1e-3)
+        assert deflections[1, 1] == pytest.approx(-0.54882, 1e-3)
 
     def test__spherical_and_elliptical_match(self):
         elliptical = mp.EllipticalCoredPowerLaw(centre=(1.1, 1.1), axis_ratio=1.0, phi=0.0, einstein_radius=3.0,
@@ -533,41 +534,41 @@ class TestPowerLaw(object):
 
     def test__deflections__correct_values(self):
         power_law = mp.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0, slope=2.0)
-        defls = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(-0.31622, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.94868, 1e-3)
+        deflections = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(-0.31622, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.94868, 1e-3)
 
         power_law = mp.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0, slope=2.5)
-        defls = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(-1.59054, 1e-3)
-        assert defls[0, 1] == pytest.approx(-4.77162, 1e-3)
+        deflections = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(-1.59054, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-4.77162, 1e-3)
 
         power_law = mp.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0, slope=1.5)
-        defls = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(-0.06287, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.18861, 1e-3)
+        deflections = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(-0.06287, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.18861, 1e-3)
 
         power_law = mp.EllipticalPowerLaw(centre=(0, 0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0, slope=2.5)
-        defls = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(1.29641, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.99629, 1e-3)
+        deflections = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(1.29641, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.99629, 1e-3)
 
         power_law = mp.EllipticalPowerLaw(centre=(0, 0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0, slope=1.5)
-        defls = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.48036, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.26729, 1e-3)
+        deflections = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.48036, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.26729, 1e-3)
 
         power_law = mp.EllipticalPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0, einstein_radius=1.3,
                                           slope=1.9)
-        defls = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(1.12841, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.60205, 1e-3)
+        deflections = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(1.12841, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.60205, 1e-3)
 
         power_law = mp.EllipticalPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=150.0, einstein_radius=1.3,
                                           slope=2.2)
-        defls = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(1.25995, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.35096, 1e-3)
+        deflections = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(1.25995, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.35096, 1e-3)
 
     def test__compare_to_cored_power_law(self):
         power_law = mp.EllipticalPowerLaw(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0, einstein_radius=1.0, slope=2.3)
@@ -772,15 +773,15 @@ class TestCoredIsothermal(object):
 
         cored_isothermal = mp.EllipticalCoredIsothermal(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0,
                                                         einstein_radius=1.3, core_radius=0.2)
-        defls = cored_isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.95429, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.52047, 1e-3)
+        deflections = cored_isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.95429, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.52047, 1e-3)
 
         cored_isothermal = mp.EllipticalCoredIsothermal(centre=(0.2, - 0.2), axis_ratio=0.6, phi=120.0,
                                                         einstein_radius=0.5, core_radius=0.5)
-        defls = cored_isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.02097, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.20500, 1e-3)
+        deflections = cored_isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.02097, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.20500, 1e-3)
 
     def test__compare_to_cored_power_law(self):
         power_law = mp.EllipticalCoredIsothermal(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0, einstein_radius=1.0,
@@ -953,14 +954,14 @@ class TestIsothermal(object):
         assert deflections[0, 1] == pytest.approx(1.06214, 1e-4)
 
         isothermal = mp.EllipticalIsothermal(centre=(0, 0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0)
-        defls = isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.79421, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.50734, 1e-3)
+        deflections = isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.79421, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.50734, 1e-3)
 
         isothermal = mp.EllipticalIsothermal(centre=(0, 0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0)
-        defls = isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.79421, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.50734, 1e-3)
+        deflections = isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.79421, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.50734, 1e-3)
 
     def test__compare_to_cored_power_law(self):
         isothermal = mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0,
@@ -1151,7 +1152,7 @@ class TestAbstractNFW(object):
                pytest.approx(np.array([0.06946888, 0.06946888]), 1.0e-4)
 
     def test__rho_at_scale_radius__numerical_values_in_default_units(self):
-        cosmology = MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
+        cosmology = mock_cosmology.MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
         rho = nfw.rho_at_scale_radius_for_units(redshift_profile=0.5, redshift_source=1.0, cosmology=cosmology)
@@ -1166,7 +1167,7 @@ class TestAbstractNFW(object):
         assert rho == pytest.approx(0.25, 1e-3)
 
     def test__rho_at_scale_radius__unit_conversions(self):
-        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0)
 
         nfw_arcsec = mp.SphericalNFW(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
                                      kappa_s=1.0,
@@ -1189,13 +1190,13 @@ class TestAbstractNFW(object):
 
         # This will make the critical surface density 4.0, with the same conversions as above
 
-        cosmology = MockCosmology(arcsec_per_kpc=0.25, kpc_per_arcsec=4.0, critical_surface_density=2.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.25, kpc_per_arcsec=4.0, critical_surface_density=2.0)
 
         rho = nfw_arcsec.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.5,
                                                        redshift_source=1.0, cosmology=cosmology)
         assert rho == pytest.approx(0.5 / 4.0, 1e-3)
 
-        cosmology = MockCosmology(arcsec_per_kpc=0.25, kpc_per_arcsec=4.0, critical_surface_density=4.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.25, kpc_per_arcsec=4.0, critical_surface_density=4.0)
 
         rho = nfw_arcsec.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.5,
                                                        redshift_source=1.0, cosmology=cosmology)
@@ -1205,7 +1206,7 @@ class TestAbstractNFW(object):
                                   kappa_s=1.0,
                                   scale_radius=dim.Length(1.0, 'kpc'))
 
-        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0)
         rho = nfw_kpc.rho_at_scale_radius_for_units(unit_length='kpc', unit_mass='solMass', redshift_profile=0.5,
                                                     redshift_source=1.0, cosmology=cosmology)
         assert rho == pytest.approx(0.5, 1e-3)
@@ -1221,7 +1222,7 @@ class TestAbstractNFW(object):
     def test__delta_concentration_value_in_default_units(self):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
-        cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
                                   cosmic_average_density=1.0)
 
         delta_concentration = nfw.delta_concentration_for_units(redshift_profile=0.5, redshift_source=1.0, unit_mass='solMass',
@@ -1238,7 +1239,7 @@ class TestAbstractNFW(object):
                                                                 cosmology=cosmology)
         assert delta_concentration == pytest.approx(0.25, 1e-3)
 
-        # cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
+        # cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
         #                           cosmic_average_density=1.0)
         #
         # nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
@@ -1256,7 +1257,7 @@ class TestAbstractNFW(object):
         #                                               cosmology=cosmology)
         # assert delta_concentration == pytest.approx(0.05, 1e-3)
         #
-        # cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
+        # cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
         #                           cosmic_average_density=2.0)
         #
         # nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
@@ -1265,7 +1266,7 @@ class TestAbstractNFW(object):
         # assert delta_concentration == pytest.approx(0.25, 1e-3)
 
     def test__solve_concentration(self):
-        cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
                                   cosmic_average_density=1.0)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
@@ -1279,7 +1280,7 @@ class TestAbstractNFW(object):
                                      kappa_s=1.0,
                                      scale_radius=dim.Length(1.0, 'arcsec'))
 
-        cosmology = MockCosmology(arcsec_per_kpc=0.2, kpc_per_arcsec=5.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.2, kpc_per_arcsec=5.0)
 
         concentration = nfw_arcsec.concentration_for_units(cosmology=cosmology, redshift_profile=0.5, redshift_source=1.0)
 
@@ -1288,7 +1289,7 @@ class TestAbstractNFW(object):
 
         assert radius_200 == concentration * 1.0
 
-        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
 
         concentration = nfw_arcsec.concentration_for_units(unit_length='kpc', cosmology=cosmology, redshift_profile=0.5,
                                                            redshift_source=1.0)
@@ -1302,7 +1303,7 @@ class TestAbstractNFW(object):
                                   kappa_s=1.0,
                                   scale_radius=dim.Length(1.0, 'kpc'))
 
-        cosmology = MockCosmology(arcsec_per_kpc=0.2, kpc_per_arcsec=5.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.2, kpc_per_arcsec=5.0)
 
         concentration = nfw_kpc.concentration_for_units(unit_length='kpc', redshift_profile=0.5, redshift_source=1.0,
                                                         cosmology=cosmology)
@@ -1312,7 +1313,7 @@ class TestAbstractNFW(object):
 
         assert radius_200 == concentration * 1.0
 
-        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
 
         concentration = nfw_kpc.concentration_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
                                                         cosmology=cosmology)
@@ -1325,7 +1326,7 @@ class TestAbstractNFW(object):
     def test__mass_at_200__unit_conversions_work(self):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
-        cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
                                   cosmic_average_density=1.0)
 
         radius_at_200 = nfw.radius_at_200_for_units(unit_length='arcsec', redshift_profile=0.5, redshift_source=1.0,
@@ -1338,7 +1339,7 @@ class TestAbstractNFW(object):
         mass_calc = 200.0 * ((4.0 / 3.0) * np.pi) * cosmology.cosmic_average_density * (radius_at_200 ** 3.0)
         assert mass_at_200 == pytest.approx(mass_calc, 1.0e-5)
 
-        # cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
+        # cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0,
         #                           cosmic_average_density=1.0)
         #
         # radius_at_200 = nfw.radius_at_200_for_units(unit_length='arcsec', redshift_lens=0.5, redshift_source=1.0,
@@ -1556,26 +1557,26 @@ class TestGeneralizedNFW(object):
 
     def test__deflections_correct_values(self):
         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
-        defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.43501, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.37701, 1e-3)
+        deflections = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.43501, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.37701, 1e-3)
 
         gnfw = mp.SphericalGeneralizedNFW(centre=(0.3, 0.2), kappa_s=2.5, inner_slope=1.5, scale_radius=4.0)
-        defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(-9.31254, 1e-3)
-        assert defls[0, 1] == pytest.approx(-3.10418, 1e-3)
+        deflections = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(-9.31254, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-3.10418, 1e-3)
 
         # gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.3,
         #                                    phi=100.0, inner_slope=0.5, scale_radius=8.0)
-        # defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-        # assert defls[0, 0] == pytest.approx(0.26604, 1e-3)
-        # assert defls[0, 1] == pytest.approx(0.58988, 1e-3)
+        # deflections = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        # assert deflections[0, 0] == pytest.approx(0.26604, 1e-3)
+        # assert deflections[0, 1] == pytest.approx(0.58988, 1e-3)
         #
         # gnfw = mp.EllipticalGeneralizedNFW(centre=(0.3, 0.2), kappa_s=2.5, axis_ratio=0.5,
         #                                    phi=100.0, inner_slope=1.5, scale_radius=4.0)
-        # defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-        # assert defls[0, 0] == pytest.approx(-5.99032, 1e-3)
-        # assert defls[0, 1] == pytest.approx(-4.02541, 1e-3)
+        # deflections = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        # assert deflections[0, 0] == pytest.approx(-5.99032, 1e-3)
+        # assert deflections[0, 1] == pytest.approx(-4.02541, 1e-3)
 
     def test__surfce_density__change_geometry(self):
         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
@@ -1612,26 +1613,26 @@ class TestGeneralizedNFW(object):
     def test__deflections__change_geometry(self):
         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
-        defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
-        defls_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
-        assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
+        deflections_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        deflections_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert deflections_0[0, 0] == pytest.approx(-deflections_1[0, 0], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(-deflections_1[0, 1], 1e-5)
 
         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
-        defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        defls_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+        deflections_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
 
         # gnfw_0 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0,
         #                                      inner_slope=1.5, scale_radius=1.0)
         # gnfw_1 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, kappa_s=1.0,
         #                                      inner_slope=1.5, scale_radius=1.0)
-        # defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        # defls_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-        # assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-        # assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+        # deflections_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        # deflections_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        # assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
+        # assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
 
     def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
         gNFW = mp.SphericalGeneralizedNFW(centre=(-0.7, 0.5), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
@@ -1835,7 +1836,7 @@ class TestTruncatedNFW(object):
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
                                                  truncation_radius=1.0)
 
-        cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=1.0,
                                   cosmic_average_density=1.0)
 
         mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(redshift_profile=0.5, redshift_source=1.0,
@@ -1846,7 +1847,7 @@ class TestTruncatedNFW(object):
         # truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
         #                                          truncation_radius=1.0)
         #
-        # cosmology = MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=2.0,
+        # cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=1.0, kpc_per_arcsec=1.0, critical_surface_density=2.0,
         #                           cosmic_average_density=3.0)
         #
         # mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(redshift_lens=0.5, redshift_source=1.0,
@@ -2040,24 +2041,24 @@ class TestNFW(object):
 
     def test__deflections_correct_values(self):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        defls = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.56194, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.56194, 1e-3)
+        deflections = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.56194, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.56194, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.3, 0.2), kappa_s=2.5, scale_radius=4.0)
-        defls = nfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(-2.08909, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.69636, 1e-3)
+        deflections = nfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(-2.08909, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.69636, 1e-3)
 
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=1.0, scale_radius=1.0)
-        defls = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.56194, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.56194, 1e-3)
+        deflections = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.56194, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.56194, 1e-3)
 
         nfw = mp.EllipticalNFW(centre=(0.3, 0.2), axis_ratio=0.7, phi=6.0, kappa_s=2.5, scale_radius=4.0)
-        defls = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(-2.59480, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.44204, 1e-3)
+        deflections = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(-2.59480, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.44204, 1e-3)
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
         nfw = mp.EllipticalNFW(centre=(-0.7, 0.5), axis_ratio=0.9, phi=45.0, kappa_s=1.0, scale_radius=8.0)
@@ -2208,17 +2209,17 @@ class TestSersic(object):
     def test__deflections_correct_values(self):
         sersic = mp.EllipticalSersic(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                      effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
-        defls = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(1.1446, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.79374, 1e-3)
+        deflections = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(1.1446, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.79374, 1e-3)
 
         sersic = mp.EllipticalSersic(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                      effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
-        defls = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625], [0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(1.1446, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.79374, 1e-3)
-        assert defls[1, 0] == pytest.approx(1.1446, 1e-3)
-        assert defls[1, 1] == pytest.approx(0.79374, 1e-3)
+        deflections = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625], [0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(1.1446, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.79374, 1e-3)
+        assert deflections[1, 0] == pytest.approx(1.1446, 1e-3)
+        assert deflections[1, 1] == pytest.approx(0.79374, 1e-3)
 
     def test__surfce_density__change_geometry(self):
         sersic_0 = mp.SphericalSersic(centre=(0.0, 0.0))
@@ -2239,24 +2240,24 @@ class TestSersic(object):
     def test__deflections__change_geometry(self):
         sersic_0 = mp.SphericalSersic(centre=(0.0, 0.0))
         sersic_1 = mp.SphericalSersic(centre=(1.0, 1.0))
-        defls_0 = sersic_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
-        defls_1 = sersic_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
-        assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
+        deflections_0 = sersic_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        deflections_1 = sersic_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert deflections_0[0, 0] == pytest.approx(-deflections_1[0, 0], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(-deflections_1[0, 1], 1e-5)
 
         sersic_0 = mp.SphericalSersic(centre=(0.0, 0.0))
         sersic_1 = mp.SphericalSersic(centre=(0.0, 0.0))
-        defls_0 = sersic_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        defls_1 = sersic_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+        deflections_0 = sersic_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = sersic_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
 
         sersic_0 = mp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
         sersic_1 = mp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-        defls_0 = sersic_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        defls_1 = sersic_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+        deflections_0 = sersic_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = sersic_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
 
     def test__spherical_and_elliptical_identical(self):
         elliptical = mp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -2425,15 +2426,15 @@ class TestExponential(object):
     def test__deflections_correct_values(self):
         exponential = mp.EllipticalExponential(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                effective_radius=0.2, mass_to_light_ratio=1.0)
-        defls = exponential.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.90493, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.62569, 1e-3)
+        deflections = exponential.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.90493, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.62569, 1e-3)
 
         exponential = mp.EllipticalExponential(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                effective_radius=0.2, mass_to_light_ratio=1.0)
-        defls = exponential.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.90493, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.62569, 1e-3)
+        deflections = exponential.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.90493, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.62569, 1e-3)
 
     def test__spherical_and_elliptical_identical(self):
         elliptical = mp.EllipticalExponential(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -2601,9 +2602,9 @@ class TestDevVaucouleurs(object):
     def test__deflections_correct_values(self):
         dev = mp.EllipticalDevVaucouleurs(centre=(0.4, 0.2), axis_ratio=0.9, phi=10.0, intensity=2.0,
                                           effective_radius=0.8, mass_to_light_ratio=3.0)
-        defls = dev.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(-24.528, 1e-3)
-        assert defls[0, 1] == pytest.approx(-3.37605, 1e-3)
+        deflections = dev.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(-24.528, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-3.37605, 1e-3)
 
     def test__spherical_and_elliptical_identical(self):
         elliptical = mp.EllipticalDevVaucouleurs(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -2792,54 +2793,54 @@ class TestSersicMassRadialGradient(object):
         sersic = mp.EllipticalSersicRadialGradient(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                    effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=1.0)
-        defls = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(3.60324873535244, 1e-3)
-        assert defls[0, 1] == pytest.approx(2.3638898009652, 1e-3)
+        deflections = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(3.60324873535244, 1e-3)
+        assert deflections[0, 1] == pytest.approx(2.3638898009652, 1e-3)
 
         sersic = mp.EllipticalSersicRadialGradient(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                    effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=-1.0)
-        defls = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.97806399756448, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.725459334118341, 1e-3)
+        deflections = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.97806399756448, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.725459334118341, 1e-3)
 
     def test__compare_to_sersic(self):
         sersic = mp.EllipticalSersicRadialGradient(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                    effective_radius=0.2, sersic_index=1.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=0.0)
-        sersic_defls = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        sersic_deflections = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
 
         exponential = mp.EllipticalExponential(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                effective_radius=0.2, mass_to_light_ratio=1.0)
-        exponential_defls = exponential.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        exponential_deflections = exponential.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
 
-        assert sersic_defls[0, 0] == exponential_defls[0, 0] == pytest.approx(0.90493, 1e-3)
-        assert sersic_defls[0, 1] == exponential_defls[0, 1] == pytest.approx(0.62569, 1e-3)
+        assert sersic_deflections[0, 0] == exponential_deflections[0, 0] == pytest.approx(0.90493, 1e-3)
+        assert sersic_deflections[0, 1] == exponential_deflections[0, 1] == pytest.approx(0.62569, 1e-3)
 
         sersic = mp.EllipticalSersicRadialGradient(centre=(0.4, 0.2), axis_ratio=0.9, phi=10.0, intensity=2.0,
                                                    effective_radius=0.8, sersic_index=4.0, mass_to_light_ratio=3.0,
                                                    mass_to_light_gradient=0.0)
-        sersic_defls = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        sersic_deflections = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
 
         dev = mp.EllipticalDevVaucouleurs(centre=(0.4, 0.2), axis_ratio=0.9, phi=10.0, intensity=2.0,
                                           effective_radius=0.8, mass_to_light_ratio=3.0)
 
-        dev_defls = dev.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        dev_deflections = dev.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
 
-        assert sersic_defls[0, 0] == dev_defls[0, 0] == pytest.approx(-24.528, 1e-3)
-        assert sersic_defls[0, 1] == dev_defls[0, 1] == pytest.approx(-3.37605, 1e-3)
+        assert sersic_deflections[0, 0] == dev_deflections[0, 0] == pytest.approx(-24.528, 1e-3)
+        assert sersic_deflections[0, 1] == dev_deflections[0, 1] == pytest.approx(-3.37605, 1e-3)
 
         sersic_grad = mp.EllipticalSersicRadialGradient(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                         effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0,
                                                         mass_to_light_gradient=0.0)
-        sersic_grad_defls = sersic_grad.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        sersic_grad_deflections = sersic_grad.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
 
         sersic = mp.EllipticalSersic(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                      effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
-        sersic_defls = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        sersic_deflections = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
 
-        assert sersic_grad_defls[0, 0] == sersic_defls[0, 0] == pytest.approx(1.1446, 1e-3)
-        assert sersic_grad_defls[0, 1] == sersic_defls[0, 1] == pytest.approx(0.79374, 1e-3)
+        assert sersic_grad_deflections[0, 0] == sersic_deflections[0, 0] == pytest.approx(1.1446, 1e-3)
+        assert sersic_grad_deflections[0, 1] == sersic_deflections[0, 1] == pytest.approx(0.79374, 1e-3)
 
     def test__spherical_and_elliptical_identical(self):
         elliptical = mp.EllipticalSersicRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -3035,17 +3036,17 @@ class TestMassSheet(object):
     def test__deflections__change_geometry(self):
         mass_sheet_0 = mp.MassSheet(centre=(0.0, 0.0))
         mass_sheet_1 = mp.MassSheet(centre=(1.0, 1.0))
-        defls_0 = mass_sheet_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
-        defls_1 = mass_sheet_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
-        assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
+        deflections_0 = mass_sheet_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        deflections_1 = mass_sheet_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert deflections_0[0, 0] == pytest.approx(-deflections_1[0, 0], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(-deflections_1[0, 1], 1e-5)
 
         mass_sheet_0 = mp.MassSheet(centre=(0.0, 0.0))
         mass_sheet_1 = mp.MassSheet(centre=(0.0, 0.0))
-        defls_0 = mass_sheet_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        defls_1 = mass_sheet_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+        deflections_0 = mass_sheet_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = mass_sheet_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
+        assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
 
     def test__multiple_coordinates_in__multiple_coordinates_out(self):
         mass_sheet = mp.MassSheet(centre=(1.0, 2.0), kappa=1.0)
@@ -3107,21 +3108,21 @@ class TestExternalShear(object):
 
     def test__deflections_correct_values(self):
         shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
-        defls = shear.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.01625, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.01625, 1e-3)
+        deflections = shear.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.01625, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.01625, 1e-3)
 
         shear = mp.ExternalShear(magnitude=0.2, phi=75.0)
-        defls = shear.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.04439, 1e-3)
-        assert defls[0, 1] == pytest.approx(-0.011895, 1e-3)
+        deflections = shear.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+        assert deflections[0, 0] == pytest.approx(0.04439, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-0.011895, 1e-3)
 
 
 class TestEinsteinRadiusMass(object):
 
     def test__radius_of_critical_curve_and_einstein_radius__radius_unit_conversions(self):
 
-        cosmology = MockCosmology(kpc_per_arcsec=2.0)
+        cosmology = mock_cosmology.MockCosmology(kpc_per_arcsec=2.0)
 
         sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
                                             einstein_radius=dim.Length(2.0, 'arcsec'))
@@ -3173,7 +3174,7 @@ class TestEinsteinRadiusMass(object):
 
     def test__einstein_mass__radius_unit_conversions(self):
 
-        cosmology = MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
+        cosmology = mock_cosmology.MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
 
 
         sis_arcsec = mp.SphericalIsothermal(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
@@ -3276,7 +3277,7 @@ class TestMassWithinCircle(object):
 
     def test__radius_units_conversions__mass_profile_updates_units_and_computes_correct_mass(self):
 
-        cosmology = MockCosmology(kpc_per_arcsec=2.0)
+        cosmology = mock_cosmology.MockCosmology(kpc_per_arcsec=2.0)
 
         # arcsec -> arcsec
 
@@ -3334,7 +3335,7 @@ class TestMassWithinCircle(object):
 
     def test__mass_units_conversions__multiplies_by_critical_surface_density_factor(self):
 
-        cosmology = MockCosmology(critical_surface_density=2.0)
+        cosmology = mock_cosmology.MockCosmology(critical_surface_density=2.0)
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         radius = dim.Length(2.0, 'arcsec')
@@ -3389,7 +3390,7 @@ class TestMassWithinEllipse(object):
 
     def test__radius_units_conversions__mass_profile_updates_units_and_computes_correct_mass(self):
 
-        cosmology = MockCosmology(kpc_per_arcsec=2.0)
+        cosmology = mock_cosmology.MockCosmology(kpc_per_arcsec=2.0)
 
         # arcsec -> arcsec
 
@@ -3450,7 +3451,7 @@ class TestMassWithinEllipse(object):
 
     def test__mass_unit_conversions__compare_to_grid__mutliplies_by_critical_surface_density(self):
 
-        cosmology = MockCosmology(critical_surface_density=2.0)
+        cosmology = mock_cosmology.MockCosmology(critical_surface_density=2.0)
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
 
@@ -3475,7 +3476,7 @@ class TestDensityBetweenAnnuli(object):
 
     def test__circular_annuli__sis__analyic_density_agrees(self):
 
-        cosmology = MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
+        cosmology = mock_cosmology.MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
 
         einstein_radius = 1.0
         sis_arcsec = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=einstein_radius)
@@ -3515,7 +3516,7 @@ class TestDensityBetweenAnnuli(object):
 
     def test__circular_annuli__nfw_profile__compare_to_manual_mass(self):
 
-        cosmology = MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
+        cosmology = mock_cosmology.MockCosmology(kpc_per_arcsec=2.0, critical_surface_density=2.0)
 
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
 
