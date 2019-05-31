@@ -999,7 +999,7 @@ class TestPaddedGrids:
                                  5.0, 6.0, 7.0, 8.0,
                                  1.0, 2.0, 3.0, 4.0])
 
-            array_2d = regular_padded_grid.map_to_2d_keep_padded(padded_array_1d=array_1d)
+            array_2d = regular_padded_grid.padded_array_2d_from_padded_array_1d(padded_array_1d=array_1d)
 
             assert (array_2d == np.array([[6.0, 7.0, 9.0, 10.0],
                                           [1.0, 2.0, 3.0, 4.0],
@@ -1016,7 +1016,7 @@ class TestPaddedGrids:
                                  7.0, 8.0, 9.0,
                                  1.0, 2.0, 3.0,
                                  4.0, 5.0, 6.0])
-            array_2d = regular_padded_grid.map_to_2d_keep_padded(padded_array_1d=array_1d)
+            array_2d = regular_padded_grid.padded_array_2d_from_padded_array_1d(padded_array_1d=array_1d)
 
             assert (array_2d == np.array([[1.0, 2.0, 3.0],
                                           [4.0, 5.0, 6.0],
@@ -1032,7 +1032,7 @@ class TestPaddedGrids:
             array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0,
                                  6.0, 7.0, 8.0, 9.0, 1.0,
                                  2.0, 3.0, 4.0, 5.0, 6.0])
-            array_2d = regular_padded_grid.map_to_2d_keep_padded(padded_array_1d=array_1d)
+            array_2d = regular_padded_grid.padded_array_2d_from_padded_array_1d(padded_array_1d=array_1d)
 
             assert (array_2d == np.array([[1.0, 2.0, 3.0, 4.0, 5.0],
                                           [6.0, 7.0, 8.0, 9.0, 1.0],

@@ -86,7 +86,7 @@ def test__same_as_above__but_grid_is_padded_to_7x7_for_simulation():
     assert image_1d.argmax() == 8
     image_2d = data_grids.regular.array_2d_from_array_1d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 0)
-    image_2d = data_grids.regular.map_to_2d_keep_padded(padded_array_1d=image_1d)
+    image_2d = data_grids.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (1, 1)
 
     sersic = lp.SphericalSersic(centre=(2.0, 2.0))
@@ -94,7 +94,7 @@ def test__same_as_above__but_grid_is_padded_to_7x7_for_simulation():
     assert image_1d.argmax() == 12
     image_2d = data_grids.regular.array_2d_from_array_1d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 4)
-    image_2d = data_grids.regular.map_to_2d_keep_padded(padded_array_1d=image_1d)
+    image_2d = data_grids.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (1, 5)
 
     sersic = lp.SphericalSersic(centre=(-2.0, -2.0))
@@ -102,7 +102,7 @@ def test__same_as_above__but_grid_is_padded_to_7x7_for_simulation():
     assert image_1d.argmax() == 36
     image_2d = data_grids.regular.array_2d_from_array_1d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 0)
-    image_2d = data_grids.regular.map_to_2d_keep_padded(padded_array_1d=image_1d)
+    image_2d = data_grids.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (5, 1)
 
     sersic = lp.SphericalSersic(centre=(-2.0, 2.0))
@@ -110,7 +110,7 @@ def test__same_as_above__but_grid_is_padded_to_7x7_for_simulation():
     assert image_1d.argmax() == 40
     image_2d = data_grids.regular.array_2d_from_array_1d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 4)
-    image_2d = data_grids.regular.map_to_2d_keep_padded(padded_array_1d=image_1d)
+    image_2d = data_grids.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (5, 5)
 
 def test__deflection_angles():
