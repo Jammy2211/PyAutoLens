@@ -1,20 +1,30 @@
 import numpy as np
 import pytest
 
+from autolens.model.profiles import light_and_mass_profiles as lmp
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
 from test.unit.mock.data import mock_ccd
+from test.unit.mock.lens import mock_lens_data
+from test.unit.mock.data import mock_mask
+from test.unit.mock.data import mock_convolution
+from autolens.model.galaxy import galaxy_fit
+from test.unit.mock.data import mock_grids
+from autolens.model.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy_data as gd
 
 
-###############
-#### DATA #####
-###############
-#### CCD #####
+#
+# DATA #
+#
+# CCD #
 
-@pytest.fixture(name=")")
+@pytest.fixture(name="image_5x5")
 def make_image_5x5():
     return mock_ccd.MockImage(shape=(5, 5), value=1.0)
 
 
-@pytest.fixture(name=":")
+@pytest.fixture(name="psf_3x3")
 def make_psf_3x3():
     return mock_ccd.MockPSF(shape=(3, 3), value=1.0)
 
@@ -75,12 +85,10 @@ def make_ccd_data_6x6():
                                 name='mock_ccd_data_6x6')
 
 
-### MASK ####
-
-from test.unit.mock.data import mock_mask
+# MASK #
 
 
-@pytest.fixture(name=":")
+@pytest.fixture(name="mask_5x5")
 def make_mask_5x5():
     array = np.array([[True, True, True, True, True],
                       [True, False, False, False, True],
@@ -109,7 +117,7 @@ def make_padded_mask_7x7():
     return mock_mask.MockMask(array=array)
 
 
-@pytest.fixture(name=":")
+@pytest.fixture(name="mask_6x6")
 def make_mask_6x6():
     array = np.array([[True, True, True, True, True, True],
                       [True, True, True, True, True, True],
@@ -121,7 +129,7 @@ def make_mask_6x6():
     return mock_mask.MockMask(array=array)
 
 
-### MASKED DATA ###
+# MASKED DATA #
 
 @pytest.fixture(name="image_1d_5x5")
 def make_image_1d_5x5(image_5x5, mask_5x5):
@@ -133,9 +141,7 @@ def make_noise_map_1d_5x5(noise_map_5x5, mask_5x5):
     return mask_5x5.map_2d_array_to_masked_1d_array(array_2d=noise_map_5x5)
 
 
-#### GRIDS ####
-
-from test.unit.mock.data import mock_grids
+# GRIDS #
 
 
 @pytest.fixture(name="regular_grid_5x5")
@@ -195,16 +201,14 @@ def make_padded_grid_stack_5x5(padded_regular_grid_5x5, padded_sub_grid_5x5):
     return mock_grids.MockPaddedGridStack(regular=padded_regular_grid_5x5, sub=padded_sub_grid_5x5)
 
 
-### BORDERS ###
+# BORDERS #
 
-@pytest.fixture(name="(")
+@pytest.fixture(name="border_5x5")
 def make_border_5x5():
     return mock_grids.MockBorders(arr=np.array([0, 1, 2, 3, 5, 6, 7, 8]))
 
 
-### CONVOLVERS ###
-
-from test.unit.mock.data import mock_convolution
+# CONVOLVERS #
 
 
 @pytest.fixture(name="convolver_image_5x5")
@@ -217,74 +221,70 @@ def make_convolver_mapping_matrix_5x5(mask_5x5, psf_3x3):
     return mock_convolution.MockConvolverMappingMatrix(mask=mask_5x5, psf=psf_3x3)
 
 
-###############
-#### MODEL ####
-###############
+#
+# MODEL #
+#
 
-## PROFILES ###
-
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.profiles import mass_profiles as mp
-from autolens.model.profiles import light_and_mass_profiles as lmp
+# PROFILES #
 
 
-@pytest.fixture(name=":")
+@pytest.fixture(name="lp_0")
 def make_lp_0():
+    # noinspection PyTypeChecker
     return lp.SphericalSersic(intensity=1.0, effective_radius=2.0, sersic_index=2.0)
 
 
-@pytest.fixture(name=":")
+@pytest.fixture(name="lp_1")
 def make_lp_1():
+    # noinspection PyTypeChecker
     return lp.SphericalSersic(intensity=2.0, effective_radius=2.0, sersic_index=2.0)
 
 
-@pytest.fixture(name=":")
+@pytest.fixture(name="mp_0")
 def make_mp_0():
+    # noinspection PyTypeChecker
     return mp.SphericalIsothermal(einstein_radius=1.0)
 
 
-@pytest.fixture(name=":")
+@pytest.fixture(name="mp_1")
 def make_mp_1():
+    # noinspection PyTypeChecker
     return mp.SphericalIsothermal(einstein_radius=2.0)
 
 
-@pytest.fixture(name=":")
+@pytest.fixture(name="lmp_0")
 def make_lmp_0():
     return lmp.EllipticalSersicRadialGradient()
 
 
-### GALAXY ###
-
-from autolens.model.galaxy import galaxy as g
+# GALAXY #
 
 
-@pytest.fixture(name="lp_0")
+@pytest.fixture(name="gal_x1_lp")
 def make_gal_x1_lp(lp_0):
     return g.Galaxy(redshift=0.5, lp0=lp_0)
 
 
-@pytest.fixture(name="lp_0")
+@pytest.fixture(name="gal_x2_lp")
 def make_gal_x2_lp(lp_0, lp_1):
     return g.Galaxy(redshift=0.5, lp0=lp_0, lp1=lp_1)
 
 
-@pytest.fixture(name="mp_0")
+@pytest.fixture(name="gal_x1_mp")
 def make_gal_x1_mp(mp_0):
     return g.Galaxy(redshift=0.5, mass_profile_0=mp_0)
 
 
-@pytest.fixture(name="mp_0")
+@pytest.fixture(name="gal_x2_mp")
 def make_gal_x2_mp(mp_0, mp_1):
     return g.Galaxy(redshift=0.5, mass_profile_0=mp_0, mass_profile_1=mp_1)
 
 
-## GALAXY DATA ##
-
-from autolens.model.galaxy import galaxy_data as gd
+# GALAXY DATA #
 
 
 @pytest.fixture(name="gal_data_5x5")
-def make_gal_data_5x5(image_5x5, noise_map_5x5, mask_5x5):
+def make_gal_data_5x5(image_5x5, noise_map_5x5):
     return gd.GalaxyData(image=image_5x5, noise_map=noise_map_5x5, pixel_scale=image_5x5.pixel_scale)
 
 
@@ -313,9 +313,7 @@ def make_gal_fit_data_5x5_deflections_x(gal_data_5x5, mask_5x5):
     return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2, use_deflections_x=True)
 
 
-## GALAXY FIT ##
-
-from autolens.model.galaxy import galaxy_fit
+# GALAXY FIT #
 
 
 @pytest.fixture(name="gal_fit_5x5_intensities")
@@ -343,13 +341,11 @@ def make_gal_fit_5x5_deflections_x(gal_fit_data_5x5_deflections_x, gal_x1_mp):
     return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_deflections_x, model_galaxies=[gal_x1_mp])
 
 
-### LensData
-
-from test.unit.mock.lens import mock_lens_data
+# LensData
 
 
 @pytest.fixture(name="lens_data_5x5")
-def make_lens_data_5x5(ccd_data_5x5, mask_5x5, blurring_mask_5x5, grid_stack_5x5, padded_grid_stack_5x5, border_5x5,
+def make_lens_data_5x5(ccd_data_5x5, mask_5x5, grid_stack_5x5, padded_grid_stack_5x5, border_5x5,
                        convolver_image_5x5, convolver_mapping_matrix_5x5):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_5x5, mask=mask_5x5, grid_stack=grid_stack_5x5, padded_grid_stack=padded_grid_stack_5x5,
