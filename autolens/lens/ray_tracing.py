@@ -9,6 +9,7 @@ from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 from autolens.model.inversion import inversions as inv
 from autolens.model.inversion import pixelizations as pix
+from autolens.model.galaxy import galaxy as g
 
 
 def check_tracer_for_light_profile(func):
@@ -193,7 +194,10 @@ class AbstractTracer(AbstractTracerCosmology):
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
     @property
-    def galaxy_image_dict(self):
+    def galaxy_image_dict(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
         galaxy_image_dict = dict()
         for plane in self.planes:
             for galaxy in plane.galaxies:
