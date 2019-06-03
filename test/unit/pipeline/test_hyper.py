@@ -4,6 +4,7 @@ from astropy import cosmology as cosmo
 
 from autofit.mapper import model
 from autofit.mapper import model_mapper as mm
+from autolens.lens import ray_tracing as rt
 from autolens.model import galaxy as g
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -92,3 +93,10 @@ class TestImagePassing(object):
         image_dict = multi_plane_result.image_dict
         assert isinstance(image_dict["lens"], np.ndarray)
         assert isinstance(image_dict["source"], np.ndarray)
+
+    def test_galaxy_image_dict(self, lens_galaxy, source_galaxy, grid_stack_5x5):
+        tracer = rt.TracerImageSourcePlanes([lens_galaxy], [source_galaxy], grid_stack_5x5)
+
+        assert len(tracer.galaxy_image_dict) == 2
+        assert lens_galaxy in tracer.galaxy_image_dict
+        assert source_galaxy in tracer.galaxy_image_dict
