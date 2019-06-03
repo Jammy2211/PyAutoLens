@@ -1,5 +1,6 @@
 import os
 
+import autolens.pipeline.phase.phase_imaging
 import autolens.pipeline.phase_imaging
 from autofit import conf
 from autofit.optimize import non_linear as nl
@@ -31,7 +32,7 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    class SensitivePhase(autolens.pipeline.phase_imaging.SensitivityPhase):
+    class SensitivePhase(autolens.pipeline.phase.phase_imaging.SensitivityPhase):
 
         def pass_priors(self, results):
 
