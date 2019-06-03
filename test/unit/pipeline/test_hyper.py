@@ -123,5 +123,5 @@ class TestImagePassing(object):
 
         instance = phase.associate_images(multi_plane_instance)
 
-        assert instance.galaxies.lens.image is multi_plane_result.image_dict["lens_galaxies_lens"]
-        assert instance.galaxies.source.image is multi_plane_result.image_dict["source_galaxies_source"]
+        assert (instance.galaxies.lens.image == multi_plane_result.image_dict["galaxies_lens"]).all()
+        assert (instance.galaxies.source.image == multi_plane_result.image_dict["galaxies_source"]).all()
