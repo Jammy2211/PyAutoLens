@@ -115,6 +115,16 @@ def mask_6x6():
 
     return mock_mask.MockMask(array=array)
 
+### MASKED DATA ###
+
+@pytest.fixture()
+def image_1d_5x5(image_5x5, mask_5x5):
+    return mask_5x5.map_2d_array_to_masked_1d_array(array_2d=image_5x5)
+
+@pytest.fixture()
+def noise_map_1d_5x5(noise_map_5x5, mask_5x5):
+    return mask_5x5.map_2d_array_to_masked_1d_array(array_2d=noise_map_5x5)
+
 #### GRIDS ####
 
 from test.unit.mock.data import mock_grids
@@ -143,6 +153,22 @@ def grid_stack_5x5(regular_grid_5x5, sub_grid_5x5, blurring_grid_5x5):
     return mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5, blurring=blurring_grid_5x5)
 
 @pytest.fixture()
+def grid_stack_simple(regular_grid_5x5, sub_grid_5x5, blurring_grid_5x5):
+
+    # Manually overwrite some sub-grid and blurring grid coodinates for easier deflection angle calculations
+
+    grid_stack = mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5, blurring=blurring_grid_5x5)
+
+    grid_stack.regular[0] = np.array([1.0, 1.0])
+    grid_stack.sub[0] = np.array([1.0, 1.0])
+    grid_stack.sub[1] = np.array([1.0, 0.0])
+    grid_stack.sub[2] = np.array([1.0, 1.0])
+    grid_stack.sub[3] = np.array([1.0, 0.0])
+    grid_stack.blurring[0] = np.array([1.0, 0.0])
+
+    return grid_stack
+
+@pytest.fixture()
 def padded_regular_grid_5x5():
     return mock_grids.MockPaddedRegularGrid(image_shape=(5,5), psf_shape=(3,3))
 
@@ -152,8 +178,7 @@ def padded_sub_grid_5x5():
 
 @pytest.fixture()
 def padded_grid_stack_5x5(padded_regular_grid_5x5, padded_sub_grid_5x5):
-    return mock_grids.MockGridStack(regular=padded_regular_grid_5x5, sub=padded_sub_grid_5x5,
-                                    blurring=np.array([[1.0, 1.0]]))
+    return mock_grids.MockPaddedGridStack(regular=padded_regular_grid_5x5, sub=padded_sub_grid_5x5)
 
 ### BORDERS ###
 
@@ -287,7 +312,8 @@ def gal_fit_5x5_deflections_x(gal_fit_data_5x5_deflections_x, gal_x1_mp):
 from test.unit.mock.lens import mock_lens_data
 
 @pytest.fixture()
-def lens_data_5x5(ccd_data_5x5, mask_5x5, blurring_mask_5x5, grid_stack_5x5, padded_grid_stack_5x5, border_5x5):
+def lens_data_5x5(ccd_data_5x5, mask_5x5, blurring_mask_5x5, grid_stack_5x5, padded_grid_stack_5x5, border_5x5,
+                  convolver_image_5x5, convolver_mapping_matrix_5x5):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_5x5, mask=mask_5x5, grid_stack=grid_stack_5x5, padded_grid_stack=padded_grid_stack_5x5,
-        border=border_5x5, convolver_image=convolver_image_5x5, convolver_mapping_matrix=convolver_image_5x5)
+        border=border_5x5, convolver_image=convolver_image_5x5, convolver_mapping_matrix=convolver_mapping_matrix_5x5)
