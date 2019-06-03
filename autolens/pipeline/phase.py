@@ -4,6 +4,7 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit import conf
+from autofit.mapper.model import ModelInstance
 from autofit.optimize import non_linear
 from autofit.tools import phase as autofit_phase
 from autofit.tools.phase_property import PhaseProperty
@@ -123,6 +124,12 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def last_results(self):
+            """
+            Returns
+            -------
+            result: AbstractPhase.Result | None
+                The result from the last phase
+            """
             if self.results is not None:
                 return self.results.last
 
@@ -595,7 +602,12 @@ class PhaseImaging(Phase):
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=None)
             return fit.figure_of_merit
 
-        def associate_images(self, instance):
+        def associate_images(self, instance: ModelInstance):
+            if self.last_results is not None:
+                image_dict = self.last_results.image_dict
+                for name, galaxy in instance.name_instance_tuples_for_class(g.Galaxy):
+                    if name in image_dict:
+                        galaxy.image = image_dict[name]
             return instance
 
         def visualize(self, instance, image_path, during_analysis):
