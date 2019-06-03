@@ -1,11 +1,12 @@
 import os
 
+import autolens.pipeline.phase_imaging
 from autofit import conf
 from autofit.optimize import non_linear as nl
 from autofit.mapper import prior
 from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import integration_util
@@ -30,7 +31,7 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    class SensitivePhase(ph.SensitivityPhase):
+    class SensitivePhase(autolens.pipeline.phase_imaging.SensitivityPhase):
 
         def pass_priors(self, results):
 
