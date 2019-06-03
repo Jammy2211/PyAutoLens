@@ -185,7 +185,7 @@ class TestSensitivityInversionFit:
         assert (fit.fit_normal.noise_map_2d == ld_blur.noise_map_2d).all()
 
         mapper = pixelization.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grid_stack, border=None)
-        inversion = inv.inversion_from_image_mapper_and_regularization(
+        inversion = inv.Inversion.from_data_1d_mapper_and_regularization(
             mapper=mapper, regularization=regularization, image_1d=ld_blur.image_1d,
             noise_map_1d=ld_blur.noise_map_1d, convolver=ld_blur.convolver_mapping_matrix)
 
@@ -240,7 +240,7 @@ class TestSensitivityInversionFit:
 
         mapper = pixelization.mapper_from_grid_stack_and_border(grid_stack=tracer_normal.source_plane.grid_stack,
                                                                 border=None)
-        inversion = inv.inversion_from_image_mapper_and_regularization(
+        inversion = inv.Inversion.from_data_1d_mapper_and_regularization(
             mapper=mapper, regularization=regularization, image_1d=ld_blur.image_1d,
             noise_map_1d=ld_blur.noise_map_1d, convolver=ld_blur.convolver_mapping_matrix)
 
@@ -261,7 +261,7 @@ class TestSensitivityInversionFit:
 
         mapper = pixelization.mapper_from_grid_stack_and_border(grid_stack=tracer_sensitive.source_plane.grid_stack,
                                                                 border=None)
-        inversion = inv.inversion_from_image_mapper_and_regularization(
+        inversion = inv.Inversion.from_data_1d_mapper_and_regularization(
             mapper=mapper, regularization=regularization, image_1d=ld_blur.image_1d,
             noise_map_1d=ld_blur.noise_map_1d, convolver=ld_blur.convolver_mapping_matrix)
 
