@@ -34,7 +34,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
-    conf.instance = conf.Config('{}/../test_files/configs/phase'.format(directory))
+    conf.instance = conf.Config('{}/../test_files/config/phase'.format(directory))
 
 
 shape = (10, 10)

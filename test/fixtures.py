@@ -8,7 +8,7 @@ from autofit import conf
 
 @pytest.fixture(name='general_config', autouse=True)
 def make_general_config():
-    general_config_path = "{}/test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
+    general_config_path = "{}/test_files/config/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
 
