@@ -37,12 +37,16 @@ def make_all_galaxies(lens_galaxy, source_galaxy):
     return galaxies
 
 
-@pytest.fixture(name="lens_result")
-def make_lens_result(lens_data_5x5, lens_galaxies):
+@pytest.fixture(name="lens_instance")
+def make_lens_instance(lens_galaxies):
     instance = model.ModelInstance()
     instance.lens_galaxies = lens_galaxies
+    return instance
 
-    return ph.LensPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
+
+@pytest.fixture(name="lens_result")
+def make_lens_result(lens_data_5x5, lens_instance):
+    return ph.LensPlanePhase.Result(lens_instance, 1.0, mm.ModelMapper(), None,
                                     ph.LensPlanePhase.Analysis(lens_data=lens_data_5x5, cosmology=cosmo.Planck15,
                                                                positions_threshold=1.0), None)
 
@@ -116,7 +120,16 @@ class TestImagePassing(object):
         assert lens_galaxy in tracer.galaxy_image_dict
         assert source_galaxy in tracer.galaxy_image_dict
 
-    def test_associate_images(self, multi_plane_instance, multi_plane_result, lens_data_5x5):
+    def test_associate_images_lens(self, lens_instance, lens_result, lens_data_5x5):
+        results_collection = pl.ResultsCollection()
+        results_collection.add("phase", lens_result)
+        phase = ph.MultiPlanePhase.Analysis(lens_data_5x5, None, None, results_collection)
+
+        instance = phase.associate_images(lens_instance)
+
+        assert (instance.lens_galaxies.lens.image == lens_result.image_dict["lens_galaxies_lens"]).all()
+
+    def test_associate_images_multi_plane(self, multi_plane_instance, multi_plane_result, lens_data_5x5):
         results_collection = pl.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         phase = ph.MultiPlanePhase.Analysis(lens_data_5x5, None, None, results_collection)
