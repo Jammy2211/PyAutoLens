@@ -602,7 +602,30 @@ class PhaseImaging(Phase):
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=None)
             return fit.figure_of_merit
 
-        def associate_images(self, instance: ModelInstance):
+        def associate_images(self, instance: ModelInstance) -> ModelInstance:
+            """
+            Takes images from the last result, if there is one, and associates them with galaxies in this phase where
+            full-path galaxy names match.
+
+            If the galaxy collection has a different name then an association is not made.
+
+            e.g.
+            lens_galaxies.lens will match with:
+                lens_galaxies.lens
+            but not with:
+                galaxies.lens
+                lens_galaxies.source
+
+            Parameters
+            ----------
+            instance
+                A model instance with 0 or more galaxies in its tree
+
+            Returns
+            -------
+            instance
+               The input instance with images associated with galaxies where possible.
+            """
             if self.last_results is not None:
                 image_dict = self.last_results.image_dict
                 for name, galaxy in instance.name_instance_tuples_for_class(g.Galaxy):
