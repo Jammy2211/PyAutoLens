@@ -185,8 +185,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         def unmasked_model_image_of_planes_and_galaxies(self):
             return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
 
-        def unmasked_image_for_galaxy(self, galaxy):
-            return self.most_likely_fit.unmasked_model_image_for_galaxy(galaxy)
+        def image_for_galaxy(self, galaxy):
+            return self.most_likely_fit.galaxy_image_dict[galaxy]
 
         @property
         def name_galaxy_tuples(self) -> [(str, g.Galaxy)]:
@@ -194,7 +194,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def image_dict(self) -> {str: g.Galaxy}:
-            return {name: self.unmasked_image_for_galaxy(galaxy) for name, galaxy in self.name_galaxy_tuples}
+            return {name: self.image_for_galaxy(galaxy) for name, galaxy in self.name_galaxy_tuples}
 
 
 class Phase(AbstractPhase):
@@ -1407,7 +1407,7 @@ class HyperGalaxyPhase(Phase):
         for name, galaxy in galaxy_tuples:
             optimizer = self.optimizer.copy_with_name_extension(name)
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
-            galaxy_image = results.last.unmasked_image_for_galaxy(galaxy)
+            galaxy_image = results.last.image_for_galaxy(galaxy)
             optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image))
 
             getattr(results_copy.variable, name).hyper_galaxy = optimizer.variable.hyper_galaxy

@@ -103,6 +103,10 @@ class LensTracerFit(LensDataFit):
         self.psf = psf
 
     @property
+    def galaxy_image_dict(self):
+        return self.tracer.galaxy_image_dict
+
+    @property
     def total_inversions(self):
         return len(self.tracer.mappers_of_planes)
 
