@@ -350,9 +350,11 @@ def make_gal_fit_5x5_deflections_y(gal_fit_data_5x5_deflections_y, gal_x1_mp):
 def make_gal_fit_5x5_deflections_x(gal_fit_data_5x5_deflections_x, gal_x1_mp):
     return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_deflections_x, model_galaxies=[gal_x1_mp])
 
+############
+### LENS ###
+############
 
-# LensData
-
+##### Lens Data ###
 
 @pytest.fixture(name="lens_data_5x5")
 def make_lens_data_5x5(ccd_data_5x5, mask_5x5, grid_stack_5x5, padded_grid_stack_5x5, border_5x5,
@@ -360,3 +362,59 @@ def make_lens_data_5x5(ccd_data_5x5, mask_5x5, grid_stack_5x5, padded_grid_stack
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_5x5, mask=mask_5x5, grid_stack=grid_stack_5x5, padded_grid_stack=padded_grid_stack_5x5,
         border=border_5x5, convolver_image=convolver_image_5x5, convolver_mapping_matrix=convolver_mapping_matrix_5x5)
+
+
+### Plane ####
+
+from autolens.lens import plane as pl
+
+@pytest.fixture(name='plane_5x5')
+def make_plane_5x5(gal_x1_lp, grid_stack_5x5):
+    return pl.Plane(galaxies=[gal_x1_lp], grid_stack=grid_stack_5x5, compute_deflections=False)
+
+### Ray Tracing ####
+
+from autolens.lens import ray_tracing
+
+@pytest.fixture(name='tracer_x1_plane_5x5')
+def make_tracer_x1_plane_5x5(gal_x1_lp, grid_stack_5x5):
+    return ray_tracing.TracerImagePlane(lens_galaxies=[gal_x1_lp], image_plane_grid_stack=grid_stack_5x5)
+
+@pytest.fixture(name='tracer_x2_plane_5x5')
+def make_tracer_x2_plane_5x5(gal_x1_lp, gal_x1_mp, grid_stack_5x5):
+    return ray_tracing.TracerImageSourcePlanes(lens_galaxies=[gal_x1_mp, gal_x1_lp],
+                                               source_galaxies=[gal_x1_lp],
+                                               image_plane_grid_stack=grid_stack_5x5)
+
+### Lens Fit ####
+
+from autolens.lens import lens_fit
+
+@pytest.fixture(name='lens_fit_x1_plane_5x5')
+def make_lens_fit_x1_plane_5x5(lens_data_5x5, tracer_x1_plane_5x5):
+    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer_x1_plane_5x5)
+
+@pytest.fixture(name='lens_fit_x2_plane_5x5')
+def make_lens_fit_x2_plane_5x5(lens_data_5x5, tracer_x2_plane_5x5):
+    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer_x2_plane_5x5)
+
+### Sensitive Fit ###
+
+from autolens.lens import sensitivity_fit
+
+@pytest.fixture(name='sensitivity_fit_5x5')
+def make_sensitivity_fit_5x5(lens_data_5x5):
+
+    lens_galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
+    lens_subhalo = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=0.1))
+    source_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
+
+    tracer_normal = ray_tracing.TracerImageSourcePlanes(
+        lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], image_plane_grid_stack=lens_data_5x5.grid_stack)
+
+    tracer_sensitivity = ray_tracing.TracerImageSourcePlanes(
+        lens_galaxies=[lens_galaxy, lens_subhalo], source_galaxies=[source_galaxy],
+        image_plane_grid_stack=lens_data_5x5.grid_stack)
+
+    return sensitivity_fit.SensitivityProfileFit(lens_data=lens_data_5x5, tracer_normal=tracer_normal,
+                                                 tracer_sensitive=tracer_sensitivity)

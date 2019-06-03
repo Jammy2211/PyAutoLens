@@ -28,7 +28,7 @@ output_path = '{}/output'.format(dirpath)
 test_name = "test"
 
 
-def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
+def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_galaxies):
     output_path = "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__))) + test_name + '/'
     psf_shape = (11, 11)
     image_shape = (150, 150)
@@ -96,7 +96,7 @@ class TestPhaseModelMapper(object):
         lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
-                                   source_galaxies=[], target_signal_to_noise=10.0)
+                                   source_galaxies=[])
 
         path = "{}/".format(
             os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
@@ -146,7 +146,7 @@ class TestPhaseModelMapper(object):
         lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
-                                   source_galaxies=[], target_signal_to_noise=10.0)
+                                   source_galaxies=[])
         path = "{}/".format(
             os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
 
