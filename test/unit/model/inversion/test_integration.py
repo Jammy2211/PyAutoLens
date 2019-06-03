@@ -10,6 +10,7 @@ from test.unit.mock.data.mock_grids import MockPixSubGrid, MockPixGridStack
 class TestRectangular:
 
     def test__5_simple_grid__no_sub_grid(self):
+
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
         regular_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
         sub_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])

@@ -7,7 +7,6 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 from test.unit.mock.model import mock_cosmology
 
-
 class TestLightProfiles(object):
 
     class TestIntensity:
