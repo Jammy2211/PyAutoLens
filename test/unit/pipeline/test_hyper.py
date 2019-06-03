@@ -51,8 +51,8 @@ def make_lens_result(lens_data_5x5, lens_instance):
                                                                positions_threshold=1.0), None)
 
 
-@pytest.fixture(name="lens_source_result")
-def make_lens_source_result(lens_data_5x5, source_galaxy, lens_galaxy):
+@pytest.fixture(name="lens_source_instance")
+def make_lens_source_instance(lens_galaxy, source_galaxy):
     source_galaxies = model.ModelInstance()
     lens_galaxies = model.ModelInstance()
     source_galaxies.source = source_galaxy
@@ -61,8 +61,12 @@ def make_lens_source_result(lens_data_5x5, source_galaxy, lens_galaxy):
     instance = model.ModelInstance()
     instance.source_galaxies = source_galaxies
     instance.lens_galaxies = lens_galaxies
+    return instance
 
-    return ph.LensSourcePlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
+
+@pytest.fixture(name="lens_source_result")
+def make_lens_source_result(lens_data_5x5, lens_source_instance):
+    return ph.LensSourcePlanePhase.Result(lens_source_instance, 1.0, mm.ModelMapper(), None,
                                           ph.LensSourcePlanePhase.Analysis(lens_data=lens_data_5x5,
                                                                            cosmology=cosmo.Planck15,
                                                                            positions_threshold=1.0), None)
@@ -123,11 +127,21 @@ class TestImagePassing(object):
     def test_associate_images_lens(self, lens_instance, lens_result, lens_data_5x5):
         results_collection = pl.ResultsCollection()
         results_collection.add("phase", lens_result)
-        phase = ph.MultiPlanePhase.Analysis(lens_data_5x5, None, None, results_collection)
+        phase = ph.LensPlanePhase.Analysis(lens_data_5x5, None, None, results_collection)
 
         instance = phase.associate_images(lens_instance)
 
         assert (instance.lens_galaxies.lens.image == lens_result.image_dict["lens_galaxies_lens"]).all()
+
+    def test_associate_images_lens_source(self, lens_source_instance, lens_source_result, lens_data_5x5):
+        results_collection = pl.ResultsCollection()
+        results_collection.add("phase", lens_source_result)
+        phase = ph.LensSourcePlanePhase.Analysis(lens_data_5x5, None, None, results_collection)
+
+        instance = phase.associate_images(lens_source_instance)
+
+        assert (instance.lens_galaxies.lens.image == lens_source_result.image_dict["lens_galaxies_lens"]).all()
+        assert (instance.source_galaxies.source.image == lens_source_result.image_dict["source_galaxies_source"]).all()
 
     def test_associate_images_multi_plane(self, multi_plane_instance, multi_plane_result, lens_data_5x5):
         results_collection = pl.ResultsCollection()
