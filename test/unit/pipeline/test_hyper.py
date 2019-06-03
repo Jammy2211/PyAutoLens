@@ -8,7 +8,6 @@ from autolens.model import galaxy as g
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.pipeline import phase as ph
-from test.unit.mock.lens.mock_lens_data import MockLensData
 
 
 @pytest.fixture(name="lens_galaxy")
@@ -29,17 +28,17 @@ def make_lens_galaxies(lens_galaxy):
 
 
 @pytest.fixture(name="lens_result")
-def make_lens_result(lens_galaxies):
+def make_lens_result(lens_data_5x5, lens_galaxies):
     instance = model.ModelInstance()
     instance.lens_galaxies = lens_galaxies
 
     return ph.LensPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
-                                    ph.LensPlanePhase.Analysis(lens_data=MockLensData(), cosmology=cosmo.Planck15,
+                                    ph.LensPlanePhase.Analysis(lens_data=lens_data_5x5, cosmology=cosmo.Planck15,
                                                                positions_threshold=1.0), None)
 
 
 @pytest.fixture(name="lens_source_result")
-def make_lens_source_result(source_galaxy, lens_galaxy):
+def make_lens_source_result(lens_data_5x5, source_galaxy, lens_galaxy):
     source_galaxies = model.ModelInstance()
     lens_galaxies = model.ModelInstance()
     source_galaxies.source = source_galaxy
@@ -50,13 +49,13 @@ def make_lens_source_result(source_galaxy, lens_galaxy):
     instance.lens_galaxies = lens_galaxies
 
     return ph.LensSourcePlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
-                                          ph.LensSourcePlanePhase.Analysis(lens_data=MockLensData(),
+                                          ph.LensSourcePlanePhase.Analysis(lens_data=lens_data_5x5,
                                                                            cosmology=cosmo.Planck15,
                                                                            positions_threshold=1.0), None)
 
 
 @pytest.fixture(name="multi_plane_result")
-def make_multi_plane_result(lens_galaxy, source_galaxy):
+def make_multi_plane_result(lens_data_5x5, lens_galaxy, source_galaxy):
     instance = model.ModelInstance()
     galaxies = model.ModelInstance()
     galaxies.lens = lens_galaxy
@@ -64,7 +63,7 @@ def make_multi_plane_result(lens_galaxy, source_galaxy):
     instance.galaxies = galaxies
 
     return ph.MultiPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
-                                     ph.MultiPlanePhase.Analysis(lens_data=MockLensData(),
+                                     ph.MultiPlanePhase.Analysis(lens_data=lens_data_5x5,
                                                                  cosmology=cosmo.Planck15,
                                                                  positions_threshold=1.0), None)
 
