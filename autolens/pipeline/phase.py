@@ -155,11 +155,6 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             self.analysis = analysis
             self.optimizer = optimizer
 
-            # summary_file = open(optimizer.phase_output_path + 'model.summary', mode='w+')
-            # tracer_summary.summarize_tracer(summary_file=summary_file, tracer=self.most_likely_tracer,
-            #                                 radii=[10.0, 500.0])
-            # summary_file.close()
-
         @property
         def most_likely_tracer(self):
             return self.analysis.tracer_for_instance(instance=self.constant)
@@ -201,6 +196,9 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def name_galaxy_tuples(self) -> [(str, g.Galaxy)]:
+            """
+            Tuples associating the names of galaxies with instances from the best fit
+            """
             raise NotImplementedError()
 
         @property
