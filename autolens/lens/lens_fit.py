@@ -3,6 +3,7 @@ import numpy as np
 from autofit.tools import fit
 from autolens import exc
 from autolens.lens.util import lens_fit_util as util
+from autolens.model.galaxy import galaxy as g
 
 
 class LensDataFit(fit.DataFit1D):
@@ -103,6 +104,13 @@ class LensTracerFit(LensDataFit):
         self.psf = psf
 
     @property
+    def galaxy_image_dict(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+        return self.tracer.galaxy_image_dict
+
+    @property
     def total_inversions(self):
         return len(self.tracer.mappers_of_planes)
 
@@ -116,7 +124,8 @@ class LensTracerFit(LensDataFit):
 
     @property
     def unmasked_blurred_image_plane_image_of_planes_and_galaxies(self):
-        return self.padded_tracer.unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(psf=self.psf)
+        return self.padded_tracer.unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(
+            psf=self.psf)
 
 
 class LensProfileFit(LensTracerFit):
@@ -151,14 +160,16 @@ class LensProfileFit(LensTracerFit):
 
         super(LensProfileFit, self).__init__(
             image_1d=lens_data.image_1d, noise_map_1d=noise_map_1d, mask_1d=lens_data.mask_1d,
-            model_image_1d=blurred_profile_image_1d, mask_2d=lens_data.mask_2d, tracer=tracer, padded_tracer=padded_tracer,
+            model_image_1d=blurred_profile_image_1d, mask_2d=lens_data.mask_2d, tracer=tracer,
+            padded_tracer=padded_tracer,
             psf=lens_data.psf, map_to_scaled_array=lens_data.map_to_scaled_array)
 
         self.convolver_image = lens_data.convolver_image
 
     @property
     def model_image_2d_of_planes(self):
-        return self.tracer.blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(convolver_image=self.convolver_image)
+        return self.tracer.blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(
+            convolver_image=self.convolver_image)
 
     @property
     def figure_of_merit(self):
@@ -168,7 +179,6 @@ class LensProfileFit(LensTracerFit):
 class InversionFit(LensTracerFit):
 
     def __init__(self, lens_data, noise_map_1d, model_image_1d, tracer, inversion, padded_tracer=None):
-
         super().__init__(image_1d=lens_data.image_1d, noise_map_1d=noise_map_1d, mask_1d=lens_data.mask_1d,
                          model_image_1d=model_image_1d, mask_2d=lens_data.mask_2d, psf=lens_data.psf, tracer=tracer,
                          padded_tracer=padded_tracer, map_to_scaled_array=lens_data.map_to_scaled_array)

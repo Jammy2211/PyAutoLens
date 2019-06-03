@@ -1,10 +1,10 @@
 import os
-import shutil
 
+import autolens.pipeline.phase.phase_imaging
 from autofit import conf
 from autofit.optimize import non_linear as nl
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.integration import integration_util
@@ -28,16 +28,16 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensSourcePlanePhase(phase_name='phase_1', phase_folders=[test_type, test_name],
-                                      lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
-                                     source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
-                                     optimizer_class=nl.MultiNest)
+    phase1 = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(phase_name='phase_1', phase_folders=[test_type, test_name],
+                                                                        lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+                                                                        source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
+                                                                        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.7
 
-    class AddSourceGalaxyPhase(ph.LensSourcePlanePhase):
+    class AddSourceGalaxyPhase(autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase):
 
         def pass_priors(self, results):
 

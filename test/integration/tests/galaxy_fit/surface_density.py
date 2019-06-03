@@ -7,7 +7,7 @@ from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.galaxy import galaxy_data as gd
 from autolens.model.galaxy.util import galaxy_util
 from autolens.data.array import grids, scaled_array
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase as ph
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import integration_util
 

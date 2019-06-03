@@ -96,10 +96,8 @@ class GridStack(object):
         self.regular = regular
         self.sub = sub
         self.blurring = blurring
-        if pix is None:
-            self.pix = np.array([[0.0, 0.0]])
-        else:
-            self.pix = pix
+
+        self.pix = np.array([[0.0, 0.0]]) if pix is None else pix
 
     def unmasked_blurred_image_from_psf_and_unmasked_image(self, psf, unmasked_image_1d):
         """For a padded grid-stack and psf, compute an unmasked blurred image from an unmasked unblurred image.
@@ -531,7 +529,7 @@ class RegularGrid(np.ndarray):
             The 1D grid which is mapped to its masked 2D grid.
         """
         return mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=self.mask)
-    
+
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
         pickled_state = super(RegularGrid, self).__reduce__()
@@ -1180,7 +1178,6 @@ class RegularGridBorder(np.ndarray):
 class Interpolator(object):
 
     def __init__(self, grid, interp_grid):
-
         self.grid = grid
         self.interp_grid = interp_grid
 

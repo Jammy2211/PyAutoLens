@@ -1,10 +1,11 @@
 import os
 
+import autolens.pipeline.phase.phase_imaging
 from autofit import conf
 from autofit.optimize import non_linear as nl
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
@@ -31,7 +32,7 @@ def make_pipeline(test_name):
     def modify_mask_function(image):
         return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.)
 
-    class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
+    class LensPlaneGalaxy0Phase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
 
         def pass_priors(self, results):
 
@@ -46,7 +47,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class LensPlaneGalaxy1Phase(ph.LensPlanePhase):
+    class LensPlaneGalaxy1Phase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
 
         def pass_priors(self, results):
 
@@ -65,7 +66,7 @@ def make_pipeline(test_name):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    class LensPlaneBothGalaxyPhase(ph.LensPlanePhase):
+    class LensPlaneBothGalaxyPhase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
 
         def pass_priors(self, results):
 

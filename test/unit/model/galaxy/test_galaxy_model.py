@@ -41,7 +41,7 @@ def make_profile():
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
     conf.instance = conf.Config(
-        "{}/../../test_files/configs/galaxy_model".format(os.path.dirname(os.path.realpath(__file__))))
+        "{}/../../test_files/config/galaxy_model".format(os.path.dirname(os.path.realpath(__file__))))
 
 
 @pytest.fixture(name="mapper")
