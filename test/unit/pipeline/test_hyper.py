@@ -4,6 +4,7 @@ from astropy import cosmology as cosmo
 
 from autofit.mapper import model
 from autofit.mapper import model_mapper as mm
+from autofit.tools import pipeline as pl
 from autolens.lens import ray_tracing as rt
 from autolens.model import galaxy as g
 from autolens.model.profiles import light_profiles as lp
@@ -26,6 +27,14 @@ def make_lens_galaxies(lens_galaxy):
     lens_galaxies = model.ModelInstance()
     lens_galaxies.lens = lens_galaxy
     return lens_galaxies
+
+
+@pytest.fixture(name="all_galaxies")
+def make_all_galaxies(lens_galaxy, source_galaxy):
+    galaxies = model.ModelInstance()
+    galaxies.lens = lens_galaxy
+    galaxies.source = source_galaxy
+    return galaxies
 
 
 @pytest.fixture(name="lens_result")
@@ -55,44 +64,50 @@ def make_lens_source_result(lens_data_5x5, source_galaxy, lens_galaxy):
                                                                            positions_threshold=1.0), None)
 
 
-@pytest.fixture(name="multi_plane_result")
-def make_multi_plane_result(lens_data_5x5, lens_galaxy, source_galaxy):
+@pytest.fixture(name="multi_plane_instance")
+def make_multi_plane_instance(all_galaxies):
     instance = model.ModelInstance()
-    galaxies = model.ModelInstance()
-    galaxies.lens = lens_galaxy
-    galaxies.source = source_galaxy
-    instance.galaxies = galaxies
+    instance.galaxies = all_galaxies
+    return instance
 
-    return ph.MultiPlanePhase.Result(instance, 1.0, mm.ModelMapper(), None,
+
+@pytest.fixture(name="multi_plane_result")
+def make_multi_plane_result(lens_data_5x5, multi_plane_instance):
+    return ph.MultiPlanePhase.Result(multi_plane_instance, 1.0, mm.ModelMapper(), None,
                                      ph.MultiPlanePhase.Analysis(lens_data=lens_data_5x5,
                                                                  cosmology=cosmo.Planck15,
                                                                  positions_threshold=1.0), None)
 
 
 class TestImagePassing(object):
-
     def test_lens_galaxy_dict(self, lens_result, lens_galaxy):
-        assert lens_result.name_galaxy_tuples == [("lens", lens_galaxy)]
+        assert lens_result.name_galaxy_tuples == [("lens_galaxies_lens", lens_galaxy)]
 
     def test_lens_source_galaxy_dict(self, lens_source_result, lens_galaxy, source_galaxy):
-        assert lens_source_result.name_galaxy_tuples == [("lens", lens_galaxy), ("source", source_galaxy)]
+        assert lens_source_result.name_galaxy_tuples == [
+            ("source_galaxies_source", source_galaxy),
+            ("lens_galaxies_lens", lens_galaxy)
+        ]
 
     def test_multi_plane_galaxy_dict(self, multi_plane_result, lens_galaxy, source_galaxy):
-        assert multi_plane_result.name_galaxy_tuples == [("lens", lens_galaxy), ("source", source_galaxy)]
+        assert multi_plane_result.name_galaxy_tuples == [
+            ("galaxies_lens", lens_galaxy),
+            ("galaxies_source", source_galaxy)
+        ]
 
     def test_lens_image_dict(self, lens_result):
         image_dict = lens_result.image_dict
-        assert isinstance(image_dict["lens"], np.ndarray)
+        assert isinstance(image_dict["lens_galaxies_lens"], np.ndarray)
 
     def test_lens_source_image_dict(self, lens_source_result):
         image_dict = lens_source_result.image_dict
-        assert isinstance(image_dict["lens"], np.ndarray)
-        assert isinstance(image_dict["source"], np.ndarray)
+        assert isinstance(image_dict["lens_galaxies_lens"], np.ndarray)
+        assert isinstance(image_dict["source_galaxies_source"], np.ndarray)
 
     def test_multi_plane_image_dict(self, multi_plane_result):
         image_dict = multi_plane_result.image_dict
-        assert isinstance(image_dict["lens"], np.ndarray)
-        assert isinstance(image_dict["source"], np.ndarray)
+        assert isinstance(image_dict["galaxies_lens"], np.ndarray)
+        assert isinstance(image_dict["galaxies_source"], np.ndarray)
 
     def test_galaxy_image_dict(self, lens_galaxy, source_galaxy, grid_stack_5x5):
         tracer = rt.TracerImageSourcePlanes([lens_galaxy], [source_galaxy], grid_stack_5x5)
@@ -100,3 +115,13 @@ class TestImagePassing(object):
         assert len(tracer.galaxy_image_dict) == 2
         assert lens_galaxy in tracer.galaxy_image_dict
         assert source_galaxy in tracer.galaxy_image_dict
+
+    def test_associate_images(self, multi_plane_instance, multi_plane_result, lens_data_5x5):
+        results_collection = pl.ResultsCollection()
+        results_collection.add("phase", multi_plane_result)
+        phase = ph.MultiPlanePhase.Analysis(lens_data_5x5, None, None, results_collection)
+
+        instance = phase.associate_images(multi_plane_instance)
+
+        assert instance.galaxies.lens.image is multi_plane_result.image_dict["lens_galaxies_lens"]
+        assert instance.galaxies.source.image is multi_plane_result.image_dict["source_galaxies_source"]
