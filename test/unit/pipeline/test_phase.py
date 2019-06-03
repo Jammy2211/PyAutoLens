@@ -8,11 +8,11 @@ from astropy import cosmology as cosmo
 import autofit.tools.pipeline
 import autolens.pipeline.phase.phase_imaging
 from autofit import conf
+from autofit.exc import PipelineException
 from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
 from autofit.optimize import non_linear
 from autolens import exc
-from autofit.exc import PipelineException
 from autolens.data import ccd
 from autolens.data.array import grids, mask as msk
 from autolens.data.array import scaled_array
@@ -105,7 +105,9 @@ def make_grids(lens_data):
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(optimizer_class=NLO, mask_function=ph.default_mask_function, phase_name='test_phase')
+    return autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(optimizer_class=NLO,
+                                                                      mask_function=ph.default_mask_function,
+                                                                      phase_name='test_phase')
 
 
 @pytest.fixture(name="galaxy")
@@ -176,142 +178,6 @@ def make_hyper_galaxy():
 @pytest.fixture(name="hyper_phase")
 def make_hyper_phase():
     return ph.HyperGalaxyPhase("hyper_galaxy_phase")
-
-
-# class TestHyperGalaxyPhase(object):
-#     def test_analysis(self, hyper_lens_data, hyper_galaxy):
-#         analysis = ph.HyperGalaxyPhase.Analysis(hyper_lens_data, np.ones(5), np.ones(5))
-#         result = analysis.fit_for_hyper_Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy)
-#
-#         assert isinstance(result, lens_fit.LensDataFit)
-#
-#     def test_run(self, hyper_galaxy, hyper_phase, hyper_lens_data):
-#         class Instance(object):
-#             def __init__(self):
-#                 self.hyper_galaxy = "hyper_galaxy"
-#                 self.one = g.Galaxy(redshift=0.5)
-#                 self.two = g.Galaxy(redshift=0.5)
-#                 self.three = g.Galaxy(redshift=0.5)
-#
-#             @staticmethod
-#             def name_instance_tuples_for_class(cls):
-#                 return [("one", None), ("two", None), ("three", None)]
-#
-#         class MockOptimizer(object):
-#             def __init__(self):
-#                 self.extensions = []
-#                 self.constant = Instance()
-#                 self.variable = Instance()
-#
-#             @classmethod
-#             def fit(cls, analysis):
-#                 instance = mm.ModelInstance()
-#                 instance.hyper_galaxy = hyper_galaxy
-#                 return analysis.fit(instance)
-#
-#             def copy_with_name_extension(self, name):
-#                 self.extensions.append(name)
-#                 return self
-#
-#         optimizer = MockOptimizer()
-#         hyper_phase.optimizer = optimizer
-#
-#         class Result(object):
-#             def __init__(self):
-#                 self.constant \
-#                     = Instance()
-#                 self.variable = Instance()
-#
-#             def unmasked_image_for_galaxy(self, galaxy):
-#                 return np.ones(5)
-#
-#             @property
-#             def unmasked_model_image(self):
-#                 return np.ones(5)
-#
-#         class PreviousResults(object):
-#             @property
-#             def last(self):
-#                 return Result()
-#
-#         results = hyper_phase.run(hyper_lens_data, PreviousResults())
-#
-#         assert isinstance(results, Result)
-#         assert optimizer.extensions == ["one", "two", "three"]
-#         assert results.variable.one.hyper_galaxy == g.HyperGalaxy
-#         assert results.constant.one.hyper_galaxy == "hyper_galaxy"
-#
-#     def test__figure_of_merit_of_fit__noise_factor_0_so_no_noise_scaling(self, hyper_phase):
-#         hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=np.ones(3), mask=np.full(3, False))
-#         analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
-#                                                 galaxy_image=np.ones(3))
-#         hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
-#         fit = analysis.fit_for_hyper_Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy)
-#         assert (fit.residual_map_2d == np.zeros(3)).all()
-#         assert (fit.chi_squared_map_2d == np.zeros(3)).all()
-#         assert (fit.noise_map_2d == hyper_lens_data.noise_map_2d).all()
-#
-#         chi_squared = 0.0
-#         noise_normalization = 3.0 * np.log(2 * np.pi * 1.0 ** 2.0)
-#
-#         assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
-#
-#         hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=2.0 * np.ones(3), mask=np.full(3, False))
-#         analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
-#                                                 galaxy_image=np.ones(3))
-#         hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
-#         fit = analysis.fit_for_hyper_Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy)
-#         assert (fit.residual_map_2d == np.zeros(3)).all()
-#         assert (fit.chi_squared_map_2d == np.zeros(3)).all()
-#         assert (fit.noise_map_2d == hyper_lens_data.noise_map_2d).all()
-#
-#         chi_squared = 0.0
-#         noise_normalization = 3.0 * np.log(2 * np.pi * 2.0 ** 2.0)
-#
-#         assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
-#
-#         hyper_lens_data = MockLensData(ccd_data=2.0 * np.ones(3), noise_map=2.0 * np.ones(3), mask=np.full(3, False))
-#         analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
-#                                                 galaxy_image=np.ones(3))
-#         hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
-#         fit = analysis.fit_for_hyper_Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy)
-#         assert (fit.residual_map_2d == np.ones(3)).all()
-#         assert (fit.chi_squared_map_2d == 0.25 * np.ones(3)).all()
-#         assert (fit.noise_map_2d == hyper_lens_data.noise_map_2d).all()
-#
-#         chi_squared = 0.75
-#         noise_normalization = 3.0 * np.log(2 * np.pi * 2.0 ** 2.0)
-#
-#         assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
-#
-#     def test__figure_of_merit_of_fit__hyper_galaxy_params_scale_noise_as_expected(self, hyper_phase):
-#         hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=np.ones(3), mask=np.full(3, False))
-#         analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
-#                                                 galaxy_image=np.ones(3))
-#         hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0)
-#         fit = analysis.fit_for_hyper_Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy)
-#         assert (fit.residual_map_2d == np.zeros(3)).all()
-#         assert (fit.chi_squared_map_2d == np.zeros(3)).all()
-#         assert (fit.noise_map_2d == hyper_lens_data.noise_map_2d + np.ones(3)).all()
-#
-#         chi_squared = 0.0
-#         noise_normalization = 3.0 * np.log(2 * np.pi * 2.0 ** 2.0)
-#
-#         assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
-#
-#         hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=2.0 * np.ones(3), mask=np.full(3, False))
-#         analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
-#                                                 galaxy_image=2.0 * np.ones(3))
-#         hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0)
-#         fit = analysis.fit_for_hyper_Galaxy(redshift=0.5, hyper_galaxy=hyper_galaxy)
-#         assert (fit.residual_map_2d == np.zeros(3)).all()
-#         assert (fit.chi_squared_map_2d == np.zeros(3)).all()
-#         assert (fit.noise_map_2d == hyper_lens_data.noise_map_2d + ((2.0 * np.ones(3)) ** 2.0)).all()
-#
-#         chi_squared = 0.0
-#         noise_normalization = 3.0 * np.log(2 * np.pi * 6.0 ** 2.0)
-#
-#         assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
 
 
 def clean_images():
@@ -479,9 +345,11 @@ class TestPhase(object):
 
         phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(optimizer_class=NLO,
                                                                            lens_galaxies=dict(
-                                            lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+                                                                               lens=gm.GalaxyModel(redshift=0.5,
+                                                                                                   light=lp.EllipticalSersic)),
                                                                            source_galaxies=dict(
-                                            source=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+                                                                               source=gm.GalaxyModel(redshift=0.5,
+                                                                                                     light=lp.EllipticalSersic)),
                                                                            phase_name='test_phase_test_fit')
         result = phase.run(data=ccd_data)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
@@ -511,9 +379,10 @@ class TestPhase(object):
         assert len(lens_data.image_1d) == 32
 
     def test_duplication(self):
-        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
-                                                                           source_galaxies=dict(source=gm.GalaxyModel(redshift=0.5)),
-                                                                           phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
+            lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
+            source_galaxies=dict(source=gm.GalaxyModel(redshift=0.5)),
+            phase_name='test_phase')
 
         autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(phase_name='test_phase')
 
@@ -606,7 +475,8 @@ class TestPhase(object):
         lens_galaxy = g.Galaxy(redshift=0.5)
         source_galaxy = g.Galaxy(redshift=0.5)
 
-        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW,
+                                                                     phase_name='test_phase')
         analysis = phase.make_analysis(ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
@@ -617,8 +487,10 @@ class TestPhase(object):
         assert padded_tracer.image_plane.galaxies[0] == lens_galaxy
         assert padded_tracer.cosmology == cosmo.FLRW
 
-        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                                           cosmology=cosmo.FLRW, phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(lens_galaxies=[lens_galaxy],
+                                                                           source_galaxies=[source_galaxy],
+                                                                           cosmology=cosmo.FLRW,
+                                                                           phase_name='test_phase')
         analysis = phase.make_analysis(ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
@@ -635,7 +507,8 @@ class TestPhase(object):
         galaxy_1 = g.Galaxy(redshift=0.2)
         galaxy_2 = g.Galaxy(redshift=0.3)
 
-        phase = autolens.pipeline.phase.phase_imaging.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7,
+        phase = autolens.pipeline.phase.phase_imaging.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2],
+                                                                      cosmology=cosmo.WMAP7,
                                                                       phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
@@ -656,7 +529,8 @@ class TestPhase(object):
         source_galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
 
-        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(lens_galaxies=[lens_galaxy],
+                                                                     mask_function=ph.default_mask_function,
                                                                      cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
@@ -669,67 +543,6 @@ class TestPhase(object):
         fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
-
-        # phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-        #                                 mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
-        #                                 phase_name='test_phase')
-        # phase.uses_inversion = True
-        # analysis = phase.make_analysis(data=ccd_data)
-        # instance = phase.variable.instance_from_unit_vector([])
-        # fit_figure_of_merit = analysis.fit(instance=instance)
-        #
-        # mask = phase.mask_function(image=ccd_data.image)
-        # lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
-        # tracer = analysis.tracer_for_instance(instance=instance)
-        # fit = lens_fit.LensProfileInversionFit(lens_data=lens_data, tracer=tracer)
-        #
-        # assert fit.evidence == fit_figure_of_merit
-
-    # TODO : Need to test using results
-
-    # def test_unmasked_model_image_for_instance(self, image_):
-    #
-    #     lens_galaxy = g.Galaxy(redshift=0.5, light_profile=lp.SphericalSersic(intensity=1.0))
-    #     image_padded_grid = msk.PaddedRegularGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=image_.shape,
-    #                                                                                         psf_shape=image_.psf.shape,
-    #                                                                                         pixel_scale=image_.pixel_scale)
-    #     image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
-    #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, image_.psf)
-    #     blurred_image = image_padded_grid.scaled_array_from_array_1d(blurred_image_1d)
-    #
-    #     phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
-    #     analysis = phase.make_analysis(image_)
-    #     instance = phase.constant
-    #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
-    #     unmasked_model_image = analysis.unmasked_model_image_for_tracer(unmasked_tracer)
-    #
-    #     assert blurred_image == pytest.approx(unmasked_model_image, 1e-4)
-    #
-    # def test_unmasked_model_images_of_galaxies_for_instance(self, image_):
-    #
-    #     g0= g.Galaxy(redshift=0.5, light_profile=lp.SphericalSersic(intensity=1.0))
-    #     g1 = g.Galaxy(redshift=0.5, light_profile=lp.SphericalSersic(intensity=2.0))
-    #
-    #     image_padded_grid = msk.PaddedRegularGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=image_.shape,
-    #                                                                                         psf_shape=image_.psf.shape,
-    #                                                                                         pixel_scale=image_.pixel_scale)
-    #
-    #     g0_image_1d = g0.intensities_from_grid(image_padded_grid)
-    #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, image_.psf)
-    #     g0_blurred_image = image_padded_grid.scaled_array_from_array_1d(g0_blurred_image_1d)
-    #
-    #     g1_image_1d = g1.intensities_from_grid(image_padded_grid)
-    #     g1_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g1_image_1d, image_.psf)
-    #     g1_blurred_image = image_padded_grid.scaled_array_from_array_1d(g1_blurred_image_1d)
-    #
-    #     phase = ph.LensPlanePhase(lens_galaxies=[g0, g1])
-    #     analysis = phase.make_analysis(image_)
-    #     instance = phase.constant
-    #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
-    #     unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(unmasked_tracer)
-    #
-    #     assert g0_blurred_image == pytest.approx(unmasked_model_images[0], 1e-4)
-    #     assert g1_blurred_image == pytest.approx(unmasked_model_images[1], 1e-4)
 
     def test__phase_can_receive_list_of_galaxy_models(self):
         phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
@@ -786,7 +599,9 @@ class TestResult(object):
         clean_images()
 
         phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(optimizer_class=NLO,
-                                                                     lens_galaxies=[g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))],
+                                                                     lens_galaxies=[g.Galaxy(redshift=0.5,
+                                                                                             light=lp.EllipticalSersic(
+                                                                                                 intensity=1.0))],
                                                                      phase_name='test_phase_2')
 
         result = phase.run(data=ccd_data)
@@ -798,7 +613,8 @@ class TestResult(object):
         source_galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
 
-        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(lens_galaxies=[lens_galaxy],
+                                                                     mask_function=ph.default_mask_function,
                                                                      cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
@@ -810,23 +626,6 @@ class TestResult(object):
         fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
-
-        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                                           mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
-                                                                           phase_name='test_phase')
-
-        # phase.uses_inversion = True
-        #
-        # analysis = phase.make_analysis(data=ccd_data)
-        # instance = phase.variable.instance_from_unit_vector([])
-        # fit_figure_of_merit = analysis.fit(instance=instance)
-        #
-        # mask = phase.mask_function(image=ccd_data.image)
-        # lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
-        # tracer = analysis.tracer_for_instance(instance=instance)
-        # fit = lens_fit.LensProfileInversionFit(lens_data=lens_data, tracer=tracer)
-        #
-        # assert fit.evidence == fit_figure_of_merit
 
 
 class TestPhasePickle(object):
@@ -850,8 +649,6 @@ class TestPhasePickle(object):
             optimizer_class=NLO,
             lens_galaxies=dict(lens=g.Galaxy(light=lp.EllipticalLightProfile, redshift=1))
         )
-
-        print(phase.make_optimizer_pickle_path())
 
         phase.make_analysis = make_analysis
         result = phase.run(ccd_data, None, None, None)
