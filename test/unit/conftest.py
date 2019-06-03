@@ -155,6 +155,23 @@ def padded_grid_stack_5x5(padded_regular_grid_5x5, padded_sub_grid_5x5):
     return mock_grids.MockGridStack(regular=padded_regular_grid_5x5, sub=padded_sub_grid_5x5,
                                     blurring=np.array([[1.0, 1.0]]))
 
+### BORDERS ###
+
+@pytest.fixture()
+def border_5x5():
+    return mock_grids.MockBorders(arr=np.array([0, 1, 2, 3, 5, 6, 7, 8]))
+
+### CONVOLVERS ###
+
+from test.unit.mock.data import mock_convolution
+
+@pytest.fixture()
+def convolver_image_5x5(mask_5x5, blurring_mask_5x5, psf_3x3):
+    return mock_convolution.MockConvolverImage(mask=mask_5x5, blurring_mask=blurring_mask_5x5, psf=psf_3x3)
+
+@pytest.fixture()
+def convolver_mapping_matrix_5x5(mask_5x5, psf_3x3):
+    return mock_convolution.MockConvolverMappingMatrix(mask=mask_5x5, psf=psf_3x3)
 
 ###############
 #### MODEL ####
@@ -263,3 +280,14 @@ def gal_fit_5x5_deflections_y(gal_fit_data_5x5_deflections_y, gal_x1_mp):
 @pytest.fixture()
 def gal_fit_5x5_deflections_x(gal_fit_data_5x5_deflections_x, gal_x1_mp):
     return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_deflections_x, model_galaxies=[gal_x1_mp])
+
+
+### LensData
+
+from test.unit.mock.lens import mock_lens_data
+
+@pytest.fixture()
+def lens_data_5x5(ccd_data_5x5, mask_5x5, blurring_mask_5x5, grid_stack_5x5, padded_grid_stack_5x5, border_5x5):
+    return mock_lens_data.MockLensData(
+        ccd_data=ccd_data_5x5, mask=mask_5x5, grid_stack=grid_stack_5x5, padded_grid_stack=padded_grid_stack_5x5,
+        border=border_5x5, convolver_image=convolver_image_5x5, convolver_mapping_matrix=convolver_image_5x5)
