@@ -13,7 +13,7 @@ from autolens.model.galaxy.util import galaxy_util
 
 class AbstractPlane(object):
 
-    def __init__(self, redshift, galaxies, cosmology=cosmo.Planck15):
+    def __init__(self, redshift, galaxies=None, cosmology=cosmo.Planck15):
         """An abstract plane which represents a set of galaxies that are close to one another in redshift-space.
 
         From an abstract plane, cosmological quantities like angular diameter distances can be computed. If the  \
@@ -289,7 +289,7 @@ class AbstractPlane(object):
 
 class AbstractGriddedPlane(AbstractPlane):
 
-    def __init__(self, redshift, galaxies, grid_stack, border, compute_deflections, cosmology=cosmo.Planck15):
+    def __init__(self, redshift, grid_stack, border, compute_deflections, galaxies=None, cosmology=cosmo.Planck15):
         """An abstract plane which represents a set of galaxies that are close to one another in redshift-space and \
         have an associated grid on which lensing calcuations are performed.
 
