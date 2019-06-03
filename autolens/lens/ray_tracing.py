@@ -1,47 +1,15 @@
-import math
-
 import numpy as np
 from astropy import cosmology as cosmo
 from functools import wraps
 
 from autolens import exc
-from autolens.model import cosmology_util
 from autolens.data.array import grids
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
-from autolens.model.inversion import pixelizations as pix
+from autolens.model import cosmology_util
 from autolens.model.inversion import inversions as inv
-
-
-def check_tracer_for_light_profile(func):
-    """If none of the tracer's galaxies have a light profile, it image-plane image cannot be computed. This wrapper \
-    makes this property return *None*.
-
-    Parameters
-    ----------
-    func : (self) -> Object
-        A property function that requires galaxies to have a mass profile.
-    """
-
-    @wraps(func)
-    def wrapper(self):
-        """
-
-        Parameters
-        ----------
-        self
-
-        Returns
-        -------
-            A value or coordinate in the same coordinate system as those passed in.
-        """
-
-        if self.has_light_profile is True:
-            return func(self)
-        else:
-            return None
-
-    return wrapper
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.galaxy import galaxy as g
 
 
 def check_tracer_for_mass_profile(func):
@@ -195,16 +163,21 @@ class AbstractTracer(AbstractTracerCosmology):
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
     @property
-    def galaxies_in_planes(self):
-        return list([plane.galaxies for plane in self.planes])
+    def galaxy_image_dict(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+        galaxy_image_dict = dict()
+        for plane in self.planes:
+            for galaxy in plane.galaxies:
+                galaxy_image_dict[galaxy] = galaxy.intensities_from_grid(plane.grid_stack.blurring)
+        return galaxy_image_dict
 
     @property
-    @check_tracer_for_light_profile
     def profile_image_plane_image_2d(self):
         return self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=self.profile_image_plane_image_1d)
 
     @property
-    @check_tracer_for_light_profile
     def profile_image_plane_image_2d_for_simulation(self):
         return sum(self.profile_image_plane_image_2d_of_planes_for_simulation)
 
@@ -213,7 +186,6 @@ class AbstractTracer(AbstractTracerCosmology):
         return [plane.profile_image_plane_image_2d_for_simulation for plane in self.planes]
 
     @property
-    @check_tracer_for_light_profile
     def profile_image_plane_image_1d(self):
         return sum(self.profile_image_plane_image_1d_of_planes)
 
@@ -222,7 +194,6 @@ class AbstractTracer(AbstractTracerCosmology):
         return [plane.profile_image_plane_image_1d for plane in self.planes]
 
     @property
-    @check_tracer_for_light_profile
     def profile_image_plane_blurring_image_1d(self):
         return sum(self.profile_image_plane_blurring_image_1d_of_planes)
 
@@ -350,8 +321,9 @@ class AbstractTracerData(AbstractTracer):
         blurred_profile_image_plane_images_of_planes_1d = \
             self.blurred_profile_image_plane_image_1d_of_planes_from_convolver_image(convolver_image=convolver_image)
 
-        return list(map(lambda blurred_profile_image_plane_image_1d :
-                        self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=blurred_profile_image_plane_image_1d),
+        return list(map(lambda blurred_profile_image_plane_image_1d:
+                        self.image_plane.grid_stack.scaled_array_2d_from_array_1d(
+                            array_1d=blurred_profile_image_plane_image_1d),
                         blurred_profile_image_plane_images_of_planes_1d))
 
     def blurred_profile_image_plane_image_1d_from_convolver_image(self, convolver_image):
@@ -395,30 +367,26 @@ class AbstractTracerData(AbstractTracer):
         return [plane.unmasked_blurred_profile_image_plane_image_from_psf(psf=psf) for plane in self.planes]
 
     def unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(self, psf):
-        return [plane.unmasked_blurred_profile_image_plane_images_of_galaxies_from_psf(psf=psf) for plane in self.planes]
+        return [plane.unmasked_blurred_profile_image_plane_images_of_galaxies_from_psf(psf=psf) for plane in
+                self.planes]
 
     def inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(self, image_1d, noise_map_1d,
                                                                           convolver_mapping_matrix):
 
         if len(self.mappers_of_planes) > 1:
-            raise exc.RayTracingException('PyAutoLens does not currently support more than one mapper, reglarization and'
-                                          'therefore inversion per tracer.')
+            raise exc.RayTracingException(
+                'PyAutoLens does not currently support more than one mapper, reglarization and'
+                'therefore inversion per tracer.')
 
         return inv.Inversion.from_data_1d_mapper_and_regularization(
             image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver_mapping_matrix,
             mapper=self.mappers_of_planes[0], regularization=self.regularizations_of_planes[0])
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
-
-        if self.has_hyper_galaxy:
-
             hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_planes_from_noise_map_1d(noise_map_1d=noise_map_1d)
-            hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if hyper_noise_map is not None]
+            hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if
+                                   hyper_noise_map is not None]
             return sum(hyper_noise_maps_1d)
-
-        else:
-
-            return None
 
     def hyper_noise_maps_1d_of_planes_from_noise_map_1d(self, noise_map_1d):
         return [plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d) for plane in self.planes]
@@ -484,17 +452,28 @@ class TracerImageSourcePlanes(AbstractTracerData):
         image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
             galaxies=source_galaxies, grid_stack=image_plane_grid_stack)
 
-        image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border,
-                               compute_deflections=True, cosmology=cosmology)
+        image_plane = pl.Plane(
+            galaxies=lens_galaxies,
+            grid_stack=image_plane_grid_stack,
+            border=border,
+            compute_deflections=True,
+            cosmology=cosmology
+        )
 
         source_plane_grid_stack = image_plane.trace_grid_stack_to_next_plane()
 
-        source_plane = pl.Plane(galaxies=source_galaxies, grid_stack=source_plane_grid_stack, border=border,
-            compute_deflections=False, cosmology=cosmology)
+        source_plane = pl.Plane(
+            galaxies=source_galaxies,
+            grid_stack=source_plane_grid_stack,
+            border=border,
+            compute_deflections=False,
+            cosmology=cosmology
+        )
 
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
-    def critical_surface_density_between_image_and_source_plane_in_units(self, unit_length='arcsec', unit_mass='solMass'):
+    def critical_surface_density_between_image_and_source_plane_in_units(self, unit_length='arcsec',
+                                                                         unit_mass='solMass'):
         return self.critical_surface_density_between_planes_in_units(i=0, j=1, unit_length=unit_length,
                                                                      unit_mass=unit_mass)
 
@@ -564,7 +543,7 @@ class TracerMultiPlanes(AbstractTracerData):
                                                                     deflections_stack=scaled_deflections_stack)
 
             planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack, border=border,
-                                    compute_deflections=compute_deflections, cosmology=cosmology))
+                                   compute_deflections=compute_deflections, cosmology=cosmology))
 
         super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
 
@@ -639,7 +618,8 @@ class TracerMultiPlanesSliced(AbstractTracerData):
                                                                     deflections_stack=scaled_deflections_stack)
 
             planes.append(pl.Plane(redshift=plane_redshifts[plane_index], galaxies=galaxies_in_planes[plane_index],
-                grid_stack=new_grid_stack, border=border, compute_deflections=compute_deflections, cosmology=cosmology))
+                                   grid_stack=new_grid_stack, border=border, compute_deflections=compute_deflections,
+                                   cosmology=cosmology))
 
         super(TracerMultiPlanesSliced, self).__init__(planes=planes, cosmology=cosmology)
 

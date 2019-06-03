@@ -1,10 +1,11 @@
 import os
 
+import autolens.pipeline.phase.phase_imaging
 from autofit import conf
 from autofit.optimize import non_linear as nl
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
@@ -28,7 +29,7 @@ def pipeline():
 
 def make_pipeline(test_name):
     
-    class LensPlanex2GalPhase(ph.LensPlanePhase):
+    class LensPlanex2GalPhase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
 
         def pass_priors(self, results):
 

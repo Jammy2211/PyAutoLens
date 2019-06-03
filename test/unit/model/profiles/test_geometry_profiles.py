@@ -13,7 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
-    conf.instance = conf.Config(config_path='{}/../../test_files/configs/radial_min'.format(directory))
+    conf.instance = conf.Config(config_path='{}/../../test_files/config/radial_min'.format(directory))
 
 
 class TestMemoize(object):

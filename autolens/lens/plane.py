@@ -2,7 +2,6 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit.tools import text_util as af_text_util
-from autolens import text_util
 from autolens import exc, dimensions as dim
 from autolens.data.array import grids
 from autolens.data.array import scaled_array
@@ -110,55 +109,36 @@ class AbstractPlane(object):
     @property
     def centres_of_galaxy_mass_profiles(self):
 
-        if self.has_mass_profile:
+        galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
 
-            galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
+        mass_profile_centres = [[] for _ in range(len(galaxies_with_mass_profiles))]
 
-            mass_profile_centres = [[] for i in range(len(galaxies_with_mass_profiles))]
-
-            for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
-                mass_profile_centres[galaxy_index] = [profile.centre for profile in galaxy.mass_profiles]
-            return mass_profile_centres
-
-        else:
-
-            return None
+        for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
+            mass_profile_centres[galaxy_index] = [profile.centre for profile in galaxy.mass_profiles]
+        return mass_profile_centres
 
     @property
     def axis_ratios_of_galaxy_mass_profiles(self):
+        galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
 
-        if self.has_mass_profile:
+        mass_profile_axis_ratios = [[] for _ in range(len(galaxies_with_mass_profiles))]
 
-            galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
+        for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
+            mass_profile_axis_ratios[galaxy_index] = [profile.axis_ratio for profile in galaxy.mass_profiles]
+        return mass_profile_axis_ratios
 
-            mass_profile_axis_ratios = [[] for i in range(len(galaxies_with_mass_profiles))]
-
-            for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
-                mass_profile_axis_ratios[galaxy_index] = [profile.axis_ratio for profile in galaxy.mass_profiles]
-            return mass_profile_axis_ratios
-
-        else:
-
-            return None
-        
     @property
     def phis_of_galaxy_mass_profiles(self):
 
-        if self.has_mass_profile:
+        galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
 
-            galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
+        mass_profile_phis = [[] for _ in range(len(galaxies_with_mass_profiles))]
 
-            mass_profile_phis = [[] for i in range(len(galaxies_with_mass_profiles))]
+        for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
+            mass_profile_phis[galaxy_index] = [profile.phi for profile in galaxy.mass_profiles]
+        return mass_profile_phis
 
-            for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
-                mass_profile_phis[galaxy_index] = [profile.phi for profile in galaxy.mass_profiles]
-            return mass_profile_phis
-
-        else:
-
-            return None
-
-    def luminosities_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_luminosity='eps',
+    def luminosities_of_galaxies_within_circles_in_units(self, radius: dim.Length, unit_luminosity='eps',
                                                          exposure_time=None):
         """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
 
@@ -169,7 +149,7 @@ class AbstractPlane(object):
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        units_luminosity : str
+        unit_luminosity : str
             The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
@@ -178,7 +158,7 @@ class AbstractPlane(object):
             radius=radius, unit_luminosity=unit_luminosity, exposure_time=exposure_time, cosmology=self.cosmology),
                         self.galaxies))
 
-    def luminosities_of_galaxies_within_ellipses_in_units(self, major_axis : dim.Length, unit_luminosity='eps',
+    def luminosities_of_galaxies_within_ellipses_in_units(self, major_axis: dim.Length, unit_luminosity='eps',
                                                           exposure_time=None):
         """
         Compute the total luminosity of all galaxies in this plane within a ellipse of specified major-axis.
@@ -193,16 +173,17 @@ class AbstractPlane(object):
         ----------
         major_axis : float
             The major-axis radius of the ellipse.
-        units_luminosity : str
+        unit_luminosity : str
             The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         return list(map(lambda galaxy: galaxy.luminosity_within_ellipse_in_units(
-            major_axis=major_axis, unit_luminosity=unit_luminosity, exposure_time=exposure_time, cosmology=self.cosmology),
+            major_axis=major_axis, unit_luminosity=unit_luminosity, exposure_time=exposure_time,
+            cosmology=self.cosmology),
                         self.galaxies))
 
-    def masses_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_mass='solMass', redshift_source=None):
+    def masses_of_galaxies_within_circles_in_units(self, radius: dim.Length, unit_mass='solMass', redshift_source=None):
         """Compute the total mass of all galaxies in this plane within a circle of specified radius.
 
         See *galaxy.angular_mass_within_circle* and *mass_profiles.angular_mass_within_circle* for details
@@ -210,19 +191,18 @@ class AbstractPlane(object):
 
         Parameters
         ----------
+        redshift_source
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        units_mass : str
+        unit_mass : str
             The units the mass is returned in (angular | solMass).
-        critical_surface_density : float
-            The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
-            units to physical units (e.g. solar masses).
+
         """
         return list(map(lambda galaxy: galaxy.mass_within_circle_in_units(
-                        radius=radius, unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
+            radius=radius, unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
                         self.galaxies))
 
-    def masses_of_galaxies_within_ellipses_in_units(self, major_axis : dim.Length, unit_mass='solMass',
+    def masses_of_galaxies_within_ellipses_in_units(self, major_axis: dim.Length, unit_mass='solMass',
                                                     redshift_source=None):
         """Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
 
@@ -231,34 +211,34 @@ class AbstractPlane(object):
 
         Parameters
         ----------
+        redshift_source
+        unit_mass
         major_axis : float
             The major-axis radius of the ellipse.
-        units_luminosity : str
-            The units the luminosity is returned in (eps | counts).
-        exposure_time : float
-            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
+
         """
         return list(map(lambda galaxy: galaxy.mass_within_ellipse_in_units(
-                        major_axis=major_axis, unit_mass=unit_mass, redshift_source=redshift_source,
-                        cosmology=self.cosmology),
+            major_axis=major_axis, unit_mass=unit_mass, redshift_source=redshift_source,
+            cosmology=self.cosmology),
                         self.galaxies))
 
     def einstein_radius_in_units(self, unit_length='arcsec'):
 
         if self.has_mass_profile:
             return sum(filter(None,
-                   list(map(lambda galaxy: galaxy.einstein_radius_in_units(
-                       unit_length=unit_length, cosmology=self.cosmology),
-                            self.galaxies))))
+                              list(map(lambda galaxy: galaxy.einstein_radius_in_units(
+                                  unit_length=unit_length, cosmology=self.cosmology),
+                                       self.galaxies))))
 
     def einstein_mass_in_units(self, unit_mass='solMass', redshift_source=None):
 
         if self.has_mass_profile:
             return sum(filter(None,
-                   list(map(lambda galaxy: galaxy.einstein_mass_in_units(
-                       unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
-                            self.galaxies))))
+                              list(map(lambda galaxy: galaxy.einstein_mass_in_units(
+                                  unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
+                                       self.galaxies))))
 
+    # noinspection PyUnusedLocal
     def summarize_in_units(self, radii, whitespace=80,
                            unit_length='arcsec', unit_luminosity='eps', unit_mass='solMass',
                            redshift_source=None, **kwargs):
@@ -267,22 +247,24 @@ class AbstractPlane(object):
         prefix_plane = ''
 
         summary += [af_text_util.label_and_value_string(
-            label=prefix_plane+'redshift', value=self.redshift, whitespace=whitespace, format_str='{:.2f}')]
+            label=prefix_plane + 'redshift', value=self.redshift, whitespace=whitespace, format_str='{:.2f}')]
 
         summary += [af_text_util.label_and_value_string(
-            label=prefix_plane+'kpc_per_arcsec', value=self.kpc_per_arcsec, whitespace=whitespace, format_str='{:.2f}')]
+            label=prefix_plane + 'kpc_per_arcsec', value=self.kpc_per_arcsec, whitespace=whitespace,
+            format_str='{:.2f}')]
 
         angular_diameter_distance_to_earth = self.angular_diameter_distance_to_earth_in_units(unit_length=unit_length)
 
         summary += [af_text_util.label_and_value_string(
-            label=prefix_plane+'angular_diameter_distance_to_earth', value=angular_diameter_distance_to_earth, whitespace=whitespace,
+            label=prefix_plane + 'angular_diameter_distance_to_earth', value=angular_diameter_distance_to_earth,
+            whitespace=whitespace,
             format_str='{:.2f}')]
 
         for galaxy in self.galaxies:
             summary += ['\n']
             summary += galaxy.summarize_in_units(radii=radii, whitespace=whitespace, unit_length=unit_length,
-                                                  unit_luminosity=unit_luminosity, unit_mass=unit_mass,
-                                                  redshift_source=redshift_source, cosmology=self.cosmology)
+                                                 unit_luminosity=unit_luminosity, unit_mass=unit_mass,
+                                                 redshift_source=redshift_source, cosmology=self.cosmology)
 
         return summary
 
@@ -351,7 +333,8 @@ class AbstractGriddedPlane(AbstractPlane):
             raise exc.RayTracingException(
                 'To retrieve an image plane image for a simulation, the grid stack in the plane'
                 'must be a padded grid stack')
-        return self.grid_stack.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=self.profile_image_plane_image_1d)
+        return self.grid_stack.regular.padded_array_2d_from_padded_array_1d(
+            padded_array_1d=self.profile_image_plane_image_1d)
 
     @property
     def profile_image_plane_image_1d(self):
@@ -444,10 +427,11 @@ class AbstractDataPlane(AbstractGriddedPlane):
 
     def blurred_profile_image_plane_images_1d_of_galaxies_from_convolver_image(self, convolver_image):
 
-        return list(map(lambda profile_image_plane_image_1d, profile_image_plane_blurring_image_1d :
-                               convolver_image.convolve_image(image_array=profile_image_plane_image_1d,
-                                                              blurring_array=profile_image_plane_blurring_image_1d),
-                        self.profile_image_plane_image_1d_of_galaxies, self.profile_image_plane_blurring_image_1d_of_galaxies))
+        return list(map(lambda profile_image_plane_image_1d, profile_image_plane_blurring_image_1d:
+                        convolver_image.convolve_image(image_array=profile_image_plane_image_1d,
+                                                       blurring_array=profile_image_plane_blurring_image_1d),
+                        self.profile_image_plane_image_1d_of_galaxies,
+                        self.profile_image_plane_blurring_image_1d_of_galaxies))
 
     def unmasked_blurred_profile_image_plane_image_from_psf(self, psf):
 
@@ -468,33 +452,22 @@ class AbstractDataPlane(AbstractGriddedPlane):
             raise exc.RayTracingException('As unmasked blurred image plane image cannot be returned frmm a plane'
                                           'with a pixelization')
 
-        return list(map(lambda image_plane_image_1d :
+        return list(map(lambda image_plane_image_1d:
                         self.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
                             psf=psf, unmasked_image_1d=image_plane_image_1d),
                         self.profile_image_plane_image_1d_of_galaxies))
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
-
-        if self.has_hyper_galaxy:
-
-            hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
-            hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if hyper_noise_map is not None]
-            return sum(hyper_noise_maps_1d)
-
-        else:
-
-            return None
+        hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+        hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if
+                               hyper_noise_map is not None]
+        return sum(hyper_noise_maps_1d)
 
     def hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(self, noise_map_1d):
         """For a contribution map and noise-map, use the model hyper galaxies to compute a scaled noise-map.
 
         Parameters
         -----------
-        contribution_maps : ndarray
-            The image's list of 1D masked contribution maps (e.g. one for each hyper galaxy)
-        hyper_galaxies : [galaxy.Galaxy]
-            The hyper galaxies which represent the model components used to scale the noise_map, which correspond to
-            individual galaxies in the image.
         noise_map_1d : ccd.NoiseMap or ndarray
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
@@ -548,12 +521,10 @@ class Plane(AbstractDataPlane):
                     'determined')
             elif not all([galaxies[0].redshift == galaxy.redshift for galaxy in galaxies]):
                 raise exc.RayTracingException(
-                    'A redshif and two or more galaxies with different redshifts were input to a Plane. A unique '
+                    'A redshift and two or more galaxies with different redshifts were input to a Plane. A unique '
                     'Redshift for the Plane therefore cannot be determined')
             else:
                 redshift = galaxies[0].redshift
-
-
 
         super(Plane, self).__init__(redshift=redshift, galaxies=galaxies, grid_stack=grid_stack,
                                     border=border, compute_deflections=compute_deflections, cosmology=cosmology)
