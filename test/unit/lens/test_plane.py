@@ -1278,17 +1278,17 @@ class TestAbstractPlaneGridded(object):
             g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack_5x5, compute_deflections=False,
                                             border=None, redshift=None)
-            assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (0, 3)
+            assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (0, 4)
 
             g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack_5x5, compute_deflections=False,
                                             border=None, redshift=None)
-            assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (3, 0)
+            assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (4, 0)
 
             g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack_5x5, compute_deflections=False,
                                             border=None, redshift=None)
-            assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (3, 4)
+            assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (4, 4)
 
 
 class TestAbstractDataPlane(object):
