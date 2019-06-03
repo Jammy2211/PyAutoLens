@@ -57,7 +57,7 @@ class MockPaddedRegularGrid(grids.PaddedRegularGrid):
 
         padded_shape = (image_shape[0] + psf_shape[0] - 1, image_shape[1] + psf_shape[1] - 1)
 
-        padded_mask = np.full(fill_value=False, shape=padded_shape)
+        padded_mask = mock_mask.MockMask(array=np.full(fill_value=False, shape=padded_shape), pixel_scale=pixel_scale)
 
         regular_grid = grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(
             shape=padded_mask.shape, pixel_scales=(pixel_scale, pixel_scale), origin=(0.0, 0.0))
@@ -79,7 +79,7 @@ class MockPaddedSubGrid(grids.PaddedSubGrid):
 
         padded_shape = (image_shape[0] + psf_shape[0] - 1, image_shape[1] + psf_shape[1] - 1)
 
-        padded_mask = np.full(fill_value=False, shape=padded_shape)
+        padded_mask = mock_mask.MockMask(array=np.full(fill_value=False, shape=padded_shape), pixel_scale=pixel_scale)
 
         sub_grid = grid_util.sub_grid_1d_from_shape_pixel_scales_and_sub_grid_size(
             shape=padded_mask.shape, pixel_scales=(pixel_scale, pixel_scale), sub_grid_size=sub_grid_size)
@@ -100,10 +100,9 @@ class MockPaddedSubGrid(grids.PaddedSubGrid):
 
 class MockPaddedGridStack(grids.GridStack):
 
-    def __init__(self):
+    def __init__(self, regular, sub):
 
-        super(MockPaddedGridStack, self).__init__(regular=MockPaddedRegularGrid(), sub=MockPaddedSubGrid(),
-                                                  blurring=np.array([[0.0, 0.0]]))
+        super(MockPaddedGridStack, self).__init__(regular=regular, sub=sub, blurring=np.array([[0.0, 0.0]]))
 
 
 class MockPixSubGrid(np.ndarray):
