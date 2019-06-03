@@ -6,12 +6,6 @@ from test.fixtures import *
 
 import numpy as np
 
-from test.unit.fixtures.data.ccd import positions_5x5
-from test.unit.fixtures.data.mask import mask_5x5
-from test.unit.fixtures.data.grids import regular_grid_5x5, sub_grid_5x5, blurring_grid_5x5, grid_stack_5x5
-from test.unit.fixtures.model.profiles import lp_0, mp_0
-from test.unit.fixtures.model.galaxy import gal_x1_lp, gal_x1_mp
-
 @pytest.fixture(name='galaxy_plotter_path')
 def make_galaxy_plotter_setup():
     return "{}/../../../test_files/plotting/model_galaxy/".format(os.path.dirname(os.path.realpath(__file__)))
