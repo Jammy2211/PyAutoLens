@@ -97,7 +97,7 @@ class GridStack(object):
         self.sub = sub
         self.blurring = blurring
 
-        self.pix = pix or np.array([[0.0, 0.0]])
+        self.pix = np.array([[0.0, 0.0]]) if pix is None else pix
 
     def unmasked_blurred_image_from_psf_and_unmasked_image(self, psf, unmasked_image_1d):
         """For a padded grid-stack and psf, compute an unmasked blurred image from an unmasked unblurred image.
