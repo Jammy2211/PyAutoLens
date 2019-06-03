@@ -199,14 +199,16 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             """
             Tuples associating the names of galaxies with instances from the best fit
             """
-            raise NotImplementedError()
+            return self.constant.name_instance_tuples_for_class(g.Galaxy)
 
         @property
         def image_dict(self) -> {str: g.Galaxy}:
             """
             A dictionary associating galaxy names with model images of those galaxies
             """
-            return {name: self.image_for_galaxy(galaxy) for name, galaxy in self.name_galaxy_tuples}
+            return {name: self.image_for_galaxy(galaxy)
+                    for name, galaxy
+                    in self.name_galaxy_tuples}
 
 
 class Phase(AbstractPhase):
@@ -588,9 +590,13 @@ class PhaseImaging(Phase):
                 A fractional value indicating how well this model fit and the model lens_data itself
             """
             self.check_positions_trace_within_threshold(instance)
+            instance = self.associate_images(instance)
             tracer = self.tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=None)
             return fit.figure_of_merit
+
+        def associate_images(self, instance):
+            return instance
 
         def visualize(self, instance, image_path, during_analysis):
 
@@ -727,10 +733,6 @@ class LensPlanePhase(PhaseImaging):
         def unmasked_lens_plane_model_image(self):
             return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes[0]
 
-        @property
-        def name_galaxy_tuples(self):
-            return self.constant.lens_galaxies.name_instance_tuples_for_class(g.Galaxy)
-
 
 class LensSourcePlanePhase(PhaseImaging):
     """
@@ -817,11 +819,6 @@ class LensSourcePlanePhase(PhaseImaging):
         def unmasked_source_plane_model_image(self):
             return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes[1]
 
-        @property
-        def name_galaxy_tuples(self):
-            return (self.constant.lens_galaxies.name_instance_tuples_for_class(g.Galaxy) +
-                    self.constant.source_galaxies.name_instance_tuples_for_class(g.Galaxy))
-
 
 class MultiPlanePhase(PhaseImaging):
     """
@@ -892,11 +889,6 @@ class MultiPlanePhase(PhaseImaging):
         @classmethod
         def describe(cls, instance):
             return "\nRunning multi-plane for... \n\nGalaxies:\n{}\n\n".format(instance.galaxies)
-
-    class Result(PhaseImaging.Result):
-        @property
-        def name_galaxy_tuples(self):
-            return self.constant.galaxies.name_instance_tuples_for_class(g.Galaxy)
 
 
 class GalaxyFitPhase(AbstractPhase):
