@@ -6,6 +6,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 import autofit.tools.pipeline
+import autolens.pipeline.phase.phase_imaging
 from autofit import conf
 from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
@@ -21,7 +22,7 @@ from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase as ph
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -104,7 +105,7 @@ def make_grids(lens_data):
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.LensSourcePlanePhase(optimizer_class=NLO, mask_function=ph.default_mask_function, phase_name='test_phase')
+    return autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(optimizer_class=NLO, mask_function=ph.default_mask_function, phase_name='test_phase')
 
 
 @pytest.fixture(name="galaxy")
@@ -476,18 +477,18 @@ class TestPhase(object):
     def test_fit(self, ccd_data):
         clean_images()
 
-        phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
-                                        lens_galaxies=dict(
+        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(optimizer_class=NLO,
+                                                                           lens_galaxies=dict(
                                             lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
-                                        source_galaxies=dict(
+                                                                           source_galaxies=dict(
                                             source=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
-                                        phase_name='test_phase_test_fit')
+                                                                           phase_name='test_phase_test_fit')
         result = phase.run(data=ccd_data)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
         assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
 
     def test_customize(self, results, results_collection, ccd_data):
-        class MyPlanePhaseAnd(ph.LensSourcePlanePhase):
+        class MyPlanePhaseAnd(autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase):
             def pass_priors(self, results):
                 self.lens_galaxies = results.last.constant.lens_galaxies
                 self.source_galaxies = results.last.variable.source_galaxies
@@ -510,17 +511,17 @@ class TestPhase(object):
         assert len(lens_data.image_1d) == 32
 
     def test_duplication(self):
-        phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
-                                        source_galaxies=dict(source=gm.GalaxyModel(redshift=0.5)),
-                                        phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
+                                                                           source_galaxies=dict(source=gm.GalaxyModel(redshift=0.5)),
+                                                                           phase_name='test_phase')
 
-        ph.LensSourcePlanePhase(phase_name='test_phase')
+        autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(phase_name='test_phase')
 
         assert phase.lens_galaxies is not None
         assert phase.source_galaxies is not None
 
     def test_modify_image(self, ccd_data):
-        class MyPhase(ph.PhaseImaging):
+        class MyPhase(autolens.pipeline.phase.phase_imaging.PhaseImaging):
             def modify_image(self, image, results):
                 assert ccd_data.image.shape == image.shape
                 image = 20.0 * np.ones(shape=shape)
@@ -532,27 +533,27 @@ class TestPhase(object):
         assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=32)).all()
 
     def test__check_if_phase_uses_inversion(self):
-        phase = ph.LensPlanePhase(
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
             phase_name='test_phase',
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
 
         assert phase.uses_inversion is False
 
-        phase = ph.LensPlanePhase(
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
             phase_name='test_phase',
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
                                                    regularization=reg.Constant)))
 
         assert phase.uses_inversion is True
 
-        phase = ph.LensSourcePlanePhase(
+        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase',
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
             source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0)))
 
         assert phase.uses_inversion is False
 
-        phase = ph.LensSourcePlanePhase(
+        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase',
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
                                                    regularization=reg.Constant)),
@@ -560,7 +561,7 @@ class TestPhase(object):
 
         assert phase.uses_inversion is True
 
-        phase = ph.LensSourcePlanePhase(
+        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase',
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
             source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.Rectangular,
@@ -569,7 +570,7 @@ class TestPhase(object):
         assert phase.uses_inversion is True
 
     def test__phase_with_no_inversion__convolver_mapping_matrix_of_lens_data_is_none(self, ccd_data, mask):
-        phase = ph.LensPlanePhase(
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
             phase_name='test_phase',
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
 
@@ -581,7 +582,7 @@ class TestPhase(object):
         binned_up_ccd_data = ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=2)
         binned_up_mask = mask.binned_up_mask_from_mask(bin_up_factor=2)
 
-        phase = ph.PhaseImaging(phase_name='phase', bin_up_factor=2)
+        phase = autolens.pipeline.phase.phase_imaging.PhaseImaging(phase_name='phase', bin_up_factor=2)
         analysis = phase.make_analysis(data=ccd_data)
         assert (analysis.lens_data.image_2d == binned_up_ccd_data.image).all()
         assert (analysis.lens_data.psf == binned_up_ccd_data.psf).all()
@@ -605,7 +606,7 @@ class TestPhase(object):
         lens_galaxy = g.Galaxy(redshift=0.5)
         source_galaxy = g.Galaxy(redshift=0.5)
 
-        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
@@ -616,8 +617,8 @@ class TestPhase(object):
         assert padded_tracer.image_plane.galaxies[0] == lens_galaxy
         assert padded_tracer.cosmology == cosmo.FLRW
 
-        phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                        cosmology=cosmo.FLRW, phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                                                           cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
@@ -634,8 +635,8 @@ class TestPhase(object):
         galaxy_1 = g.Galaxy(redshift=0.2)
         galaxy_2 = g.Galaxy(redshift=0.3)
 
-        phase = ph.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7,
-                                   phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7,
+                                                                      phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
@@ -655,8 +656,8 @@ class TestPhase(object):
         source_galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
 
-        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
-                                  cosmology=cosmo.FLRW, phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
+                                                                     cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
 
@@ -731,7 +732,7 @@ class TestPhase(object):
     #     assert g1_blurred_image == pytest.approx(unmasked_model_images[1], 1e-4)
 
     def test__phase_can_receive_list_of_galaxy_models(self):
-        phase = ph.LensPlanePhase(
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
             lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic, sis=mp.SphericalIsothermal,
                                                    redshift=g.Redshift),
                                lens1=gm.GalaxyModel(sis=mp.SphericalIsothermal, redshift=g.Redshift)),
@@ -751,7 +752,7 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
-        class LensPlanePhase2(ph.LensPlanePhase):
+        class LensPlanePhase2(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
             # noinspection PyUnusedLocal
             def pass_models(self, results):
                 self.lens_galaxies[0].sis.einstein_radius = prior.Constant(10.0)
@@ -784,9 +785,9 @@ class TestResult(object):
     def test__results_of_phase_are_available_as_properties(self, ccd_data):
         clean_images()
 
-        phase = ph.LensPlanePhase(optimizer_class=NLO,
-                                  lens_galaxies=[g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))],
-                                  phase_name='test_phase_2')
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(optimizer_class=NLO,
+                                                                     lens_galaxies=[g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))],
+                                                                     phase_name='test_phase_2')
 
         result = phase.run(data=ccd_data)
 
@@ -797,8 +798,8 @@ class TestResult(object):
         source_galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
 
-        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
-                                  cosmology=cosmo.FLRW, phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
+                                                                     cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
@@ -810,9 +811,9 @@ class TestResult(object):
 
         assert fit.likelihood == fit_figure_of_merit
 
-        phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                        mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
-                                        phase_name='test_phase')
+        phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                                                           mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
+                                                                           phase_name='test_phase')
 
         # phase.uses_inversion = True
         #
@@ -834,7 +835,7 @@ class TestPhasePickle(object):
         def make_analysis(*args, **kwargs):
             return MockAnalysis(1, 1)
 
-        phase = ph.LensPlanePhase(
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
             phase_name="phase_name",
             optimizer_class=NLO,
             lens_galaxies=dict(lens=g.Galaxy(light=lp.EllipticalLightProfile, redshift=1))
@@ -844,7 +845,7 @@ class TestPhasePickle(object):
         result = phase.run(ccd_data, None, None, None)
         assert result is not None
 
-        phase = ph.LensPlanePhase(
+        phase = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
             phase_name="phase_name",
             optimizer_class=NLO,
             lens_galaxies=dict(lens=g.Galaxy(light=lp.EllipticalLightProfile, redshift=1))
@@ -856,7 +857,7 @@ class TestPhasePickle(object):
         result = phase.run(ccd_data, None, None, None)
         assert result is not None
 
-        class CustomPhase(ph.LensPlanePhase):
+        class CustomPhase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
             def pass_priors(self, results):
                 self.lens_galaxies.lens.light = lp.EllipticalLightProfile()
 

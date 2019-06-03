@@ -1,6 +1,7 @@
+import autolens.pipeline.phase.phase_imaging
 from autofit import conf
 from autofit.optimize import non_linear as nl
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase as ph
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
@@ -41,11 +42,11 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
-phase = ph.LensSourcePlanePhase(phase_name='phase_interp',
-                                phase_folders=[data_type, data_resolution + '_' + str(interp_pixel_scale)],
-                                lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
-                                 source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                                 optimizer_class=nl.MultiNest, interp_pixel_scale=interp_pixel_scale)
+phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(phase_name='phase_interp',
+                                                                   phase_folders=[data_type, data_resolution + '_' + str(interp_pixel_scale)],
+                                                                   lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
+                                                                   source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
+                                                                   optimizer_class=nl.MultiNest, interp_pixel_scale=interp_pixel_scale)
 
 phase.optimizer.const_efficiency_mode = True
 phase.optimizer.n_live_points = 50

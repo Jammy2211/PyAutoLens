@@ -1,5 +1,6 @@
 import os
 
+import autolens.pipeline.phase.phase_imaging
 from autofit import conf
 from autofit.mapper import prior
 from autofit.optimize import non_linear as nl
@@ -7,7 +8,7 @@ from autofit.tools import phase as autofit_ph
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase as ph
 from autolens.pipeline import pipeline as pl
 from test.integration import integration_util
 from test.simulation import simulation_util
@@ -31,7 +32,7 @@ def pipeline():
 
 def make_pipeline(test_name):
     
-    class QuickPhase(ph.LensSourcePlanePhase):
+    class QuickPhase(autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase):
 
         def pass_priors(self, results):
 
@@ -59,7 +60,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(autofit_ph.as_grid_search(ph.LensSourcePlanePhase)):
+    class GridPhase(autofit_ph.as_grid_search(autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase)):
 
         @property
         def grid_priors(self):
