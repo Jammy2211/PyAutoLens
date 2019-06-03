@@ -168,7 +168,7 @@ class AbstractPlane(object):
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        units_luminosity : str
+        unit_luminosity : str
             The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.

@@ -193,6 +193,14 @@ class AbstractTracer(AbstractTracerCosmology):
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
     @property
+    def galaxy_image_dict(self):
+        galaxy_image_dict = dict()
+        for plane in self.planes:
+            for galaxy in plane.galaxies:
+                galaxy_image_dict[galaxy] = galaxy.intensities_from_grid(plane.grid_stack.blurring)
+        return galaxy_image_dict
+
+    @property
     def galaxies_in_planes(self):
         return list([plane.galaxies for plane in self.planes])
 
