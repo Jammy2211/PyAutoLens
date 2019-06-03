@@ -8,6 +8,8 @@ from autolens import text_util
 from autolens import exc, dimensions as dim
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
+from autofit.mapper.model_object import ModelObject
+
 
 def is_light_profile(obj):
     return isinstance(obj, lp.LightProfile)
@@ -17,13 +19,13 @@ def is_mass_profile(obj):
     return isinstance(obj, mp.MassProfile)
 
 
-class Galaxy(object):
+class Galaxy(ModelObject):
     """
     @DynamicAttrs
     """
 
-    def __init__(self, redshift, pixelization=None, regularization=None, hyper_galaxy=None,
-                 hyper_model_image_1d=None, hyper_galaxy_image_1d=None, hyper_minimum_value=None, **kwargs):
+    def __init__(self, redshift, pixelization=None, regularization=None, hyper_galaxy=None, hyper_model_image_1d=None,
+                 hyper_galaxy_image_1d=None, hyper_minimum_value=None, **kwargs):
         """Class representing a galaxy, which is composed of attributes used for fitting hyper (e.g. light profiles, \ 
         mass profiles, pixelizations, etc.).
         
@@ -47,6 +49,7 @@ class Galaxy(object):
         regularization : inversion.Regularization
             The regularization of the pixel-grid used to reconstruct an observed regular using an inversion.
         """
+        super().__init__()
         self.redshift = redshift
 
         for name, val in kwargs.items():
@@ -65,6 +68,9 @@ class Galaxy(object):
         self.hyper_model_image_1d = hyper_model_image_1d
         self.hyper_galaxy_image_1d = hyper_galaxy_image_1d
         self.hyper_minimum_value = hyper_minimum_value
+
+    def __hash__(self):
+        return self.id
 
     @property
     def light_profiles(self):
