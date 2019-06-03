@@ -109,53 +109,34 @@ class AbstractPlane(object):
     @property
     def centres_of_galaxy_mass_profiles(self):
 
-        if self.has_mass_profile:
+        galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
 
-            galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
+        mass_profile_centres = [[] for _ in range(len(galaxies_with_mass_profiles))]
 
-            mass_profile_centres = [[] for i in range(len(galaxies_with_mass_profiles))]
-
-            for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
-                mass_profile_centres[galaxy_index] = [profile.centre for profile in galaxy.mass_profiles]
-            return mass_profile_centres
-
-        else:
-
-            return None
+        for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
+            mass_profile_centres[galaxy_index] = [profile.centre for profile in galaxy.mass_profiles]
+        return mass_profile_centres
 
     @property
     def axis_ratios_of_galaxy_mass_profiles(self):
+        galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
 
-        if self.has_mass_profile:
+        mass_profile_axis_ratios = [[] for _ in range(len(galaxies_with_mass_profiles))]
 
-            galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
-
-            mass_profile_axis_ratios = [[] for i in range(len(galaxies_with_mass_profiles))]
-
-            for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
-                mass_profile_axis_ratios[galaxy_index] = [profile.axis_ratio for profile in galaxy.mass_profiles]
-            return mass_profile_axis_ratios
-
-        else:
-
-            return None
+        for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
+            mass_profile_axis_ratios[galaxy_index] = [profile.axis_ratio for profile in galaxy.mass_profiles]
+        return mass_profile_axis_ratios
 
     @property
     def phis_of_galaxy_mass_profiles(self):
 
-        if self.has_mass_profile:
+        galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
 
-            galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
+        mass_profile_phis = [[] for _ in range(len(galaxies_with_mass_profiles))]
 
-            mass_profile_phis = [[] for i in range(len(galaxies_with_mass_profiles))]
-
-            for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
-                mass_profile_phis[galaxy_index] = [profile.phi for profile in galaxy.mass_profiles]
-            return mass_profile_phis
-
-        else:
-
-            return None
+        for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
+            mass_profile_phis[galaxy_index] = [profile.phi for profile in galaxy.mass_profiles]
+        return mass_profile_phis
 
     def luminosities_of_galaxies_within_circles_in_units(self, radius: dim.Length, unit_luminosity='eps',
                                                          exposure_time=None):
@@ -192,7 +173,7 @@ class AbstractPlane(object):
         ----------
         major_axis : float
             The major-axis radius of the ellipse.
-        units_luminosity : str
+        unit_luminosity : str
             The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
@@ -210,13 +191,12 @@ class AbstractPlane(object):
 
         Parameters
         ----------
+        redshift_source
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        units_mass : str
+        unit_mass : str
             The units the mass is returned in (angular | solMass).
-        critical_surface_density : float
-            The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
-            units to physical units (e.g. solar masses).
+
         """
         return list(map(lambda galaxy: galaxy.mass_within_circle_in_units(
             radius=radius, unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
@@ -231,12 +211,11 @@ class AbstractPlane(object):
 
         Parameters
         ----------
+        redshift_source
+        unit_mass
         major_axis : float
             The major-axis radius of the ellipse.
-        units_luminosity : str
-            The units the luminosity is returned in (eps | counts).
-        exposure_time : float
-            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
+
         """
         return list(map(lambda galaxy: galaxy.mass_within_ellipse_in_units(
             major_axis=major_axis, unit_mass=unit_mass, redshift_source=redshift_source,
@@ -259,6 +238,7 @@ class AbstractPlane(object):
                                   unit_mass=unit_mass, redshift_source=redshift_source, cosmology=self.cosmology),
                                        self.galaxies))))
 
+    # noinspection PyUnusedLocal
     def summarize_in_units(self, radii, whitespace=80,
                            unit_length='arcsec', unit_luminosity='eps', unit_mass='solMass',
                            redshift_source=None, **kwargs):
@@ -478,16 +458,10 @@ class AbstractDataPlane(AbstractGriddedPlane):
                         self.profile_image_plane_image_1d_of_galaxies))
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
-
-        if self.has_hyper_galaxy:
-
-            hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
-            hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if
-                                   hyper_noise_map is not None]
-            return sum(hyper_noise_maps_1d)
-
-        else:
-            return None
+        hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(noise_map_1d=noise_map_1d)
+        hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if
+                               hyper_noise_map is not None]
+        return sum(hyper_noise_maps_1d)
 
     def hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(self, noise_map_1d):
         """For a contribution map and noise-map, use the model hyper galaxies to compute a scaled noise-map.

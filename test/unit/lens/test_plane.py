@@ -506,7 +506,7 @@ class TestAbstractPlane(object):
                           mass1=mp.SphericalIsothermal(centre=(4.0, 4.0)))
 
             plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
-            assert plane.centres_of_galaxy_mass_profiles == None
+            assert plane.centres_of_galaxy_mass_profiles == []
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
             assert plane.centres_of_galaxy_mass_profiles == [[(1.0, 1.0)]]
@@ -534,7 +534,7 @@ class TestAbstractPlane(object):
                           mass1=mp.EllipticalIsothermal(axis_ratio=0.6))
 
             plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
-            assert plane.axis_ratios_of_galaxy_mass_profiles == None
+            assert plane.axis_ratios_of_galaxy_mass_profiles == []
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
             assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.9]]
@@ -562,7 +562,7 @@ class TestAbstractPlane(object):
                           mass1=mp.EllipticalIsothermal(phi=0.6))
 
             plane = pl.AbstractPlane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
-            assert plane.phis_of_galaxy_mass_profiles == None
+            assert plane.phis_of_galaxy_mass_profiles == []
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
             assert plane.phis_of_galaxy_mass_profiles == [[0.9]]
@@ -1651,7 +1651,7 @@ class TestAbstractDataPlane(object):
             plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g.Galaxy(redshift=0.5)], grid_stack=None,
                                          compute_deflections=False, border=None)
             hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
-            assert hyper_noise_map_1d == None
+            assert hyper_noise_map_1d == 0
 
 
 class TestPlane(object):
