@@ -12,37 +12,6 @@ from autolens.model.inversion import pixelizations as pix
 from autolens.model.galaxy import galaxy as g
 
 
-def check_tracer_for_light_profile(func):
-    """If none of the tracer's galaxies have a light profile, it image-plane image cannot be computed. This wrapper \
-    makes this property return *None*.
-
-    Parameters
-    ----------
-    func : (self) -> Object
-        A property function that requires galaxies to have a mass profile.
-    """
-
-    @wraps(func)
-    def wrapper(self):
-        """
-
-        Parameters
-        ----------
-        self
-
-        Returns
-        -------
-            A value or coordinate in the same coordinate system as those passed in.
-        """
-
-        if self.has_light_profile is True:
-            return func(self)
-        else:
-            return None
-
-    return wrapper
-
-
 def check_tracer_for_mass_profile(func):
     """If none of the tracer's galaxies have a mass profile, it surface density, potential and deflections cannot \
     be computed. This wrapper makes these properties return *None*.
@@ -205,16 +174,10 @@ class AbstractTracer(AbstractTracerCosmology):
         return galaxy_image_dict
 
     @property
-    def galaxies_in_planes(self):
-        return list([plane.galaxies for plane in self.planes])
-
-    @property
-    @check_tracer_for_light_profile
     def profile_image_plane_image_2d(self):
         return self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=self.profile_image_plane_image_1d)
 
     @property
-    @check_tracer_for_light_profile
     def profile_image_plane_image_2d_for_simulation(self):
         return sum(self.profile_image_plane_image_2d_of_planes_for_simulation)
 
@@ -223,7 +186,6 @@ class AbstractTracer(AbstractTracerCosmology):
         return [plane.profile_image_plane_image_2d_for_simulation for plane in self.planes]
 
     @property
-    @check_tracer_for_light_profile
     def profile_image_plane_image_1d(self):
         return sum(self.profile_image_plane_image_1d_of_planes)
 
@@ -232,7 +194,6 @@ class AbstractTracer(AbstractTracerCosmology):
         return [plane.profile_image_plane_image_1d for plane in self.planes]
 
     @property
-    @check_tracer_for_light_profile
     def profile_image_plane_blurring_image_1d(self):
         return sum(self.profile_image_plane_blurring_image_1d_of_planes)
 
@@ -422,17 +383,10 @@ class AbstractTracerData(AbstractTracer):
             mapper=self.mappers_of_planes[0], regularization=self.regularizations_of_planes[0])
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
-
-        if self.has_hyper_galaxy:
-
             hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_planes_from_noise_map_1d(noise_map_1d=noise_map_1d)
             hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if
                                    hyper_noise_map is not None]
             return sum(hyper_noise_maps_1d)
-
-        else:
-
-            return None
 
     def hyper_noise_maps_1d_of_planes_from_noise_map_1d(self, noise_map_1d):
         return [plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d) for plane in self.planes]
