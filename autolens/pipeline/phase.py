@@ -185,7 +185,18 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         def unmasked_model_image_of_planes_and_galaxies(self):
             return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
 
-        def image_for_galaxy(self, galaxy):
+        def image_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
+            """
+            Parameters
+            ----------
+            galaxy
+                A galaxy used in this phase
+
+            Returns
+            -------
+            image
+                A numpy array giving the model image of that galaxy
+            """
             return self.most_likely_fit.galaxy_image_dict[galaxy]
 
         @property
@@ -194,6 +205,9 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def image_dict(self) -> {str: g.Galaxy}:
+            """
+            A dictionary associating galaxy names with model images of those galaxies
+            """
             return {name: self.image_for_galaxy(galaxy) for name, galaxy in self.name_galaxy_tuples}
 
 
