@@ -1,17 +1,27 @@
+from os import path
+
 import numpy as np
 import pytest
 
+from autofit import conf
+from autolens.model.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy_data as gd
+from autolens.model.galaxy import galaxy_fit
 from autolens.model.profiles import light_and_mass_profiles as lmp
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from test.unit.mock.data import mock_ccd
-from test.unit.mock.lens import mock_lens_data
-from test.unit.mock.data import mock_mask
 from test.unit.mock.data import mock_convolution
-from autolens.model.galaxy import galaxy_fit
 from test.unit.mock.data import mock_grids
-from autolens.model.galaxy import galaxy as g
-from autolens.model.galaxy import galaxy_data as gd
+from test.unit.mock.data import mock_mask
+from test.unit.mock.lens import mock_lens_data
+
+directory = path.dirname(path.realpath(__file__))
+
+
+@pytest.fixture(autouse=True)
+def set_config_path():
+    conf.instance = conf.Config(path.join(directory, "test_files/configs"), path.join(directory, "output"))
 
 
 #
