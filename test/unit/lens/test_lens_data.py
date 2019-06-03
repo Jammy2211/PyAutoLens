@@ -1,17 +1,13 @@
 import numpy as np
 import pytest
 
-from autolens.data import ccd, convolution
+from autolens.data import convolution
 from autolens.data.array.util import grid_util
 from autolens.data import ccd
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.model.inversion import convolution as inversion_convolution
-
-from test.unit.fixtures.data.ccd import ccd_data_5x5, ccd_data_6x6
-from test.unit.fixtures.data.grids import regular_grid_3x3, sub_grid_3x3, blurring_grid_3x3
-from test.unit.fixtures.data.mask import mask_5x5, mask_6x6
 
 @pytest.fixture(name="lens_data_5x5")
 def make_lens_data_5x5(ccd_data_5x5, mask_5x5):
@@ -64,11 +60,11 @@ class TestLensData(object):
                                                     [0.0, 2.0, 2.0, 2.0, 0.0],
                                                     [0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-    def test__grid_stack(self, lens_data_5x5, regular_grid_3x3, sub_grid_3x3, blurring_grid_3x3):
+    def test__grid_stack(self, lens_data_5x5, regular_grid_5x5, sub_grid_5x5, blurring_grid_5x5):
 
-        assert (lens_data_5x5.grid_stack.regular == regular_grid_3x3).all()
-        assert (lens_data_5x5.grid_stack.sub == sub_grid_3x3).all()
-        assert (lens_data_5x5.grid_stack.blurring == blurring_grid_3x3).all()
+        assert (lens_data_5x5.grid_stack.regular == regular_grid_5x5).all()
+        assert (lens_data_5x5.grid_stack.sub == sub_grid_5x5).all()
+        assert (lens_data_5x5.grid_stack.blurring == blurring_grid_5x5).all()
 
     def test__padded_grid_stack(self, lens_data_5x5):
 

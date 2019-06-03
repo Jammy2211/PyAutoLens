@@ -4,38 +4,7 @@ import pytest
 from autolens import exc
 from autolens.data.array import grids, mask
 from autolens.model.inversion import inversions
-from test.unit.mock.model.mock_inversion import MockConvolver
-
-
-class MockGeometry(object):
-
-    def __init__(self):
-
-        self.pixel_scales = (1.0, 1.0)
-        self.origin = (0.0, 0.0)
-        self.pixel_centres = None
-        self.pixel_neighbors = [[]]
-        self.pixel_neighbors_size = []
-
-
-class MockMapper(object):
-
-    def __init__(self, matrix_shape, grid_stack=None):
-
-        self.grid_stack = grid_stack
-        self.mapping_matrix = np.ones(matrix_shape)
-        self.geometry = MockGeometry()
-
-
-class MockRegularization(object):
-
-    def __init__(self, matrix_shape):
-        self.shape = matrix_shape
-
-    def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors, pixel_neighbors_size):
-        return np.array([[1.0, 0.0, 0.0],
-                         [0.0, 1.0, 0.0],
-                         [0.0, 0.0, 1.0]])
+from test.unit.mock.model import mock_inversion
 
 
 class TestRegularizationTerm:
@@ -44,8 +13,10 @@ class TestRegularizationTerm:
 
         matrix_shape = (3,3)
 
-        inv = inversions.Inversion(image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape), regularization=MockRegularization(matrix_shape))
+        inv = inversions.Inversion(
+            image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
+            mapper=mock_inversion.MockMapper(matrix_shape=matrix_shape),
+            regularization=mock_inversion.MockRegularization(matrix_shape))
 
         inv.solution_vector = np.array([1.0, 1.0, 1.0])
 
@@ -73,8 +44,9 @@ class TestRegularizationTerm:
 
         matrix_shape = (3,3)
 
-        inv = inversions.Inversion(image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape), regularization=MockRegularization(matrix_shape))
+        inv = inversions.Inversion(
+            image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
+            mapper=mock_inversion.MockMapper(matrix_shape), regularization=mock_inversion.MockRegularization(matrix_shape))
 
         # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
 
@@ -105,8 +77,9 @@ class TestLogDetMatrix:
 
         matrix_shape = (3,3)
 
-        inv = inversions.Inversion(image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape), regularization=MockRegularization(matrix_shape))
+        inv = inversions.Inversion(
+            image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
+            mapper=mock_inversion.MockMapper(matrix_shape), regularization=mock_inversion.MockRegularization(matrix_shape))
 
         matrix = np.array([[1.0, 0.0, 0.0],
                            [0.0, 1.0, 0.0],
@@ -120,8 +93,9 @@ class TestLogDetMatrix:
 
         matrix_shape = (3,3)
 
-        inv = inversions.Inversion(image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape), regularization=MockRegularization(matrix_shape))
+        inv = inversions.Inversion(
+            image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
+            mapper=mock_inversion.MockMapper(matrix_shape), regularization=mock_inversion.MockRegularization(matrix_shape))
 
         matrix = np.array([[2.0, -1.0, 0.0],
                            [-1.0, 2.0, -1.0],
@@ -135,8 +109,9 @@ class TestLogDetMatrix:
 
         matrix_shape = (3,3)
 
-        inv = inversions.Inversion(image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape), regularization=MockRegularization(matrix_shape))
+        inv = inversions.Inversion(
+            image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
+            mapper=mock_inversion.MockMapper(matrix_shape), regularization=mock_inversion.MockRegularization(matrix_shape))
 
         matrix = np.array([[2.0, 0.0, 0.0],
                            [-1.0, 2.0, -1.0],
@@ -156,12 +131,13 @@ class TestReconstructedDataVectorAndImage:
                                         [False, False, False],
                                         [True, True, True]]), pixel_scale=1.0)
 
-        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
-                                                                                         psf_shape=(1,1))
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+            mask=msk, sub_grid_size=1, psf_shape=(1,1))
 
-        inv = inversions.Inversion(image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape, grid_stack),
-                                   regularization=MockRegularization(matrix_shape))
+        inv = inversions.Inversion(
+            image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
+            mapper=mock_inversion.MockMapper(matrix_shape, grid_stack),
+            regularization=mock_inversion.MockRegularization(matrix_shape))
 
         inv.solution_vector = np.array([1.0, 1.0, 1.0, 1.0])
 
@@ -185,11 +161,13 @@ class TestReconstructedDataVectorAndImage:
                                         [False, False, False],
                                         [True, True, True]]), pixel_scale=1.0)
 
-        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
-                                                                                         psf_shape=(1,1))
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+            mask=msk, sub_grid_size=1, psf_shape=(1,1))
 
-        inv = inversions.Inversion(image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape, grid_stack), regularization=MockRegularization(matrix_shape))
+        inv = inversions.Inversion(
+            image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
+            mapper=mock_inversion.MockMapper(matrix_shape, grid_stack),
+            regularization=mock_inversion.MockRegularization(matrix_shape))
 
         inv.solution_vector = np.array([1.0, 2.0, 3.0, 4.0])
 

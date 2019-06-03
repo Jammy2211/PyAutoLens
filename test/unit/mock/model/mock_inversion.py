@@ -26,15 +26,22 @@ class MockPixelization(object):
 
 class MockRegularization(object):
 
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, matrix_shape):
+        self.shape = matrix_shape
+
+    def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors, pixel_neighbors_size):
+        return np.array([[1.0, 0.0, 0.0],
+                         [0.0, 1.0, 0.0],
+                         [0.0, 0.0, 1.0]])
 
 class MockMapper(object):
 
-    def __init__(self):
-        self.mapping_matrix = np.ones((1, 1))
-        self.regularization_matrix = np.ones((1, 1))
+    def __init__(self, matrix_shape, grid_stack=None):
+
+        self.grid_stack = grid_stack
+        self.mapping_matrix = np.ones(matrix_shape)
         self.geometry = MockGeometry()
+
 
 class MockConvolver(object):
 
