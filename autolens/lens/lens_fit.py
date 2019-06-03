@@ -3,6 +3,7 @@ import numpy as np
 from autofit.tools import fit
 from autolens import exc
 from autolens.lens.util import lens_fit_util as util
+from autolens.model.galaxy import galaxy as g
 
 
 class LensDataFit(fit.DataFit1D):
@@ -103,7 +104,10 @@ class LensTracerFit(LensDataFit):
         self.psf = psf
 
     @property
-    def galaxy_image_dict(self):
+    def galaxy_image_dict(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
         return self.tracer.galaxy_image_dict
 
     @property
