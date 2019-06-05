@@ -3585,7 +3585,7 @@ class TestDeflectionsViaPotential(object):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(0.0, 0.0), pixel_scale=0.05,
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
 
         deflections_via_calculation = sis.deflections_from_grid(grid=grid)
@@ -3600,7 +3600,7 @@ class TestDeflectionsViaPotential(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(0.0, 0.0), pixel_scale=0.05,
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
 
         deflections_via_calculation = sie.deflections_from_grid(grid=grid)
@@ -3615,7 +3615,7 @@ class TestDeflectionsViaPotential(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(0.0, 0.0), pixel_scale=0.05,
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
 
         deflections_via_calculation = sie.deflections_from_grid(grid=grid)
@@ -3676,7 +3676,7 @@ class TestConvergenceViaJacobian(object):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(0.0, 0.0), pixel_scale=0.05,
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
 
         convergence_via_calculation = sis.convergence_from_grid(grid=grid)
@@ -3692,7 +3692,7 @@ class TestConvergenceViaJacobian(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(0.0, 0.0), pixel_scale=0.05,
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
 
         convergence_via_calculation = sie.convergence_from_grid(grid=grid)
@@ -3707,7 +3707,7 @@ class TestConvergenceViaJacobian(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(0.0, 0.0), pixel_scale=0.05,
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
 
         convergence_via_calculation = sie.convergence_from_grid(grid=grid)
@@ -3717,3 +3717,90 @@ class TestConvergenceViaJacobian(object):
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
 
         assert mean_error < 1e-2
+
+class TestCriticalCurvesandCaustics(object):
+
+    def test__critical_curves_SIS__reg_grid(self):
+
+        sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
+
+        critical_curves = sis.critical_curves_from_grid(grid=grid)
+
+        critical_curve_tan = critical_curves[0]
+
+        xcritical_tan, ycritical_tan = critical_curve_tan[:, 1], critical_curve_tan[:, 0]
+
+        assert xcritical_tan**2 + ycritical_tan**2 == pytest.approx(sis.einstein_radius**2, 1e-1)
+
+    def test_compare_tangential_critical_curves_from_magnification_and_lamda_t(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
+
+        critical_curves_from_mag = sie.critical_curves_from_grid(grid=grid)
+        critical_curve_tan_from_mag = critical_curves_from_mag[0]
+        critical_curve_tan_from_lambda_t = sie.tangential_critical_curve_from_grid(grid=grid)
+
+        print(critical_curve_tan_from_mag)
+        print(critical_curve_tan_from_lambda_t)
+
+        assert critical_curve_tan_from_lambda_t == pytest.approx(critical_curve_tan_from_mag, 1e-4)
+
+    def test_compare_radial_critical_curves_from_magnification_and_lamda_t(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
+
+        critical_curves_from_mag = sie.critical_curves_from_grid(grid=grid)
+
+        critical_curve_rad_from_mag = critical_curves_from_mag[1]
+        critical_curve_rad_from_lambda_t = sie.radial_critical_curve_from_grid(grid=grid)
+
+        print(critical_curve_rad_from_mag)
+        print(critical_curve_rad_from_lambda_t)
+
+        assert critical_curve_rad_from_lambda_t == pytest.approx(critical_curve_rad_from_mag, 1e-1)
+
+    def test_compare_tangential_caustic_from_magnification_and_lamda_t(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
+
+        caustics_from_mag = sie.caustics_from_grid(grid=grid)
+        caustic_tan_from_mag = caustics_from_mag[0]
+        caustic_tan_from_lambda_t = sie.tangential_caustic_from_grid(grid=grid)
+
+
+        assert caustic_tan_from_lambda_t == pytest.approx(caustic_tan_from_mag, 1e-4)
+
+    def test_compare_radial_caustic_from_magnification_and_lamda_t(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
+
+        caustics_from_mag = sie.caustics_from_grid(grid=grid)
+
+        caustic_rad_from_mag = caustics_from_mag[1]
+        caustic_rad_from_lambda_t = sie.radial_caustic_from_grid(grid=grid)
+
+        print(caustic_rad_from_mag)
+        print(caustic_rad_from_lambda_t)
+
+        assert caustic_rad_from_lambda_t == pytest.approx(caustic_rad_from_mag, 1e-2)
+
+
+
+
+    def test__caustics(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05)
+
+        caustics = sie.caustics_from_grid(grid=grid)
