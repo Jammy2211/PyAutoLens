@@ -108,6 +108,16 @@ def make_mask_5x5():
 
     return mock_mask.MockMask(array=array)
 
+@pytest.fixture(name="mask_5x5_1_pix")
+def make_mask_5x5_1_pix():
+    array = np.array([[True, True, True, True, True],
+                      [True, True, True, True, True],
+                      [True, True, False, True, True],
+                      [True, True, True, True, True],
+                      [True, True, True, True, True]])
+
+    return mock_mask.MockMask(array=array)
+
 
 @pytest.fixture(name="blurring_mask_5x5")
 def make_blurring_mask_5x5():
@@ -272,12 +282,12 @@ def make_lmp_0():
 
 @pytest.fixture(name="gal_x1_lp")
 def make_gal_x1_lp(lp_0):
-    return g.Galaxy(redshift=0.5, lp0=lp_0)
+    return g.Galaxy(redshift=0.5, light_profile_0=lp_0)
 
 
 @pytest.fixture(name="gal_x2_lp")
 def make_gal_x2_lp(lp_0, lp_1):
-    return g.Galaxy(redshift=0.5, lp0=lp_0, lp1=lp_1)
+    return g.Galaxy(redshift=0.5, light_profile_0=lp_0, light_profile_1=lp_1)
 
 
 @pytest.fixture(name="gal_x1_mp")
@@ -288,6 +298,10 @@ def make_gal_x1_mp(mp_0):
 @pytest.fixture(name="gal_x2_mp")
 def make_gal_x2_mp(mp_0, mp_1):
     return g.Galaxy(redshift=0.5, mass_profile_0=mp_0, mass_profile_1=mp_1)
+
+@pytest.fixture(name="gal_x1_lp_x1_mp")
+def make_gal_x1_lp_x1_mp(lp_0, mp_0):
+    return g.Galaxy(redshift=0.5, light_profile_0=lp_0, mass_profile_0=mp_0)
 
 
 # GALAXY DATA #
@@ -418,3 +432,62 @@ def make_sensitivity_fit_5x5(lens_data_5x5):
 
     return sensitivity_fit.SensitivityProfileFit(lens_data=lens_data_5x5, tracer_normal=tracer_normal,
                                                  tracer_sensitive=tracer_sensitivity)
+
+##############
+## PIPELINE ##
+#############
+
+### Phase ###
+
+from autofit.tools import pipeline as af_pipeline
+from autolens.pipeline import pipeline
+from autolens.pipeline import phase as ph
+from test.unit.mock.pipeline import mock_pipeline
+
+@pytest.fixture(name="mask_function_5x5_1_pix")
+def make_mask_function_5x5_1_pix():
+
+    def mask_function_5x5_1_pix(image):
+
+        array = np.array([[True, True, True, True, True],
+                          [True, True, True, True, True],
+                          [True, True, False, True, True],
+                          [True, True, True, True, True],
+                          [True, True, True, True, True]])
+
+        return mock_mask.MockMask(array=array)
+
+    return mask_function_5x5_1_pix
+
+@pytest.fixture(name="mask_function_5x5")
+def make_mask_function_5x5():
+
+    def mask_function_5x5(image):
+
+        array = np.array([[True, True, True, True, True],
+                          [True, False, False, False, True],
+                          [True, False, False, False, True],
+                          [True, False, False, False, True],
+                          [True, True, True, True, True]])
+
+        return mock_mask.MockMask(array=array)
+
+    return mask_function_5x5
+
+@pytest.fixture(name="phase_5x5")
+def make_phase_5x5(mask_function_5x5):
+
+    return ph.phase_imaging.LensSourcePlanePhase(
+        optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5, phase_name='test_phase')
+
+@pytest.fixture(name="results_5x5")
+def make_results():
+    return mock_pipeline.MockResults(model_image=np.ones((5,5)),
+                       galaxy_images=[np.ones((5,5)), np.ones((5,5))])
+
+
+@pytest.fixture(name="results_collection_5x5")
+def make_results_collection(results_5x5):
+    results_collection = af_pipeline.ResultsCollection()
+    results_collection.add("phase", results_5x5)
+    return results_collection

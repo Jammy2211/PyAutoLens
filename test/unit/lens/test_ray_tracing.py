@@ -926,7 +926,7 @@ class TestTracerImageSourcePlanes(object):
 
         def test__no_galaxy__image_and_source_planes_setup__same_coordinates(self, grid_stack_5x5):
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_non], source_galaxies=[galaxy_non],
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy(redshift=0.5)],
                                                          image_plane_grid_stack=grid_stack_5x5)
 
             assert tracer.image_plane.grid_stack.regular[0] == pytest.approx(np.array([1.0, -1.0]), 1e-3)
@@ -1011,7 +1011,7 @@ class TestTracerImageSourcePlanes(object):
             assert tracer.source_plane.grid_stack.blurring[0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
 
         def test__grid_attributes_passed(self, grid_stack_5x5):
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_non], source_galaxies=[galaxy_non],
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy(redshift=0.5)],
                                                          image_plane_grid_stack=grid_stack_5x5)
 
             assert (tracer.image_plane.grid_stack.regular.mask == grid_stack_5x5.regular.mask).all()
@@ -1969,7 +1969,7 @@ class TestTracerImageAndSourcePositions(object):
     class TestSetup:
 
         def test__x2_positions__no_galaxy__image_and_source_planes_setup__same_positions(self):
-            tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=[galaxy_non],
+            tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=[g.Galaxy(redshift=0.5)],
                                                                   image_plane_positions=[
                                                                       np.array([[1.0, 1.0], [-1.0, -1.0]])])
 
