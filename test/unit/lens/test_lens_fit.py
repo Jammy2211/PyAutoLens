@@ -278,26 +278,35 @@ class TestLensProfileFit:
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer)
 
-            g0_image_plane_image = galaxy_util.intensities_of_galaxies_from_grid(
+            g0_image_plane_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
                 grid=lens_data_5x5.grid_stack.sub, galaxies=[g0])
-            g0_blurring_image_plane_image = galaxy_util.intensities_of_galaxies_from_grid(
+            g0_image_plane_bluring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
                 grid=lens_data_5x5.grid_stack.blurring, galaxies=[g0])
 
-            g0_blurred_image_plane_image = lens_data_5x5.convolver_image.convolve_image(
-                image_array=g0_image_plane_image, blurring_array=g0_blurring_image_plane_image)
+            g0_blurred_image_plane_image_1d = lens_data_5x5.convolver_image.convolve_image(
+                image_array=g0_image_plane_image_1d, blurring_array=g0_image_plane_bluring_image_1d)
 
-            g1_image_plane_image = galaxy_util.intensities_of_galaxies_from_grid(
+            g1_image_plane_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
                 grid=tracer.source_plane.grid_stack.sub, galaxies=[g1])
-            g1_blurring_image_plane_image = galaxy_util.intensities_of_galaxies_from_grid(
+            g1_image_plane_bluring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
                 grid=tracer.source_plane.grid_stack.blurring, galaxies=[g1])
 
-            g1_blurred_image_plane_image = lens_data_5x5.convolver_image.convolve_image(
-                image_array=g1_image_plane_image, blurring_array=g1_blurring_image_plane_image)
+            g1_blurred_image_plane_image_1d = lens_data_5x5.convolver_image.convolve_image(
+                image_array=g1_image_plane_image_1d, blurring_array=g1_image_plane_bluring_image_1d)
 
-            assert fit.galaxy_image_dict[g0] == pytest.approx(g0_blurred_image_plane_image, 1.0e-4)
-            assert fit.galaxy_image_dict[g1] == pytest.approx(g1_blurred_image_plane_image, 1.0e-4)
+            assert fit.galaxy_image_1d_dict[g0] == pytest.approx(g0_blurred_image_plane_image_1d, 1.0e-4)
+            assert fit.galaxy_image_1d_dict[g1] == pytest.approx(g1_blurred_image_plane_image_1d, 1.0e-4)
 
-            assert fit.model_image_1d == pytest.approx(fit.galaxy_image_dict[g0] + fit.galaxy_image_dict[g1], 1.0e-4)
+            assert fit.model_image_1d == pytest.approx(fit.galaxy_image_1d_dict[g0] + fit.galaxy_image_1d_dict[g1], 1.0e-4)
+
+            g0_blurred_image_plane_image_2d = lens_data_5x5.map_to_scaled_array(array_1d=g0_blurred_image_plane_image_1d)
+            g1_blurred_image_plane_image_2d = lens_data_5x5.map_to_scaled_array(array_1d=g1_blurred_image_plane_image_1d)
+
+            assert fit.galaxy_image_2d_dict[g0] == pytest.approx(g0_blurred_image_plane_image_2d, 1.0e-4)
+            assert fit.galaxy_image_2d_dict[g1] == pytest.approx(g1_blurred_image_plane_image_2d, 1.0e-4)
+
+            assert fit.model_image_2d == pytest.approx(fit.galaxy_image_2d_dict[g0] + fit.galaxy_image_2d_dict[g1], 1.0e-4)
+
 
         def test___all_lens_fit_quantities__including_hyper_methods(self, lens_data_5x5):
 
@@ -465,6 +474,32 @@ class TestLensInversionFit:
 
             assert evidence == fit.evidence
             assert evidence == fit.figure_of_merit
+
+        def test___lens_fit_galaxy_image_dict__has_inversion_reconstructed_data(self, lens_data_5x5):
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            reg = regularization.Constant(coefficients=(1.0,))
+
+            g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g0],
+                                                         image_plane_grid_stack=lens_data_5x5.grid_stack,
+                                                         border=None)
+
+            fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer)
+
+            mapper = pix.mapper_from_grid_stack_and_border(grid_stack=lens_data_5x5.grid_stack, border=None)
+            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+                mapper=mapper, regularization=reg, image_1d=lens_data_5x5.image_1d, noise_map_1d=lens_data_5x5.noise_map_1d,
+                convolver=lens_data_5x5.convolver_mapping_matrix)
+
+            assert fit.galaxy_image_1d_dict[g0] == pytest.approx(inversion.reconstructed_data_1d, 1.0e-4)
+
+            assert fit.model_image_1d == pytest.approx(fit.galaxy_image_1d_dict[g0], 1.0e-4)
+
+            assert fit.galaxy_image_2d_dict[g0] == pytest.approx(inversion.reconstructed_data_2d, 1.0e-4)
+
+            assert fit.model_image_2d == pytest.approx(fit.galaxy_image_2d_dict[g0], 1.0e-4)
 
         def test___all_lens_fit_quantities__include_hyper_methods(self, lens_data_5x5):
 
@@ -650,6 +685,64 @@ class TestLensProfileInversionFit:
 
             assert evidence == fit.evidence
             assert evidence == fit.figure_of_merit
+
+        def test___lens_fit_galaxy_image_dict__has_blurred_profile_images_and_inversion_reconstructed_data(self, lens_data_5x5):
+
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0))
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            reg = regularization.Constant(coefficients=(1.0,))
+            galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[galaxy_pix],
+                                                         image_plane_grid_stack=lens_data_5x5.grid_stack,
+                                                         border=None)
+
+            fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer)
+
+            g0_image_plane_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
+                grid=lens_data_5x5.grid_stack.sub, galaxies=[g0])
+            g0_image_plane_bluring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
+                grid=lens_data_5x5.grid_stack.blurring, galaxies=[g0])
+
+            g0_blurred_image_plane_image_1d = lens_data_5x5.convolver_image.convolve_image(
+                image_array=g0_image_plane_image_1d, blurring_array=g0_image_plane_bluring_image_1d)
+
+            g1_image_plane_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
+                grid=tracer.source_plane.grid_stack.sub, galaxies=[g1])
+            g1_image_plane_bluring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
+                grid=tracer.source_plane.grid_stack.blurring, galaxies=[g1])
+
+            g1_blurred_image_plane_image_1d = lens_data_5x5.convolver_image.convolve_image(
+                image_array=g1_image_plane_image_1d, blurring_array=g1_image_plane_bluring_image_1d)
+
+            blurred_profile_image_1d = g0_blurred_image_plane_image_1d + g1_blurred_image_plane_image_1d
+
+            profile_subtracted_image_1d = lens_data_5x5.image_1d - blurred_profile_image_1d
+            mapper = pix.mapper_from_grid_stack_and_border(grid_stack=lens_data_5x5.grid_stack, border=None)
+
+            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+                image_1d=profile_subtracted_image_1d, noise_map_1d=lens_data_5x5.noise_map_1d,
+                convolver=lens_data_5x5.convolver_mapping_matrix, mapper=mapper, regularization=reg)
+
+            assert fit.galaxy_image_1d_dict[g0] == pytest.approx(g0_blurred_image_plane_image_1d, 1.0e-4)
+            assert fit.galaxy_image_1d_dict[g1] == pytest.approx(g1_blurred_image_plane_image_1d, 1.0e-4)
+            assert fit.galaxy_image_1d_dict[galaxy_pix] == pytest.approx(inversion.reconstructed_data_1d, 1.0e-4)
+
+            assert fit.model_image_1d == pytest.approx(fit.galaxy_image_1d_dict[g0] + fit.galaxy_image_1d_dict[g1] +
+                                                       fit.galaxy_image_1d_dict[galaxy_pix], 1.0e-4)
+
+            g0_blurred_image_plane_image_2d = lens_data_5x5.map_to_scaled_array(array_1d=g0_blurred_image_plane_image_1d)
+            g1_blurred_image_plane_image_2d = lens_data_5x5.map_to_scaled_array(array_1d=g1_blurred_image_plane_image_1d)
+
+            assert fit.galaxy_image_2d_dict[g0] == pytest.approx(g0_blurred_image_plane_image_2d, 1.0e-4)
+            assert fit.galaxy_image_2d_dict[g1] == pytest.approx(g1_blurred_image_plane_image_2d, 1.0e-4)
+            assert fit.galaxy_image_2d_dict[galaxy_pix] == pytest.approx(inversion.reconstructed_data_2d, 1.0e-4)
+
+            assert fit.model_image_2d == pytest.approx(fit.galaxy_image_2d_dict[g0] +
+                                                       fit.galaxy_image_2d_dict[g1] +
+                                                       inversion.reconstructed_data_2d, 1.0e-4)
 
         def test___all_lens_fit_quantities__include_hyper_methods(self, lens_data_5x5):
 

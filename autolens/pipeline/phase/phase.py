@@ -193,7 +193,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             image
                 A numpy array giving the model image of that galaxy
             """
-            return self.most_likely_fit.galaxy_image_dict[galaxy]
+            return self.most_likely_fit.galaxy_image_1d_dict[galaxy]
 
         @property
         def name_galaxy_tuples(self) -> [(str, g.Galaxy)]:

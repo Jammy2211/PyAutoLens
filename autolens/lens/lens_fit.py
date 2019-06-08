@@ -104,11 +104,25 @@ class LensTracerFit(LensDataFit):
         self.psf = psf
 
     @property
-    def galaxy_image_dict(self) -> {g.Galaxy: np.ndarray}:
+    def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        return self.tracer.galaxy_image_dict_from_convolver_image(convolver_image=self.convolver_image)
+        raise NotImplementedError()
+
+    @property
+    def galaxy_image_2d_dict(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+
+        galaxy_image_2d_dict = {}
+
+        for key, value in self.galaxy_image_1d_dict.items():
+
+            galaxy_image_2d_dict[key] = self.map_to_scaled_array(array_1d=value)
+
+        return galaxy_image_2d_dict
 
     @property
     def total_inversions(self):
@@ -165,6 +179,13 @@ class LensProfileFit(LensTracerFit):
             psf=lens_data.psf, map_to_scaled_array=lens_data.map_to_scaled_array)
 
         self.convolver_image = lens_data.convolver_image
+
+    @property
+    def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+        return self.tracer.galaxy_image_dict_from_convolver_image(convolver_image=self.convolver_image)
 
     @property
     def model_image_2d_of_planes(self):
@@ -228,6 +249,14 @@ class LensInversionFit(InversionFit):
         super().__init__(lens_data=lens_data, noise_map_1d=noise_map_1d, model_image_1d=inversion.reconstructed_data_1d,
                          tracer=tracer, inversion=inversion)
 
+
+    @property
+    def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+        return {self.tracer.planes[-1].galaxies[0] : self.inversion.reconstructed_data_1d}
+
     @property
     def figure_of_merit(self):
         return self.evidence
@@ -283,6 +312,15 @@ class LensProfileInversionFit(InversionFit):
             noise_map_1d=noise_map_1d, model_image_1d=model_image, inversion=inversion)
 
         self.convolver_image = lens_data.convolver_image
+
+    @property
+    def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+        galaxy_image_dict = self.tracer.galaxy_image_dict_from_convolver_image(convolver_image=self.convolver_image)
+        galaxy_image_dict.update({self.tracer.planes[-1].galaxies[0] : self.inversion.reconstructed_data_1d})
+        return galaxy_image_dict
 
     @property
     def blurred_profile_image_2d(self):
