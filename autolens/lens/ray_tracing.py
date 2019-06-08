@@ -163,17 +163,6 @@ class AbstractTracer(AbstractTracerCosmology):
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
     @property
-    def galaxy_image_dict(self) -> {g.Galaxy: np.ndarray}:
-        """
-        A dictionary associating galaxies with their corresponding model images
-        """
-        galaxy_image_dict = dict()
-        for plane in self.planes:
-            for galaxy in plane.galaxies:
-                galaxy_image_dict[galaxy] = galaxy.intensities_from_grid(plane.grid_stack.blurring)
-        return galaxy_image_dict
-
-    @property
     def profile_image_plane_image_2d(self):
         return self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=self.profile_image_plane_image_1d)
 
@@ -390,6 +379,26 @@ class AbstractTracerData(AbstractTracer):
 
     def hyper_noise_maps_1d_of_planes_from_noise_map_1d(self, noise_map_1d):
         return [plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d) for plane in self.planes]
+
+    def galaxy_image_dict_from_convolver_image(self, convolver_image) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+
+        galaxy_image_dict = dict()
+
+        for plane in self.planes:
+            for galaxy in plane.galaxies:
+
+                profile_image_plane_image_1d = plane.profile_image_plane_image_1d_of_galaxy(galaxy=galaxy)
+                profile_image_plane_blurring_image_1d = plane.profile_image_plane_blurring_image_1d_of_galaxy(galaxy=galaxy)
+
+                blurred_profile_image_pane_image_1d = convolver_image.convolve_image(
+                    image_array=profile_image_plane_image_1d, blurring_array=profile_image_plane_blurring_image_1d)
+
+                galaxy_image_dict[galaxy] = blurred_profile_image_pane_image_1d
+
+        return galaxy_image_dict
 
 
 class TracerImagePlane(AbstractTracerData):

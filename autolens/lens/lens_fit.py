@@ -108,7 +108,7 @@ class LensTracerFit(LensDataFit):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        return self.tracer.galaxy_image_dict
+        return self.tracer.galaxy_image_dict_from_convolver_image(convolver_image=self.convolver_image)
 
     @property
     def total_inversions(self):

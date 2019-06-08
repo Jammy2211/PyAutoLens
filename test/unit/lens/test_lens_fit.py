@@ -8,6 +8,7 @@ from autolens.lens import lens_data as ld
 from autolens.lens import ray_tracing, lens_fit
 from autolens.lens.util import lens_fit_util as util
 from autolens.model.galaxy import galaxy as g
+from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import inversions
 from autolens.model.inversion import pixelizations
 from autolens.model.inversion import regularization
@@ -216,14 +217,15 @@ class TestLensProfileFit:
 
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_5x5):
 
-            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0),
+                                         mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0))
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=lens_data_5x5.grid_stack)
 
             padded_tracer = ray_tracing.TracerImageSourcePlanes(
-                lens_galaxies=[g0, g1], source_galaxies=[g0],
+                lens_galaxies=[g0], source_galaxies=[g1],
                 image_plane_grid_stack=lens_data_5x5.padded_grid_stack)
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer,
@@ -265,18 +267,51 @@ class TestLensProfileFit:
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
             assert likelihood == fit.figure_of_merit
 
+        def test___lens_fit_galaxy_image_dict__corresponds_to_blurred_galaxy_images(self, lens_data_5x5):
+
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0),
+                                         mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0))
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grid_stack=lens_data_5x5.grid_stack)
+
+            fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer)
+
+            g0_image_plane_image = galaxy_util.intensities_of_galaxies_from_grid(
+                grid=lens_data_5x5.grid_stack.sub, galaxies=[g0])
+            g0_blurring_image_plane_image = galaxy_util.intensities_of_galaxies_from_grid(
+                grid=lens_data_5x5.grid_stack.blurring, galaxies=[g0])
+
+            g0_blurred_image_plane_image = lens_data_5x5.convolver_image.convolve_image(
+                image_array=g0_image_plane_image, blurring_array=g0_blurring_image_plane_image)
+
+            g1_image_plane_image = galaxy_util.intensities_of_galaxies_from_grid(
+                grid=tracer.source_plane.grid_stack.sub, galaxies=[g1])
+            g1_blurring_image_plane_image = galaxy_util.intensities_of_galaxies_from_grid(
+                grid=tracer.source_plane.grid_stack.blurring, galaxies=[g1])
+
+            g1_blurred_image_plane_image = lens_data_5x5.convolver_image.convolve_image(
+                image_array=g1_image_plane_image, blurring_array=g1_blurring_image_plane_image)
+
+            assert fit.galaxy_image_dict[g0] == pytest.approx(g0_blurred_image_plane_image, 1.0e-4)
+            assert fit.galaxy_image_dict[g1] == pytest.approx(g1_blurred_image_plane_image, 1.0e-4)
+
+            assert fit.model_image_1d == pytest.approx(fit.galaxy_image_dict[g0] + fit.galaxy_image_dict[g1], 1.0e-4)
+
         def test___all_lens_fit_quantities__including_hyper_methods(self, lens_data_5x5):
 
             g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0),
+                          mass_profile=mp.SphericalIsothermal(einstein_radius=1.0),
                           hyper_galaxy=g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0),
                           hyper_model_image_1d=np.ones(9), hyper_galaxy_image_1d=np.ones(9), hyper_minimum_value=0.0)
-            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0))
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=lens_data_5x5.grid_stack)
 
             padded_tracer = ray_tracing.TracerImageSourcePlanes(
-                lens_galaxies=[g0, g1], source_galaxies=[g0],
+                lens_galaxies=[g0], source_galaxies=[g1],
                 image_plane_grid_stack=lens_data_5x5.padded_grid_stack)
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer,
@@ -324,14 +359,15 @@ class TestLensProfileFit:
 
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(self, lens_data_5x5):
 
-            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0),
+                          mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0))
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=lens_data_5x5.grid_stack)
 
             padded_tracer = ray_tracing.TracerImageSourcePlanes(
-                lens_galaxies=[g0, g1], source_galaxies=[g0],
+                lens_galaxies=[g0], source_galaxies=[g1],
                 image_plane_grid_stack=lens_data_5x5.padded_grid_stack)
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer,
@@ -539,7 +575,7 @@ class TestLensProfileInversionFit:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
             reg = regularization.Constant(coefficients=(1.0,))
-            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+            galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
                                                          image_plane_grid_stack=lens_data_5x5.grid_stack,
@@ -624,7 +660,7 @@ class TestLensProfileInversionFit:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
             reg = regularization.Constant(coefficients=(1.0,))
-            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+            galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
                                                          image_plane_grid_stack=lens_data_5x5.grid_stack,
@@ -712,7 +748,7 @@ class TestLensProfileInversionFit:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
             reg = regularization.Constant(coefficients=(1.0,))
-            galaxy_pix = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+            galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
                                                          image_plane_grid_stack=lens_data_5x5.grid_stack,

@@ -115,7 +115,7 @@ class TestRegularGrid:
                          [True, True, True, True, True, True, True, True, True]])
         mask = msk.Mask(array=mask, pixel_scale=2.0)
 
-        blurring_mask_util = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(3, 5))
+        blurring_mask_util = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(3, 5))
         blurring_grid_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(blurring_mask_util,
                                                                                                 pixel_scales=(2.0, 2.0))
 
@@ -138,7 +138,7 @@ class TestRegularGrid:
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
         one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
 
-        array_2d_util = mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
+        array_2d_util = mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
             array_1d=array_1d, shape=(3, 4), one_to_two=one_to_two)
 
         mask = msk.Mask(array=mask, pixel_scale=3.0)
@@ -180,7 +180,7 @@ class TestRegularGrid:
                          [False, False, False, True],
                          [True, False, True, False]])
 
-        array_1d_util = mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=array_2d, mask=mask)
+        array_1d_util = mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(array_2d=array_2d, mask=mask)
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
         regular_grid = grids.RegularGrid.from_mask(mask=mask)
@@ -198,7 +198,7 @@ class TestRegularGrid:
                          [False, False, False, True],
                          [True, False, True, False]])
 
-        grid_1d_util = mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
+        grid_1d_util = mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
         regular_grid = grids.RegularGrid.from_mask(mask=mask)
@@ -497,7 +497,7 @@ class TestSubGrid(object):
 
         sub_array_1d = sub_grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
-        sub_array_1d_util = mapping_util.map_2d_sub_array_to_masked_1d_sub_array_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_1d_util = mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
 
         assert (sub_array_1d == sub_array_1d_util).all()
