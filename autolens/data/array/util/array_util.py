@@ -63,20 +63,22 @@ def extracted_array_2d_from_array_2d_and_coordinates(array_2d, y0, y1, x0, x1):
     dimensions of the extracted array.
 
     In the example below, an array of size (5,5) is extracted using the coordinates y0=1, y1=4, x0=1, x1=4. This
-    extracts an array of dimensions (2,2) and is equivalent to array_2d[1:4, 1:4]
+    extracts an array of dimensions (3,3) and is equivalent to array_2d[1:4, 1:4].
+
+    This function is necessary work with numba jit tags and is why a standard Numpy array extraction is not used.
 
     Parameters
     ----------
     array_2d : ndarray
-        The 2D array that is an array is extracted from.
+        The 2D array that an array is extracted from.
     y0 : int
-        The lower row number (e.g. the higher y-coodinate) of the array that is extracted for the resize.
+        The top row number (e.g. the higher y-coodinate) of the array that is extracted for the resize.
     y1 : int
-        The upper row number (e.g. the lower y-coodinate) of the array that is extracted for the resize.
+        The bottom row number (e.g. the lower y-coodinate) of the array that is extracted for the resize.
     x0 : int
-        The lower column number (e.g. the lower x-coodinate) of the array that is extracted for the resize.
+        The left column number (e.g. the lower x-coodinate) of the array that is extracted for the resize.
     x1 : int
-        The upper column number (e.g. the higher x-coodinate) of the array that is extracted for the resize.
+        The right column number (e.g. the higher x-coodinate) of the array that is extracted for the resize.
 
     Returns
     -------
@@ -119,6 +121,9 @@ def resized_array_2d_from_array_2d_and_resized_shape(array_2d, resized_shape, or
         The (y,x) new pixel dimension of the trimmed array.
     origin : (int, int)
         The oigin of the resized array, e.g. the central pixel around which the array is extracted.
+    pad_value : float
+        If the reszied array is bigger in size than the input array, the value the padded edge values are filled in \
+        using.
 
     Returns
     -------
@@ -177,7 +182,36 @@ def resized_array_2d_from_array_2d_and_resized_shape(array_2d, resized_shape, or
 
 @decorator_util.jit()
 def replace_noise_map_2d_values_where_image_2d_values_are_negative(image_2d, noise_map_2d, target_signal_to_noise=2.0):
+    """If the values of a 2D image array are negative, this function replaces the corresponding 2D noise-map array \
+    values to meet a specified target to noise value.
 
+    This routine is necessary because of anomolous values in images which come from our HST ACS data-reduction \
+    pipeline, where image-pixels with negative values (e.g. due to the background sky subtraction) have extremely \
+    small noise values, which inflate their signal-to-noise values and chi-squared contributions in the modeling.
+
+    Parameters
+    ----------
+    image_2d : ndarray
+        The 2D image array used to locate the pixel indexes in the noise-map which are replaced.
+    noise_map_2d : ndarray
+        The 2D noise-map array whose values are replaced.
+    target_signal_to_noise : float
+        The target signal-to-noise the noise-map valueus are changed to.
+
+    Returns
+    -------
+    ndarray
+        The 2D noise-map with values changed.
+
+    Examples
+    --------
+    image_2d = np.ones((5,5))
+    image_2d[2,2] = -1.0
+    noise_map_2d = np.ones((5,5))
+
+    noise_map_2d_replaced = replace_noise_map_2d_values_where_image_2d_values_are_negative(
+        image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=2.0):
+    """
     for y in range(image_2d.shape[0]):
         for x in range(image_2d.shape[1]):
             if image_2d[y, x] < 0.0:
@@ -188,8 +222,33 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(image_2d, noi
     return noise_map_2d
 
 @decorator_util.jit()
-def pad_2d_array_for_binning_up_with_bin_up_factor(array_2d, bin_up_factor, pad_value=0.0):
+def padded_array_2d_for_binning_up_with_bin_up_factor(array_2d, bin_up_factor, pad_value=0.0):
+    """If an array is to be binned up, but the dimensions are not divisible by the bin-up factor, this routine pads \
+    the array to make it divisible.
 
+    For example, if the array is shape (5,5) and the bin_up_factor is 2, this routine will pad the array to shape \
+    (6,6).
+
+    Parameters
+    ----------
+    array_2d : ndarray
+        The 2D array that is padded.
+    bin_up_factor : int
+        The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
+    pad_value : float
+        If the array is padded, the value the padded edge values are filled in using.
+
+    Returns
+    -------
+    ndarray
+        The 2D array that is padded before binning up.
+
+    Examples
+    --------
+    array_2d = np.ones((5,5))
+    padded_array_2d = padded_array_2d_for_binning_up_with_bin_up_factor( \
+        array_2d=array_2d, bin_up_factor=2, pad_value=0.0)
+    """
     shape = array_2d.shape
     shape_remainder = (shape[0] % bin_up_factor, shape[1] % bin_up_factor)
 
@@ -214,31 +273,28 @@ def bin_up_array_2d_using_mean(array_2d, bin_up_factor):
     If an array of shape (8,8) is input and the bin up size is 2, this would return a new array of size (4,4) where \
     every pixel was the mean of each collection of 2x2 pixels on the (8,8) array.
 
-    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), an array is first \
-    extracted around the centre of that array.
-
+    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first \
+    padded to make the division work. One must be careful of edge effects in this case.
 
     Parameters
     ----------
     array_2d : ndarray
-        The 2D array that is resized.
-    new_shape : (int, int)
-        The (y,x) new pixel dimension of the trimmed array.
-    origin : (int, int)
-        The oigin of the resized array, e.g. the central pixel around which the array is extracted.
+        The 2D array that is binned up.
+    bin_up_factor : int
+        The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
 
     Returns
     -------
     ndarray
-        The resized 2D array from the input 2D array.
+        The binned up 2D array from the input 2D array.
 
     Examples
     --------
     array_2d = np.ones((5,5))
-    resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
+    resize_array = bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=2)
     """
 
-    padded_array_2d = pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=bin_up_factor)
+    padded_array_2d = padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=bin_up_factor)
 
     binned_array_2d = np.zeros(shape=(padded_array_2d.shape[0] // bin_up_factor,
                                       padded_array_2d.shape[1] // bin_up_factor))
@@ -258,37 +314,34 @@ def bin_up_array_2d_using_mean(array_2d, bin_up_factor):
 
 @decorator_util.jit()
 def bin_up_array_2d_using_quadrature(array_2d, bin_up_factor):
-    """Bin up an array to coarser resolution, by binning up groups of pixels and using their quadrature value to determine \
-     the value of the new pixel.
+    """Bin up an array to coarser resolution, by binning up groups of pixels and using their quadrature value to \
+    determine the value of the new pixel.
 
     If an array of shape (8,8) is input and the bin up size is 2, this would return a new array of size (4,4) where \
     every pixel was the quadrature of each collection of 2x2 pixels on the (8,8) array.
 
-    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), an array is first \
-    extracted around the centre of that array.
-
+    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first \
+    padded to make the division work. One must be careful of edge effects in this case.
 
     Parameters
     ----------
     array_2d : ndarray
-        The 2D array that is resized.
-    new_shape : (int, int)
-        The (y,x) new pixel dimension of the trimmed array.
-    origin : (int, int)
-        The oigin of the resized array, e.g. the central pixel around which the array is extracted.
+        The 2D array that is binned up.
+    bin_up_factor : int
+        The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
 
     Returns
     -------
     ndarray
-        The resized 2D array from the input 2D array.
+        The binned up 2D array from the input 2D array.
 
     Examples
     --------
     array_2d = np.ones((5,5))
-    resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
+    resize_array = bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=2)
     """
 
-    padded_array_2d = pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=bin_up_factor)
+    padded_array_2d = padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=bin_up_factor)
 
     binned_array_2d = np.zeros(shape=(padded_array_2d.shape[0] // bin_up_factor,
                                       padded_array_2d.shape[1] // bin_up_factor))
@@ -314,31 +367,28 @@ def bin_up_array_2d_using_sum(array_2d, bin_up_factor):
     If an array of shape (8,8) is input and the bin up size is 2, this would return a new array of size (4,4) where \
     every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
 
-    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), an array is first \
-    extracted around the centre of that array.
-
+    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first \
+    padded to make the division work. One must be careful of edge effects in this case.
 
     Parameters
     ----------
     array_2d : ndarray
-        The 2D array that is resized.
-    new_shape : (int, int)
-        The (y,x) new pixel dimension of the trimmed array.
-    origin : (int, int)
-        The oigin of the resized array, e.g. the central pixel around which the array is extracted.
+        The 2D array that is binned up.
+    bin_up_factor : int
+        The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
 
     Returns
     -------
     ndarray
-        The resized 2D array from the input 2D array.
+        The binned up 2D array from the input 2D array.
 
     Examples
     --------
     array_2d = np.ones((5,5))
-    resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
+    resize_array = bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=2)
     """
 
-    padded_array_2d = pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=bin_up_factor)
+    padded_array_2d = padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=bin_up_factor)
 
     binned_array_2d = np.zeros(shape=(padded_array_2d.shape[0] // bin_up_factor,
                                       padded_array_2d.shape[1] // bin_up_factor))
@@ -379,7 +429,7 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
     Examples
     --------
     array_2d = np.ones((5,5))
-    numpy_array_to_fits(array=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
+    numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
     """
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)

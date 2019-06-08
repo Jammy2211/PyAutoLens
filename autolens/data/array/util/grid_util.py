@@ -1,6 +1,5 @@
 from autolens import decorator_util
 import numpy as np
-from skimage.transform import rescale
 
 from autolens.data.array.util import mask_util
 
@@ -40,7 +39,7 @@ def regular_grid_2d_from_shape_pixel_scales_and_origin(shape, pixel_scales, orig
     """Compute the (y,x) arc second coordinates at the centre of every pixel of an array of shape (rows, columns).
 
     Coordinates are defined from the top-left corner, such that the first pixel at location [0, 0] has negative x \
-    and y values in arc seconds.
+    and positive y values in arc seconds.
 
     The regular grid is returned on an array of shape (total_pixels, total_pixels, 2) where coordinate indexes match \
     those of the original 2D array. y coordinates are stored in the 0 index of the third dimension, x coordinates in \
@@ -63,8 +62,8 @@ def regular_grid_2d_from_shape_pixel_scales_and_origin(shape, pixel_scales, orig
 
     Examples
     --------
-    regular_grid_1d = regular_grid_2d_from_shape_pixel_scales_and_origin(shape=(5,5), pixel_scales=(0.5, 0.5), \
-                                                                      origin=(0.0, 0.0))
+    regular_grid_2d = regular_grid_2d_from_shape_pixel_scales_and_origin( \
+        shape=(5,5), pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
     regular_grid_2d = np.zeros((shape[0], shape[1], 2))
@@ -81,10 +80,11 @@ def regular_grid_2d_from_shape_pixel_scales_and_origin(shape, pixel_scales, orig
 
 @decorator_util.jit()
 def regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask, pixel_scales, origin=(0.0, 0.0)):
-    """Compute the (y,x) arc second coordinates at the centre of every pixel of a 2D mask array of shape (rows, columns).
+    """Compute the (y,x) arc second coordinates at the centre of every pixel of a 2D mask array of shape \
+    (rows, columns).
 
-    Coordinates are defined from the top-left corner, where the first unmasked pixel corresponds to index 0. The pixel \
-    at the top-left of the array has negative x and y values in arc seconds.
+    Coordinates are defined from the top-left corner, where the first unmasked pixel corresponds to index 0. The \
+    pixel at the top-left of the array has negative x and positive y values in arc seconds.
 
     The regular grid is returned on an array of shape (total_unmasked_pixels, 2). y coordinates are stored in the 0 \
     index of the second dimension, x coordinates in the 1 index.
@@ -92,10 +92,10 @@ def regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask, pixel_scales,
     Parameters
      ----------
     mask : ndarray
-        A 2D array of bools, where *False* values mean unmasked and are therefore included as part of the calculated \
-        regular grid.
+        A 2D array of bools, where *False* values are unmasked and therefore included as part of the calculated \
+        regular grid 1d.
     pixel_scales : (float, float)
-        The (y,x) arc-second to pixel scales of the 2D mask array.
+        The (y,x) arc-second to pixel scales of the 2D array and mask from which the grid is computed.
     origin : (float, flloat)
         The (y,x) origin of the 2D array, which the regular grid is shifted around.
 
@@ -132,8 +132,8 @@ def regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask, pixel_scales,
 def regular_grid_1d_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin=(0.0, 0.0)):
     """Compute the (y,x) arc second coordinates at the centre of every pixel of an array of shape (rows, columns).
 
-    Coordinates are defined from the top-left corner, such that the first pixel at location [0, 0] has negative x \
-    and y values in arc seconds.
+    Coordinates are defined from the top-left corner, where the first unmasked pixel corresponds to index 0. The \
+    pixel at the top-left of the array has negative x and positive y values in arc seconds.
 
     The regular grid is returned on an array of shape (total_pixels**2, 2) where the 2D dimension of the original 2D \
     array are reduced to one dimension. y coordinates are stored in the 0 index of the second dimension, x coordinates
@@ -165,9 +165,9 @@ def regular_grid_1d_from_shape_pixel_scales_and_origin(shape, pixel_scales, orig
 @decorator_util.jit()
 def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size,
                                                                 origin=(0.0, 0.0)):
-    """ For the sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
+    """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
     uniform grid of shape (sub_grid_size, sub_grid_size). This routine computes the (y,x) arc second coordinates at \
-    the centre of every sub-pixel defined by this grid.
+    the centre of every sub-pixel defined by this 2D mask array.
 
     Coordinates are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0. \
     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
@@ -179,8 +179,8 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
     Parameters
      ----------
     mask : ndarray
-        A 2D array of bools, where *False* values mean unmasked and are therefore included as part of the calculated \
-        regular grid.
+        A 2D array of bools, where *False* values are unmasked and therefore included as part of the calculated \
+        sub-grid.
     pixel_scales : (float, float)
         The (y,x) arc-second to pixel scales of the 2D mask array.
     sub_grid_size : int
@@ -236,18 +236,53 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
 
 @decorator_util.jit()
 def sub_grid_1d_from_shape_pixel_scales_and_sub_grid_size(shape, pixel_scales, sub_grid_size, origin=(0.0, 0.0)):
+    """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
+    uniform grid of shape (sub_grid_size, sub_grid_size). This routine computes the (y,x) arc second coordinates at \
+    the centre of every sub-pixel defined by this 2D mask array.
+
+    Coordinates are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0]. \
+    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
+    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+
+    The sub-grid is returned on an array of shape (total_pixels**2*sub_grid_size**2, 2). y coordinates are \
+    stored in the 0 index of the second dimension, x coordinates in the 1 index.
+
+    Parameters
+     ----------
+    shape : (int, int)
+        The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
+    pixel_scales : (float, float)
+        The (y,x) arc-second to pixel scales of the 2D mask array.
+    sub_grid_size : int
+        The size of the sub-grid that each pixel of the 2D mask array is divided into.
+    origin : (float, flloat)
+        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
+
+    Returns
+    --------
+    ndarray
+        A sub grid of (y,x) arc-second coordinates at the centre of every pixel unmasked pixel on the 2D mask \
+        array. The sub grid array has dimensions (total_unmasked_pixels*sub_grid_size**2, 2).
+
+    Examples
+    --------
+    mask = np.array([[True, False, True],
+                     [False, False, False]
+                     [True, False, True]])
+    sub_grid_1d = sub_grid_1d_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
+    """
     return sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
         mask=np.full(fill_value=False, shape=shape), pixel_scales=pixel_scales, sub_grid_size=sub_grid_size,
         origin=origin)
 
 @decorator_util.jit()
 def grid_arcsec_1d_to_grid_pixels_1d(grid_arcsec_1d, shape, pixel_scales, origin=(0.0, 0.0)):
-    """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel coordinate values. Pixel coordinates \
-    are returned as floats such that they include the decimal offset from each pixel's top-left corner relative to \
-    the input arc-second coordinate.
+    """ Convert a 1D grid of (y,x) arc second coordinates to a 1D grid of (y,x) pixel coordinate values. Pixel
+    coordinates are returned as floats such that they include the decimal offset from each pixel's top-left corner
+    relative to the input arc-second coordinate.
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
-    the highest y arc-second coordinate and lowest x arc-second coordinate on the gird.
+    the highest (most positive) y arc-second coordinate and lowest (most negative) x arc-second coordinate on the gird.
 
     The arc-second grid is defined by an origin and coordinates are shifted to this origin before computing their \
     1D grid pixel coordinate values.
@@ -290,11 +325,11 @@ def grid_arcsec_1d_to_grid_pixels_1d(grid_arcsec_1d, shape, pixel_scales, origin
 
 @decorator_util.jit()
 def grid_arcsec_1d_to_grid_pixel_centres_1d(grid_arcsec_1d, shape, pixel_scales, origin=(0.0, 0.0)):
-    """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
+    """ Convert a 1D grid of (y,x) arc second coordinates to a 1D grid of (y,x) pixel values. Pixel coordinates are \
     returned as integers such that they map directly to the pixel they are contained within.
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
-    higher y arc-second coordinate value and lowest x arc-second coordinate.
+    the highest (most positive) y arc-second coordinate and lowest (most negative) x arc-second coordinate on the gird.
 
     The arc-second coordinate grid is defined by the class attribute origin, and coordinates are shifted to this \
     origin before computing their 1D grid pixel indexes.
@@ -337,8 +372,8 @@ def grid_arcsec_1d_to_grid_pixel_centres_1d(grid_arcsec_1d, shape, pixel_scales,
 
 @decorator_util.jit()
 def grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec_1d, shape, pixel_scales, origin=(0.0, 0.0)):
-    """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
-    returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
+    """ Convert a 1D grid of (y,x) arc second coordinates to a 1D grid of (y,x) pixel 1D indexes. Pixel coordinates
+    are returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
     downwards.
 
     For example:
@@ -388,10 +423,10 @@ def grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec_1d, shape, pixel_scales,
 
 @decorator_util.jit()
 def grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d, shape, pixel_scales, origin=(0.0, 0.0)):
-    """ Convert a grid of (y,x) pixel coordinates to a grid of (y,x) arc second values.
+    """ Convert a 1D grid of (y,x) pixel coordinates to a 1D grid of (y,x) arc second values.
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
-    higher y arc-second coordinate value and lowest x arc-second coordinate.
+    the highest (most positive) y arc-second coordinate and lowest (most negative) x arc-second coordinate on the gird.
 
     The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
     origin after computing their values from the 1D grid pixel indexes.
@@ -434,16 +469,16 @@ def grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d, shape, pixel_scales, origin
 
 @decorator_util.jit()
 def grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d, shape, pixel_scales, origin=(0.0, 0.0)):
-    """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
+    """ Convert a 2D grid of (y,x) arc second coordinates to a 2D grid of (y,x) pixel values. Pixel coordinates are \
     returned as integers such that they map directly to the pixel they are contained within.
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
-    higher y arc-second coordinate value and lowest x arc-second coordinate.
+    the highest (most positive) y arc-second coordinate and lowest (most negative) x arc-second coordinate on the gird.
 
     The arc-second coordinate grid is defined by the class attribute origin, and coordinates are shifted to this \
     origin before computing their 1D grid pixel indexes.
 
-    The input and output grids are both of shape (total_pixels, 2).
+    The input and output grids are both of shape (y_dimension, x_dimension, 2).
 
     Parameters
     ----------

@@ -353,7 +353,7 @@ class RegularGrid(np.ndarray):
             array_1d=padded_array_1d, shape=self.mask.shape)
         # noinspection PyUnresolvedReferences
         blurred_padded_array_2d = psf.convolve(array=padded_array_2d)
-        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
+        return mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
                                                                                    mask=np.full(self.mask.shape, False))
 
     @classmethod
@@ -455,7 +455,7 @@ class RegularGrid(np.ndarray):
     def from_unmasked_grid_2d(cls, grid_2d):
         mask_shape = (grid_2d.shape[0], grid_2d.shape[1])
         mask = np.full(fill_value=False, shape=mask_shape)
-        grid_1d = mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
+        grid_1d = mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
         return RegularGrid(arr=grid_1d, mask=mask)
 
     def new_grid_with_interpolator(self, interp_pixel_scale):
@@ -476,7 +476,7 @@ class RegularGrid(np.ndarray):
         array_1d : ndarray
             The 1D array which is mapped to its masked 2D array.
         """
-        return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
+        return mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
             array_1d=array_1d, shape=self.mask.shape, one_to_two=self.mask.masked_grid_index_to_pixel)
 
     def scaled_array_2d_from_array_1d(self, array_1d):
@@ -515,7 +515,7 @@ class RegularGrid(np.ndarray):
         array_1d : ndarray
             The 1D array which is mapped to its masked 2D array.
         """
-        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(
+        return mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(
             array_2d=array_2d, mask=self.mask)
 
     def grid_1d_from_grid_2d(self, grid_2d):
@@ -528,7 +528,7 @@ class RegularGrid(np.ndarray):
         grid_1d : ndgrid
             The 1D grid which is mapped to its masked 2D grid.
         """
-        return mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=self.mask)
+        return mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(grid_2d=grid_2d, mask=self.mask)
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -707,7 +707,7 @@ class SubGrid(RegularGrid):
     def from_unmasked_grid_2d(cls, grid_2d):
         mask_shape = (grid_2d.shape[0], grid_2d.shape[1])
         mask = np.full(fill_value=False, shape=mask_shape)
-        grid_1d = mapping_util.map_2d_grid_to_masked_1d_grid_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
+        grid_1d = mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
         return SubGrid(grid_1d, mask=mask, sub_grid_size=1)
 
     def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
@@ -721,7 +721,7 @@ class SubGrid(RegularGrid):
         """
         sub_shape = (self.mask.shape[0] * self.sub_grid_size, self.mask.shape[1] * self.sub_grid_size)
         sub_one_to_two = self.mask.masked_sub_grid_index_to_sub_pixel(sub_grid_size=self.sub_grid_size)
-        return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
+        return mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
             array_1d=sub_array_1d, shape=sub_shape, one_to_two=sub_one_to_two)
 
     def scaled_array_2d_with_sub_dimensions_from_sub_array_1d(self, sub_array_1d):
@@ -795,7 +795,7 @@ class SubGrid(RegularGrid):
         su_array_2d : ndarray
             The 2D sub-array which is mapped to its masked 1D sub-array.
         """
-        return mapping_util.map_2d_sub_array_to_masked_1d_sub_array_from_sub_array_2d_mask_and_sub_grid_size(
+        return mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=self.mask, sub_grid_size=self.sub_grid_size)
 
     @property

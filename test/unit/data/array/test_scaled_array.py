@@ -705,7 +705,6 @@ class TestScaledSquarePixelArray:
                                             [True,  True,  True, True]]), pixel_scale=1.0)
 
             array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
-            print(array_extracted)
             assert (array_extracted == np.array([[5.0,  6.0,  7.0],
                                                  [9.0, 10.0, 11.0]])).all()
 

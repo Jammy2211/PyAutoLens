@@ -200,7 +200,6 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             """
             Tuples associating the names of galaxies with instances from the best fit
             """
-            print(self.constant)
             return self.constant.name_instance_tuples_for_class(cls=g.Galaxy)
 
         @property

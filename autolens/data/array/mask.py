@@ -238,7 +238,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         if array_2d is None or isinstance(array_2d, float):
             return array_2d
-        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(self, array_2d)
+        return mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(self, array_2d)
 
     @array_util.Memoizer()
     def blurring_mask_for_psf_shape(self, psf_shape):
@@ -254,7 +254,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         if psf_shape[0] % 2 == 0 or psf_shape[1] % 2 == 0:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(self, psf_shape)
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(self, psf_shape)
 
         return Mask(blurring_mask, self.pixel_scale)
 
