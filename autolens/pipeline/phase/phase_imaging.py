@@ -2,6 +2,7 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit import conf
+from autofit.mapper import prior as p
 from autofit.mapper.model import ModelInstance
 from autofit.optimize import non_linear
 from autofit.tools.phase_property import PhaseProperty
@@ -11,6 +12,8 @@ from autolens.lens import ray_tracing, lens_data as ld, lens_fit, sensitivity_fi
 from autolens.lens.plotters import ray_tracing_plotters, lens_fit_plotters, \
     sensitivity_fit_plotters
 from autolens.model.galaxy import galaxy as g
+from autolens.model.inversion import pixelizations as px
+from autolens.model.inversion import regularization as rg
 from autolens.pipeline import tagging as tag
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 
@@ -792,7 +795,22 @@ class SensitivityPhase(PhaseImaging):
 
         @classmethod
         def describe(cls, instance):
-            return "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive " \
+            return "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource " \
+                   "Galaxy:\n{}\n\n Sensitive " \
                    "Galaxy\n{}\n\n ".format(instance.lens_galaxies,
                                             instance.source_galaxies,
                                             instance.sensitive_galaxies)
+
+
+def transfer_classes(instance, mapper):
+    for key, instance_value in instance.__dict__.items():
+        try:
+            mapper_value = getattr(mapper, key)
+            if isinstance(mapper_value, p.Prior):
+                setattr(mapper, key, instance_value)
+            if not (isinstance(instance_value, px.Pixelization)
+                    or isinstance(instance_value, rg.Regularization)):
+                transfer_classes(instance_value, mapper_value)
+        except AttributeError:
+            pass
+    return mapper
