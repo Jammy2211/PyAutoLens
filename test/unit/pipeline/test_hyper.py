@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
-import autolens.pipeline.phase.phase_imaging
 from autofit.mapper import model
 from autofit.mapper import model_mapper as mm
 from autofit.tools import pipeline as pl
@@ -14,6 +13,7 @@ from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
+from autolens.pipeline.phase import phase_imaging
 from test.unit.mock.pipeline import mock_pipeline
 
 
@@ -52,10 +52,10 @@ def make_lens_instance(lens_galaxies):
 
 @pytest.fixture(name="lens_result")
 def make_lens_result(lens_data_5x5, lens_instance):
-    return autolens.pipeline.phase.phase_imaging.LensPlanePhase.Result(
+    return phase_imaging.LensPlanePhase.Result(
         constant=lens_instance, figure_of_merit=1.0, previous_variable=mm.ModelMapper(),
         gaussian_tuples=None,
-        analysis=autolens.pipeline.phase.phase_imaging.LensPlanePhase.Analysis(
+        analysis=phase_imaging.LensPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=1.0),
         optimizer=None)
 
@@ -75,10 +75,10 @@ def make_lens_source_instance(lens_galaxy, source_galaxy):
 
 @pytest.fixture(name="lens_source_result")
 def make_lens_source_result(lens_data_5x5, lens_source_instance):
-    return autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase.Result(
+    return phase_imaging.LensSourcePlanePhase.Result(
         constant=lens_source_instance, figure_of_merit=1.0,
         previous_variable=mm.ModelMapper(), gaussian_tuples=None,
-        analysis=autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase.Analysis(
+        analysis=phase_imaging.LensSourcePlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=1.0),
         optimizer=None)
 
@@ -92,10 +92,10 @@ def make_multi_plane_instance(all_galaxies):
 
 @pytest.fixture(name="multi_plane_result")
 def make_multi_plane_result(lens_data_5x5, multi_plane_instance):
-    return autolens.pipeline.phase.phase_imaging.MultiPlanePhase.Result(
+    return phase_imaging.MultiPlanePhase.Result(
         constant=multi_plane_instance, figure_of_merit=1.0,
         previous_variable=mm.ModelMapper(), gaussian_tuples=None,
-        analysis=autolens.pipeline.phase.phase_imaging.MultiPlanePhase.Analysis(
+        analysis=phase_imaging.MultiPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=1.0),
         optimizer=None)
 
@@ -106,18 +106,26 @@ class TestPixelization(object):
         mapper = mm.ModelMapper()
 
         mapper.galaxy = g.GalaxyModel(
-            redshift=2.0,
+            redshift=g.Redshift,
             pixelization=px.Rectangular,
             regularization=rg.Constant
         )
 
-        assert mapper.prior_count == 3
+        assert mapper.prior_count == 4
 
-        instance.lens_galaxy = g.Galaxy(
+        instance.galaxy = g.Galaxy(
             pixelization=px.Rectangular(),
             regularization=rg.Constant(),
             redshift=1.0
         )
+
+        new_mapper = phase_imaging.transfer_classes(
+            instance,
+            mapper
+        )
+
+        assert new_mapper.prior_count == 3
+        assert new_mapper.galaxy.redshift == 1.0
 
 
 class TestImagePassing(object):
@@ -171,7 +179,7 @@ class TestImagePassing(object):
             ccd_data_5x5
     ):
         # noinspection PyPep8Naming
-        Phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase
+        Phase = phase_imaging.LensSourcePlanePhase
 
         phase_5x5 = Phase(optimizer_class=mock_pipeline.MockNLO,
                           mask_function=mask_function_5x5,
@@ -194,7 +202,7 @@ class TestImagePassing(object):
             ccd_data_5x5
     ):
         # noinspection PyPep8Naming
-        Phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase
+        Phase = phase_imaging.LensSourcePlanePhase
 
         phase_5x5 = Phase(optimizer_class=mock_pipeline.MockNLO,
                           mask_function=mask_function_5x5,
@@ -208,7 +216,7 @@ class TestImagePassing(object):
     def test_associate_images_lens(self, lens_instance, lens_result, lens_data_5x5):
         results_collection = pl.ResultsCollection()
         results_collection.add("phase", lens_result)
-        analysis = autolens.pipeline.phase.phase_imaging.LensPlanePhase.Analysis(
+        analysis = phase_imaging.LensPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
             results=results_collection)
 
@@ -226,7 +234,7 @@ class TestImagePassing(object):
                                           lens_source_result, lens_data_5x5):
         results_collection = pl.ResultsCollection()
         results_collection.add("phase", lens_source_result)
-        analysis = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase.Analysis(
+        analysis = phase_imaging.LensSourcePlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
             results=results_collection)
 
@@ -253,7 +261,7 @@ class TestImagePassing(object):
                                           multi_plane_result, lens_data_5x5):
         results_collection = pl.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
-        analysis = autolens.pipeline.phase.phase_imaging.MultiPlanePhase.Analysis(
+        analysis = phase_imaging.MultiPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
             results=results_collection)
 
@@ -281,7 +289,7 @@ class TestImagePassing(object):
                                                       lens_data_5x5):
         results_collection = pl.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
-        analysis = autolens.pipeline.phase.phase_imaging.MultiPlanePhase.Analysis(
+        analysis = phase_imaging.MultiPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=None,
             results=results_collection)
 
@@ -324,7 +332,7 @@ class TestImagePassing(object):
     # def test__results_are_passed_to_new_analysis__associate_images_works(
     #         self, lens_source_instance, mask_function_5x5, results_collection_5x5,
     #         ccd_data_5x5):
-    #     Phase = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase
+    #     Phase = phase_imaging.LensSourcePlanePhase
     #
     #     phase_5x5 = Phase(optimizer_class=mock_pipeline.MockNLO,
     #                       mask_function=mask_function_5x5,
