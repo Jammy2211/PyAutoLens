@@ -796,7 +796,17 @@ class SensitivityPhase(PhaseImaging):
 
 
 class PixelizationPhase(PhaseImaging):
+    """
+    Phase that makes everything in the variable from the previous phase equal to the
+    corresponding value from the best fit except for variables associated with
+    pixelization
+    """
+
     def run(self, data, results=None, mask=None, positions=None):
+        """
+        Run the phase, overriding the optimizer's variable instance with one created to
+        only fit pixelization hyperparameters.
+        """
         variable = copy.deepcopy(results.last.variable)
         PixelizationPhase.transfer_classes(
             results.last.constant,
@@ -812,6 +822,17 @@ class PixelizationPhase(PhaseImaging):
 
     @staticmethod
     def transfer_classes(instance, mapper):
+        """
+        Recursively overwrite priors in the mapper with constant values from the
+        instance except where the containing class is associated with pixelization.
+
+        Parameters
+        ----------
+        instance
+            The best fit from the previous phase
+        mapper
+            The prior variable from the previous phase
+        """
         for key, instance_value in instance.__dict__.items():
             try:
                 mapper_value = getattr(mapper, key)
