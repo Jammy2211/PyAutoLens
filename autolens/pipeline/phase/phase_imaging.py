@@ -810,7 +810,10 @@ def transfer_classes(instance, mapper):
                 setattr(mapper, key, instance_value)
             if not (isinstance(instance_value, px.Pixelization)
                     or isinstance(instance_value, rg.Regularization)):
-                transfer_classes(instance_value, mapper_value)
+                try:
+                    transfer_classes(instance_value, mapper_value)
+                except AttributeError:
+                    setattr(mapper, key, instance_value)
         except AttributeError:
             pass
     return mapper
