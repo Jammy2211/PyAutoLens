@@ -181,7 +181,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         def unmasked_model_image_of_planes_and_galaxies(self):
             return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
 
-        def image_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
+        def image_2d_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
             """
             Parameters
             ----------
@@ -193,7 +193,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             image
                 A numpy array giving the model image of that galaxy
             """
-            return self.most_likely_fit.galaxy_image_1d_dict[galaxy]
+            return self.most_likely_fit.galaxy_image_2d_dict[galaxy]
 
         @property
         def name_galaxy_tuples(self) -> [(str, g.Galaxy)]:
@@ -203,11 +203,11 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             return self.constant.name_instance_tuples_for_class(cls=g.Galaxy)
 
         @property
-        def image_dict(self) -> {str: g.Galaxy}:
+        def image_2d_dict(self) -> {str: g.Galaxy}:
             """
             A dictionary associating galaxy names with model images of those galaxies
             """
-            return {name: self.image_for_galaxy(galaxy)
+            return {name: self.image_2d_for_galaxy(galaxy)
                     for name, galaxy
                     in self.name_galaxy_tuples}
 
@@ -221,6 +221,7 @@ class Phase(AbstractPhase):
     class Analysis(AbstractPhase.Analysis):
 
         def __init__(self, cosmology, results=None):
+
             super(Phase.Analysis, self).__init__(cosmology=cosmology, results=results)
 
             self.should_plot_mask = \
@@ -585,9 +586,10 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class HyperGalaxyPhase(Phase):
+
     class Analysis(non_linear.Analysis):
 
-        def __init__(self, lens_data, model_image, galaxy_image):
+        def __init__(self, lens_data, model_image_2d, galaxy_image_2d):
             """
             An analysis to fit the noise for a single galaxy image.
 
@@ -595,14 +597,14 @@ class HyperGalaxyPhase(Phase):
             ----------
             lens_data: LensData
                 Lens data, including an image and noise
-            model_image: ndarray
+            model_image_2d: ndarray
                 An image produce of the overall system by a model
-            galaxy_image: ndarray
+            galaxy_image_2d: ndarray
                 The contribution of one galaxy to the model image
             """
             self.lens_data = lens_data
-            self.model_image = model_image
-            self.galaxy_image = galaxy_image
+            self.hyper_model_image_1d = model_image_2d
+            self.hyper_galaxy_image_1d = galaxy_image_2d
 
         def visualize(self, instance, image_path, during_analysis):
             # TODO: I'm guessing you have an idea of what you want here?
@@ -626,12 +628,12 @@ class HyperGalaxyPhase(Phase):
 
         def fit_for_hyper_galaxy(self, hyper_galaxy):
             hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
-                hyper_model_image=self.model_image, hyper_galaxy_image=self.galaxy_image,
+                hyper_model_image=self.hyper_model_image_1d, hyper_galaxy_image=self.hyper_galaxy_image_1d,
                 hyper_minimum_value=0.0)
 
             hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
             return lens_fit.LensDataFit(image_1d=self.lens_data.image_1d, noise_map_1d=hyper_noise_map_1d,
-                                        mask_1d=self.lens_data.mask_1d, model_image_1d=self.model_image,
+                                        mask_1d=self.lens_data.mask_1d, model_image_1d=self.hyper_model_image_1d,
                                         map_to_scaled_array=self.lens_data.map_to_scaled_array)
 
         @classmethod
@@ -656,16 +658,16 @@ class HyperGalaxyPhase(Phase):
         results: HyperGalaxyResults
             A collection of results, with one item per a galaxy
         """
-        model_image = results.last.unmasked_blurred_image_plane_image
-        galaxy_tuples = results.last.constant.name_instance_tuples_for_class(g.Galaxy)
+        model_image_2d = results.last.unmasked_model_image
+     #   galaxy_tuples = results.last.constant.name_instance_tuples_for_class(cls=g.Galaxy)
 
         results_copy = copy.copy(results.last)
 
-        for name, galaxy in galaxy_tuples:
-            optimizer = self.optimizer.copy_with_name_extension(name)
+        for name, galaxy in results.last.name_galaxy_tuples:
+            optimizer = self.optimizer.copy_with_name_extension(name=name)
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
-            galaxy_image = results.last.image_for_galaxy(galaxy)
-            optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image))
+            galaxy_image_2d = results.last.image_2d_for_galaxy(galaxy=galaxy)
+            optimizer.fit(self.__class__.Analysis(lens_data=data, model_image_2d=model_image_2d, galaxy_image_2d=galaxy_image_2d))
 
             getattr(results_copy.variable, name).hyper_galaxy = optimizer.variable.hyper_galaxy
             getattr(results_copy.constant, name).hyper_galaxy = optimizer.constant.hyper_galaxy

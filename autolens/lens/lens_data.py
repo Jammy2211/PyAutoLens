@@ -1,8 +1,10 @@
+from autolens.exc import exc
 from autolens.data.array import grids
 from autolens.data import convolution
 from autolens.data.array import mask as msk
 from autolens.model.inversion import convolution as inversion_convolution
 
+import numpy as np
 
 class LensData(object):
 
@@ -118,6 +120,9 @@ class LensData(object):
                         positions=self.positions, interp_pixel_scale=self.interp_pixel_scale,
                         uses_inversion=self.uses_inversion)
 
+    @property
+    def array_1d_from_array_2d(self):
+        return self.grid_stack.regular.array_1d_from_array_2d
 
     @property
     def map_to_scaled_array(self):

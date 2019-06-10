@@ -39,13 +39,39 @@ class MockAnalysis(object):
 
 
 class MockResults(object):
+
     def __init__(self, model_image=None, galaxy_images=(), constant=None, analysis=None, optimizer=None):
+
         self.model_image = model_image
+        self.unmasked_model_image = model_image
         self.galaxy_images = galaxy_images
         self.constant = constant or mm.ModelInstance()
         self.variable = mm.ModelMapper()
         self.analysis = analysis
         self.optimizer = optimizer
+
+    @property
+    def name_galaxy_tuples(self) -> [(str, g.Galaxy)]:
+        """
+        Tuples associating the names of galaxies with instances from the best fit
+        """
+        return [('g0', g.Galaxy(redshift=0.5)), ('g1', g.Galaxy(redshift=1.0))]
+
+    @property
+    def name_galaxy_tuples_with_index(self) -> [(str, g.Galaxy)]:
+        """
+        Tuples associating the names of galaxies with instances from the best fit
+        """
+        return [(0, 'g0', g.Galaxy(redshift=0.5)), (1, 'g1', g.Galaxy(redshift=1.0))]
+
+    @property
+    def image_2d_dict(self) -> {str: g.Galaxy}:
+        """
+        A dictionary associating galaxy names with model images of those galaxies
+        """
+        return {name : self.galaxy_images[i]
+                for i, name, galaxy
+                in self.name_galaxy_tuples_with_index}
 
 
 class MockResult:
