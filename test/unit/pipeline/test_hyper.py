@@ -10,6 +10,8 @@ from autolens import exc
 from autolens.lens import lens_fit
 from autolens.lens import ray_tracing as rt
 from autolens.model import galaxy as g
+from autolens.model.inversion import pixelizations as px
+from autolens.model.inversion import regularization as rg
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from test.unit.mock.pipeline import mock_pipeline
@@ -98,8 +100,27 @@ def make_multi_plane_result(lens_data_5x5, multi_plane_instance):
         optimizer=None)
 
 
-class TestImagePassing(object):
+class TestPixelization(object):
+    def test_make_pixelization_variable(self):
+        instance = model.ModelInstance()
+        mapper = mm.ModelMapper()
 
+        mapper.galaxy = g.GalaxyModel(
+            redshift=2.0,
+            pixelization=px.Rectangular,
+            regularization=rg.Constant
+        )
+
+        assert mapper.prior_count == 3
+
+        instance.lens_galaxy = g.Galaxy(
+            pixelization=px.Rectangular(),
+            regularization=rg.Constant(),
+            redshift=1.0
+        )
+
+
+class TestImagePassing(object):
     def test_lens_galaxy_dict(self, lens_result, lens_galaxy):
         assert lens_result.name_galaxy_tuples == [("lens_galaxies_lens", lens_galaxy)]
 
