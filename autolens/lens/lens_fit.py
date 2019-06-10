@@ -118,9 +118,9 @@ class LensTracerFit(LensDataFit):
 
         galaxy_image_2d_dict = {}
 
-        for key, value in self.galaxy_image_1d_dict.items():
+        for galalxy, galaxy_image in self.galaxy_image_1d_dict.items():
 
-            galaxy_image_2d_dict[key] = self.map_to_scaled_array(array_1d=value)
+            galaxy_image_2d_dict[galalxy] = self.map_to_scaled_array(array_1d=galaxy_image)
 
         return galaxy_image_2d_dict
 

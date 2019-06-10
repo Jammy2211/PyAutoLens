@@ -232,11 +232,13 @@ class TestPhase(object):
 
         phase_5x5 = MyPlanePhaseAnd(optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
                                     phase_name='test_phase')
+
         phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
         phase_5x5.pass_priors(results_collection_5x5)
 
         assert phase_5x5.lens_galaxies == [galaxy]
         assert phase_5x5.source_galaxies == [galaxy_model]
+
 
     def test_default_mask_function(self, phase_5x5, ccd_data_5x5):
         lens_data = ld.LensData(ccd_data=ccd_data_5x5, mask=phase_5x5.mask_function(ccd_data_5x5.image))

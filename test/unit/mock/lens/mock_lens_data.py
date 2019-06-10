@@ -25,6 +25,11 @@ class MockLensData(object):
 
         self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
         self.noise_map_2d = self.map_to_scaled_array(array_1d=self.noise_map_1d)
+        self.positions = None
+
+    @property
+    def array_1d_from_array_2d(self):
+        return self.grid_stack.regular.array_1d_from_array_2d
 
     @property
     def map_to_scaled_array(self):

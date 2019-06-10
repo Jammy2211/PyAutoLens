@@ -483,7 +483,7 @@ def make_phase_5x5(mask_function_5x5):
 @pytest.fixture(name="results_5x5")
 def make_results():
     return mock_pipeline.MockResults(model_image=np.ones((5,5)),
-                       galaxy_images=[np.ones((5,5)), np.ones((5,5))])
+                       galaxy_images=[2.0*np.ones((5,5)), 3.0*np.ones((5,5))])
 
 
 @pytest.fixture(name="results_collection_5x5")

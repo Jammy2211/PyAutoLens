@@ -235,6 +235,25 @@ class PhaseImaging(Phase):
             self.plot_lens_fit_contribution_map = \
                 conf.instance.general.get('output', 'plot_lens_fit_contribution_map', bool)
 
+            if results is not None:
+
+                image_1d_galaxy_dict = {}
+                self.hyper_model_image_1d = np.zeros(lens_data.mask_1d.shape)
+
+                for galaxy, galaxy_image in results.last.image_2d_dict.items():
+
+                    image_1d_galaxy_dict[galaxy] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image)
+                    self.check_for_previously_masked_values(array=image_1d_galaxy_dict[galaxy])
+
+                self.hyper_galaxy_image_1d_name_dict = {}
+
+                for name, galaxy in results.last.name_galaxy_tuples:
+
+                    self.hyper_galaxy_image_1d_name_dict[name] = image_1d_galaxy_dict[name]
+
+                    self.hyper_model_image_1d += image_1d_galaxy_dict[name]
+
+
         def fit(self, instance):
             """
             Determine the fit of a lens galaxy and source galaxy to the lens_data in this lens.
@@ -254,6 +273,11 @@ class PhaseImaging(Phase):
             tracer = self.tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=None)
             return fit.figure_of_merit
+
+        def check_for_previously_masked_values(self, array):
+            if not np.all(array) != 0.0:
+                raise exc.PhaseException('When mapping a 2D array to a 1D array using lens data, a value encountered was'
+                                            '0.0 and therefore masked in a previous phase.')
 
         def associate_images(self, instance: ModelInstance) -> ModelInstance:
             """
@@ -280,10 +304,11 @@ class PhaseImaging(Phase):
                The input instance with images associated with galaxies where possible.
             """
             if self.last_results is not None:
-                image_dict = self.last_results.image_dict
                 for name, galaxy in instance.name_instance_tuples_for_class(g.Galaxy):
-                    if name in image_dict:
-                        galaxy.image = image_dict[name]
+                    if name in self.hyper_galaxy_image_1d_name_dict:
+                        galaxy.hyper_model_image_1d = self.hyper_model_image_1d
+                        galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_name_dict[name]
+                        galaxy.hyper_minimum_value = 0.0
             return instance
 
         def visualize(self, instance, image_path, during_analysis):
