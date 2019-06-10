@@ -356,7 +356,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         jacobian = self.lensing_jacobian_from_grid(grid=grid)
 
-        convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
+        return 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
 
        # if type(grid) is grids.RegularGrid:
        #     return convergence
@@ -434,16 +434,20 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             lambda_rad_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=lambda_rad_1d)
 
         rad_critical_curve_indices = measure.find_contours(lambda_rad_2d, 0)
+        rad_critical_curve = np.fliplr(rad_critical_curve_indices[0])
 
+        ## fliping x, y coordinates may or may not be necessary, appears to visualise the same either way
+        ## reg grid unit test works with this fix, sub grid still doesn't like it
+        ## may be an isuue with where the marching squares algorithm starts rathet than x, y flip
 
         if type(grid) is grids.RegularGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve_indices[0], shape=lambda_rad_2d.shape,
+            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve, shape=lambda_rad_2d.shape,
                                                                         pixel_scales=(
                                                                         grid.pixel_scale, grid.pixel_scale),
                                                                         origin=(0.0, 0.0))
 
         elif type(grid) is grids.SubGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve_indices[0], shape=lambda_rad_2d.shape,
+            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve, shape=lambda_rad_2d.shape,
                                                                         pixel_scales=(
                                                                         grid.pixel_scale / grid.sub_grid_size,
                                                                         grid.pixel_scale / grid.sub_grid_size),
