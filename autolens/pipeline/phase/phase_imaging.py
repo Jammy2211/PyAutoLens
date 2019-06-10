@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 from astropy import cosmology as cosmo
 
@@ -436,16 +438,6 @@ class PhaseImaging(Phase):
             return self.lens_data.mask.map_2d_array_to_masked_1d_array(data)
 
 
-class PixelizationPhase(PhaseImaging):
-    def run(self, data, results=None, mask=None, positions=None):
-        return super().run(
-            data,
-            results=results,
-            mask=mask,
-            positions=positions
-        )
-
-
 class MultiPlanePhase(PhaseImaging):
     """
     Fit a simple source and lens system.
@@ -601,7 +593,8 @@ class LensSourcePlanePhase(PhaseImaging):
 
         @classmethod
         def describe(cls, instance):
-            return "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+            return "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource " \
+                   "Galaxy:\n{}\n\n".format(
                 instance.lens_galaxies, instance.source_galaxies)
 
     class Result(PhaseImaging.Result):
@@ -802,18 +795,36 @@ class SensitivityPhase(PhaseImaging):
                                             instance.sensitive_galaxies)
 
 
-def transfer_classes(instance, mapper):
-    for key, instance_value in instance.__dict__.items():
-        try:
-            mapper_value = getattr(mapper, key)
-            if isinstance(mapper_value, p.Prior):
-                setattr(mapper, key, instance_value)
-            if not (isinstance(instance_value, px.Pixelization)
-                    or isinstance(instance_value, rg.Regularization)):
-                try:
-                    transfer_classes(instance_value, mapper_value)
-                except AttributeError:
+class PixelizationPhase(PhaseImaging):
+    def run(self, data, results=None, mask=None, positions=None):
+        variable = copy.deepcopy(results.last.variable)
+        PixelizationPhase.transfer_classes(
+            results.last.constant,
+            variable
+        )
+        self.optimizer.variable = variable
+        return super().run(
+            data,
+            results=results,
+            mask=mask,
+            positions=positions
+        )
+
+    @staticmethod
+    def transfer_classes(instance, mapper):
+        for key, instance_value in instance.__dict__.items():
+            try:
+                mapper_value = getattr(mapper, key)
+                if isinstance(mapper_value, p.Prior):
                     setattr(mapper, key, instance_value)
-        except AttributeError:
-            pass
-    return mapper
+                if not (isinstance(instance_value, px.Pixelization)
+                        or isinstance(instance_value, rg.Regularization)):
+                    try:
+                        PixelizationPhase.transfer_classes(
+                            instance_value,
+                            mapper_value
+                        )
+                    except AttributeError:
+                        setattr(mapper, key, instance_value)
+            except AttributeError:
+                pass

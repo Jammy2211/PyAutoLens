@@ -105,27 +105,36 @@ class TestPixelization(object):
         instance = model.ModelInstance()
         mapper = mm.ModelMapper()
 
-        mapper.galaxy = g.GalaxyModel(
+        mapper.lens_galaxy = g.GalaxyModel(
             redshift=g.Redshift,
             pixelization=px.Rectangular,
             regularization=rg.Constant
         )
+        mapper.source_galaxy = g.GalaxyModel(
+            redshift=g.Redshift,
+            light=lp.EllipticalLightProfile
+        )
 
-        assert mapper.prior_count == 4
+        assert mapper.prior_count == 9
 
-        instance.galaxy = g.Galaxy(
+        instance.lens_galaxy = g.Galaxy(
             pixelization=px.Rectangular(),
             regularization=rg.Constant(),
             redshift=1.0
         )
+        instance.source_galaxy = g.Galaxy(
+            redshift=1.0,
+            light=lp.EllipticalLightProfile()
+        )
 
-        new_mapper = phase_imaging.transfer_classes(
+        phase_imaging.PixelizationPhase.transfer_classes(
             instance,
             mapper
         )
 
-        assert new_mapper.prior_count == 3
-        assert new_mapper.galaxy.redshift == 1.0
+        assert mapper.prior_count == 3
+        assert mapper.lens_galaxy.redshift == 1.0
+        assert mapper.source_galaxy.light.axis_ratio == 1.0
 
 
 class TestImagePassing(object):
