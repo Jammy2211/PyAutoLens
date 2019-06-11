@@ -80,8 +80,7 @@ class TestPhase(object):
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
         def mask_function(image):
-            return msk.Mask.circular(shape=image.shape, pixel_scale=1,
-                                     radius_arcsec=0.3)
+            return msk.Mask.circular(shape=image.shape, pixel_scale=1, radius_arcsec=0.3)
 
         mask_from_function = mask_function(image=ccd_data_5x5.image)
         phase_5x5.mask_function = mask_function

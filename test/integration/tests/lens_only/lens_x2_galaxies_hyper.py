@@ -46,7 +46,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase2 = ph.HyperGalaxyPhase(phase_name='phase_2_hyper', phase_folders=[test_type, test_name])
+    phase2 = autolens.pipeline.phase.phase_imaging.HyperGalaxyPhase(phase_name='phase_2_hyper', phase_folders=[test_type, test_name])
 
     return pl.PipelineImaging(test_name, phase1, phase2)
 
