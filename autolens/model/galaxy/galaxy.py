@@ -456,8 +456,9 @@ class HyperGalaxy(object):
 
     def hyper_noise_map_from_hyper_images_and_noise_map(self, hyper_model_image, hyper_galaxy_image, noise_map,
                                                         hyper_minimum_value=0.0):
-        contribution_map = self.contribution_map_from_hyper_images(hyper_model_image, hyper_galaxy_image, hyper_minimum_value)
-        return self.hyper_noise_map_from_contribution_map(noise_map, contribution_map)
+        contribution_map = self.contribution_map_from_hyper_images(
+            hyper_model_image=hyper_model_image, hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=hyper_minimum_value)
+        return self.hyper_noise_map_from_contribution_map(noise_map=noise_map, contribution_map=contribution_map)
 
     def contribution_map_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, hyper_minimum_value=0.0):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that the \

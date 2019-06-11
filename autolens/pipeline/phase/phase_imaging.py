@@ -17,6 +17,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.pipeline import tagging as tag
+from autolens.pipeline.phase import Phase
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 
 
@@ -57,12 +58,10 @@ class PhaseImaging(Phase):
 
             phase_tag = None
 
-        super(PhaseImaging, self).__init__(phase_name=phase_name, phase_tag=phase_tag,
-                                           phase_folders=phase_folders,
-                                           tag_phases=tag_phases,
-                                           optimizer_class=optimizer_class,
-                                           cosmology=cosmology,
-                                           auto_link_priors=auto_link_priors)
+        super(PhaseImaging, self).__init__(phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders,
+                                           tag_phases=tag_phases, optimizer_class=optimizer_class,
+                                           cosmology=cosmology, auto_link_priors=auto_link_priors)
+
         self.sub_grid_size = sub_grid_size
         self.bin_up_factor = bin_up_factor
         self.image_psf_shape = image_psf_shape
@@ -225,22 +224,16 @@ class PhaseImaging(Phase):
             self.plot_data_psf = \
                 conf.instance.general.get('output', 'plot_data_psf', bool)
             self.plot_data_signal_to_noise_map = \
-                conf.instance.general.get('output', 'plot_data_signal_to_noise_map',
-                                          bool)
+                conf.instance.general.get('output', 'plot_data_signal_to_noise_map',bool)
             self.plot_data_absolute_signal_to_noise_map = \
-                conf.instance.general.get('output',
-                                          'plot_data_absolute_signal_to_noise_map',
-                                          bool)
+                conf.instance.general.get('output','plot_data_absolute_signal_to_noise_map', bool)
             self.plot_data_potential_chi_squared_map = \
-                conf.instance.general.get('output',
-                                          'plot_data_potential_chi_squared_map', bool)
+                conf.instance.general.get('output','plot_data_potential_chi_squared_map', bool)
 
             self.plot_lens_fit_all_at_end_png = \
-                conf.instance.general.get('output', 'plot_lens_fit_all_at_end_png',
-                                          bool)
+                conf.instance.general.get('output', 'plot_lens_fit_all_at_end_png', bool)
             self.plot_lens_fit_all_at_end_fits = \
-                conf.instance.general.get('output', 'plot_lens_fit_all_at_end_fits',
-                                          bool)
+                conf.instance.general.get('output', 'plot_lens_fit_all_at_end_fits', bool)
 
             self.plot_lens_fit_as_subplot = \
                 conf.instance.general.get('output', 'plot_lens_fit_as_subplot', bool)
@@ -249,47 +242,38 @@ class PhaseImaging(Phase):
             self.plot_lens_fit_noise_map = \
                 conf.instance.general.get('output', 'plot_lens_fit_noise_map', bool)
             self.plot_lens_fit_signal_to_noise_map = \
-                conf.instance.general.get('output', 'plot_lens_fit_signal_to_noise_map',
-                                          bool)
+                conf.instance.general.get('output', 'plot_lens_fit_signal_to_noise_map', bool)
             self.plot_lens_fit_lens_subtracted_image = \
-                conf.instance.general.get('output',
-                                          'plot_lens_fit_lens_subtracted_image', bool)
+                conf.instance.general.get('output', 'plot_lens_fit_lens_subtracted_image', bool)
             self.plot_lens_fit_model_image = \
                 conf.instance.general.get('output', 'plot_lens_fit_model_image', bool)
             self.plot_lens_fit_lens_model_image = \
-                conf.instance.general.get('output', 'plot_lens_fit_lens_model_image',
-                                          bool)
+                conf.instance.general.get('output', 'plot_lens_fit_lens_model_image',bool)
             self.plot_lens_fit_source_model_image = \
-                conf.instance.general.get('output', 'plot_lens_fit_source_model_image',
-                                          bool)
+                conf.instance.general.get('output', 'plot_lens_fit_source_model_image',bool)
             self.plot_lens_fit_source_plane_image = \
-                conf.instance.general.get('output', 'plot_lens_fit_source_plane_image',
-                                          bool)
+                conf.instance.general.get('output', 'plot_lens_fit_source_plane_image',bool)
             self.plot_lens_fit_residual_map = \
                 conf.instance.general.get('output', 'plot_lens_fit_residual_map', bool)
             self.plot_lens_fit_chi_squared_map = \
-                conf.instance.general.get('output', 'plot_lens_fit_chi_squared_map',
-                                          bool)
+                conf.instance.general.get('output', 'plot_lens_fit_chi_squared_map', bool)
             self.plot_lens_fit_contribution_map = \
-                conf.instance.general.get('output', 'plot_lens_fit_contribution_map',
-                                          bool)
+                conf.instance.general.get('output', 'plot_lens_fit_contribution_map', bool)
 
-            if results is not None:
+            if self.last_results is not None:
 
                 image_1d_galaxy_dict = {}
                 self.hyper_model_image_1d = np.zeros(lens_data.mask_1d.shape)
 
                 for galaxy, galaxy_image in results.last.image_2d_dict.items():
-                    image_1d_galaxy_dict[galaxy] = lens_data.array_1d_from_array_2d(
-                        array_2d=galaxy_image)
-                    self.check_for_previously_masked_values(
-                        array=image_1d_galaxy_dict[galaxy])
+                    image_1d_galaxy_dict[galaxy] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image)
+                    self.check_for_previously_masked_values(array=image_1d_galaxy_dict[galaxy])
 
                 self.hyper_galaxy_image_1d_name_dict = {}
 
                 for name, galaxy in results.last.name_galaxy_tuples:
-                    self.hyper_galaxy_image_1d_name_dict[name] = image_1d_galaxy_dict[
-                        name]
+
+                    self.hyper_galaxy_image_1d_name_dict[name] = image_1d_galaxy_dict[name]
 
                     self.hyper_model_image_1d += image_1d_galaxy_dict[name]
 
@@ -307,9 +291,9 @@ class PhaseImaging(Phase):
             fit : Fit
                 A fractional value indicating how well this model fit and the model lens_data itself
             """
-            self.check_positions_trace_within_threshold(instance)
-            instance = self.associate_images(instance)
-            tracer = self.tracer_for_instance(instance)
+            self.check_positions_trace_within_threshold(instance=instance)
+            instance = self.associate_images(instance=instance)
+            tracer = self.tracer_for_instance(instance=instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=None)
             return fit.figure_of_merit
 
@@ -347,8 +331,7 @@ class PhaseImaging(Phase):
                 for name, galaxy in instance.name_instance_tuples_for_class(g.Galaxy):
                     if name in self.hyper_galaxy_image_1d_name_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
-                        galaxy.hyper_galaxy_image_1d = \
-                            self.hyper_galaxy_image_1d_name_dict[name]
+                        galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_name_dict[name]
                         galaxy.hyper_minimum_value = 0.0
             return instance
 
@@ -808,17 +791,9 @@ class PixelizationPhase(PhaseImaging):
         only fit pixelization hyperparameters.
         """
         variable = copy.deepcopy(results.last.variable)
-        PixelizationPhase.transfer_classes(
-            results.last.constant,
-            variable
-        )
+        PixelizationPhase.transfer_classes(results.last.constant,variable)
         self.optimizer.variable = variable
-        return super().run(
-            data,
-            results=results,
-            mask=mask,
-            positions=positions
-        )
+        return super().run(data, results=results, mask=mask, positions=positions)
 
     @staticmethod
     def transfer_classes(instance, mapper):
@@ -838,14 +813,124 @@ class PixelizationPhase(PhaseImaging):
                 mapper_value = getattr(mapper, key)
                 if isinstance(mapper_value, p.Prior):
                     setattr(mapper, key, instance_value)
-                if not (isinstance(instance_value, px.Pixelization)
-                        or isinstance(instance_value, rg.Regularization)):
+                if not (isinstance(instance_value, px.Pixelization) or isinstance(instance_value, rg.Regularization)):
                     try:
-                        PixelizationPhase.transfer_classes(
-                            instance_value,
-                            mapper_value
-                        )
+                        PixelizationPhase.transfer_classes(instance_value,mapper_value)
                     except AttributeError:
                         setattr(mapper, key, instance_value)
             except AttributeError:
                 pass
+
+
+class HyperGalaxyPhase(PhaseImaging):
+
+    class Analysis(non_linear.Analysis):
+
+        def __init__(self, lens_data, model_image_2d, galaxy_image_2d):
+            """
+            An analysis to fit the noise for a single galaxy image.
+
+            Parameters
+            ----------
+            lens_data: LensData
+                Lens data, including an image and noise
+            model_image_2d: ndarray
+                An image produce of the overall system by a model
+            galaxy_image_2d: ndarray
+                The contribution of one galaxy to the model image
+            """
+            self.lens_data = lens_data
+            self.hyper_model_image_1d = lens_data.array_1d_from_array_2d(array_2d=model_image_2d)
+            self.hyper_galaxy_image_1d = lens_data.array_1d_from_array_2d(array_2d=galaxy_image_2d)
+
+            self.check_for_previously_masked_values(array=self.hyper_model_image_1d)
+            self.check_for_previously_masked_values(array=self.hyper_galaxy_image_1d)
+
+        def check_for_previously_masked_values(self, array):
+            if not np.all(array) != 0.0:
+                raise exc.PhaseException(
+                    'When mapping a 2D array to a 1D array using lens data, a value encountered was'
+                    '0.0 and therefore masked in a previous phase.')
+
+        def visualize(self, instance, image_path, during_analysis):
+            # TODO: I'm guessing you have an idea of what you want here?
+            pass
+
+        def fit(self, instance):
+            """
+            Fit the model image to the real image by scaling the hyper noise.
+
+            Parameters
+            ----------
+            instance: ModelInstance
+                A model instance with a hyper galaxy property
+
+            Returns
+            -------
+            fit: float
+            """
+            fit = self.fit_for_hyper_galaxy(hyper_galaxy=instance.hyper_galaxy)
+            return fit.figure_of_merit
+
+        def fit_for_hyper_galaxy(self, hyper_galaxy):
+
+            hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
+                hyper_model_image=self.hyper_model_image_1d, hyper_galaxy_image=self.hyper_galaxy_image_1d,
+                noise_map=self.lens_data.noise_map_1d, hyper_minimum_value=0.0)
+
+            hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
+            return lens_fit.LensDataFit(image_1d=self.lens_data.image_1d, noise_map_1d=hyper_noise_map_1d,
+                                        mask_1d=self.lens_data.mask_1d, model_image_1d=self.hyper_model_image_1d,
+                                        map_to_scaled_array=self.lens_data.map_to_scaled_array)
+
+        @classmethod
+        def describe(cls, instance):
+            return "Running hyper galaxy fit for HyperGalaxy:\n{}".format(instance.hyper_galaxy)
+
+    def run(self, data, results=None, mask=None, positions=None):
+        """
+        Run a fit for each galaxy from the previous phase.
+
+        Parameters
+        ----------
+        data: LensData
+        results: ResultsCollection
+            Results from all previous phases
+        mask: Mask
+            The mask
+        positions
+
+        Returns
+        -------
+        results: HyperGalaxyResults
+            A collection of results, with one item per a galaxy
+        """
+
+        mask = setup_phase_mask(data=data, mask=mask, mask_function=self.mask_function,
+                                inner_mask_radii=self.inner_mask_radii)
+
+        lens_data = ld.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
+                                image_psf_shape=self.image_psf_shape, positions=positions,
+                                interp_pixel_scale=self.interp_pixel_scale, uses_inversion=self.uses_inversion)
+
+        model_image_2d = results.last.most_likely_fit.model_image_2d
+
+        results_copy = copy.copy(results.last)
+
+        for name, galaxy in results.last.name_galaxy_tuples:
+
+            optimizer = self.optimizer.copy_with_name_extension(extension=name)
+            optimizer.variable.hyper_galaxy = g.HyperGalaxy
+            galaxy_image_2d = results.last.image_2d_dict[name]
+
+            # If array is all zeros, galaxy did not have image in previous phase and should be ignored
+            if not np.all(galaxy_image_2d==0):
+
+                analysis = self.__class__.Analysis(lens_data=lens_data, model_image_2d=model_image_2d,
+                                                    galaxy_image_2d=galaxy_image_2d)
+                optimizer.fit(analysis)
+
+                getattr(results_copy.variable, name).hyper_galaxy = optimizer.variable.hyper_galaxy
+                getattr(results_copy.constant, name).hyper_galaxy = optimizer.constant.hyper_galaxy
+
+        return results_copy

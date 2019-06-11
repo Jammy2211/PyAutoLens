@@ -1,15 +1,11 @@
-import copy
-
 import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit import conf
-from autofit.mapper.model import ModelInstance
 from autofit.optimize import non_linear
 from autofit.tools import phase as autofit_phase
 from autofit.tools.phase_property import PhaseProperty
 from autolens.data.array import mask as msk
-from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 
@@ -190,7 +186,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
             Returns
             -------
-            image
+            ndarray or None
                 A numpy array giving the model image of that galaxy
             """
             return self.most_likely_fit.galaxy_image_2d_dict[galaxy]
@@ -585,91 +581,3 @@ class GalaxyFitPhase(AbstractPhase):
             return fit_y, fit_x
 
 
-class HyperGalaxyPhase(Phase):
-
-    class Analysis(non_linear.Analysis):
-
-        def __init__(self, lens_data, model_image_2d, galaxy_image_2d):
-            """
-            An analysis to fit the noise for a single galaxy image.
-
-            Parameters
-            ----------
-            lens_data: LensData
-                Lens data, including an image and noise
-            model_image_2d: ndarray
-                An image produce of the overall system by a model
-            galaxy_image_2d: ndarray
-                The contribution of one galaxy to the model image
-            """
-            self.lens_data = lens_data
-            self.hyper_model_image_1d = model_image_2d
-            self.hyper_galaxy_image_1d = galaxy_image_2d
-
-        def visualize(self, instance, image_path, during_analysis):
-            # TODO: I'm guessing you have an idea of what you want here?
-            pass
-
-        def fit(self, instance):
-            """
-            Fit the model image to the real image by scaling the hyper noise.
-
-            Parameters
-            ----------
-            instance: ModelInstance
-                A model instance with a hyper galaxy property
-
-            Returns
-            -------
-            fit: float
-            """
-            fit = self.fit_for_hyper_galaxy(hyper_galaxy=instance.hyper_galaxy)
-            return fit.figure_of_merit
-
-        def fit_for_hyper_galaxy(self, hyper_galaxy):
-            hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
-                hyper_model_image=self.hyper_model_image_1d, hyper_galaxy_image=self.hyper_galaxy_image_1d,
-                hyper_minimum_value=0.0)
-
-            hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
-            return lens_fit.LensDataFit(image_1d=self.lens_data.image_1d, noise_map_1d=hyper_noise_map_1d,
-                                        mask_1d=self.lens_data.mask_1d, model_image_1d=self.hyper_model_image_1d,
-                                        map_to_scaled_array=self.lens_data.map_to_scaled_array)
-
-        @classmethod
-        def describe(cls, instance):
-            return "Running hyper galaxy fit for HyperGalaxy:\n{}".format(instance.hyper_galaxy)
-
-    def run(self, data, results=None, mask=None, positions=None):
-        """
-        Run a fit for each galaxy from the previous phase.
-
-        Parameters
-        ----------
-        data: LensData
-        results: ResultsCollection
-            Results from all previous phases
-        mask: Mask
-            The mask
-        positions
-
-        Returns
-        -------
-        results: HyperGalaxyResults
-            A collection of results, with one item per a galaxy
-        """
-        model_image_2d = results.last.unmasked_model_image
-     #   galaxy_tuples = results.last.constant.name_instance_tuples_for_class(cls=g.Galaxy)
-
-        results_copy = copy.copy(results.last)
-
-        for name, galaxy in results.last.name_galaxy_tuples:
-            optimizer = self.optimizer.copy_with_name_extension(name=name)
-            optimizer.variable.hyper_galaxy = g.HyperGalaxy
-            galaxy_image_2d = results.last.image_2d_for_galaxy(galaxy=galaxy)
-            optimizer.fit(self.__class__.Analysis(lens_data=data, model_image_2d=model_image_2d, galaxy_image_2d=galaxy_image_2d))
-
-            getattr(results_copy.variable, name).hyper_galaxy = optimizer.variable.hyper_galaxy
-            getattr(results_copy.constant, name).hyper_galaxy = optimizer.constant.hyper_galaxy
-
-        return results_copy
