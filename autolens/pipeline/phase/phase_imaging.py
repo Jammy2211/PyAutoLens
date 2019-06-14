@@ -19,7 +19,7 @@ from autolens.model.inversion import regularization as rg
 from autolens.pipeline import tagging as tag
 from autolens.pipeline.phase import Phase
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
-
+from autolens.plotters import array_plotters
 
 class PhaseImaging(Phase):
 
@@ -70,6 +70,11 @@ class PhaseImaging(Phase):
         self.mask_function = mask_function
         self.inner_mask_radii = inner_mask_radii
         self.interp_pixel_scale = interp_pixel_scale
+
+
+    @property
+    def uses_hyper_images(self) -> bool:
+        return False
 
     @property
     def uses_inversion(self) -> bool:
@@ -178,7 +183,7 @@ class PhaseImaging(Phase):
         analysis = self.__class__.Analysis(lens_data=lens_data,
                                            cosmology=self.cosmology,
                                            positions_threshold=self.positions_threshold,
-                                           results=results)
+                                           results=results, uses_hyper_images=self.uses_hyper_images)
         return analysis
 
     def output_phase_info(self):
@@ -201,19 +206,16 @@ class PhaseImaging(Phase):
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
-        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
+        def __init__(self, lens_data, cosmology, positions_threshold, results=None, uses_hyper_images=False):
 
-            super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology,
-                                                        results=results)
+            super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology, results=results)
 
             self.lens_data = lens_data
 
             self.positions_threshold = positions_threshold
 
             self.should_plot_image_plane_pix = \
-                conf.instance.general.get('output',
-                                          'plot_image_plane_adaptive_pixelization_grid',
-                                          bool)
+                conf.instance.general.get('output', 'plot_image_plane_adaptive_pixelization_grid', bool)
 
             self.plot_data_as_subplot = \
                 conf.instance.general.get('output', 'plot_data_as_subplot', bool)
@@ -257,10 +259,15 @@ class PhaseImaging(Phase):
                 conf.instance.general.get('output', 'plot_lens_fit_residual_map', bool)
             self.plot_lens_fit_chi_squared_map = \
                 conf.instance.general.get('output', 'plot_lens_fit_chi_squared_map', bool)
-            self.plot_lens_fit_contribution_map = \
-                conf.instance.general.get('output', 'plot_lens_fit_contribution_map', bool)
 
-            if self.last_results is not None:
+            self.plot_lens_fit_contribution_maps = \
+                conf.instance.general.get('output', 'plot_lens_fit_contribution_maps', bool)
+            self.plot_lens_fit_regularization_weights = \
+                conf.instance.general.get('output', 'plot_lens_fit_regularization_weights', bool)
+
+            self.uses_hyper_images = uses_hyper_images
+
+            if self.last_results is not None and self.uses_hyper_images:
 
                 image_1d_galaxy_dict = {}
                 self.hyper_model_image_1d = np.zeros(lens_data.mask_1d.shape)
@@ -276,6 +283,11 @@ class PhaseImaging(Phase):
                     self.hyper_galaxy_image_1d_name_dict[name] = image_1d_galaxy_dict[name]
 
                     self.hyper_model_image_1d += image_1d_galaxy_dict[name]
+
+            else:
+
+                self.hyper_galaxy_image_1d_name_dict = None
+                self.hyper_model_image_1d = None
 
         def fit(self, instance):
             """
@@ -298,7 +310,7 @@ class PhaseImaging(Phase):
             return fit.figure_of_merit
 
         def check_for_previously_masked_values(self, array):
-            if not np.all(array) != 0.0:
+            if not np.all(array) != 0.0 and not np.all(array == 0):
                 raise exc.PhaseException(
                     'When mapping a 2D array to a 1D array using lens data, a value encountered was'
                     '0.0 and therefore masked in a previous phase.')
@@ -336,6 +348,8 @@ class PhaseImaging(Phase):
             return instance
 
         def visualize(self, instance, image_path, during_analysis):
+
+            instance = self.associate_images(instance=instance)
 
             mask = self.lens_data.mask_2d if self.should_plot_mask else None
             positions = self.lens_data.positions if self.should_plot_positions else None
@@ -394,6 +408,7 @@ class PhaseImaging(Phase):
                 should_plot_source_plane_image=self.plot_lens_fit_source_plane_image,
                 should_plot_residual_map=self.plot_lens_fit_residual_map,
                 should_plot_chi_squared_map=self.plot_lens_fit_chi_squared_map,
+                should_plot_regularization_weights=self.plot_lens_fit_regularization_weights,
                 units=self.plot_units,
                 visualize_path=image_path)
 
@@ -469,17 +484,14 @@ class MultiPlanePhase(PhaseImaging):
                 return True
         return False
 
+    @property
+    def uses_hyper_images(self):
+        return any([galaxy.uses_hyper_images for galaxy in self.galaxies])
+
     class Analysis(PhaseImaging.Analysis):
 
         def figure_of_merit_for_fit(self, tracer):
             raise NotImplementedError()
-
-        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
-            self.lens_data = lens_data
-            super(MultiPlanePhase.Analysis, self).__init__(lens_data=lens_data,
-                                                           cosmology=cosmology,
-                                                           positions_threshold=positions_threshold,
-                                                           results=results)
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
@@ -556,6 +568,10 @@ class LensSourcePlanePhase(PhaseImaging):
                 return True
         return False
 
+    @property
+    def uses_hyper_images(self):
+        return any([galaxy.uses_hyper_images for galaxy in self.lens_galaxies + self.source_galaxies])
+
     class Analysis(PhaseImaging.Analysis):
         def figure_of_merit_for_fit(self, tracer):
             raise NotImplementedError()
@@ -624,6 +640,10 @@ class LensPlanePhase(PhaseImaging):
             if galaxy_model.pixelization is not None:
                 return True
         return False
+
+    @property
+    def uses_hyper_images(self):
+        return any([galaxy.uses_hyper_images for galaxy in self.lens_galaxies])
 
     class Analysis(PhaseImaging.Analysis):
         def figure_of_merit_for_fit(self, tracer):

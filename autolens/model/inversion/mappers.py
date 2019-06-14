@@ -1,13 +1,10 @@
-from autolens import decorator_util
-import numpy as np
-
 from autolens.data.array.util import mapping_util
 from autolens.data.array import scaled_array
 from autolens.model.inversion.util import mapper_util
 
 class Mapper(object):
 
-    def __init__(self, pixels, grid_stack, border):
+    def __init__(self, pixels, grid_stack, border, hyper_image=None):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper.array.grid_stack* module) to discretized pixels in a pixelization.
 
@@ -28,10 +25,13 @@ class Mapper(object):
             A stack of grid's which are mapped to the pixelization (includes an regular and sub grid).
         border : grid_stack.RegularGridBorder
             The border of the grid-stack's regular-grid.
+        hyper_image : ndarray
+            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         self.pixels = pixels
         self.grid_stack = grid_stack
         self.border = border
+        self.hyper_image = hyper_image
 
     @property
     def mapping_matrix(self):
@@ -123,7 +123,7 @@ class Mapper(object):
 
 class RectangularMapper(Mapper):
 
-    def __init__(self, pixels, grid_stack, border, shape, geometry):
+    def __init__(self, pixels, grid_stack, border, shape, geometry, hyper_image=None):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper.array.grid_stack* module) to pixels discretized on a rectangular grid.
 
@@ -144,7 +144,8 @@ class RectangularMapper(Mapper):
         """
         self.shape = shape
         self.geometry = geometry
-        super(RectangularMapper, self).__init__(pixels, grid_stack, border)
+        super(RectangularMapper, self).__init__(pixels=pixels, grid_stack=grid_stack, border=border,
+                                                hyper_image=hyper_image)
 
     @property
     def is_image_plane_pixelization(self):
@@ -171,7 +172,7 @@ class RectangularMapper(Mapper):
 
 class VoronoiMapper(Mapper):
 
-    def __init__(self, pixels, grid_stack, border, voronoi, geometry):
+    def __init__(self, pixels, grid_stack, border, voronoi, geometry, hyper_image=None):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper.array.grid_stack* module) to pixels discretized on a Voronoi grid.
 
@@ -190,10 +191,13 @@ class VoronoiMapper(Mapper):
             Class storing the Voronoi grid's geometry.
         geometry : pixelization.Voronoi.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the Vornoi pixelization.
+        hyper_image : ndarray
+            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         self.voronoi = voronoi
         self.geometry = geometry
-        super(VoronoiMapper, self).__init__(pixels, grid_stack, border)
+        super(VoronoiMapper, self).__init__(pixels=pixels, grid_stack=grid_stack, border=border,
+                                            hyper_image=hyper_image)
 
     @property
     def is_image_plane_pixelization(self):

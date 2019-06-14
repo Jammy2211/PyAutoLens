@@ -97,6 +97,7 @@ def test__lens_fit_for_phase__source_and_lens__depedent_on_input(lens_fit_x2_pla
         should_plot_source_plane_image=False,
         should_plot_residual_map=False,
         should_plot_chi_squared_map=True,
+        should_plot_regularization_weights=False,
         visualize_path=lens_fit_plotter_path)
 
     assert lens_fit_plotter_path + 'lens_fit.png' in plot_patch.paths

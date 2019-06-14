@@ -17,11 +17,11 @@ class MockPixelization(object):
         self.value = value
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grid_stack_and_border(self, grid_stack, border):
+    def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
         return self.value
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grid_stack(self, grid_stack):
+    def mapper_from_grid_stack(self, grid_stack, hyper_image=None):
         return self.value
 
 class MockRegularization(object):
@@ -30,6 +30,11 @@ class MockRegularization(object):
         self.shape = matrix_shape
 
     def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors, pixel_neighbors_size):
+        return np.array([[1.0, 0.0, 0.0],
+                         [0.0, 1.0, 0.0],
+                         [0.0, 0.0, 1.0]])
+
+    def regularization_matrix_from_mapper(self, mapper):
         return np.array([[1.0, 0.0, 0.0],
                          [0.0, 1.0, 0.0],
                          [0.0, 0.0, 1.0]])

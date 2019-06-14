@@ -7,11 +7,10 @@ from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.pipeline.phase import phase_imaging as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import mass_profiles as mp
-from test.integration import integration_util
 from test.simulation import simulation_util
 
 test_type = 'lens_and_source_inversion'
-test_name = "lens_mass_x1_source_x1_adaptive_hyper"
+test_name = "lens_mass_x1_source_x1_adaptive_pix_phase"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
@@ -49,9 +48,9 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1h = ph.HyperGalaxyPhase(phase_name='phase_1_hyper', phase_folders=[test_type, test_name])
+    phase1p = ph.PixelizationPhase(phase_name='phase_1_pix', phase_folders=[test_type, test_name])
 
-    return pl.PipelineImaging(test_name, phase1, phase1h)
+    return pl.PipelineImaging(test_name, phase1, phase1p)
 
 
 if __name__ == "__main__":
