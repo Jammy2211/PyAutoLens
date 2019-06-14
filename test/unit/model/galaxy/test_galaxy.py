@@ -4,6 +4,8 @@ import pytest
 from autolens import exc, dimensions as dim
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import regularization as reg
 
 from test.unit.mock.model import mock_cosmology
 
@@ -520,6 +522,25 @@ class TestHyperGalaxy(object):
 
             assert (hyper_noise_map == np.array([0.0, 2.0, 18.0])).all()
 
+class TestUsesHyperImages(object):
+
+    def test__simple_tests_depending_on_hyper_galaxy_and_certain_pixelizations_and_regularizations(self):
+        
+        galaxy = g.Galaxy(redshift=0.5)
+
+        assert galaxy.uses_hyper_images == False
+
+        galaxy = g.Galaxy(redshift=0.5, hyper_galaxy=g.HyperGalaxy())
+
+        assert galaxy.uses_hyper_images == True
+
+        galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant())
+
+        assert galaxy.uses_hyper_images == False
+
+        galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.AdaptiveBrightness())
+
+        assert galaxy.uses_hyper_images == True
 
 class TestBooleanProperties(object):
 

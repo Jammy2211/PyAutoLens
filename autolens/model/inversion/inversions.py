@@ -52,9 +52,8 @@ class Inversion(object):
         self.curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
                 blurred_mapping_matrix=self.blurred_mapping_matrix, noise_map_1d=noise_map_1d)
 
-        self.regularization_matrix = \
-            regularization.regularization_matrix_from_pixel_neighbors(pixel_neighbors=mapper.geometry.pixel_neighbors,
-                                                            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size)
+        self.regularization_matrix = regularization.regularization_matrix_from_mapper(mapper=mapper)
+
         self.curvature_reg_matrix = np.add(self.curvature_matrix, self.regularization_matrix)
         self.solution_vector = np.linalg.solve(self.curvature_reg_matrix, self.data_vector)
 

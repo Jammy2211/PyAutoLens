@@ -401,8 +401,13 @@ class AbstractGriddedPlane(AbstractPlane):
         if len(galaxies_with_pixelization) == 0:
             return None
         if len(galaxies_with_pixelization) == 1:
+
             pixelization = galaxies_with_pixelization[0].pixelization
-            return pixelization.mapper_from_grid_stack_and_border(grid_stack=self.grid_stack, border=self.border)
+
+            return pixelization.mapper_from_grid_stack_and_border(
+                grid_stack=self.grid_stack, border=self.border,
+                hyper_image=galaxies_with_pixelization[0].hyper_galaxy_image_1d)
+
         elif len(galaxies_with_pixelization) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 

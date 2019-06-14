@@ -255,7 +255,9 @@ class LensInversionFit(InversionFit):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        return {self.tracer.planes[-1].galaxies[0] : self.inversion.reconstructed_data_1d}
+        galaxy_image_dict = self.tracer.galaxy_image_dict_blank_images
+        galaxy_image_dict.update({self.tracer.planes[-1].galaxies[0] : self.inversion.reconstructed_data_1d})
+        return galaxy_image_dict
 
     @property
     def figure_of_merit(self):

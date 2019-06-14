@@ -153,8 +153,15 @@ class Constant(Regularization):
         return regularization_util.constant_regularization_matrix_from_pixel_neighbors(coefficients=self.coefficients,
                pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
 
+    def regularization_weights_from_mapper(self, mapper):
+        return self.coefficients[0] * np.ones(mapper.pixels)
 
-class Weighted(Regularization):
+    def regularization_matrix_from_mapper(self, mapper):
+        return self.regularization_matrix_from_pixel_neighbors(
+            pixel_neighbors=mapper.geometry.pixel_neighbors, pixel_neighbors_size=mapper.geometry.pixel_neighbors_size)
+
+
+class AdaptiveBrightness(Regularization):
 
     def __init__(self, coefficients=(1.0, 1.0), signal_scale=1.0):
         """ A constant-regularization scheme (regularization is described in the *Regularization* class above).
@@ -199,19 +206,34 @@ class Weighted(Regularization):
             A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
             low signal regions.
         """
-        super(Weighted, self).__init__(coefficients)
+        super(AdaptiveBrightness, self).__init__(coefficients)
         self.signal_scale = signal_scale
 
-    def pixel_signals_from_images(self, pixels, regular_to_pix, galaxy_image):
-        return regularization_util.weighted_pixel_signals_from_images(pixels=pixels, signal_scale=self.signal_scale,
-                                                                      regular_to_pix=regular_to_pix,
-                                                                      galaxy_image=galaxy_image)
+    def pixel_signals_from_images(self, pixels, regular_to_pix, hyper_image):
+        return regularization_util.adaptive_pixel_signals_from_images(
+            pixels=pixels, signal_scale=self.signal_scale, regular_to_pix=regular_to_pix,
+            hyper_image=hyper_image)
 
     def regularization_weights_from_pixel_signals(self, pixel_signals):
-        return regularization_util.weighted_regularization_weights_from_pixel_signals(coefficients=self.coefficients,
+        return regularization_util.adaptive_regularization_weights_from_pixel_signals(coefficients=self.coefficients,
                                                                                       pixel_signals=pixel_signals)
 
-    def regularization_matrix_from_pixel_neighbors(self, regularization_weights, pixel_neighbors, pixel_neighbors_size):
+    def regularization_matrix_from_regularization_weights_and_pixel_neighbors(self, regularization_weights,
+                                                                              pixel_neighbors, pixel_neighbors_size):
         return regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
                                                  pixel_neighbors_size=pixel_neighbors_size)
+
+    def regularization_weights_from_mapper(self, mapper):
+        pixel_signals = self.pixel_signals_from_images(pixels=mapper.pixels, regular_to_pix=mapper.regular_to_pix,
+                                                       hyper_image=mapper.hyper_image)
+
+        return self.regularization_weights_from_pixel_signals(pixel_signals=pixel_signals)
+
+    def regularization_matrix_from_mapper(self, mapper):
+
+        regularization_weights = self.regularization_weights_from_mapper(mapper=mapper)
+
+        return self.regularization_matrix_from_regularization_weights_and_pixel_neighbors(
+            regularization_weights=regularization_weights, pixel_neighbors=mapper.geometry.pixel_neighbors,
+            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size)

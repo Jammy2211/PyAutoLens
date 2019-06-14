@@ -171,7 +171,7 @@ class Rectangular(Pixelization):
     def neighbors_from_pixelization(self):
         return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
 
-    def mapper_from_grid_stack_and_border(self, grid_stack, border):
+    def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
         1) If a border is supplied, relocate all of the grid-stack's regular and sub grid pixels beyond the border.
@@ -184,6 +184,8 @@ class Rectangular(Pixelization):
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
         border : grids.RegularGridBorder | None
             The border of the grid-stack's regular-grid.
+        hyper_image : ndarray
+            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
         if border is not None:
@@ -194,7 +196,7 @@ class Rectangular(Pixelization):
         geometry = self.geometry_from_grid(grid=relocated_grid_stack.sub)
 
         return mappers.RectangularMapper(pixels=self.pixels, grid_stack=relocated_grid_stack, border=border,
-                                         shape=self.shape, geometry=geometry)
+                                         shape=self.shape, geometry=geometry, hyper_image=hyper_image)
 
 
 class Voronoi(Pixelization):
@@ -306,7 +308,7 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
         super(AdaptiveMagnification, self).__init__()
         ImagePlanePixelization.__init__(self=self, shape=shape)
 
-    def mapper_from_grid_stack_and_border(self, grid_stack, border):
+    def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
         1) (before this routine is called), setup the 'pix' grid as part of the grid-stack, which corresponds to a \
@@ -325,10 +327,12 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : grids.RegularGridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
+        hyper_image : ndarray
+            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
         if border is not None:
-            relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
+            relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack=grid_stack)
         else:
             relocated_grids = grid_stack
 
@@ -337,11 +341,12 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
         voronoi = self.voronoi_from_pixel_centers(pixel_centres)
 
-        pixel_neighbors, pixel_neighbors_size = self.neighbors_from_pixelization(pixels=pixels,
-                                                                                 ridge_points=voronoi.ridge_points)
-        geometry = self.geometry_from_grid(grid=relocated_grids.sub, pixel_centres=pixel_centres,
-                                           pixel_neighbors=pixel_neighbors,
-                                           pixel_neighbors_size=pixel_neighbors_size)
+        pixel_neighbors, pixel_neighbors_size = self.neighbors_from_pixelization(
+            pixels=pixels, ridge_points=voronoi.ridge_points)
+
+        geometry = self.geometry_from_grid(
+            grid=relocated_grids.sub, pixel_centres=pixel_centres, pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size)
 
         return mappers.VoronoiMapper(pixels=pixels, grid_stack=relocated_grids, border=border,
-                                     voronoi=voronoi, geometry=geometry)
+                                     voronoi=voronoi, geometry=geometry, hyper_image=hyper_image)

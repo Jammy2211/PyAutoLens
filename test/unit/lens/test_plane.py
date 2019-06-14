@@ -1218,6 +1218,7 @@ class TestAbstractPlaneGridded(object):
             assert plane.mapper is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, grid_stack_5x5):
+
             galaxy_pix = g.Galaxy(redshift=0.5, pixelization=mock_inv.MockPixelization(value=1),
                                   regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)))
 

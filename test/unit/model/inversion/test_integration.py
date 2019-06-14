@@ -17,16 +17,16 @@ class TestRectangular:
 
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        grid_stack = MockPixGridStack(regular=regular_grid,
-                                      sub=MockPixSubGrid(sub_grid=sub_grid,
-                                                      sub_to_regular=sub_to_regular, sub_grid_size=1))
+        grid_stack = MockPixGridStack(
+            regular=regular_grid, sub=MockPixSubGrid(sub_grid=sub_grid,
+            sub_to_regular=sub_to_regular, sub_grid_size=1))
 
         # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
+        mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None, hyper_image=np.ones((2, 2)))
 
         assert mapper.is_image_plane_pixelization == False
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
@@ -38,10 +38,11 @@ class TestRectangular:
                                                        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
                                                        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])).all()
         assert mapper.shape == (3, 3)
+        assert (mapper.hyper_image == np.ones((2,2))).all()
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
-                                                                               mapper.geometry.pixel_neighbors_size)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
+            pixel_neighbors=mapper.geometry.pixel_neighbors, pixel_neighbors_size=mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix ==
                 np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -55,6 +56,7 @@ class TestRectangular:
                           [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.00000001]])).all()
 
     def test__15_grid__no_sub_grid(self):
+
         # Source-plane comprises 15 grid, so 15 masked_image pixels traced to the pix-plane.
 
         regular_grid = np.array([[0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
@@ -232,12 +234,13 @@ class TestImagePlanePixelization:
         grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
                                       regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
 
-        mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
+        mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None, hyper_image=np.ones((2,2)))
 
         assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
         assert (mapper.geometry.pixel_centres == image_plane_pix.sparse_grid).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert (mapper.hyper_image == np.ones((2,2))).all()
 
         assert isinstance(mapper, pm.VoronoiMapper)
 
@@ -436,12 +439,13 @@ class TestAdaptiveMagnification:
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
-        mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
+        mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None, hyper_image=np.ones((2,2)))
 
         assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
         assert (mapper.geometry.pixel_centres == regular_grid).all()
         assert mapper.geometry.origin == (0.0, 0.0)
+        assert (mapper.hyper_image == np.ones((2,2))).all()
 
         assert isinstance(mapper, pm.VoronoiMapper)
 

@@ -8,7 +8,8 @@ from autofit.tools import pipeline as pl
 from autolens import exc
 from autolens.lens import lens_fit
 from autolens.lens import ray_tracing as rt
-from autolens.model import galaxy as g
+from autolens.model.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.model.profiles import light_profiles as lp
@@ -102,36 +103,21 @@ def make_multi_plane_result(lens_data_5x5, multi_plane_instance):
 
 
 class TestPixelization(object):
+
     def test_make_pixelization_variable(self):
+
         instance = model.ModelInstance()
         mapper = mm.ModelMapper()
 
-        mapper.lens_galaxy = g.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=px.Rectangular,
-            regularization=rg.Constant
-        )
-        mapper.source_galaxy = g.GalaxyModel(
-            redshift=g.Redshift,
-            light=lp.EllipticalLightProfile
-        )
+        mapper.lens_galaxy = gm.GalaxyModel(redshift=g.Redshift, pixelization=px.Rectangular, regularization=rg.Constant)
+        mapper.source_galaxy = gm.GalaxyModel(redshift=g.Redshift, light=lp.EllipticalLightProfile)
 
         assert mapper.prior_count == 9
 
-        instance.lens_galaxy = g.Galaxy(
-            pixelization=px.Rectangular(),
-            regularization=rg.Constant(),
-            redshift=1.0
-        )
-        instance.source_galaxy = g.Galaxy(
-            redshift=1.0,
-            light=lp.EllipticalLightProfile()
-        )
+        instance.lens_galaxy = g.Galaxy(pixelization=px.Rectangular(), regularization=rg.Constant(), redshift=1.0)
+        instance.source_galaxy = g.Galaxy(redshift=1.0, light=lp.EllipticalLightProfile())
 
-        phase_imaging.PixelizationPhase.transfer_classes(
-            instance,
-            mapper
-        )
+        phase_imaging.PixelizationPhase.transfer_classes(instance=instance, mapper=mapper)
 
         assert mapper.prior_count == 3
         assert mapper.lens_galaxy.redshift == 1.0
@@ -182,8 +168,7 @@ class TestImagePassing(object):
         assert isinstance(image_dict["galaxies_source"], np.ndarray)
 
 
-    def test_galaxy_image_dict(self, lens_galaxy, source_galaxy, grid_stack_5x5,
-                               convolver_image_5x5):
+    def test_galaxy_image_dict(self, lens_galaxy, source_galaxy, grid_stack_5x5, convolver_image_5x5):
         tracer = rt.TracerImageSourcePlanes([lens_galaxy], [source_galaxy],
                                             grid_stack_5x5)
 
@@ -194,17 +179,31 @@ class TestImagePassing(object):
         assert source_galaxy in tracer.galaxy_image_dict_from_convolver_image(
             convolver_image=convolver_image_5x5)
 
+    def test__phase_galaxy_models_do_not_use_hyper_images__hyper_images_not_passed(self, mask_function_5x5,
+                                                                                   results_collection_5x5, ccd_data_5x5):
+
+        # noinspection PyPep8Naming
+        Phase = phase_imaging.LensSourcePlanePhase
+
+        phase_5x5 = Phase(optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
+                          phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
+
+        assert analysis.hyper_model_image_1d == None
+        assert analysis.hyper_galaxy_image_1d_name_dict == None
+
     def test__results_are_passed_to_new_analysis__sets_up_hyper_images(self, mask_function_5x5, results_collection_5x5,
             ccd_data_5x5):
         # noinspection PyPep8Naming
         Phase = phase_imaging.LensSourcePlanePhase
 
         phase_5x5 = Phase(optimizer_class=mock_pipeline.MockNLO,
+                          lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)),
                           mask_function=mask_function_5x5,
                           phase_name='test_phase')
 
-        analysis = phase_5x5.make_analysis(data=ccd_data_5x5,
-                                           results=results_collection_5x5)
+        analysis = phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
 
         assert (analysis.hyper_model_image_1d == 5.0*np.ones(9)).all()
 
@@ -217,21 +216,29 @@ class TestImagePassing(object):
         # noinspection PyPep8Naming
         Phase = phase_imaging.LensSourcePlanePhase
 
-        phase_5x5 = Phase(optimizer_class=mock_pipeline.MockNLO,
-                          mask_function=mask_function_5x5,
-                          phase_name='test_phase')
+        phase_5x5 = Phase(
+            optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
+            lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)),
+            phase_name='test_phase')
 
         results_collection_5x5[0].galaxy_images[0][2, 2] = 0.0
 
         with pytest.raises(exc.PhaseException):
             phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
 
+            # If image is all zeros, dont raise exception
+
+        results_collection_5x5[0].galaxy_images[0] = np.zeros((5,5))
+
+        phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
+
     def test_associate_images_lens(self, lens_instance, lens_result, lens_data_5x5):
         results_collection = pl.ResultsCollection()
         results_collection.add("phase", lens_result)
+        
         analysis = phase_imaging.LensPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
-            results=results_collection)
+            results=results_collection, uses_hyper_images=True)
 
         instance = analysis.associate_images(instance=lens_instance)
 
@@ -249,7 +256,7 @@ class TestImagePassing(object):
         results_collection.add("phase", lens_source_result)
         analysis = phase_imaging.LensSourcePlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
-            results=results_collection)
+            results=results_collection, uses_hyper_images=True)
 
         instance = analysis.associate_images(lens_source_instance)
 
@@ -270,18 +277,20 @@ class TestImagePassing(object):
         assert instance.source_galaxies.source.hyper_galaxy_image_1d == pytest.approx(
             hyper_source_image_1d, 1.04e-4)
 
-    def test_associate_images_multi_plane(self, multi_plane_instance,
-                                          multi_plane_result, lens_data_5x5):
+    def test_associate_images_multi_plane(self, multi_plane_instance, multi_plane_result, lens_data_5x5):
+
         results_collection = pl.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
+
         analysis = phase_imaging.MultiPlanePhase.Analysis(
-            lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
-            results=results_collection)
+            lens_data=lens_data_5x5, cosmology=None, positions_threshold=None, results=results_collection,
+            uses_hyper_images=True)
 
         instance = analysis.associate_images(instance=multi_plane_instance)
 
         hyper_lens_image_1d = lens_data_5x5.array_1d_from_array_2d(
             array_2d=multi_plane_result.image_2d_dict["galaxies_lens"])
+
         hyper_source_image_1d = lens_data_5x5.array_1d_from_array_2d(
             array_2d=multi_plane_result.image_2d_dict["galaxies_source"])
 
@@ -303,9 +312,9 @@ class TestImagePassing(object):
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=None,
-            results=results_collection)
+            results=results_collection, uses_hyper_images=True)
 
-        hyper_galaxy = g.galaxy.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0,
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0,
                                             noise_power=1.0)
 
         multi_plane_instance.galaxies.lens.hyper_galaxy = hyper_galaxy
@@ -319,25 +328,18 @@ class TestImagePassing(object):
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
 
-        g0 = g.Galaxy(redshift=0.5,
-                      light_profile=multi_plane_instance.galaxies.lens.light,
+        g0 = g.Galaxy(redshift=0.5, light_profile=multi_plane_instance.galaxies.lens.light,
                       mass_profile=multi_plane_instance.galaxies.lens.mass,
-                      hyper_galaxy=hyper_galaxy,
-                      hyper_model_image_1d=hyper_model_image_1d,
-                      hyper_galaxy_image_1d=hyper_lens_image_1d,
-                      hyper_minimum_value=0.0)
+                      hyper_galaxy=hyper_galaxy, hyper_model_image_1d=hyper_model_image_1d,
+                      hyper_galaxy_image_1d=hyper_lens_image_1d, hyper_minimum_value=0.0)
+
         g1 = g.Galaxy(redshift=1.0,
                       light_profile=multi_plane_instance.galaxies.source.light)
 
-        tracer = rt.TracerImageSourcePlanes(
-            lens_galaxies=[g0],
-            source_galaxies=[g1],
-            image_plane_grid_stack=lens_data_5x5.grid_stack
-        )
+        tracer = rt.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                            image_plane_grid_stack=lens_data_5x5.grid_stack)
 
-        fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5,
-                                                       tracer=tracer,
-                                                       padded_tracer=None)
+        fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer, padded_tracer=None)
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 

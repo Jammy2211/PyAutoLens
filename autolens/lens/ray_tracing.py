@@ -380,6 +380,22 @@ class AbstractTracerData(AbstractTracer):
     def hyper_noise_maps_1d_of_planes_from_noise_map_1d(self, noise_map_1d):
         return [plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d) for plane in self.planes]
 
+    @property
+    def galaxy_image_dict_blank_images(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+
+        galaxy_image_dict = dict()
+
+        for plane in self.planes:
+            for galaxy in plane.galaxies:
+
+                galaxy_image_dict[galaxy] = plane.profile_image_plane_image_1d_of_galaxy(galaxy=galaxy)
+
+        return galaxy_image_dict
+
+
     def galaxy_image_dict_from_convolver_image(self, convolver_image) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images

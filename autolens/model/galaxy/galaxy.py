@@ -7,6 +7,8 @@ from autofit.tools import text_util as af_text_util
 from autolens import text_util
 from autolens import exc, dimensions as dim
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import regularization as reg
 
 from autofit.mapper.model_object import ModelObject
 
@@ -107,6 +109,15 @@ class Galaxy(ModelObject):
     @property
     def has_profile(self):
         return len(self.mass_profiles) + len(self.light_profiles) > 0
+
+    @property
+    def uses_hyper_images(self):
+        if self.has_hyper_galaxy:
+            return True
+        elif isinstance(self.regularization, reg.AdaptiveBrightness):
+            return True
+        else:
+            return False
 
     def __repr__(self):
         string = "Redshift: {}".format(self.redshift)

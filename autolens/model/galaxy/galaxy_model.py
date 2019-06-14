@@ -7,7 +7,8 @@ from autofit.mapper import prior_model as pm
 from autofit.mapper.prior import PriorNameValue, ConstantNameValue, cast_collection
 from autolens.model.galaxy import galaxy
 from autolens.model.profiles import light_profiles, mass_profiles
-
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import regularization as reg
 
 def is_light_profile_class(cls):
     """
@@ -141,13 +142,19 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             raise exc.PriorException(
                 'If the galaxy prior has a regularization, it must also have a pixelization.')
 
-        self.pixelization = pm.PriorModel(pixelization) if inspect.isclass(
-            pixelization) else pixelization
-        self.regularization = pm.PriorModel(regularization) if inspect.isclass(
-            regularization) else regularization
+        self.pixelization = pm.PriorModel(pixelization) if inspect.isclass(pixelization) else pixelization
+        self.regularization = pm.PriorModel(regularization) if inspect.isclass(regularization) else regularization
 
-        self.hyper_galaxy = pm.PriorModel(hyper_galaxy) if inspect.isclass(
-            hyper_galaxy) else hyper_galaxy
+        self.hyper_galaxy = pm.PriorModel(hyper_galaxy) if inspect.isclass(hyper_galaxy) else hyper_galaxy
+
+        self.hyper_galaxy_image_1d = None
+
+        if hyper_galaxy is not None:
+            self.uses_hyper_images = True
+        elif regularization is reg.AdaptiveBrightness:
+            self.uses_hyper_images = True
+        else:
+            self.uses_hyper_images = False
 
     @property
     def constant_light_profiles(self):
