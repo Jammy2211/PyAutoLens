@@ -844,7 +844,7 @@ class PixelizationGrid(np.ndarray):
             unmasked_sparse_shape=unmasked_sparse_shape, regular_grid=regular_grid)
 
         return PixelizationGrid(arr=sparse_regular_grid.sparse,
-                                regular_to_nearest_pix=sparse_regular_grid.regular_to_sparse)
+                                regular_to_pixelization=sparse_regular_grid.regular_to_sparse)
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "regular_to_nearest_pix"):

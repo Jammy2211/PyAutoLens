@@ -588,6 +588,11 @@ class TestPixelizationGrid:
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
             unmasked_sparse_shape=(10, 10), regular_grid=regular_grid)
 
+        pixelization_grid = grids.PixelizationGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+            unmasked_sparse_shape=(10, 10), regular_grid=regular_grid)
+
+        assert (sparse_to_regular_grid.sparse == pixelization_grid).all()
+        assert (sparse_to_regular_grid.regular_to_sparse == pixelization_grid.regular_to_pixelization).all()
 
 class TestSparseToRegularGrid:
 
