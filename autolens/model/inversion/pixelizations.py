@@ -8,75 +8,6 @@ from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 
 
-def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, grid_stack):
-    """An image-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels from \
-    the image's regular grid to other planes (e.g. the source-plane).
-
-    Provided a galaxy has an image-plane pixelization, this function returns a new *GridStack* instance where the \
-    image-plane pixelization's sparse grid is added to it as an attibute.
-
-    Thus, when the *GridStack* are are passed to the *ray_tracing* module this sparse grid is also traced and the \
-    traced coordinates represent the centre of each pixelization pixel.
-
-    Parameters
-    -----------
-    galaxies : [model.galaxy.galaxy.Galaxy]
-        A list of galaxies, which may contain pixelizations and an *ImagePlanePixelization*.
-    grid_stacks : image.array.grid_stacks.GridStack
-        The collection of grid_stacks (regular, sub, etc.) which the image-plane pixelization grid (referred to as pix) \
-        may be added to.
-    """
-    if not isinstance(grid_stack.regular, grids.PaddedRegularGrid):
-        for galaxy in galaxies:
-            if hasattr(galaxy, 'pixelization'):
-                if isinstance(galaxy.pixelization, ImagePlanePixelization):
-
-                    image_plane_pix_grid = galaxy.pixelization.image_plane_pix_grid_from_regular_grid(
-                        regular_grid=grid_stack.regular)
-                    return grid_stack.new_grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
-                                                                         regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
-
-    return grid_stack
-
-
-class ImagePlanePixelization(object):
-
-    def __init__(self, shape):
-        """An image-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels \
-        from the image's regular grid to other planes (e.g. the source-plane).
-
-        The traced coordinates of this sparse grid represent each centre of a pixelization pixel.
-
-        See *grid_stacks.SparseToRegularGrid* for details on how this grid is calculated.
-
-        Parameters
-        -----------
-        shape : (float, float) or (int, int)
-            The shape of the image-plane pixelizaton grid in pixels (floats are converted to integers). The grid is \
-            laid over the masked image such that it spans the most outer pixels of the masks.
-        """
-        self.shape = (int(shape[0]), int(shape[1]))
-
-    def image_plane_pix_grid_from_regular_grid(self, regular_grid):
-        """Calculate the image-plane pixelization from a regular-grid of coordinates (and its mask).
-
-        See *grid_stacks.SparseToRegularGrid* for details on how this grid is calculated.
-
-        Parameters
-        -----------
-        regular_grid : grids.RegularGrid
-            The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
-        """
-
-        pixel_scale = regular_grid.mask.pixel_scale
-
-        pixel_scales = ((regular_grid.masked_shape_arcsec[0] + pixel_scale) / (self.shape[0]),
-                        (regular_grid.masked_shape_arcsec[1] + pixel_scale) / (self.shape[1]))
-
-        return grids.SparseToRegularGrid(unmasked_sparse_grid_shape=self.shape, pixel_scales=pixel_scales,
-                                         regular_grid=regular_grid, origin=regular_grid.mask.centre)
-
-
 class Pixelization(object):
 
     def __init__(self):
@@ -293,7 +224,7 @@ class Voronoi(Pixelization):
                                                                                 ridge_points=np.asarray(ridge_points))
 
 
-class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
+class AdaptiveMagnification(Voronoi):
 
     def __init__(self, shape=(3, 3)):
         """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
@@ -306,7 +237,7 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
             adaptive-magnification pixelization (see *ImagePlanePixelization*)
         """
         super(AdaptiveMagnification, self).__init__()
-        ImagePlanePixelization.__init__(self=self, shape=shape)
+        self.shape = shape
 
     def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
@@ -336,7 +267,7 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
         else:
             relocated_grids = grid_stack
 
-        pixel_centres = relocated_grids.pix
+        pixel_centres = relocated_grids.pixelization
         pixels = pixel_centres.shape[0]
 
         voronoi = self.voronoi_from_pixel_centers(pixel_centres)
@@ -350,3 +281,17 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
         return mappers.VoronoiMapper(pixels=pixels, grid_stack=relocated_grids, border=border,
                                      voronoi=voronoi, geometry=geometry, hyper_image=hyper_image)
+
+class AdaptiveBrightness(AdaptiveMagnification):
+
+    def __init__(self, shape=(3, 3)):
+        """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
+        pixelization to discretize the grid into pixels.
+
+        Parameters
+        ----------
+        shape : (int, int)
+            The shape of the unmasked sparse-grid which is laid over the masked image, in order to derive the \
+            adaptive-magnification pixelization (see *ImagePlanePixelization*)
+        """
+        super(AdaptiveBrightness, self).__init__(shape=shape)
