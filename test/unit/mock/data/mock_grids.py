@@ -127,8 +127,8 @@ class MockPixGridStack(object):
         self.regular = grids.RegularGrid(regular, mask=None)
         self.sub = sub
         self.blurring = grids.RegularGrid(blurring, mask=None) if blurring is not None else None
-        self.pix = grids.PixGrid(pix, regular_to_nearest_pix=regular_to_nearest_pix,
-                                 mask=None) if pix is not None else np.array([[0.0, 0.0]])
+        self.pix = grids.PixelizationGrid(pix, regular_to_nearest_pix=regular_to_nearest_pix,
+                                          mask=None) if pix is not None else np.array([[0.0, 0.0]])
 
 
 class MockBorders(np.ndarray):

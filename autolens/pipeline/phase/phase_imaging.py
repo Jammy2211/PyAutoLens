@@ -339,13 +339,26 @@ class PhaseImaging(Phase):
             instance
                The input instance with images associated with galaxies where possible.
             """
-            if self.last_results is not None:
+            if self.uses_hyper_images:
                 for name, galaxy in instance.name_instance_tuples_for_class(g.Galaxy):
                     if name in self.hyper_galaxy_image_1d_name_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
                         galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_name_dict[name]
                         galaxy.hyper_minimum_value = 0.0
             return instance
+
+        def add_grids_to_grid_stack(self, galaxies, grid_stack):
+
+            for galaxy in galaxies:
+                if hasattr(galaxy, 'pixelization'):
+                    if isinstance(galaxy.pixelization, ImagePlanePixelization):
+                        image_plane_pix_grid = galaxy.pixelization.from_unmasked_2d_grid_shape_and_regular_grid(
+                            regular_grid=grid_stack.regular)
+                        return grid_stack.new_grid_stack_with_pixelization_grid_added(
+                            pixelization_grid=image_plane_pix_grid.sparse_grid,
+                            regular_to_pixelization=image_plane_pix_grid.regular_to_sparse)
+
+            return grid_stack
 
         def visualize(self, instance, image_path, during_analysis):
 
@@ -494,8 +507,12 @@ class MultiPlanePhase(PhaseImaging):
             raise NotImplementedError()
 
         def tracer_for_instance(self, instance):
+
+            image_plane_grid_stack = self.add_grids_to_grid_stack(
+                galaxies=instance.galaxies, grid_stack=self.lens_data.grid_stack)
+
             return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
-                                                 image_plane_grid_stack=self.lens_data.grid_stack,
+                                                 image_plane_grid_stack=image_plane_grid_stack,
                                                  border=self.lens_data.border,
                                                  cosmology=self.cosmology)
 

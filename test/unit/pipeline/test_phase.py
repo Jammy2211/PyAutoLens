@@ -660,3 +660,77 @@ class TestPhasePickle(object):
 
         with pytest.raises(PipelineException):
             phase_5x5.run(data=ccd_data_5x5, results=None, mask=None, positions=None)
+
+
+def test__setup_pixelization__galaxies_have_no_pixelization__returns_normal_grids(self):
+
+    mask = msk.Mask(np.array([[False, False, False],
+                              [False, False, False],
+                              [False, False, False]]), pixel_scale=1.0)
+
+    grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
+                                                                                  psf_shape=(1, 1))
+
+    galaxy = g.Galaxy(redshift=0.5)
+
+    image_plane_sparse_grids = \
+        grids.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                       grid_stack=grid_stack)
+
+    assert image_plane_sparse_grids == grid_stack
+
+def test__setup_pixelization__galaxies_have_other_pixelization__returns_normal_grids(self):
+    mask = msk.Mask(np.array([[False, False, False],
+                              [False, False, False],
+                              [False, False, False]]), pixel_scale=1.0)
+
+    grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
+                                                                                  psf_shape=(1, 1))
+
+    galaxy = g.Galaxy(redshift=0.5, pixelization=grids.Rectangular(shape=(3, 3)),
+                      regularization=regularization.Constant())
+
+    image_plane_sparse_grids = \
+        grids.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                       grid_stack=grid_stack)
+
+    assert image_plane_sparse_grids == grid_stack
+
+def test__setup_pixelization__galaxy_has_pixelization__but_grid_is_padded_grid__returns_normal_grids(self):
+    mask = msk.Mask(np.array([[False, False, False],
+                              [False, False, False],
+                              [False, True, False]]), pixel_scale=1.0)
+
+    grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
+                                                                                         psf_shape=(1, 1))
+
+    galaxy = g.Galaxy(redshift=0.5, pixelization=grids.AdaptiveMagnification(shape=(3, 3)),
+                      regularization=regularization.Constant())
+
+    image_plane_sparse_grids = \
+        grids.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                       grid_stack=grid_stack)
+
+    assert image_plane_sparse_grids == grid_stack
+
+def test__setup_pixelization__galaxy_has_pixelization__returns_grids_with_sparse_grid(self):
+    mask = msk.Mask(np.array([[False, False, False],
+                              [False, False, False],
+                              [False, True, False]]), pixel_scale=1.0)
+
+    grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
+                                                                                  psf_shape=(1, 1))
+
+    galaxy = g.Galaxy(redshift=0.5, pixelization=grids.AdaptiveMagnification(shape=(3, 3)),
+                      regularization=regularization.Constant())
+
+    image_plane_sparse_grids = \
+        grids.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                       grid_stack=grid_stack)
+
+    assert (image_plane_sparse_grids.regular == grid_stack.regular).all()
+    assert (image_plane_sparse_grids.sub == grid_stack.sub).all()
+    assert (image_plane_sparse_grids.blurring == grid_stack.blurring).all()
+    assert image_plane_sparse_grids.pix == pytest.approx(np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+                                                                [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                [-1.0, -1.0], [-1.0, 1.0]]), 1.0e-4)
