@@ -52,7 +52,6 @@ def make_lens_instance(lens_galaxies):
 
 @pytest.fixture(name="lens_result")
 def make_lens_result(lens_data_5x5, lens_instance):
-
     return phase_imaging.LensPlanePhase.Result(
         constant=lens_instance, figure_of_merit=1.0, previous_variable=mm.ModelMapper(),
         gaussian_tuples=None,
@@ -140,47 +139,46 @@ class TestPixelization(object):
 
 class TestImagePassing(object):
 
-    def test_lens_galaxy_dict(self, lens_result, lens_galaxy):
-        assert lens_result.name_galaxy_tuples == [("lens_galaxies_lens", lens_galaxy)]
+    def test_path_galaxy_tuples(self, lens_result, lens_galaxy):
+        assert lens_result.path_galaxy_tuples == [
+            (("lens_galaxies", "lens"), lens_galaxy)]
 
-    def test_lens_source_galaxy_dict(self, lens_source_result, lens_galaxy, source_galaxy):
-        assert lens_source_result.name_galaxy_tuples == [
-            ("source_galaxies_source", source_galaxy),
-            ("lens_galaxies_lens", lens_galaxy)
+    def test_lens_source_galaxy_dict(self, lens_source_result, lens_galaxy,
+                                     source_galaxy):
+        assert lens_source_result.path_galaxy_tuples == [
+            (("source_galaxies", "source"), source_galaxy),
+            (("lens_galaxies", "lens"), lens_galaxy)
         ]
 
-    def test_multi_plane_galaxy_dict(self, multi_plane_result, lens_galaxy, source_galaxy):
-        assert multi_plane_result.name_galaxy_tuples == [
-            ("galaxies_lens", lens_galaxy),
-            ("galaxies_source", source_galaxy)
+    def test_multi_plane_galaxy_dict(self, multi_plane_result, lens_galaxy,
+                                     source_galaxy):
+        assert multi_plane_result.path_galaxy_tuples == [
+            (("galaxies", "lens"), lens_galaxy),
+            (("galaxies", "source"), source_galaxy)
         ]
 
     def test_lens_image_dict(self, lens_result):
-
         image_dict = lens_result.image_2d_dict
-        assert isinstance(image_dict["lens_galaxies_lens"], np.ndarray)
+        assert isinstance(image_dict[("lens_galaxies", "lens")], np.ndarray)
 
     def test_lens_source_image_dict(self, lens_source_result):
-
         image_dict = lens_source_result.image_2d_dict
-        assert isinstance(image_dict["lens_galaxies_lens"], np.ndarray)
-        assert isinstance(image_dict["source_galaxies_source"], np.ndarray)
+        assert isinstance(image_dict[("lens_galaxies", "lens")], np.ndarray)
+        assert isinstance(image_dict[("source_galaxies", "source")], np.ndarray)
 
         lens_source_result.constant.lens_galaxies.lens = g.Galaxy(redshift=0.5)
         lens_source_result.constant.source_galaxies.source = g.Galaxy(redshift=1.0)
 
     def test_multi_plane_image_dict(self, multi_plane_result):
-
         image_dict = multi_plane_result.image_2d_dict
-        assert isinstance(image_dict["galaxies_lens"], np.ndarray)
-        assert isinstance(image_dict["galaxies_source"], np.ndarray)
+        assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
+        assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
         multi_plane_result.constant.galaxies.lens = g.Galaxy(redshift=0.5)
 
         image_dict = multi_plane_result.image_2d_dict
-        assert (image_dict["galaxies_lens"] == np.zeros((5,5))).all()
-        assert isinstance(image_dict["galaxies_source"], np.ndarray)
-
+        assert (image_dict[("galaxies", "lens")] == np.zeros((5, 5))).all()
+        assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
     def test_galaxy_image_dict(self, lens_galaxy, source_galaxy, grid_stack_5x5,
                                convolver_image_5x5):
@@ -194,8 +192,12 @@ class TestImagePassing(object):
         assert source_galaxy in tracer.galaxy_image_dict_from_convolver_image(
             convolver_image=convolver_image_5x5)
 
-    def test__results_are_passed_to_new_analysis__sets_up_hyper_images(self, mask_function_5x5, results_collection_5x5,
-            ccd_data_5x5):
+    def test__results_are_passed_to_new_analysis__sets_up_hyper_images(
+            self,
+            mask_function_5x5,
+            results_collection_5x5,
+            ccd_data_5x5
+    ):
         # noinspection PyPep8Naming
         Phase = phase_imaging.LensSourcePlanePhase
 
@@ -206,14 +208,17 @@ class TestImagePassing(object):
         analysis = phase_5x5.make_analysis(data=ccd_data_5x5,
                                            results=results_collection_5x5)
 
-        assert (analysis.hyper_model_image_1d == 5.0*np.ones(9)).all()
+        assert (analysis.hyper_model_image_1d == 5.0 * np.ones(9)).all()
 
-        assert (analysis.hyper_galaxy_image_1d_name_dict['g0'] == 2.0 * np.ones(9)).all()
-        assert (analysis.hyper_galaxy_image_1d_name_dict['g1'] == 3.0 * np.ones(9)).all()
+        assert (analysis.hyper_galaxy_image_1d_path_dict[('g0',)] == 2.0 * np.ones(
+            9)).all()
+        assert (analysis.hyper_galaxy_image_1d_path_dict[('g1',)] == 3.0 * np.ones(
+            9)).all()
 
-    def test__image_in_results_has_masked_value_passsed__raises_error(self, mask_function_5x5, results_collection_5x5,
-            ccd_data_5x5):
-
+    def test__image_in_results_has_masked_value_passsed__raises_error(self,
+                                                                      mask_function_5x5,
+                                                                      results_collection_5x5,
+                                                                      ccd_data_5x5):
         # noinspection PyPep8Naming
         Phase = phase_imaging.LensSourcePlanePhase
 
@@ -236,7 +241,7 @@ class TestImagePassing(object):
         instance = analysis.associate_images(instance=lens_instance)
 
         hyper_model_image_1d = lens_data_5x5.array_1d_from_array_2d(
-            array_2d=lens_result.image_2d_dict["lens_galaxies_lens"])
+            array_2d=lens_result.image_2d_dict[("lens_galaxies", "lens")])
 
         assert instance.lens_galaxies.lens.hyper_model_image_1d == pytest.approx(
             hyper_model_image_1d, 1.0e-4)
@@ -254,9 +259,9 @@ class TestImagePassing(object):
         instance = analysis.associate_images(lens_source_instance)
 
         hyper_lens_image_1d = lens_data_5x5.array_1d_from_array_2d(
-            array_2d=lens_source_result.image_2d_dict["lens_galaxies_lens"])
+            array_2d=lens_source_result.image_2d_dict[("lens_galaxies", "lens")])
         hyper_source_image_1d = lens_data_5x5.array_1d_from_array_2d(
-            array_2d=lens_source_result.image_2d_dict["source_galaxies_source"])
+            array_2d=lens_source_result.image_2d_dict[("source_galaxies", "source")])
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
 
@@ -281,9 +286,9 @@ class TestImagePassing(object):
         instance = analysis.associate_images(instance=multi_plane_instance)
 
         hyper_lens_image_1d = lens_data_5x5.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_2d_dict["galaxies_lens"])
+            array_2d=multi_plane_result.image_2d_dict[("galaxies", "lens")])
         hyper_source_image_1d = lens_data_5x5.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_2d_dict["galaxies_source"])
+            array_2d=multi_plane_result.image_2d_dict[("galaxies", "source")])
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
 
@@ -297,8 +302,9 @@ class TestImagePassing(object):
         assert instance.galaxies.source.hyper_model_image_1d == pytest.approx(
             hyper_model_image_1d, 1.0e-4)
 
-    def test_fit_uses_hyper_fit_correctly_multi_plane(self, multi_plane_instance, multi_plane_result, lens_data_5x5):
-
+    def test_fit_uses_hyper_fit_correctly_multi_plane(self, multi_plane_instance,
+                                                      multi_plane_result,
+                                                      lens_data_5x5):
         results_collection = pl.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(
@@ -313,9 +319,9 @@ class TestImagePassing(object):
         fit_figure_of_merit = analysis.fit(instance=multi_plane_instance)
 
         hyper_lens_image_1d = lens_data_5x5.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_2d_dict["galaxies_lens"])
+            array_2d=multi_plane_result.image_2d_dict[("galaxies", "lens")])
         hyper_source_image_1d = lens_data_5x5.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_2d_dict["galaxies_source"])
+            array_2d=multi_plane_result.image_2d_dict[("galaxies", "source")])
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
 
