@@ -952,24 +952,28 @@ class HyperGalaxyPhase(PhaseImaging):
 
         model_image_2d = results.last.most_likely_fit.model_image_2d
 
-        results_copy = results.last.copy()
+        results_copy = copy.deepcopy(results.last)
 
-        for name, galaxy in results.last.path_galaxy_tuples:
+        for galaxy_path, galaxy in results.last.path_galaxy_tuples:
 
-            optimizer = self.optimizer.copy_with_name_extension(extension=name)
+            optimizer = self.optimizer.copy_with_name_extension(
+                extension=galaxy_path[-1])
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
-            galaxy_image_2d = results.last.image_2d_dict[name]
+            galaxy_image_2d = results.last.image_2d_dict[galaxy_path]
 
-            # If array is all zeros, galaxy did not have image in previous phase and should be ignored
+            # If array is all zeros, galaxy did not have image in previous phase and
+            # should be ignored
             if not np.all(galaxy_image_2d == 0):
                 analysis = self.__class__.Analysis(lens_data=lens_data,
                                                    model_image_2d=model_image_2d,
                                                    galaxy_image_2d=galaxy_image_2d)
                 optimizer.fit(analysis)
 
-                getattr(results_copy.variable,
-                        name).hyper_galaxy = optimizer.variable.hyper_galaxy
-                getattr(results_copy.constant,
-                        name).hyper_galaxy = optimizer.constant.hyper_galaxy
+                results_copy.variable.object_for_path(
+                    galaxy_path
+                ).hyper_galaxy = optimizer.variable.hyper_galaxy
+                results_copy.constant.object_for_path(
+                    galaxy_path
+                ).hyper_galaxy = optimizer.constant.hyper_galaxy
 
         return results_copy
