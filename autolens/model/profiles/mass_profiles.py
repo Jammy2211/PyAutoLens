@@ -437,36 +437,30 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             else:
                 return grid.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=lambda_r)
 
-    def tangential_critical_curve_from_grid(self, grid, return_sub_grid=False):
+    def tangential_critical_curve_from_grid(self, grid):
 
         if type(grid) is grids.RegularGrid:
             lambda_tan_1d = self.tangential_eigenvalue_from_shear_and_convergence(grid=grid)
             lambda_tan_2d = grid.array_2d_from_array_1d(array_1d=lambda_tan_1d)
-            tan_critical_curve_indices = measure.find_contours(lambda_tan_2d, 0)
+        elif type(grid) is grids.SubGrid:
+            lambda_tan_1d = self.tangential_eigenvalue_from_shear_and_convergence(grid=grid, return_sub_grid=True)
+            lambda_tan_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=lambda_tan_1d)
+
+        tan_critical_curve_indices = measure.find_contours(lambda_tan_2d, 0)
+
+        if type(grid) is grids.RegularGrid:
             return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=tan_critical_curve_indices[0],
                                                               shape=lambda_tan_2d.shape,
                                                               pixel_scales=(
                                                                   grid.pixel_scale, grid.pixel_scale),
                                                               origin=(0.0, 0.0))
-
         elif type(grid) is grids.SubGrid:
-            lambda_tan_1d = self.tangential_eigenvalue_from_shear_and_convergence(grid=grid, return_sub_grid=True)
-            lambda_tan_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=lambda_tan_1d)
-            if return_sub_grid:
-                tan_critical_curve_indices = measure.find_contours(lambda_tan_2d, 0)
-                return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=tan_critical_curve_indices[0], shape=lambda_tan_2d.shape,
+            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=tan_critical_curve_indices[0], shape=lambda_tan_2d.shape,
                                                                         pixel_scales=(
                                                                         grid.pixel_scale / grid.sub_grid_size,
                                                                         grid.pixel_scale / grid.sub_grid_size),
                                                                         origin=(0.0, 0.0))
-            else:
-                lambda_tan_2d_binned = grid.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=lambda_tan_2d)
-                tan_critical_curve_indices = measure.find_contours(lambda_tan_2d_binned, 0)
-                return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=tan_critical_curve_indices[0], shape=lambda_tan_2d.shape,
-                                                                        pixel_scales=(
-                                                                        grid.pixel_scale / grid.sub_grid_size,
-                                                                        grid.pixel_scale / grid.sub_grid_size),
-                                                                        origin=(0.0, 0.0))
+
 
     def tangential_caustic_from_grid(self, grid):
 
@@ -480,28 +474,29 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def radial_critical_curve_from_grid(self, grid):
 
-        lambda_rad_1d = self.radial_eigenvalue_from_shear_and_convergence(grid=grid)
-
         if type(grid) is grids.RegularGrid:
+            lambda_rad_1d = self.radial_eigenvalue_from_shear_and_convergence(grid=grid)
             lambda_rad_2d = grid.array_2d_from_array_1d(array_1d=lambda_rad_1d)
         elif type(grid) is grids.SubGrid:
+            lambda_rad_1d = self.radial_eigenvalue_from_shear_and_convergence(grid=grid, return_sub_grid=True)
             lambda_rad_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=lambda_rad_1d)
 
         rad_critical_curve_indices = measure.find_contours(lambda_rad_2d, 0)
-        rad_critical_curve = np.fliplr(rad_critical_curve_indices[0])
+
+        ##rad_critical_curve = np.fliplr(rad_critical_curve_indices[0])
 
         ## fliping x, y coordinates may or may not be necessary, appears to visualise the same either way
         ## reg grid unit test works with this fix, sub grid still doesn't like it
         ## may be an isuue with where the marching squares algorithm starts rathet than x, y flip
 
         if type(grid) is grids.RegularGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve, shape=lambda_rad_2d.shape,
+            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve_indices[0], shape=lambda_rad_2d.shape,
                                                                         pixel_scales=(
                                                                         grid.pixel_scale, grid.pixel_scale),
                                                                         origin=(0.0, 0.0))
 
         elif type(grid) is grids.SubGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve, shape=lambda_rad_2d.shape,
+            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve_indices[0], shape=lambda_rad_2d.shape,
                                                                         pixel_scales=(
                                                                         grid.pixel_scale / grid.sub_grid_size,
                                                                         grid.pixel_scale / grid.sub_grid_size),
@@ -533,74 +528,42 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                 return grid.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=mag)
 
 
-    def critical_curves_from_grid(self, grid, return_sub_grid=False):
+    def critical_curves_from_grid(self, grid):
 
         if type(grid) is grids.RegularGrid:
             mag_1d = self.magnification_from_grid(grid=grid)
             mag_2d = grid.array_2d_from_array_1d(array_1d=mag_1d)
-            inv_mag = 1 / mag_2d
-            critical_curves_indices = measure.find_contours(inv_mag, 0)
-            Ncrit = len(critical_curves_indices)
-            contours = []
-            critical_curves = []
+        elif type(grid) is grids.SubGrid:
+                mag_1d = self.magnification_from_grid(grid=grid, return_sub_grid=True)
+                mag_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=mag_1d)
 
-            for jj in np.arange(Ncrit):
-                contours.append(critical_curves_indices[jj])
-                xcontour, ycontour = contours[jj].T
-                pixel_coord = np.stack((xcontour, ycontour), axis=-1)
+        inv_mag = 1 / mag_2d
+        critical_curves_indices = measure.find_contours(inv_mag, 0)
+        Ncrit = len(critical_curves_indices)
+        contours = []
+        critical_curves = []
 
+        for jj in np.arange(Ncrit):
+            contours.append(critical_curves_indices[jj])
+            xcontour, ycontour = contours[jj].T
+            pixel_coord = np.stack((xcontour, ycontour), axis=-1)
+
+            if type(grid) is grids.RegularGrid:
                 critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=pixel_coord, shape=mag_2d.shape,
                                                                         pixel_scales=(
                                                                         grid.pixel_scale, grid.pixel_scale),
                                                                         origin=(0.0, 0.0))
                 critical_curves.append(critical_curve)
-            return critical_curves
 
-        elif type(grid) is grids.SubGrid:
-            if return_sub_grid:
-                mag_1d = self.magnification_from_grid(grid=grid, return_sub_grid=True)
-                mag_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=mag_1d)
-                inv_mag = 1 / mag_2d
-                critical_curves_indices = measure.find_contours(inv_mag, 0)
-                Ncrit = len(critical_curves_indices)
-                contours=[]
-                critical_curves=[]
-
-                print(mag_2d.shape)
-
-                for jj in np.arange(Ncrit):
-                    contours.append(critical_curves_indices[jj])
-                    xcontour, ycontour = contours[jj].T
-                    pixel_coord = np.stack((xcontour, ycontour), axis=-1)
-                    critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=pixel_coord, shape=mag_2d.shape,
-                                                                  pixel_scales=(grid.pixel_scale/ grid.sub_grid_size,
-                                                                                grid.pixel_scale / grid.sub_grid_size),
-                                                                  origin=(0.0, 0.0))
-                    critical_curves.append(critical_curve)
-                return critical_curves
-            else:
-                mag_1d = self.magnification_from_grid(grid=grid, return_sub_grid=False)
-                mag_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=mag_1d)
-                inv_mag = 1 / mag_2d
-                critical_curves_indices = measure.find_contours(inv_mag, 0)
-                Ncrit = len(critical_curves_indices)
-                contours = []
-                critical_curves = []
-
-                print(mag_2d.shape)
-
-                for jj in np.arange(Ncrit):
-                    contours.append(critical_curves_indices[jj])
-                    xcontour, ycontour = contours[jj].T
-                    pixel_coord = np.stack((xcontour, ycontour), axis=-1)
+            elif type(grid) is grids.SubGrid:
                     critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=pixel_coord,
-                                                                                shape=mag_2d.shape,
-                                                                                pixel_scales=(grid.pixel_scale,
-                                                                                grid.pixel_scale),
-                                                                                origin=(0.0, 0.0))
+                                                                             shape=mag_2d.shape,
+                                                                            pixel_scales=(
+                                                                            grid.pixel_scale / grid.sub_grid_size,
+                                                                            grid.pixel_scale / grid.sub_grid_size),
+                                                                            origin=(0.0, 0.0))
                     critical_curves.append(critical_curve)
-                return critical_curves
-
+        return critical_curves
 
     def caustics_from_grid(self, grid):
 
