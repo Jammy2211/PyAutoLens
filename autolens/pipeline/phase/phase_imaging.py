@@ -972,6 +972,8 @@ class HyperGalaxyPhase(PhaseImaging):
                 results_copy.variable.object_for_path(
                     galaxy_path
                 ).hyper_galaxy = optimizer.variable.hyper_galaxy
+                # Optimizer's don't have constant hypergalaxies? Did you mean
+                # result.constant?
                 results_copy.constant.object_for_path(
                     galaxy_path
                 ).hyper_galaxy = optimizer.constant.hyper_galaxy
