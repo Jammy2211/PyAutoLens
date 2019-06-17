@@ -3651,6 +3651,7 @@ class TestDeflectionsViaPotential(object):
 
         assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
 
+
 class TestConvergenceViaJacobian(object):
 
     def test__compare_sis_convergence_via_jacobian_and_calculation__reg_grid(self):
@@ -3704,7 +3705,7 @@ class TestConvergenceViaJacobian(object):
 
         convergence_via_calculation = sis.convergence_from_grid(grid=grid)
 
-        convergence_via_jacobian = sis.convergence_from_jacobian(grid=grid)
+        convergence_via_jacobian = sis.convergence_from_jacobian(grid=grid, return_sub_grid=True)
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
 
@@ -3719,7 +3720,7 @@ class TestConvergenceViaJacobian(object):
 
         convergence_via_calculation = sie.convergence_from_grid(grid=grid)
 
-        convergence_via_jacobian = sie.convergence_from_jacobian(grid=grid)
+        convergence_via_jacobian = sie.convergence_from_jacobian(grid=grid, return_sub_grid=True)
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
 
@@ -3734,7 +3735,7 @@ class TestConvergenceViaJacobian(object):
 
         convergence_via_calculation = sie.convergence_from_grid(grid=grid)
 
-        convergence_via_jacobian = sie.convergence_from_jacobian(grid=grid)
+        convergence_via_jacobian = sie.convergence_from_jacobian(grid=grid, return_sub_grid=True)
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
 
@@ -3762,7 +3763,6 @@ class TestConvergenceViaJacobian(object):
                                         + convergence_sub_grid[39997] + convergence_sub_grid[39996]) / 4
 
         assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
-
 
 
 class TestJacobianandMagnification(object):
@@ -3839,11 +3839,11 @@ class TestJacobianandMagnification(object):
 
         grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
-        mag_via_determinant = sie.magnification_from_grid(grid=grid)
+        mag_via_determinant = sie.magnification_from_grid(grid=grid, return_sub_grid=True)
 
-        tan_eig = sie.tangential_eigenvalue_from_shear_and_convergence(grid=grid)
+        tan_eig = sie.tangential_eigenvalue_from_shear_and_convergence(grid=grid, return_sub_grid=True)
 
-        rad_eig = sie.radial_eigenvalue_from_shear_and_convergence(grid=grid)
+        rad_eig = sie.radial_eigenvalue_from_shear_and_convergence(grid=grid, return_sub_grid=True)
 
         mag_via_eigenvalues = 1/ (tan_eig * rad_eig)
 
@@ -3857,11 +3857,11 @@ class TestJacobianandMagnification(object):
 
         grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
-        mag_via_determinant = sie.magnification_from_grid(grid=grid)
+        mag_via_determinant = sie.magnification_from_grid(grid=grid, return_sub_grid=True)
 
-        convergence = sie.convergence_from_jacobian(grid=grid)
+        convergence = sie.convergence_from_jacobian(grid=grid, return_sub_grid=True)
 
-        shear = sie.shear_from_jacobian(grid=grid)
+        shear = sie.shear_from_jacobian(grid=grid, return_sub_grid=True)
 
         mag_via_convergence_and_shear = 1 / ((1 - convergence)**2 - shear**2)
 
@@ -3964,7 +3964,6 @@ class TestJacobianandMagnification(object):
         assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
 
 
-
 class TestCriticalCurvesandCaustics(object):
 
     def test_compare_magnification_from_determinant_and_from_convergence_and_shear(self):
@@ -4052,9 +4051,9 @@ class TestCriticalCurvesandCaustics(object):
         grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
 
-        critical_curves_from_mag = sie.critical_curves_from_grid(grid=grid, return_sub_grid=True)
+        critical_curves_from_mag = sie.critical_curves_from_grid(grid=grid)
         critical_curve_tan_from_mag = critical_curves_from_mag[0]
-        critical_curve_tan_from_lambda_t = sie.tangential_critical_curve_from_grid(grid=grid, return_sub_grid=True)
+        critical_curve_tan_from_lambda_t = sie.tangential_critical_curve_from_grid(grid=grid)
 
         assert critical_curve_tan_from_lambda_t == pytest.approx(critical_curve_tan_from_mag, 1e-4)
 
@@ -4066,10 +4065,10 @@ class TestCriticalCurvesandCaustics(object):
 
         critical_curves_from_mag = sie.critical_curves_from_grid(grid=grid)
 
-        critical_curve_rad_from_mag = critical_curves_from_mag[1]
-        critical_curve_rad_from_lambda_t = sie.radial_critical_curve_from_grid(grid=grid)
+        critical_curve_rad_from_mag = set(map(tuple, critical_curves_from_mag[1]))
+        critical_curve_rad_from_lambda_t = set(map(tuple, sie.radial_critical_curve_from_grid(grid=grid)))
 
-        assert critical_curve_rad_from_lambda_t == pytest.approx(critical_curve_rad_from_mag, 1e-1)
+        assert critical_curve_rad_from_lambda_t == pytest.approx(critical_curve_rad_from_mag, 1e-2)
 
     def test_compare_radial_critical_curves_from_magnification_and_lamda_r__sub_grid(self):
 
