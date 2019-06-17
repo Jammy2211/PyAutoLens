@@ -8,7 +8,6 @@ from astropy import cosmology as cosmo
 import autolens.pipeline.phase.phase_imaging
 from autofit import conf
 from autofit.exc import PipelineException
-from autofit.mapper import prior
 from autofit.optimize import non_linear
 from autolens import exc
 from autolens.data.array import mask as msk
@@ -80,7 +79,8 @@ class TestPhase(object):
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
         def mask_function(image):
-            return msk.Mask.circular(shape=image.shape, pixel_scale=1, radius_arcsec=0.3)
+            return msk.Mask.circular(shape=image.shape, pixel_scale=1,
+                                     radius_arcsec=0.3)
 
         mask_from_function = mask_function(image=ccd_data_5x5.image)
         phase_5x5.mask_function = mask_function
@@ -470,7 +470,7 @@ class TestPhase(object):
         class LensPlanePhase2(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
             # noinspection PyUnusedLocal
             def pass_models(self, results):
-                self.lens_galaxies[0].sis.einstein_radius = prior.Constant(10.0)
+                self.lens_galaxies[0].sis.einstein_radius = 10.0
 
         phase_5x5 = LensPlanePhase2(
             lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic,
@@ -514,9 +514,11 @@ class TestResult(object):
 
         assert isinstance(result, ph.AbstractPhase.Result)
 
-    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self,
-                                                                             ccd_data_5x5,
-                                                                             mask_function_5x5):
+    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
+            self,
+            ccd_data_5x5,
+            mask_function_5x5
+    ):
         lens_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=0.1))
 
         phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(

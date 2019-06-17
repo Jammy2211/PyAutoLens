@@ -395,7 +395,7 @@ class TestRedshift(object):
 
     def test_set_redshift_constant(self):
         galaxy_prior = gp.GalaxyModel(redshift=g.Redshift, )
-        galaxy_prior.redshift = prior.Constant(3)
+        galaxy_prior.redshift = 3.
         # noinspection PyUnresolvedReferences
         assert galaxy_prior.redshift == 3
 
