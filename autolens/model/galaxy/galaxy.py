@@ -338,7 +338,7 @@ class Galaxy(ModelObject):
             prefix_galaxy = ''
 
         summary += [af_text_util.label_and_value_string(
-            label=prefix_galaxy+'redshift', value=self.redshift, whitespace=whitespace, format_str='{:.2f}')]
+            label=prefix_galaxy+'redshift', value=self.redshift, whitespace=whitespace)]
 
         if self.has_light_profile:
 
@@ -368,7 +368,7 @@ class Galaxy(ModelObject):
 
             summary += [text_util.within_radius_label_value_and_unit_string(
                 prefix=prefix+'luminosity', radius=radius, unit_length=unit_length, value=luminosity,
-                unit_value=unit_luminosity, whitespace=whitespace, format_str_value='{:.4e}')]
+                unit_value=unit_luminosity, whitespace=whitespace)]
 
         summary.append('\nLIGHT PROFILES:\n\n')
 
@@ -392,13 +392,13 @@ class Galaxy(ModelObject):
         einstein_radius = self.einstein_radius_in_units(unit_length=unit_length, cosmology=cosmology)
 
         summary += [af_text_util.label_value_and_unit_string(label=prefix+'einstein_radius', value=einstein_radius,
-                                                        unit=unit_length, whitespace=whitespace, format_str='{:.2f}')]
+                                                        unit=unit_length, whitespace=whitespace)]
 
         einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass, redshift_source=redshift_source,
                                                     cosmology=cosmology, kwargs=kwargs)
 
         summary += [af_text_util.label_value_and_unit_string(label=prefix+'einstein_mass', value=einstein_mass,
-                                                        unit=unit_mass, whitespace=whitespace, format_str='{:.4e}')]
+                                                        unit=unit_mass, whitespace=whitespace)]
 
         for radius in radii:
 
@@ -407,7 +407,7 @@ class Galaxy(ModelObject):
 
             summary += [text_util.within_radius_label_value_and_unit_string(
                 prefix=prefix+'mass', radius=radius, unit_length=unit_length, value=mass,
-                unit_value=unit_mass, whitespace=whitespace, format_str_value='{:.4e}')]
+                unit_value=unit_mass, whitespace=whitespace)]
 
         summary += ['\nMASS PROFILES:\n\n']
 
