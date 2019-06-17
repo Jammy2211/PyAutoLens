@@ -3590,7 +3590,7 @@ class TestDeflectionsViaPotential(object):
 
         deflections_via_calculation = sis.deflections_from_grid(grid=grid)
 
-        deflections_via_potential = sis.deflections_via_potential_from_grid(grid=grid)
+        deflections_via_potential = sis.deflections_via_potential_from_grid(grid=grid, return_sub_grid=True)
 
         mean_error = np.mean(deflections_via_potential - deflections_via_calculation)
 
@@ -3605,7 +3605,7 @@ class TestDeflectionsViaPotential(object):
 
         deflections_via_calculation = sie.deflections_from_grid(grid=grid)
 
-        deflections_via_potential = sie.deflections_via_potential_from_grid(grid=grid)
+        deflections_via_potential = sie.deflections_via_potential_from_grid(grid=grid, return_sub_grid=True)
 
         mean_error = np.mean(deflections_via_potential - deflections_via_calculation)
 
@@ -3620,12 +3620,36 @@ class TestDeflectionsViaPotential(object):
 
         deflections_via_calculation = sie.deflections_from_grid(grid=grid)
 
-        deflections_via_potential = sie.deflections_via_potential_from_grid(grid=grid)
+        deflections_via_potential = sie.deflections_via_potential_from_grid(grid=grid, return_sub_grid=True)
 
         mean_error = np.mean(deflections_via_potential - deflections_via_calculation)
 
         assert mean_error < 1e-4
 
+    def test__sub_grid_binning(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
+
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                      sub_grid_size=2)
+
+        deflections_binned_reg_grid = sie.deflections_via_potential_from_grid(grid=grid)
+
+        deflections_sub_grid = sie.deflections_via_potential_from_grid(grid=grid, return_sub_grid=True)
+
+        pixel_1_reg_grid = deflections_binned_reg_grid[0]
+
+        pixel_1_from_av_sub_grid = (deflections_sub_grid[0] + deflections_sub_grid[1]
+                                          + deflections_sub_grid[2] + deflections_sub_grid[3])/4
+
+        assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+        pixel_10000_reg_grid = deflections_binned_reg_grid[9999]
+
+        pixel_10000_from_av_sub_grid = (deflections_sub_grid[39999] + deflections_sub_grid[39998]
+                                        + deflections_sub_grid[39997] + deflections_sub_grid[39996])/4
+
+        assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
 
 class TestConvergenceViaJacobian(object):
 
@@ -3715,6 +3739,30 @@ class TestConvergenceViaJacobian(object):
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
 
         assert mean_error < 1e-2
+
+    def test_convergence_sub_grid_binning(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
+
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                      sub_grid_size=2)
+
+        convergence_binned_reg_grid = sie.convergence_from_jacobian(grid=grid)
+        convergence_sub_grid = sie.convergence_from_jacobian(grid=grid, return_sub_grid=True)
+
+        pixel_1_reg_grid = convergence_binned_reg_grid[0]
+        pixel_1_from_av_sub_grid = (convergence_sub_grid[0] + convergence_sub_grid[1]
+                                    + convergence_sub_grid[2] + convergence_sub_grid[3]) / 4
+
+        assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+        pixel_10000_reg_grid = convergence_binned_reg_grid[9999]
+
+        pixel_10000_from_av_sub_grid = (convergence_sub_grid[39999] + convergence_sub_grid[39998]
+                                        + convergence_sub_grid[39997] + convergence_sub_grid[39996]) / 4
+
+        assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
+
 
 
 class TestJacobianandMagnification(object):
@@ -3821,6 +3869,101 @@ class TestJacobianandMagnification(object):
 
         assert mean_error < 1e-4
 
+    def test__Jacobian_sub_grid_binning(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
+
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                      sub_grid_size=2)
+
+        Jacobian_binned_reg_grid = sie.lensing_jacobian_from_grid(grid=grid)
+        A11_binned_reg_grid = Jacobian_binned_reg_grid[0, 0]
+        Jacobian_sub_grid = sie.lensing_jacobian_from_grid(grid=grid, return_sub_grid=True)
+        A11_sub_grid = Jacobian_sub_grid[0, 0]
+
+        pixel_1_reg_grid = A11_binned_reg_grid[0]
+        pixel_1_from_av_sub_grid = (A11_sub_grid[0] + A11_sub_grid[1]
+                                          + A11_sub_grid[2] + A11_sub_grid[3])/4
+
+        assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+        pixel_10000_reg_grid = A11_binned_reg_grid[9999]
+
+        pixel_10000_from_av_sub_grid = (A11_sub_grid[39999] + A11_sub_grid[39998]
+                                        + A11_sub_grid[39997] + A11_sub_grid[39996])/4
+
+        assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
+
+    def test_shear_sub_grid_binning(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
+
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                      sub_grid_size=2)
+
+        shear_binned_reg_grid = sie.shear_from_jacobian(grid=grid)
+        shear_sub_grid = sie.shear_from_jacobian(grid=grid, return_sub_grid=True)
+
+        pixel_1_reg_grid = shear_binned_reg_grid[0]
+        pixel_1_from_av_sub_grid = (shear_sub_grid[0] + shear_sub_grid[1]
+                                    + shear_sub_grid[2] + shear_sub_grid[3]) / 4
+
+        assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+        pixel_10000_reg_grid = shear_binned_reg_grid[9999]
+
+        pixel_10000_from_av_sub_grid = (shear_sub_grid[39999] + shear_sub_grid[39998]
+                                        + shear_sub_grid[39997] + shear_sub_grid[39996]) / 4
+
+        assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
+
+    def test_lambda_t_sub_grid_binning(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
+
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                      sub_grid_size=2)
+
+        lambda_t_binned_reg_grid = sie.tangential_eigenvalue_from_shear_and_convergence(grid=grid)
+        lambda_t_sub_grid = sie.tangential_eigenvalue_from_shear_and_convergence(grid=grid, return_sub_grid=True)
+
+        pixel_1_reg_grid = lambda_t_binned_reg_grid[0]
+        pixel_1_from_av_sub_grid = (lambda_t_sub_grid[0] + lambda_t_sub_grid[1]
+                                    + lambda_t_sub_grid[2] + lambda_t_sub_grid[3]) / 4
+
+        assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+        pixel_10000_reg_grid = lambda_t_binned_reg_grid[9999]
+
+        pixel_10000_from_av_sub_grid = (lambda_t_sub_grid[39999] + lambda_t_sub_grid[39998]
+                                        + lambda_t_sub_grid[39997] + lambda_t_sub_grid[39996]) / 4
+
+        assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
+
+    def test_lambda_r_sub_grid_binning(self):
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
+
+        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                      sub_grid_size=2)
+
+        lambda_r_binned_reg_grid = sie.radial_eigenvalue_from_shear_and_convergence(grid=grid)
+        lambda_r_sub_grid = sie.radial_eigenvalue_from_shear_and_convergence(grid=grid, return_sub_grid=True)
+
+        pixel_1_reg_grid = lambda_r_binned_reg_grid[0]
+        pixel_1_from_av_sub_grid = (lambda_r_sub_grid[0] + lambda_r_sub_grid[1]
+                                    + lambda_r_sub_grid[2] + lambda_r_sub_grid[3]) / 4
+
+        assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+        pixel_10000_reg_grid = lambda_r_binned_reg_grid[9999]
+
+        pixel_10000_from_av_sub_grid = (lambda_r_sub_grid[39999] + lambda_r_sub_grid[39998]
+                                        + lambda_r_sub_grid[39997] + lambda_r_sub_grid[39996]) / 4
+
+        assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
+
+
 
 class TestCriticalCurvesandCaustics(object):
 
@@ -3902,16 +4045,16 @@ class TestCriticalCurvesandCaustics(object):
 
         assert critical_curve_tan_from_lambda_t == pytest.approx(critical_curve_tan_from_mag, 1e-4)
 
-    def test_compare_tangential_critical_curves_from_magnification_and_lamda_t__sub_grid(self):
+    def test_compare_tangential_critical_curves_from_magnification_and_lambda_t__sub_grid(self):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
 
         grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
                                                                       sub_grid_size=2)
 
-        critical_curves_from_mag = sie.critical_curves_from_grid(grid=grid)
+        critical_curves_from_mag = sie.critical_curves_from_grid(grid=grid, return_sub_grid=True)
         critical_curve_tan_from_mag = critical_curves_from_mag[0]
-        critical_curve_tan_from_lambda_t = sie.tangential_critical_curve_from_grid(grid=grid)
+        critical_curve_tan_from_lambda_t = sie.tangential_critical_curve_from_grid(grid=grid, return_sub_grid=True)
 
         assert critical_curve_tan_from_lambda_t == pytest.approx(critical_curve_tan_from_mag, 1e-4)
 
@@ -3947,7 +4090,6 @@ class TestCriticalCurvesandCaustics(object):
         ## hence visually they look the same when the arrays are not equal
 
         assert mean_error < 1e-4
-
 
     def test_compare_tangential_caustic_from_magnification_and_lambda_t__reg_grid(self):
 
@@ -4005,5 +4147,4 @@ class TestCriticalCurvesandCaustics(object):
         ## same issue as with radial critical curve
 
         assert mean_error < 1e-1
-
 
