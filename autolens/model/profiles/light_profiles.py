@@ -163,8 +163,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             summary += [text_util.within_radius_label_value_and_unit_string(
                 prefix=prefix + 'luminosity', radius=radius, unit_length=unit_length,
                 value=luminosity,
-                unit_value=unit_luminosity, whitespace=whitespace,
-                format_str_value='{:.4e}')]
+                unit_value=unit_luminosity, whitespace=whitespace)]
 
         return summary
 
