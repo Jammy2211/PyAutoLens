@@ -290,7 +290,7 @@ class PhaseImaging(Phase):
 
                 for galaxy_path, galaxy in results.last.path_galaxy_tuples:
                     self.hyper_galaxy_image_1d_path_dict[galaxy_path] = \
-                    image_1d_galaxy_dict[galaxy_path]
+                        image_1d_galaxy_dict[galaxy_path]
 
                     self.hyper_model_image_1d += image_1d_galaxy_dict[galaxy_path]
 
@@ -345,11 +345,13 @@ class PhaseImaging(Phase):
                The input instance with images associated with galaxies where possible.
             """
             if self.last_results is not None:
-                for name, galaxy in instance.name_instance_tuples_for_class(g.Galaxy):
-                    if name in self.hyper_galaxy_image_1d_path_dict:
+                for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
+                        g.Galaxy
+                ):
+                    if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
                         galaxy.hyper_galaxy_image_1d = \
-                        self.hyper_galaxy_image_1d_path_dict[name]
+                            self.hyper_galaxy_image_1d_path_dict[galaxy_path]
                         galaxy.hyper_minimum_value = 0.0
             return instance
 
@@ -681,8 +683,8 @@ class SensitivityPhase(PhaseImaging):
                  bin_up_factor=None, mask_function=None,
                  cosmology=cosmo.Planck15):
         """
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
-        passed to it.
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
+        models and hyper passed to it.
 
         Parameters
         ----------
@@ -752,15 +754,19 @@ class SensitivityPhase(PhaseImaging):
                                              output_path=image_path,
                                              output_format='png')
 
-            ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer_normal,
-                                                          output_path=image_path,
-                                                          output_format='png',
-                                                          output_filename='tracer_normal')
+            ray_tracing_plotters.plot_ray_tracing_subplot(
+                tracer=tracer_normal,
+                output_path=image_path,
+                output_format='png',
+                output_filename='tracer_normal'
+            )
 
-            ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer_sensitive,
-                                                          output_path=image_path,
-                                                          output_format='png',
-                                                          output_filename='tracer_sensitive')
+            ray_tracing_plotters.plot_ray_tracing_subplot(
+                tracer=tracer_sensitive,
+                output_path=image_path,
+                output_format='png',
+                output_filename='tracer_sensitive'
+            )
 
             sensitivity_fit_plotters.plot_fit_subplot(fit=fit, output_path=image_path,
                                                       output_format='png')
@@ -859,18 +865,21 @@ class HyperGalaxyPhase(PhaseImaging):
             """
             self.lens_data = lens_data
             self.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
-                array_2d=model_image_2d)
+                array_2d=model_image_2d
+            )
             self.hyper_galaxy_image_1d = lens_data.array_1d_from_array_2d(
-                array_2d=galaxy_image_2d)
+                array_2d=galaxy_image_2d
+            )
 
             self.check_for_previously_masked_values(array=self.hyper_model_image_1d)
             self.check_for_previously_masked_values(array=self.hyper_galaxy_image_1d)
 
-        def check_for_previously_masked_values(self, array):
+        @staticmethod
+        def check_for_previously_masked_values(array):
             if not np.all(array) != 0.0:
                 raise exc.PhaseException(
-                    'When mapping a 2D array to a 1D array using lens data, a value encountered was'
-                    '0.0 and therefore masked in a previous phase.')
+                    'When mapping a 2D array to a 1D array using lens data, a value '
+                    'encountered was 0.0 and therefore masked in a previous phase.')
 
         def visualize(self, instance, image_path, during_analysis):
             # TODO: I'm guessing you have an idea of what you want here?
@@ -899,11 +908,13 @@ class HyperGalaxyPhase(PhaseImaging):
                 noise_map=self.lens_data.noise_map_1d, hyper_minimum_value=0.0)
 
             hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
-            return lens_fit.LensDataFit(image_1d=self.lens_data.image_1d,
-                                        noise_map_1d=hyper_noise_map_1d,
-                                        mask_1d=self.lens_data.mask_1d,
-                                        model_image_1d=self.hyper_model_image_1d,
-                                        map_to_scaled_array=self.lens_data.map_to_scaled_array)
+            return lens_fit.LensDataFit(
+                image_1d=self.lens_data.image_1d,
+                noise_map_1d=hyper_noise_map_1d,
+                mask_1d=self.lens_data.mask_1d,
+                model_image_1d=self.hyper_model_image_1d,
+                map_to_scaled_array=self.lens_data.map_to_scaled_array
+            )
 
         @classmethod
         def describe(cls, instance):
