@@ -38,12 +38,13 @@ def make_pipeline(test_name):
             self.source_galaxies.source.pixelization.shape_0 = 20.0
             self.source_galaxies.source.pixelization.shape_1 = 20.0
 
-    phase1 = SourcePix(phase_name='phase_1', phase_folders=[test_type, test_name],
-                       lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.SphericalDevVaucouleurs,
-                                                              mass=mp.EllipticalIsothermal)),
-                       source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.AdaptiveMagnification,
-                                                                  regularization=reg.Constant)),
-                       optimizer_class=nl.MultiNest)
+    phase1 = SourcePix(
+        phase_name='phase_1', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.SphericalDevVaucouleurs,
+                                               mass=mp.EllipticalIsothermal)),
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.AdaptiveMagnification,
+                                                   regularization=reg.Constant)),
+        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60
