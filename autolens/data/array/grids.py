@@ -847,8 +847,8 @@ class PixelizationGrid(np.ndarray):
                                 regular_to_pixelization=sparse_regular_grid.regular_to_sparse)
 
     def __array_finalize__(self, obj):
-        if hasattr(obj, "regular_to_nearest_pix"):
-            self.regular_to_nearest_pix = obj.regular_to_nearest_pix
+        if hasattr(obj, "regular_to_pixelization"):
+            self.regular_to_pixelization = obj.regular_to_pixelization
         if hasattr(obj, "interpolator"):
             self.interpolator = obj.interpolator
 

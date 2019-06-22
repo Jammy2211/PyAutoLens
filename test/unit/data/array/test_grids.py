@@ -594,6 +594,7 @@ class TestPixelizationGrid:
         assert (sparse_to_regular_grid.sparse == pixelization_grid).all()
         assert (sparse_to_regular_grid.regular_to_sparse == pixelization_grid.regular_to_pixelization).all()
 
+
 class TestSparseToRegularGrid:
 
     def test__properties_consistent_with_mapping_util(self):
@@ -1283,7 +1284,8 @@ class TestGridStack(object):
         assert (scaled_array_from_grid_stack == scaled_array_from_regular).all()
 
     def test__apply_function_retains_attributes(self, grid_stack):
-        grid_stack.pixelization = grid_stack.regular
+
+        grid_stack.pixelization = grids.PixelizationGrid(arr=np.array([[1.0, 1.0]]), regular_to_pixelization=1)
 
         def add_one(coords):
             return np.add(1, coords)
@@ -1305,7 +1307,8 @@ class TestGridStack(object):
         assert new_collection.sub.sub_grid_length is not None
         assert new_collection.sub.sub_grid_fraction is not None
 
-        assert isinstance(grid_stack.pixelization, grids.RegularGrid)
+        assert isinstance(grid_stack.pixelization, grids.PixelizationGrid)
+        assert grid_stack.pixelization.regular_to_pixelization == 1
         assert grid_stack.regular.mask is not None
 
     def test__apply_function(self, grid_stack):
@@ -1332,7 +1335,7 @@ class TestGridStack(object):
         assert (new_collection.pixelization == np.add(1, np.array([[0., 0.]]))).all()
 
     def test__map_function(self, grid_stack):
-        grid_stack.pixelization = grid_stack.regular
+        grid_stack.pixelization = grids.PixelizationGrid(arr=np.array([[1.0, 1.0]]), regular_to_pixelization=1)
 
         def add_number(coords, number):
             return np.add(coords, number)
@@ -1354,7 +1357,8 @@ class TestGridStack(object):
                                                                [-1., 0.],
                                                                [-1., 1.]]))).all()
 
-        assert (new_collection.pixelization == np.add(1, np.array([[0., 0.]]))).all()
+        assert (new_collection.pixelization == np.add(1, np.array([[1., 1.]]))).all()
+        assert new_collection.pixelization.regular_to_pixelization == 1
 
     def test__new_grid_stack_with_sparse_grid(self, grid_stack):
 

@@ -133,6 +133,7 @@ class Rectangular(Pixelization):
     def uses_pixelization_grid(self):
         return False
 
+
 class Voronoi(Pixelization):
 
     def __init__(self):
@@ -240,7 +241,7 @@ class AdaptiveMagnification(Voronoi):
             adaptive-magnification pixelization (see *ImagePlanePixelization*)
         """
         super(AdaptiveMagnification, self).__init__()
-        self.shape = shape
+        self.shape = (int(shape[0]), int(shape[1]))
 
     def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
