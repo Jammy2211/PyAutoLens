@@ -9,6 +9,7 @@ from autofit.mapper.model import ModelInstance
 from autofit.optimize import non_linear
 from autofit.tools.phase_property import PhaseProperty
 from autolens import exc
+from autolens.data.array import grids
 from autolens.data.plotters import ccd_plotters
 from autolens.lens import ray_tracing, lens_data as ld, lens_fit, sensitivity_fit
 from autolens.lens.plotters import ray_tracing_plotters, lens_fit_plotters, \
@@ -17,9 +18,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.pipeline import tagging as tag
-from autolens.pipeline.phase import Phase
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
-from autolens.plotters import array_plotters
 
 class PhaseImaging(Phase):
 
@@ -350,13 +349,15 @@ class PhaseImaging(Phase):
         def add_grids_to_grid_stack(self, galaxies, grid_stack):
 
             for galaxy in galaxies:
-                if hasattr(galaxy, 'pixelization'):
-                    if isinstance(galaxy.pixelization, ImagePlanePixelization):
-                        image_plane_pix_grid = galaxy.pixelization.from_unmasked_2d_grid_shape_and_regular_grid(
-                            regular_grid=grid_stack.regular)
+                if galaxy.pixelization is not None:
+                    if galaxy.pixelization.uses_pixelization_grid:
+
+                        sparse_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                            unmasked_sparse_shape=galaxy.pixelization.shape, regular_grid=grid_stack.regular)
+
                         return grid_stack.new_grid_stack_with_pixelization_grid_added(
-                            pixelization_grid=image_plane_pix_grid.sparse_grid,
-                            regular_to_pixelization=image_plane_pix_grid.regular_to_sparse)
+                            pixelization_grid=sparse_regular_grid.sparse,
+                            regular_to_pixelization=sparse_regular_grid.regular_to_sparse)
 
             return grid_stack
 
@@ -492,14 +493,18 @@ class MultiPlanePhase(PhaseImaging):
 
     @property
     def uses_inversion(self):
-        for galaxy in self.galaxies:
-            if galaxy.pixelization is not None:
-                return True
+        if self.galaxies:
+            for galaxy in self.galaxies:
+                if galaxy.pixelization is not None:
+                    return True
         return False
 
     @property
     def uses_hyper_images(self):
-        return any([galaxy.uses_hyper_images for galaxy in self.galaxies])
+        if self.galaxies:
+            return any([galaxy.uses_hyper_images for galaxy in self.galaxies])
+        else:
+            return False
 
     class Analysis(PhaseImaging.Analysis):
 
