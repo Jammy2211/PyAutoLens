@@ -5,6 +5,7 @@ from autofit.optimize import non_linear as nl
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
+from autolens.pipeline.phase import phase_hyper
 from autolens.pipeline.phase import phase_imaging as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import mass_profiles as mp
@@ -33,13 +34,11 @@ def make_pipeline(test_name):
 
         def pass_priors(self, results):
 
-            pass
-
-            # self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
-            # self.lens_galaxies.lens.mass.centre.centre_1 = 0.0
-            # self.lens_galaxies.lens.mass.einstein_radius = 1.6
-            # self.source_galaxies.source.pixelization.shape.shape_0 = 20.0
-            # self.source_galaxies.source.pixelization.shape.shape_1 = 20.0
+            self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
+            self.lens_galaxies.lens.mass.centre.centre_1 = 0.0
+            self.lens_galaxies.lens.mass.einstein_radius = 1.6
+            self.source_galaxies.source.pixelization.shape.shape_0 = 20.0
+            self.source_galaxies.source.pixelization.shape.shape_1 = 20.0
 
     phase1 = SourcePix(
         phase_name='phase_1', phase_folders=[test_type, test_name],
@@ -52,7 +51,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1h = ph.HyperGalaxyPhase(phase_name='phase_1_hyper', phase_folders=[test_type, test_name])
+    phase1h = phase_hyper.HyperGalaxyPhase(phase_name='phase_1_hyper', phase_folders=[test_type, test_name])
 
     class HyperLensSourcePlanePhase(ph.LensSourcePlanePhase):
 

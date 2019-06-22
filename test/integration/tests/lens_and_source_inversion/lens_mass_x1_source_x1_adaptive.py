@@ -31,13 +31,11 @@ def make_pipeline(test_name):
 
         def pass_priors(self, results):
 
-            pass
-
-            # self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
-            # self.lens_galaxies.lens.mass.centre.centre_1 = 0.0
-            # self.lens_galaxies.lens.mass.einstein_radius = 1.6
-            # self.source_galaxies.source.pixelization.shape.shape_0 = 20.0
-            # self.source_galaxies.source.pixelization.shape.shape_1 = 20.0
+            self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
+            self.lens_galaxies.lens.mass.centre.centre_1 = 0.0
+            self.lens_galaxies.lens.mass.einstein_radius = 1.6
+            self.source_galaxies.source.pixelization.shape.shape_0 = 20.0
+            self.source_galaxies.source.pixelization.shape.shape_1 = 20.0
 
     phase1 = SourcePix(
         phase_name='phase_1', phase_folders=[test_type, test_name],

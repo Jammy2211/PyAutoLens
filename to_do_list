@@ -14,6 +14,7 @@ Small Picture:
 - Integration tests + pipelines for noise scaling.
 - Implment weighted kmeans (day before Rich if psosible)
 
+- point source ray tracing, modeling, etc.
 - classmethods using realistic lens units.
 - Lensing example test data suites.
 - Aggregator use examples.
@@ -29,6 +30,8 @@ Small Picture:
 - positions still plotting wrong?
 - Expand intepolation tests and write tutorial.
 - Challenge mass errors.
+
+- Optimization
 
 Rich:
 
@@ -54,7 +57,6 @@ Mid term:
 Long Term:
 
 - Automated Prior Linking
-- Hyper Analysis intergration at high level (e.g. phase).
 - Write hyper analysis howtolens
 - Multi-plane analysis.
 
@@ -63,7 +65,7 @@ Future:
 2019) Population module for simulating large suites of 'realistic' lenses.
 2019) Quasar modeling (time-delays, variable cosmology, PSF refinement)
 2019) UV-plane
-2019) Multi-CCD analysis.
+2020) Multi-CCD analysis.
 
 
 Possible:
