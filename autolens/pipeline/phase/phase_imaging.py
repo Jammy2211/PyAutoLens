@@ -18,7 +18,9 @@ from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.pipeline import tagging as tag
+from autolens.pipeline.phase import Phase
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
+
 
 class PhaseImaging(Phase):
 
@@ -275,17 +277,17 @@ class PhaseImaging(Phase):
                     image_1d_galaxy_dict[galaxy] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image)
                     self.check_for_previously_masked_values(array=image_1d_galaxy_dict[galaxy])
 
-                self.hyper_galaxy_image_1d_name_dict = {}
+                self.hyper_galaxy_image_1d_path_dict = {}
 
-                for name, galaxy in results.last.name_galaxy_tuples:
+                for path, galaxy in results.last.path_galaxy_tuples:
 
-                    self.hyper_galaxy_image_1d_name_dict[name] = image_1d_galaxy_dict[name]
+                    self.hyper_galaxy_image_1d_path_dict[path] = image_1d_galaxy_dict[path]
 
-                    self.hyper_model_image_1d += image_1d_galaxy_dict[name]
+                    self.hyper_model_image_1d += image_1d_galaxy_dict[path]
 
             else:
 
-                self.hyper_galaxy_image_1d_name_dict = None
+                self.hyper_galaxy_image_1d_path_dict = None
                 self.hyper_model_image_1d = None
 
         def fit(self, instance):
@@ -339,10 +341,10 @@ class PhaseImaging(Phase):
                The input instance with images associated with galaxies where possible.
             """
             if self.uses_hyper_images:
-                for name, galaxy in instance.name_instance_tuples_for_class(g.Galaxy):
-                    if name in self.hyper_galaxy_image_1d_name_dict:
+                for galaxy_path, galaxy in instance.path_instance_tuples_for_class(g.Galaxy):
+                    if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
-                        galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_name_dict[name]
+                        galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[galaxy_path]
                         galaxy.hyper_minimum_value = 0.0
             return instance
 
@@ -352,12 +354,12 @@ class PhaseImaging(Phase):
                 if galaxy.pixelization is not None:
                     if galaxy.pixelization.uses_pixelization_grid:
 
-                        sparse_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
                             unmasked_sparse_shape=galaxy.pixelization.shape, regular_grid=grid_stack.regular)
 
                         return grid_stack.new_grid_stack_with_pixelization_grid_added(
-                            pixelization_grid=sparse_regular_grid.sparse,
-                            regular_to_pixelization=sparse_regular_grid.regular_to_sparse)
+                            pixelization_grid=sparse_to_regular_grid.sparse,
+                            regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
 
             return grid_stack
 
@@ -492,19 +494,19 @@ class MultiPlanePhase(PhaseImaging):
         self.galaxies = galaxies
 
     @property
+    def uses_hyper_images(self):
+        if self.galaxies:
+            return any([galaxy.uses_hyper_images for galaxy in self.galaxies])
+        else:
+            return False
+
+    @property
     def uses_inversion(self):
         if self.galaxies:
             for galaxy in self.galaxies:
                 if galaxy.pixelization is not None:
                     return True
         return False
-
-    @property
-    def uses_hyper_images(self):
-        if self.galaxies:
-            return any([galaxy.uses_hyper_images for galaxy in self.galaxies])
-        else:
-            return False
 
     class Analysis(PhaseImaging.Analysis):
 
@@ -581,13 +583,16 @@ class LensSourcePlanePhase(PhaseImaging):
 
     @property
     def uses_inversion(self):
-        for galaxy_model in self.lens_galaxies:
-            if galaxy_model.pixelization is not None:
-                return True
 
-        for galaxy_model in self.source_galaxies:
-            if galaxy_model.pixelization is not None:
-                return True
+        if self.lens_galaxies:
+            for galaxy_model in self.lens_galaxies:
+                if galaxy_model.pixelization is not None:
+                    return True
+
+        if self.source_galaxies:
+            for galaxy_model in self.source_galaxies:
+                if galaxy_model.pixelization is not None:
+                    return True
         return False
 
     @property
@@ -595,6 +600,7 @@ class LensSourcePlanePhase(PhaseImaging):
         return any([galaxy.uses_hyper_images for galaxy in self.lens_galaxies + self.source_galaxies])
 
     class Analysis(PhaseImaging.Analysis):
+
         def figure_of_merit_for_fit(self, tracer):
             raise NotImplementedError()
 
@@ -657,15 +663,16 @@ class LensPlanePhase(PhaseImaging):
         self.lens_galaxies = lens_galaxies
 
     @property
-    def uses_inversion(self):
-        for galaxy_model in self.lens_galaxies:
-            if galaxy_model.pixelization is not None:
-                return True
-        return False
-
-    @property
     def uses_hyper_images(self):
         return any([galaxy.uses_hyper_images for galaxy in self.lens_galaxies])
+
+    @property
+    def uses_inversion(self):
+        if self.lens_galaxies:
+            for galaxy_model in self.lens_galaxies:
+                if galaxy_model.pixelization is not None:
+                    return True
+        return False
 
     class Analysis(PhaseImaging.Analysis):
         def figure_of_merit_for_fit(self, tracer):
@@ -959,11 +966,11 @@ class HyperGalaxyPhase(PhaseImaging):
 
         results_copy = copy.copy(results.last)
 
-        for name, galaxy in results.last.name_galaxy_tuples:
+        for galaxy_path, galaxy in results.last.path_galaxy_tuples:
 
-            optimizer = self.optimizer.copy_with_name_extension(extension=name)
+            optimizer = self.optimizer.copy_with_name_extension(extension=galaxy_path)
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
-            galaxy_image_2d = results.last.image_2d_dict[name]
+            galaxy_image_2d = results.last.image_2d_dict[galaxy_path]
 
             # If array is all zeros, galaxy did not have image in previous phase and should be ignored
             if not np.all(galaxy_image_2d==0):
@@ -972,7 +979,7 @@ class HyperGalaxyPhase(PhaseImaging):
                                                     galaxy_image_2d=galaxy_image_2d)
                 optimizer.fit(analysis)
 
-                getattr(results_copy.variable, name).hyper_galaxy = optimizer.variable.hyper_galaxy
-                getattr(results_copy.constant, name).hyper_galaxy = optimizer.constant.hyper_galaxy
+                getattr(results_copy.variable, galaxy_path).hyper_galaxy = optimizer.variable.hyper_galaxy
+                getattr(results_copy.constant, galaxy_path).hyper_galaxy = optimizer.constant.hyper_galaxy
 
         return results_copy

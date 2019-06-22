@@ -225,7 +225,7 @@ class AdaptiveBrightness(Regularization):
                                                  pixel_neighbors_size=pixel_neighbors_size)
 
     def regularization_weights_from_mapper(self, mapper):
-        pixel_signals = self.pixel_signals_from_images(pixels=mapper.pixels, regular_to_pix=mapper.regular_to_pix,
+        pixel_signals = self.pixel_signals_from_images(pixels=mapper.pixels, regular_to_pix=mapper.regular_to_pixelization,
                                                        hyper_image=mapper.hyper_image)
 
         return self.regularization_weights_from_pixel_signals(pixel_signals=pixel_signals)
