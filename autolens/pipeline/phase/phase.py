@@ -211,11 +211,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             """
             A dictionary associating galaxy names with model images of those galaxies
             """
-            return {
-                galaxy_path: self.image_2d_for_galaxy(galaxy)
-                for galaxy_path, galaxy
-                in self.path_galaxy_tuples
-            }
+            return {galaxy_path: self.image_2d_for_galaxy(galaxy) for galaxy_path, galaxy in self.path_galaxy_tuples}
 
 
 class Phase(AbstractPhase):
