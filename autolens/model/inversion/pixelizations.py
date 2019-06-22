@@ -129,6 +129,9 @@ class Rectangular(Pixelization):
         return mappers.RectangularMapper(pixels=self.pixels, grid_stack=relocated_grid_stack, border=border,
                                          shape=self.shape, geometry=geometry, hyper_image=hyper_image)
 
+    @property
+    def uses_pixelization_grid(self):
+        return False
 
 class Voronoi(Pixelization):
 
@@ -281,6 +284,10 @@ class AdaptiveMagnification(Voronoi):
 
         return mappers.VoronoiMapper(pixels=pixels, grid_stack=relocated_grids, border=border,
                                      voronoi=voronoi, geometry=geometry, hyper_image=hyper_image)
+
+    @property
+    def uses_pixelization_grid(self):
+        return True
 
 class AdaptiveBrightness(AdaptiveMagnification):
 
