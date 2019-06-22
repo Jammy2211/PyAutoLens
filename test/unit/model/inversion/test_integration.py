@@ -208,7 +208,7 @@ class TestRectangular:
                                                    [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.00000001]])).all()
 
 
-class TestImagePlanePixelization:
+class TestSparseToRegularGrid:
 
     def test__3x3_simple_grid__create_using_regular_grid(self):
 
@@ -229,16 +229,17 @@ class TestImagePlanePixelization:
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
-        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+            unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
-        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=sparse_to_regular_grid.sparse,
+                                      regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None, hyper_image=np.ones((2,2)))
 
         assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == image_plane_pix.sparse_grid).all()
+        assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
         assert (mapper.hyper_image == np.ones((2,2))).all()
 
@@ -287,16 +288,17 @@ class TestImagePlanePixelization:
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
-        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+            unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
-        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=sparse_to_regular_grid.sparse,
+                                      regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
         assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == image_plane_pix.sparse_grid).all()
+        assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert isinstance(mapper, pm.VoronoiMapper)
@@ -339,16 +341,17 @@ class TestImagePlanePixelization:
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=2)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
-        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+            unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
-        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=sparse_to_regular_grid.sparse,
+                                      regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
         assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arcsec == pytest.approx((2.02, 2.01), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == image_plane_pix.sparse_grid).all()
+        assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.005), 1.0e-4)
 
         assert isinstance(mapper, pm.VoronoiMapper)
@@ -390,16 +393,17 @@ class TestImagePlanePixelization:
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
-        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+            unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
-        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=sparse_to_regular_grid.sparse,
+                                      regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
         assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == image_plane_pix.sparse_grid).all()
+        assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
         assert isinstance(mapper, pm.VoronoiMapper)
@@ -435,7 +439,7 @@ class TestAdaptiveMagnification:
         grid_stack = MockPixGridStack(regular=regular_grid,
                                       sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
                                       pix=regular_grid,
-                                      regular_to_nearest_pix=regular_to_sparse)
+                                      regular_to_pixelization=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
@@ -490,7 +494,7 @@ class TestAdaptiveMagnification:
         grid_stack = MockPixGridStack(regular=regular_grid,
                                       sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
                                       pix=regular_grid,
-                                      regular_to_nearest_pix=regular_to_sparse)
+                                      regular_to_pixelization=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
@@ -527,16 +531,17 @@ class TestAdaptiveMagnification:
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
-        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+            unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
-        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
-                                      regular_to_nearest_pix=image_plane_pix.regular_to_sparse)
+        grid_stack = MockPixGridStack(regular=regular_grid, sub=sub_grid, pix=sparse_to_regular_grid.sparse,
+                                      regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
         assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == image_plane_pix.sparse_grid).all()
+        assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
         assert isinstance(mapper, pm.VoronoiMapper)
@@ -578,7 +583,7 @@ class TestAdaptiveMagnification:
 
         grid_stack = MockPixGridStack(regular=regular_grid,
                                       sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
-                                      pix=pixel_centers, regular_to_nearest_pix=regular_to_sparse)
+                                      pix=pixel_centers, regular_to_pixelization=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
@@ -637,7 +642,7 @@ class TestAdaptiveMagnification:
                                       sub=MockPixSubGrid(sub_grid, sub_to_regular,
                                                       sub_grid_size=2),
                                       pix=pixel_centers,
-                                      regular_to_nearest_pix=regular_to_sparse)
+                                      regular_to_pixelization=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
@@ -681,7 +686,7 @@ class TestAdaptiveMagnification:
 
         grid_stack = MockPixGridStack(regular=regular_grid,
                                       sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
-                                      pix=pix_grid, regular_to_nearest_pix=regular_to_sparse)
+                                      pix=pix_grid, regular_to_pixelization=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 

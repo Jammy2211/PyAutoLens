@@ -123,12 +123,12 @@ class MockPixSubGrid(np.ndarray):
 
 class MockPixGridStack(object):
 
-    def __init__(self, regular, sub, blurring=None, pix=None, regular_to_nearest_pix=None):
+    def __init__(self, regular, sub, blurring=None, pix=None, regular_to_pixelization=None):
         self.regular = grids.RegularGrid(regular, mask=None)
         self.sub = sub
         self.blurring = grids.RegularGrid(blurring, mask=None) if blurring is not None else None
-        self.pix = grids.PixelizationGrid(pix, regular_to_nearest_pix=regular_to_nearest_pix,
-                                          mask=None) if pix is not None else np.array([[0.0, 0.0]])
+        self.pixelization = grids.PixelizationGrid(pix, regular_to_pixelization=regular_to_pixelization,
+                                                   mask=None) if pix is not None else np.array([[0.0, 0.0]])
 
 
 class MockBorders(np.ndarray):

@@ -474,9 +474,6 @@ class TracerImageSourcePlanes(AbstractTracerData):
             The cosmology of the ray-tracing calculation.
         """
 
-        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
-            galaxies=source_galaxies, grid_stack=image_plane_grid_stack)
-
         image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border,
             compute_deflections=True, cosmology=cosmology)
 
@@ -536,9 +533,6 @@ class TracerMultiPlanes(AbstractTracerData):
         galaxies_in_planes = \
             lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
                                                                         plane_redshifts=plane_redshifts)
-
-        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
-            galaxies=galaxies, grid_stack=image_plane_grid_stack)
 
         planes = []
 
@@ -611,9 +605,6 @@ class TracerMultiPlanesSliced(AbstractTracerData):
 
         plane_redshifts.append(source_galaxies[0].redshift)
         galaxies_in_planes.append(source_galaxies)
-
-        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
-            galaxies=lens_galaxies, grid_stack=image_plane_grid_stack)
 
         planes = []
 

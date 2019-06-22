@@ -11,7 +11,8 @@ from autolens.model.galaxy.plotters import galaxy_fit_plotters
 
 
 def default_mask_function(image):
-    return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
+    return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale,
+                             radius_arcsec=3.0)
 
 
 def setup_phase_mask(data, mask, mask_function, inner_mask_radii):
@@ -45,8 +46,10 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             The name of this phase
         """
 
-        super().__init__(phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders, tag_phases=tag_phases,
-                         optimizer_class=optimizer_class, auto_link_priors=auto_link_priors)
+        super().__init__(phase_name=phase_name, phase_tag=phase_tag,
+                         phase_folders=phase_folders, tag_phases=tag_phases,
+                         optimizer_class=optimizer_class,
+                         auto_link_priors=auto_link_priors)
 
         self.cosmology = cosmology
 
@@ -136,18 +139,23 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             raise NotImplementedError()
 
     def make_result(self, result, analysis):
-        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
-                                     previous_variable=result.previous_variable, gaussian_tuples=result.gaussian_tuples,
+        return self.__class__.Result(constant=result.constant,
+                                     figure_of_merit=result.figure_of_merit,
+                                     previous_variable=result.previous_variable,
+                                     gaussian_tuples=result.gaussian_tuples,
                                      analysis=analysis, optimizer=self.optimizer)
 
     class Result(non_linear.Result):
 
-        def __init__(self, constant, figure_of_merit, previous_variable, gaussian_tuples, analysis, optimizer):
+        def __init__(self, constant, figure_of_merit, previous_variable,
+                     gaussian_tuples, analysis, optimizer):
             """
             The result of a phase
             """
-            super(Phase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
-                                               previous_variable=previous_variable, gaussian_tuples=gaussian_tuples)
+            super(Phase.Result, self).__init__(constant=constant,
+                                               figure_of_merit=figure_of_merit,
+                                               previous_variable=previous_variable,
+                                               gaussian_tuples=gaussian_tuples)
 
             self.analysis = analysis
             self.optimizer = optimizer
@@ -192,20 +200,22 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             return self.most_likely_fit.galaxy_image_2d_dict[galaxy]
 
         @property
-        def name_galaxy_tuples(self) -> [(str, g.Galaxy)]:
+        def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
             """
             Tuples associating the names of galaxies with instances from the best fit
             """
-            return self.constant.name_instance_tuples_for_class(cls=g.Galaxy)
+            return self.constant.path_instance_tuples_for_class(cls=g.Galaxy)
 
         @property
         def image_2d_dict(self) -> {str: g.Galaxy}:
             """
             A dictionary associating galaxy names with model images of those galaxies
             """
-            return {name: self.image_2d_for_galaxy(galaxy)
-                    for name, galaxy
-                    in self.name_galaxy_tuples}
+            return {
+                galaxy_path: self.image_2d_for_galaxy(galaxy)
+                for galaxy_path, galaxy
+                in self.path_galaxy_tuples
+            }
 
 
 class Phase(AbstractPhase):
@@ -217,7 +227,6 @@ class Phase(AbstractPhase):
     class Analysis(AbstractPhase.Analysis):
 
         def __init__(self, cosmology, results=None):
-
             super(Phase.Analysis, self).__init__(cosmology=cosmology, results=results)
 
             self.should_plot_mask = \
@@ -232,28 +241,35 @@ class Phase(AbstractPhase):
                 conf.instance.general.get('output', 'plot_units', str).strip()
 
             self.plot_ray_tracing_all_at_end_png = \
-                conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_png', bool)
+                conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_png',
+                                          bool)
             self.plot_ray_tracing_all_at_end_fits = \
-                conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_fits', bool)
+                conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_fits',
+                                          bool)
 
             self.plot_ray_tracing_as_subplot = \
                 conf.instance.general.get('output', 'plot_ray_tracing_as_subplot', bool)
             self.plot_ray_tracing_image_plane_image = \
-                conf.instance.general.get('output', 'plot_ray_tracing_image_plane_image', bool)
+                conf.instance.general.get('output',
+                                          'plot_ray_tracing_image_plane_image', bool)
             self.plot_ray_tracing_source_plane = \
-                conf.instance.general.get('output', 'plot_ray_tracing_source_plane_image', bool)
+                conf.instance.general.get('output',
+                                          'plot_ray_tracing_source_plane_image', bool)
             self.plot_ray_tracing_convergence = \
-                conf.instance.general.get('output', 'plot_ray_tracing_convergence', bool)
+                conf.instance.general.get('output', 'plot_ray_tracing_convergence',
+                                          bool)
             self.plot_ray_tracing_potential = \
                 conf.instance.general.get('output', 'plot_ray_tracing_potential', bool)
             self.plot_ray_tracing_deflections = \
-                conf.instance.general.get('output', 'plot_ray_tracing_deflections', bool)
+                conf.instance.general.get('output', 'plot_ray_tracing_deflections',
+                                          bool)
 
 
 class GalaxyFitPhase(AbstractPhase):
     galaxies = PhaseProperty("galaxies")
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None, use_intensities=False,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
+                 use_intensities=False,
                  use_convergence=False,
                  use_potential=False,
                  use_deflections=False, optimizer_class=non_linear.MultiNest,
@@ -271,9 +287,11 @@ class GalaxyFitPhase(AbstractPhase):
             The side length of the subgrid
         """
 
-        super(GalaxyFitPhase, self).__init__(phase_name=phase_name, tag_phases=tag_phases,
+        super(GalaxyFitPhase, self).__init__(phase_name=phase_name,
+                                             tag_phases=tag_phases,
                                              phase_folders=phase_folders,
-                                             optimizer_class=optimizer_class, cosmology=cosmology)
+                                             optimizer_class=optimizer_class,
+                                             cosmology=cosmology)
         self.use_intensities = use_intensities
         self.use_convergence = use_convergence
         self.use_potential = use_potential
@@ -300,7 +318,8 @@ class GalaxyFitPhase(AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper.
         """
-        analysis = self.make_analysis(galaxy_data=galaxy_data, results=results, mask=mask)
+        analysis = self.make_analysis(galaxy_data=galaxy_data, results=results,
+                                      mask=mask)
 
         self.pass_priors(results)
         self.assert_and_save_pickle()
@@ -328,12 +347,14 @@ class GalaxyFitPhase(AbstractPhase):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
 
-        mask = setup_phase_mask(data=galaxy_data[0], mask=mask, mask_function=self.mask_function,
+        mask = setup_phase_mask(data=galaxy_data[0], mask=mask,
+                                mask_function=self.mask_function,
                                 inner_mask_radii=None)
 
         if self.use_intensities or self.use_convergence or self.use_potential:
 
-            galaxy_data = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask, sub_grid_size=self.sub_grid_size,
+            galaxy_data = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask,
+                                           sub_grid_size=self.sub_grid_size,
                                            interp_pixel_scale=self.interp_pixel_scale,
                                            use_intensities=self.use_intensities,
                                            use_convergence=self.use_convergence,
@@ -347,21 +368,26 @@ class GalaxyFitPhase(AbstractPhase):
 
         elif self.use_deflections:
 
-            galaxy_data_y = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask, sub_grid_size=self.sub_grid_size,
+            galaxy_data_y = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask,
+                                             sub_grid_size=self.sub_grid_size,
                                              interp_pixel_scale=self.interp_pixel_scale,
                                              use_intensities=self.use_intensities,
                                              use_convergence=self.use_convergence,
                                              use_potential=self.use_potential,
-                                             use_deflections_y=self.use_deflections, use_deflections_x=False)
+                                             use_deflections_y=self.use_deflections,
+                                             use_deflections_x=False)
 
-            galaxy_data_x = gd.GalaxyFitData(galaxy_data=galaxy_data[1], mask=mask, sub_grid_size=self.sub_grid_size,
+            galaxy_data_x = gd.GalaxyFitData(galaxy_data=galaxy_data[1], mask=mask,
+                                             sub_grid_size=self.sub_grid_size,
                                              interp_pixel_scale=self.interp_pixel_scale,
                                              use_intensities=self.use_intensities,
                                              use_convergence=self.use_convergence,
                                              use_potential=self.use_potential,
-                                             use_deflections_y=False, use_deflections_x=self.use_deflections)
+                                             use_deflections_y=False,
+                                             use_deflections_x=self.use_deflections)
 
-            return self.__class__.AnalysisDeflections(galaxy_data_y=galaxy_data_y, galaxy_data_x=galaxy_data_x,
+            return self.__class__.AnalysisDeflections(galaxy_data_y=galaxy_data_y,
+                                                      galaxy_data_x=galaxy_data_x,
                                                       cosmology=self.cosmology,
                                                       results=results)
 
@@ -372,9 +398,11 @@ class GalaxyFitPhase(AbstractPhase):
                                                           results=results)
 
             self.plot_galaxy_fit_all_at_end_png = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_png', bool)
+                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_png',
+                                          bool)
             self.plot_galaxy_fit_all_at_end_fits = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_fits', bool)
+                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_fits',
+                                          bool)
             self.plot_galaxy_fit_as_subplot = \
                 conf.instance.general.get('output', 'plot_galaxy_fit_as_subplot', bool)
             self.plot_galaxy_fit_image = \
@@ -384,13 +412,16 @@ class GalaxyFitPhase(AbstractPhase):
             self.plot_galaxy_fit_model_image = \
                 conf.instance.general.get('output', 'plot_galaxy_fit_model_image', bool)
             self.plot_galaxy_fit_residual_map = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_residual_map', bool)
+                conf.instance.general.get('output', 'plot_galaxy_fit_residual_map',
+                                          bool)
             self.plot_galaxy_fit_chi_squared_map = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_chi_squared_map', bool)
+                conf.instance.general.get('output', 'plot_galaxy_fit_chi_squared_map',
+                                          bool)
 
         @classmethod
         def describe(cls, instance):
-            return "\nRunning galaxy fit for... \n\nGalaxies::\n{}\n\n".format(instance.galaxies)
+            return "\nRunning galaxy fit for... \n\nGalaxies::\n{}\n\n".format(
+                instance.galaxies)
 
     # noinspection PyAbstractClass
     class AnalysisSingle(Analysis):
@@ -412,14 +443,16 @@ class GalaxyFitPhase(AbstractPhase):
 
             if self.plot_galaxy_fit_as_subplot:
                 galaxy_fit_plotters.plot_fit_subplot(
-                    fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    fit=fit, should_plot_mask=self.should_plot_mask,
+                    zoom_around_mask=self.zoom_around_mask,
                     units=self.plot_units,
                     output_path=image_path, output_format='png')
 
             if during_analysis:
 
                 galaxy_fit_plotters.plot_fit_individuals(
-                    fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    fit=fit, should_plot_mask=self.should_plot_mask,
+                    zoom_around_mask=self.zoom_around_mask,
                     should_plot_image=self.plot_galaxy_fit_image,
                     should_plot_noise_map=self.plot_galaxy_fit_noise_map,
                     should_plot_model_image=self.plot_galaxy_fit_model_image,
@@ -432,7 +465,8 @@ class GalaxyFitPhase(AbstractPhase):
 
                 if self.plot_ray_tracing_all_at_end_png:
                     galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        fit=fit, should_plot_mask=self.should_plot_mask,
+                        zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
                         should_plot_noise_map=True,
                         should_plot_model_image=True,
@@ -443,7 +477,8 @@ class GalaxyFitPhase(AbstractPhase):
 
                 if self.plot_ray_tracing_all_at_end_fits:
                     galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        fit=fit, should_plot_mask=self.should_plot_mask,
+                        zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
                         should_plot_noise_map=True,
                         should_plot_model_image=True,
@@ -468,14 +503,16 @@ class GalaxyFitPhase(AbstractPhase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model lens_data itself
             """
-            return galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data, model_galaxies=instance.galaxies)
+            return galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data,
+                                        model_galaxies=instance.galaxies)
 
     # noinspection PyAbstractClass
     class AnalysisDeflections(Analysis):
 
         def __init__(self, galaxy_data_y, galaxy_data_x, cosmology, results=None):
-            super(GalaxyFitPhase.AnalysisDeflections, self).__init__(cosmology=cosmology,
-                                                                     results=results)
+            super(GalaxyFitPhase.AnalysisDeflections, self).__init__(
+                cosmology=cosmology,
+                results=results)
 
             self.galaxy_data_y = galaxy_data_y
             self.galaxy_data_x = galaxy_data_x
@@ -496,19 +533,22 @@ class GalaxyFitPhase(AbstractPhase):
 
             if self.plot_galaxy_fit_as_subplot:
                 galaxy_fit_plotters.plot_fit_subplot(
-                    fit=fit_y, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    fit=fit_y, should_plot_mask=self.should_plot_mask,
+                    zoom_around_mask=self.zoom_around_mask,
                     units=self.plot_units,
                     output_path=output_image_y_path, output_format='png')
 
                 galaxy_fit_plotters.plot_fit_subplot(
-                    fit=fit_x, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    fit=fit_x, should_plot_mask=self.should_plot_mask,
+                    zoom_around_mask=self.zoom_around_mask,
                     units=self.plot_units,
                     output_path=output_image_x_path, output_format='png')
 
             if during_analysis:
 
                 galaxy_fit_plotters.plot_fit_individuals(
-                    fit=fit_y, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    fit=fit_y, should_plot_mask=self.should_plot_mask,
+                    zoom_around_mask=self.zoom_around_mask,
                     should_plot_image=self.plot_galaxy_fit_image,
                     should_plot_noise_map=self.plot_galaxy_fit_noise_map,
                     should_plot_model_image=self.plot_galaxy_fit_model_image,
@@ -518,7 +558,8 @@ class GalaxyFitPhase(AbstractPhase):
                     output_path=output_image_y_path, output_format='png')
 
                 galaxy_fit_plotters.plot_fit_individuals(
-                    fit=fit_x, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    fit=fit_x, should_plot_mask=self.should_plot_mask,
+                    zoom_around_mask=self.zoom_around_mask,
                     should_plot_image=self.plot_galaxy_fit_image,
                     should_plot_noise_map=self.plot_galaxy_fit_noise_map,
                     should_plot_model_image=self.plot_galaxy_fit_model_image,
@@ -531,7 +572,8 @@ class GalaxyFitPhase(AbstractPhase):
 
                 if self.plot_ray_tracing_all_at_end_png:
                     galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit_y, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        fit=fit_y, should_plot_mask=self.should_plot_mask,
+                        zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
                         should_plot_noise_map=True,
                         should_plot_model_image=True,
@@ -541,7 +583,8 @@ class GalaxyFitPhase(AbstractPhase):
                         output_path=output_image_y_path, output_format='png')
 
                     galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit_x, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        fit=fit_x, should_plot_mask=self.should_plot_mask,
+                        zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
                         should_plot_noise_map=True,
                         should_plot_model_image=True,
@@ -552,7 +595,8 @@ class GalaxyFitPhase(AbstractPhase):
 
                 if self.plot_ray_tracing_all_at_end_fits:
                     galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit_y, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        fit=fit_y, should_plot_mask=self.should_plot_mask,
+                        zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
                         should_plot_noise_map=True,
                         should_plot_model_image=True,
@@ -562,7 +606,8 @@ class GalaxyFitPhase(AbstractPhase):
                         output_path=output_fits_y_path, output_format='fits')
 
                     galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit_x, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        fit=fit_x, should_plot_mask=self.should_plot_mask,
+                        zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
                         should_plot_noise_map=True,
                         should_plot_model_image=True,
@@ -575,9 +620,9 @@ class GalaxyFitPhase(AbstractPhase):
 
         def fit_for_instance(self, instance):
 
-            fit_y = galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data_y, model_galaxies=instance.galaxies)
-            fit_x = galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data_x, model_galaxies=instance.galaxies)
+            fit_y = galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data_y,
+                                         model_galaxies=instance.galaxies)
+            fit_x = galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data_x,
+                                         model_galaxies=instance.galaxies)
 
             return fit_y, fit_x
-
-

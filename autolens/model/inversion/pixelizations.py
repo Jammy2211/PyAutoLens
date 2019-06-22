@@ -289,6 +289,7 @@ class AdaptiveMagnification(Voronoi):
     def uses_pixelization_grid(self):
         return True
 
+
 class AdaptiveBrightness(AdaptiveMagnification):
 
     def __init__(self, shape=(3, 3)):

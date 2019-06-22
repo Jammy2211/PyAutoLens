@@ -699,6 +699,7 @@ class TestAbstractPlane(object):
 
 
 class TestAbstractPlaneGridded(object):
+
     class TestImage:
 
         def test__image_from_plane__same_as_its_light_profile_image(self, grid_stack_5x5, gal_x1_lp):

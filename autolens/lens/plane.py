@@ -247,18 +247,18 @@ class AbstractPlane(object):
         prefix_plane = ''
 
         summary += [af_text_util.label_and_value_string(
-            label=prefix_plane + 'redshift', value=self.redshift, whitespace=whitespace, format_str='{:.2f}')]
+            label=prefix_plane + 'redshift', value=self.redshift, whitespace=whitespace, format_string='{:.2f}')]
 
         summary += [af_text_util.label_and_value_string(
             label=prefix_plane + 'kpc_per_arcsec', value=self.kpc_per_arcsec, whitespace=whitespace,
-            format_str='{:.2f}')]
+            format_string='{:.2f}')]
 
         angular_diameter_distance_to_earth = self.angular_diameter_distance_to_earth_in_units(unit_length=unit_length)
 
         summary += [af_text_util.label_and_value_string(
             label=prefix_plane + 'angular_diameter_distance_to_earth', value=angular_diameter_distance_to_earth,
             whitespace=whitespace,
-            format_str='{:.2f}')]
+            format_string='{:.2f}')]
 
         for galaxy in self.galaxies:
             summary += ['\n']

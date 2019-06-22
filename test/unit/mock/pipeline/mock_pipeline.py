@@ -1,28 +1,9 @@
-import os
-from os import path
-
 import numpy as np
-import pytest
-from astropy import cosmology as cosmo
 
-import autofit.tools.pipeline
-import autolens.pipeline.phase.phase_imaging
-from autofit import conf
-from autofit.exc import PipelineException
 from autofit.mapper import model_mapper as mm
-from autofit.mapper import prior
 from autofit.optimize import non_linear
-from autolens import exc
-from autolens.data import ccd
-from autolens.data.array import grids, mask as msk
-from autolens.data.array import scaled_array
-from autolens.lens import lens_data as ld
-from autolens.lens import lens_fit
-from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.pipeline.phase import phase as ph
+from autolens.model.galaxy import galaxy as g
+
 
 class MockAnalysis(object):
 
@@ -40,8 +21,8 @@ class MockAnalysis(object):
 
 class MockResults(object):
 
-    def __init__(self, model_image=None, galaxy_images=(), constant=None, analysis=None, optimizer=None):
-
+    def __init__(self, model_image=None, galaxy_images=(), constant=None, analysis=None,
+                 optimizer=None):
         self.model_image = model_image
         self.unmasked_model_image = model_image
         self.galaxy_images = galaxy_images
@@ -51,27 +32,28 @@ class MockResults(object):
         self.optimizer = optimizer
 
     @property
-    def name_galaxy_tuples(self) -> [(str, g.Galaxy)]:
+    def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
         """
         Tuples associating the names of galaxies with instances from the best fit
         """
-        return [('g0', g.Galaxy(redshift=0.5)), ('g1', g.Galaxy(redshift=1.0))]
+        return [(('g0',), g.Galaxy(redshift=0.5)), (('g1',), g.Galaxy(redshift=1.0))]
 
     @property
-    def name_galaxy_tuples_with_index(self) -> [(str, g.Galaxy)]:
+    def path_galaxy_tuples_with_index(self) -> [(str, g.Galaxy)]:
         """
         Tuples associating the names of galaxies with instances from the best fit
         """
-        return [(0, 'g0', g.Galaxy(redshift=0.5)), (1, 'g1', g.Galaxy(redshift=1.0))]
+        return [(0, ('g0',), g.Galaxy(redshift=0.5)),
+                (1, ('g1',), g.Galaxy(redshift=1.0))]
 
     @property
     def image_2d_dict(self) -> {str: g.Galaxy}:
         """
         A dictionary associating galaxy names with model images of those galaxies
         """
-        return {name : self.galaxy_images[i]
-                for i, name, galaxy
-                in self.name_galaxy_tuples_with_index}
+        return {galaxy_path: self.galaxy_images[i]
+                for i, galaxy_path, galaxy
+                in self.path_galaxy_tuples_with_index}
 
 
 class MockResult:
@@ -86,7 +68,6 @@ class MockResult:
 class MockNLO(non_linear.NonLinearOptimizer):
 
     def fit(self, analysis):
-
         class Fitness(object):
 
             def __init__(self, instance_from_physical_vector):
@@ -94,7 +75,6 @@ class MockNLO(non_linear.NonLinearOptimizer):
                 self.instance_from_physical_vector = instance_from_physical_vector
 
             def __call__(self, vector):
-
                 instance = self.instance_from_physical_vector(vector)
 
                 likelihood = analysis.fit(instance)

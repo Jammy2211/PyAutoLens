@@ -78,21 +78,21 @@ class Mapper(object):
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
         [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
         """
-        return mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=self.sub_to_pix, pixels=self.pixels,
+        return mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=self.sub_to_pixelization, pixels=self.pixels,
                                                           regular_pixels=self.grid_stack.regular.shape[0],
                                                           sub_to_regular=self.grid_stack.sub.sub_to_regular,
                                                           sub_grid_fraction=self.grid_stack.sub.sub_grid_fraction)
 
     @property
-    def regular_to_pix(self):
-        raise NotImplementedError("regular_to_pix should be overridden")
+    def regular_to_pixelization(self):
+        raise NotImplementedError("regular_to_pixelization should be overridden")
 
     @property
-    def sub_to_pix(self):
-        raise NotImplementedError("sub_to_pix should be overridden")
+    def sub_to_pixelization(self):
+        raise NotImplementedError("sub_to_pixelization should be overridden")
 
     @property
-    def pix_to_regular(self):
+    def pixelization_to_regular(self):
         """Compute the mappings between a pixelization's pixels and the unmasked regular-grid pixels. These mappings \
         are determined after the regular-grid is used to determine the pixelization.
 
@@ -100,14 +100,14 @@ class Mapper(object):
         represent these mappings"""
         pix_to_regular = [[] for _ in range(self.pixels)]
 
-        for regular_pixel, pix_pixel in enumerate(self.regular_to_pix):
+        for regular_pixel, pix_pixel in enumerate(self.regular_to_pixelization):
 
             pix_to_regular[pix_pixel].append(regular_pixel)
 
         return pix_to_regular
 
     @property
-    def pix_to_sub(self):
+    def pixelization_to_sub(self):
         """Compute the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings \
         are determined after the regular-grid is used to determine the pixelization.
 
@@ -115,7 +115,7 @@ class Mapper(object):
         represent these mappings"""
         pix_to_sub = [[] for _ in range(self.pixels)]
 
-        for regular_pixel, pix_pixel in enumerate(self.sub_to_pix):
+        for regular_pixel, pix_pixel in enumerate(self.sub_to_pixelization):
             pix_to_sub[pix_pixel].append(regular_pixel)
 
         return pix_to_sub
@@ -152,12 +152,12 @@ class RectangularMapper(Mapper):
         return False
 
     @property
-    def regular_to_pix(self):
+    def regular_to_pixelization(self):
         """The 1D index mappings between the regular grid's pixels and rectangular pixelization's pixels."""
         return self.geometry.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.grid_stack.regular)
 
     @property
-    def sub_to_pix(self):
+    def sub_to_pixelization(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
         return self.geometry.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.grid_stack.sub)
 
@@ -204,18 +204,18 @@ class VoronoiMapper(Mapper):
         return True
 
     @property
-    def regular_to_pix(self):
+    def regular_to_pixelization(self):
         """The 1D index mappings between the regular pixels and Voronoi pixelization pixels."""
         return mapper_util.voronoi_regular_to_pix_from_grids_and_geometry(regular_grid=self.grid_stack.regular,
-               regular_to_nearest_pix=self.grid_stack.pix.regular_to_nearest_pix,
+               regular_to_nearest_pix=self.grid_stack.pixelization.regular_to_pixelization,
                pixel_centres=self.geometry.pixel_centres, pixel_neighbors=self.geometry.pixel_neighbors,
                pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')
 
     @property
-    def sub_to_pix(self):
+    def sub_to_pixelization(self):
         """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
         return mapper_util.voronoi_sub_to_pix_from_grids_and_geometry(sub_grid=self.grid_stack.sub,
-               regular_to_nearest_pix=self.grid_stack.pix.regular_to_nearest_pix,
+               regular_to_nearest_pix=self.grid_stack.pixelization.regular_to_pixelization,
                sub_to_regular=self.grid_stack.sub.sub_to_regular, pixel_centres=self.geometry.pixel_centres,
                pixel_neighbors=self.geometry.pixel_neighbors,
                pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')
