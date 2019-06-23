@@ -333,4 +333,6 @@ class TestVoronoiBrightness:
 
             cluster_weight_map = pix.cluster_weight_map_from_hyper_image(hyper_image=hyper_image)
 
-            assert (cluster_weight_map == np.array([1.0, 1.5, 2.0])).all()
+            print(cluster_weight_map)
+
+            assert (cluster_weight_map == np.array([3.0, 3.5, 4.0])).all()

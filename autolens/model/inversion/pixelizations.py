@@ -310,7 +310,7 @@ class VoronoiBrightnessImage(Voronoi):
     def cluster_weight_map_from_hyper_image(self, hyper_image):
 
         cluster_weight_map = (hyper_image - np.min(hyper_image)) / \
-                             (np.max(hyper_image) - np.min(hyper_image)) + self.weight_floor
+                             (np.max(hyper_image) - np.min(hyper_image)) + self.weight_floor*np.max(hyper_image)
 
         return np.power(cluster_weight_map, self.weight_power)
 
