@@ -293,7 +293,7 @@ class TestMaskMappings:
                         [True, False, True],
                         [True, True, True]])
 
-        array_1d_util = mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d)
+        array_1d_util = mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(mask, array_2d)
 
         mask = msk.Mask(mask, pixel_scale=3.0)
 
@@ -316,7 +316,7 @@ class TestMaskRegions:
                         [True, True, True, True, True, True, True, True],
                         [True, True, True, True, True, True, True, True]])
 
-        blurring_mask_util = util.mask_blurring_from_mask_and_psf_shape(mask=mask, psf_shape=(3, 3))
+        blurring_mask_util = util.blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape=(3, 3))
 
         mask = msk.Mask(mask, pixel_scale=1.0)
         blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape=(3, 3))

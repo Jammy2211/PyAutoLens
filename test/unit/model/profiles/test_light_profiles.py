@@ -10,7 +10,8 @@ from autofit import conf
 from autolens import dimensions as dim
 from autolens.model.profiles import light_profiles as lp
 
-from test.unit.mock.mock_cosmology import MockCosmology
+from test.unit.mock.model import mock_cosmology
+
 
 @pytest.fixture(autouse=True)
 def reset_config():
@@ -22,11 +23,6 @@ def reset_config():
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
-
-@pytest.fixture(name='elliptical')
-def elliptical_sersic():
-    return lp.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                               sersic_index=4.0)
 
 class TestGaussian:
 
@@ -84,8 +80,7 @@ class TestGaussian:
         gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=2.0,sigma=1.0)
         assert gaussian.intensities_from_grid_radii(grid_radii=1.0) == pytest.approx(2.0 * 0.24197, 1e-2)
 
-        gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                         sigma=2.0)
+        gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=2.0)
         assert gaussian.intensities_from_grid_radii(grid_radii=1.0) == pytest.approx(0.1760, 1e-2)
 
         gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -255,12 +250,12 @@ class TestSersic:
         summary_text = sersic.summarize_in_units(radii=[dim.Length(10.0), dim.Length(500.0)], prefix='sersic_',
                                                   unit_length='arcsec', unit_luminosity='eps', whitespace=50)
 
-        index = 0
+        i = 0
 
-        assert summary_text[index] == 'Light Profile = SphericalSersic' ; index += 1
-        assert summary_text[index] ==  ''  ; index += 1
-        assert summary_text[index] == 'sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps' ; index += 1
-        assert summary_text[index] == 'sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps' ; index += 1
+        assert summary_text[i] == 'Light Profile = SphericalSersic\n' ; i += 1
+        assert summary_text[i] == 'sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps' ; i += 1
+        assert summary_text[i] == 'sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps' ; i += 1
+
 
 class TestExponential:
 
@@ -661,7 +656,7 @@ class TestLuminosityWithinCircle(object):
 
     def test__radius_units_conversions__light_profile_updates_units_and_computes_correct_luminosity(self):
 
-        cosmology = MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
+        cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
 
         sersic_arcsec = lp.SphericalSersic(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')), 
                                     intensity=dim.Luminosity(3.0, 'eps'), 
@@ -751,10 +746,16 @@ class TestLuminosityWithinEllipse(object):
 
 class TestGrids(object):
 
-    def test__grid_to_eccentric_radius(self, elliptical):
+    def test__grid_to_eccentric_radius(self):
+
+        elliptical = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0)
+
         assert elliptical.grid_to_eccentric_radii(np.array([[1, 1]])) == pytest.approx(
             elliptical.grid_to_eccentric_radii(np.array([[-1, -1]])), 1e-10)
 
-    def test__intensity_from_grid(self, elliptical):
+    def test__intensity_from_grid(self):
+
+        elliptical = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0)
+
         assert elliptical.intensities_from_grid(np.array([[1, 1]])) == \
                pytest.approx(elliptical.intensities_from_grid(np.array([[-1, -1]])), 1e-4)

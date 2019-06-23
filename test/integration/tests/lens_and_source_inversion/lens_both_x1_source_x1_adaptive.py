@@ -4,7 +4,7 @@ from autofit import conf
 from autofit.optimize import non_linear as nl
 from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase_imaging as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.integration import integration_util
@@ -38,12 +38,13 @@ def make_pipeline(test_name):
             self.source_galaxies.source.pixelization.shape_0 = 20.0
             self.source_galaxies.source.pixelization.shape_1 = 20.0
 
-    phase1 = SourcePix(phase_name='phase_1', phase_folders=[test_type, test_name],
-                       lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.SphericalDevVaucouleurs,
-                                                              mass=mp.EllipticalIsothermal)),
-                       source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.AdaptiveMagnification,
-                                                                  regularization=reg.Constant)),
-                       optimizer_class=nl.MultiNest)
+    phase1 = SourcePix(
+        phase_name='phase_1', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.SphericalDevVaucouleurs,
+                                               mass=mp.EllipticalIsothermal)),
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
+                                                   regularization=reg.Constant)),
+        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60

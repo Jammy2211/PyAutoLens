@@ -12,11 +12,11 @@ class TestCase:
         directory = os.path.dirname(os.path.realpath(__file__))
 
         config = conf.DefaultPriorConfig(
-            "{}/../../{}".format(directory,"test_files/configs/galaxy_model/priors/default"))
+            "{}/../../{}".format(directory,"test_files/config/galaxy_model/priors/default"))
 
         limit_config = conf.LimitConfig(
             "{}/../../{}".format(directory,
-                                 "test_files/configs/galaxy_model/priors/limit"))
+                                 "test_files/config/galaxy_model/priors/limit"))
 
         # Create a mapper. This can be used to convert values output by a non linear optimiser into class instances.
         mapper = mm.ModelMapper(config=config, limit_config=limit_config)

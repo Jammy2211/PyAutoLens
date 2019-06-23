@@ -424,19 +424,6 @@ class TestFrameLengths(object):
         assert (convolver.blurring_frame_lengths == np.array([5, 5, 5, 5])).all()
 
 
-@pytest.fixture(name="convolver_4_edges")
-def make_convolver_4_edges():
-    mask = np.array(
-        [[True, True, True, True],
-         [True, False, False, True],
-         [True, False, False, True],
-         [True, True, True, True]]
-    )
-
-    convolver = convolution.ConvolverImage(mask)
-    return convolver.convolver_for_kernel_shape((3, 3), mask)
-
-
 class TestConvolution(object):
 
     def test_cross_mask_with_blurring_entries(self, cross_mask):
@@ -456,17 +443,6 @@ class TestConvolution(object):
         result = convolver.convolve_image(pixel_array, blurring_array)
 
         assert (np.round(result, 1) == np.array([0.6, 0.2, 0.2, 0., 0.])).all()
-
-
-@pytest.fixture(name='sim_image_31x31', scope='function')
-def sim_grid_9x9():
-    sim_grid_9x9.ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arcsec=(5.5, 5.5), pixel_scale=0.5,
-                                                               pad_size=(3, 3))
-    sim_grid_9x9.image_grid = sim_grid_9x9.ma.coordinates_collection_for_subgrid_size_and_blurring_shape(
-        sub_grid_size=1,
-        blurring_shape=(3, 3))
-    sim_grid_9x9.mapping = sim_grid_9x9.ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
-    return sim_grid_9x9
 
 
 class TestCompareToFull2dConv:
