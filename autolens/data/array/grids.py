@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.spatial.qhull as qhull
+from sklearn.cluster import KMeans
 from functools import wraps
 
 from autolens import decorator_util
@@ -941,6 +942,29 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         return SparseToRegularGrid(sparse_grid=sparse_grid, regular_grid=regular_grid,
                                    regular_to_sparse=regular_to_sparse)
 
+    @classmethod
+    def from_total_pixels_regular_grid_and_cluster_weight_map(cls, total_pixels, regular_grid, cluster_weight_map,
+                                                              seed=None):
+        """Calculate the image-plane pixelization from a regular-grid of coordinates (and its mask).
+
+        See *grid_stacks.SparseToRegularGrid* for details on how this grid is calculated.
+
+        Parameters
+        -----------
+        regular_grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
+        """
+
+        kmeans = KMeans(n_clusters=total_pixels, random_state=seed)
+
+        kmeans = kmeans.fit(X=regular_grid, sample_weight=cluster_weight_map)
+
+        return SparseToRegularGrid(sparse_grid=kmeans.cluster_centers_, regular_grid=regular_grid,
+                                   regular_to_sparse=kmeans.labels_)
+
+    @property
+    def total_sparse_pixels(self):
+        return len(self.sparse)
 
 class PaddedRegularGrid(RegularGrid):
 
