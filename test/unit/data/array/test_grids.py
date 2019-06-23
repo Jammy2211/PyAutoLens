@@ -597,202 +597,248 @@ class TestPixelizationGrid:
 
 class TestSparseToRegularGrid:
 
-    def test__properties_consistent_with_mapping_util(self):
+    class TestUnmaskedShape:
 
-        mask = msk.Mask(array=np.array([[True, False, True],
-                                        [False, False, False],
-                                        [True, False, True]]), pixel_scale=0.5)
+        def test__properties_consistent_with_mapping_util(self):
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+            mask = msk.Mask(array=np.array([[True, False, True],
+                                            [False, False, False],
+                                            [True, False, True]]), pixel_scale=0.5)
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(10, 10), regular_grid=regular_grid)
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
-        unmasked_sparse_grid_util = grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(
-            shape=(10, 10), pixel_scales=(0.15, 0.15), origin=(0.0, 0.0))
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(10, 10), regular_grid=regular_grid)
 
-        unmasked_sparse_grid_pixel_centres = \
-            regular_grid.mask.grid_arcsec_to_grid_pixel_centres(grid_arcsec=unmasked_sparse_grid_util)
-        
-        total_sparse_pixels = mask_util.total_sparse_pixels_from_mask(
-            mask=mask, unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres)
+            unmasked_sparse_grid_util = grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(
+                shape=(10, 10), pixel_scales=(0.15, 0.15), origin=(0.0, 0.0))
 
-        regular_to_unmasked_sparse_util = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
-            grid_arcsec_1d=regular_grid, shape=(10, 10), pixel_scales=(0.15, 0.15),
-            origin=(0.0, 0.0)).astype('int')
+            unmasked_sparse_grid_pixel_centres = \
+                regular_grid.mask.grid_arcsec_to_grid_pixel_centres(grid_arcsec=unmasked_sparse_grid_util)
 
-        sparse_to_unmasked_sparse_util = mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
-            total_sparse_pixels=total_sparse_pixels, mask=mask,
-            unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres).astype('int')
+            total_sparse_pixels = mask_util.total_sparse_pixels_from_mask(
+                mask=mask, unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres)
 
-        unmasked_sparse_to_sparse_util = mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
-            mask=mask, unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
-            total_sparse_pixels=total_sparse_pixels).astype('int')
+            regular_to_unmasked_sparse_util = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+                grid_arcsec_1d=regular_grid, shape=(10, 10), pixel_scales=(0.15, 0.15),
+                origin=(0.0, 0.0)).astype('int')
 
-        regular_to_sparse_util = mapping_util.regular_to_sparse_from_sparse_mappings(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
-            unmasked_sparse_to_sparse=unmasked_sparse_to_sparse_util)
+            sparse_to_unmasked_sparse_util = mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
+                total_sparse_pixels=total_sparse_pixels, mask=mask,
+                unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres).astype('int')
 
-        sparse_grid_util = mapping_util.sparse_grid_from_unmasked_sparse_grid(
-            unmasked_sparse_grid=unmasked_sparse_grid_util, sparse_to_unmasked_sparse=sparse_to_unmasked_sparse_util)
+            unmasked_sparse_to_sparse_util = mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
+                mask=mask, unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
+                total_sparse_pixels=total_sparse_pixels).astype('int')
 
-        assert (sparse_to_regular_grid.regular_to_sparse == regular_to_sparse_util).all()
-        assert (sparse_to_regular_grid.sparse == sparse_grid_util).all()
+            regular_to_sparse_util = mapping_util.regular_to_sparse_from_sparse_mappings(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
+                unmasked_sparse_to_sparse=unmasked_sparse_to_sparse_util)
 
-    def test__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_masked_sparse_grid(self):
+            sparse_grid_util = mapping_util.sparse_grid_from_unmasked_sparse_grid(
+                unmasked_sparse_grid=unmasked_sparse_grid_util, sparse_to_unmasked_sparse=sparse_to_unmasked_sparse_util)
 
-        mask = msk.Mask(array=np.array([[True, False, True],
-                                      [False, False, False],
-                                      [True, False, True]]), pixel_scale=1.0)
+            assert (sparse_to_regular_grid.regular_to_sparse == regular_to_sparse_util).all()
+            assert (sparse_to_regular_grid.sparse == sparse_grid_util).all()
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        def test__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_masked_sparse_grid(self):
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
+            mask = msk.Mask(array=np.array([[True, False, True],
+                                          [False, False, False],
+                                          [True, False, True]]), pixel_scale=1.0)
 
-        assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4])).all()
-        assert (sparse_to_regular_grid.sparse == np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                  [-1.0, 0.0]])).all()
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
-    def test__same_as_above_but_4x3_grid_and_mask(self):
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
 
-        mask = msk.Mask(array=np.array([[True, False, True],
-                                      [False, False, False],
-                                      [False, False, False],
-                                      [True, False, True]]), pixel_scale=1.0)
+            assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (sparse_to_regular_grid.sparse == np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                      [-1.0, 0.0]])).all()
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        def test__same_as_above_but_4x3_grid_and_mask(self):
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(4, 3), regular_grid=regular_grid)
+            mask = msk.Mask(array=np.array([[True, False, True],
+                                          [False, False, False],
+                                          [False, False, False],
+                                          [True, False, True]]), pixel_scale=1.0)
 
-        assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7])).all()
-        assert (sparse_to_regular_grid.sparse == np.array([[1.5, 0.0],
-                                                  [0.5, -1.0], [0.5, 0.0], [0.5, 1.0],
-                                                  [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
-                                                  [-1.5, 0.0]])).all()
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
-    def test__same_as_above_but_3x4_grid_and_mask(self):
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(4, 3), regular_grid=regular_grid)
 
-        mask = msk.Mask(array=np.array([[True, False, True, True],
-                                      [False, False, False, False],
-                                      [True, False, True, True]]), pixel_scale=1.0)
+            assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7])).all()
+            assert (sparse_to_regular_grid.sparse == np.array([[1.5, 0.0],
+                                                      [0.5, -1.0], [0.5, 0.0], [0.5, 1.0],
+                                                      [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
+                                                      [-1.5, 0.0]])).all()
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        def test__same_as_above_but_3x4_grid_and_mask(self):
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(3, 4), regular_grid=regular_grid)
+            mask = msk.Mask(array=np.array([[True, False, True, True],
+                                          [False, False, False, False],
+                                          [True, False, True, True]]), pixel_scale=1.0)
 
-        assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5])).all()
-        assert (sparse_to_regular_grid.sparse == np.array([[1.0, -0.5],
-                                                  [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
-                                                  [-1.0, -0.5]])).all()
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
-    def test__mask_with_offset_centre__origin_of_sparse_to_regular_grid_moves_to_give_same_pairings(self):
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(3, 4), regular_grid=regular_grid)
 
-        mask = msk.Mask(array=np.array([[True, True, True, False, True],
-                                      [True, True, False, False, False],
-                                      [True, True, True, False, True],
-                                      [True, True, True, True, True],
-                                      [True, True, True, True, True]]), pixel_scale=1.0)
+            assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5])).all()
+            assert (sparse_to_regular_grid.sparse == np.array([[1.0, -0.5],
+                                                      [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
+                                                      [-1.0, -0.5]])).all()
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        def test__mask_with_offset_centre__origin_of_sparse_to_regular_grid_moves_to_give_same_pairings(self):
 
-        # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
-        # the central (3x3) pixels only.
+            mask = msk.Mask(array=np.array([[True, True, True, False, True],
+                                          [True, True, False, False, False],
+                                          [True, True, True, False, True],
+                                          [True, True, True, True, True],
+                                          [True, True, True, True, True]]), pixel_scale=1.0)
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
-        assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4])).all()
-        assert (sparse_to_regular_grid.sparse == np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
-                                                  [0.0, 1.0]])).all()
+            # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
+            # the central (3x3) pixels only.
 
-    def test__same_as_above_but_different_offset(self):
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
 
-        mask = msk.Mask(array=np.array([[True, True, True, True, True],
-                                      [True, True, True, False, True],
-                                      [True, True, False, False, False],
-                                      [True, True, True, False, True],
-                                      [True, True, True, True, True]]), pixel_scale=2.0)
+            assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (sparse_to_regular_grid.sparse == np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
+                                                      [0.0, 1.0]])).all()
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        def test__same_as_above_but_different_offset(self):
 
-        # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
-        # the central (3x3) pixels only.
+            mask = msk.Mask(array=np.array([[True, True, True, True, True],
+                                          [True, True, True, False, True],
+                                          [True, True, False, False, False],
+                                          [True, True, True, False, True],
+                                          [True, True, True, True, True]]), pixel_scale=2.0)
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
-        assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4])).all()
-        assert (sparse_to_regular_grid.sparse == np.array([[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0],
-                                                  [-2.0, 2.0]])).all()
+            # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
+            # the central (3x3) pixels only.
 
-    def test__from_shape_and_regular__sets_up_with_correct_shape_and_pixel_scales(self, mask_5x5):
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask_5x5)
+            assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (sparse_to_regular_grid.sparse == np.array([[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0],
+                                                      [-2.0, 2.0]])).all()
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
+        def test__from_shape_and_regular__sets_up_with_correct_shape_and_pixel_scales(self, mask_5x5):
 
-        assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
-        assert (sparse_to_regular_grid.sparse == np.array([[1.0, - 1.0], [1.0, 0.0], [1.0, 1.0],
-                                                     [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                     [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])).all()
-        assert sparse_to_regular_grid.regular == pytest.approx(regular_grid, 1e-4)
+            regular_grid = grids.RegularGrid.from_mask(mask=mask_5x5)
 
-    def test__same_as_above__but_4x3_image(self):
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
 
-        mask = msk.Mask(array=np.array([[True, False, True],
-                                        [False, False, False],
-                                        [False, False, False],
-                                        [True, False, True]]), pixel_scale=1.0)
+            assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+            assert (sparse_to_regular_grid.sparse == np.array([[1.0, - 1.0], [1.0, 0.0], [1.0, 1.0],
+                                                         [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                         [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])).all()
+            assert sparse_to_regular_grid.regular == pytest.approx(regular_grid, 1e-4)
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        def test__same_as_above__but_4x3_image(self):
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(4, 3), regular_grid=regular_grid)
+            mask = msk.Mask(array=np.array([[True, False, True],
+                                            [False, False, False],
+                                            [False, False, False],
+                                            [True, False, True]]), pixel_scale=1.0)
 
-        assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7])).all()
-        assert (sparse_to_regular_grid.sparse == np.array([[1.5, 0.0],
-                                                     [0.5, -1.0], [0.5, 0.0], [0.5, 1.0],
-                                                     [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
-                                                     [-1.5, 0.0]])).all()
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
-    def test__same_as_above__but_3x4_image(self):
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(4, 3), regular_grid=regular_grid)
 
-        mask = msk.Mask(array=np.array([[True, False, True, True],
-                                        [False, False, False, False],
-                                        [True, False, True, True]]), pixel_scale=1.0)
+            assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7])).all()
+            assert (sparse_to_regular_grid.sparse == np.array([[1.5, 0.0],
+                                                         [0.5, -1.0], [0.5, 0.0], [0.5, 1.0],
+                                                         [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
+                                                         [-1.5, 0.0]])).all()
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        def test__same_as_above__but_3x4_image(self):
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(3, 4), regular_grid=regular_grid)
+            mask = msk.Mask(array=np.array([[True, False, True, True],
+                                            [False, False, False, False],
+                                            [True, False, True, True]]), pixel_scale=1.0)
 
-        assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5])).all()
-        assert (sparse_to_regular_grid.sparse == np.array([[1.0, -0.5],
-                                                     [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
-                                                     [-1.0, -0.5]])).all()
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
-    def test__from_shape_and_regular__offset_mask__origin_shift_corrects(self):
-        
-        mask = msk.Mask(array=np.array([[True, True, False, False, False],
-                                        [True, True, False, False, False],
-                                        [True, True, False, False, False],
-                                        [True, True, True, True, True],
-                                        [True, True, True, True, True]]), pixel_scale=1.0)
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(3, 4), regular_grid=regular_grid)
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+            assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5])).all()
+            assert (sparse_to_regular_grid.sparse == np.array([[1.0, -0.5],
+                                                         [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
+                                                         [-1.0, -0.5]])).all()
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
+        def test__from_shape_and_regular__offset_mask__origin_shift_corrects(self):
 
-        assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
-        assert (sparse_to_regular_grid.sparse == np.array([[2.0, 0.0], [2.0, 1.0], [2.0, 2.0],
-                                                     [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
-                                                     [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])).all()
-        assert sparse_to_regular_grid.regular == pytest.approx(regular_grid, 1e-4)
+            mask = msk.Mask(array=np.array([[True, True, False, False, False],
+                                            [True, True, False, False, False],
+                                            [True, True, False, False, False],
+                                            [True, True, True, True, True],
+                                            [True, True, True, True, True]]), pixel_scale=1.0)
+
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
+
+            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
+
+            assert (sparse_to_regular_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+            assert (sparse_to_regular_grid.sparse == np.array([[2.0, 0.0], [2.0, 1.0], [2.0, 2.0],
+                                                         [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
+                                                         [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])).all()
+            assert sparse_to_regular_grid.regular == pytest.approx(regular_grid, 1e-4)
+
+    class TestUnmaskeedShapeAndWeightImage:
+
+        def test__cluster_weight_map_all_ones__kmenas_grid_is_regular_grid_overlapping_image(self):
+
+            mask = msk.Mask(array=np.array([[False, False, False, False],
+                                            [False, False, False, False],
+                                            [False, False, False, False],
+                                            [False, False, False, False]]), pixel_scale=0.5)
+
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
+
+            cluster_weight_map = np.ones(mask.pixels_in_mask)
+
+            sparse_to_regular_grid_weight = grids.SparseToRegularGrid.from_total_pixels_regular_grid_and_cluster_weight_map(
+                total_pixels=8, regular_grid=regular_grid, cluster_weight_map=cluster_weight_map, seed=1)
+
+            assert (sparse_to_regular_grid_weight.sparse ==
+                    np.array([[-0.25, 0.25], [0.5, -0.5], [0.75, 0.5], [0.25, 0.5],
+                              [-0.5, -0.25], [-0.5, -0.75], [-0.75, 0.5], [-0.25, 0.75]])).all()
+
+            assert (sparse_to_regular_grid_weight.regular_to_sparse ==
+                    np.array([1, 1, 2, 2, 1, 1, 3, 3, 5, 4, 0, 7, 5, 4, 6, 6])).all()
+
+        def test__cluster_weight_map_changes_grid_from_above(self):
+
+            mask = msk.Mask(array=np.array([[False, False, False, False],
+                                            [False, False, False, False],
+                                            [False, False, False, False],
+                                            [False, False, False, False]]), pixel_scale=0.5)
+
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
+
+            cluster_weight_map = np.ones(mask.pixels_in_mask)
+            cluster_weight_map[0:15] = 0.00000001
+
+            sparse_to_regular_grid_weight = grids.SparseToRegularGrid.from_total_pixels_regular_grid_and_cluster_weight_map(
+                total_pixels=8, regular_grid=regular_grid, cluster_weight_map=cluster_weight_map, seed=1)
+
+            assert sparse_to_regular_grid_weight.sparse[1] == pytest.approx(np.array([0.4166666, -0.0833333]), 1.0e-4)
+
+            assert (sparse_to_regular_grid_weight.regular_to_sparse ==
+                    np.array([5, 1, 0, 0, 5, 1, 1, 4, 3, 6, 7, 4, 3, 6, 2, 2])).all()
+
 
 
 class TestPaddedGrids:
