@@ -429,8 +429,8 @@ class TestPhase(object):
 
         assert (grid_stack.pixelization == np.array([[0.0, 0.0]])).all()
 
-        galaxy_pix_which_uses_pix_grid = g.Galaxy(redshift=0.5, pixelization=pix.AdaptiveMagnification(),
-                                                        regularization=reg.Constant())
+        galaxy_pix_which_uses_pix_grid = g.Galaxy(redshift=0.5, pixelization=pix.VoronoiMagnification(),
+                                                  regularization=reg.Constant())
 
         grid_stack = analysis.add_grids_to_grid_stack(galaxies=[galaxy_pix_which_uses_pix_grid],
                                                       grid_stack=analysis.lens_data.grid_stack)

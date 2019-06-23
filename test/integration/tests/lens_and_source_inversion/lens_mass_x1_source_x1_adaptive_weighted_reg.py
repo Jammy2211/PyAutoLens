@@ -41,7 +41,7 @@ def make_pipeline(test_name):
     phase1 = SourcePix(
         phase_name='phase_1', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)),
-        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.AdaptiveMagnification,
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
                                                    regularization=reg.Constant)),
         optimizer_class=nl.MultiNest)
 
@@ -61,7 +61,7 @@ def make_pipeline(test_name):
         phase_name='phase_2_weighted_regularization', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal,
                                                shear=mp.ExternalShear)),
-        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.AdaptiveMagnification,
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
                                                    regularization=reg.AdaptiveBrightness)),
         optimizer_class=nl.MultiNest)
 

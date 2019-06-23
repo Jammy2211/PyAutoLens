@@ -228,7 +228,7 @@ class TestSparseToRegularGrid:
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
+        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
             unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
@@ -287,7 +287,7 @@ class TestSparseToRegularGrid:
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
+        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
             unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
@@ -340,7 +340,7 @@ class TestSparseToRegularGrid:
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=2)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
+        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
             unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
@@ -392,7 +392,7 @@ class TestSparseToRegularGrid:
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
+        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
             unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
@@ -441,7 +441,7 @@ class TestAdaptiveMagnification:
                                       pix=regular_grid,
                                       regular_to_pixelization=regular_to_sparse)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
+        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None, hyper_image=np.ones((2,2)))
 
@@ -496,7 +496,7 @@ class TestAdaptiveMagnification:
                                       pix=regular_grid,
                                       regular_to_pixelization=regular_to_sparse)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
+        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
@@ -530,7 +530,7 @@ class TestAdaptiveMagnification:
         regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
+        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
             unmasked_sparse_shape=pix.shape, regular_grid=regular_grid)
 
@@ -585,7 +585,7 @@ class TestAdaptiveMagnification:
                                       sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
                                       pix=pixel_centers, regular_to_pixelization=regular_to_sparse)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
+        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
@@ -644,7 +644,7 @@ class TestAdaptiveMagnification:
                                       pix=pixel_centers,
                                       regular_to_pixelization=regular_to_sparse)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
+        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=None)
 
@@ -688,7 +688,7 @@ class TestAdaptiveMagnification:
                                       sub=MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
                                       pix=pix_grid, regular_to_pixelization=regular_to_sparse)
 
-        pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
+        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
         mapper = pix.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=border)
 

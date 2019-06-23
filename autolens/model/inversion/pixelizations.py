@@ -212,7 +212,6 @@ class Voronoi(Pixelization):
         return scipy.spatial.Voronoi(np.asarray([pixel_centers[:, 1], pixel_centers[:, 0]]).T,
                                      qhull_options='Qbb Qc Qx Qm')
 
-
     def neighbors_from_pixelization(self, pixels, ridge_points):
         """Compute the neighbors of every Voronoi pixel as an ndarray of the pixel index's each pixel shares a \
         vertex with.
@@ -226,22 +225,6 @@ class Voronoi(Pixelization):
         """
         return pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(pixels=pixels,
                                                                                 ridge_points=np.asarray(ridge_points))
-
-
-class AdaptiveMagnification(Voronoi):
-
-    def __init__(self, shape=(3, 3)):
-        """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
-        pixelization to discretize the grid into pixels.
-
-        Parameters
-        ----------
-        shape : (int, int)
-            The shape of the unmasked sparse-grid which is laid over the masked image, in order to derive the \
-            adaptive-magnification pixelization (see *ImagePlanePixelization*)
-        """
-        super(AdaptiveMagnification, self).__init__()
-        self.shape = (int(shape[0]), int(shape[1]))
 
     def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
@@ -286,12 +269,8 @@ class AdaptiveMagnification(Voronoi):
         return mappers.VoronoiMapper(pixels=pixels, grid_stack=relocated_grids, border=border,
                                      voronoi=voronoi, geometry=geometry, hyper_image=hyper_image)
 
-    @property
-    def uses_pixelization_grid(self):
-        return True
 
-
-class AdaptiveBrightness(AdaptiveMagnification):
+class VoronoiMagnification(Voronoi):
 
     def __init__(self, shape=(3, 3)):
         """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
@@ -303,4 +282,34 @@ class AdaptiveBrightness(AdaptiveMagnification):
             The shape of the unmasked sparse-grid which is laid over the masked image, in order to derive the \
             adaptive-magnification pixelization (see *ImagePlanePixelization*)
         """
-        super(AdaptiveBrightness, self).__init__(shape=shape)
+        super(VoronoiMagnification, self).__init__()
+        self.shape = (int(shape[0]), int(shape[1]))
+
+    @property
+    def uses_pixelization_grid(self):
+        return True
+
+
+class VoronoiBrightnessImage(Voronoi):
+
+    def __init__(self, pixels=10, weight_floor=0.0, weight_power=0.0):
+        """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
+        pixelization to discretize the grid into pixels.
+
+        Parameters
+        ----------
+        shape : (int, int)
+            The shape of the unmasked sparse-grid which is laid over the masked image, in order to derive the \
+            adaptive-magnification pixelization (see *ImagePlanePixelization*)
+        """
+        super(VoronoiBrightnessImage, self).__init__()
+        self.pixels = int(pixels)
+        self.weight_floor = weight_floor
+        self.weight_power = weight_power
+
+    def cluster_weight_map_from_hyper_image(self, hyper_image):
+
+        cluster_weight_map = (hyper_image - np.min(hyper_image)) / \
+                             (np.max(hyper_image) - np.min(hyper_image)) + self.weight_floor
+
+        return np.power(cluster_weight_map, self.weight_power)
