@@ -425,7 +425,7 @@ class TestSparseToRegularGrid:
                                                    [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
 
 
-class TestAdaptiveMagnification:
+class TestVoronoiMagnification:
 
     def test__5_simple_grid__no_sub_grid(self):
 

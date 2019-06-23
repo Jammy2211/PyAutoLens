@@ -15,6 +15,7 @@ from autolens.model.inversion import regularization as rg
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.pipeline.phase import phase_imaging
+from autolens.pipeline.phase import phase_hyper
 from test.unit.mock.pipeline import mock_pipeline
 
 
@@ -121,7 +122,7 @@ class TestPixelization(object):
         instance.lens_galaxy = g.Galaxy(pixelization=px.Rectangular(), regularization=rg.Constant(), redshift=1.0)
         instance.source_galaxy = g.Galaxy(redshift=1.0,light=lp.EllipticalLightProfile())
 
-        phase_imaging.HyperPixelizationPhase.transfer_classes(instance, mapper)
+        phase_hyper.HyperPixelizationPhase.transfer_classes(instance, mapper)
 
         assert mapper.prior_count == 3
         assert mapper.lens_galaxy.redshift == 1.0

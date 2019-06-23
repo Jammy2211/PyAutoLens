@@ -6,12 +6,13 @@ from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.pipeline.phase import phase_imaging as ph
 from autolens.pipeline import pipeline as pl
+from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import integration_util
 from test.simulation import simulation_util
 
 test_type = 'lens_and_source_inversion'
-test_name = "lens_mass_x1_source_x1_adaptive_weighted_reg"
+test_name = "lens_mass_x1_source_x1_adaptive_weighted"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
@@ -28,26 +29,11 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    class SourcePix(ph.LensSourcePlanePhase):
-
-        def pass_priors(self, results):
-
-            self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
-            self.lens_galaxies.lens.mass.centre.centre_1 = 0.0
-            self.lens_galaxies.lens.mass.einstein_radius = 1.6
-            self.source_galaxies.source.pixelization.shape.shape_0 = 20.0
-            self.source_galaxies.source.pixelization.shape.shape_1 = 20.0
-
-    phase1 = SourcePix(
+    phase1 = ph.LensSourcePlanePhase(
         phase_name='phase_1', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)),
-        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
-                                                   regularization=reg.Constant)),
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)),
         optimizer_class=nl.MultiNest)
-
-    phase1.optimizer.const_efficiency_mode = True
-    phase1.optimizer.n_live_points = 60
-    phase1.optimizer.sampling_efficiency = 0.8
 
     class InversionPhase(ph.LensSourcePlanePhase):
 
@@ -61,12 +47,12 @@ def make_pipeline(test_name):
         phase_name='phase_2_weighted_regularization', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal,
                                                shear=mp.ExternalShear)),
-        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiBrightnessImage,
                                                    regularization=reg.AdaptiveBrightness)),
         optimizer_class=nl.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True
-    phase2.optimizer.n_live_points = 20
+    phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
     return pl.PipelineImaging(test_name, phase1, phase2)

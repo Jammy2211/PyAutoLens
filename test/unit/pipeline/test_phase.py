@@ -439,6 +439,18 @@ class TestPhase(object):
                                                      [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                                      [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])).all()
 
+        galaxy_pix_which_uses_brightness = g.Galaxy(redshift=0.5, pixelization=pix.VoronoiBrightnessImage(pixels=9),
+                                                  regularization=reg.Constant())
+
+        galaxy_pix_which_uses_brightness.hyper_galaxy_image_1d = np.array([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0])
+
+        grid_stack = analysis.add_grids_to_grid_stack(galaxies=[galaxy_pix_which_uses_brightness],
+                                                      grid_stack=analysis.lens_data.grid_stack)
+
+        assert (grid_stack.pixelization == np.array([[0.0, 1.0], [1.0, -1.0], [-1.0, -1.0],
+                                                     [-1.0, 1.0], [0.0, -1.0], [1.0, 1.0],
+                                                     [-1.0, 0.0], [0.0, 0.0], [1.0, 0.0]])).all()
+
     def test__phase_with_no_inversion__convolver_mapping_matrix_of_lens_data_is_none(self, ccd_data_5x5, mask_function_5x5):
 
         phase_5x5 = ph.LensPlanePhase(
