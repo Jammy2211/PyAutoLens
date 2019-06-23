@@ -457,9 +457,8 @@ class TestHyperGalaxy(object):
             hyper_image = np.ones((3,))
 
             hyp = g.HyperGalaxy(contribution_factor=0.0)
-            contribution_map = hyp.contribution_map_from_hyper_images(hyper_model_image=hyper_image,
-                                                                   hyper_galaxy_image=hyper_image,
-                                                                   hyper_minimum_value=0.0)
+            contribution_map = hyp.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_image, hyper_galaxy_image=hyper_image)
 
             assert (contribution_map == np.ones((3,))).all()
 
@@ -468,21 +467,10 @@ class TestHyperGalaxy(object):
             hyper_image = np.array([0.5, 1.0, 1.5])
 
             hyp = g.HyperGalaxy(contribution_factor=1.0)
-            contribution_map = hyp.contribution_map_from_hyper_images(hyper_model_image=hyper_image,
-                                                                   hyper_galaxy_image=hyper_image,
-                                                                   hyper_minimum_value=0.0)
+            contribution_map = hyp.contribution_map_from_hyper_images(
+                hyper_model_image=hyper_image, hyper_galaxy_image=hyper_image)
 
             assert (contribution_map == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
-
-        def test__different_values__threshold_is_1_minimum_threshold_included__wipes_1st_value_to_0(self):
-            hyper_image = np.array([0.5, 1.0, 1.5])
-
-            hyp = g.HyperGalaxy(contribution_factor=1.0)
-            contribution_map = hyp.contribution_map_from_hyper_images(hyper_model_image=hyper_image,
-                                                                   hyper_galaxy_image=hyper_image,
-                                                                   hyper_minimum_value=0.6)
-
-            assert (contribution_map == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
     class TestHyperNoiseMap(object):
 
@@ -522,6 +510,7 @@ class TestHyperGalaxy(object):
 
             assert (hyper_noise_map == np.array([0.0, 2.0, 18.0])).all()
 
+
 class TestUsesHyperImages(object):
 
     def test__simple_tests_depending_on_hyper_galaxy_and_certain_pixelizations_and_regularizations(self):
@@ -541,6 +530,7 @@ class TestUsesHyperImages(object):
         galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.AdaptiveBrightness())
 
         assert galaxy.uses_hyper_images == True
+
 
 class TestBooleanProperties(object):
 

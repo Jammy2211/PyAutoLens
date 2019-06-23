@@ -465,13 +465,12 @@ class HyperGalaxy(object):
 
         self.component_number = next(self._ids)
 
-    def hyper_noise_map_from_hyper_images_and_noise_map(self, hyper_model_image, hyper_galaxy_image, noise_map,
-                                                        hyper_minimum_value=0.0):
+    def hyper_noise_map_from_hyper_images_and_noise_map(self, hyper_model_image, hyper_galaxy_image, noise_map):
         contribution_map = self.contribution_map_from_hyper_images(
-            hyper_model_image=hyper_model_image, hyper_galaxy_image=hyper_galaxy_image, hyper_minimum_value=hyper_minimum_value)
+            hyper_model_image=hyper_model_image, hyper_galaxy_image=hyper_galaxy_image)
         return self.hyper_noise_map_from_contribution_map(noise_map=noise_map, contribution_map=contribution_map)
 
-    def contribution_map_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, hyper_minimum_value=0.0):
+    def contribution_map_from_hyper_images(self, hyper_model_image, hyper_galaxy_image):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that the \
         galaxy is attributed to contain, scaled to the *contribution_factor* hyper-parameter.
 
@@ -490,7 +489,6 @@ class HyperGalaxy(object):
         """
         contribution_map = np.divide(hyper_galaxy_image, np.add(hyper_model_image, self.contribution_factor))
         contribution_map = np.divide(contribution_map, np.max(contribution_map))
-        contribution_map[contribution_map < hyper_minimum_value] = 0.0
         return contribution_map
 
     def hyper_noise_map_from_contribution_map(self, noise_map, contribution_map):
