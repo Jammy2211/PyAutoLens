@@ -281,9 +281,15 @@ class PhaseImaging(Phase):
 
                 for path, galaxy in results.last.path_galaxy_tuples:
 
-                    self.hyper_galaxy_image_1d_path_dict[path] = image_1d_galaxy_dict[path]
+                    galaxy_image = image_1d_galaxy_dict[path]
 
-                    self.hyper_model_image_1d += image_1d_galaxy_dict[path]
+                    self.hyper_model_image_1d += galaxy_image
+
+                    minimum_galaxy_value = 0.01*max(galaxy_image)
+
+                    galaxy_image[galaxy_image < minimum_galaxy_value] = minimum_galaxy_value
+
+                    self.hyper_galaxy_image_1d_path_dict[path] = galaxy_image
 
             else:
 
@@ -344,7 +350,6 @@ class PhaseImaging(Phase):
                     if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
                         galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[galaxy_path]
-                        galaxy.hyper_minimum_value = 0.0
             return instance
 
         def add_grids_to_grid_stack(self, galaxies, grid_stack):

@@ -95,8 +95,7 @@ class AbstractPlane(object):
             if galaxy.hyper_galaxy is not None:
 
                 contribution_map = galaxy.hyper_galaxy.contribution_map_from_hyper_images(
-                    hyper_model_image=galaxy.hyper_model_image_1d, hyper_galaxy_image=galaxy.hyper_galaxy_image_1d,
-                    hyper_minimum_value=galaxy.hyper_minimum_value)
+                    hyper_model_image=galaxy.hyper_model_image_1d, hyper_galaxy_image=galaxy.hyper_galaxy_image_1d)
 
                 contribution_maps_1d.append(contribution_map)
 
@@ -484,7 +483,7 @@ class AbstractDataPlane(AbstractGriddedPlane):
 
                 hyper_noise_map_1d = galaxy.hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
                     noise_map=noise_map_1d, hyper_model_image=galaxy.hyper_model_image_1d,
-                    hyper_galaxy_image=galaxy.hyper_galaxy_image_1d, hyper_minimum_value=galaxy.hyper_minimum_value)
+                    hyper_galaxy_image=galaxy.hyper_galaxy_image_1d)
 
                 hyper_noise_maps_1d.append(hyper_noise_map_1d)
 

@@ -61,15 +61,11 @@ def adaptive_pixel_signals_from_images(pixels, signal_scale, regular_to_pix, hyp
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
-    minimum_signal = 0.01*np.max(hyper_image)
-    hyper_image_min = hyper_image
-    hyper_image_min[hyper_image_min < minimum_signal] = minimum_signal
-
-    pixel_signals = minimum_signal*np.zeros((pixels,))
+    pixel_signals = np.zeros((pixels,))
     pixel_sizes = np.zeros((pixels,))
 
     for regular_index in range(hyper_image.shape[0]):
-        pixel_signals[regular_to_pix[regular_index]] += np.abs(hyper_image_min[regular_index])
+        pixel_signals[regular_to_pix[regular_index]] += np.abs(hyper_image[regular_index])
         pixel_sizes[regular_to_pix[regular_index]] += 1
 
     pixel_sizes[pixel_sizes == 0] = 1
