@@ -53,20 +53,21 @@ def make_padded_grid_stack():
 
 @pytest.fixture(name='galaxy_non', scope='function')
 def make_galaxy_non():
-    return g.Galaxy()
+    return g.Galaxy(redshift=0.5)
 
 @pytest.fixture(name="galaxy_light")
 def make_galaxy_light():
-    return g.Galaxy(light_profile=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=1.0, phi=0.0, intensity=1.0,
+    return g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                       effective_radius=0.6, sersic_index=4.0))
 
 @pytest.fixture(name="galaxy_mass")
 def make_galaxy_mass():
-    return g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+    return g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
 
 @pytest.fixture(name='galaxy_mass_x2')
 def make_galaxy_mass_x2():
-    return g.Galaxy(sis_0=mp.SphericalIsothermal(einstein_radius=1.0),
+    return g.Galaxy(redshift=0.5,
+                    sis_0=mp.SphericalIsothermal(einstein_radius=1.0),
                     sis_1=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
@@ -74,7 +75,7 @@ class TestPlaneImageFromGrid:
 
     def test__3x3_grid__extracts_max_min_coordinates__creates_regular_grid_including_half_pixel_offset_from_edge(self):
 
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+        galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
@@ -91,7 +92,7 @@ class TestPlaneImageFromGrid:
 
     def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self):
 
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+        galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
 
@@ -108,7 +109,7 @@ class TestPlaneImageFromGrid:
 
     def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
 
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+        galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
@@ -124,7 +125,7 @@ class TestPlaneImageFromGrid:
 
     def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
 
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+        galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
@@ -141,7 +142,7 @@ class TestPlaneImageFromGrid:
 
     def test__3x3_grid__buffer_aligns_two_grids(self):
 
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+        galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
         grid_without_buffer = np.array([[-1.48, -1.48], [1.48, 1.48]])
 
@@ -356,19 +357,19 @@ class TestScaledDeflections:
 
         plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack)
 
-        scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
-                                                                                                    scaling_factor=1.0)
+        scaled_deflection_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(plane=plane,
+                                                                                                   scaling_factor=1.0)
 
-        assert (scaled_deflection_stack.regular == plane.deflection_stack.regular).all()
-        assert (scaled_deflection_stack.sub == plane.deflection_stack.sub).all()
-        assert (scaled_deflection_stack.blurring == plane.deflection_stack.blurring).all()
+        assert (scaled_deflection_stack.regular == plane.deflections_stack.regular).all()
+        assert (scaled_deflection_stack.sub == plane.deflections_stack.sub).all()
+        assert (scaled_deflection_stack.blurring == plane.deflections_stack.blurring).all()
 
-        scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
-                                                                                                    scaling_factor=2.0)
+        scaled_deflection_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(plane=plane,
+                                                                                                   scaling_factor=2.0)
 
-        assert (scaled_deflection_stack.regular == 2.0*plane.deflection_stack.regular).all()
-        assert (scaled_deflection_stack.sub == 2.0*plane.deflection_stack.sub).all()
-        assert (scaled_deflection_stack.blurring == 2.0*plane.deflection_stack.blurring).all()
+        assert (scaled_deflection_stack.regular == 2.0 * plane.deflections_stack.regular).all()
+        assert (scaled_deflection_stack.sub == 2.0 * plane.deflections_stack.sub).all()
+        assert (scaled_deflection_stack.blurring == 2.0 * plane.deflections_stack.blurring).all()
 
 
 class TestGridStackDeflections:
@@ -377,11 +378,11 @@ class TestGridStackDeflections:
 
         plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack)
 
-        deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
-                                                                                                    scaling_factor=3.0)
+        deflection_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(plane=plane,
+                                                                                            scaling_factor=3.0)
 
-        traced_grid_stack = lens_util.grid_stack_from_deflection_stack(grid_stack=grid_stack,
-                                                                              deflection_stack=deflection_stack)
+        traced_grid_stack = lens_util.grid_stack_from_deflections_stack(grid_stack=grid_stack,
+                                                                        deflections_stack=deflection_stack)
 
         assert (traced_grid_stack.regular == grid_stack.regular - deflection_stack.regular).all()
         assert (traced_grid_stack.sub == grid_stack.sub - deflection_stack.sub).all()

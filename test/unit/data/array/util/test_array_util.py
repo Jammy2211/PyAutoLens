@@ -426,7 +426,7 @@ class TestBinUpPadding:
                              [4.0, 5.0, 6.0],
                              [7.0, 8.0, 9.0]])
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=1)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=1)
 
         assert (array_2d_padded == array_2d).all()
 
@@ -434,94 +434,94 @@ class TestBinUpPadding:
 
         array_2d = np.ones(shape=(6, 6))
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
         assert array_2d_padded.shape == (6, 6)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
         assert array_2d_padded.shape == (6, 6)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=6)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=6)
         assert array_2d_padded.shape == (6, 6)
 
         array_2d = np.ones(shape=(8, 8))
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
         assert array_2d_padded.shape == (8, 8)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
         assert array_2d_padded.shape == (8, 8)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=8)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=8)
         assert array_2d_padded.shape == (8, 8)
 
         array_2d = np.ones(shape=(9, 9))
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
         assert array_2d_padded.shape == (9, 9)
 
         array_2d = np.ones(shape=(16, 16))
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
         assert array_2d_padded.shape == (16, 16)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
         assert array_2d_padded.shape == (16, 16)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=8)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=8)
         assert array_2d_padded.shape == (16, 16)
 
         array_2d = np.ones(shape=(12, 16))
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
         assert array_2d_padded.shape == (12, 16)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
         assert array_2d_padded.shape == (12, 16)
 
         array_2d = np.ones(shape=(16, 12))
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
         assert array_2d_padded.shape == (16, 12)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
         assert array_2d_padded.shape == (16, 12)
 
     def test__bin_up_factor_gives_remainder__array_2d_padded_to_give_no_remainder(self):
 
         array_2d = np.ones(shape=(6, 6))
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
         assert array_2d_padded.shape == (8, 8)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=5)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=5)
         assert array_2d_padded.shape == (10, 10)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=7)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=7)
         assert array_2d_padded.shape == (7, 7)
 
         array_2d = np.ones(shape=(10, 10))
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
         assert array_2d_padded.shape == (12, 12)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
         assert array_2d_padded.shape == (12, 12)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=6)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=6)
         assert array_2d_padded.shape == (12, 12)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=7)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=7)
         assert array_2d_padded.shape == (14, 14)
 
         array_2d = np.ones(shape=(7, 10))
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
         assert array_2d_padded.shape == (9, 12)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=5)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=5)
         assert array_2d_padded.shape == (10, 10)
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=7)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=7)
         assert array_2d_padded.shape == (7, 14)
 
     def test__padding_using_arrays_and_not_shapes(self):
@@ -529,7 +529,7 @@ class TestBinUpPadding:
         array_2d = np.ones(shape=(4, 4))
         array_2d[1,1] = 2.0
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=3)
         assert array_2d_padded.shape == (6, 6)
         assert (array_2d_padded == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                              [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -538,7 +538,7 @@ class TestBinUpPadding:
                                              [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=5)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=5)
         assert array_2d_padded.shape == (5, 5)
         assert (array_2d_padded == np.array([[1.0, 1.0, 1.0, 1.0, 0.0],
                                              [1.0, 2.0, 1.0, 1.0, 0.0],
@@ -548,14 +548,14 @@ class TestBinUpPadding:
 
         array_2d = np.ones(shape=(2, 3))
         array_2d[1,1] = 2.0
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
         assert array_2d_padded.shape == (2, 4)
         assert (array_2d_padded == np.array([[0.0, 1.0, 1.0, 1.0],
                                              [0.0, 1.0, 2.0, 1.0]])).all()
 
         array_2d = np.ones(shape=(3, 2))
         array_2d[1,1] = 2.0
-        array_2d_padded = array_util.pad_2d_array_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
+        array_2d_padded = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(array_2d=array_2d, bin_up_factor=2)
         assert array_2d_padded.shape == (4, 2)
         assert (array_2d_padded == np.array([[0.0, 0.0],
                                              [1.0, 1.0],

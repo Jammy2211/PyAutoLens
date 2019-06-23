@@ -2,8 +2,9 @@ import os
 
 from autofit import conf
 from autofit.optimize import non_linear as nl
+from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase_imaging as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
@@ -27,17 +28,41 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensPlanePhase(phase_name='phase_1', phase_folders=[test_type, test_name],
-                               lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
-                               optimizer_class=nl.MultiNest)
+    phase1 = ph.LensPlanePhase(
+        phase_name='phase_1', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase2 = ph.HyperGalaxyPhase(phase_name='phase_2_hyper', phase_folders=[test_type, test_name])
+    phase1h = ph.HyperGalaxyPhase(phase_name='phase_1_hyper', phase_folders=[test_type, test_name])
 
-    return pl.PipelineImaging(test_name, phase1, phase2)
+    phase1h.optimizer.const_efficiency_mode = True
+    phase1h.optimizer.n_live_points = 40
+    phase1h.optimizer.sampling_efficiency = 0.8
+
+    class HyperLensPlanePhase(ph.LensPlanePhase):
+
+        def pass_priors(self, results):
+
+            self.lens_galaxies.lens.hyper_galaxy = results.from_phase('phase_1_hyper').\
+                constant.lens_galaxies.lens.hyper_galaxy
+
+            self.lens_galaxies.lens.light = results.from_phase('phase_1').\
+                variable.lens_galaxies.lens.light
+
+    phase2 = HyperLensPlanePhase(
+        phase_name='phase_2', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic, hyper_galaxy=g.HyperGalaxy)),
+        optimizer_class=nl.MultiNest)
+
+    phase2.optimizer.const_efficiency_mode = True
+    phase2.optimizer.n_live_points = 40
+    phase2.optimizer.sampling_efficiency = 0.8
+
+    return pl.PipelineImaging(test_name, phase1, phase1h, phase2)
 
 
 if __name__ == "__main__":

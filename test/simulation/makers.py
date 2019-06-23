@@ -1,5 +1,6 @@
 from autofit.tools import path_util
 from autolens.data import ccd
+from autolens.data import simulated_ccd
 from autolens.data.array import grids
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
@@ -21,7 +22,7 @@ def simulate_image_from_galaxies_and_output_to_fits(data_resolution, data_type, 
     shape = simulation_util.shape_from_data_resolution(data_resolution=data_resolution)
 
     # Simulate a simple Gaussian PSF for the image.
-    psf = ccd.PSF.simulate_as_gaussian(shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale)
+    psf = ccd.PSF.from_gaussian(shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale)
 
     # Setup the image-plane grid stack of the CCD array which will be used for generating the image-plane image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
@@ -35,9 +36,9 @@ def simulate_image_from_galaxies_and_output_to_fits(data_resolution, data_type, 
 
     # Simulate the CCD data, remembering that we use a special image-plane image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.g. the PSF convolution).
-    simulated_ccd_data = ccd.CCDData.simulate(array=tracer.image_plane_image_for_simulation,
-                                              pixel_scale=pixel_scale, psf=psf, exposure_time=exposure_time,
-                                              background_sky_level=background_sky_level, add_noise=True)
+    simulated_ccd_data = simulated_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
+        image=tracer.profile_image_plane_image_2d_for_simulation, pixel_scale=pixel_scale, psf=psf,
+        exposure_time=exposure_time, background_sky_level=background_sky_level, add_noise=True)
 
     # Now, lets output this simulated ccd-data to the test/data folder.
     test_path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
@@ -186,9 +187,9 @@ def make_no_lens_light_and_source_smooth_offset_centre(data_resolutions, sub_gri
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
 
-def make_lens_and_source_smooth(data_resolutions, sub_grid_size):
+def make_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
 
-    data_type = 'lens_and_source_smooth'
+    data_type = 'lens_light_and_source_smooth'
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -208,9 +209,9 @@ def make_lens_and_source_smooth(data_resolutions, sub_grid_size):
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
 
-def make_lens_and_source_cuspy(data_resolutions, sub_grid_size):
+def make_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
 
-    data_type = 'lens_and_source_cuspy'
+    data_type = 'lens_light_and_source_cuspy'
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 

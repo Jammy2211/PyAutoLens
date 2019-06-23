@@ -23,6 +23,7 @@ def plot_lens_fit_for_phase(
         should_plot_source_plane_image,
         should_plot_residual_map,
         should_plot_chi_squared_map,
+        should_plot_regularization_weights,
         visualize_path):
 
     output_path = visualize_path
@@ -50,6 +51,7 @@ def plot_lens_fit_for_phase(
         should_plot_source_plane_image=should_plot_source_plane_image,
         should_plot_residual_map=should_plot_residual_map,
         should_plot_chi_squared_map=should_plot_chi_squared_map,
+        should_plot_regularization_weights=should_plot_regularization_weights,
         units=units,
         output_path=output_path, output_format='png')
 
@@ -436,6 +438,7 @@ def plot_fit_individuals(
         should_plot_source_plane_image=False,
         should_plot_residual_map=False,
         should_plot_chi_squared_map=False,
+        should_plot_regularization_weights=False,
         units='arcsec',
         output_path=None, output_format='show'):
 
@@ -472,6 +475,7 @@ def plot_fit_individuals(
             should_plot_source_plane_image=should_plot_source_plane_image,
             should_plot_residual_map=should_plot_residual_map,
             should_plot_chi_squared_map=should_plot_chi_squared_map,
+            should_plot_regularization_weights=should_plot_regularization_weights,
             units=units,
             output_path=output_path, output_format=output_format)
 
@@ -563,6 +567,7 @@ def plot_fit_individuals_lens_and_source_planes(
         should_plot_source_plane_image=False,
         should_plot_residual_map=False,
         should_plot_chi_squared_map=False,
+        should_plot_regularization_weights=False,
         units='arcsec',
         output_path=None, output_format='show'):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
@@ -653,7 +658,6 @@ def plot_fit_individuals_lens_and_source_planes(
                 inversion=fit.inversion, should_plot_grid=True,
                 units=units, figsize=(20, 20),
                 output_path=output_path, output_filename='fit_source_plane', output_format=output_format)
-
     if should_plot_residual_map:
 
         lens_plotter_util.plot_residual_map(
@@ -667,3 +671,12 @@ def plot_fit_individuals_lens_and_source_planes(
             fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units, kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path, output_format=output_format)
+
+    if should_plot_regularization_weights:
+
+        if fit.total_inversions == 1:
+
+            inversion_plotters.plot_regularization_weights(
+                inversion=fit.inversion, should_plot_grid=True,
+                units=units, figsize=(20, 20),
+                output_path=output_path, output_filename='fit_regularization_weights', output_format=output_format)

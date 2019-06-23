@@ -3,12 +3,6 @@ import numpy as np
 from autolens import exc
 from autolens.model.inversion.util import inversion_util
 
-# TODO : Unit test this properly, using a cleverly made mock hyper-set
-
-def inversion_from_image_mapper_and_regularization(image_1d, noise_map_1d, convolver, mapper, regularization):
-    return Inversion(image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver, mapper=mapper,
-                     regularization=regularization)
-
 class Inversion(object):
 
     def __init__(self, image_1d, noise_map_1d, convolver, mapper, regularization):
@@ -58,20 +52,24 @@ class Inversion(object):
         self.curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
                 blurred_mapping_matrix=self.blurred_mapping_matrix, noise_map_1d=noise_map_1d)
 
-        self.regularization_matrix = \
-            regularization.regularization_matrix_from_pixel_neighbors(pixel_neighbors=mapper.geometry.pixel_neighbors,
-                                                            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size)
+        self.regularization_matrix = regularization.regularization_matrix_from_mapper(mapper=mapper)
+
         self.curvature_reg_matrix = np.add(self.curvature_matrix, self.regularization_matrix)
         self.solution_vector = np.linalg.solve(self.curvature_reg_matrix, self.data_vector)
 
-    @property
-    def reconstructed_data(self):
-        return self.mapper.grid_stack.regular.scaled_array_2d_from_array_1d(np.asarray(self.reconstructed_data_vector))
+    @classmethod
+    def from_data_1d_mapper_and_regularization(cls, image_1d, noise_map_1d, convolver, mapper, regularization):
+        return Inversion(image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver, mapper=mapper,
+                         regularization=regularization)
 
     @property
-    def reconstructed_data_vector(self):
+    def reconstructed_data_2d(self):
+        return self.mapper.grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=np.asarray(self.reconstructed_data_1d))
+
+    @property
+    def reconstructed_data_1d(self):
         return inversion_util.reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
-            self.blurred_mapping_matrix, self.solution_vector)
+            blurred_mapping_matrix=self.blurred_mapping_matrix, solution_vector=self.solution_vector)
 
     @property
     def regularization_term(self):

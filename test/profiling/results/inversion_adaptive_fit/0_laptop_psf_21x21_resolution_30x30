@@ -15,7 +15,7 @@ psf shape = (21, 21)
 
 pixelization shape = (30, 30)
 
-AdaptiveMagnification Inversion fit run times for image type LSST
+VoronoiMagnification Inversion fit run times for image type LSST
 
 Number of points = 11456
 
@@ -35,7 +35,7 @@ Time to compute solution vector = 0.008177638053894043
 Time to compute reconstructed data vector = 0.0009632587432861328
 Time to perform complete fit = 0.5076256513595581
 
-AdaptiveMagnification Inversion fit run times for image type Euclid
+VoronoiMagnification Inversion fit run times for image type Euclid
 
 Number of points = 45248
 
@@ -55,7 +55,7 @@ Time to compute solution vector = 0.00842440128326416
 Time to compute reconstructed data vector = 0.0027432680130004884
 Time to perform complete fit = 0.5233160018920898
 
-AdaptiveMagnification Inversion fit run times for image type HST
+VoronoiMagnification Inversion fit run times for image type HST
 
 Number of points = 180864
 
@@ -75,7 +75,7 @@ Time to compute solution vector = 0.008687043190002441
 Time to compute reconstructed data vector = 0.01062338352203369
 Time to perform complete fit = 0.43745505809783936
 
-AdaptiveMagnification Inversion fit run times for image type HST_Up
+VoronoiMagnification Inversion fit run times for image type HST_Up
 
 Number of points = 502848
 
@@ -95,7 +95,7 @@ Time to compute solution vector = 0.00926070213317871
 Time to compute reconstructed data vector = 0.028932976722717284
 Time to perform complete fit = 0.6788107395172119
 
-AdaptiveMagnification Inversion fit run times for image type AO
+VoronoiMagnification Inversion fit run times for image type AO
 
 Number of points = 4524672
 

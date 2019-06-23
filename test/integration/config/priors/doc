@@ -54,7 +54,7 @@ EllipticalSersicRadialGradient
 ## Pixelizations ##
 
 Retangular
-AdaptiveMagnification
+VoronoiMagnification
 
 ## Regularization ##
 

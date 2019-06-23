@@ -54,7 +54,7 @@ for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
     start = time.time()
     for i in range(repeats):
         blurred_profile_image_1d = lens_fit_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
+            unblurred_image_1d=tracer.profile_image_plane_image_1d, blurring_image_1d=tracer.profile_image_plane_blurring_image_1d,
             convolver=lens_data.convolver_image)
         blurred_profile_image = lens_data.map_to_scaled_array(array_1d=blurred_profile_image_1d)
     diff = time.time() - start
@@ -62,15 +62,15 @@ for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
 
     start = time.time()
     for i in range(repeats):
-        lens_fit.LensDataFit(image=lens_data.image_1d, noise_map=lens_data.noise_map_1d, mask=lens_data.mask_1d,
-                               model_image=blurred_profile_image_1d)
+        lens_fit.LensDataFit(image_1d=lens_data.image_1d, noise_map_1d=lens_data.noise_map_1d, mask_1d=lens_data.mask_1d,
+                             model_image_1d=blurred_profile_image_1d)
     diff = time.time() - start
     print("Time to perform fit (1D) = {}".format(diff/repeats))
 
     start = time.time()
     for i in range(repeats):
-        lens_fit.LensDataFit(image=lens_data.image, noise_map=lens_data.noise_map, mask=lens_data.mask,
-                         model_image=blurred_profile_image)
+        lens_fit.LensDataFit(image_1d=lens_data.unmasked_image, noise_map_1d=lens_data.unmasked_noise_map, mask_1d=lens_data.mask_2d,
+                             model_image_1d=blurred_profile_image)
     diff = time.time() - start
     print("Time to perform fit (2D) = {}".format(diff/repeats))
 

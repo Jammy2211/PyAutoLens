@@ -33,7 +33,7 @@ print('pixelization shape = ' + str(pixelization_shape) + '\n')
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6,
                                                     axis_ratio=0.7, phi=45.0))
 
-pixelization = pix.AdaptiveMagnification(shape=pixelization_shape)
+pixelization = pix.VoronoiMagnification(shape=pixelization_shape)
 
 source_galaxy = g.Galaxy(pixelization=pixelization, regularization=reg.Constant(coefficients=(1.0,)))
 
@@ -44,7 +44,7 @@ for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
-    print('AdaptiveMagnification Inversion fit run times for image type ' + data_resolution + '\n')
+    print('VoronoiMagnification Inversion fit run times for image type ' + data_resolution + '\n')
     print('Number of points = ' + str(lens_data.grid_stack.sub.shape[0]) + '\n')
 
     start_overall = time.time()
