@@ -266,12 +266,71 @@ class TestVoronoi:
             assert (pixel_neighbors_size == pixel_neighbors_size_util).all()
 
 
-class TestAdaptiveMagnification:
+class TestVoronoiMagnification:
 
-    class TestConstructor:
+    def test__number_of_pixels_setup_correct(self):
 
-        def test__number_of_pixels_and_regularization_set_up_correctly(self):
+        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
 
-            pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
+        assert pix.shape == (3, 3)
 
-            assert pix.shape == (3, 3)
+
+class TestVoronoiBrightness:
+
+    def test__number_of_pixels_and_regularization_set_up_correctly(self):
+
+        pix = pixelizations.VoronoiBrightnessImage(pixels=5)
+
+        assert pix.pixels == 5
+
+    class TestClusterWeightMap:
+
+        def test__hyper_image_doesnt_use_min_and_max_cluster_weight_map_uses_floor_and_power(self):
+
+            hyper_image = np.array([0.0, 1.0, 0.0])
+
+            pix = pixelizations.VoronoiBrightnessImage(pixels=5, weight_floor=0.0, weight_power=0.0)
+
+            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(hyper_image=hyper_image)
+
+            assert (cluster_weight_map == np.ones(3)).all()
+
+            pix = pixelizations.VoronoiBrightnessImage(pixels=5, weight_floor=0.0, weight_power=1.0)
+
+            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(hyper_image=hyper_image)
+
+            assert (cluster_weight_map == np.array([0.0, 1.0, 0.0])).all()
+
+            pix = pixelizations.VoronoiBrightnessImage(pixels=5, weight_floor=1.0, weight_power=1.0)
+
+            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(hyper_image=hyper_image)
+
+            assert (cluster_weight_map == np.array([1.0, 2.0, 1.0])).all()
+
+            pix = pixelizations.VoronoiBrightnessImage(pixels=5, weight_floor=1.0, weight_power=2.0)
+
+            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(hyper_image=hyper_image)
+
+            assert (cluster_weight_map == np.array([1.0, 4.0, 1.0])).all()
+
+        def test__hyper_image_uses_min_and_max__cluster_weight_map_uses_floor_and_power(self):
+
+            hyper_image = np.array([-1.0, 1.0, 3.0])
+
+            pix = pixelizations.VoronoiBrightnessImage(pixels=5, weight_floor=0.0, weight_power=1.0)
+
+            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(hyper_image=hyper_image)
+
+            assert (cluster_weight_map == np.array([0.0, 0.5, 1.0])).all()
+
+            pix = pixelizations.VoronoiBrightnessImage(pixels=5, weight_floor=0.0, weight_power=2.0)
+
+            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(hyper_image=hyper_image)
+
+            assert (cluster_weight_map == np.array([0.0, 0.25, 1.0])).all()
+
+            pix = pixelizations.VoronoiBrightnessImage(pixels=5, weight_floor=1.0, weight_power=1.0)
+
+            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(hyper_image=hyper_image)
+
+            assert (cluster_weight_map == np.array([1.0, 1.5, 2.0])).all()

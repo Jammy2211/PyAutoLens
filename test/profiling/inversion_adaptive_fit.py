@@ -33,7 +33,7 @@ print('pixelization shape = ' + str(pixelization_shape) + '\n')
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6,
                                                     axis_ratio=0.7, phi=45.0))
 
-pixelization = pix.AdaptiveMagnification(shape=pixelization_shape)
+pixelization = pix.VoronoiMagnification(shape=pixelization_shape)
 
 source_galaxy = g.Galaxy(pixelization=pixelization, regularization=reg.Constant(coefficients=(1.0,)))
 
