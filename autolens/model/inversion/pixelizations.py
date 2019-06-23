@@ -313,3 +313,7 @@ class VoronoiBrightnessImage(Voronoi):
                              (np.max(hyper_image) - np.min(hyper_image)) + self.weight_floor
 
         return np.power(cluster_weight_map, self.weight_power)
+
+    @property
+    def uses_pixelization_grid(self):
+        return True

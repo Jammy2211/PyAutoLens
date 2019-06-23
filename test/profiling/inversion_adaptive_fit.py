@@ -44,7 +44,7 @@ for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
-    print('AdaptiveMagnification Inversion fit run times for image type ' + data_resolution + '\n')
+    print('VoronoiMagnification Inversion fit run times for image type ' + data_resolution + '\n')
     print('Number of points = ' + str(lens_data.grid_stack.sub.shape[0]) + '\n')
 
     start_overall = time.time()
