@@ -180,10 +180,11 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging):
         model_image_2d = results.last.most_likely_fit.model_image_2d
 
         results_copy = copy.deepcopy(results.last)
-        results_copy.analysis.uses_hyper_images = True
-        results_copy.analysis.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
+        hyper_result = copy.deepcopy(results.last)
+        hyper_result.analysis.uses_hyper_images = True
+        hyper_result.analysis.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
             array_2d=model_image_2d)
-        results_copy.analysis.hyper_galaxy_image_1d_path_dict = {}
+        hyper_result.analysis.hyper_galaxy_image_1d_path_dict = {}
 
         for galaxy_path, galaxy in results.last.path_galaxy_tuples:
 
@@ -195,7 +196,7 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging):
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
             if not np.all(galaxy_image_2d == 0):
-                results_copy.analysis.hyper_galaxy_image_1d_path_dict[
+                hyper_result.analysis.hyper_galaxy_image_1d_path_dict[
                     galaxy_path] = lens_data.array_1d_from_array_2d(
                     array_2d=galaxy_image_2d)
                 analysis = self.__class__.Analysis(lens_data=lens_data,
@@ -203,7 +204,10 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging):
                                                    galaxy_image_2d=galaxy_image_2d)
                 result = optimizer.fit(analysis)
 
-                results_copy.constant.object_for_path(
-                    galaxy_path).hyper_galaxy = result.constant.hyper_galaxy
+                hyper_result.constant.object_for_path(
+                    galaxy_path
+                ).hyper_galaxy = result.constant.hyper_galaxy
+
+        results_copy.hyper = hyper_result
 
         return results_copy
