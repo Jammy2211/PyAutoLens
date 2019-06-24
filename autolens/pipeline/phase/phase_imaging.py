@@ -7,7 +7,7 @@ from autofit import conf
 from autofit.mapper.model import ModelInstance
 from autofit.optimize import non_linear
 from autofit.tools.phase_property import PhaseProperty
-from autolens.data.array.util import array_util
+from autolens.data.array.util import binning_util
 from autolens import exc
 from autolens.data.array import grids
 from autolens.data.plotters import ccd_plotters
@@ -293,32 +293,26 @@ class PhaseImaging(Phase):
 
                     self.hyper_galaxy_image_1d_path_dict[path] = galaxy_image
 
-                if self.lens_data.cluster_bin_up_factor is not None:
+                cluster_image_1d_galaxy_dict = {}
 
-                    cluster_image_1d_galaxy_dict = {}
+                for galaxy, galaxy_image in results.last.image_2d_dict.items():
 
-                    for galaxy, galaxy_image in results.last.image_2d_dict.items():
+                    cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+                        array_2d=galaxy_image, bin_up_factor=lens_data.cluster.bin_up_factor)
 
-                        cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
-                            array_2d=galaxy_image, bin_up_factor=lens_data.cluster_bin_up_factor)
+                    cluster_image_1d_galaxy_dict[galaxy] = \
+                        lens_data.cluster.mask.map_2d_array_to_masked_1d_array(array_2d=cluster_image_2d)
 
-                        cluster_image_1d_galaxy_dict[galaxy] = \
-                            lens_data.cluster_mask_2d.map_2d_array_to_masked_1d_array(array_2d=cluster_image_2d)
+                self.hyper_galaxy_cluster_image_1d_path_dict = {}
 
-                    self.hyper_galaxy_cluster_image_1d_path_dict = {}
+                for path, galaxy in results.last.path_galaxy_tuples:
 
-                    for path, galaxy in results.last.path_galaxy_tuples:
+                    galaxy_cluster_image = cluster_image_1d_galaxy_dict[path]
 
-                        galaxy_cluster_image = cluster_image_1d_galaxy_dict[path]
+                    minimum_cluster_value = 0.01 * max(galaxy_cluster_image)
+                    galaxy_cluster_image[galaxy_cluster_image < minimum_cluster_value] = minimum_cluster_value
 
-                        minimum_cluster_value = 0.01 * max(galaxy_cluster_image)
-                        galaxy_cluster_image[galaxy_cluster_image < minimum_cluster_value] = minimum_cluster_value
-
-                        self.hyper_galaxy_cluster_image_1d_path_dict[path] = galaxy_cluster_image
-
-                else:
-
-                    self.hyper_galaxy_cluster_image_1d_path_dict = self.hyper_galaxy_image_1d_path_dict
+                    self.hyper_galaxy_cluster_image_1d_path_dict[path] = galaxy_cluster_image
 
 
             else:
@@ -400,18 +394,19 @@ class PhaseImaging(Phase):
                                     hyper_image=galaxy.hyper_galaxy_cluster_image_1d)
 
                             sparse_to_regular_grid = \
-                                grids.SparseToRegularGrid.from_total_pixels_regular_grid_and_cluster_weight_map(
-                                    total_pixels=galaxy.pixelization.pixels, regular_grid=self.lens_data.cluster_grid,
-                                    cluster_weight_map=cluster_weight_map, seed=1)
+                                grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+                                    total_pixels=galaxy.pixelization.pixels, cluster_grid=self.lens_data.cluster,
+                                    regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map, seed=1)
 
                         else:
 
                             raise exc.PhaseException('The pixelization of a galaxy uses a pixelization grid, but was not a viable'
                                                      'type in the grid stack calculation method')
 
-                        return grid_stack.new_grid_stack_with_pixelization_grid_added(
-                            pixelization_grid=sparse_to_regular_grid.sparse,
-                            regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
+                        pixelization_grid = grids.PixelizationGrid(
+                            arr=sparse_to_regular_grid.sparse, regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
+
+                        return grid_stack.new_grid_stack_with_grids_added(pixelization=pixelization_grid)
 
             return grid_stack
 

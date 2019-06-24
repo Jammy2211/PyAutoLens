@@ -441,7 +441,7 @@ class TestPhase(object):
         galaxy_pix_which_uses_brightness = g.Galaxy(redshift=0.5, pixelization=pix.VoronoiBrightnessImage(pixels=9),
                                                   regularization=reg.Constant())
 
-        galaxy_pix_which_uses_brightness.hyper_galaxy_image_1d = np.array([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0])
+        galaxy_pix_which_uses_brightness.hyper_galaxy_cluster_image_1d = np.array([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0])
 
         grid_stack = analysis.add_grids_to_grid_stack(galaxies=[galaxy_pix_which_uses_brightness],
                                                       grid_stack=analysis.lens_data.grid_stack)

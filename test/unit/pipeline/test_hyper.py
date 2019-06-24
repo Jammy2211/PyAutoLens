@@ -226,9 +226,9 @@ class TestImagePassing(object):
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)] == 2.0 * np.ones(9)).all()
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)] == 3.0 * np.ones(9)).all()
         assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
-               analysis.lens_data.cluster_grid.shape[0]
+               analysis.lens_data.cluster.shape[0]
         assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
-               analysis.lens_data.cluster_grid.shape[0]
+               analysis.lens_data.cluster.shape[0]
 
         phase_5x5 = Phase(lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)),
                           optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
@@ -239,9 +239,9 @@ class TestImagePassing(object):
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)] == 2.0 * np.ones(4)).all()
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)] == 3.0 * np.ones(4)).all()
         assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
-               analysis.lens_data.cluster_grid.shape[0]
+               analysis.lens_data.cluster.shape[0]
         assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
-               analysis.lens_data.cluster_grid.shape[0]
+               analysis.lens_data.cluster.shape[0]
 
     def test__image_in_results_has_masked_value_passsed__raises_error(self,
                                                                       mask_function_5x5,

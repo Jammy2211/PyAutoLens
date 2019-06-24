@@ -184,6 +184,10 @@ def make_blurring_grid_5x5():
 
     return mock_grids.MockRegularGrid(mask=blurring_mask)
 
+@pytest.fixture(name="cluster_grid_5x5")
+def make_cluster_grid_5x5(mask_5x5):
+    return mock_grids.MockClusterGrid.from_mask_and_cluster_pixel_scale(
+        mask=mask_5x5, cluster_pixel_scale=mask_5x5.pixel_scale)
 
 @pytest.fixture(name="grid_stack_5x5")
 def make_grid_stack_5x5(regular_grid_5x5, sub_grid_5x5, blurring_grid_5x5):
@@ -372,10 +376,11 @@ def make_gal_fit_5x5_deflections_x(gal_fit_data_5x5_deflections_x, gal_x1_mp):
 
 @pytest.fixture(name="lens_data_5x5")
 def make_lens_data_5x5(ccd_data_5x5, mask_5x5, grid_stack_5x5, padded_grid_stack_5x5, border_5x5,
-                       convolver_image_5x5, convolver_mapping_matrix_5x5):
+                       convolver_image_5x5, convolver_mapping_matrix_5x5, cluster_grid_5x5):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_5x5, mask=mask_5x5, grid_stack=grid_stack_5x5, padded_grid_stack=padded_grid_stack_5x5,
-        border=border_5x5, convolver_image=convolver_image_5x5, convolver_mapping_matrix=convolver_mapping_matrix_5x5)
+        border=border_5x5, convolver_image=convolver_image_5x5, convolver_mapping_matrix=convolver_mapping_matrix_5x5,
+        cluster=cluster_grid_5x5)
 
 
 ### Plane ####

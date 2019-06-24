@@ -1,4 +1,5 @@
 from autolens.exc import exc
+from autolens.data.array.util import binning_util
 from autolens.data.array import grids
 from autolens.data import convolution
 from autolens.data.array import mask as msk
@@ -105,23 +106,13 @@ class LensData(object):
 
         if self.cluster_pixel_scale is not None:
 
-            if self.cluster_pixel_scale > self.pixel_scale:
-
-                self.cluster_bin_up_factor = int(self.cluster_pixel_scale / self.pixel_scale)
-
-            else:
-
-                self.cluster_bin_up_factor = 1
-
-            self.cluster_mask_2d = self.mask_2d.binned_up_mask_from_mask(bin_up_factor=self.cluster_bin_up_factor)
-            self.cluster_grid = grids.RegularGrid.from_mask(mask=self.cluster_mask_2d)
+            self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                mask=self.mask_2d, cluster_pixel_scale=cluster_pixel_scale)
 
         else:
 
-            self.cluster_bin_up_factor = None
-            self.cluster_mask_2d = None
-            self.cluster_grid = None
-
+            self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                mask=self.mask_2d, cluster_pixel_scale=self.pixel_scale)
 
 
     def new_lens_data_with_modified_image(self, modified_image):
@@ -173,6 +164,4 @@ class LensData(object):
             self.border = obj.border
             self.positions = obj.positions
             self.interp_pixel_scale = obj.interp_pixel_scale
-            self.cluster_pixel_scale = obj.cluster_pixel_scale
-            self.cluster_bin_up_factor = obj.cluster_bin_up_factor
-            self.cluster_mask_2d = obj.cluster_mask_2d
+            self.cluster = obj.cluster
