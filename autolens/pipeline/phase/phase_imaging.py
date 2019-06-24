@@ -4,10 +4,10 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit import conf
-from autofit.mapper import prior as p
 from autofit.mapper.model import ModelInstance
 from autofit.optimize import non_linear
 from autofit.tools.phase_property import PhaseProperty
+from autolens.data.array.util import array_util
 from autolens import exc
 from autolens.data.array import grids
 from autolens.data.plotters import ccd_plotters
@@ -16,9 +16,7 @@ from autolens.lens.plotters import ray_tracing_plotters, lens_fit_plotters, \
     sensitivity_fit_plotters
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as px
-from autolens.model.inversion import regularization as rg
 from autolens.pipeline import tagging as tag
-from autolens.pipeline.phase import Phase
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 
 
@@ -29,7 +27,9 @@ class PhaseImaging(Phase):
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  inversion_psf_shape=None, positions_threshold=None, mask_function=None,
                  inner_mask_radii=None,
-                 interp_pixel_scale=None, cosmology=cosmo.Planck15,
+                 interp_pixel_scale=None,
+                 cluster_pixel_scale=None,
+                 cosmology=cosmo.Planck15,
                  auto_link_priors=False):
 
         """
@@ -71,6 +71,7 @@ class PhaseImaging(Phase):
         self.mask_function = mask_function
         self.inner_mask_radii = inner_mask_radii
         self.interp_pixel_scale = interp_pixel_scale
+        self.cluster_pixel_scale = cluster_pixel_scale
 
 
     @property
@@ -167,14 +168,15 @@ class PhaseImaging(Phase):
                                 image_psf_shape=self.image_psf_shape,
                                 positions=positions,
                                 interp_pixel_scale=self.interp_pixel_scale,
+                                cluster_pixel_scale=self.cluster_pixel_scale,
                                 uses_inversion=self.uses_inversion)
 
-        modified_image = self.modify_image(image=lens_data.unmasked_image,
-                                           results=results)
+        modified_image = self.modify_image(image=lens_data.unmasked_image, results=results)
         lens_data = lens_data.new_lens_data_with_modified_image(
             modified_image=modified_image)
 
         if self.bin_up_factor is not None:
+
             lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(
                 bin_up_factor=self.bin_up_factor)
 
@@ -270,9 +272,11 @@ class PhaseImaging(Phase):
             if self.last_results is not None and self.uses_hyper_images:
 
                 image_1d_galaxy_dict = {}
+
                 self.hyper_model_image_1d = np.zeros(lens_data.mask_1d.shape)
 
                 for galaxy, galaxy_image in results.last.image_2d_dict.items():
+
                     image_1d_galaxy_dict[galaxy] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image)
                     self.check_for_previously_masked_values(array=image_1d_galaxy_dict[galaxy])
 
@@ -285,10 +289,37 @@ class PhaseImaging(Phase):
                     self.hyper_model_image_1d += galaxy_image
 
                     minimum_galaxy_value = 0.01*max(galaxy_image)
-
                     galaxy_image[galaxy_image < minimum_galaxy_value] = minimum_galaxy_value
 
                     self.hyper_galaxy_image_1d_path_dict[path] = galaxy_image
+
+                if self.lens_data.cluster_bin_up_factor is not None:
+
+                    cluster_image_1d_galaxy_dict = {}
+
+                    for galaxy, galaxy_image in results.last.image_2d_dict.items():
+
+                        cluster_image_2d = array_util.bin_up_array_2d_using_mean(
+                            array_2d=galaxy_image, bin_up_factor=lens_data.cluster_bin_up_factor)
+
+                        cluster_image_1d_galaxy_dict[galaxy] = \
+                            lens_data.cluster_mask_2d.map_2d_array_to_masked_1d_array(array_2d=cluster_image_2d)
+
+                    self.hyper_galaxy_cluster_image_1d_path_dict = {}
+
+                    for path, galaxy in results.last.path_galaxy_tuples:
+
+                        galaxy_cluster_image = cluster_image_1d_galaxy_dict[path]
+
+                        minimum_cluster_value = 0.01 * max(galaxy_cluster_image)
+                        galaxy_cluster_image[galaxy_cluster_image < minimum_cluster_value] = minimum_cluster_value
+
+                        self.hyper_galaxy_cluster_image_1d_path_dict[path] = galaxy_cluster_image
+
+                else:
+
+                    self.hyper_galaxy_cluster_image_1d_path_dict = self.hyper_galaxy_image_1d_path_dict
+
 
             else:
 
@@ -484,7 +515,9 @@ class MultiPlanePhase(PhaseImaging):
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  positions_threshold=None,
                  mask_function=None,
-                 inner_mask_radii=None, cosmology=cosmo.Planck15,
+                 inner_mask_radii=None,
+                 cluster_pixel_scale=None,
+                 cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -509,6 +542,7 @@ class MultiPlanePhase(PhaseImaging):
                                               positions_threshold=positions_threshold,
                                               mask_function=mask_function,
                                               inner_mask_radii=inner_mask_radii,
+                                              cluster_pixel_scale=cluster_pixel_scale,
                                               cosmology=cosmology,
                                               auto_link_priors=auto_link_priors)
         self.galaxies = galaxies
@@ -574,6 +608,7 @@ class LensSourcePlanePhase(PhaseImaging):
                  positions_threshold=None,
                  mask_function=None,
                  interp_pixel_scale=None, inner_mask_radii=None,
+                 cluster_pixel_scale=None,
                  cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
@@ -601,6 +636,7 @@ class LensSourcePlanePhase(PhaseImaging):
                                                    mask_function=mask_function,
                                                    interp_pixel_scale=interp_pixel_scale,
                                                    inner_mask_radii=inner_mask_radii,
+                                                   cluster_pixel_scale=cluster_pixel_scale,
                                                    cosmology=cosmology,
                                                    auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies or []

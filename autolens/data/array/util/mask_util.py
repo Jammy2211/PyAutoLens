@@ -708,12 +708,3 @@ def bin_up_mask_2d(mask_2d, bin_up_factor):
             binned_array_2d[y,x] = value
 
     return binned_array_2d
-
-def rescaled_mask_from_mask_and_rescale_factor(mask, rescale_factor):
-
-    rescaled_mask = rescale(image=mask, scale=rescale_factor, mode='edge', anti_aliasing=False, multichannel=False)
-    rescaled_mask[0, :] = True
-    rescaled_mask[rescaled_mask.shape[0]-1, :] = True
-    rescaled_mask[:, 0] = True
-    rescaled_mask[:, rescaled_mask.shape[1]-1] = True
-    return rescaled_mask == 1
