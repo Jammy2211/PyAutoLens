@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from autolens.data.array.util import mask_util as util
+from autolens.data.array.util import binning_util
 from autolens.data.array.util import mapping_util
 from autolens.data.array import mask as msk
 from autolens.data.array.util import grid_util
@@ -633,14 +634,14 @@ class TestBinnedMaskFromMask:
         mask[4, 9] = False
         mask[11, 10] = False
 
-        binned_up_mask_util = util.bin_up_mask_2d(mask_2d=mask, bin_up_factor=2)
+        binned_up_mask_util = binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(mask_2d=mask, bin_up_factor=2)
 
         mask = msk.Mask(array=mask, pixel_scale=1.0)
         mask = mask.binned_up_mask_from_mask(bin_up_factor=2)
         assert (mask == binned_up_mask_util).all()
         assert mask.pixel_scale == 2.0
 
-        binned_up_mask_util = util.bin_up_mask_2d(mask_2d=mask, bin_up_factor=3)
+        binned_up_mask_util = binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(mask_2d=mask, bin_up_factor=3)
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
         mask = mask.binned_up_mask_from_mask(bin_up_factor=3)

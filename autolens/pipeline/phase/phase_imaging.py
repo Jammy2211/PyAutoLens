@@ -299,7 +299,7 @@ class PhaseImaging(Phase):
 
                     for galaxy, galaxy_image in results.last.image_2d_dict.items():
 
-                        cluster_image_2d = array_util.bin_up_array_2d_using_mean(
+                        cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                             array_2d=galaxy_image, bin_up_factor=lens_data.cluster_bin_up_factor)
 
                         cluster_image_1d_galaxy_dict[galaxy] = \
@@ -380,6 +380,7 @@ class PhaseImaging(Phase):
                     if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
                         galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[galaxy_path]
+                        galaxy.hyper_galaxy_cluster_image_1d = self.hyper_galaxy_cluster_image_1d_path_dict[galaxy_path]
             return instance
 
         def add_grids_to_grid_stack(self, galaxies, grid_stack):
@@ -395,12 +396,12 @@ class PhaseImaging(Phase):
 
                         elif isinstance(galaxy.pixelization, px.VoronoiBrightnessImage):
 
-                            cluster_weight_map = \
-                                galaxy.pixelization.cluster_weight_map_from_hyper_image(hyper_image=galaxy.hyper_galaxy_image_1d)
+                            cluster_weight_map = galaxy.pixelization.cluster_weight_map_from_hyper_image(
+                                    hyper_image=galaxy.hyper_galaxy_cluster_image_1d)
 
                             sparse_to_regular_grid = \
                                 grids.SparseToRegularGrid.from_total_pixels_regular_grid_and_cluster_weight_map(
-                                    total_pixels=galaxy.pixelization.pixels, regular_grid=grid_stack.regular,
+                                    total_pixels=galaxy.pixelization.pixels, regular_grid=self.lens_data.cluster_grid,
                                     cluster_weight_map=cluster_weight_map, seed=1)
 
                         else:
