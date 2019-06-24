@@ -4,8 +4,7 @@ import pytest
 from autolens.data import ccd
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
-from autolens.data.array.util import grid_util
-from autolens.data.array.util import mapping_util, mask_util
+from autolens.data.array.util import grid_util, mapping_util, mask_util
 from autolens.model.profiles import mass_profiles as mp
 
 

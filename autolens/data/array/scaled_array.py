@@ -3,8 +3,7 @@ import logging
 import numpy as np
 
 from autolens import exc
-from autolens.data.array.util import array_util, grid_util
-from skimage.transform import rescale
+from autolens.data.array.util import array_util, grid_util, binning_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -373,16 +372,16 @@ class ScaledSquarePixelArray(ScaledArray):
     def binned_up_array_from_array(self, bin_up_factor, method):
 
         if method is 'mean':
-            return ScaledSquarePixelArray(array=array_util.bin_up_array_2d_using_mean(array_2d=self,
-                                                                                   bin_up_factor=bin_up_factor),
+            return ScaledSquarePixelArray(array=binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(array_2d=self,
+                                                                                                                         bin_up_factor=bin_up_factor),
                                           pixel_scale=self.pixel_scale*bin_up_factor)
         elif method is 'quadrature':
-            return ScaledSquarePixelArray(array=array_util.bin_up_array_2d_using_quadrature(array_2d=self,
-                                                                                   bin_up_factor=bin_up_factor),
+            return ScaledSquarePixelArray(array=binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(array_2d=self,
+                                                                                                                            bin_up_factor=bin_up_factor),
                                           pixel_scale=self.pixel_scale*bin_up_factor)
         elif method is 'sum':
-            return ScaledSquarePixelArray(array=array_util.bin_up_array_2d_using_sum(array_2d=self,
-                                                                                     bin_up_factor=bin_up_factor),
+            return ScaledSquarePixelArray(array=binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(array_2d=self,
+                                                                                                                     bin_up_factor=bin_up_factor),
                                           pixel_scale=self.pixel_scale*bin_up_factor)
         else:
             raise exc.DataException('The method used in binned_up_array_from_array is not a valid method '
