@@ -1,7 +1,6 @@
 import numpy as np
 
-from autofit.mapper import model_mapper as mm
-from autofit.optimize import non_linear
+import autofit as af
 from autolens.model.galaxy import galaxy as g
 
 
@@ -26,8 +25,8 @@ class MockResults(object):
         self.model_image = model_image
         self.unmasked_model_image = model_image
         self.galaxy_images = galaxy_images
-        self.constant = constant or mm.ModelInstance()
-        self.variable = mm.ModelMapper()
+        self.constant = constant or af.ModelInstance()
+        self.variable = af.ModelMapper()
         self.analysis = analysis
         self.optimizer = optimizer
 
@@ -65,7 +64,7 @@ class MockResult:
         self.gaussian_tuples = None
 
 
-class MockNLO(non_linear.NonLinearOptimizer):
+class MockNLO(af.NonLinearOptimizer):
 
     def fit(self, analysis):
         class Fitness(object):

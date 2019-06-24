@@ -1,6 +1,7 @@
-from autofit.tools import fit
+import autofit as af
 
-class GalaxyFit(fit.DataFit1D):
+
+class GalaxyFit(af.fit.DataFit1D):
 
     def __init__(self, galaxy_data, model_galaxies):
         """Class which fits a set of galaxy-datas to a model galaxy, using either the galaxy's intensities, \
@@ -22,8 +23,10 @@ class GalaxyFit(fit.DataFit1D):
         model_data_1d = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(
             galaxies=model_galaxies, sub_grid=galaxy_data.grid_stack.sub)
 
-        super(GalaxyFit, self).__init__(data_1d=galaxy_data.image_1d, noise_map_1d=galaxy_data.noise_map_1d,
-                                        mask_1d=galaxy_data.mask_1d, model_data_1d=model_data_1d)
+        super(GalaxyFit, self).__init__(data_1d=galaxy_data.image_1d,
+                                        noise_map_1d=galaxy_data.noise_map_1d,
+                                        mask_1d=galaxy_data.mask_1d,
+                                        model_data_1d=model_data_1d)
 
     @property
     def image_1d(self):

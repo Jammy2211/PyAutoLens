@@ -1,9 +1,9 @@
 import os
 
 import autolens.pipeline.phase.phase_imaging
-from autofit import conf
-from autofit.mapper import prior
-from autofit.optimize import non_linear as nl
+import autofit as af
+import autofit as af
+import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline.phase import phase as ph
 from autolens.pipeline import pipeline as pl
@@ -17,7 +17,7 @@ test_name = "use_constant_as_mean_of_gaussian_prior"
 path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = path+'output/'+test_type
 config_path = path+'config'
-conf.instance = conf.Config(config_path=config_path, output_path=output_path)
+af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 

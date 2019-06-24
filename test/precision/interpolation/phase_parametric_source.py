@@ -1,6 +1,6 @@
 import autolens.pipeline.phase.phase_imaging
-from autofit import conf
-from autofit.optimize import non_linear as nl
+import autofit as af
+import autofit as af
 from autolens.pipeline.phase import phase as ph
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
@@ -15,7 +15,7 @@ import os
 test_path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 # Use this path to explicitly set the config path and output papth
-conf.instance = conf.Config(config_path=test_path + 'config', output_path=test_path + 'output')
+af.conf.instance = af.conf.Config(config_path=test_path + 'config', output_path=test_path + 'output')
 
 # It is convinient to specify the lens name as a string, so that if the pipeline is applied to multiple images we \
 # don't have to change all of the path entries in the load_ccd_data_from_fits function below.

@@ -3,11 +3,8 @@ import os
 import shutil
 
 import autolens.pipeline.phase.phase_imaging
-from autofit import conf
-from autofit.mapper import model_mapper as mm
-from autofit.mapper import prior
-from autofit.mapper import prior_model as pm
-from autofit.optimize import non_linear as nl
+import autofit as af
+import autofit as af
 from autolens.data import ccd
 from autolens.data import simulated_ccd as sim_ccd
 from autolens.data.array import grids
@@ -18,7 +15,7 @@ from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
-conf.instance = conf.Config("{}/config".format(dirpath),
+af.conf.instance = af.conf.Config("{}/config".format(dirpath),
                             "{}/output/".format(dirpath))
 
 dirpath = os.path.dirname(dirpath)
@@ -79,7 +76,7 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
 
 class TestAdvancedModelMapper(object):
     def test_fully_qualified_paramnames(self):
-        mapper = mm.ModelMapper()
+        mapper = af.ModelMapper()
         galaxy_model = gm.GalaxyModel(redshift=0.5,
                                       light_profile=lp.EllipticalLightProfile)
         light_profile = galaxy_model.light_profile
@@ -129,7 +126,7 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(lens_galaxies=dict(
             lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)),
-                        optimizer_class=nl.MultiNest,
+                        optimizer_class=af.MultiNest,
                         phase_name="{}/phase1".format(test_name))
 
         initial_total_priors = phase.variable.prior_count
@@ -188,7 +185,7 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(lens_galaxies=dict(
             lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)),
-                        optimizer_class=nl.MultiNest,
+                        optimizer_class=af.MultiNest,
                         phase_name="{}/phase1".format(name))
 
         phase.optimizer.n_live_points = 20
@@ -198,7 +195,7 @@ class TestPhaseModelMapper(object):
 
         sersic = phase.variable.lens_galaxies[0].sersic
 
-        assert isinstance(sersic, pm.PriorModel)
+        assert isinstance(sersic, af.PriorModel)
 
         assert isinstance(sersic.axis_ratio, float)
         assert isinstance(sersic.phi, float)
