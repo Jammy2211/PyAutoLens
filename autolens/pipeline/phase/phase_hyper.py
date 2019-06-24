@@ -12,7 +12,7 @@ from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline.phase.phase import setup_phase_mask
 
 
-class HyperPixelizationPhase(phase_imaging.PhaseImaging):
+class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
     """
     Phase that makes everything in the variable from the previous phase equal to the
     corresponding value from the best fit except for variables associated with
@@ -77,7 +77,7 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging):
                 results=results, uses_hyper_images=uses_hyper_images)
 
 
-class HyperGalaxyPhase(phase_imaging.PhaseImaging):
+class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
     class Analysis(af.Analysis):
 
         def __init__(self, lens_data, model_image_2d, galaxy_image_2d):
