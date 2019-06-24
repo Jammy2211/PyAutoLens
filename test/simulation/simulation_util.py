@@ -1,6 +1,6 @@
 import os
 
-from autofit.tools import path_util
+from autofit import path_util
 from autolens.data import ccd
 
 test_path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))

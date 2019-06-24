@@ -3,8 +3,8 @@ import os
 import autolens.pipeline.phase.phase_imaging
 import autolens.pipeline.phase_imaging
 from autofit import conf
-from autofit.optimize import non_linear as nl
-from autofit.mapper import prior
+from autofit import non_linear as nl
+from autofit import prior
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline.phase import phase as ph
 from autolens.pipeline import pipeline as pl

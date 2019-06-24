@@ -1,7 +1,7 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autofit.tools import text_util as af_text_util
+from autofit import text_util as af_text_util
 from autolens import exc, dimensions as dim
 from autolens.data.array import grids
 from autolens.data.array import scaled_array

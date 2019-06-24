@@ -1,4 +1,4 @@
-from autofit.tools import text_util
+from autofit import text_util
 
 
 def within_radius_label_value_and_unit_string(prefix, radius, unit_length, value,

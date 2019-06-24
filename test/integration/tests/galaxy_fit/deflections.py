@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from autofit import conf
-from autofit.optimize import non_linear as nl
+from autofit import non_linear as nl
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.galaxy import galaxy_data as gd
 from autolens.model.galaxy.util import galaxy_util

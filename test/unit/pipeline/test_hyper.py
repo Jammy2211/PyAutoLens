@@ -2,9 +2,9 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
-from autofit.mapper import model
-from autofit.mapper import model_mapper as mm
-from autofit.tools import pipeline as pl
+from autofit import model
+from autofit import model_mapper as mm
+from autofit import pipeline as pl
 from autolens import exc
 from autolens.lens import lens_fit
 from autolens.lens import ray_tracing as rt

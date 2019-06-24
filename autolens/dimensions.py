@@ -3,7 +3,7 @@ import typing
 from functools import wraps
 from astropy import cosmology as cosmo
 
-from autofit.tools import dimension_type
+from autofit import dimension_type
 from autolens.model import cosmology_util
 from autolens import exc
 

@@ -5,10 +5,9 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
+import autofit as af
 import autolens.pipeline.phase.phase_imaging
 from autofit import conf
-from autofit.exc import PipelineException
-from autofit.optimize import non_linear
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
@@ -64,7 +63,9 @@ class TestPhase(object):
         assert analysis.lens_data.image_2d == lens_data_5x5.image_2d
         assert analysis.lens_data.noise_map_2d == lens_data_5x5.noise_map_2d
 
-    def test_make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(self, phase_5x5, ccd_data_5x5):
+    def test_make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(self,
+                                                                             phase_5x5,
+                                                                             ccd_data_5x5):
         # If an input mask is supplied and there is no mask function, we use mask input.
 
         phase_5x5.mask_function = None
@@ -78,7 +79,8 @@ class TestPhase(object):
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
         def mask_function(image):
-            return msk.Mask.circular(shape=image.shape, pixel_scale=1, radius_arcsec=0.3)
+            return msk.Mask.circular(shape=image.shape, pixel_scale=1,
+                                     radius_arcsec=0.3)
 
         mask_from_function = mask_function(image=ccd_data_5x5.image)
         phase_5x5.mask_function = mask_function
@@ -139,7 +141,8 @@ class TestPhase(object):
         with pytest.raises(exc.MaskException):
             phase_5x5.make_analysis(data=ccd_data_5x5, mask=None)
 
-    def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase_5x5, ccd_data_5x5):
+    def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase_5x5,
+                                                                      ccd_data_5x5):
         # If position threshold is input (not None) and positions are input, make the positions part of the lens data.
 
         phase_5x5.positions_threshold = 0.2
@@ -315,7 +318,6 @@ class TestPhase(object):
         assert phase_5x5.uses_inversion is True
 
     def test__check_if_phase_uses_hyper_images(self, mask_function_5x5):
-
         phase_5x5 = ph.LensPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
@@ -332,7 +334,8 @@ class TestPhase(object):
 
         phase_5x5 = ph.LensPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
-            lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)))
+            lens_galaxies=dict(
+                lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)))
 
         assert phase_5x5.uses_hyper_images is True
 
@@ -358,17 +361,18 @@ class TestPhase(object):
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5)),
-            source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.Rectangular,
-                                    regularization=reg.AdaptiveBrightness)))
+            source_galaxies=dict(
+                source=gm.GalaxyModel(redshift=1.0, pixelization=pix.Rectangular,
+                                      regularization=reg.AdaptiveBrightness)))
 
         assert phase_5x5.uses_hyper_images is True
-
 
         phase_5x5 = ph.LensSourcePlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5)),
-            source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, hyper_galaxy=g.HyperGalaxy)))
+            source_galaxies=dict(
+                source=gm.GalaxyModel(redshift=1.0, hyper_galaxy=g.HyperGalaxy)))
 
         assert phase_5x5.uses_hyper_images is True
 
@@ -382,7 +386,8 @@ class TestPhase(object):
         phase_5x5 = ph.MultiPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             galaxies=dict(lens=gm.GalaxyModel(redshift=0.5),
-                          source=gm.GalaxyModel(redshift=1.0, hyper_galaxy=g.HyperGalaxy)))
+                          source=gm.GalaxyModel(redshift=1.0,
+                                                hyper_galaxy=g.HyperGalaxy)))
 
         assert phase_5x5.uses_hyper_images is True
 
@@ -396,63 +401,77 @@ class TestPhase(object):
         phase_5x5 = ph.MultiPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             galaxies=dict(lens=gm.GalaxyModel(redshift=0.5),
-                          source=gm.GalaxyModel(redshift=1.0, pixelization=pix.Rectangular,
-                                    regularization=reg.AdaptiveBrightness)))
+                          source=gm.GalaxyModel(redshift=1.0,
+                                                pixelization=pix.Rectangular,
+                                                regularization=reg.AdaptiveBrightness)))
 
         assert phase_5x5.uses_hyper_images is True
 
         phase_5x5 = ph.MultiPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
-            galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
+            galaxies=dict(
+                lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
                                     regularization=reg.AdaptiveBrightness),
-                          source=gm.GalaxyModel(redshift=1.0)))
+                source=gm.GalaxyModel(redshift=1.0)))
 
         assert phase_5x5.uses_hyper_images is True
 
-    def test__adds_pixelization_grid_to_grid_stack_if_required(self, ccd_data_5x5, mask_function_5x5):
-
-        phase_5x5 = ph.MultiPlanePhase(phase_name='test_phase', mask_function=mask_function_5x5)
+    def test__adds_pixelization_grid_to_grid_stack_if_required(self, ccd_data_5x5,
+                                                               mask_function_5x5):
+        phase_5x5 = ph.MultiPlanePhase(phase_name='test_phase',
+                                       mask_function=mask_function_5x5)
 
         analysis = phase_5x5.make_analysis(data=ccd_data_5x5)
 
         galaxy = g.Galaxy(redshift=0.5)
 
-        grid_stack = analysis.add_grids_to_grid_stack(galaxies=[galaxy, galaxy], grid_stack=analysis.lens_data.grid_stack)
+        grid_stack = analysis.add_grids_to_grid_stack(galaxies=[galaxy, galaxy],
+                                                      grid_stack=analysis.lens_data.grid_stack)
 
         assert (grid_stack.pixelization == np.array([[0.0, 0.0]])).all()
 
-        galaxy_pix_which_doesnt_use_pix_grid = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(),
+        galaxy_pix_which_doesnt_use_pix_grid = g.Galaxy(redshift=0.5,
+                                                        pixelization=pix.Rectangular(),
                                                         regularization=reg.Constant())
 
-        grid_stack = analysis.add_grids_to_grid_stack(galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
-                                                      grid_stack=analysis.lens_data.grid_stack)
+        grid_stack = analysis.add_grids_to_grid_stack(
+            galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
+            grid_stack=analysis.lens_data.grid_stack)
 
         assert (grid_stack.pixelization == np.array([[0.0, 0.0]])).all()
 
-        galaxy_pix_which_uses_pix_grid = g.Galaxy(redshift=0.5, pixelization=pix.VoronoiMagnification(),
+        galaxy_pix_which_uses_pix_grid = g.Galaxy(redshift=0.5,
+                                                  pixelization=pix.VoronoiMagnification(),
                                                   regularization=reg.Constant())
 
-        grid_stack = analysis.add_grids_to_grid_stack(galaxies=[galaxy_pix_which_uses_pix_grid],
-                                                      grid_stack=analysis.lens_data.grid_stack)
+        grid_stack = analysis.add_grids_to_grid_stack(
+            galaxies=[galaxy_pix_which_uses_pix_grid],
+            grid_stack=analysis.lens_data.grid_stack)
 
-        assert (grid_stack.pixelization == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
-                                                     [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                     [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])).all()
+        assert (grid_stack.pixelization == np.array(
+            [[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+             [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+             [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])).all()
 
-        galaxy_pix_which_uses_brightness = g.Galaxy(redshift=0.5, pixelization=pix.VoronoiBrightnessImage(pixels=9),
-                                                  regularization=reg.Constant())
+        galaxy_pix_which_uses_brightness = g.Galaxy(redshift=0.5,
+                                                    pixelization=pix.VoronoiBrightnessImage(
+                                                        pixels=9),
+                                                    regularization=reg.Constant())
 
-        galaxy_pix_which_uses_brightness.hyper_galaxy_image_1d = np.array([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0])
+        galaxy_pix_which_uses_brightness.hyper_galaxy_image_1d = np.array(
+            [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0])
 
-        grid_stack = analysis.add_grids_to_grid_stack(galaxies=[galaxy_pix_which_uses_brightness],
-                                                      grid_stack=analysis.lens_data.grid_stack)
+        grid_stack = analysis.add_grids_to_grid_stack(
+            galaxies=[galaxy_pix_which_uses_brightness],
+            grid_stack=analysis.lens_data.grid_stack)
 
-        assert (grid_stack.pixelization == np.array([[0.0, 1.0], [1.0, -1.0], [-1.0, -1.0],
-                                                     [-1.0, 1.0], [0.0, -1.0], [1.0, 1.0],
-                                                     [-1.0, 0.0], [0.0, 0.0], [1.0, 0.0]])).all()
+        assert (grid_stack.pixelization == np.array(
+            [[0.0, 1.0], [1.0, -1.0], [-1.0, -1.0],
+             [-1.0, 1.0], [0.0, -1.0], [1.0, 1.0],
+             [-1.0, 0.0], [0.0, 0.0], [1.0, 0.0]])).all()
 
-    def test__phase_with_no_inversion__convolver_mapping_matrix_of_lens_data_is_none(self, ccd_data_5x5, mask_function_5x5):
-
+    def test__phase_with_no_inversion__convolver_mapping_matrix_of_lens_data_is_none(
+            self, ccd_data_5x5, mask_function_5x5):
         phase_5x5 = ph.LensPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
@@ -493,8 +512,8 @@ class TestPhase(object):
         assert (
                 analysis.lens_data.noise_map_1d == binned_up_lens_data.noise_map_1d).all()
 
-    def test__tracer_for_instance__includes_cosmology(self, ccd_data_5x5, mask_function_5x5):
-
+    def test__tracer_for_instance__includes_cosmology(self, ccd_data_5x5,
+                                                      mask_function_5x5):
         lens_galaxy = g.Galaxy(redshift=0.5)
         source_galaxy = g.Galaxy(redshift=0.5)
 
@@ -578,13 +597,14 @@ class TestPhase(object):
         assert fit.likelihood == fit_figure_of_merit
 
     def test__phase_can_receive_list_of_galaxy_models(self):
-
         phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
-            lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic, sis=mp.SphericalIsothermal,
-                                                   redshift=g.Redshift),
-                               lens1=gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                    redshift=g.Redshift)),
-            optimizer_class=non_linear.MultiNest, phase_name='test_phase')
+            lens_galaxies=dict(lens=gm.GalaxyModel(
+                sersic=lp.EllipticalSersic,
+                sis=mp.SphericalIsothermal,
+                redshift=g.Redshift),
+                lens1=gm.GalaxyModel(sis=mp.SphericalIsothermal,
+                                     redshift=g.Redshift)),
+            optimizer_class=af.MultiNest, phase_name='test_phase')
 
         instance = phase_5x5.optimizer.variable.instance_from_physical_vector(
             [0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.8, 0.1, 0.2, 0.3,
@@ -611,7 +631,7 @@ class TestPhase(object):
                                                    redshift=g.Redshift),
                                lens1=gm.GalaxyModel(sis=mp.SphericalIsothermal,
                                                     redshift=g.Redshift)),
-            optimizer_class=non_linear.MultiNest, phase_name='test_phase')
+            optimizer_class=af.MultiNest, phase_name='test_phase')
 
         # noinspection PyTypeChecker
         phase_5x5.pass_models(None)
@@ -647,7 +667,9 @@ class TestResult(object):
 
         assert isinstance(result, phase.AbstractPhase.Result)
 
-    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data_5x5, mask_function_5x5):
+    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self,
+                                                                             ccd_data_5x5,
+                                                                             mask_function_5x5):
         lens_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=0.1))
 
         phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
@@ -671,7 +693,6 @@ class TestPhasePickle(object):
 
     # noinspection PyTypeChecker
     def test_assertion_failure(self, ccd_data_5x5, mask_function_5x5):
-
         def make_analysis(*args, **kwargs):
             return mock_pipeline.MockAnalysis(1, 1)
 
@@ -701,7 +722,6 @@ class TestPhasePickle(object):
 
         class CustomPhase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
             def pass_priors(self, results):
-
                 self.lens_galaxies.lens.light = lp.EllipticalLightProfile()
 
         phase_5x5 = CustomPhase(
@@ -712,5 +732,5 @@ class TestPhasePickle(object):
         )
         phase_5x5.make_analysis = make_analysis
 
-        with pytest.raises(PipelineException):
+        with pytest.raises(af.exc.PipelineException):
             phase_5x5.run(data=ccd_data_5x5, results=None, mask=None, positions=None)

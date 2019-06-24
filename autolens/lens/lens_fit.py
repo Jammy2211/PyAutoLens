@@ -1,6 +1,6 @@
 import numpy as np
 
-from autofit.tools import fit
+from autofit import fit
 from autolens import exc
 from autolens.lens.util import lens_fit_util as util
 from autolens.model.galaxy import galaxy as g

@@ -3,8 +3,8 @@ from itertools import count
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autofit.mapper.model_object import ModelObject
-from autofit.tools import text_util as af_text_util
+from autofit import ModelObject
+from autofit import text_util as af_text_util
 from autolens import exc, dimensions as dim
 from autolens import text_util
 from autolens.model.inversion import regularization as reg

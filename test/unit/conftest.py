@@ -439,7 +439,7 @@ def make_sensitivity_fit_5x5(lens_data_5x5):
 
 ### Phase ###
 
-from autofit.tools import pipeline as af_pipeline
+import autofit as af
 from autolens.pipeline import pipeline
 from autolens.pipeline import phase as ph
 from test.unit.mock.pipeline import mock_pipeline
@@ -488,6 +488,6 @@ def make_results():
 
 @pytest.fixture(name="results_collection_5x5")
 def make_results_collection(results_5x5):
-    results_collection = af_pipeline.ResultsCollection()
+    results_collection = af.ResultsCollection()
     results_collection.add("phase", results_5x5)
     return results_collection

@@ -2,7 +2,7 @@ import numpy as np
 from functools import wraps
 
 from autofit import conf
-from autofit.tools.dimension_type import map_types
+from autofit import map_types
 from autolens import dimensions as dim
 
 
