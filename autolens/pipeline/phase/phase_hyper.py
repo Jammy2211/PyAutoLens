@@ -132,7 +132,7 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging):
                 hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
                     hyper_model_image=self.hyper_model_image_1d,
                     hyper_galaxy_image=self.hyper_galaxy_image_1d,
-                    noise_map=self.lens_data.noise_map_1d, hyper_minimum_value=0.0
+                    noise_map=self.lens_data.noise_map_1d
                 )
             )
 
