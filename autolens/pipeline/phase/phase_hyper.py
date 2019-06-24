@@ -1,6 +1,7 @@
 import copy
 
 import numpy as np
+
 from autofit.mapper import prior as p
 from autofit.mapper.model import ModelInstance
 from autofit.optimize import non_linear
@@ -50,7 +51,8 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging):
                 if not (isinstance(instance_value, px.Pixelization) or isinstance(
                         instance_value, rg.Regularization)):
                     try:
-                        HyperPixelizationPhase.transfer_classes(instance_value, mapper_value)
+                        HyperPixelizationPhase.transfer_classes(instance_value,
+                                                                mapper_value)
                     except AttributeError:
                         setattr(mapper, key, instance_value)
             except AttributeError:
@@ -66,15 +68,18 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging):
 
     class Analysis(phase_imaging.LensSourcePlanePhase.Analysis):
 
-        def __init__(self, lens_data, cosmology, positions_threshold, results=None, uses_hyper_images=False):
+        def figure_of_merit_for_fit(self, tracer):
+            pass
 
+        def __init__(self, lens_data, cosmology, positions_threshold, results=None,
+                     uses_hyper_images=False):
             super(HyperPixelizationPhase.Analysis, self).__init__(
-                lens_data=lens_data, cosmology=cosmology, positions_threshold=positions_threshold,
+                lens_data=lens_data, cosmology=cosmology,
+                positions_threshold=positions_threshold,
                 results=results, uses_hyper_images=uses_hyper_images)
 
 
 class HyperGalaxyPhase(phase_imaging.PhaseImaging):
-
     class Analysis(non_linear.Analysis):
 
         def __init__(self, lens_data, model_image_2d, galaxy_image_2d):
@@ -90,8 +95,10 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging):
                 The contribution of one galaxy to the model image
             """
             self.lens_data = lens_data
-            self.hyper_model_image_1d = lens_data.array_1d_from_array_2d(array_2d=model_image_2d)
-            self.hyper_galaxy_image_1d = lens_data.array_1d_from_array_2d(array_2d=galaxy_image_2d)
+            self.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
+                array_2d=model_image_2d)
+            self.hyper_galaxy_image_1d = lens_data.array_1d_from_array_2d(
+                array_2d=galaxy_image_2d)
 
             self.check_for_previously_masked_values(array=self.hyper_model_image_1d)
             self.check_for_previously_masked_values(array=self.hyper_galaxy_image_1d)
@@ -104,7 +111,6 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging):
                     'encountered was 0.0 and therefore masked in a previous phase.')
 
         def visualize(self, instance, image_path, during_analysis):
-            # TODO: I'm guessing you have an idea of what you want here?
             pass
 
         def fit(self, instance):
@@ -122,10 +128,13 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging):
             return fit.figure_of_merit
 
         def fit_for_hyper_galaxy(self, hyper_galaxy):
-            hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
-                hyper_model_image=self.hyper_model_image_1d,
-                hyper_galaxy_image=self.hyper_galaxy_image_1d,
-                noise_map=self.lens_data.noise_map_1d, hyper_minimum_value=0.0)
+            hyper_noise_1d = (
+                hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
+                    hyper_model_image=self.hyper_model_image_1d,
+                    hyper_galaxy_image=self.hyper_galaxy_image_1d,
+                    noise_map=self.lens_data.noise_map_1d, hyper_minimum_value=0.0
+                )
+            )
 
             hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
             return lens_fit.LensDataFit(
@@ -172,28 +181,29 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging):
 
         results_copy = copy.deepcopy(results.last)
         results_copy.analysis.uses_hyper_images = True
-        results_copy.analysis.hyper_model_image_1d = lens_data.array_1d_from_array_2d(array_2d=model_image_2d)
+        results_copy.analysis.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
+            array_2d=model_image_2d)
         results_copy.analysis.hyper_galaxy_image_1d_path_dict = {}
 
         for galaxy_path, galaxy in results.last.path_galaxy_tuples:
 
-            optimizer = self.optimizer.copy_with_name_extension(extension=galaxy_path[-1])
+            optimizer = self.optimizer.copy_with_name_extension(
+                extension=galaxy_path[-1])
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
             galaxy_image_2d = results.last.image_2d_dict[galaxy_path]
 
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
             if not np.all(galaxy_image_2d == 0):
-
-                results_copy.analysis.hyper_galaxy_image_1d_path_dict[galaxy_path] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image_2d)
+                results_copy.analysis.hyper_galaxy_image_1d_path_dict[
+                    galaxy_path] = lens_data.array_1d_from_array_2d(
+                    array_2d=galaxy_image_2d)
                 analysis = self.__class__.Analysis(lens_data=lens_data,
                                                    model_image_2d=model_image_2d,
                                                    galaxy_image_2d=galaxy_image_2d)
                 result = optimizer.fit(analysis)
 
-             #   results_copy.variable.object_for_path(galaxy_path).hyper_galaxy = result.variable.hyper_galaxy
-                # Optimizer's don't have constant hypergalaxies? Did you mean
-                # result.constant?
-                results_copy.constant.object_for_path(galaxy_path).hyper_galaxy = result.constant.hyper_galaxy
+                results_copy.constant.object_for_path(
+                    galaxy_path).hyper_galaxy = result.constant.hyper_galaxy
 
         return results_copy
