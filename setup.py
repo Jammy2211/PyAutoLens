@@ -66,7 +66,7 @@ setup(
                       'numba',
                       'matplotlib==3.0.3',
                       'colorama',
-                      'autofit==0.26.1',
+                      'autofit==0.26.2',
                       'Cython==0.28.0',
                       'pyquad'
                       ],
