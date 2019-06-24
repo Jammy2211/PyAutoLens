@@ -15,7 +15,7 @@ When two or more galaxies are aligned perfectly down our line-of-sight, the back
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits the foreground lens galaxy's mass and the background source galaxy's light.
 
 ```python
-from autofit.optimize import non_linear as nl
+from autofit import non_linear as nl
 from autolens.pipeline import phase as ph
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm

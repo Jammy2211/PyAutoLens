@@ -1,4 +1,4 @@
-from autofit.tools import path_util
+from autofit import path_util
 from autolens.data import ccd
 from autolens.data import simulated_ccd
 from autolens.data.array import grids

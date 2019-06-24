@@ -11,8 +11,8 @@ from scipy.integrate import quad
 from scipy.optimize import fsolve
 from scipy.optimize import root_scalar
 
-from autofit.tools import text_util as af_text_util
-from autofit.tools.dimension_type import map_types
+from autofit import text_util as af_text_util
+from autofit import map_types
 from autolens import decorator_util, dimensions as dim
 from autolens import text_util
 from autolens.data.array import grids

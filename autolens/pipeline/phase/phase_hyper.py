@@ -2,9 +2,7 @@ import copy
 
 import numpy as np
 
-from autofit.mapper import prior as p
-from autofit.mapper.model import ModelInstance
-from autofit.optimize import non_linear
+import autofit as af
 from autolens import exc
 from autolens.lens import lens_data as ld, lens_fit
 from autolens.model.galaxy import galaxy as g
@@ -46,7 +44,7 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging):
         for key, instance_value in instance.__dict__.items():
             try:
                 mapper_value = getattr(mapper, key)
-                if isinstance(mapper_value, p.Prior):
+                if isinstance(mapper_value, af.Prior):
                     setattr(mapper, key, instance_value)
                 if not (isinstance(instance_value, px.Pixelization) or isinstance(
                         instance_value, rg.Regularization)):
@@ -80,7 +78,7 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging):
 
 
 class HyperGalaxyPhase(phase_imaging.PhaseImaging):
-    class Analysis(non_linear.Analysis):
+    class Analysis(af.Analysis):
 
         def __init__(self, lens_data, model_image_2d, galaxy_image_2d):
             """

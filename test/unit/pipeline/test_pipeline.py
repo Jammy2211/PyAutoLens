@@ -2,9 +2,7 @@ import builtins
 import numpy as np
 import pytest
 
-from autofit.mapper import model_mapper
-from autofit.optimize import non_linear
-from autofit.tools import phase as ph
+import autofit as af
 from autolens.pipeline import pipeline as pl
 
 
@@ -29,7 +27,7 @@ class Optimizer(object):
         self.phase_name = "dummy_phase"
 
 
-class DummyPhaseImaging(ph.AbstractPhase):
+class DummyPhaseImaging(af.AbstractPhase):
     def make_result(self, result, analysis):
         pass
 
@@ -51,7 +49,7 @@ class DummyPhaseImaging(ph.AbstractPhase):
         self.mask = mask
         self.positions = positions
         self.assert_and_save_pickle()
-        return non_linear.Result(model_mapper.ModelInstance(), 1)
+        return af.Result(af.ModelInstance(), 1)
 
 
 class MockCCDData(object):
@@ -144,7 +142,7 @@ class TestPipelineImaging(object):
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
 
 
-class DummyPhasePositions(ph.AbstractPhase):
+class DummyPhasePositions(af.AbstractPhase):
     def make_result(self, result, analysis):
         pass
 
@@ -162,7 +160,7 @@ class DummyPhasePositions(ph.AbstractPhase):
         self.positions = positions
         self.pixel_scale = pixel_scale
         self.results = results
-        return non_linear.Result(model_mapper.ModelInstance(), 1)
+        return af.Result(af.ModelInstance(), 1)
 
 
 class TestPipelinePositions(object):

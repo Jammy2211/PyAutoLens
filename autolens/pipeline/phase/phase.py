@@ -1,10 +1,8 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
+import autofit as af
 from autofit import conf
-from autofit.optimize import non_linear
-from autofit.tools import phase as autofit_phase
-from autofit.tools.phase_property import PhaseProperty
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
@@ -29,10 +27,10 @@ def setup_phase_mask(data, mask, mask_function, inner_mask_radii):
     return mask
 
 
-class AbstractPhase(autofit_phase.AbstractPhase):
+class AbstractPhase(af.AbstractPhase):
 
     def __init__(self, phase_name, phase_tag=None, phase_folders=None, tag_phases=True,
-                 optimizer_class=non_linear.MultiNest,
+                 optimizer_class=af.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
@@ -99,7 +97,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         pass
 
     # noinspection PyAbstractClass
-    class Analysis(non_linear.Analysis):
+    class Analysis(af.Analysis):
 
         def __init__(self, cosmology, results=None):
             """
@@ -146,7 +144,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
                                      gaussian_tuples=result.gaussian_tuples,
                                      analysis=analysis, optimizer=self.optimizer)
 
-    class Result(non_linear.Result):
+    class Result(af.Result):
 
         def __init__(self, constant, figure_of_merit, previous_variable,
                      gaussian_tuples, analysis, optimizer):
@@ -266,13 +264,13 @@ class Phase(AbstractPhase):
 
 
 class GalaxyFitPhase(AbstractPhase):
-    galaxies = PhaseProperty("galaxies")
+    galaxies = af.PhaseProperty("galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
                  use_intensities=False,
                  use_convergence=False,
                  use_potential=False,
-                 use_deflections=False, optimizer_class=non_linear.MultiNest,
+                 use_deflections=False, optimizer_class=af.MultiNest,
                  sub_grid_size=2, interp_pixel_scale=None,
                  mask_function=None, cosmology=cosmo.Planck15):
         """

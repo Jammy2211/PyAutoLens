@@ -1,21 +1,20 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autofit.optimize import non_linear
-from autofit.tools.phase_property import PhaseProperty
+import autofit as af
 from autolens.lens import ray_tracing, lens_fit
 from autolens.pipeline.phase.phase import AbstractPhase, Phase
 
 
 class PhasePositions(AbstractPhase):
-    lens_galaxies = PhaseProperty("lens_galaxies")
+    lens_galaxies = af.PhaseProperty("lens_galaxies")
 
     @property
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, lens_galaxies=None,
-                 optimizer_class=non_linear.MultiNest,
+                 optimizer_class=af.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         super().__init__(phase_name=phase_name, phase_tag=None, phase_folders=phase_folders, tag_phases=tag_phases,
                          optimizer_class=optimizer_class, cosmology=cosmology, auto_link_priors=auto_link_priors)

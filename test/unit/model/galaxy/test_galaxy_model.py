@@ -4,9 +4,9 @@ import pytest
 
 from autofit import conf
 from autofit import exc
-from autofit.mapper import model_mapper as mm
-from autofit.mapper import prior
-from autofit.mapper import prior_model as pm
+from autofit import model_mapper as mm
+from autofit import prior
+from autofit import prior_model as pm
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg

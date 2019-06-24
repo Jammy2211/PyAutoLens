@@ -2,7 +2,7 @@ import os
 
 import autolens.pipeline.phase.phase_imaging
 from autofit import conf
-from autofit.optimize import non_linear as nl
+from autofit import non_linear as nl
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.pipeline.phase import phase as ph

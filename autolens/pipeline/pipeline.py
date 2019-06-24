@@ -1,4 +1,4 @@
-from autofit.tools.pipeline import Pipeline
+from autofit import Pipeline
 
 
 class PipelineImaging(Pipeline):
