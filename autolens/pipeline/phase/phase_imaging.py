@@ -154,8 +154,7 @@ class PhaseImaging(Phase):
                                 inner_mask_radii=self.inner_mask_radii)
 
         if self.positions_threshold is not None and positions is not None:
-            positions = list(
-                map(lambda position_set: np.asarray(position_set), positions))
+            positions = list(map(lambda position_set: np.asarray(position_set), positions))
         elif self.positions_threshold is None:
             positions = None
         elif self.positions_threshold is not None and positions is None:

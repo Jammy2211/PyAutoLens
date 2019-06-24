@@ -1,5 +1,7 @@
 from autolens.pipeline import tagging
 
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import regularization as reg
 
 class TestPipelineNameTag:
 
@@ -25,6 +27,7 @@ class TestPipelineNameTag:
 
         assert pipeline_tag == '_fix_lens_light_bd_align_phi'
 
+
 class TestPipelineTaggers:
 
     def test__fix_lens_light_tagger(self):
@@ -32,6 +35,24 @@ class TestPipelineTaggers:
         assert tag == ''
         tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=True)
         assert tag == '_fix_lens_light'
+    #
+    # def test__pixelization_tagger(self):
+    #
+    #     tag = tagging.pixelization_tag_from_pixelization(pixelization=None)
+    #     assert tag == ''
+    #     tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.Rectangular)
+    #     assert tag == 'rect'
+    #     tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.VoronoiBrightnessImage)
+    #     assert tag == 'voro_image'
+    #
+    # def test__regularization_tagger(self):
+    #
+    #     tag = tagging.regularization_tag_from_regularization(regularization=None)
+    #     assert tag == ''
+    #     tag = tagging.regularization_tag_from_regularization(regularization=reg.Constant)
+    #     assert tag == 'rectangular'
+    #     tag = tagging.regularization_tag_from_regularization(regularization=reg.AdaptiveBrightness)
+    #     assert tag == 'voron_image'
 
     def test__align_bulge_disk_taggers(self):
         tag = tagging.align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre=False)
@@ -66,6 +87,7 @@ class TestPipelineTaggers:
         tag = tagging.bulge_disk_tag_from_align_bulge_disks(
             align_bulge_disk_centre=True, align_bulge_disk_axis_ratio=True, align_bulge_disk_phi=True)
         assert tag == '_bd_align_centre_bd_align_axis_ratio_bd_align_phi'
+
 
 class TestPhaseTag:
 

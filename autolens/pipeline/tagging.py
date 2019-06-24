@@ -1,3 +1,5 @@
+from autofit import conf
+
 def pipeline_name_from_name_and_settings(pipeline_name, fix_lens_light=False, align_bulge_disk_centre=False,
                                          align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False):
 
@@ -32,6 +34,22 @@ def fix_lens_light_tag_from_fix_lens_light(fix_lens_light):
     elif fix_lens_light:
         return '_fix_lens_light'
 
+def pixelization_tag_from_pixelization(pixelization):
+
+    if pixelization is None:
+        return ''
+    else:
+        print(pixelization().__class__.__name__)
+        return conf.instance.label.get('tag', pixelization().__class__.__name__, str)
+
+def regularization_tag_from_regularization(regularization):
+
+    if regularization is None:
+        return ''
+    else:
+        print(regularization().__class__.__name__)
+        return conf.instance.label.get('tag', regularization().__class__.__name__, str)
+    
 def align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre):
     """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
     based on the bulge-disk model. This changee the phase name 'phase_name' as follows:
@@ -82,6 +100,7 @@ def bulge_disk_tag_from_align_bulge_disks(align_bulge_disk_centre, align_bulge_d
         align_bulge_disk_phi=align_bulge_disk_phi)
 
     return align_bulge_disk_centre_tag + align_bulge_disk_axis_ratio_tag + align_bulge_disk_phi_tag
+
 
 def phase_tag_from_phase_settings(sub_grid_size, bin_up_factor, image_psf_shape, inversion_psf_shape,
                                   positions_threshold, inner_mask_radii, interp_pixel_scale):
