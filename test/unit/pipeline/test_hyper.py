@@ -202,6 +202,47 @@ class TestImagePassing(object):
         assert (analysis.hyper_galaxy_image_1d_path_dict[('g0',)] == 2.0 * np.ones(9)).all()
         assert (analysis.hyper_galaxy_image_1d_path_dict[('g1',)] == 3.0 * np.ones(9)).all()
 
+    def test__results_are_passed_to_new_analysis__sets_up_hyper_cluster_images(self, mask_function_5x5, results_collection_5x5,
+            ccd_data_5x5):
+
+        # noinspection PyPep8Naming
+        Phase = phase_imaging.LensSourcePlanePhase
+
+        phase_5x5 = Phase(lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)),
+                          optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
+                          cluster_pixel_scale=None, phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
+
+        assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)] == 2.0 * np.ones(9)).all()
+        assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)] == 3.0 * np.ones(9)).all()
+
+        phase_5x5 = Phase(lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)),
+                          optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
+                          cluster_pixel_scale=ccd_data_5x5.pixel_scale, phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
+
+        assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)] == 2.0 * np.ones(9)).all()
+        assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)] == 3.0 * np.ones(9)).all()
+        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
+               analysis.lens_data.cluster_grid.shape[0]
+        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
+               analysis.lens_data.cluster_grid.shape[0]
+
+        phase_5x5 = Phase(lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)),
+                          optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
+                          cluster_pixel_scale=ccd_data_5x5.pixel_scale*2.0, phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
+
+        assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)] == 2.0 * np.ones(4)).all()
+        assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)] == 3.0 * np.ones(4)).all()
+        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
+               analysis.lens_data.cluster_grid.shape[0]
+        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
+               analysis.lens_data.cluster_grid.shape[0]
+
     def test__image_in_results_has_masked_value_passsed__raises_error(self,
                                                                       mask_function_5x5,
                                                                       results_collection_5x5,

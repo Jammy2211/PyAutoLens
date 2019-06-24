@@ -1329,6 +1329,7 @@ class TestBorderPixels(object):
 class TestBinUpMask2d:
 
     def test__mask_4x4_to_2x2__creates_correct_binned_up_mask(self):
+
         mask_2d = np.array([[True, False, True, True],
                             [True, True, True, True],
                             [True, True, False, False],
@@ -1350,6 +1351,7 @@ class TestBinUpMask2d:
                                             [True, False]])).all()
 
     def test__mask_6x3_to_2x1_and_3x6_to_1x2__sets_up_correct_mask(self):
+
         mask_2d = np.array([[True, True, True],
                             [True, True, True],
                             [True, True, True],

@@ -162,8 +162,7 @@ class TestPhase(object):
                                            positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert analysis.lens_data.positions is None
 
-    def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(
-            self, phase_5x5, ccd_data_5x5):
+    def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(self, phase_5x5, ccd_data_5x5):
         # If use positions is true and positions are input, make the positions part of the lens data.
 
         phase_5x5.interp_pixel_scale = 0.1

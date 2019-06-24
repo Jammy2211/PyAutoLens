@@ -658,7 +658,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, True, True],
                          [True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=1.0)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=1.0)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True],
                                            [True, True, True, True, True],
@@ -674,7 +674,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, True, True],
                          [True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=2.0)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=2.0)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True, True, True, True, True, True],
                                            [True, True, True, True, True, True, True,  True, True, True],
@@ -695,7 +695,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, False, True],
                          [True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=2.0)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=2.0)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True, True, True, True, True, True],
                                            [True, False, False, False, False, True, True,  True, True, True],
@@ -717,7 +717,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, True, True],
                          [True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=1.2)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=1.2)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True, True],
                                            [True, True, True, True, True, True],
@@ -727,7 +727,7 @@ class TestRescaledMaskFromMask(object):
                                            [True, True, True, True, True, True],
                                            [True, True, True, True, True, True]])).all()
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=0.8)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=0.8)
 
         assert (rescaled_mask == np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -743,7 +743,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, True, True, True],
                          [True, True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=1.2)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=1.2)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True, True, True],
                                            [True, True, True, True, True, True, True],
@@ -752,7 +752,7 @@ class TestRescaledMaskFromMask(object):
                                            [True, True, True, True, True, True, True],
                                            [True, True, True, True, True, True, True]])).all()
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=0.8)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=0.8)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True],
                                            [True, False, False, False, True],
