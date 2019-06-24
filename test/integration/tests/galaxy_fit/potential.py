@@ -1,8 +1,8 @@
 import os
 import numpy as np
 
-from autofit import conf
-from autofit import non_linear as nl
+import autofit as af
+import autofit as af
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.galaxy import galaxy_data as gd
 from autolens.model.galaxy.util import galaxy_util
@@ -17,7 +17,7 @@ test_name = "potential"
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
 config_path = test_path + 'config'
-conf.instance = conf.Config(config_path=config_path, output_path=output_path)
+af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
 
 def phase():
 

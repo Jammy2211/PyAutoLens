@@ -1,12 +1,12 @@
 import numpy as np
 
-from autofit import fit
+import autofit as af
 from autolens import exc
 from autolens.lens.util import lens_fit_util as util
 from autolens.model.galaxy import galaxy as g
 
 
-class LensDataFit(fit.DataFit1D):
+class LensDataFit(af.DataFit1D):
 
     def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d, map_to_scaled_array):
 

@@ -2,9 +2,7 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
-from autofit import model
-from autofit import model_mapper as mm
-from autofit import pipeline as pl
+import autofit as af
 from autolens import exc
 from autolens.lens import lens_fit
 from autolens.lens import ray_tracing as rt
@@ -32,14 +30,14 @@ def make_source_galaxy():
 
 @pytest.fixture(name="lens_galaxies")
 def make_lens_galaxies(lens_galaxy):
-    lens_galaxies = model.ModelInstance()
+    lens_galaxies = af.ModelInstance()
     lens_galaxies.lens = lens_galaxy
     return lens_galaxies
 
 
 @pytest.fixture(name="all_galaxies")
 def make_all_galaxies(lens_galaxy, source_galaxy):
-    galaxies = model.ModelInstance()
+    galaxies = af.ModelInstance()
     galaxies.lens = lens_galaxy
     galaxies.source = source_galaxy
     return galaxies
@@ -47,7 +45,7 @@ def make_all_galaxies(lens_galaxy, source_galaxy):
 
 @pytest.fixture(name="lens_instance")
 def make_lens_instance(lens_galaxies):
-    instance = model.ModelInstance()
+    instance = af.ModelInstance()
     instance.lens_galaxies = lens_galaxies
     return instance
 
@@ -55,7 +53,7 @@ def make_lens_instance(lens_galaxies):
 @pytest.fixture(name="lens_result")
 def make_lens_result(lens_data_5x5, lens_instance):
     return phase_imaging.LensPlanePhase.Result(
-        constant=lens_instance, figure_of_merit=1.0, previous_variable=mm.ModelMapper(),
+        constant=lens_instance, figure_of_merit=1.0, previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=phase_imaging.LensPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=1.0),
@@ -64,12 +62,12 @@ def make_lens_result(lens_data_5x5, lens_instance):
 
 @pytest.fixture(name="lens_source_instance")
 def make_lens_source_instance(lens_galaxy, source_galaxy):
-    source_galaxies = model.ModelInstance()
-    lens_galaxies = model.ModelInstance()
+    source_galaxies = af.ModelInstance()
+    lens_galaxies = af.ModelInstance()
     source_galaxies.source = source_galaxy
     lens_galaxies.lens = lens_galaxy
 
-    instance = model.ModelInstance()
+    instance = af.ModelInstance()
     instance.source_galaxies = source_galaxies
     instance.lens_galaxies = lens_galaxies
     return instance
@@ -79,7 +77,7 @@ def make_lens_source_instance(lens_galaxy, source_galaxy):
 def make_lens_source_result(lens_data_5x5, lens_source_instance):
     return phase_imaging.LensSourcePlanePhase.Result(
         constant=lens_source_instance, figure_of_merit=1.0,
-        previous_variable=mm.ModelMapper(), gaussian_tuples=None,
+        previous_variable=af.ModelMapper(), gaussian_tuples=None,
         analysis=phase_imaging.LensSourcePlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=1.0),
         optimizer=None)
@@ -87,7 +85,7 @@ def make_lens_source_result(lens_data_5x5, lens_source_instance):
 
 @pytest.fixture(name="multi_plane_instance")
 def make_multi_plane_instance(all_galaxies):
-    instance = model.ModelInstance()
+    instance = af.ModelInstance()
     instance.galaxies = all_galaxies
     return instance
 
@@ -96,7 +94,7 @@ def make_multi_plane_instance(all_galaxies):
 def make_multi_plane_result(lens_data_5x5, multi_plane_instance):
     return phase_imaging.MultiPlanePhase.Result(
         constant=multi_plane_instance, figure_of_merit=1.0,
-        previous_variable=mm.ModelMapper(), gaussian_tuples=None,
+        previous_variable=af.ModelMapper(), gaussian_tuples=None,
         analysis=phase_imaging.MultiPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=1.0),
         optimizer=None)
@@ -105,8 +103,8 @@ def make_multi_plane_result(lens_data_5x5, multi_plane_instance):
 class TestPixelization(object):
 
     def test_make_pixelization_variable(self):
-        instance = model.ModelInstance()
-        mapper = mm.ModelMapper()
+        instance = af.ModelInstance()
+        mapper = af.ModelMapper()
 
         mapper.lens_galaxy = gm.GalaxyModel(redshift=g.Redshift,
                                             pixelization=px.Rectangular,
@@ -230,7 +228,7 @@ class TestImagePassing(object):
             phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
 
     def test_associate_images_lens(self, lens_instance, lens_result, lens_data_5x5):
-        results_collection = pl.ResultsCollection()
+        results_collection = af.ResultsCollection()
         results_collection.add("phase", lens_result)
         analysis = phase_imaging.LensPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
@@ -248,7 +246,7 @@ class TestImagePassing(object):
 
     def test_associate_images_lens_source(self, lens_source_instance,
                                           lens_source_result, lens_data_5x5):
-        results_collection = pl.ResultsCollection()
+        results_collection = af.ResultsCollection()
         results_collection.add("phase", lens_source_result)
         analysis = phase_imaging.LensSourcePlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
@@ -275,7 +273,7 @@ class TestImagePassing(object):
 
     def test_associate_images_multi_plane(self, multi_plane_instance,
                                           multi_plane_result, lens_data_5x5):
-        results_collection = pl.ResultsCollection()
+        results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
@@ -303,7 +301,7 @@ class TestImagePassing(object):
     def test_fit_uses_hyper_fit_correctly_multi_plane(self, multi_plane_instance,
                                                       multi_plane_result,
                                                       lens_data_5x5):
-        results_collection = pl.ResultsCollection()
+        results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=None,

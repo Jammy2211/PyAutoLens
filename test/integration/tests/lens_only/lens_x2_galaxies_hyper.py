@@ -1,7 +1,7 @@
 import os
 
-from autofit import conf
-from autofit import non_linear as nl
+import autofit as af
+import autofit as af
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline.phase import phase_imaging as ph
@@ -16,7 +16,7 @@ test_name = "lens_x2_galaxies_hyper"
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
 config_path = test_path + 'config'
-conf.instance = conf.Config(config_path=config_path, output_path=output_path)
+af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
 
 
 def pipeline():

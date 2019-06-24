@@ -1,5 +1,5 @@
-from autofit import model_mapper
-from autofit import grid_search as gs
+import autofit as af
+import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 
 if __name__ == "__main__":
