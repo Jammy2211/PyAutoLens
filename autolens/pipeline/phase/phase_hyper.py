@@ -27,7 +27,10 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
         variable = copy.deepcopy(results.last.variable)
         HyperPixelizationPhase.transfer_classes(results.last.constant, variable)
         self.optimizer.variable = variable
-        return super().run(data, results=results, mask=mask, positions=positions)
+        new_result = super().run(data, results=results, mask=mask, positions=positions)
+        result = results.last
+        result.hyper = new_result
+        return result
 
     @staticmethod
     def transfer_classes(instance, mapper):
@@ -177,7 +180,6 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
 
         model_image_2d = results.last.most_likely_fit.model_image_2d
 
-        results_copy = copy.deepcopy(results.last)
         hyper_result = copy.deepcopy(results.last)
         hyper_result.analysis.uses_hyper_images = True
         hyper_result.analysis.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
@@ -206,6 +208,6 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                     galaxy_path
                 ).hyper_galaxy = result.constant.hyper_galaxy
 
-        results_copy.hyper = hyper_result
+        results.hyper = hyper_result
 
-        return results_copy
+        return results
