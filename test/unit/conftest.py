@@ -3,7 +3,6 @@ from os import path
 import numpy as np
 import pytest
 
-import autofit as af
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_data as gd
 from autolens.model.galaxy import galaxy_fit
@@ -21,7 +20,8 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    af.conf.instance = af.conf.Config(path.join(directory, "test_files/config"), path.join(directory, "output"))
+    af.conf.instance = af.conf.Config(path.join(directory, "test_files/config"),
+                                      path.join(directory, "output"))
 
 
 #
@@ -71,12 +71,16 @@ def make_positions_5x5():
 
 
 @pytest.fixture(name="ccd_data_5x5")
-def make_ccd_data_5x5(image_5x5, psf_3x3, noise_map_5x5, background_noise_map_5x5, poisson_noise_map_5x5,
+def make_ccd_data_5x5(image_5x5, psf_3x3, noise_map_5x5, background_noise_map_5x5,
+                      poisson_noise_map_5x5,
                       exposure_time_map_5x5, background_sky_map_5x5):
     return mock_ccd.MockCCDData(
-        image=image_5x5, pixel_scale=image_5x5.pixel_scale, psf=psf_3x3, noise_map=noise_map_5x5,
-        background_noise_map=background_noise_map_5x5, poisson_noise_map=poisson_noise_map_5x5,
-        exposure_time_map=exposure_time_map_5x5, background_sky_map=background_sky_map_5x5, name='mock_ccd_data_5x5')
+        image=image_5x5, pixel_scale=image_5x5.pixel_scale, psf=psf_3x3,
+        noise_map=noise_map_5x5,
+        background_noise_map=background_noise_map_5x5,
+        poisson_noise_map=poisson_noise_map_5x5,
+        exposure_time_map=exposure_time_map_5x5,
+        background_sky_map=background_sky_map_5x5, name='mock_ccd_data_5x5')
 
 
 @pytest.fixture(name="ccd_data_6x6")
@@ -89,9 +93,12 @@ def make_ccd_data_6x6():
     exposure_time_map = mock_ccd.MockExposureTimeMap(shape=(6, 6), value=5.0)
     background_sky_map = mock_ccd.MockBackgrondSkyMap(shape=(6, 6), value=6.0)
 
-    return mock_ccd.MockCCDData(image=image, pixel_scale=1.0, psf=psf, noise_map=noise_map,
-                                background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                                exposure_time_map=exposure_time_map, background_sky_map=background_sky_map,
+    return mock_ccd.MockCCDData(image=image, pixel_scale=1.0, psf=psf,
+                                noise_map=noise_map,
+                                background_noise_map=background_noise_map,
+                                poisson_noise_map=poisson_noise_map,
+                                exposure_time_map=exposure_time_map,
+                                background_sky_map=background_sky_map,
                                 name='mock_ccd_data_6x6')
 
 
@@ -107,6 +114,7 @@ def make_mask_5x5():
                       [True, True, True, True, True]])
 
     return mock_mask.MockMask(array=array)
+
 
 @pytest.fixture(name="mask_5x5_1_pix")
 def make_mask_5x5_1_pix():
@@ -187,14 +195,16 @@ def make_blurring_grid_5x5():
 
 @pytest.fixture(name="grid_stack_5x5")
 def make_grid_stack_5x5(regular_grid_5x5, sub_grid_5x5, blurring_grid_5x5):
-    return mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5, blurring=blurring_grid_5x5)
+    return mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5,
+                                    blurring=blurring_grid_5x5)
 
 
 @pytest.fixture(name="grid_stack_simple")
 def make_grid_stack_simple(regular_grid_5x5, sub_grid_5x5, blurring_grid_5x5):
     # Manually overwrite some sub-grid and blurring grid coodinates for easier deflection angle calculations
 
-    grid_stack = mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5, blurring=blurring_grid_5x5)
+    grid_stack = mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5,
+                                          blurring=blurring_grid_5x5)
 
     grid_stack.regular[0] = np.array([1.0, 1.0])
     grid_stack.sub[0] = np.array([1.0, 1.0])
@@ -218,7 +228,8 @@ def make_padded_sub_grid_5x5():
 
 @pytest.fixture(name="padded_grid_stack_5x5")
 def make_padded_grid_stack_5x5(padded_regular_grid_5x5, padded_sub_grid_5x5):
-    return mock_grids.MockPaddedGridStack(regular=padded_regular_grid_5x5, sub=padded_sub_grid_5x5)
+    return mock_grids.MockPaddedGridStack(regular=padded_regular_grid_5x5,
+                                          sub=padded_sub_grid_5x5)
 
 
 # BORDERS #
@@ -233,7 +244,9 @@ def make_border_5x5():
 
 @pytest.fixture(name="convolver_image_5x5")
 def make_convolver_image_5x5(mask_5x5, blurring_mask_5x5, psf_3x3):
-    return mock_convolution.MockConvolverImage(mask=mask_5x5, blurring_mask=blurring_mask_5x5, psf=psf_3x3)
+    return mock_convolution.MockConvolverImage(mask=mask_5x5,
+                                               blurring_mask=blurring_mask_5x5,
+                                               psf=psf_3x3)
 
 
 @pytest.fixture(name="convolver_mapping_matrix_5x5")
@@ -299,6 +312,7 @@ def make_gal_x1_mp(mp_0):
 def make_gal_x2_mp(mp_0, mp_1):
     return g.Galaxy(redshift=0.5, mass_profile_0=mp_0, mass_profile_1=mp_1)
 
+
 @pytest.fixture(name="gal_x1_lp_x1_mp")
 def make_gal_x1_lp_x1_mp(lp_0, mp_0):
     return g.Galaxy(redshift=0.5, light_profile_0=lp_0, mass_profile_0=mp_0)
@@ -309,32 +323,38 @@ def make_gal_x1_lp_x1_mp(lp_0, mp_0):
 
 @pytest.fixture(name="gal_data_5x5")
 def make_gal_data_5x5(image_5x5, noise_map_5x5):
-    return gd.GalaxyData(image=image_5x5, noise_map=noise_map_5x5, pixel_scale=image_5x5.pixel_scale)
+    return gd.GalaxyData(image=image_5x5, noise_map=noise_map_5x5,
+                         pixel_scale=image_5x5.pixel_scale)
 
 
 @pytest.fixture(name="gal_fit_data_5x5_intensities")
 def make_gal_fit_data_5x5_intensities(gal_data_5x5, mask_5x5):
-    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2, use_intensities=True)
+    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2,
+                            use_intensities=True)
 
 
 @pytest.fixture(name="gal_fit_data_5x5_convergence")
 def make_gal_fit_data_5x5_convergence(gal_data_5x5, mask_5x5):
-    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2, use_convergence=True)
+    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2,
+                            use_convergence=True)
 
 
 @pytest.fixture(name="gal_fit_data_5x5_potential")
 def make_gal_fit_data_5x5_potential(gal_data_5x5, mask_5x5):
-    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2, use_potential=True)
+    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2,
+                            use_potential=True)
 
 
 @pytest.fixture(name="gal_fit_data_5x5_deflections_y")
 def make_gal_fit_data_5x5_deflections_y(gal_data_5x5, mask_5x5):
-    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2, use_deflections_y=True)
+    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2,
+                            use_deflections_y=True)
 
 
 @pytest.fixture(name="gal_fit_data_5x5_deflections_x")
 def make_gal_fit_data_5x5_deflections_x(gal_data_5x5, mask_5x5):
-    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2, use_deflections_x=True)
+    return gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, sub_grid_size=2,
+                            use_deflections_x=True)
 
 
 # GALAXY FIT #
@@ -342,27 +362,33 @@ def make_gal_fit_data_5x5_deflections_x(gal_data_5x5, mask_5x5):
 
 @pytest.fixture(name="gal_fit_5x5_intensities")
 def make_gal_fit_5x5_intensities(gal_fit_data_5x5_intensities, gal_x1_lp):
-    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_intensities, model_galaxies=[gal_x1_lp])
+    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_intensities,
+                                model_galaxies=[gal_x1_lp])
 
 
 @pytest.fixture(name="gal_fit_5x5_convergence")
 def make_gal_fit_5x5_convergence(gal_fit_data_5x5_convergence, gal_x1_mp):
-    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_convergence, model_galaxies=[gal_x1_mp])
+    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_convergence,
+                                model_galaxies=[gal_x1_mp])
 
 
 @pytest.fixture(name="gal_fit_5x5_potential")
 def make_gal_fit_5x5_potential(gal_fit_data_5x5_potential, gal_x1_mp):
-    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_potential, model_galaxies=[gal_x1_mp])
+    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_potential,
+                                model_galaxies=[gal_x1_mp])
 
 
 @pytest.fixture(name="gal_fit_5x5_deflections_y")
 def make_gal_fit_5x5_deflections_y(gal_fit_data_5x5_deflections_y, gal_x1_mp):
-    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_deflections_y, model_galaxies=[gal_x1_mp])
+    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_deflections_y,
+                                model_galaxies=[gal_x1_mp])
 
 
 @pytest.fixture(name="gal_fit_5x5_deflections_x")
 def make_gal_fit_5x5_deflections_x(gal_fit_data_5x5_deflections_x, gal_x1_mp):
-    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_deflections_x, model_galaxies=[gal_x1_mp])
+    return galaxy_fit.GalaxyFit(galaxy_data=gal_fit_data_5x5_deflections_x,
+                                model_galaxies=[gal_x1_mp])
+
 
 ############
 ### LENS ###
@@ -371,28 +397,37 @@ def make_gal_fit_5x5_deflections_x(gal_fit_data_5x5_deflections_x, gal_x1_mp):
 ##### Lens Data ###
 
 @pytest.fixture(name="lens_data_5x5")
-def make_lens_data_5x5(ccd_data_5x5, mask_5x5, grid_stack_5x5, padded_grid_stack_5x5, border_5x5,
+def make_lens_data_5x5(ccd_data_5x5, mask_5x5, grid_stack_5x5, padded_grid_stack_5x5,
+                       border_5x5,
                        convolver_image_5x5, convolver_mapping_matrix_5x5):
     return mock_lens_data.MockLensData(
-        ccd_data=ccd_data_5x5, mask=mask_5x5, grid_stack=grid_stack_5x5, padded_grid_stack=padded_grid_stack_5x5,
-        border=border_5x5, convolver_image=convolver_image_5x5, convolver_mapping_matrix=convolver_mapping_matrix_5x5)
+        ccd_data=ccd_data_5x5, mask=mask_5x5, grid_stack=grid_stack_5x5,
+        padded_grid_stack=padded_grid_stack_5x5,
+        border=border_5x5, convolver_image=convolver_image_5x5,
+        convolver_mapping_matrix=convolver_mapping_matrix_5x5)
 
 
 ### Plane ####
 
 from autolens.lens import plane as pl
 
+
 @pytest.fixture(name='plane_5x5')
 def make_plane_5x5(gal_x1_lp, grid_stack_5x5):
-    return pl.Plane(galaxies=[gal_x1_lp], grid_stack=grid_stack_5x5, compute_deflections=False)
+    return pl.Plane(galaxies=[gal_x1_lp], grid_stack=grid_stack_5x5,
+                    compute_deflections=False)
+
 
 ### Ray Tracing ####
 
 from autolens.lens import ray_tracing
 
+
 @pytest.fixture(name='tracer_x1_plane_5x5')
 def make_tracer_x1_plane_5x5(gal_x1_lp, grid_stack_5x5):
-    return ray_tracing.TracerImagePlane(lens_galaxies=[gal_x1_lp], image_plane_grid_stack=grid_stack_5x5)
+    return ray_tracing.TracerImagePlane(lens_galaxies=[gal_x1_lp],
+                                        image_plane_grid_stack=grid_stack_5x5)
+
 
 @pytest.fixture(name='tracer_x2_plane_5x5')
 def make_tracer_x2_plane_5x5(gal_x1_lp, gal_x1_mp, grid_stack_5x5):
@@ -400,38 +435,49 @@ def make_tracer_x2_plane_5x5(gal_x1_lp, gal_x1_mp, grid_stack_5x5):
                                                source_galaxies=[gal_x1_lp],
                                                image_plane_grid_stack=grid_stack_5x5)
 
+
 ### Lens Fit ####
 
 from autolens.lens import lens_fit
 
+
 @pytest.fixture(name='lens_fit_x1_plane_5x5')
 def make_lens_fit_x1_plane_5x5(lens_data_5x5, tracer_x1_plane_5x5):
-    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer_x1_plane_5x5)
+    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5,
+                                                    tracer=tracer_x1_plane_5x5)
+
 
 @pytest.fixture(name='lens_fit_x2_plane_5x5')
 def make_lens_fit_x2_plane_5x5(lens_data_5x5, tracer_x2_plane_5x5):
-    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5, tracer=tracer_x2_plane_5x5)
+    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5,
+                                                    tracer=tracer_x2_plane_5x5)
+
 
 ### Sensitive Fit ###
 
 from autolens.lens import sensitivity_fit
 
+
 @pytest.fixture(name='sensitivity_fit_5x5')
 def make_sensitivity_fit_5x5(lens_data_5x5):
-
-    lens_galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
-    lens_subhalo = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=0.1))
+    lens_galaxy = g.Galaxy(redshift=0.5,
+                           mass=mp.SphericalIsothermal(einstein_radius=1.0))
+    lens_subhalo = g.Galaxy(redshift=0.5,
+                            mass=mp.SphericalIsothermal(einstein_radius=0.1))
     source_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
     tracer_normal = ray_tracing.TracerImageSourcePlanes(
-        lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], image_plane_grid_stack=lens_data_5x5.grid_stack)
+        lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+        image_plane_grid_stack=lens_data_5x5.grid_stack)
 
     tracer_sensitivity = ray_tracing.TracerImageSourcePlanes(
         lens_galaxies=[lens_galaxy, lens_subhalo], source_galaxies=[source_galaxy],
         image_plane_grid_stack=lens_data_5x5.grid_stack)
 
-    return sensitivity_fit.SensitivityProfileFit(lens_data=lens_data_5x5, tracer_normal=tracer_normal,
+    return sensitivity_fit.SensitivityProfileFit(lens_data=lens_data_5x5,
+                                                 tracer_normal=tracer_normal,
                                                  tracer_sensitive=tracer_sensitivity)
+
 
 ##############
 ## PIPELINE ##
@@ -440,15 +486,13 @@ def make_sensitivity_fit_5x5(lens_data_5x5):
 ### Phase ###
 
 import autofit as af
-from autolens.pipeline import pipeline
 from autolens.pipeline import phase as ph
 from test.unit.mock.pipeline import mock_pipeline
 
+
 @pytest.fixture(name="mask_function_5x5_1_pix")
 def make_mask_function_5x5_1_pix():
-
     def mask_function_5x5_1_pix(image):
-
         array = np.array([[True, True, True, True, True],
                           [True, True, True, True, True],
                           [True, True, False, True, True],
@@ -459,11 +503,10 @@ def make_mask_function_5x5_1_pix():
 
     return mask_function_5x5_1_pix
 
+
 @pytest.fixture(name="mask_function_5x5")
 def make_mask_function_5x5():
-
     def mask_function_5x5(image):
-
         array = np.array([[True, True, True, True, True],
                           [True, False, False, False, True],
                           [True, False, False, False, True],
@@ -474,16 +517,19 @@ def make_mask_function_5x5():
 
     return mask_function_5x5
 
+
 @pytest.fixture(name="phase_5x5")
 def make_phase_5x5(mask_function_5x5):
-
     return ph.phase_imaging.LensSourcePlanePhase(
-        optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5, phase_name='test_phase')
+        optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
+        phase_name='test_phase')
+
 
 @pytest.fixture(name="results_5x5")
 def make_results():
-    return mock_pipeline.MockResults(model_image=np.ones((5,5)),
-                       galaxy_images=[2.0*np.ones((5,5)), 3.0*np.ones((5,5))])
+    return mock_pipeline.MockResults(model_image=np.ones((5, 5)),
+                                     galaxy_images=[2.0 * np.ones((5, 5)),
+                                                    3.0 * np.ones((5, 5))])
 
 
 @pytest.fixture(name="results_collection_5x5")
