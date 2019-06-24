@@ -125,30 +125,36 @@ class TestLensData(object):
 
         ccd_data_5x5.pixel_scale = 1.0
         lens_data_5x5 = ld.LensData(ccd_data=ccd_data_5x5, mask=mask_5x5, cluster_pixel_scale=1.0)
-        assert lens_data_5x5.cluster_bin_up_factor == 1
-        assert (lens_data_5x5.mask_2d == lens_data_5x5.cluster_mask_2d).all()
-        assert (lens_data_5x5.cluster_grid == regular_grid_5x5).all()
+        assert lens_data_5x5.cluster.bin_up_factor == 1
+        assert (lens_data_5x5.mask_2d == lens_data_5x5.cluster.mask).all()
+        assert (lens_data_5x5.cluster == regular_grid_5x5).all()
+        assert (lens_data_5x5.cluster.cluster_to_regular == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
         ccd_data_5x5.pixel_scale = 1.0
         lens_data_5x5 = ld.LensData(ccd_data=ccd_data_5x5, mask=mask_5x5, cluster_pixel_scale=1.9)
-        assert lens_data_5x5.cluster_bin_up_factor == 1
-        assert (lens_data_5x5.mask_2d == lens_data_5x5.cluster_mask_2d).all()
+        assert lens_data_5x5.cluster.bin_up_factor == 1
+        assert (lens_data_5x5.mask_2d == lens_data_5x5.cluster.mask).all()
+        assert (lens_data_5x5.cluster.cluster_to_regular == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
         ccd_data_5x5.pixel_scale = 1.0
         lens_data_5x5 = ld.LensData(ccd_data=ccd_data_5x5, mask=mask_5x5, cluster_pixel_scale=2.0)
-        assert lens_data_5x5.cluster_bin_up_factor == 2
-        assert (lens_data_5x5.cluster_mask_2d == np.array([[True, True, True],
+        assert lens_data_5x5.cluster.bin_up_factor == 2
+        assert (lens_data_5x5.cluster.mask == np.array([[True, True, True],
                                                            [True, False, False],
                                                            [True, False, False]])).all()
-        assert (lens_data_5x5.cluster_grid == np.array([[0.0, 0.0], [0.0, 2.0], [-2.0, 0.0], [-2.0, 2.0]])).all()
+        assert (lens_data_5x5.cluster == np.array([[0.0, 0.0], [0.0, 2.0], [-2.0, 0.0], [-2.0, 2.0]])).all()
+        assert (lens_data_5x5.cluster.cluster_to_regular == np.array([0, 2, 6, 8])).all()
 
         ccd_data_5x5.pixel_scale = 2.0
         lens_data_5x5 = ld.LensData(ccd_data=ccd_data_5x5, mask=mask_5x5, cluster_pixel_scale=1.0)
-        assert lens_data_5x5.cluster_bin_up_factor == 1
+        assert lens_data_5x5.cluster.bin_up_factor == 1
 
         ccd_data_5x5.pixel_scale = 1.0
         lens_data_5x5 = ld.LensData(ccd_data=ccd_data_5x5, mask=mask_5x5, cluster_pixel_scale=None)
-        assert lens_data_5x5.cluster_bin_up_factor == None
+        assert lens_data_5x5.cluster.bin_up_factor == 1
+        assert (lens_data_5x5.mask_2d == lens_data_5x5.cluster.mask).all()
+        assert (lens_data_5x5.cluster == regular_grid_5x5).all()
+        assert (lens_data_5x5.cluster.cluster_to_regular == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
 
     def test__border(self, lens_data_5x5):
