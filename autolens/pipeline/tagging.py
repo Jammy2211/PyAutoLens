@@ -1,24 +1,33 @@
 from autofit import conf
 
-def pipeline_name_from_name_and_settings(pipeline_name, fix_lens_light=False, align_bulge_disk_centre=False,
-                                         align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False):
+def pipeline_name_from_name_and_settings(
+        pipeline_name, fix_lens_light=False,
+        pixelization=None, regularization=None,
+        align_bulge_disk_centre=False, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False):
 
     pipeline_tag = pipeline_tag_from_pipeline_settings(
         fix_lens_light=fix_lens_light, align_bulge_disk_centre=align_bulge_disk_centre,
+        pixelization=pixelization, regularization=regularization,
         align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio, align_bulge_disk_phi=align_bulge_disk_phi)
 
     return pipeline_name + pipeline_tag
 
-def pipeline_tag_from_pipeline_settings(fix_lens_light=False, align_bulge_disk_centre=False,
-                                        align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False):
+def pipeline_tag_from_pipeline_settings(
+        fix_lens_light=False,
+        pixelization=None, regularization=None,
+        align_bulge_disk_centre=False, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False):
 
     fix_lens_light_tag = fix_lens_light_tag_from_fix_lens_light(fix_lens_light=fix_lens_light)
+
+    pixelization_tag = pixelization_tag_from_pixelization(pixelization=pixelization)
+
+    regularization_tag = regularization_tag_from_regularization(regularization=regularization)
 
     bulge_disk_tag = bulge_disk_tag_from_align_bulge_disks(align_bulge_disk_centre=align_bulge_disk_centre,
                                                            align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
                                                            align_bulge_disk_phi=align_bulge_disk_phi)
 
-    return fix_lens_light_tag + bulge_disk_tag
+    return fix_lens_light_tag + pixelization_tag + regularization_tag + bulge_disk_tag
 
 def fix_lens_light_tag_from_fix_lens_light(fix_lens_light):
     """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
@@ -39,16 +48,14 @@ def pixelization_tag_from_pixelization(pixelization):
     if pixelization is None:
         return ''
     else:
-        print(pixelization().__class__.__name__)
-        return conf.instance.label.get('tag', pixelization().__class__.__name__, str)
+        return '_pix_' + conf.instance.label.get('tag', pixelization().__class__.__name__, str)
 
 def regularization_tag_from_regularization(regularization):
 
     if regularization is None:
         return ''
     else:
-        print(regularization().__class__.__name__)
-        return conf.instance.label.get('tag', regularization().__class__.__name__, str)
+        return '_reg_' + conf.instance.label.get('tag', regularization().__class__.__name__, str)
     
 def align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre):
     """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \

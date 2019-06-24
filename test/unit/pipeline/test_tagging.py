@@ -12,6 +12,11 @@ class TestPipelineNameTag:
 
         assert pipeline_name == 'pl_fix_lens_light'
 
+        pipeline_tag = tagging.pipeline_name_from_name_and_settings(
+            pipeline_name='pl', fix_lens_light=True, pixelization=pix.Rectangular, regularization=reg.Constant)
+
+        assert pipeline_tag == 'pl_fix_lens_light_pix_rect_reg_const'
+
         pipeline_name = tagging.pipeline_name_from_name_and_settings(
             pipeline_name='pl2', fix_lens_light=True, align_bulge_disk_phi=True)
 
@@ -22,6 +27,11 @@ class TestPipelineNameTag:
         pipeline_tag = tagging.pipeline_tag_from_pipeline_settings(fix_lens_light=True)
 
         assert pipeline_tag == '_fix_lens_light'
+
+        pipeline_tag = tagging.pipeline_tag_from_pipeline_settings(fix_lens_light=True, pixelization=pix.Rectangular,
+                                                                   regularization=reg.Constant)
+
+        assert pipeline_tag == '_fix_lens_light_pix_rect_reg_const'
 
         pipeline_tag = tagging.pipeline_tag_from_pipeline_settings(fix_lens_light=True, align_bulge_disk_phi=True)
 
@@ -35,24 +45,24 @@ class TestPipelineTaggers:
         assert tag == ''
         tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=True)
         assert tag == '_fix_lens_light'
-    #
-    # def test__pixelization_tagger(self):
-    #
-    #     tag = tagging.pixelization_tag_from_pixelization(pixelization=None)
-    #     assert tag == ''
-    #     tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.Rectangular)
-    #     assert tag == 'rect'
-    #     tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.VoronoiBrightnessImage)
-    #     assert tag == 'voro_image'
-    #
-    # def test__regularization_tagger(self):
-    #
-    #     tag = tagging.regularization_tag_from_regularization(regularization=None)
-    #     assert tag == ''
-    #     tag = tagging.regularization_tag_from_regularization(regularization=reg.Constant)
-    #     assert tag == 'rectangular'
-    #     tag = tagging.regularization_tag_from_regularization(regularization=reg.AdaptiveBrightness)
-    #     assert tag == 'voron_image'
+
+    def test__pixelization_tagger(self):
+
+        tag = tagging.pixelization_tag_from_pixelization(pixelization=None)
+        assert tag == ''
+        tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.Rectangular)
+        assert tag == '_pix_rect'
+        tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.VoronoiBrightnessImage)
+        assert tag == '_pix_voro_image'
+
+    def test__regularization_tagger(self):
+
+        tag = tagging.regularization_tag_from_regularization(regularization=None)
+        assert tag == ''
+        tag = tagging.regularization_tag_from_regularization(regularization=reg.Constant)
+        assert tag == '_reg_const'
+        tag = tagging.regularization_tag_from_regularization(regularization=reg.AdaptiveBrightness)
+        assert tag == '_reg_adapt_bright'
 
     def test__align_bulge_disk_taggers(self):
         tag = tagging.align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre=False)
