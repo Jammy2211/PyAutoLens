@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.spatial.qhull as qhull
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, MiniBatchKMeans
 from functools import wraps
 
 from autolens import decorator_util
@@ -955,7 +955,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
-        kmeans = KMeans(n_clusters=total_pixels, random_state=seed)
+        kmeans = MiniBatchKMeans(n_clusters=total_pixels, random_state=seed, init_size=total_pixels, max_iter=3, n_init=1)
 
         kmeans = kmeans.fit(X=regular_grid, sample_weight=cluster_weight_map)
 
@@ -965,6 +965,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
     @property
     def total_sparse_pixels(self):
         return len(self.sparse)
+
 
 class PaddedRegularGrid(RegularGrid):
 

@@ -289,7 +289,6 @@ class VoronoiMagnification(Voronoi):
     def uses_pixelization_grid(self):
         return True
 
-
 class VoronoiBrightnessImage(Voronoi):
 
     def __init__(self, pixels=10, weight_floor=0.0, weight_power=0.0):
