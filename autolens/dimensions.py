@@ -3,7 +3,7 @@ import typing
 from functools import wraps
 from astropy import cosmology as cosmo
 
-from autofit import dimension_type
+import autofit as af
 from autolens.model import cosmology_util
 from autolens import exc
 
@@ -197,7 +197,7 @@ class DimensionsProfile(object):
         return None
 
 
-class Length(dimension_type.DimensionType):
+class Length(af.DimensionType):
 
     def __init__(self, value, unit_length="arcsec"):
         super().__init__(value)
@@ -217,7 +217,7 @@ class Length(dimension_type.DimensionType):
         return Length(value=value, unit_length=unit_length)
 
 
-class Luminosity(dimension_type.DimensionType):
+class Luminosity(af.DimensionType):
 
     def __init__(self, value, unit_luminosity='eps'):
         super().__init__(value)
@@ -237,7 +237,7 @@ class Luminosity(dimension_type.DimensionType):
         return Luminosity(value=value, unit_luminosity=unit_luminosity)
 
 
-class Mass(dimension_type.DimensionType):
+class Mass(af.DimensionType):
 
     def __init__(self, value, unit_mass="angular"):
         super().__init__(value)
@@ -257,7 +257,7 @@ class Mass(dimension_type.DimensionType):
         return Mass(value=value, unit_mass=unit_mass)
 
 
-class MassOverLuminosity(dimension_type.DimensionType):
+class MassOverLuminosity(af.DimensionType):
 
     def __init__(self, value, unit_luminosity="eps", unit_mass="angular"):
 
@@ -289,7 +289,7 @@ class MassOverLuminosity(dimension_type.DimensionType):
         return MassOverLuminosity(value=value, unit_mass=unit_mass, unit_luminosity=unit_luminosity)
 
 
-class MassOverLength2(dimension_type.DimensionType):
+class MassOverLength2(af.DimensionType):
 
     def __init__(self, value, unit_length="arcsec", unit_mass="angular"):
         super().__init__(value)
@@ -321,7 +321,7 @@ class MassOverLength2(dimension_type.DimensionType):
         return MassOverLength2(value=value, unit_mass=unit_mass, unit_length=unit_length)
 
 
-class MassOverLength3(dimension_type.DimensionType):
+class MassOverLength3(af.DimensionType):
 
     def __init__(self, value, unit_length="arcsec", unit_mass="angular"):
         super().__init__(value)

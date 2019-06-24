@@ -4,7 +4,7 @@ import shutil
 
 import autolens.pipeline.phase.phase_imaging
 import autofit as af
-from autofit import conf
+import autofit as af
 from autolens.data import ccd
 from autolens.data import simulated_ccd as sim_ccd
 from autolens.data.array import grids
@@ -15,7 +15,7 @@ from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
-conf.instance = conf.Config("{}/config".format(dirpath),
+af.conf.instance = af.conf.Config("{}/config".format(dirpath),
                             "{}/output/".format(dirpath))
 
 dirpath = os.path.dirname(dirpath)

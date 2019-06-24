@@ -1,14 +1,11 @@
 import copy
 import inspect
 
-from autofit import exc
-from autofit import model_mapper
 import autofit as af
-from autofit import PriorNameValue, ConstantNameValue, cast_collection
 from autolens.model.galaxy import galaxy
-from autolens.model.profiles import light_profiles, mass_profiles
-from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
+from autolens.model.profiles import light_profiles, mass_profiles
+
 
 def is_light_profile_class(cls):
     """
@@ -55,7 +52,7 @@ def is_profile_class(cls):
     return is_light_profile_class(cls) or is_mass_profile_class(cls)
 
 
-class GalaxyModel(model_mapper.AbstractPriorModel):
+class GalaxyModel(af.AbstractPriorModel):
     """
     @DynamicAttrs
     """
@@ -136,16 +133,21 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             redshift) else redshift
 
         if pixelization is not None and regularization is None:
-            raise exc.PriorException(
-                'If the galaxy prior has a pixelization, it must also have a regularization.')
+            raise af.exc.PriorException(
+                'If the galaxy prior has a pixelization, it must also have a '
+                'regularization.')
         if pixelization is None and regularization is not None:
-            raise exc.PriorException(
-                'If the galaxy prior has a regularization, it must also have a pixelization.')
+            raise af.exc.PriorException(
+                'If the galaxy prior has a regularization, it must also have a '
+                'pixelization.')
 
-        self.pixelization = af.PriorModel(pixelization) if inspect.isclass(pixelization) else pixelization
-        self.regularization = af.PriorModel(regularization) if inspect.isclass(regularization) else regularization
+        self.pixelization = af.PriorModel(pixelization) if inspect.isclass(
+            pixelization) else pixelization
+        self.regularization = af.PriorModel(regularization) if inspect.isclass(
+            regularization) else regularization
 
-        self.hyper_galaxy = af.PriorModel(hyper_galaxy) if inspect.isclass(hyper_galaxy) else hyper_galaxy
+        self.hyper_galaxy = af.PriorModel(hyper_galaxy) if inspect.isclass(
+            hyper_galaxy) else hyper_galaxy
 
         self.hyper_galaxy_image_1d = None
 
@@ -225,7 +227,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                 galaxy.is_light_profile(value) or galaxy.is_mass_profile(value)}
 
     @property
-    @cast_collection(PriorNameValue)
+    @af.cast_collection(af.PriorNameValue)
     def prior_tuples(self):
         """
         Returns
@@ -237,7 +239,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                 prior_model.prior_tuples]
 
     @property
-    @cast_collection(ConstantNameValue)
+    @af.cast_collection(af.ConstantNameValue)
     def constant_tuples(self):
         """
         Returns

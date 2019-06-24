@@ -2,11 +2,7 @@ import os
 
 import pytest
 
-from autofit import conf
-from autofit import exc
-from autofit import model_mapper as mm
-from autofit import prior
-from autofit import prior_model as pm
+import autofit as af
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
@@ -41,13 +37,13 @@ def make_profile():
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
-    conf.instance = conf.Config(
+    af.conf.instance = af.conf.Config(
         "{}/../../test_files/config/galaxy_model".format(os.path.dirname(os.path.realpath(__file__))))
 
 
 @pytest.fixture(name="mapper")
 def make_mapper():
-    return mm.ModelMapper()
+    return af.ModelMapper()
 
 
 @pytest.fixture(name="galaxy_model_2")
@@ -166,11 +162,11 @@ class TestNamedProfiles:
         galaxy_model = gp.GalaxyModel(redshift=g.Redshift, light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.EllipticalSersic)
 
-        assert isinstance(galaxy_model.light_profile, pm.PriorModel)
-        assert isinstance(galaxy_model.mass_profile, pm.PriorModel)
+        assert isinstance(galaxy_model.light_profile, af.PriorModel)
+        assert isinstance(galaxy_model.mass_profile, af.PriorModel)
 
     def test_set_prior_model(self):
-        mapper = mm.ModelMapper()
+        mapper = af.ModelMapper()
         galaxy_model = gp.GalaxyModel(redshift=g.Redshift, light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.EllipticalSersic)
 
@@ -178,7 +174,7 @@ class TestNamedProfiles:
 
         assert 16 == len(mapper.prior_tuples_ordered_by_id)
 
-        galaxy_model.light_profile = pm.PriorModel(light_profiles.LightProfile)
+        galaxy_model.light_profile = af.PriorModel(light_profiles.LightProfile)
 
         assert 9 == len(mapper.prior_tuples_ordered_by_id)
 
@@ -216,19 +212,19 @@ class TestResultForArguments:
                                       light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.SphericalIsothermal)
 
-        redshift_prior = mm.GaussianPrior(1, 1)
-        einstein_radius_prior = mm.GaussianPrior(4, 1)
-        intensity_prior = mm.GaussianPrior(7, 1)
+        redshift_prior = af.GaussianPrior(1, 1)
+        einstein_radius_prior = af.GaussianPrior(4, 1)
+        intensity_prior = af.GaussianPrior(7, 1)
 
         arguments = {galaxy_model.redshift.redshift: redshift_prior,
-                     galaxy_model.mass_profile.centre.centre_0: mm.GaussianPrior(2, 1),
-                     galaxy_model.mass_profile.centre.centre_1: mm.GaussianPrior(3, 1),
+                     galaxy_model.mass_profile.centre.centre_0: af.GaussianPrior(2, 1),
+                     galaxy_model.mass_profile.centre.centre_1: af.GaussianPrior(3, 1),
                      galaxy_model.mass_profile.einstein_radius.value: einstein_radius_prior,
-                     galaxy_model.light_profile.axis_ratio: mm.GaussianPrior(5, 1),
-                     galaxy_model.light_profile.phi: mm.GaussianPrior(6, 1),
+                     galaxy_model.light_profile.axis_ratio: af.GaussianPrior(5, 1),
+                     galaxy_model.light_profile.phi: af.GaussianPrior(6, 1),
                      galaxy_model.light_profile.intensity.value: intensity_prior,
-                     galaxy_model.light_profile.effective_radius.value: mm.GaussianPrior(8, 1),
-                     galaxy_model.light_profile.sersic_index: mm.GaussianPrior(9, 1)}
+                     galaxy_model.light_profile.effective_radius.value: af.GaussianPrior(8, 1),
+                     galaxy_model.light_profile.sersic_index: af.GaussianPrior(9, 1)}
 
         gaussian_galaxy_model_model = galaxy_model.gaussian_prior_model_for_arguments(arguments)
 
@@ -265,7 +261,7 @@ class TestPixelization(object):
         assert galaxy.pixelization.shape[1] == 3
 
     def test__if_no_pixelization_raises_error(self):
-        with pytest.raises(exc.PriorException):
+        with pytest.raises(af.exc.PriorException):
             gp.GalaxyModel(redshift=g.Redshift, pixelization=pix.Voronoi)
 
 
@@ -295,7 +291,7 @@ class TestRegularization(object):
         assert galaxy.regularization.coefficients == (1.,)
 
     def test__if_no_pixelization_raises_error(self):
-        with pytest.raises(exc.PriorException):
+        with pytest.raises(af.exc.PriorException):
             gp.GalaxyModel(redshift=g.Redshift, regularization=reg.Constant)
 
 

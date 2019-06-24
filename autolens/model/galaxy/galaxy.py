@@ -3,8 +3,8 @@ from itertools import count
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autofit import ModelObject
-from autofit import text_util as af_text_util
+import autofit as af
+
 from autolens import exc, dimensions as dim
 from autolens import text_util
 from autolens.model.inversion import regularization as reg
@@ -19,7 +19,7 @@ def is_mass_profile(obj):
     return isinstance(obj, mp.MassProfile)
 
 
-class Galaxy(ModelObject):
+class Galaxy(af.ModelObject):
     """
     @DynamicAttrs
     """
@@ -361,7 +361,7 @@ class Galaxy(ModelObject):
             summary = ['Galaxy\n']
             prefix_galaxy = ''
 
-        summary += [af_text_util.label_and_value_string(
+        summary += [af.text_util.label_and_value_string(
             label=prefix_galaxy + 'redshift', value=self.redshift,
             whitespace=whitespace)]
 
@@ -434,7 +434,7 @@ class Galaxy(ModelObject):
                                                         cosmology=cosmology)
 
         summary += [
-            af_text_util.label_value_and_unit_string(label=prefix + 'einstein_radius',
+            af.text_util.label_value_and_unit_string(label=prefix + 'einstein_radius',
                                                      value=einstein_radius,
                                                      unit=unit_length,
                                                      whitespace=whitespace)]
@@ -444,7 +444,7 @@ class Galaxy(ModelObject):
                                                     cosmology=cosmology, kwargs=kwargs)
 
         summary += [
-            af_text_util.label_value_and_unit_string(label=prefix + 'einstein_mass',
+            af.text_util.label_value_and_unit_string(label=prefix + 'einstein_mass',
                                                      value=einstein_mass,
                                                      unit=unit_mass,
                                                      whitespace=whitespace)]

@@ -7,7 +7,6 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens.pipeline.phase.phase_imaging
-from autofit import conf
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
@@ -30,7 +29,8 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
-    conf.instance = conf.Config('{}/../test_files/config/phase_5x5'.format(directory))
+    af.conf.instance = af.conf.Config(
+        '{}/../test_files/config/phase_5x5'.format(directory))
 
 
 def clean_images():
@@ -40,7 +40,7 @@ def clean_images():
         os.remove('{}/source_lens_phase/model_image_0.fits'.format(directory))
     except FileNotFoundError:
         pass
-    conf.instance.data_path = directory
+    af.conf.instance.data_path = directory
 
 
 class TestPhase(object):
@@ -667,9 +667,10 @@ class TestResult(object):
 
         assert isinstance(result, phase.AbstractPhase.Result)
 
-    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self,
-                                                                             ccd_data_5x5,
-                                                                             mask_function_5x5):
+    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
+            self,
+            ccd_data_5x5,
+            mask_function_5x5):
         lens_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=0.1))
 
         phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(

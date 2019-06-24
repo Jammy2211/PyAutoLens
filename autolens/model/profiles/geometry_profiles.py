@@ -1,8 +1,8 @@
 import numpy as np
 from functools import wraps
 
-from autofit import conf
-from autofit import map_types
+import autofit as af
+import autofit as af
 from autolens import dimensions as dim
 
 
@@ -107,7 +107,7 @@ def move_grid_to_radial_minimum(func):
         -------
             A value or coordinate in the same coordinate system as those passed in.
         """
-        radial_minimum_config = conf.NamedConfig(f"{conf.instance.config_path}/radial_minimum.ini")
+        radial_minimum_config = af.conf.NamedConfig(f"{af.conf.instance.config_path}/radial_minimum.ini")
         grid_radial_minimum = radial_minimum_config.get("radial_minimum", profile.__class__.__name__, float)
         with np.errstate(all='ignore'):  # Division by zero fixed via isnan
             grid_radii = profile.grid_to_grid_radii(grid=grid)
@@ -125,7 +125,7 @@ class TransformedGrid(np.ndarray):
 
 class GeometryProfile(dim.DimensionsProfile):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0)):
         """An abstract geometry profile, which describes profiles with y and x centre Cartesian coordinates
@@ -154,7 +154,7 @@ class GeometryProfile(dim.DimensionsProfile):
 
 class SphericalProfile(GeometryProfile):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0)):
         """ A spherical profile, which describes profiles with y and x centre Cartesian coordinates.
@@ -232,7 +232,7 @@ class SphericalProfile(GeometryProfile):
 
 class EllipticalProfile(SphericalProfile):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,

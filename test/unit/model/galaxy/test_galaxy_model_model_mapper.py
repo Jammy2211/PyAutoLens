@@ -1,7 +1,7 @@
 import os
 
-from autofit import conf
-from autofit import model_mapper as mm
+import autofit as af
+import autofit as af
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles, mass_profiles
@@ -11,15 +11,15 @@ class TestCase:
     def test_integration(self):
         directory = os.path.dirname(os.path.realpath(__file__))
 
-        config = conf.DefaultPriorConfig(
+        config = af.conf.DefaultPriorConfig(
             "{}/../../{}".format(directory,"test_files/config/galaxy_model/priors/default"))
 
-        limit_config = conf.LimitConfig(
+        limit_config = af.conf.LimitConfig(
             "{}/../../{}".format(directory,
                                  "test_files/config/galaxy_model/priors/limit"))
 
         # Create a mapper. This can be used to convert values output by a non linear optimiser into class instances.
-        mapper = mm.ModelMapper(config=config, limit_config=limit_config)
+        mapper = af.ModelMapper(config=config, limit_config=limit_config)
 
         # Create a model_galaxy prior for the source model_galaxy. Here we are describing only the light profile of
         # the source model_galaxy which comprises an elliptical exponential and elliptical sersic light profile.

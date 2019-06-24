@@ -2,7 +2,7 @@ from os import path
 
 import pytest
 
-from autofit import aggregator as a
+import autofit as af
 
 directory = path.dirname(path.realpath(__file__))
 aggregator_directory = "{}/test_files/aggregator".format(directory)
@@ -10,7 +10,7 @@ aggregator_directory = "{}/test_files/aggregator".format(directory)
 
 @pytest.fixture(name="aggregator")
 def make_aggregator():
-    return a.Aggregator(aggregator_directory)
+    return af.Aggregator(aggregator_directory)
 
 
 def filter_phases(aggregator, folder):

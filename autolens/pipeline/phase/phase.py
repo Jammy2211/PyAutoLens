@@ -2,7 +2,7 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autofit import conf
+import autofit as af
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
@@ -228,38 +228,38 @@ class Phase(AbstractPhase):
             super(Phase.Analysis, self).__init__(cosmology=cosmology, results=results)
 
             self.should_plot_mask = \
-                conf.instance.general.get('output', 'plot_mask_on_images', bool)
+                af.conf.instance.general.get('output', 'plot_mask_on_images', bool)
             self.extract_array_from_mask = \
-                conf.instance.general.get('output', 'extract_images_from_mask', bool)
+                af.conf.instance.general.get('output', 'extract_images_from_mask', bool)
             self.zoom_around_mask = \
-                conf.instance.general.get('output', 'zoom_around_mask_of_images', bool)
+                af.conf.instance.general.get('output', 'zoom_around_mask_of_images', bool)
             self.should_plot_positions = \
-                conf.instance.general.get('output', 'plot_positions_on_images', bool)
+                af.conf.instance.general.get('output', 'plot_positions_on_images', bool)
             self.plot_units = \
-                conf.instance.general.get('output', 'plot_units', str).strip()
+                af.conf.instance.general.get('output', 'plot_units', str).strip()
 
             self.plot_ray_tracing_all_at_end_png = \
-                conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_png',
+                af.conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_png',
                                           bool)
             self.plot_ray_tracing_all_at_end_fits = \
-                conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_fits',
+                af.conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_fits',
                                           bool)
 
             self.plot_ray_tracing_as_subplot = \
-                conf.instance.general.get('output', 'plot_ray_tracing_as_subplot', bool)
+                af.conf.instance.general.get('output', 'plot_ray_tracing_as_subplot', bool)
             self.plot_ray_tracing_image_plane_image = \
-                conf.instance.general.get('output',
+                af.conf.instance.general.get('output',
                                           'plot_ray_tracing_image_plane_image', bool)
             self.plot_ray_tracing_source_plane = \
-                conf.instance.general.get('output',
+                af.conf.instance.general.get('output',
                                           'plot_ray_tracing_source_plane_image', bool)
             self.plot_ray_tracing_convergence = \
-                conf.instance.general.get('output', 'plot_ray_tracing_convergence',
+                af.conf.instance.general.get('output', 'plot_ray_tracing_convergence',
                                           bool)
             self.plot_ray_tracing_potential = \
-                conf.instance.general.get('output', 'plot_ray_tracing_potential', bool)
+                af.conf.instance.general.get('output', 'plot_ray_tracing_potential', bool)
             self.plot_ray_tracing_deflections = \
-                conf.instance.general.get('output', 'plot_ray_tracing_deflections',
+                af.conf.instance.general.get('output', 'plot_ray_tracing_deflections',
                                           bool)
 
 
@@ -399,24 +399,24 @@ class GalaxyFitPhase(AbstractPhase):
                                                           results=results)
 
             self.plot_galaxy_fit_all_at_end_png = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_png',
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_png',
                                           bool)
             self.plot_galaxy_fit_all_at_end_fits = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_fits',
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_fits',
                                           bool)
             self.plot_galaxy_fit_as_subplot = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_as_subplot', bool)
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_as_subplot', bool)
             self.plot_galaxy_fit_image = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_image', bool)
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_image', bool)
             self.plot_galaxy_fit_noise_map = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_noise_map', bool)
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_noise_map', bool)
             self.plot_galaxy_fit_model_image = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_model_image', bool)
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_model_image', bool)
             self.plot_galaxy_fit_residual_map = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_residual_map',
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_residual_map',
                                           bool)
             self.plot_galaxy_fit_chi_squared_map = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_chi_squared_map',
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_chi_squared_map',
                                           bool)
 
         @classmethod

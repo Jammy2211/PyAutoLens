@@ -2,8 +2,6 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autofit import PhaseProperty
-from autofit import conf
 from autolens import exc
 from autolens.data.array import grids
 from autolens.data.plotters import ccd_plotters
@@ -215,71 +213,80 @@ class PhaseImaging(Phase):
             self.positions_threshold = positions_threshold
 
             self.should_plot_image_plane_pix = \
-                conf.instance.general.get('output',
-                                          'plot_image_plane_adaptive_pixelization_grid',
-                                          bool)
+                af.conf.instance.general.get('output',
+                                             'plot_image_plane_adaptive_pixelization_grid',
+                                             bool)
 
             self.plot_data_as_subplot = \
-                conf.instance.general.get('output', 'plot_data_as_subplot', bool)
+                af.conf.instance.general.get('output', 'plot_data_as_subplot', bool)
             self.plot_data_image = \
-                conf.instance.general.get('output', 'plot_data_image', bool)
+                af.conf.instance.general.get('output', 'plot_data_image', bool)
             self.plot_data_noise_map = \
-                conf.instance.general.get('output', 'plot_data_noise_map', bool)
+                af.conf.instance.general.get('output', 'plot_data_noise_map', bool)
             self.plot_data_psf = \
-                conf.instance.general.get('output', 'plot_data_psf', bool)
+                af.conf.instance.general.get('output', 'plot_data_psf', bool)
             self.plot_data_signal_to_noise_map = \
-                conf.instance.general.get('output', 'plot_data_signal_to_noise_map',
-                                          bool)
+                af.conf.instance.general.get('output', 'plot_data_signal_to_noise_map',
+                                             bool)
             self.plot_data_absolute_signal_to_noise_map = \
-                conf.instance.general.get('output',
-                                          'plot_data_absolute_signal_to_noise_map',
-                                          bool)
+                af.conf.instance.general.get('output',
+                                             'plot_data_absolute_signal_to_noise_map',
+                                             bool)
             self.plot_data_potential_chi_squared_map = \
-                conf.instance.general.get('output',
-                                          'plot_data_potential_chi_squared_map', bool)
+                af.conf.instance.general.get('output',
+                                             'plot_data_potential_chi_squared_map',
+                                             bool)
 
             self.plot_lens_fit_all_at_end_png = \
-                conf.instance.general.get('output', 'plot_lens_fit_all_at_end_png',
-                                          bool)
+                af.conf.instance.general.get('output', 'plot_lens_fit_all_at_end_png',
+                                             bool)
             self.plot_lens_fit_all_at_end_fits = \
-                conf.instance.general.get('output', 'plot_lens_fit_all_at_end_fits',
-                                          bool)
+                af.conf.instance.general.get('output', 'plot_lens_fit_all_at_end_fits',
+                                             bool)
 
             self.plot_lens_fit_as_subplot = \
-                conf.instance.general.get('output', 'plot_lens_fit_as_subplot', bool)
+                af.conf.instance.general.get('output', 'plot_lens_fit_as_subplot', bool)
             self.plot_lens_fit_image = \
-                conf.instance.general.get('output', 'plot_lens_fit_image', bool)
+                af.conf.instance.general.get('output', 'plot_lens_fit_image', bool)
             self.plot_lens_fit_noise_map = \
-                conf.instance.general.get('output', 'plot_lens_fit_noise_map', bool)
+                af.conf.instance.general.get('output', 'plot_lens_fit_noise_map', bool)
             self.plot_lens_fit_signal_to_noise_map = \
-                conf.instance.general.get('output', 'plot_lens_fit_signal_to_noise_map',
-                                          bool)
+                af.conf.instance.general.get('output',
+                                             'plot_lens_fit_signal_to_noise_map',
+                                             bool)
             self.plot_lens_fit_lens_subtracted_image = \
-                conf.instance.general.get('output',
-                                          'plot_lens_fit_lens_subtracted_image', bool)
+                af.conf.instance.general.get('output',
+                                             'plot_lens_fit_lens_subtracted_image',
+                                             bool)
             self.plot_lens_fit_model_image = \
-                conf.instance.general.get('output', 'plot_lens_fit_model_image', bool)
+                af.conf.instance.general.get('output', 'plot_lens_fit_model_image',
+                                             bool)
             self.plot_lens_fit_lens_model_image = \
-                conf.instance.general.get('output', 'plot_lens_fit_lens_model_image',
-                                          bool)
+                af.conf.instance.general.get('output', 'plot_lens_fit_lens_model_image',
+                                             bool)
             self.plot_lens_fit_source_model_image = \
-                conf.instance.general.get('output', 'plot_lens_fit_source_model_image',
-                                          bool)
+                af.conf.instance.general.get('output',
+                                             'plot_lens_fit_source_model_image',
+                                             bool)
             self.plot_lens_fit_source_plane_image = \
-                conf.instance.general.get('output', 'plot_lens_fit_source_plane_image',
-                                          bool)
+                af.conf.instance.general.get('output',
+                                             'plot_lens_fit_source_plane_image',
+                                             bool)
             self.plot_lens_fit_residual_map = \
-                conf.instance.general.get('output', 'plot_lens_fit_residual_map', bool)
+                af.conf.instance.general.get('output', 'plot_lens_fit_residual_map',
+                                             bool)
             self.plot_lens_fit_chi_squared_map = \
-                conf.instance.general.get('output', 'plot_lens_fit_chi_squared_map',
-                                          bool)
+                af.conf.instance.general.get('output', 'plot_lens_fit_chi_squared_map',
+                                             bool)
 
             self.plot_lens_fit_contribution_maps = \
-                conf.instance.general.get('output', 'plot_lens_fit_contribution_maps',
-                                          bool)
+                af.conf.instance.general.get('output',
+                                             'plot_lens_fit_contribution_maps',
+                                             bool)
             self.plot_lens_fit_regularization_weights = \
-                conf.instance.general.get('output',
-                                          'plot_lens_fit_regularization_weights', bool)
+                af.conf.instance.general.get('output',
+                                             'plot_lens_fit_regularization_weights',
+                                             bool)
 
             self.uses_hyper_images = uses_hyper_images
 
@@ -335,8 +342,8 @@ class PhaseImaging(Phase):
         def check_for_previously_masked_values(self, array):
             if not np.all(array) != 0.0 and not np.all(array == 0):
                 raise exc.PhaseException(
-                    'When mapping a 2D array to a 1D array using lens data, a value encountered was'
-                    '0.0 and therefore masked in a previous phase.')
+                    'When mapping a 2D array to a 1D array using lens data, a value '
+                    'encountered was 0.0 and therefore masked in a previous phase.')
 
         def associate_images(self, instance: af.ModelInstance) -> af.ModelInstance:
             """
@@ -368,7 +375,7 @@ class PhaseImaging(Phase):
                     if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
                         galaxy.hyper_galaxy_image_1d = \
-                        self.hyper_galaxy_image_1d_path_dict[galaxy_path]
+                            self.hyper_galaxy_image_1d_path_dict[galaxy_path]
             return instance
 
         def add_grids_to_grid_stack(self, galaxies, grid_stack):
@@ -501,7 +508,7 @@ class MultiPlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    galaxies = PhaseProperty("galaxies")
+    galaxies = af.PhaseProperty("galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
                  optimizer_class=af.MultiNest,
@@ -586,8 +593,8 @@ class LensSourcePlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    lens_galaxies = PhaseProperty("lens_galaxies")
-    source_galaxies = PhaseProperty("source_galaxies")
+    lens_galaxies = af.PhaseProperty("lens_galaxies")
+    source_galaxies = af.PhaseProperty("source_galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None,
                  lens_galaxies=None, source_galaxies=None,
@@ -694,7 +701,7 @@ class LensPlanePhase(PhaseImaging):
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = PhaseProperty("lens_galaxies")
+    lens_galaxies = af.PhaseProperty("lens_galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None,
                  lens_galaxies=None,
@@ -759,9 +766,9 @@ class LensPlanePhase(PhaseImaging):
 
 
 class SensitivityPhase(PhaseImaging):
-    lens_galaxies = PhaseProperty("lens_galaxies")
-    source_galaxies = PhaseProperty("source_galaxies")
-    sensitive_galaxies = PhaseProperty("sensitive_galaxies")
+    lens_galaxies = af.PhaseProperty("lens_galaxies")
+    source_galaxies = af.PhaseProperty("source_galaxies")
+    sensitive_galaxies = af.PhaseProperty("sensitive_galaxies")
 
     def __init__(self, phase_name, tag_phases=None, phase_folders=None,
                  lens_galaxies=None, source_galaxies=None,
