@@ -1,10 +1,7 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autofit import conf
-from autofit.optimize import non_linear
-from autofit.tools import phase as autofit_phase
-from autofit.tools.phase_property import PhaseProperty
+import autofit as af
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
@@ -29,14 +26,14 @@ def setup_phase_mask(data, mask, mask_function, inner_mask_radii):
     return mask
 
 
-class AbstractPhase(autofit_phase.AbstractPhase):
+class AbstractPhase(af.AbstractPhase):
 
     def __init__(self, phase_name, phase_tag=None, phase_folders=None, tag_phases=True,
-                 optimizer_class=non_linear.MultiNest,
+                 optimizer_class=af.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         """
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
-        passed to it.
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
+        models and hyper passed to it.
 
         Parameters
         ----------
@@ -71,8 +68,9 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         Returns
         -------
         phase_property_collections: [PhaseProperty]
-            A list of phase property collections associated with this phase. This is used in automated prior passing and
-            should be overridden for any phase that contains its own PhasePropertys.
+            A list of phase property collections associated with this phase. This is
+            used in automated prior passing and should be overridden for any phase that
+            contains its own PhasePropertys.
         """
         return []
 
@@ -87,8 +85,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
     def pass_priors(self, results):
         """
-        Perform any prior or constant passing. This could involve setting model attributes equal to priors or constants
-        from a previous phase.
+        Perform any prior or constant passing. This could involve setting model
+        attributes equal to priors or constants from a previous phase.
 
         Parameters
         ----------
@@ -98,7 +96,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         pass
 
     # noinspection PyAbstractClass
-    class Analysis(non_linear.Analysis):
+    class Analysis(af.Analysis):
 
         def __init__(self, cosmology, results=None):
             """
@@ -145,7 +143,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
                                      gaussian_tuples=result.gaussian_tuples,
                                      analysis=analysis, optimizer=self.optimizer)
 
-    class Result(non_linear.Result):
+    class Result(af.Result):
 
         def __init__(self, constant, figure_of_merit, previous_variable,
                      gaussian_tuples, analysis, optimizer):
@@ -170,8 +168,9 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def most_likely_fit(self):
-            return self.analysis.fit_for_tracers(tracer=self.most_likely_tracer,
-                                                 padded_tracer=self.most_likely_padded_tracer)
+            return self.analysis.fit_for_tracers(
+                tracer=self.most_likely_tracer,
+                padded_tracer=self.most_likely_padded_tracer)
 
         @property
         def unmasked_model_image(self):
@@ -183,7 +182,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def unmasked_model_image_of_planes_and_galaxies(self):
-            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
+            fit = self.most_likely_fit
+            return fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
 
         def image_2d_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
             """
@@ -211,7 +211,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             """
             A dictionary associating galaxy names with model images of those galaxies
             """
-            return {galaxy_path: self.image_2d_for_galaxy(galaxy) for galaxy_path, galaxy in self.path_galaxy_tuples}
+            return {galaxy_path: self.image_2d_for_galaxy(galaxy) for
+                    galaxy_path, galaxy in self.path_galaxy_tuples}
 
 
 class Phase(AbstractPhase):
@@ -226,54 +227,54 @@ class Phase(AbstractPhase):
             super(Phase.Analysis, self).__init__(cosmology=cosmology, results=results)
 
             self.should_plot_mask = \
-                conf.instance.general.get('output', 'plot_mask_on_images', bool)
+                af.conf.instance.general.get('output', 'plot_mask_on_images', bool)
             self.extract_array_from_mask = \
-                conf.instance.general.get('output', 'extract_images_from_mask', bool)
+                af.conf.instance.general.get('output', 'extract_images_from_mask', bool)
             self.zoom_around_mask = \
-                conf.instance.general.get('output', 'zoom_around_mask_of_images', bool)
+                af.conf.instance.general.get('output', 'zoom_around_mask_of_images', bool)
             self.should_plot_positions = \
-                conf.instance.general.get('output', 'plot_positions_on_images', bool)
+                af.conf.instance.general.get('output', 'plot_positions_on_images', bool)
             self.plot_units = \
-                conf.instance.general.get('output', 'plot_units', str).strip()
+                af.conf.instance.general.get('output', 'plot_units', str).strip()
 
             self.plot_ray_tracing_all_at_end_png = \
-                conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_png',
+                af.conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_png',
                                           bool)
             self.plot_ray_tracing_all_at_end_fits = \
-                conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_fits',
+                af.conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_fits',
                                           bool)
 
             self.plot_ray_tracing_as_subplot = \
-                conf.instance.general.get('output', 'plot_ray_tracing_as_subplot', bool)
+                af.conf.instance.general.get('output', 'plot_ray_tracing_as_subplot', bool)
             self.plot_ray_tracing_image_plane_image = \
-                conf.instance.general.get('output',
+                af.conf.instance.general.get('output',
                                           'plot_ray_tracing_image_plane_image', bool)
             self.plot_ray_tracing_source_plane = \
-                conf.instance.general.get('output',
+                af.conf.instance.general.get('output',
                                           'plot_ray_tracing_source_plane_image', bool)
             self.plot_ray_tracing_convergence = \
-                conf.instance.general.get('output', 'plot_ray_tracing_convergence',
+                af.conf.instance.general.get('output', 'plot_ray_tracing_convergence',
                                           bool)
             self.plot_ray_tracing_potential = \
-                conf.instance.general.get('output', 'plot_ray_tracing_potential', bool)
+                af.conf.instance.general.get('output', 'plot_ray_tracing_potential', bool)
             self.plot_ray_tracing_deflections = \
-                conf.instance.general.get('output', 'plot_ray_tracing_deflections',
+                af.conf.instance.general.get('output', 'plot_ray_tracing_deflections',
                                           bool)
 
 
 class GalaxyFitPhase(AbstractPhase):
-    galaxies = PhaseProperty("galaxies")
+    galaxies = af.PhaseProperty("galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
                  use_intensities=False,
                  use_convergence=False,
                  use_potential=False,
-                 use_deflections=False, optimizer_class=non_linear.MultiNest,
+                 use_deflections=False, optimizer_class=af.MultiNest,
                  sub_grid_size=2, interp_pixel_scale=None,
                  mask_function=None, cosmology=cosmo.Planck15):
         """
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
-        passed to it.
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
+        models and hyper passed to it.
 
         Parameters
         ----------
@@ -307,7 +308,8 @@ class GalaxyFitPhase(AbstractPhase):
         mask: Mask
             The default masks passed in by the pipeline
         results: autofit.tools.pipeline.ResultsCollection
-            An object describing the results of the last phase or None if no phase has been executed
+            An object describing the results of the last phase or None if no phase has
+            been executed
 
         Returns
         -------
@@ -326,8 +328,8 @@ class GalaxyFitPhase(AbstractPhase):
 
     def make_analysis(self, galaxy_data, results=None, mask=None):
         """
-        Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
-        classes to change the behaviour of the phase.
+        Create an lens object. Also calls the prior passing and lens_data modifying
+        functions to allow child classes to change the behaviour of the phase.
 
         Parameters
         ----------
@@ -340,7 +342,8 @@ class GalaxyFitPhase(AbstractPhase):
         Returns
         -------
         lens: Analysis
-            An lens object that the non-linear optimizer calls to determine the fit of a set of values
+            An lens object that the non-linear optimizer calls to determine the fit of a
+             set of values
         """
 
         mask = setup_phase_mask(data=galaxy_data[0], mask=mask,
@@ -387,6 +390,7 @@ class GalaxyFitPhase(AbstractPhase):
                                                       cosmology=self.cosmology,
                                                       results=results)
 
+    # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
         def __init__(self, cosmology, results):
@@ -394,24 +398,24 @@ class GalaxyFitPhase(AbstractPhase):
                                                           results=results)
 
             self.plot_galaxy_fit_all_at_end_png = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_png',
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_png',
                                           bool)
             self.plot_galaxy_fit_all_at_end_fits = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_fits',
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_fits',
                                           bool)
             self.plot_galaxy_fit_as_subplot = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_as_subplot', bool)
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_as_subplot', bool)
             self.plot_galaxy_fit_image = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_image', bool)
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_image', bool)
             self.plot_galaxy_fit_noise_map = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_noise_map', bool)
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_noise_map', bool)
             self.plot_galaxy_fit_model_image = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_model_image', bool)
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_model_image', bool)
             self.plot_galaxy_fit_residual_map = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_residual_map',
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_residual_map',
                                           bool)
             self.plot_galaxy_fit_chi_squared_map = \
-                conf.instance.general.get('output', 'plot_galaxy_fit_chi_squared_map',
+                af.conf.instance.general.get('output', 'plot_galaxy_fit_chi_squared_map',
                                           bool)
 
         @classmethod
@@ -487,7 +491,8 @@ class GalaxyFitPhase(AbstractPhase):
 
         def fit_for_instance(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lens_data in this lens.
+            Determine the fit of a lens galaxy and source galaxy to the lens_data in
+            this lens.
 
             Parameters
             ----------
@@ -497,7 +502,8 @@ class GalaxyFitPhase(AbstractPhase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model lens_data itself
+                A fractional value indicating how well this model fit and the model
+                lens_data itself
             """
             return galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data,
                                         model_galaxies=instance.galaxies)

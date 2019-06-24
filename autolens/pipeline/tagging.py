@@ -1,4 +1,4 @@
-from autofit import conf
+import autofit as af
 
 def pipeline_name_from_name_and_settings(
         pipeline_name, fix_lens_light=False,
@@ -48,14 +48,14 @@ def pixelization_tag_from_pixelization(pixelization):
     if pixelization is None:
         return ''
     else:
-        return '_pix_' + conf.instance.label.get('tag', pixelization().__class__.__name__, str)
+        return '_pix_' + af.conf.instance.label.get('tag', pixelization().__class__.__name__, str)
 
 def regularization_tag_from_regularization(regularization):
 
     if regularization is None:
         return ''
     else:
-        return '_reg_' + conf.instance.label.get('tag', regularization().__class__.__name__, str)
+        return '_reg_' + af.conf.instance.label.get('tag', regularization().__class__.__name__, str)
     
 def align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre):
     """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \

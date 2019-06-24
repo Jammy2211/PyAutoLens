@@ -1,8 +1,8 @@
 import os
 
 import autolens.pipeline.phase.phase_imaging
-from autofit import conf
-from autofit.optimize import non_linear as nl
+import autofit as af
+import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.pipeline.phase import phase as ph
@@ -16,7 +16,7 @@ test_name = "positions_mass_x1_source_x1"
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
 config_path = test_path + 'config'
-conf.instance = conf.Config(config_path=config_path, output_path=output_path)
+af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
 
 
 def pipeline():
