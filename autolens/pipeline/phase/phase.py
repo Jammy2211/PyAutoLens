@@ -35,8 +35,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
                  optimizer_class=non_linear.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         """
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
-        passed to it.
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
+        models and hyper passed to it.
 
         Parameters
         ----------
@@ -71,8 +71,9 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         Returns
         -------
         phase_property_collections: [PhaseProperty]
-            A list of phase property collections associated with this phase. This is used in automated prior passing and
-            should be overridden for any phase that contains its own PhasePropertys.
+            A list of phase property collections associated with this phase. This is
+            used in automated prior passing and should be overridden for any phase that
+            contains its own PhasePropertys.
         """
         return []
 
@@ -87,8 +88,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
     def pass_priors(self, results):
         """
-        Perform any prior or constant passing. This could involve setting model attributes equal to priors or constants
-        from a previous phase.
+        Perform any prior or constant passing. This could involve setting model
+        attributes equal to priors or constants from a previous phase.
 
         Parameters
         ----------
@@ -170,8 +171,9 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def most_likely_fit(self):
-            return self.analysis.fit_for_tracers(tracer=self.most_likely_tracer,
-                                                 padded_tracer=self.most_likely_padded_tracer)
+            return self.analysis.fit_for_tracers(
+                tracer=self.most_likely_tracer,
+                padded_tracer=self.most_likely_padded_tracer)
 
         @property
         def unmasked_model_image(self):
@@ -183,7 +185,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def unmasked_model_image_of_planes_and_galaxies(self):
-            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
+            fit = self.most_likely_fit
+            return fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
 
         def image_2d_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
             """
@@ -211,7 +214,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             """
             A dictionary associating galaxy names with model images of those galaxies
             """
-            return {galaxy_path: self.image_2d_for_galaxy(galaxy) for galaxy_path, galaxy in self.path_galaxy_tuples}
+            return {galaxy_path: self.image_2d_for_galaxy(galaxy) for
+                    galaxy_path, galaxy in self.path_galaxy_tuples}
 
 
 class Phase(AbstractPhase):
@@ -272,8 +276,8 @@ class GalaxyFitPhase(AbstractPhase):
                  sub_grid_size=2, interp_pixel_scale=None,
                  mask_function=None, cosmology=cosmo.Planck15):
         """
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
-        passed to it.
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
+        models and hyper passed to it.
 
         Parameters
         ----------
@@ -307,7 +311,8 @@ class GalaxyFitPhase(AbstractPhase):
         mask: Mask
             The default masks passed in by the pipeline
         results: autofit.tools.pipeline.ResultsCollection
-            An object describing the results of the last phase or None if no phase has been executed
+            An object describing the results of the last phase or None if no phase has
+            been executed
 
         Returns
         -------
@@ -326,8 +331,8 @@ class GalaxyFitPhase(AbstractPhase):
 
     def make_analysis(self, galaxy_data, results=None, mask=None):
         """
-        Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
-        classes to change the behaviour of the phase.
+        Create an lens object. Also calls the prior passing and lens_data modifying
+        functions to allow child classes to change the behaviour of the phase.
 
         Parameters
         ----------
@@ -340,7 +345,8 @@ class GalaxyFitPhase(AbstractPhase):
         Returns
         -------
         lens: Analysis
-            An lens object that the non-linear optimizer calls to determine the fit of a set of values
+            An lens object that the non-linear optimizer calls to determine the fit of a
+             set of values
         """
 
         mask = setup_phase_mask(data=galaxy_data[0], mask=mask,
@@ -387,6 +393,7 @@ class GalaxyFitPhase(AbstractPhase):
                                                       cosmology=self.cosmology,
                                                       results=results)
 
+    # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
         def __init__(self, cosmology, results):
@@ -487,7 +494,8 @@ class GalaxyFitPhase(AbstractPhase):
 
         def fit_for_instance(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lens_data in this lens.
+            Determine the fit of a lens galaxy and source galaxy to the lens_data in
+            this lens.
 
             Parameters
             ----------
@@ -497,7 +505,8 @@ class GalaxyFitPhase(AbstractPhase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model lens_data itself
+                A fractional value indicating how well this model fit and the model
+                lens_data itself
             """
             return galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data,
                                         model_galaxies=instance.galaxies)
