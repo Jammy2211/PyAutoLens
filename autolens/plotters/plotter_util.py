@@ -1,10 +1,10 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from astropy.io import fits
+import numpy as np
 
 from autolens import exc
 from autolens.data.array.util import array_util
-
-import numpy as np
 
 def get_subplot_rows_columns_figsize(number_subplots):
     """Get the size of a sub plot in (rows, columns), based on the number of subplots that are going to be plotted.
