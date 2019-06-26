@@ -302,14 +302,15 @@ class PhaseImaging(Phase):
 
                 self.hyper_model_image_1d = np.zeros(lens_data.mask_1d.shape)
 
-                for galaxy, galaxy_image in results.last.image_2d_dict.items():
+                for galaxy, galaxy_image in self.last_results.image_2d_dict.items():
 
                     image_1d_galaxy_dict[galaxy] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image)
                     self.check_for_previously_masked_values(array=image_1d_galaxy_dict[galaxy])
 
                 self.hyper_galaxy_image_1d_path_dict = {}
 
-                for path, galaxy in results.last.path_galaxy_tuples:
+                for path, galaxy in self.last_results.path_galaxy_tuples:
+
                     galaxy_image = image_1d_galaxy_dict[path]
 
                     self.hyper_model_image_1d += galaxy_image
@@ -321,7 +322,7 @@ class PhaseImaging(Phase):
 
                 cluster_image_1d_galaxy_dict = {}
 
-                for galaxy, galaxy_image in results.last.image_2d_dict.items():
+                for galaxy, galaxy_image in self.last_results.image_2d_dict.items():
 
                     cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                         array_2d=galaxy_image, bin_up_factor=lens_data.cluster.bin_up_factor)
@@ -331,7 +332,7 @@ class PhaseImaging(Phase):
 
                 self.hyper_galaxy_cluster_image_1d_path_dict = {}
 
-                for path, galaxy in results.last.path_galaxy_tuples:
+                for path, galaxy in self.last_results.path_galaxy_tuples:
 
                     galaxy_cluster_image = cluster_image_1d_galaxy_dict[path]
 

@@ -233,7 +233,7 @@ class GalaxyModel(af.AbstractPriorModel):
         Returns
         -------
         priors: [PriorTuple]
-            A list of priors associated with prior models in this galaxy prior.
+            A list of priors associated with prior models in this galaxy af.prior.
         """
         return [prior for prior_model in self.prior_models for prior in
                 prior_model.prior_tuples]
@@ -245,7 +245,7 @@ class GalaxyModel(af.AbstractPriorModel):
         Returns
         -------
         constant: [ConstantTuple]
-            A list of constants associated with prior models in this galaxy prior.
+            A list of constants associated with prior models in this galaxy af.prior.
         """
         return [constant for prior_model in self.prior_models for constant in
                 prior_model.constant_tuples]

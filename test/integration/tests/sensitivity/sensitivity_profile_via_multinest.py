@@ -1,12 +1,8 @@
 import os
 
-import autolens.pipeline.phase.phase_imaging
-import autolens.pipeline.phase_imaging
-import autofit as af
-import autofit as af
 import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline.phase import phase as ph
+from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -32,7 +28,7 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    class SensitivePhase(autolens.pipeline.phase.phase_imaging.SensitivityPhase):
+    class SensitivePhase(phase_imaging.SensitivityPhase):
 
         def pass_priors(self, results):
 
@@ -46,8 +42,8 @@ def make_pipeline(test_name):
             self.source_galaxies.source.light.effective_radius = 0.5
             self.source_galaxies.source.light.sersic_index = 1.0
 
-            self.sensitive_galaxies.subhalo.mass.centre_0 = prior.GaussianPrior(mean=0.0, sigma=1.0)
-            self.sensitive_galaxies.subhalo.mass.centre_1 = prior.GaussianPrior(mean=0.0, sigma=1.0)
+            self.sensitive_galaxies.subhalo.mass.centre_0 = af.prior.GaussianPrior(mean=0.0, sigma=1.0)
+            self.sensitive_galaxies.subhalo.mass.centre_1 = af.prior.GaussianPrior(mean=0.0, sigma=1.0)
             self.sensitive_galaxies.subhalo.mass.kappa_s = 0.1
             self.sensitive_galaxies.subhalo.mass.scale_radius = 5.0
 
@@ -56,7 +52,7 @@ def make_pipeline(test_name):
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal)),
         source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, light=lp.SphericalSersic)),
         sensitive_galaxies=dict(subhalo=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalNFW)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
 

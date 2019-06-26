@@ -462,7 +462,7 @@ def make_sensitivity_fit_5x5(lens_data_5x5):
 
 from autofit.tools import pipeline as af_pipeline
 from autolens.pipeline import pipeline
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase_imaging, phase_hyper
 from test.unit.mock.pipeline import mock_pipeline
 
 @pytest.fixture(name="mask_function_5x5_1_pix")
@@ -498,7 +498,7 @@ def make_mask_function_5x5():
 @pytest.fixture(name="phase_5x5")
 def make_phase_5x5(mask_function_5x5):
 
-    return ph.phase_imaging.LensSourcePlanePhase(
+    return phase_imaging.phase_imaging.LensSourcePlanePhase(
         optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5, phase_name='test_phase')
 
 @pytest.fixture(name="results_5x5")
