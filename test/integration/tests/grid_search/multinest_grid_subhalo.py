@@ -1,14 +1,10 @@
 import os
 
-import autolens.pipeline.phase.phase_imaging
-from autofit import conf
-from autofit.mapper import prior
-from autofit.optimize import non_linear as nl
-from autofit.tools import phase as autofit_ph
+import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.pipeline.phase import phase as ph
+from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline as pl
 from test.integration import integration_util
 from test.simulation import simulation_util
@@ -19,7 +15,7 @@ test_name = "multinest_grid_subhalo"
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
 config_path = test_path + 'config'
-conf.instance = conf.Config(config_path=config_path, output_path=output_path)
+af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
 
 
 def pipeline():
@@ -32,35 +28,35 @@ def pipeline():
 
 def make_pipeline(test_name):
     
-    class QuickPhase(autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase):
+    class QuickPhase(phase_imaging.LensSourcePlanePhase):
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.mass.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
-            self.lens_galaxies.lens.mass.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
-            self.lens_galaxies.lens.mass.axis_ratio = prior.UniformPrior(lower_limit=0.65, upper_limit=0.75)
-            self.lens_galaxies.lens.mass.phi = prior.UniformPrior(lower_limit=40.0, upper_limit=50.0)
-            self.lens_galaxies.lens.mass.einstein_radius = prior.UniformPrior(lower_limit=1.55, upper_limit=1.65)
+            self.lens_galaxies.lens.mass.centre_0 = af.prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
+            self.lens_galaxies.lens.mass.centre_1 = af.prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
+            self.lens_galaxies.lens.mass.axis_ratio = af.prior.UniformPrior(lower_limit=0.65, upper_limit=0.75)
+            self.lens_galaxies.lens.mass.phi = af.prior.UniformPrior(lower_limit=40.0, upper_limit=50.0)
+            self.lens_galaxies.lens.mass.einstein_radius = af.prior.UniformPrior(lower_limit=1.55, upper_limit=1.65)
 
-            self.source_galaxies.source.light.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
-            self.source_galaxies.source.light.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
-            self.source_galaxies.source.light.axis_ratio = prior.UniformPrior(lower_limit=0.75, upper_limit=0.85)
-            self.source_galaxies.source.light.phi = prior.UniformPrior(lower_limit=50.0, upper_limit=70.0)
-            self.source_galaxies.source.light.intensity = prior.UniformPrior(lower_limit=0.35, upper_limit=0.45)
-            self.source_galaxies.source.light.effective_radius = prior.UniformPrior(lower_limit=0.45, upper_limit=0.55)
-            self.source_galaxies.source.light.sersic_index = prior.UniformPrior(lower_limit=0.9, upper_limit=1.1)
+            self.source_galaxies.source.light.centre_0 = af.prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
+            self.source_galaxies.source.light.centre_1 = af.prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
+            self.source_galaxies.source.light.axis_ratio = af.prior.UniformPrior(lower_limit=0.75, upper_limit=0.85)
+            self.source_galaxies.source.light.phi = af.prior.UniformPrior(lower_limit=50.0, upper_limit=70.0)
+            self.source_galaxies.source.light.intensity = af.prior.UniformPrior(lower_limit=0.35, upper_limit=0.45)
+            self.source_galaxies.source.light.effective_radius = af.prior.UniformPrior(lower_limit=0.45, upper_limit=0.55)
+            self.source_galaxies.source.light.sersic_index = af.prior.UniformPrior(lower_limit=0.9, upper_limit=1.1)
 
     phase1 = QuickPhase(
         phase_name='phase_1', phase_folders=[test_type, test_name],
-        lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
-        source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-        optimizer_class=nl.MultiNest)
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)),
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)),
+        optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(autofit_ph.as_grid_search(autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase)):
+    class GridPhase(af.phase.as_grid_search(phase_imaging.LensSourcePlanePhase)):
 
         @property
         def grid_priors(self):
@@ -76,10 +72,10 @@ def make_pipeline(test_name):
 
             ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
 
-            self.lens_galaxies.subhalo.mass.kappa_s = prior.UniformPrior(lower_limit=0.0005, upper_limit=0.2)
-            self.lens_galaxies.subhalo.mass.scale_radius = prior.UniformPrior(lower_limit=0.001, upper_limit=1.0)
-            self.lens_galaxies.subhalo.mass.centre_0 = prior.UniformPrior(lower_limit=-2.0, upper_limit=2.0)
-            self.lens_galaxies.subhalo.mass.centre_1 = prior.UniformPrior(lower_limit=-2.0, upper_limit=2.0)
+            self.lens_galaxies.subhalo.mass.kappa_s = af.prior.UniformPrior(lower_limit=0.0005, upper_limit=0.2)
+            self.lens_galaxies.subhalo.mass.scale_radius = af.prior.UniformPrior(lower_limit=0.001, upper_limit=1.0)
+            self.lens_galaxies.subhalo.mass.centre_0 = af.prior.UniformPrior(lower_limit=-2.0, upper_limit=2.0)
+            self.lens_galaxies.subhalo.mass.centre_1 = af.prior.UniformPrior(lower_limit=-2.0, upper_limit=2.0)
 
             ### Source Light, Sersic -> Sersic ###
 
@@ -104,10 +100,10 @@ def make_pipeline(test_name):
 
     phase2 = GridPhase(
         phase_name='phase_2', phase_folders=[test_type, test_name],
-        lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal),
-                           subhalo=gm.GalaxyModel(mass=mp.SphericalTruncatedNFWChallenge)),
-        source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-        optimizer_class=nl.MultiNest, number_of_steps=2)
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
+                           subhalo=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalTruncatedNFWChallenge)),
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)),
+        optimizer_class=af.MultiNest, number_of_steps=2)
 
     phase2.optimizer.const_efficiency_mode = True
 

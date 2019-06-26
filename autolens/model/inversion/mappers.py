@@ -98,13 +98,13 @@ class Mapper(object):
 
         The pixelization's pixels map to different number of regular-grid pixels, thus a list of lists is used to \
         represent these mappings"""
-        pix_to_regular = [[] for _ in range(self.pixels)]
+        pixelization_to_regular = [[] for _ in range(self.pixels)]
 
         for regular_pixel, pix_pixel in enumerate(self.regular_to_pixelization):
 
-            pix_to_regular[pix_pixel].append(regular_pixel)
+            pixelization_to_regular[pix_pixel].append(regular_pixel)
 
-        return pix_to_regular
+        return pixelization_to_regular
 
     @property
     def pixelization_to_sub(self):
@@ -113,12 +113,12 @@ class Mapper(object):
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
         represent these mappings"""
-        pix_to_sub = [[] for _ in range(self.pixels)]
+        pixelization_to_sub = [[] for _ in range(self.pixels)]
 
         for regular_pixel, pix_pixel in enumerate(self.sub_to_pixelization):
-            pix_to_sub[pix_pixel].append(regular_pixel)
+            pixelization_to_sub[pix_pixel].append(regular_pixel)
 
-        return pix_to_sub
+        return pixelization_to_sub
 
 
 class RectangularMapper(Mapper):

@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 from autolens import decorator_util
+from autolens.data.array.util import array_util
 from autolens.data.array.util import mask_util
 
 logger = logging.getLogger(__name__)

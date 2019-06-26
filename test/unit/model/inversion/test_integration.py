@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens.data.array import grids, mask as msk
-from autolens.model.inversion import mappers as pm
+from autolens.model.inversion import mappers as m
 from autolens.model.inversion import pixelizations, regularization
 from test.unit.mock.data.mock_grids import MockPixSubGrid, MockPixGridStack
 
@@ -243,7 +243,7 @@ class TestSparseToRegularGrid:
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
         assert (mapper.hyper_image == np.ones((2,2))).all()
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -301,7 +301,7 @@ class TestSparseToRegularGrid:
         assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                    [0.0, 1.0, 0.0, 0.0, 0.0],
@@ -354,7 +354,7 @@ class TestSparseToRegularGrid:
         assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.005), 1.0e-4)
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.0, 0.0, 0.0],
                                                    [0.0, 0.75, 0.0, 0.0, 0.0],
@@ -406,7 +406,7 @@ class TestSparseToRegularGrid:
         assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                    [0.0, 1.0, 0.0, 0.0, 0.0],
@@ -451,7 +451,7 @@ class TestVoronoiMagnification:
         assert mapper.geometry.origin == (0.0, 0.0)
         assert (mapper.hyper_image == np.ones((2,2))).all()
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                        [0.0, 1.0, 0.0, 0.0, 0.0],
@@ -505,7 +505,7 @@ class TestVoronoiMagnification:
         assert (mapper.geometry.pixel_centres == regular_grid).all()
         assert mapper.geometry.origin == (1.0, 1.0)
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                        [0.0, 1.0, 0.0, 0.0, 0.0],
@@ -544,7 +544,7 @@ class TestVoronoiMagnification:
         assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                    [0.0, 1.0, 0.0, 0.0, 0.0],
@@ -594,7 +594,7 @@ class TestVoronoiMagnification:
         assert (mapper.geometry.pixel_centres == pixel_centers).all()
         assert mapper.geometry.origin == (0.0, 0.0)
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                        [1.0, 0.0, 0.0, 0.0, 0.0],
@@ -653,7 +653,7 @@ class TestVoronoiMagnification:
         assert (mapper.geometry.pixel_centres == pixel_centers).all()
         assert mapper.geometry.origin == (0.0, 0.0)
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.25, 0.0, 0.0],
                                                        [0.0, 0.75, 0.25, 0.0, 0.0],
@@ -697,7 +697,7 @@ class TestVoronoiMagnification:
         assert mapper.geometry.pixel_centres == pytest.approx(regular_grid, 1e-4)
         assert mapper.geometry.origin == (0.0, 0.0)
 
-        assert isinstance(mapper, pm.VoronoiMapper)
+        assert isinstance(mapper, m.VoronoiMapper)
 
         assert (mapper.mapping_matrix == np.array([[0.0, 1.0, 0.0, 0.0, 0.0],
                                                    [0.0, 1.0, 0.0, 0.0, 0.0],

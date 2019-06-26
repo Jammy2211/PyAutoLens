@@ -55,7 +55,11 @@ class Inversion(object):
         self.regularization_matrix = regularization.regularization_matrix_from_mapper(mapper=mapper)
 
         self.curvature_reg_matrix = np.add(self.curvature_matrix, self.regularization_matrix)
-        self.solution_vector = np.linalg.solve(self.curvature_reg_matrix, self.data_vector)
+
+        try:
+            self.solution_vector = np.linalg.solve(self.curvature_reg_matrix, self.data_vector)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
 
     @classmethod
     def from_data_1d_mapper_and_regularization(cls, image_1d, noise_map_1d, convolver, mapper, regularization):

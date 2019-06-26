@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autolens import exc
-from autolens.data.array.util import grid_util, mapping_util, array_util, mask_util
+from autolens.data.array.util import grid_util, mapping_util, array_util, mask_util, binning_util
 from autolens.data.array import scaled_array
 
 logging.basicConfig()
@@ -204,7 +204,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     def binned_up_mask_from_mask(self, bin_up_factor):
-        return Mask(array=mask_util.bin_up_mask_2d(mask_2d=self, bin_up_factor=bin_up_factor),
+        return Mask(array=binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(mask_2d=self, bin_up_factor=bin_up_factor),
                     pixel_scale=self.pixel_scale*bin_up_factor, origin=self.origin)
 
     @property

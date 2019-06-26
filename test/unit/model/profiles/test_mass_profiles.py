@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
-from autofit import conf
+import autofit as af
 from autolens import dimensions as dim
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
@@ -20,7 +20,7 @@ def reset_config():
     """
     Use configuration from the default path. You may want to change this to set a specific path.
     """
-    conf.instance = conf.default
+    af.conf.instance = af.conf.default
 
 
 class TestPointMass(object):

@@ -1,10 +1,8 @@
 import os
 
-import autolens.pipeline.phase.phase_imaging
-from autofit import conf
-from autofit.optimize import non_linear as nl
+import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline.phase import phase as ph
+from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
@@ -16,7 +14,7 @@ test_name = "link_variable"
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
 config_path = test_path + 'config'
-conf.instance = conf.Config(config_path=config_path, output_path=output_path)
+af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
@@ -27,19 +25,19 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    class MMPhase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
+    class MMPhase(phase_imaging.LensPlanePhase):
         pass
 
     phase1 = MMPhase(
         phase_name='phase_1', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class MMPhase2(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
+    class MMPhase2(phase_imaging.LensPlanePhase):
 
         def pass_priors(self, results):
 
@@ -48,7 +46,7 @@ def make_pipeline(test_name):
     phase2 = MMPhase2(
         phase_name='phase_2', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 20
