@@ -27,6 +27,9 @@ def pipeline_tag_from_pipeline_settings(
                                                            align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
                                                            align_bulge_disk_phi=align_bulge_disk_phi)
 
+    pixelization_tag = ''
+    regularization_tag = ''
+
     return fix_lens_light_tag + pixelization_tag + regularization_tag + bulge_disk_tag
 
 def fix_lens_light_tag_from_fix_lens_light(fix_lens_light):
