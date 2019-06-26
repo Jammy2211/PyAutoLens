@@ -3,7 +3,7 @@ from os import path
 import numpy as np
 import pytest
 
-from autofit import conf
+import autofit as af
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_data as gd
 from autolens.model.galaxy import galaxy_fit
@@ -21,7 +21,8 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    conf.instance = conf.Config(path.join(directory, "test_files/config"), path.join(directory, "output"))
+    af.conf.instance = af.conf.Config(path.join(directory, "test_files/config"),
+                                      path.join(directory, "output"))
 
 
 #
@@ -71,12 +72,16 @@ def make_positions_5x5():
 
 
 @pytest.fixture(name="ccd_data_5x5")
-def make_ccd_data_5x5(image_5x5, psf_3x3, noise_map_5x5, background_noise_map_5x5, poisson_noise_map_5x5,
+def make_ccd_data_5x5(image_5x5, psf_3x3, noise_map_5x5, background_noise_map_5x5,
+                      poisson_noise_map_5x5,
                       exposure_time_map_5x5, background_sky_map_5x5):
     return mock_ccd.MockCCDData(
-        image=image_5x5, pixel_scale=image_5x5.pixel_scale, psf=psf_3x3, noise_map=noise_map_5x5,
-        background_noise_map=background_noise_map_5x5, poisson_noise_map=poisson_noise_map_5x5,
-        exposure_time_map=exposure_time_map_5x5, background_sky_map=background_sky_map_5x5, name='mock_ccd_data_5x5')
+        image=image_5x5, pixel_scale=image_5x5.pixel_scale, psf=psf_3x3,
+        noise_map=noise_map_5x5,
+        background_noise_map=background_noise_map_5x5,
+        poisson_noise_map=poisson_noise_map_5x5,
+        exposure_time_map=exposure_time_map_5x5,
+        background_sky_map=background_sky_map_5x5, name='mock_ccd_data_5x5')
 
 
 @pytest.fixture(name="ccd_data_6x6")
@@ -89,9 +94,12 @@ def make_ccd_data_6x6():
     exposure_time_map = mock_ccd.MockExposureTimeMap(shape=(6, 6), value=5.0)
     background_sky_map = mock_ccd.MockBackgrondSkyMap(shape=(6, 6), value=6.0)
 
-    return mock_ccd.MockCCDData(image=image, pixel_scale=1.0, psf=psf, noise_map=noise_map,
-                                background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                                exposure_time_map=exposure_time_map, background_sky_map=background_sky_map,
+    return mock_ccd.MockCCDData(image=image, pixel_scale=1.0, psf=psf,
+                                noise_map=noise_map,
+                                background_noise_map=background_noise_map,
+                                poisson_noise_map=poisson_noise_map,
+                                exposure_time_map=exposure_time_map,
+                                background_sky_map=background_sky_map,
                                 name='mock_ccd_data_6x6')
 
 
@@ -107,6 +115,7 @@ def make_mask_5x5():
                       [True, True, True, True, True]])
 
     return mock_mask.MockMask(array=array)
+
 
 @pytest.fixture(name="mask_5x5_1_pix")
 def make_mask_5x5_1_pix():
@@ -184,17 +193,23 @@ def make_blurring_grid_5x5():
 
     return mock_grids.MockRegularGrid(mask=blurring_mask)
 
+@pytest.fixture(name="cluster_grid_5x5")
+def make_cluster_grid_5x5(mask_5x5):
+    return mock_grids.MockClusterGrid.from_mask_and_cluster_pixel_scale(
+        mask=mask_5x5, cluster_pixel_scale=mask_5x5.pixel_scale)
 
 @pytest.fixture(name="grid_stack_5x5")
 def make_grid_stack_5x5(regular_grid_5x5, sub_grid_5x5, blurring_grid_5x5):
-    return mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5, blurring=blurring_grid_5x5)
+    return mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5,
+                                    blurring=blurring_grid_5x5)
 
 
 @pytest.fixture(name="grid_stack_simple")
 def make_grid_stack_simple(regular_grid_5x5, sub_grid_5x5, blurring_grid_5x5):
     # Manually overwrite some sub-grid and blurring grid coodinates for easier deflection angle calculations
 
-    grid_stack = mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5, blurring=blurring_grid_5x5)
+    grid_stack = mock_grids.MockGridStack(regular=regular_grid_5x5, sub=sub_grid_5x5,
+                                          blurring=blurring_grid_5x5)
 
     grid_stack.regular[0] = np.array([1.0, 1.0])
     grid_stack.sub[0] = np.array([1.0, 1.0])
@@ -299,6 +314,7 @@ def make_gal_x1_mp(mp_0):
 def make_gal_x2_mp(mp_0, mp_1):
     return g.Galaxy(redshift=0.5, mass_profile_0=mp_0, mass_profile_1=mp_1)
 
+
 @pytest.fixture(name="gal_x1_lp_x1_mp")
 def make_gal_x1_lp_x1_mp(lp_0, mp_0):
     return g.Galaxy(redshift=0.5, light_profile_0=lp_0, mass_profile_0=mp_0)
@@ -372,23 +388,28 @@ def make_gal_fit_5x5_deflections_x(gal_fit_data_5x5_deflections_x, gal_x1_mp):
 
 @pytest.fixture(name="lens_data_5x5")
 def make_lens_data_5x5(ccd_data_5x5, mask_5x5, grid_stack_5x5, padded_grid_stack_5x5, border_5x5,
-                       convolver_image_5x5, convolver_mapping_matrix_5x5):
+                       convolver_image_5x5, convolver_mapping_matrix_5x5, cluster_grid_5x5):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_5x5, mask=mask_5x5, grid_stack=grid_stack_5x5, padded_grid_stack=padded_grid_stack_5x5,
-        border=border_5x5, convolver_image=convolver_image_5x5, convolver_mapping_matrix=convolver_mapping_matrix_5x5)
+        border=border_5x5, convolver_image=convolver_image_5x5, convolver_mapping_matrix=convolver_mapping_matrix_5x5,
+        cluster=cluster_grid_5x5)
 
 
 ### Plane ####
 
 from autolens.lens import plane as pl
 
+
 @pytest.fixture(name='plane_5x5')
 def make_plane_5x5(gal_x1_lp, grid_stack_5x5):
-    return pl.Plane(galaxies=[gal_x1_lp], grid_stack=grid_stack_5x5, compute_deflections=False)
+    return pl.Plane(galaxies=[gal_x1_lp], grid_stack=grid_stack_5x5,
+                    compute_deflections=False)
+
 
 ### Ray Tracing ####
 
 from autolens.lens import ray_tracing
+
 
 @pytest.fixture(name='tracer_x1_plane_5x5')
 def make_tracer_x1_plane_5x5(gal_x1_lp, grid_stack_5x5):
@@ -441,7 +462,7 @@ def make_sensitivity_fit_5x5(lens_data_5x5):
 
 from autofit.tools import pipeline as af_pipeline
 from autolens.pipeline import pipeline
-from autolens.pipeline import phase as ph
+from autolens.pipeline.phase import phase_imaging, phase_hyper
 from test.unit.mock.pipeline import mock_pipeline
 
 @pytest.fixture(name="mask_function_5x5_1_pix")
@@ -477,7 +498,7 @@ def make_mask_function_5x5():
 @pytest.fixture(name="phase_5x5")
 def make_phase_5x5(mask_function_5x5):
 
-    return ph.phase_imaging.LensSourcePlanePhase(
+    return phase_imaging.phase_imaging.LensSourcePlanePhase(
         optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5, phase_name='test_phase')
 
 @pytest.fixture(name="results_5x5")

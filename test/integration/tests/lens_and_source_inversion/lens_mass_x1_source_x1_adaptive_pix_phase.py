@@ -1,11 +1,9 @@
 import os
 
-from autofit import conf
-from autofit.optimize import non_linear as nl
+import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.pipeline.phase import phase_imaging as ph
-from autolens.pipeline.phase import phase_hyper
+from autolens.pipeline.phase import phase_imaging, phase_hyper
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import integration_util
@@ -17,7 +15,7 @@ test_name = "lens_mass_x1_source_x1_adaptive_pix_phase"
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
 config_path = test_path + 'config'
-conf.instance = conf.Config(config_path=config_path, output_path=output_path)
+af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
@@ -29,7 +27,7 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    class SourcePix(ph.LensSourcePlanePhase):
+    class SourcePix(phase_imaging.LensSourcePlanePhase):
 
         def pass_priors(self, results):
 
@@ -44,13 +42,41 @@ def make_pipeline(test_name):
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)),
         source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
                                                    regularization=reg.Constant)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1p = phase_hyper.HyperPixelizationPhase(phase_name='phase_1_pix', phase_folders=[test_type, test_name])
+    phase1p = phase_hyper.HyperPixelizationPhase(
+        phase_name='phase_1_pix', phase_folders=[test_type, test_name])
+
+    class SourcePix(phase_imaging.LensSourcePlanePhase):
+
+        def pass_priors(self, results):
+
+            self.lens_galaxies.lens = results.from_phase('phase_1').\
+                variable.lens_galaxies.lens
+            
+            self.source_galaxies.source.pixelization = results.from_phase('phase_1').hyper.\
+                constant.source_galaxies.source.pixelization
+
+            self.source_galaxies.source.regularization = results.from_phase('phase_1').hyper.\
+                constant.source_galaxies.source.regularization
+
+    phase2 = SourcePix(
+        phase_name='phase_2', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)),
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
+                                                   regularization=reg.Constant)),
+        optimizer_class=af.MultiNest)
+
+    phase2.optimizer.const_efficiency_mode = True
+    phase2.optimizer.n_live_points = 60
+    phase2.optimizer.sampling_efficiency = 0.8
+
+    phase2p = phase_hyper.HyperPixelizationPhase(
+        phase_name='phase_1_pix', phase_folders=[test_type, test_name])
 
     return pl.PipelineImaging(test_name, phase1, phase1p)
 

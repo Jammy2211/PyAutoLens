@@ -422,7 +422,6 @@ class PSF(ScaledSquarePixelArray):
 
         return PSF(array=array, pixel_scale=pixel_scale, renormalize=False)
 
-
     @classmethod
     def from_gaussian(cls, shape, pixel_scale, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """Simulate the PSF as an elliptical Gaussian profile."""
@@ -492,6 +491,7 @@ class PSF(ScaledSquarePixelArray):
         return cls(array=array_util.numpy_array_2d_from_fits(file_path, hdu), pixel_scale=pixel_scale)
 
     def new_psf_with_rescaled_odd_dimensioned_array(self, rescale_factor, renormalize=True):
+
         psf_rescaled = rescale(self, rescale_factor, anti_aliasing=False, mode='constant', multichannel=False)
 
         if psf_rescaled.shape[0] % 2 == 0 and psf_rescaled.shape[1] % 2 == 0:

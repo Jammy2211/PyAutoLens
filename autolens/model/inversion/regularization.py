@@ -237,3 +237,7 @@ class AdaptiveBrightness(Regularization):
         return self.regularization_matrix_from_regularization_weights_and_pixel_neighbors(
             regularization_weights=regularization_weights, pixel_neighbors=mapper.geometry.pixel_neighbors,
             pixel_neighbors_size=mapper.geometry.pixel_neighbors_size)
+
+    @property
+    def tag(self):
+        return 'adaptive_brightness'

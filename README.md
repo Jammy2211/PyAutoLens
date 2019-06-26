@@ -15,8 +15,8 @@ When two or more galaxies are aligned perfectly down our line-of-sight, the back
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits the foreground lens galaxy's mass and the background source galaxy's light.
 
 ```python
-from autofit.optimize import non_linear as nl
-from autolens.pipeline import phase as ph
+import autofit as af
+from autolens.pipeline.phase import phase_imaging, phase_hyper
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.data import ccd
@@ -55,9 +55,9 @@ source_galaxy_model = gm.GalaxyModel(redshsift=1.0, light=source_light_profile)
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search 
 # (in this case, MultiNest).
-phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+phase = phase_imaging.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                 source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                                phase_name='example/phase_example', optimizer_class=nl.MultiNest)
+                                phase_name='example/phase_example', optimizer_class=af.MultiNest)
 
 # We pass the ccd data to the phase, thereby fitting it with the lens model above and plot the resulting fit.
 result = phase.run(data=ccd_data)

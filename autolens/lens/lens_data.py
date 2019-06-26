@@ -1,6 +1,5 @@
-from autolens.exc import exc
 from autolens.data.array import grids
-from autolens.data import convolution
+from autolens.data.convolution import ConvolverImage
 from autolens.data.array import mask as msk
 from autolens.model.inversion import convolution as inversion_convolution
 
@@ -9,7 +8,7 @@ import numpy as np
 class LensData(object):
 
     def __init__(self, ccd_data, mask, sub_grid_size=2, image_psf_shape=None, inversion_psf_shape=None,
-                 positions=None, interp_pixel_scale=None, uses_inversion=True):
+                 positions=None, interp_pixel_scale=None, cluster_pixel_scale=None, uses_inversion=True):
         """
         The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -57,7 +56,7 @@ class LensData(object):
         else:
             self.image_psf_shape = image_psf_shape
 
-        self.convolver_image = convolution.ConvolverImage(
+        self.convolver_image = ConvolverImage(
             mask=mask, blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=self.image_psf_shape),
             psf=self.psf.resized_scaled_array_from_array(new_shape=self.image_psf_shape))
 
@@ -101,6 +100,19 @@ class LensData(object):
         self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
         self.noise_map_2d = self.map_to_scaled_array(array_1d=self.noise_map_1d)
 
+        self.cluster_pixel_scale = cluster_pixel_scale
+
+        if self.cluster_pixel_scale is not None:
+
+            self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                mask=self.mask_2d, cluster_pixel_scale=cluster_pixel_scale)
+
+        else:
+
+            self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                mask=self.mask_2d, cluster_pixel_scale=self.pixel_scale)
+
+
     def new_lens_data_with_modified_image(self, modified_image):
 
         ccd_data_with_modified_image = self.ccd_data.new_ccd_data_with_modified_image(modified_image=modified_image)
@@ -108,7 +120,7 @@ class LensData(object):
         return LensData(ccd_data=ccd_data_with_modified_image, mask=self.mask_2d, sub_grid_size=self.sub_grid_size,
                         image_psf_shape=self.image_psf_shape, inversion_psf_shape=self.inversion_psf_shape,
                         positions=self.positions, interp_pixel_scale=self.interp_pixel_scale,
-                        uses_inversion=self.uses_inversion)
+                        cluster_pixel_scale=self.cluster_pixel_scale, uses_inversion=self.uses_inversion)
 
     def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
 
@@ -118,7 +130,7 @@ class LensData(object):
         return LensData(ccd_data=binned_up_ccd_data, mask=binned_up_mask, sub_grid_size=self.sub_grid_size,
                         image_psf_shape=self.image_psf_shape, inversion_psf_shape=self.inversion_psf_shape,
                         positions=self.positions, interp_pixel_scale=self.interp_pixel_scale,
-                        uses_inversion=self.uses_inversion)
+                        cluster_pixel_scale=self.cluster_pixel_scale, uses_inversion=self.uses_inversion)
 
     @property
     def array_1d_from_array_2d(self):
@@ -150,3 +162,4 @@ class LensData(object):
             self.border = obj.border
             self.positions = obj.positions
             self.interp_pixel_scale = obj.interp_pixel_scale
+            self.cluster = obj.cluster

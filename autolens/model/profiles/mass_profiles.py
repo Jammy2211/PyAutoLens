@@ -11,8 +11,7 @@ from scipy.integrate import quad
 from scipy.optimize import fsolve
 from scipy.optimize import root_scalar
 
-from autofit.tools import text_util as af_text_util
-from autofit.tools.dimension_type import map_types
+import autofit as af
 from autolens import decorator_util, dimensions as dim
 from autolens import text_util
 from autolens.data.array import grids
@@ -118,7 +117,7 @@ class MassProfile(object):
 
 class PointMass(geometry_profiles.SphericalProfile, MassProfile):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  einstein_radius: dim.Length = 1.0):
@@ -150,7 +149,7 @@ class PointMass(geometry_profiles.SphericalProfile, MassProfile):
 # noinspection PyAbstractClass
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -352,11 +351,11 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                                                         kwargs=kwargs)
 
         summary += [
-            af_text_util.label_value_and_unit_string(label=prefix + 'einstein_radius',
+            af.text_util.label_value_and_unit_string(label=prefix + 'einstein_radius',
                                                      value=einstein_radius,
                                                      unit=unit_length,
                                                      whitespace=whitespace,
-                                                   )]
+                                                     )]
 
         einstein_mass = self.einstein_mass_in_units(unit_mass=unit_mass,
                                                     redshift_profile=redshift_profile,
@@ -364,11 +363,11 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                                                     cosmology=cosmology, kwargs=kwargs)
 
         summary += [
-            af_text_util.label_value_and_unit_string(label=prefix + 'einstein_mass',
+            af.text_util.label_value_and_unit_string(label=prefix + 'einstein_mass',
                                                      value=einstein_mass,
                                                      unit=unit_mass,
                                                      whitespace=whitespace,
-                                                   )]
+                                                     )]
 
         for radius in radii:
             mass = self.mass_within_circle_in_units(unit_mass=unit_mass, radius=radius,
@@ -391,7 +390,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -545,7 +544,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
 class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  einstein_radius: dim.Length = 1.0,
@@ -593,7 +592,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
 class EllipticalPowerLaw(EllipticalCoredPowerLaw):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -645,7 +644,7 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
 
 class SphericalPowerLaw(EllipticalPowerLaw):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  einstein_radius: dim.Length = 1.0,
@@ -679,7 +678,7 @@ class SphericalPowerLaw(EllipticalPowerLaw):
 
 class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -712,7 +711,7 @@ class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
 
 class SphericalCoredIsothermal(SphericalCoredPowerLaw):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  einstein_radius: dim.Length = 1.0,
@@ -738,7 +737,7 @@ class SphericalCoredIsothermal(SphericalCoredPowerLaw):
 
 class EllipticalIsothermal(EllipticalPowerLaw):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -804,7 +803,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
 class SphericalIsothermal(EllipticalIsothermal):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  einstein_radius: dim.Length = 1.0):
@@ -857,7 +856,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     epsrel = 1.49e-5
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -1086,7 +1085,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
             cosmology=cosmology, kwargs=kwargs)
 
-        summary += [af_text_util.label_value_and_unit_string(
+        summary += [af.text_util.label_value_and_unit_string(
             label=prefix + 'rho_at_scale_radius', value=rho_at_scale_radius,
             unit=unit_mass + '/' + unit_length + '3',
             whitespace=whitespace)]
@@ -1097,7 +1096,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
             cosmology=cosmology, kwargs=kwargs)
 
-        summary += [af_text_util.label_and_value_string(
+        summary += [af.text_util.label_and_value_string(
             label=prefix + 'delta_concentration', value=delta_concentration,
             whitespace=whitespace)]
 
@@ -1107,9 +1106,9 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
             cosmology=cosmology, kwargs=kwargs)
 
-        summary += [af_text_util.label_and_value_string(
+        summary += [af.text_util.label_and_value_string(
             label=prefix + 'concentration', value=concentration, whitespace=whitespace,
-          )]
+        )]
 
         radius_at_200 = self.radius_at_200_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
@@ -1117,10 +1116,10 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
             cosmology=cosmology, kwargs=kwargs)
 
-        summary += [af_text_util.label_value_and_unit_string(
+        summary += [af.text_util.label_value_and_unit_string(
             label=prefix + 'radius_at_200x_cosmic_density', value=radius_at_200,
             unit=unit_length, whitespace=whitespace,
-          )]
+        )]
 
         mass_at_200 = self.mass_at_200_for_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
@@ -1128,10 +1127,10 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
             cosmology=cosmology, kwargs=kwargs)
 
-        summary += [af_text_util.label_value_and_unit_string(
+        summary += [af.text_util.label_value_and_unit_string(
             label=prefix + 'mass_at_200x_cosmic_density', value=mass_at_200,
             unit=unit_mass, whitespace=whitespace,
-          )]
+        )]
 
         return summary
 
@@ -1300,7 +1299,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
 class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  kappa_s: float = 0.05,
@@ -1369,7 +1368,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
 class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  kappa_s: float = 0.05,
@@ -1477,7 +1476,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
             redshift_of_cosmic_average_density=redshift_of_cosmic_average_density,
             cosmology=cosmology, kwargs=kwargs)
 
-        summary += [af_text_util.label_value_and_unit_string(
+        summary += [af.text_util.label_value_and_unit_string(
             label=prefix + 'mass_at_truncation_radius', value=mass_at_truncation_radius,
             unit=unit_mass,
             whitespace=whitespace)]
@@ -1487,7 +1486,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
 class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  kappa_s: float = 0.05,
@@ -1530,7 +1529,7 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -1658,7 +1657,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
 class SphericalNFW(EllipticalNFW):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  kappa_s: float = 0.05,
@@ -1739,7 +1738,7 @@ class SphericalNFW(EllipticalNFW):
 # noinspection PyAbstractClass
 class AbstractEllipticalSersic(EllipticalMassProfile):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -1885,7 +1884,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
 
 class SphericalSersic(EllipticalSersic):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  intensity: dim.Luminosity = 0.1,
@@ -1919,7 +1918,7 @@ class SphericalSersic(EllipticalSersic):
 
 class EllipticalExponential(EllipticalSersic):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -1956,7 +1955,7 @@ class EllipticalExponential(EllipticalSersic):
 
 class SphericalExponential(EllipticalExponential):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  intensity: dim.Luminosity = 0.1,
@@ -1985,7 +1984,7 @@ class SphericalExponential(EllipticalExponential):
 
 class EllipticalDevVaucouleurs(EllipticalSersic):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -2022,7 +2021,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
 
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  intensity: dim.Luminosity = 0.1,
@@ -2051,7 +2050,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
 class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
@@ -2161,7 +2160,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
 class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  intensity: dim.Luminosity = 0.1,
@@ -2188,18 +2187,20 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
         mass_to_light_gradient : float
             The mass-to-light radial gradient.
         """
-        super(SphericalSersicRadialGradient, self).__init__(centre=centre,
-                                                            axis_ratio=1.0, phi=0.0,
-                                                            intensity=intensity,
-                                                            effective_radius=effective_radius,
-                                                            sersic_index=sersic_index,
-                                                            mass_to_light_ratio=mass_to_light_ratio,
-                                                            mass_to_light_gradient=mass_to_light_gradient)
+        super(SphericalSersicRadialGradient, self).__init__(
+            centre=centre,
+            axis_ratio=1.0, phi=0.0,
+            intensity=intensity,
+            effective_radius=effective_radius,
+            sersic_index=sersic_index,
+            mass_to_light_ratio=mass_to_light_ratio,
+            mass_to_light_gradient=mass_to_light_gradient
+        )
 
 
 class MassSheet(geometry_profiles.SphericalProfile, MassProfile):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  kappa: float = 0.0):
@@ -2232,7 +2233,7 @@ class MassSheet(geometry_profiles.SphericalProfile, MassProfile):
 # noinspection PyAbstractClass
 class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
 
-    @map_types
+    @af.map_types
     def __init__(self,
                  magnitude: float = 0.2,
                  phi: float = 0.0):
