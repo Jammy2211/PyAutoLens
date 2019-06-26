@@ -1,5 +1,6 @@
 from autolens import exc
 from autolens.plotters import plotter_util
+
 import matplotlib.pyplot as plt
 
 def plot_quantity_as_function_of_radius(

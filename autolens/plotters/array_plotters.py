@@ -1,9 +1,9 @@
-from autolens import exc
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import numpy as np
 import itertools
 
+from autolens import exc
 from autolens.plotters import plotter_util
 
 

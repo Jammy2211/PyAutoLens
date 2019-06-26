@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 from autolens.plotters import plotter_util, grid_plotters, array_plotters
