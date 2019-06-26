@@ -422,6 +422,54 @@ def blurring_mask_from_mask_and_psf_shape(mask, psf_shape):
     return blurring_mask
 
 @decorator_util.jit()
+def mask_2d_to_mask_1d_index_from_mask_2d(mask_2d):
+    """Create a 2D array which maps every False entry of a 2D mask to its 1D mask array index 2D binned mask. Every \
+    True entry is given a value -1.
+
+    This is used as a convenience tool for creating arrays mapping between different grids and arrays.
+
+    For example, if we had a 3x4:
+
+    [[False, True, False, False],
+     [False, True, False, False],
+     [False, False, False, True]]]
+
+    The mask_2d_to_mask_1d array would be:
+
+    [[0, -1, 2, 3],
+     [4, -1, 5, 6],
+     [7, 8, 9, -1]]
+
+    Parameters
+    ----------
+    mask_2d : ndarray
+        The 2D mask that the mapping array is created for.
+
+    Returns
+    -------
+    ndarray
+        The 2D array mapping 2D mask entries to their 1D masked array indexes.
+
+    Examples
+    --------
+    mask_2d = np.full(fill_value=False, shape=(9,9))
+    mask_2d_to_mask_1d_index = mask_2d_to_mask_1d_index_from_mask_2d(mask_2d=mask_2d)
+    """
+
+    mask_2d_to_mask_1d_index = np.full(
+        fill_value=-1, shape=mask_2d.shape)
+
+    mask_index = 0
+
+    for mask_y in range(mask_2d.shape[0]):
+        for mask_x in range(mask_2d.shape[1]):
+            if mask_2d[mask_y, mask_x] == False:
+                mask_2d_to_mask_1d_index[mask_y, mask_x] = mask_index
+                mask_index += 1
+
+    return mask_2d_to_mask_1d_index
+
+@decorator_util.jit()
 def masked_grid_1d_index_to_2d_pixel_index_from_mask(mask):
     """Compute a 1D array that maps every unmasked pixel to its corresponding 2d pixel using its (y,x) pixel indexes.
 
@@ -656,6 +704,7 @@ def edge_buffed_mask_from_mask(mask):
                 edge_buffed_mask[y - 1, x - 1] = False
 
     return edge_buffed_mask
+
 
 def rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d, rescale_factor):
 
