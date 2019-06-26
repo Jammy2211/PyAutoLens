@@ -426,8 +426,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
     def einstein_radius_rescaled(self):
         """Rescale the einstein radius by slope and axis_ratio, to reduce its degeneracy with other mass-profiles
         parameters"""
-        return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (
-                self.slope - 1)
+        return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
