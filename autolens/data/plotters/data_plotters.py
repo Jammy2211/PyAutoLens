@@ -1,5 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')
 from autolens.plotters import array_plotters
-
 
 def plot_image(
         image, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
