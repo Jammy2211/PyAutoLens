@@ -23,9 +23,6 @@ def pipeline_tag_from_pipeline_settings(
 
     regularization_tag = regularization_tag_from_regularization(regularization=regularization)
 
-    pixelization_tag = ''
-    regularization_tag = ''
-
     bulge_disk_tag = bulge_disk_tag_from_align_bulge_disks(align_bulge_disk_centre=align_bulge_disk_centre,
                                                            align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
                                                            align_bulge_disk_phi=align_bulge_disk_phi)
