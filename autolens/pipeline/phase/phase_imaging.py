@@ -218,79 +218,76 @@ class PhaseImaging(Phase):
 
             self.positions_threshold = positions_threshold
 
-            self.should_plot_image_plane_pix = \
-                af.conf.instance.general.get('output',
-                                             'plot_image_plane_adaptive_pixelization_grid',
-                                             bool)
+            self.should_plot_image_plane_pix = af.conf.instance.visualize.get(
+                'figures', 'plot_image_plane_adaptive_pixelization_grid', bool)
 
             self.plot_data_as_subplot = \
-                af.conf.instance.general.get('output', 'plot_data_as_subplot', bool)
+                af.conf.instance.visualize.get('plots', 'plot_data_as_subplot', bool)
             self.plot_data_image = \
-                af.conf.instance.general.get('output', 'plot_data_image', bool)
+                af.conf.instance.visualize.get('plots', 'plot_data_image', bool)
             self.plot_data_noise_map = \
-                af.conf.instance.general.get('output', 'plot_data_noise_map', bool)
+                af.conf.instance.visualize.get('plots', 'plot_data_noise_map', bool)
             self.plot_data_psf = \
-                af.conf.instance.general.get('output', 'plot_data_psf', bool)
+                af.conf.instance.visualize.get('plots', 'plot_data_psf', bool)
             self.plot_data_signal_to_noise_map = \
-                af.conf.instance.general.get('output', 'plot_data_signal_to_noise_map',
+                af.conf.instance.visualize.get('plots', 'plot_data_signal_to_noise_map',
                                              bool)
             self.plot_data_absolute_signal_to_noise_map = \
-                af.conf.instance.general.get('output',
+                af.conf.instance.visualize.get('plots',
                                              'plot_data_absolute_signal_to_noise_map',
                                              bool)
             self.plot_data_potential_chi_squared_map = \
-                af.conf.instance.general.get('output',
+                af.conf.instance.visualize.get('plots',
                                              'plot_data_potential_chi_squared_map',
                                              bool)
 
             self.plot_lens_fit_all_at_end_png = \
-                af.conf.instance.general.get('output', 'plot_lens_fit_all_at_end_png',
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_all_at_end_png',
                                              bool)
             self.plot_lens_fit_all_at_end_fits = \
-                af.conf.instance.general.get('output', 'plot_lens_fit_all_at_end_fits',
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_all_at_end_fits',
                                              bool)
 
             self.plot_lens_fit_as_subplot = \
-                af.conf.instance.general.get('output', 'plot_lens_fit_as_subplot', bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_as_subplot', bool)
             self.plot_lens_fit_image = \
-                af.conf.instance.general.get('output', 'plot_lens_fit_image', bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_image', bool)
             self.plot_lens_fit_noise_map = \
-                af.conf.instance.general.get('output', 'plot_lens_fit_noise_map', bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_noise_map', bool)
             self.plot_lens_fit_signal_to_noise_map = \
-                af.conf.instance.general.get('output',
+                af.conf.instance.visualize.get('plots',
                                              'plot_lens_fit_signal_to_noise_map',
                                              bool)
             self.plot_lens_fit_lens_subtracted_image = \
-                af.conf.instance.general.get('output',
-                                             'plot_lens_fit_lens_subtracted_image',
-                                             bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_lens_subtracted_image', bool)
+
             self.plot_lens_fit_model_image = \
-                af.conf.instance.general.get('output', 'plot_lens_fit_model_image',
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_model_image',
                                              bool)
             self.plot_lens_fit_lens_model_image = \
-                af.conf.instance.general.get('output', 'plot_lens_fit_lens_model_image',
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_lens_model_image',
                                              bool)
             self.plot_lens_fit_source_model_image = \
-                af.conf.instance.general.get('output',
+                af.conf.instance.visualize.get('plots',
                                              'plot_lens_fit_source_model_image',
                                              bool)
             self.plot_lens_fit_source_plane_image = \
-                af.conf.instance.general.get('output',
+                af.conf.instance.visualize.get('plots',
                                              'plot_lens_fit_source_plane_image',
                                              bool)
             self.plot_lens_fit_residual_map = \
-                af.conf.instance.general.get('output', 'plot_lens_fit_residual_map',
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_residual_map',
                                              bool)
             self.plot_lens_fit_chi_squared_map = \
-                af.conf.instance.general.get('output', 'plot_lens_fit_chi_squared_map',
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_chi_squared_map',
                                              bool)
 
             self.plot_lens_fit_contribution_maps = \
-                af.conf.instance.general.get('output',
+                af.conf.instance.visualize.get('plots',
                                              'plot_lens_fit_contribution_maps',
                                              bool)
             self.plot_lens_fit_regularization_weights = \
-                af.conf.instance.general.get('output',
+                af.conf.instance.visualize.get('plots',
                                              'plot_lens_fit_regularization_weights',
                                              bool)
 
