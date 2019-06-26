@@ -16,7 +16,7 @@ from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.pipeline.phase import phase
-from autolens.pipeline.phase import phase_imaging as ph
+from autolens.pipeline.phase import phase_imaging
 from test.unit.mock.pipeline import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -209,7 +209,7 @@ class TestPhase(object):
     def test_fit(self, ccd_data_5x5, mask_function_5x5):
         clean_images()
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             optimizer_class=mock_pipeline.MockNLO,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
@@ -225,7 +225,7 @@ class TestPhase(object):
     def test_customize(self, mask_function_5x5, results_5x5, results_collection_5x5,
                        ccd_data_5x5):
         class MyPlanePhaseAnd(
-            autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase):
+            phase_imaging.LensSourcePlanePhase):
 
             def pass_priors(self, results):
                 self.lens_galaxies = results.last.constant.lens_galaxies
@@ -253,19 +253,19 @@ class TestPhase(object):
         assert len(lens_data.image_1d) == 9
 
     def test_duplication(self):
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
             source_galaxies=dict(source=gm.GalaxyModel(redshift=0.5)),
             phase_name='test_phase')
 
-        autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
+        phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase')
 
         assert phase_5x5.lens_galaxies is not None
         assert phase_5x5.source_galaxies is not None
 
     def test_modify_image(self, mask_function_5x5, ccd_data_5x5):
-        class MyPhase(autolens.pipeline.phase.phase_imaging.PhaseImaging):
+        class MyPhase(phase_imaging.PhaseImaging):
 
             def modify_image(self, image, results):
                 assert ccd_data_5x5.image.shape == image.shape
@@ -278,13 +278,13 @@ class TestPhase(object):
         assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=9)).all()
 
     def test__check_if_phase_uses_inversion(self, mask_function_5x5):
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
 
         assert phase_5x5.uses_inversion is False
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
@@ -292,14 +292,14 @@ class TestPhase(object):
 
         assert phase_5x5.uses_inversion is True
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
             source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0)))
 
         assert phase_5x5.uses_inversion is False
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
@@ -308,7 +308,7 @@ class TestPhase(object):
 
         assert phase_5x5.uses_inversion is True
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
             source_galaxies=dict(
@@ -318,13 +318,13 @@ class TestPhase(object):
         assert phase_5x5.uses_inversion is True
 
     def test__check_if_phase_uses_hyper_images(self, mask_function_5x5):
-        phase_5x5 = ph.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
 
         assert phase_5x5.uses_hyper_images is False
 
-        phase_5x5 = ph.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
@@ -332,13 +332,13 @@ class TestPhase(object):
 
         assert phase_5x5.uses_hyper_images is True
 
-        phase_5x5 = ph.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)))
 
         assert phase_5x5.uses_hyper_images is True
 
-        phase_5x5 = ph.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
@@ -347,7 +347,7 @@ class TestPhase(object):
 
         assert phase_5x5.uses_hyper_images is False
 
-        phase_5x5 = ph.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
@@ -356,7 +356,7 @@ class TestPhase(object):
 
         assert phase_5x5.uses_hyper_images is True
 
-        phase_5x5 = ph.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5)),
@@ -366,7 +366,7 @@ class TestPhase(object):
 
         assert phase_5x5.uses_hyper_images is True
 
-        phase_5x5 = ph.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5)),
@@ -375,14 +375,14 @@ class TestPhase(object):
 
         assert phase_5x5.uses_hyper_images is True
 
-        phase_5x5 = ph.MultiPlanePhase(
+        phase_5x5 = phase_imaging.MultiPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             galaxies=dict(lens=gm.GalaxyModel(redshift=0.5),
                           source=gm.GalaxyModel(redshift=1.0)))
 
         assert phase_5x5.uses_hyper_images is False
 
-        phase_5x5 = ph.MultiPlanePhase(
+        phase_5x5 = phase_imaging.MultiPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             galaxies=dict(lens=gm.GalaxyModel(redshift=0.5),
                           source=gm.GalaxyModel(redshift=1.0,
@@ -390,14 +390,14 @@ class TestPhase(object):
 
         assert phase_5x5.uses_hyper_images is True
 
-        phase_5x5 = ph.MultiPlanePhase(
+        phase_5x5 = phase_imaging.MultiPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy),
                           source=gm.GalaxyModel(redshift=1.0)))
 
         assert phase_5x5.uses_hyper_images is True
 
-        phase_5x5 = ph.MultiPlanePhase(
+        phase_5x5 = phase_imaging.MultiPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             galaxies=dict(lens=gm.GalaxyModel(redshift=0.5),
                           source=gm.GalaxyModel(redshift=1.0, pixelization=pix.Rectangular,
@@ -405,7 +405,7 @@ class TestPhase(object):
 
         assert phase_5x5.uses_hyper_images is True
 
-        phase_5x5 = ph.MultiPlanePhase(
+        phase_5x5 = phase_imaging.MultiPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, pixelization=pix.Rectangular,
@@ -416,7 +416,7 @@ class TestPhase(object):
 
     def test__adds_pixelization_grid_to_grid_stack_if_required(self, ccd_data_5x5,
                                                                mask_function_5x5):
-        phase_5x5 = ph.MultiPlanePhase(phase_name='test_phase',
+        phase_5x5 = phase_imaging.MultiPlanePhase(phase_name='test_phase',
                                        mask_function=mask_function_5x5)
 
         analysis = phase_5x5.make_analysis(data=ccd_data_5x5)
@@ -468,7 +468,7 @@ class TestPhase(object):
 
     def test__phase_with_no_inversion__convolver_mapping_matrix_of_lens_data_is_none(
             self, ccd_data_5x5, mask_function_5x5):
-        phase_5x5 = ph.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             phase_name='test_phase', mask_function=mask_function_5x5,
             lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)))
 
@@ -482,7 +482,7 @@ class TestPhase(object):
             bin_up_factor=2)
         binned_up_mask = mask_5x5_1_pix.binned_up_mask_from_mask(bin_up_factor=2)
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.PhaseImaging(
+        phase_5x5 = phase_imaging.PhaseImaging(
             phase_name='phase_5x5', bin_up_factor=2,
             mask_function=mask_function_5x5_1_pix)
         analysis = phase_5x5.make_analysis(data=ccd_data_5x5)
@@ -513,7 +513,7 @@ class TestPhase(object):
         lens_galaxy = g.Galaxy(redshift=0.5)
         source_galaxy = g.Galaxy(redshift=0.5)
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             mask_function=mask_function_5x5,
             lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
 
@@ -527,7 +527,7 @@ class TestPhase(object):
         assert padded_tracer.image_plane.galaxies[0] == lens_galaxy
         assert padded_tracer.cosmology == cosmo.FLRW
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensSourcePlanePhase(
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
             mask_function=mask_function_5x5,
             lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
             cosmology=cosmo.FLRW,
@@ -549,7 +549,7 @@ class TestPhase(object):
         galaxy_1 = g.Galaxy(redshift=0.2)
         galaxy_2 = g.Galaxy(redshift=0.3)
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.MultiPlanePhase(
+        phase_5x5 = phase_imaging.MultiPlanePhase(
             mask_function=mask_function_5x5,
             galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7,
             phase_name='test_phase')
@@ -576,7 +576,7 @@ class TestPhase(object):
         # noinspection PyTypeChecker
         lens_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=0.1))
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             lens_galaxies=[lens_galaxy], mask_function=mask_function_5x5,
             cosmology=cosmo.FLRW, phase_name='test_phase')
 
@@ -593,7 +593,7 @@ class TestPhase(object):
         assert fit.likelihood == fit_figure_of_merit
 
     def test__phase_can_receive_list_of_galaxy_models(self):
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             lens_galaxies=dict(lens=gm.GalaxyModel(
                 sersic=lp.EllipticalSersic,
                 sis=mp.SphericalIsothermal,
@@ -616,7 +616,7 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
-        class LensPlanePhase2(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
+        class LensPlanePhase2(phase_imaging.LensPlanePhase):
             # noinspection PyUnusedLocal
             def pass_models(self, results):
                 self.lens_galaxies[0].sis.einstein_radius = 10.0
@@ -653,7 +653,7 @@ class TestResult(object):
                                                            mask_function_5x5):
         clean_images()
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
             lens_galaxies=[
                 g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))],
@@ -669,7 +669,7 @@ class TestResult(object):
             mask_function_5x5):
         lens_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=0.1))
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             mask_function=mask_function_5x5, lens_galaxies=[lens_galaxy],
             cosmology=cosmo.FLRW,
             phase_name='test_phase')
@@ -693,7 +693,7 @@ class TestPhasePickle(object):
         def make_analysis(*args, **kwargs):
             return mock_pipeline.MockAnalysis(1, 1)
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             phase_name="phase_name", mask_function=mask_function_5x5,
             optimizer_class=mock_pipeline.MockNLO,
             lens_galaxies=dict(
@@ -705,7 +705,7 @@ class TestPhasePickle(object):
                                positions=None)
         assert result is not None
 
-        phase_5x5 = autolens.pipeline.phase.phase_imaging.LensPlanePhase(
+        phase_5x5 = phase_imaging.LensPlanePhase(
             phase_name="phase_name", mask_function=mask_function_5x5,
             optimizer_class=mock_pipeline.MockNLO,
             lens_galaxies=dict(
@@ -717,7 +717,7 @@ class TestPhasePickle(object):
                                positions=None)
         assert result is not None
 
-        class CustomPhase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
+        class CustomPhase(phase_imaging.LensPlanePhase):
             def pass_priors(self, results):
 
                 self.lens_galaxies.lens.light = lp.EllipticalLightProfile()

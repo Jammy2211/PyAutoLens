@@ -1,10 +1,9 @@
 import os
 
 import autofit as af
-import autofit as af
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline.phase import phase_imaging as ph
+from autolens.pipeline.phase import phase_imaging, phase_hyper
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
@@ -31,7 +30,7 @@ def make_pipeline(test_name):
     def modify_mask_function(image):
         return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.)
 
-    class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
+    class LensPlaneGalaxy0Phase(phase_imaging.LensPlanePhase):
         
         def pass_priors(self, results):
             
@@ -45,13 +44,13 @@ def make_pipeline(test_name):
         phase_name='phase_1', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens_0=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic),
                            lens_1=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
-        mask_function=modify_mask_function, optimizer_class=nl.MultiNest)
+        mask_function=modify_mask_function, optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1h = ph.HyperGalaxyPhase(phase_name='phase_1_hyper', phase_folders=[test_type, test_name])
+    phase1h = phase_hyper.HyperGalaxyPhase(phase_name='phase_1_hyper', phase_folders=[test_type, test_name])
 
     return pl.PipelineImaging(test_name, phase1, phase1h)
 

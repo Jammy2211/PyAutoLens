@@ -1,10 +1,8 @@
 import os
 
-import autolens.pipeline.phase.phase_positions
-import autofit as af
 import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline.phase import phase as ph
+from autolens.pipeline.phase import phase_positions
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import integration_util
@@ -28,10 +26,10 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = autolens.pipeline.phase.phase_positions.PhasePositions(
+    phase1 = phase_positions.PhasePositions(
         phase_name="phase1", phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 20

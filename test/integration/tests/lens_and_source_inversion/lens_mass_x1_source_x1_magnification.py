@@ -11,7 +11,7 @@ from test.integration import integration_util
 from test.simulation import simulation_util
 
 test_type = 'lens_and_source_inversion'
-test_name = "lens_mass_x1_source_x1_adaptive_weighted"
+test_name = "lens_mass_x1_source_x1_adaptive_magnification"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
@@ -46,7 +46,7 @@ def make_pipeline(test_name):
         phase_name='phase_2_weighted_regularization', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal,
                                                shear=mp.ExternalShear)),
-        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiBrightnessImage,
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
                                                    regularization=reg.AdaptiveBrightness)),
         optimizer_class=af.MultiNest)
 
@@ -70,7 +70,7 @@ def make_pipeline(test_name):
         phase_name='phase_3', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal,
                                                shear=mp.ExternalShear)),
-        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiBrightnessImage,
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
                                                    regularization=reg.AdaptiveBrightness)),
         optimizer_class=af.MultiNest)
 
@@ -93,7 +93,7 @@ def make_pipeline(test_name):
         phase_name='phase_4_weighted_regularization', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal,
                                                shear=mp.ExternalShear)),
-        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiBrightnessImage,
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
                                                    regularization=reg.AdaptiveBrightness)),
         optimizer_class=af.MultiNest)
 

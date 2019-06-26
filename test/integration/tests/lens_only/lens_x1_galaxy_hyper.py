@@ -1,10 +1,9 @@
 import os
 
 import autofit as af
-import autofit as af
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline.phase import phase_imaging as ph
+from autolens.pipeline.phase import phase_imaging, phase_hyper
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
@@ -28,26 +27,27 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensPlanePhase(
+    phase1 = phase_imaging.LensPlanePhase(
         phase_name='phase_1', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1h = ph.HyperGalaxyPhase(phase_name='phase_1_hyper', phase_folders=[test_type, test_name])
+    phase1h = phase_hyper.HyperGalaxyPhase(
+        phase_name='phase_1_hyper', phase_folders=[test_type, test_name])
 
     phase1h.optimizer.const_efficiency_mode = True
     phase1h.optimizer.n_live_points = 40
     phase1h.optimizer.sampling_efficiency = 0.8
 
-    class HyperLensPlanePhase(ph.LensPlanePhase):
+    class HyperLensPlanePhase(phase_imaging.LensPlanePhase):
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.hyper_galaxy = results.from_phase('phase_1_hyper').\
+            self.lens_galaxies.lens.hyper_galaxy = results.from_phase('phase_1').hyper.\
                 constant.lens_galaxies.lens.hyper_galaxy
 
             self.lens_galaxies.lens.light = results.from_phase('phase_1').\
@@ -56,7 +56,7 @@ def make_pipeline(test_name):
     phase2 = HyperLensPlanePhase(
         phase_name='phase_2', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic, hyper_galaxy=g.HyperGalaxy)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 40

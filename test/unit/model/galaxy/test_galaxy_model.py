@@ -72,7 +72,7 @@ class TestMassAndLightProfiles(object):
     def test_make_galaxy_from_constant_profile(self, mass_and_light):
         prior = gp.GalaxyModel(redshift=0.5, profile=mass_and_light)
 
-        galaxy = prior.instance_for_arguments({})
+        galaxy = af.prior.instance_for_arguments({})
 
         assert galaxy.light_profiles[0] == mass_and_light
         assert galaxy.mass_profiles[0] == mass_and_light

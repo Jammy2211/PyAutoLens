@@ -81,6 +81,7 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
 
 
 class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
+
     class Analysis(af.Analysis):
 
         def __init__(self, lens_data, model_image_2d, galaxy_image_2d):

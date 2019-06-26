@@ -1,14 +1,12 @@
 import os
 
 import autofit as af
-import autofit as af
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.model.profiles import mass_profiles as mp
 from autolens.pipeline import pipeline as pl
-from autolens.pipeline.phase import phase_hyper
-from autolens.pipeline.phase import phase_imaging as ph
+from autolens.pipeline.phase import phase_imaging, phase_hyper
 from test.integration import integration_util
 from test.simulation import simulation_util
 
@@ -32,9 +30,11 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class SourcePix(ph.LensSourcePlanePhase):
+
+    class SourcePix(phase_imaging.LensSourcePlanePhase):
 
         def pass_priors(self, results):
+
             self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
             self.lens_galaxies.lens.mass.centre.centre_1 = 0.0
             self.lens_galaxies.lens.mass.einstein_radius = 1.6
@@ -48,7 +48,7 @@ def make_pipeline(test_name):
         source_galaxies=dict(
             source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
                                   regularization=reg.Constant)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60
@@ -57,17 +57,17 @@ def make_pipeline(test_name):
     phase1h = phase_hyper.HyperGalaxyPhase(phase_name='phase_1_hyper',
                                            phase_folders=[test_type, test_name])
 
-    class HyperLensSourcePlanePhase(ph.LensSourcePlanePhase):
+    class HyperLensSourcePlanePhase(phase_imaging.LensSourcePlanePhase):
 
         def pass_priors(self, results):
+
             self.lens_galaxies.lens.hyper_galaxy = results.from_phase('phase_1_hyper'). \
                 constant.lens_galaxies.lens.hyper_galaxy
 
             self.lens_galaxies.lens.mass = results.from_phase('phase_1'). \
                 variable.lens_galaxies.lens.mass
 
-            self.source_galaxies.source.hyper_galaxy = results.from_phase(
-                'phase_1_hyper'). \
+            self.source_galaxies.source.hyper_galaxy = results.from_phase('phase_1_hyper'). \
                 constant.source_galaxies.source.hyper_galaxy
 
             self.source_galaxies.source.pixelization = results.from_phase('phase_1'). \
@@ -85,7 +85,7 @@ def make_pipeline(test_name):
             source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiMagnification,
                                   regularization=reg.Constant,
                                   hyper_galaxy=g.HyperGalaxy)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 40
