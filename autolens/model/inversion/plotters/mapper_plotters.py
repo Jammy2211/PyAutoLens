@@ -1,5 +1,7 @@
+import autofit as af
 import matplotlib
-matplotlib.use('Agg')
+backend = af.conf.instance.visualize.get('figures', 'backend', str)
+matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
