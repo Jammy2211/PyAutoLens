@@ -5,6 +5,7 @@ import autofit as af
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
+from autolens.model.inversion import pixelizations as pix
 
 
 def default_mask_function(image):
@@ -171,6 +172,14 @@ class AbstractPhase(af.AbstractPhase):
             return self.analysis.fit_for_tracers(
                 tracer=self.most_likely_tracer,
                 padded_tracer=self.most_likely_padded_tracer)
+
+        @property
+        def most_likely_image_plane_pixelization_grid(self):
+
+            if (self.most_likely_tracer.image_plane.grid_stack.pixelization == np.array([[0.0, 0.0]])).all():
+                return None
+            else:
+                return self.most_likely_tracer.image_plane.grid_stack.pixelization
 
         @property
         def unmasked_model_image(self):
