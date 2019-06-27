@@ -574,13 +574,13 @@ class TestClusterGrid:
         assert (cluster_grid == regular_grid_5x5).all()
         assert (cluster_grid.mask == mask_5x5).all()
         assert cluster_grid.bin_up_factor == 1
-        assert (cluster_grid.cluster_to_regular == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (cluster_grid.cluster_to_regular_all == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])).all()
 
         mask_5x5.pixel_scale = 1.0
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(mask=mask_5x5, cluster_pixel_scale=1.9)
         assert cluster_grid.bin_up_factor == 1
         assert (cluster_grid.mask == mask_5x5).all()
-        assert (cluster_grid.cluster_to_regular == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (cluster_grid.cluster_to_regular_all == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])).all()
 
         mask_5x5.pixel_scale = 1.0
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(mask=mask_5x5, cluster_pixel_scale=2.0)
@@ -589,7 +589,11 @@ class TestClusterGrid:
                                                [True, False, False],
                                                [True, False, False]])).all()
         assert (cluster_grid == np.array([[0.0, 0.0], [0.0, 2.0], [-2.0, 0.0], [-2.0, 2.0]])).all()
-        assert (cluster_grid.cluster_to_regular == np.array([0, 2, 6, 8])).all()
+        assert (cluster_grid.cluster_to_regular_all == np.array(
+            [[0, 1, 3, 4],
+             [2, 5, -1, -1],
+             [6, 7, -1, -1],
+             [8, -1, -1, -1]])).all()
 
         mask_5x5.pixel_scale = 2.0
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(mask=mask_5x5, cluster_pixel_scale=1.0)
@@ -826,50 +830,80 @@ class TestSparseToRegularGrid:
                                                          [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])).all()
             assert sparse_to_regular_grid.regular == pytest.approx(regular_grid, 1e-4)
 
-    # class TestUnmaskeedShapeAndWeightImage:
-    #
-    #     def test__cluster_weight_map_all_ones__kmenas_grid_is_regular_grid_overlapping_image(self):
-    #
-    #         mask = msk.Mask(array=np.array([[False, False, False, False],
-    #                                         [False, False, False, False],
-    #                                         [False, False, False, False],
-    #                                         [False, False, False, False]]), pixel_scale=0.5)
-    #
-    #         regular_grid = grids.RegularGrid.from_mask(mask=mask)
-    #
-    #         cluster_weight_map = np.ones(mask.pixels_in_mask)
-    #
-    #         sparse_to_regular_grid_weight = grids.SparseToRegularGrid.from_total_pixels_regular_grid_and_cluster_weight_map(
-    #             total_pixels=8, regular_grid=regular_grid, cluster_weight_map=cluster_weight_map, seed=1)
-    #
-    #         print(sparse_to_regular_grid_weight.sparse)
-    #
-    #         assert (sparse_to_regular_grid_weight.sparse ==
-    #                 np.array([[-0.25, 0.25], [0.5, -0.5], [0.75, 0.5], [0.25, 0.5],
-    #                           [-0.5, -0.25], [-0.5, -0.75], [-0.75, 0.5], [-0.25, 0.75]])).all()
-    #
-    #         assert (sparse_to_regular_grid_weight.regular_to_sparse ==
-    #                 np.array([1, 1, 2, 2, 1, 1, 3, 3, 5, 4, 0, 7, 5, 4, 6, 6])).all()
-    #
-    #     def test__cluster_weight_map_changes_grid_from_above(self):
-    #
-    #         mask = msk.Mask(array=np.array([[False, False, False, False],
-    #                                         [False, False, False, False],
-    #                                         [False, False, False, False],
-    #                                         [False, False, False, False]]), pixel_scale=0.5)
-    #
-    #         regular_grid = grids.RegularGrid.from_mask(mask=mask)
-    #
-    #         cluster_weight_map = np.ones(mask.pixels_in_mask)
-    #         cluster_weight_map[0:15] = 0.00000001
-    #
-    #         sparse_to_regular_grid_weight = grids.SparseToRegularGrid.from_total_pixels_regular_grid_and_cluster_weight_map(
-    #             total_pixels=8, regular_grid=regular_grid, cluster_weight_map=cluster_weight_map, seed=1)
-    #
-    #         assert sparse_to_regular_grid_weight.sparse[1] == pytest.approx(np.array([0.4166666, -0.0833333]), 1.0e-4)
-    #
-    #         assert (sparse_to_regular_grid_weight.regular_to_sparse ==
-    #                 np.array([5, 1, 0, 0, 5, 1, 1, 4, 3, 6, 7, 4, 3, 6, 2, 2])).all()
+    class TestUnmaskeedShapeAndWeightImage:
+
+        def test__cluster_weight_map_all_ones__kmenas_grid_is_regular_grid_overlapping_image(self):
+
+            mask = msk.Mask(array=np.array([[False, False, False, False],
+                                            [False, False, False, False],
+                                            [False, False, False, False],
+                                            [False, False, False, False]]), pixel_scale=0.5)
+
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
+
+            cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                mask=mask, cluster_pixel_scale=mask.pixel_scale)
+
+            cluster_weight_map = np.ones(mask.pixels_in_mask)
+
+            sparse_to_regular_grid_weight = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+                total_pixels=8, regular_grid=regular_grid, cluster_grid=cluster_grid,
+                cluster_weight_map=cluster_weight_map, n_iter=10, max_iter=20, seed=1)
+
+            assert (sparse_to_regular_grid_weight.sparse ==
+                    np.array([[-0.25, 0.25], [0.5, -0.5], [0.75, 0.5], [0.25, 0.5],
+                              [-0.5, -0.25], [-0.5, -0.75], [-0.75, 0.5], [-0.25, 0.75]])).all()
+
+            assert (sparse_to_regular_grid_weight.regular_to_sparse ==
+                    np.array([1, 1, 2, 2, 1, 1, 3, 3, 5, 4, 0, 7, 5, 4, 6, 6])).all()
+
+        def test__cluster_weight_map_changes_grid_from_above(self):
+
+            mask = msk.Mask(array=np.array([[False, False, False, False],
+                                            [False, False, False, False],
+                                            [False, False, False, False],
+                                            [False, False, False, False]]), pixel_scale=0.5)
+
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
+
+            cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                mask=mask, cluster_pixel_scale=mask.pixel_scale)
+
+            cluster_weight_map = np.ones(mask.pixels_in_mask)
+            cluster_weight_map[0:15] = 0.00000001
+
+            sparse_to_regular_grid_weight = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+                total_pixels=8, regular_grid=regular_grid, cluster_grid=cluster_grid,
+                cluster_weight_map=cluster_weight_map, n_iter=10, max_iter=30, seed=1)
+
+            assert sparse_to_regular_grid_weight.sparse[1] == pytest.approx(np.array([0.4166666, -0.0833333]), 1.0e-4)
+
+            assert (sparse_to_regular_grid_weight.regular_to_sparse ==
+                    np.array([5, 1, 0, 0, 5, 1, 1, 4, 3, 6, 7, 4, 3, 6, 2, 2])).all()
+
+        def test__cluster_weight_map_all_ones__cluster_pixel_scale_leads_to_binning_up_by_factor_2(self):
+
+            mask = msk.Mask(array=np.full(fill_value=False, shape=(8, 8)), pixel_scale=0.5)
+
+            regular_grid = grids.RegularGrid.from_mask(mask=mask)
+
+            cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                mask=mask, cluster_pixel_scale=2.0*mask.pixel_scale)
+
+            cluster_weight_map = np.ones(cluster_grid.shape[0])
+
+            sparse_to_regular_grid_weight = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+                total_pixels=8, regular_grid=regular_grid, cluster_grid=cluster_grid,
+                cluster_weight_map=cluster_weight_map, n_iter=10, max_iter=30, seed=1)
+
+            assert (sparse_to_regular_grid_weight.sparse ==
+                    np.array([[-0.5, 0.5], [1.0, -1.0], [1.5, 1.0], [0.5, 1.0],
+                              [-1.0, -0.5], [-1.0, -1.5], [-1.5, 1.0], [-0.5, 1.5]])).all()
+
+            assert (sparse_to_regular_grid_weight.regular_to_sparse ==
+                    np.array([1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 3, 3, 3, 3, 1, 1, 1, 1,
+                              3, 3, 3, 3, 5, 5, 4, 4, 0, 0, 7, 7, 5, 5, 4, 4, 0, 0, 7, 7, 5, 5, 4, 4, 6, 6, 6, 6,
+                              5, 5, 4, 4, 6, 6, 6, 6])).all()
 
 
 class TestPaddedGrids:
