@@ -110,7 +110,7 @@ def bulge_disk_tag_from_align_bulge_disks(align_bulge_disk_centre, align_bulge_d
 
 
 def phase_tag_from_phase_settings(sub_grid_size, bin_up_factor, image_psf_shape, inversion_psf_shape,
-                                  positions_threshold, inner_mask_radii, interp_pixel_scale):
+                                  positions_threshold, inner_mask_radii, interp_pixel_scale, cluster_pixel_scale):
     
     sub_grid_size_tag = sub_grid_size_tag_from_sub_grid_size(sub_grid_size=sub_grid_size)
     bin_up_factor_tag = bin_up_factor_tag_from_bin_up_factor(bin_up_factor=bin_up_factor)
@@ -119,9 +119,10 @@ def phase_tag_from_phase_settings(sub_grid_size, bin_up_factor, image_psf_shape,
     positions_threshold_tag = positions_threshold_tag_from_positions_threshold(positions_threshold=positions_threshold)
     inner_mask_radii_tag = inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii=inner_mask_radii)
     interp_pixel_scale_tag = interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=interp_pixel_scale)
+    cluster_pixel_scale_tag = cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale=cluster_pixel_scale)
 
     return sub_grid_size_tag + bin_up_factor_tag + image_psf_shape_tag + inversion_psf_shape_tag + \
-           positions_threshold_tag + inner_mask_radii_tag + interp_pixel_scale_tag
+           positions_threshold_tag + inner_mask_radii_tag + interp_pixel_scale_tag + cluster_pixel_scale_tag
 
 def positions_threshold_tag_from_positions_threshold(positions_threshold):
     """Generate a positions threshold tag, to customize phase names based on the threshold that positions are required \
@@ -227,3 +228,18 @@ def interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale):
         return ''
     else:
         return '_interp_{0:.3f}'.format(interp_pixel_scale)
+    
+def cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale):
+    """Generate an clusterolation pixel scale tag, to customize phase names based on the resolution of the clusterolation \
+    grid that deflection angles are computed on before clusterolating to the regular and sub grids.
+
+    This changes the phase name 'phase_name' as follows:
+
+    cluster_pixel_scale = 1 -> phase_name
+    cluster_pixel_scale = 2 -> phase_name_cluster_pixel_scale_2
+    cluster_pixel_scale = 2 -> phase_name_cluster_pixel_scale_2
+    """
+    if cluster_pixel_scale is None:
+        return ''
+    else:
+        return '_cluster_{0:.3f}'.format(cluster_pixel_scale)
