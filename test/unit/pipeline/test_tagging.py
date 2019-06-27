@@ -109,7 +109,8 @@ class TestPhaseTag:
                                                           inversion_psf_shape=None,
                                                           inner_mask_radii=0.3,
                                                           positions_threshold=2.0,
-                                                          interp_pixel_scale=None)
+                                                          interp_pixel_scale=None,
+                                                          cluster_pixel_scale=None)
 
 
         assert phase_tag == '_sub_2_pos_2.00_inner_mask_0.30'
@@ -120,9 +121,10 @@ class TestPhaseTag:
                                                           inversion_psf_shape=(3,3),
                                                           inner_mask_radii=None,
                                                           positions_threshold=None,
-                                                          interp_pixel_scale=0.2)
+                                                          interp_pixel_scale=0.2,
+                                                          cluster_pixel_scale=0.3)
 
-        assert phase_tag == '_sub_1_bin_up_3_image_psf_2x2_inv_psf_3x3_interp_0.200'
+        assert phase_tag == '_sub_1_bin_up_3_image_psf_2x2_inv_psf_3x3_interp_0.200_cluster_0.300'
 
 
 class TestPhaseTaggers:
@@ -194,3 +196,14 @@ class TestPhaseTaggers:
         assert tag == '_interp_0.250'
         tag = tagging.interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=0.234)
         assert tag == '_interp_0.234'
+        
+    def test__cluster_pixel_scale_tagger(self):
+
+        tag = tagging.cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale=None)
+        assert tag == ''
+        tag = tagging.cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale=0.5)
+        assert tag == '_cluster_0.500'
+        tag = tagging.cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale=0.25)
+        assert tag == '_cluster_0.250'
+        tag = tagging.cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale=0.234)
+        assert tag == '_cluster_0.234'

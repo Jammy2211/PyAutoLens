@@ -42,24 +42,28 @@ class PhaseImaging(Phase):
 
         if tag_phases:
 
-            phase_tag = tag.phase_tag_from_phase_settings(sub_grid_size=sub_grid_size,
-                                                          bin_up_factor=bin_up_factor,
-                                                          image_psf_shape=image_psf_shape,
-                                                          inversion_psf_shape=inversion_psf_shape,
-                                                          positions_threshold=positions_threshold,
-                                                          inner_mask_radii=inner_mask_radii,
-                                                          interp_pixel_scale=interp_pixel_scale)
+            phase_tag = tag.phase_tag_from_phase_settings(
+                sub_grid_size=sub_grid_size,
+                bin_up_factor=bin_up_factor,
+                image_psf_shape=image_psf_shape,
+                inversion_psf_shape=inversion_psf_shape,
+                positions_threshold=positions_threshold,
+                inner_mask_radii=inner_mask_radii,
+                interp_pixel_scale=interp_pixel_scale,
+                cluster_pixel_scale=cluster_pixel_scale)
 
         else:
 
             phase_tag = None
 
-        super(PhaseImaging, self).__init__(phase_name=phase_name, phase_tag=phase_tag,
-                                           phase_folders=phase_folders,
-                                           tag_phases=tag_phases,
-                                           optimizer_class=optimizer_class,
-                                           cosmology=cosmology,
-                                           auto_link_priors=auto_link_priors)
+        super(PhaseImaging, self).__init__(
+            phase_name=phase_name,
+            phase_tag=phase_tag,
+            phase_folders=phase_folders,
+            tag_phases=tag_phases,
+            optimizer_class=optimizer_class,
+            cosmology=cosmology,
+            auto_link_priors=auto_link_priors)
 
         self.sub_grid_size = sub_grid_size
         self.bin_up_factor = bin_up_factor
@@ -420,7 +424,8 @@ class PhaseImaging(Phase):
                             sparse_to_regular_grid = \
                                 grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
                                     total_pixels=galaxy.pixelization.pixels, cluster_grid=self.lens_data.cluster,
-                                    regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map, seed=1)
+                                    regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map,
+                                    seed=1)
 
                         else:
 

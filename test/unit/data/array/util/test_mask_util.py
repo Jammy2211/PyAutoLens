@@ -957,6 +957,76 @@ class TestMaskBlurring(object):
             mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
 
 
+class TestMask2dToMask1DIndex(object):
+
+    def test__mask_if_full_of_false__indexes_are_ascending_order(self):
+
+        mask_2d = np.full(fill_value=False, shape=(3, 3))
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, 1, 2],
+                                                      [3, 4, 5],
+                                                      [6, 7, 8]])).all()
+
+        mask_2d = np.full(fill_value=False, shape=(2, 3))
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, 1, 2],
+                                                      [3, 4, 5]])).all()
+
+        mask_2d = np.full(fill_value=False, shape=(3, 2))
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, 1],
+                                                      [2, 3],
+                                                      [4, 5]])).all()
+
+
+    def test__mask_has_true_and_falses__minus_ones_in_place_of_trues_and_falses_count_correctly(self):
+
+        mask_2d = np.array([[False, True, False],
+                            [True, True, False],
+                            [False, False, True]])
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, -1, 1],
+                                                      [-1, -1, 2],
+                                                      [3, 4, -1]])).all()
+
+        mask_2d = np.array([[False, True, True, False],
+                            [True, True, False, False],
+                            [False, False, True, False]])
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, -1, -1, 1],
+                                                      [-1, -1, 2, 3],
+                                                      [4, 5, -1, 6]])).all()
+
+
+        mask_2d = np.array([[False, True, False],
+                            [True, True, False],
+                            [False, False, True],
+                            [False, False, True]])
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, -1, 1],
+                                                      [-1, -1, 2],
+                                                      [3, 4, -1],
+                                                      [5, 6, -1]])).all()
+
+
 class TestGridToMaskedPixel(object):
 
     def test__setup_3x3_image_one_pixel(self):

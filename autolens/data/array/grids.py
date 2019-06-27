@@ -823,12 +823,13 @@ class SubGrid(RegularGrid):
 
 class ClusterGrid(RegularGrid):
 
-    def __init__(self, arr, mask, bin_up_factor, cluster_to_regular, total_regular_pixels):
+    def __init__(self, arr, mask, bin_up_factor, cluster_to_regular_all, cluster_to_regular_sizes, total_regular_pixels):
         # noinspection PyArgumentList
         super(ClusterGrid, self).__init__()
         self.mask = mask
         self.bin_up_factor = bin_up_factor
-        self.cluster_to_regular = cluster_to_regular
+        self.cluster_to_regular_all = cluster_to_regular_all
+        self.cluster_to_regular_sizes = cluster_to_regular_sizes
         self.total_regular_pixels = total_regular_pixels
 
     def __array_finalize__(self, obj):
@@ -836,7 +837,7 @@ class ClusterGrid(RegularGrid):
         if isinstance(obj, ClusterGrid):
             self.mask = obj.mask
             self.bin_up_factor = obj.bin_up_factor
-            self.cluster_to_regular = obj.cluster_to_regular
+            self.cluster_to_regular_all = obj.cluster_to_regular_all
 
     @classmethod
     def from_mask_and_cluster_pixel_scale(cls, mask, cluster_pixel_scale):
@@ -851,11 +852,14 @@ class ClusterGrid(RegularGrid):
 
         cluster_mask = mask.binned_up_mask_from_mask(bin_up_factor=cluster_bin_up_factor)
         cluster_grid = RegularGrid.from_mask(mask=cluster_mask)
-        cluster_to_regular = binning_util.binned_masked_array_1d_to_masked_array_1d_from_mask_2d_and_bin_up_factor(
+        cluster_to_regular_all, cluster_to_regular_sizes = \
+            binning_util.binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
                     mask_2d=mask, bin_up_factor=cluster_bin_up_factor)
 
         return ClusterGrid(arr=cluster_grid, mask=cluster_mask, bin_up_factor=cluster_bin_up_factor,
-                           cluster_to_regular=cluster_to_regular, total_regular_pixels=mask.pixels_in_mask)
+                           cluster_to_regular_all=cluster_to_regular_all.astype('int'),
+                           cluster_to_regular_sizes=cluster_to_regular_sizes.astype('int'),
+                           total_regular_pixels=mask.pixels_in_mask)
 
 
 class PixelizationGrid(np.ndarray):
@@ -989,8 +993,8 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
                                    regular_to_sparse=regular_to_sparse)
 
     @classmethod
-    def from_total_pixels_cluster_grid_and_cluster_weight_map(cls, total_pixels, regular_grid, cluster_grid, cluster_weight_map,
-                                                              seed=None):
+    def from_total_pixels_cluster_grid_and_cluster_weight_map(
+            cls, total_pixels, regular_grid, cluster_grid, cluster_weight_map, n_iter=1, max_iter=5, seed=None):
         """Calculate the image-plane pixelization from a regular-grid of coordinates (and its mask).
 
         See *grid_stacks.SparseToRegularGrid* for details on how this grid is calculated.
@@ -1001,21 +1005,18 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
-        kmeans = KMeans(n_clusters=total_pixels, random_state=seed)
+        kmeans = KMeans(n_clusters=total_pixels, random_state=seed, n_init=n_iter, max_iter=max_iter)
 
         kmeans = kmeans.fit(X=cluster_grid, sample_weight=cluster_weight_map)
 
-        return SparseToRegularGrid(sparse_grid=kmeans.cluster_centers_, regular_grid=regular_grid,
-                                   regular_to_sparse=kmeans.labels_)
+        regular_to_sparse = mapping_util.regular_to_sparse_from_cluster_grid(
+            cluster_labels=kmeans.labels_,
+            cluster_to_regular_all=cluster_grid.cluster_to_regular_all,
+            cluster_to_regular_sizes=cluster_grid.cluster_to_regular_sizes,
+            total_regular_pixels=cluster_grid.total_regular_pixels)
 
-    # @decorator_util.jit()
-    # @staticmethod
-    # def regular_to_sparse_from_cluster_to_regular(cluster_pixels, cluster_to_regular, total_regular_pixels):
-    #
-    #     regular_to_sparse = np.zeros(total_regular_pixels)
-    #
-    #     for regular_index in cluster_to_regular:
-    #         regular_grid[]
+        return SparseToRegularGrid(sparse_grid=kmeans.cluster_centers_, regular_grid=regular_grid,
+                                   regular_to_sparse=regular_to_sparse.astype('int'))
 
     @property
     def total_sparse_pixels(self):
