@@ -420,7 +420,8 @@ class PhaseImaging(Phase):
                             sparse_to_regular_grid = \
                                 grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
                                     total_pixels=galaxy.pixelization.pixels, cluster_grid=self.lens_data.cluster,
-                                    regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map, seed=1)
+                                    regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map,
+                                    seed=1)
 
                         else:
 

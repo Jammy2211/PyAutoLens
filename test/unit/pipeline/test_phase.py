@@ -663,6 +663,40 @@ class TestResult(object):
 
         assert isinstance(result, phase.AbstractPhase.Result)
 
+    def test__results_of_phase_include_pixelization_grid__available_as_property(self, ccd_data_5x5,
+                                                                                mask_function_5x5):
+        clean_images()
+
+        phase_5x5 = phase_imaging.LensPlanePhase(
+            optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
+            lens_galaxies=[g.Galaxy(
+                redshift=0.5,
+                light=lp.EllipticalSersic(intensity=1.0))],
+            phase_name='test_phase_2')
+
+        result = phase_5x5.run(data=ccd_data_5x5)
+
+        assert result.most_likely_image_plane_pixelization_grid == None
+
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
+            optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
+            lens_galaxies=dict(
+                lens=g.Galaxy(
+                    redshift=0.5,
+                    light=lp.EllipticalSersic(intensity=1.0))),
+            source_galaxies=dict(
+                source=g.Galaxy(
+                    redshift=1.0,
+                    pixelization=pix.VoronoiBrightnessImage(pixels=6),
+                    regularization=reg.Constant())),
+            phase_name='test_phase_2')
+
+        phase_5x5.source_galaxies.source.hyper_galaxy_cluster_image_1d = np.ones(9)
+
+        result = phase_5x5.run(data=ccd_data_5x5)
+
+        assert result.most_likely_image_plane_pixelization_grid.shape == (6, 2)
+
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
             self,
             ccd_data_5x5,
