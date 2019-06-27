@@ -9,6 +9,7 @@ Big Picture:
 
 Small Picture:
 
+- Properlty config + define hyper minimum values.
 - Hyper functionality visualizaton (contibution maps, hyper phase images, non scaled images?)
 - PLot noormalized residuals + source recon specific plot.
 - Implement Amy's branch.
