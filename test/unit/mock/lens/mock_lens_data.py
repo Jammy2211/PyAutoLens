@@ -4,6 +4,8 @@ class MockLensData(object):
     def __init__(self, ccd_data, mask, grid_stack, padded_grid_stack, border, convolver_image,
                  convolver_mapping_matrix, cluster):
 
+        self.ccd_data = ccd_data
+
         self.unmasked_image = ccd_data.image
         self.unmasked_noise_map = ccd_data.noise_map
         self.pixel_scale = ccd_data.pixel_scale

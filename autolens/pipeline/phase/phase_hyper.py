@@ -10,6 +10,7 @@ from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline.phase.phase import setup_phase_mask
+from autolens.pipeline.plotters import hyper_plotters
 
 
 class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
@@ -96,7 +97,9 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
             galaxy_image_2d: ndarray
                 The contribution of one galaxy to the model image
             """
+
             self.lens_data = lens_data
+
             self.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
                 array_2d=model_image_2d)
             self.hyper_galaxy_image_1d = lens_data.array_1d_from_array_2d(
@@ -104,6 +107,9 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
 
             self.check_for_previously_masked_values(array=self.hyper_model_image_1d)
             self.check_for_previously_masked_values(array=self.hyper_galaxy_image_1d)
+
+            self.plot_hyper_galaxy_subplot = \
+                af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_subplot', bool)
 
         @staticmethod
         def check_for_previously_masked_values(array):
@@ -113,7 +119,32 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                     'encountered was 0.0 and therefore masked in a previous phase.')
 
         def visualize(self, instance, image_path, during_analysis):
-            pass
+
+            if self.plot_hyper_galaxy_subplot:
+
+                hyper_model_image_2d = self.lens_data.map_to_scaled_array(array_1d=self.hyper_model_image_1d)
+                hyper_galaxy_image_2d = self.lens_data.map_to_scaled_array(array_1d=self.hyper_galaxy_image_1d)
+
+                contribution_map_2d = instance.hyper_galaxy.contribution_map_from_hyper_images(
+                    hyper_model_image=hyper_model_image_2d, hyper_galaxy_image=hyper_galaxy_image_2d)
+
+                fit_normal = lens_fit.LensDataFit(
+                    image_1d=self.lens_data.image_1d,
+                    noise_map_1d=self.lens_data.noise_map_1d,
+                    mask_1d=self.lens_data.mask_1d,
+                    model_image_1d=self.hyper_model_image_1d,
+                    map_to_scaled_array=self.lens_data.map_to_scaled_array)
+
+                fit = self.fit_for_hyper_galaxy(hyper_galaxy=instance.hyper_galaxy)
+
+                hyper_plotters.plot_hyper_galaxy_subplot(
+                    hyper_galaxy_image=hyper_galaxy_image_2d,
+                    contribution_map=contribution_map_2d,
+                    noise_map=self.lens_data.noise_map_2d,
+                    hyper_noise_map=fit.noise_map_2d,
+                    chi_squared_map=fit_normal.chi_squared_map_2d,
+                    hyper_chi_squared_map=fit.chi_squared_map_2d,
+                    output_path=image_path, output_format='png')
 
         def fit(self, instance):
             """
@@ -130,22 +161,20 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
             return fit.figure_of_merit
 
         def fit_for_hyper_galaxy(self, hyper_galaxy):
-            hyper_noise_1d = (
-                hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
+
+            hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
                     hyper_model_image=self.hyper_model_image_1d,
                     hyper_galaxy_image=self.hyper_galaxy_image_1d,
-                    noise_map=self.lens_data.noise_map_1d
-                )
-            )
+                    noise_map=self.lens_data.noise_map_1d)
 
             hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
+
             return lens_fit.LensDataFit(
                 image_1d=self.lens_data.image_1d,
                 noise_map_1d=hyper_noise_map_1d,
                 mask_1d=self.lens_data.mask_1d,
                 model_image_1d=self.hyper_model_image_1d,
-                map_to_scaled_array=self.lens_data.map_to_scaled_array
-            )
+                map_to_scaled_array=self.lens_data.map_to_scaled_array)
 
         @classmethod
         def describe(cls, instance):
