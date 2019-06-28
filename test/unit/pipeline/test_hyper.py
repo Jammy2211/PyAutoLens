@@ -456,4 +456,3 @@ class TestImagePassing(object):
     #     assert (instance.lens_galaxies.lens.hyper_galaxy_image_1d == 2.0 * np.ones(
     #         9)).all()
     #     assert (instance.source_galaxies.source.hyper_galaxy_image_1d == 3.0 * np.ones(
-#         9)).all()
