@@ -12,6 +12,7 @@ from autolens.lens.plotters import ray_tracing_plotters, lens_fit_plotters, \
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as px
 from autolens.pipeline import tagging as tag
+from autolens.pipeline.plotters import hyper_plotters
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 
 
@@ -188,6 +189,7 @@ class PhaseImaging(Phase):
         analysis = self.__class__.Analysis(lens_data=lens_data,
                                            cosmology=self.cosmology,
                                            positions_threshold=self.positions_threshold,
+                                           image_path=self.optimizer.image_path,
                                            results=results,
                                            uses_hyper_images=self.uses_hyper_images)
         return analysis
@@ -212,7 +214,7 @@ class PhaseImaging(Phase):
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
-        def __init__(self, lens_data, cosmology, positions_threshold, results=None,
+        def __init__(self, lens_data, cosmology, positions_threshold, image_path=None, results=None,
                      uses_hyper_images=False):
 
             super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology,
@@ -295,58 +297,111 @@ class PhaseImaging(Phase):
                                              'plot_lens_fit_regularization_weights',
                                              bool)
 
+            self.plot_hyper_model_image = \
+                af.conf.instance.visualize.get('plots', 'plot_hyper_model_image', bool)
+
+            self.plot_hyper_galaxy_images = \
+                af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_images', bool)
+
+            self.plot_hyper_galaxy_cluster_images = \
+                af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_cluster_images', bool)
+
             self.uses_hyper_images = uses_hyper_images
 
             if self.last_results is not None and self.uses_hyper_images:
 
+                self.hyper_minimum_percent = af.conf.instance.general.get('hyper', 'hyper_minimum_percent', float)
+
                 image_1d_galaxy_dict = {}
 
-                self.hyper_model_image_1d = np.zeros(lens_data.mask_1d.shape)
+                hyper_model_image_1d = np.zeros(lens_data.mask_1d.shape)
 
-                for galaxy, galaxy_image in self.last_results.image_2d_dict.items():
+                for galaxy, galaxy_image_2d in self.last_results.image_2d_dict.items():
 
-                    image_1d_galaxy_dict[galaxy] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image)
+                    image_1d_galaxy_dict[galaxy] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image_2d)
                     self.check_for_previously_masked_values(array=image_1d_galaxy_dict[galaxy])
 
-                self.hyper_galaxy_image_1d_path_dict = {}
+                hyper_galaxy_image_1d_path_dict = {}
+                hyper_galaxy_image_2d_path_dict = {}
 
                 for path, galaxy in self.last_results.path_galaxy_tuples:
 
-                    galaxy_image = image_1d_galaxy_dict[path]
+                    galaxy_image_1d = image_1d_galaxy_dict[path]
 
-                    self.hyper_model_image_1d += galaxy_image
+                    minimum_galaxy_value = self.hyper_minimum_percent * max(galaxy_image_1d)
+                    galaxy_image_1d[galaxy_image_1d < minimum_galaxy_value] = minimum_galaxy_value
 
-                    minimum_galaxy_value = 0.01*max(galaxy_image)
-                    galaxy_image[galaxy_image < minimum_galaxy_value] = minimum_galaxy_value
+                    hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
+                    hyper_model_image_1d += galaxy_image_1d
 
-                    self.hyper_galaxy_image_1d_path_dict[path] = galaxy_image
+                    hyper_galaxy_image_2d_path_dict[path] = lens_data.map_to_scaled_array(array_1d=galaxy_image_1d)
+
+                hyper_model_image_2d = lens_data.map_to_scaled_array(array_1d=hyper_model_image_1d)
 
                 cluster_image_1d_galaxy_dict = {}
 
-                for galaxy, galaxy_image in self.last_results.image_2d_dict.items():
+                for galaxy, galaxy_image_2d in self.last_results.image_2d_dict.items():
 
                     cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
-                        array_2d=galaxy_image, bin_up_factor=lens_data.cluster.bin_up_factor)
+                        array_2d=galaxy_image_2d, bin_up_factor=lens_data.cluster.bin_up_factor)
 
                     cluster_image_1d_galaxy_dict[galaxy] = \
                         lens_data.cluster.mask.map_2d_array_to_masked_1d_array(array_2d=cluster_image_2d)
 
-                self.hyper_galaxy_cluster_image_1d_path_dict = {}
+                hyper_galaxy_cluster_image_1d_path_dict = {}
+                hyper_galaxy_cluster_image_2d_path_dict = {}
 
                 for path, galaxy in self.last_results.path_galaxy_tuples:
 
-                    galaxy_cluster_image = cluster_image_1d_galaxy_dict[path]
+                    galaxy_cluster_image_1d = cluster_image_1d_galaxy_dict[path]
 
-                    minimum_cluster_value = 0.01 * max(galaxy_cluster_image)
-                    galaxy_cluster_image[galaxy_cluster_image < minimum_cluster_value] = minimum_cluster_value
+                    minimum_cluster_value = self.hyper_minimum_percent * max(galaxy_cluster_image_1d)
+                    galaxy_cluster_image_1d[galaxy_cluster_image_1d < minimum_cluster_value] = minimum_cluster_value
 
-                    self.hyper_galaxy_cluster_image_1d_path_dict[path] = galaxy_cluster_image
+                    hyper_galaxy_cluster_image_1d_path_dict[path] = galaxy_cluster_image_1d
 
+                    hyper_galaxy_cluster_image_2d_path_dict[path] = \
+                        lens_data.cluster.scaled_array_2d_from_array_1d(array_1d=galaxy_cluster_image_1d)
+
+                if self.plot_hyper_model_image:
+
+                    hyper_plotters.plot_hyper_model_image(
+                        hyper_model_image=hyper_model_image_2d,
+                        mask=lens_data.mask_2d,
+                        extract_array_from_mask=self.extract_array_from_mask,
+                        zoom_around_mask=self.zoom_around_mask,
+                        units=self.plot_units,
+                        output_path=image_path, output_format='png')
+
+                if self.plot_hyper_galaxy_images:
+
+                    hyper_plotters.plot_hyper_galaxy_images_subplot(
+                        hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict,
+                        mask=lens_data.mask_2d,
+                        extract_array_from_mask=self.extract_array_from_mask,
+                        zoom_around_mask=self.zoom_around_mask,
+                        units=self.plot_units,
+                        output_path=image_path, output_format='png')
+
+                if self.plot_hyper_galaxy_cluster_images:
+
+                    hyper_plotters.plot_hyper_galaxy_cluster_images_subplot(
+                        hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_2d_path_dict,
+                        mask=lens_data.mask_2d,
+                        extract_array_from_mask=self.extract_array_from_mask,
+                        zoom_around_mask=self.zoom_around_mask,
+                        units=self.plot_units,
+                        output_path=image_path, output_format='png')
 
             else:
 
-                self.hyper_galaxy_image_1d_path_dict = None
-                self.hyper_model_image_1d = None
+                hyper_galaxy_image_1d_path_dict = None
+                hyper_galaxy_cluster_image_1d_path_dict = None
+                hyper_model_image_1d = None
+
+            self.hyper_galaxy_image_1d_path_dict = hyper_galaxy_image_1d_path_dict
+            self.hyper_galaxy_cluster_image_1d_path_dict = hyper_galaxy_cluster_image_1d_path_dict
+            self.hyper_model_image_1d = hyper_model_image_1d
 
         def fit(self, instance):
             """
