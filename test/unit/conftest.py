@@ -606,11 +606,23 @@ def make_phase_5x5(mask_function_5x5):
     return phase_imaging.LensSourcePlanePhase(
         optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5, phase_name='test_phase')
 
+@pytest.fixture(name="hyper_model_image_5x5")
+def make_hyper_model_image_5x5(grid_stack_5x5):
+    return grid_stack_5x5.regular.scaled_array_2d_from_array_1d(array_1d=np.ones(9))
+
+@pytest.fixture(name="hyper_galaxy_image_0_5x5")
+def make_hyper_galaxy_image_0_5x5(grid_stack_5x5):
+    return grid_stack_5x5.regular.scaled_array_2d_from_array_1d(array_1d=2.0*np.ones(9))
+
+@pytest.fixture(name="hyper_galaxy_image_1_5x5")
+def make_hyper_galaxy_image_1_5x5(grid_stack_5x5):
+    return grid_stack_5x5.regular.scaled_array_2d_from_array_1d(array_1d=3.0*np.ones(9))
+
 @pytest.fixture(name="results_5x5")
-def make_results():
+def make_results(hyper_model_image_5x5, hyper_galaxy_image_0_5x5, hyper_galaxy_image_1_5x5):
     return mock_pipeline.MockResults(
-        model_image=np.ones((5,5)),
-        galaxy_images=[2.0*np.ones((5,5)), 3.0*np.ones((5,5))])
+        model_image=hyper_model_image_5x5,
+        galaxy_images=[hyper_galaxy_image_0_5x5, hyper_galaxy_image_1_5x5])
 
 
 @pytest.fixture(name="results_collection_5x5")
