@@ -345,7 +345,6 @@ def make_lmp_0():
 
 # GALAXY #
 
-
 @pytest.fixture(name="gal_x1_lp")
 def make_gal_x1_lp(lp_0):
 
@@ -381,13 +380,18 @@ def make_gal_x2_mp(mp_0, mp_1):
 
 
 @pytest.fixture(name="gal_x1_lp_x1_mp")
-
 def make_gal_x1_lp_x1_mp(lp_0, mp_0):
     return g.Galaxy(
         redshift=0.5,
         light_profile_0=lp_0,
         mass_profile_0=mp_0)
 
+
+@pytest.fixture(name="hyper_galaxy")
+def make_hyper_galaxy():
+
+    return g.HyperGalaxy(
+        noise_factor=1.0, noise_power=1.0, contribution_factor=1.0)
 
 # GALAXY DATA #
 
@@ -617,6 +621,17 @@ def make_hyper_galaxy_image_0_5x5(grid_stack_5x5):
 @pytest.fixture(name="hyper_galaxy_image_1_5x5")
 def make_hyper_galaxy_image_1_5x5(grid_stack_5x5):
     return grid_stack_5x5.regular.scaled_array_2d_from_array_1d(array_1d=3.0*np.ones(9))
+
+@pytest.fixture(name="contribution_map_5x5")
+def make_contribution_map_5x5(hyper_model_image_5x5, hyper_galaxy_image_0_5x5, hyper_galaxy):
+    return hyper_galaxy.contribution_map_from_hyper_images(
+        hyper_model_image=hyper_model_image_5x5, hyper_galaxy_image=hyper_galaxy_image_0_5x5)
+
+@pytest.fixture(name="hyper_noise_map_5x5")
+def make_hyper_noise_map_5x5(noise_map_5x5, contribution_map_5x5, hyper_galaxy):
+    hyper_noise = hyper_galaxy.hyper_noise_map_from_contribution_map(
+        noise_map=noise_map_5x5, contribution_map=contribution_map_5x5)
+    return noise_map_5x5 + hyper_noise
 
 @pytest.fixture(name="results_5x5")
 def make_results(hyper_model_image_5x5, hyper_galaxy_image_0_5x5, hyper_galaxy_image_1_5x5):

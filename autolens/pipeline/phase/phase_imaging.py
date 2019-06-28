@@ -5,14 +5,12 @@ import autofit as af
 from autolens.data.array.util import binning_util
 from autolens import exc
 from autolens.data.array import grids
-from autolens.data.plotters import ccd_plotters
 from autolens.lens import ray_tracing, lens_data as ld, lens_fit, sensitivity_fit
-from autolens.lens.plotters import ray_tracing_plotters, lens_fit_plotters, \
-    sensitivity_fit_plotters
+from autolens.lens.plotters import sensitivity_fit_plotters
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as px
 from autolens.pipeline import tagging as tag
-from autolens.pipeline.plotters import hyper_plotters
+from autolens.pipeline.plotters import phase_plotters
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 
 
@@ -186,12 +184,14 @@ class PhaseImaging(Phase):
 
         self.output_phase_info()
 
-        analysis = self.__class__.Analysis(lens_data=lens_data,
-                                           cosmology=self.cosmology,
-                                           positions_threshold=self.positions_threshold,
-                                           image_path=self.optimizer.image_path,
-                                           results=results,
-                                           uses_hyper_images=self.uses_hyper_images)
+        analysis = self.__class__.Analysis(
+            lens_data=lens_data,
+            cosmology=self.cosmology,
+            positions_threshold=self.positions_threshold,
+            image_path=self.optimizer.image_path,
+            results=results,
+            uses_hyper_images=self.uses_hyper_images)
+
         return analysis
 
     def output_phase_info(self):
@@ -308,6 +308,23 @@ class PhaseImaging(Phase):
 
             self.uses_hyper_images = uses_hyper_images
 
+            mask = self.lens_data.mask_2d if self.should_plot_mask else None
+            positions = self.lens_data.positions if self.should_plot_positions else None
+
+            phase_plotters.plot_ccd_for_phase(
+                ccd_data=self.lens_data.ccd_data, mask=mask, positions=positions,
+                extract_array_from_mask=self.extract_array_from_mask,
+                zoom_around_mask=self.zoom_around_mask,
+                units=self.plot_units,
+                should_plot_as_subplot=self.plot_data_as_subplot,
+                should_plot_image=self.plot_data_image,
+                should_plot_noise_map=self.plot_data_noise_map,
+                should_plot_psf=self.plot_data_psf,
+                should_plot_signal_to_noise_map=self.plot_data_signal_to_noise_map,
+                should_plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
+                should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
+                visualize_path=image_path)
+
             if self.last_results is not None and self.uses_hyper_images:
 
                 self.hyper_minimum_percent = af.conf.instance.general.get('hyper', 'hyper_minimum_percent', float)
@@ -363,35 +380,19 @@ class PhaseImaging(Phase):
                     hyper_galaxy_cluster_image_2d_path_dict[path] = \
                         lens_data.cluster.scaled_array_2d_from_array_1d(array_1d=galaxy_cluster_image_1d)
 
-                if self.plot_hyper_model_image:
 
-                    hyper_plotters.plot_hyper_model_image(
-                        hyper_model_image=hyper_model_image_2d,
-                        mask=lens_data.mask_2d,
-                        extract_array_from_mask=self.extract_array_from_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        units=self.plot_units,
-                        output_path=image_path, output_format='png')
-
-                if self.plot_hyper_galaxy_images:
-
-                    hyper_plotters.plot_hyper_galaxy_images_subplot(
-                        hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict,
-                        mask=lens_data.mask_2d,
-                        extract_array_from_mask=self.extract_array_from_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        units=self.plot_units,
-                        output_path=image_path, output_format='png')
-
-                if self.plot_hyper_galaxy_cluster_images:
-
-                    hyper_plotters.plot_hyper_galaxy_cluster_images_subplot(
-                        hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_2d_path_dict,
-                        mask=lens_data.mask_2d,
-                        extract_array_from_mask=self.extract_array_from_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        units=self.plot_units,
-                        output_path=image_path, output_format='png')
+                phase_plotters.plot_hyper_images_for_phase(
+                    hyper_model_image=hyper_model_image_2d,
+                    hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict,
+                    hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_2d_path_dict,
+                    mask=lens_data.mask_2d,
+                    extract_array_from_mask=self.extract_array_from_mask,
+                    zoom_around_mask=self.zoom_around_mask,
+                    units=self.plot_units,
+                    should_plot_hyper_model_image=self.plot_hyper_model_image,
+                    should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
+                    should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
+                    visualize_path=image_path)
 
             else:
 
@@ -501,23 +502,9 @@ class PhaseImaging(Phase):
             mask = self.lens_data.mask_2d if self.should_plot_mask else None
             positions = self.lens_data.positions if self.should_plot_positions else None
 
-            ccd_plotters.plot_ccd_for_phase(
-                ccd_data=self.lens_data.ccd_data, mask=mask, positions=positions,
-                extract_array_from_mask=self.extract_array_from_mask,
-                zoom_around_mask=self.zoom_around_mask,
-                units=self.plot_units,
-                should_plot_as_subplot=self.plot_data_as_subplot,
-                should_plot_image=self.plot_data_image,
-                should_plot_noise_map=self.plot_data_noise_map,
-                should_plot_psf=self.plot_data_psf,
-                should_plot_signal_to_noise_map=self.plot_data_signal_to_noise_map,
-                should_plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
-                should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
-                visualize_path=image_path)
-
             tracer = self.tracer_for_instance(instance)
 
-            ray_tracing_plotters.plot_ray_tracing_for_phase(
+            phase_plotters.plot_ray_tracing_for_phase(
                 tracer=tracer, during_analysis=during_analysis, mask=mask,
                 extract_array_from_mask=self.extract_array_from_mask,
                 zoom_around_mask=self.zoom_around_mask, positions=positions,
@@ -535,7 +522,7 @@ class PhaseImaging(Phase):
             padded_tracer = self.padded_tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
-            lens_fit_plotters.plot_lens_fit_for_phase(
+            phase_plotters.plot_lens_fit_for_phase(
                 fit=fit, during_analysis=during_analysis,
                 should_plot_mask=self.should_plot_mask,
                 extract_array_from_mask=self.extract_array_from_mask,

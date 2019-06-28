@@ -7,66 +7,6 @@ from matplotlib import pyplot as plt
 from autolens.plotters import plotter_util, array_plotters
 from autolens.lens.plotters import plane_plotters
 
-def plot_ray_tracing_for_phase(
-        tracer, during_analysis, mask, extract_array_from_mask, zoom_around_mask, positions, units,
-        should_plot_as_subplot, 
-        should_plot_all_at_end_png,
-        should_plot_all_at_end_fits,
-        should_plot_image_plane_image,
-        should_plot_source_plane,
-        should_plot_convergence,
-        should_plot_potential,
-        should_plot_deflections,
-        visualize_path):
-    
-    output_path = visualize_path
-    
-    if should_plot_as_subplot:
-        
-        plot_ray_tracing_subplot(
-            tracer=tracer, mask=mask, extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask, positions=positions,
-            units=units,
-            output_path=output_path, output_format='png')
-
-    plot_ray_tracing_individual(
-        tracer=tracer, mask=mask, extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask, positions=positions,
-        should_plot_image_plane_image=should_plot_image_plane_image,
-        should_plot_source_plane=should_plot_source_plane,
-        should_plot_convergence=should_plot_convergence,
-        should_plot_potential=should_plot_potential,
-        should_plot_deflections=should_plot_deflections,
-        units=units,
-        output_path=output_path, output_format='png')
-    
-    if not during_analysis:
-    
-        if should_plot_all_at_end_png:
-            
-            plot_ray_tracing_individual(
-                tracer=tracer, mask=mask, extract_array_from_mask=extract_array_from_mask,
-                zoom_around_mask=zoom_around_mask, positions=positions,
-                should_plot_image_plane_image=True,
-                should_plot_source_plane=True,
-                should_plot_convergence=True,
-                should_plot_potential=True,
-                should_plot_deflections=True,
-                units=units,
-                output_path=output_path, output_format='png')
-    
-        if should_plot_all_at_end_fits:
-            
-            plot_ray_tracing_individual(
-                tracer=tracer, mask=mask, extract_array_from_mask=extract_array_from_mask,
-                zoom_around_mask=zoom_around_mask, positions=positions,
-                should_plot_image_plane_image=True,
-                should_plot_source_plane=True,
-                should_plot_convergence=True,
-                should_plot_potential=True,
-                should_plot_deflections=True,
-                output_path=output_path + 'fits/', output_format='fits')
-
 def plot_ray_tracing_subplot(
         tracer, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         units='arcsec', figsize=None, aspect='square',

@@ -86,25 +86,3 @@ def test__ccd_individuals__output_dependent_on_input(ccd_data, general_config, c
     assert ccd_plotter_path + 'ccd_absolute_signal_to_noise_map.png' in plot_patch.paths
 
     assert not ccd_plotter_path + 'ccd_potential_chi_squared_map.png' in plot_patch.paths
-    
-    
-def test__plot_ccd_for_phase(ccd_data, mask, general_config, ccd_plotter_path, plot_patch):
-
-    ccd_plotters.plot_ccd_for_phase(ccd_data=ccd_data, mask=mask, positions=None, units='arcsec',
-                                    zoom_around_mask=True, extract_array_from_mask=True,
-                                    should_plot_as_subplot=True,
-                                    should_plot_image=True,
-                                    should_plot_noise_map=False,
-                                    should_plot_psf=True,
-                                    should_plot_signal_to_noise_map=False,
-                                    should_plot_absolute_signal_to_noise_map=False,
-                                    should_plot_potential_chi_squared_map=True,
-                                    visualize_path=ccd_plotter_path)
-
-    assert ccd_plotter_path + 'ccd_data.png' in plot_patch.paths
-    assert ccd_plotter_path + 'ccd_image.png' in plot_patch.paths
-    assert ccd_plotter_path + 'ccd_noise_map.png' not in plot_patch.paths
-    assert ccd_plotter_path + 'ccd_psf.png' in plot_patch.paths
-    assert ccd_plotter_path + 'ccd_signal_to_noise_map.png' not in plot_patch.paths
-    assert ccd_plotter_path + 'ccd_absolute_signal_to_noise_map.png' not in plot_patch.paths
-    assert ccd_plotter_path + 'ccd_potential_chi_squared_map.png' in plot_patch.paths
