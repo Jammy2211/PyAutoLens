@@ -18,6 +18,7 @@ from test.unit.mock.model.mock_profiles import MockLightProfile
 
 
 class TestLensProfileFit:
+    
     class TestLikelihood:
 
         def test__1x2_image__no_psf_blurring__tracing_fits_data_with_chi_sq_5(self):
@@ -49,34 +50,47 @@ class TestLensProfileFit:
             fit = lens_fit.LensProfileFit(lens_data=lens_data_5x5, tracer=tracer)
 
             assert (fit.mask_1d == np.array([False, False])).all()
-            assert (fit.mask_2d == np.array([[True, True, True, True],
-                                             [True, False, False, True],
-                                             [True, True, True, True]])).all()
+            assert (fit.mask_2d == np.array(
+                [[True, True, True, True],
+                 [True, False, False, True],
+                 [True, True, True, True]])).all()
 
             assert (fit.image_1d == np.array([5.0, 4.0])).all()
-            assert (fit.image_2d == np.array([[0.0, 0.0, 0.0, 0.0],
-                                              [0.0, 5.0, 4.0, 0.0],
-                                              [0.0, 0.0, 0.0, 0.0]])).all()
+            assert (fit.image_2d == np.array(
+               [[0.0, 0.0, 0.0, 0.0],
+                [0.0, 5.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
 
             assert (fit.noise_map_1d == np.array([1.0, 1.0])).all()
-            assert (fit.noise_map_2d == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                  [0.0, 1.0, 1.0, 0.0],
-                                                  [0.0, 0.0, 0.0, 0.0]])).all()
+            assert (fit.noise_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 1.0, 1.0, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
 
             assert (fit.model_image_1d == np.array([1.0, 1.0])).all()
-            assert (fit.model_image_2d == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                    [0.0, 1.0, 1.0, 0.0],
-                                                    [0.0, 0.0, 0.0, 0.0]])).all()
+            assert (fit.model_image_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 1.0, 1.0, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
 
             assert (fit.residual_map_1d == np.array([4.0, 3.0])).all()
-            assert (fit.residual_map_2d == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                     [0.0, 4.0, 3.0, 0.0],
-                                                     [0.0, 0.0, 0.0, 0.0]])).all()
+            assert (fit.residual_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 4.0, 3.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.normalized_residual_map_1d == np.array([4.0, 3.0])).all()
+            assert (fit.normalized_residual_map_2d == np.array(
+               [[0.0, 0.0, 0.0, 0.0],
+                [0.0, 4.0, 3.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
+
 
             assert (fit.chi_squared_map_1d == np.array([16.0, 9.0])).all()
-            assert (fit.chi_squared_map_2d == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                        [0.0, 16.0, 9.0, 0.0],
-                                                        [0.0, 0.0, 0.0, 0.0]])).all()
+            assert (fit.chi_squared_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 16.0, 9.0, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
 
             assert fit.chi_squared == 25.0
             assert fit.reduced_chi_squared == 25.0 / 2.0
@@ -84,8 +98,7 @@ class TestLensProfileFit:
             assert fit.likelihood == -0.5 * (
                         25.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
 
-        def test__1x2_image__include_psf_blurring__tracing_fits_data_with_chi_sq_4(
-                self):
+        def test__1x2_image__include_psf_blurring__tracing_fits_data_with_chi_sq_4(self):
             # This PSF changes the blurred image plane image from [1.0, 1.0] to [1.0, 5.0]
 
             # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
@@ -137,6 +150,12 @@ class TestLensProfileFit:
             assert (fit.residual_map_2d == np.array([[0.0, 0.0, 0.0, 0.0],
                                                      [0.0, 4.0, 0.0, 0.0],
                                                      [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.normalized_residual_map_1d == np.array([4.0, 0.0])).all()
+            assert (fit.normalized_residual_map_2d == np.array([
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 4.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
 
             assert (fit.chi_squared_map_1d == np.array([16.0, 0.0])).all()
             assert (fit.chi_squared_map_2d == np.array([[0.0, 0.0, 0.0, 0.0],
@@ -212,6 +231,12 @@ class TestLensProfileFit:
                                                      [0.0, 4.0, 0.0, 0.0],
                                                      [0.0, 0.0, 0.0, 0.0]])).all()
 
+            assert (fit.normalized_residual_map_1d == np.array([2.0, 0.0])).all()
+            assert (fit.normalized_residual_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 2.0, 0.0, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
+
             assert (fit.chi_squared_map_1d == np.array([4.0, 0.0])).all()
             assert (fit.chi_squared_map_2d == np.array([[0.0, 0.0, 0.0, 0.0],
                                                         [0.0, 4.0, 0.0, 0.0],
@@ -254,13 +279,22 @@ class TestLensProfileFit:
             assert model_image_2d == pytest.approx(fit.model_image_2d, 1e-4)
 
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
-                data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d,
-                model_data=model_image_1d)
+                data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d, model_data=model_image_1d)
             residual_map_2d = lens_data_5x5.map_to_scaled_array(
                 array_1d=residual_map_1d)
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
             assert residual_map_2d == pytest.approx(fit.residual_map_2d, 1e-4)
+
+            normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
+                noise_map=lens_data_5x5.noise_map_1d)
+
+            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+                array_1d=normalized_residual_map_1d)
+
+            assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
+            assert normalized_residual_map_2d == pytest.approx(fit.normalized_residual_map_2d, 1e-4)
 
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
@@ -268,6 +302,8 @@ class TestLensProfileFit:
 
             chi_squared_map_2d = lens_data_5x5.map_to_scaled_array(
                 array_1d=chi_squared_map_1d)
+            
+            assert chi_squared_map_1d == pytest.approx(fit.chi_squared_map_1d, 1e-4)
             assert chi_squared_map_2d == pytest.approx(fit.chi_squared_map_2d, 1e-4)
 
             chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
@@ -339,8 +375,8 @@ class TestLensProfileFit:
             assert fit.model_image_2d == pytest.approx(
                 fit.galaxy_image_2d_dict[g0] + fit.galaxy_image_2d_dict[g1], 1.0e-4)
 
-        def test___all_lens_fit_quantities__including_hyper_methods(self,
-                                                                    lens_data_5x5):
+        def test___all_lens_fit_quantities__including_hyper_methods(self, lens_data_5x5):
+            
             g0 = g.Galaxy(redshift=0.5,
                           light_profile=lp.EllipticalSersic(intensity=1.0),
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0),
@@ -359,9 +395,8 @@ class TestLensProfileFit:
                 lens_galaxies=[g0], source_galaxies=[g1],
                 image_plane_grid_stack=lens_data_5x5.padded_grid_stack)
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5,
-                                                           tracer=tracer,
-                                                           padded_tracer=padded_tracer)
+            fit = lens_fit.LensDataFit.for_data_and_tracer(
+                lens_data=lens_data_5x5, tracer=tracer, padded_tracer=padded_tracer)
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=lens_data_5x5.noise_map_1d)
@@ -389,12 +424,22 @@ class TestLensProfileFit:
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
             assert residual_map_2d == pytest.approx(fit.residual_map_2d, 1e-4)
 
+            normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d, noise_map=hyper_noise_map_1d)
+
+            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+                array_1d=normalized_residual_map_1d)
+
+            assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
+            assert normalized_residual_map_2d == pytest.approx(fit.normalized_residual_map_2d, 1e-4)
+
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
-                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
-                noise_map=hyper_noise_map_1d)
+                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d, noise_map=hyper_noise_map_1d)
 
             chi_squared_map_2d = lens_data_5x5.map_to_scaled_array(
                 array_1d=chi_squared_map_1d)
+
+            assert chi_squared_map_1d == pytest.approx(fit.chi_squared_map_1d, 1e-4)
             assert chi_squared_map_2d == pytest.approx(fit.chi_squared_map_2d, 1e-4)
 
             chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
@@ -467,6 +512,7 @@ class TestLensProfileFit:
 
 
 class TestLensInversionFit:
+    
     class TestCompareToManual:
 
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_5x5):
@@ -503,6 +549,16 @@ class TestLensInversionFit:
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
             assert residual_map_2d == pytest.approx(fit.residual_map_2d, 1e-4)
+
+            normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
+                noise_map=lens_data_5x5.noise_map_1d)
+
+            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+                array_1d=normalized_residual_map_1d)
+
+            assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
+            assert normalized_residual_map_2d == pytest.approx(fit.normalized_residual_map_2d, 1e-4)
 
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
@@ -581,6 +637,7 @@ class TestLensInversionFit:
                                                        1.0e-4)
 
         def test___all_lens_fit_quantities__include_hyper_methods(self, lens_data_5x5):
+            
             pix = pixelizations.Rectangular(shape=(3, 3))
             reg = regularization.Constant(coefficients=(1.0,))
 
@@ -626,6 +683,16 @@ class TestLensInversionFit:
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
             assert residual_map_2d == pytest.approx(fit.residual_map_2d, 1e-4)
+
+            normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
+                noise_map=hyper_noise_map_1d)
+
+            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+                array_1d=normalized_residual_map_1d)
+
+            assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
+            assert normalized_residual_map_2d == pytest.approx(fit.normalized_residual_map_2d, 1e-4)
 
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
@@ -700,6 +767,7 @@ class TestLensInversionFit:
 
 
 class TestLensProfileInversionFit:
+    
     class TestCompareToManual:
 
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_5x5):
@@ -761,6 +829,16 @@ class TestLensProfileInversionFit:
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
             assert residual_map_2d == pytest.approx(fit.residual_map_2d, 1e-4)
+
+            normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
+                noise_map=lens_data_5x5.noise_map_1d)
+
+            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+                array_1d=normalized_residual_map_1d)
+
+            assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
+            assert normalized_residual_map_2d == pytest.approx(fit.normalized_residual_map_2d, 1e-4)
 
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
@@ -945,17 +1023,26 @@ class TestLensProfileInversionFit:
             assert model_image_2d == pytest.approx(fit.model_image_2d, 1e-4)
 
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
-                data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d,
-                model_data=model_image_1d)
+                data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d, model_data=model_image_1d)
+
             residual_map_2d = lens_data_5x5.map_to_scaled_array(
                 array_1d=residual_map_1d)
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
             assert residual_map_2d == pytest.approx(fit.residual_map_2d, 1e-4)
 
+            normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d, noise_map=hyper_noise_map_1d)
+
+            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+                array_1d=normalized_residual_map_1d)
+
+            assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
+            assert normalized_residual_map_2d == pytest.approx(fit.normalized_residual_map_2d, 1e-4)
+
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
-                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
-                noise_map=hyper_noise_map_1d)
+                residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d, noise_map=hyper_noise_map_1d)
+
             chi_squared_map_2d = lens_data_5x5.map_to_scaled_array(
                 array_1d=chi_squared_map_1d)
 
