@@ -236,18 +236,21 @@ class TestResultForArguments:
 class TestPixelization(object):
 
     def test_pixelization(self):
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift, pixelization=pix.Rectangular,
-                                      regularization=reg.Constant)
+
+        galaxy_model = gp.GalaxyModel(
+            redshift=g.Redshift,
+            pixelization=pix.Rectangular,
+            regularization=reg.Constant)
 
         arguments = {galaxy_model.redshift.redshift: 2.0,
-                     galaxy_model.pixelization.shape_0: 14.0,
-                     galaxy_model.pixelization.shape_1: 13.0,
+                     galaxy_model.pixelization.shape_0: 24.0,
+                     galaxy_model.pixelization.shape_1: 23.0,
                      galaxy_model.regularization.coefficients_0: 0.5}
 
         galaxy = galaxy_model.instance_for_arguments(arguments)
 
-        assert galaxy.pixelization.shape[0] == 14
-        assert galaxy.pixelization.shape[1] == 13
+        assert galaxy.pixelization.shape[0] == 24
+        assert galaxy.pixelization.shape[1] == 23
 
     def test_fixed_pixelization(self):
         galaxy_model = gp.GalaxyModel(redshift=g.Redshift, pixelization=pix.Rectangular(),
@@ -268,12 +271,14 @@ class TestPixelization(object):
 class TestRegularization(object):
 
     def test_regularization(self):
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift, pixelization=pix.Rectangular,
-                                      regularization=reg.Constant)
+        galaxy_model = gp.GalaxyModel(
+            redshift=g.Redshift,
+            pixelization=pix.Rectangular,
+            regularization=reg.Constant)
 
         arguments = {galaxy_model.redshift.redshift: 2.0,
-                     galaxy_model.pixelization.shape_0: 14.0,
-                     galaxy_model.pixelization.shape_1: 13.0,
+                     galaxy_model.pixelization.shape_0: 24.0,
+                     galaxy_model.pixelization.shape_1: 23.0,
                      galaxy_model.regularization.coefficients_0: 0.5}
 
         galaxy = galaxy_model.instance_for_arguments(arguments)
@@ -326,14 +331,56 @@ class TestHyperGalaxy(object):
         assert galaxy.hyper_galaxy_image_1d == None
 
 
-class TestUsesHyperImages(object):
-    
-    def test__simple_tests_depending_on_hyper_galaxy_and_certain_pixelizations_and_regularizations(self):
-        
+class TestUseBools(object):
+
+    def test__uses_inversion__depends_on_any_pixelization(self):
+
+        galaxy_model = gp.GalaxyModel(
+            redshift=g.Redshift)
+
+        assert galaxy_model.uses_inversion == False
+
+        galaxy_model = gp.GalaxyModel(
+            redshift=g.Redshift,
+            pixelization=pix.Rectangular,
+            regularization=reg.Constant)
+
+        assert galaxy_model.uses_inversion == True
+
+        galaxy_model = gp.GalaxyModel(
+            redshift=g.Redshift,
+            pixelization=pix.VoronoiBrightnessImage,
+            regularization=reg.AdaptiveBrightness)
+
+        assert galaxy_model.uses_inversion == True
+
+    def test__uses_cluster_inversion__depends_on_specific_pixelizations(self):
+
+        galaxy_model = gp.GalaxyModel(
+            redshift=g.Redshift)
+
+        assert galaxy_model.uses_cluster_inversion == False
+
+        galaxy_model = gp.GalaxyModel(
+            redshift=g.Redshift,
+            pixelization=pix.Rectangular,
+            regularization=reg.Constant)
+
+        assert galaxy_model.uses_cluster_inversion == False
+
+        galaxy_model = gp.GalaxyModel(
+            redshift=g.Redshift,
+            pixelization=pix.VoronoiBrightnessImage,
+            regularization=reg.AdaptiveBrightness)
+
+        assert galaxy_model.uses_cluster_inversion == True
+
+    def test__uses_hyper_images__depends_on_hyper_galaxy_and_specific_pixelizations_and_regularizations(self):
+
         galaxy_model = gp.GalaxyModel(redshift=g.Redshift)
 
         assert galaxy_model.uses_hyper_images == False
-        
+
         galaxy_model = gp.GalaxyModel(redshift=g.Redshift, hyper_galaxy=g.HyperGalaxy)
 
         assert galaxy_model.uses_hyper_images == True
@@ -342,10 +389,10 @@ class TestUsesHyperImages(object):
 
         assert galaxy_model.uses_hyper_images == False
 
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift, pixelization=pix.Rectangular, regularization=reg.AdaptiveBrightness)
+        galaxy_model = gp.GalaxyModel(redshift=g.Redshift, pixelization=pix.Rectangular,
+                                      regularization=reg.AdaptiveBrightness)
 
         assert galaxy_model.uses_hyper_images == True
-
 
 class TestFixedProfiles(object):
     def test_fixed_light_property(self):

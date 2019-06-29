@@ -16,12 +16,20 @@ from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 
 class PhaseImaging(Phase):
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None,
+    def __init__(self,
+                 phase_name,
+                 tag_phases=True,
+                 phase_folders=None,
                  optimizer_class=af.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
-                 inversion_psf_shape=None, positions_threshold=None, mask_function=None,
+                 sub_grid_size=2,
+                 bin_up_factor=None,
+                 image_psf_shape=None,
+                 inversion_psf_shape=None,
+                 positions_threshold=None,
+                 mask_function=None,
                  inner_mask_radii=None,
                  interp_pixel_scale=None,
+                 inversion_pixel_limit=None,
                  cluster_pixel_scale=None,
                  cosmology=cosmo.Planck15,
                  auto_link_priors=False):
@@ -37,6 +45,12 @@ class PhaseImaging(Phase):
             The class of a non_linear optimizer
         sub_grid_size: int
             The side length of the subgrid
+        inversion_max_pixels : int or None
+            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+            up run.
+        cluster_pixel_scale : float or None
+            If *True*, the hyper image used to generate the cluster'grids weight map will be binned up to this higher \
+            pixel scale to speed up the KMeans clustering algorithm.
         """
 
         if tag_phases:
@@ -72,8 +86,19 @@ class PhaseImaging(Phase):
         self.mask_function = mask_function
         self.inner_mask_radii = inner_mask_radii
         self.interp_pixel_scale = interp_pixel_scale
+        self.inversion_pixel_limit = inversion_pixel_limit
         self.cluster_pixel_scale = cluster_pixel_scale
 
+        inversion_pixel_limit_from_prior = \
+            int(af.conf.instance.prior_default.get('pixelizations', 'VoronoiBrightnessImage', 'pixels')[2])
+
+        if self.inversion_pixel_limit is not None:
+
+            self.cluster_pixel_limit = min(inversion_pixel_limit_from_prior, self.inversion_pixel_limit)
+
+        else:
+
+            self.cluster_pixel_limit = inversion_pixel_limit_from_prior
 
     @property
     def uses_hyper_images(self) -> bool:
@@ -81,6 +106,10 @@ class PhaseImaging(Phase):
 
     @property
     def uses_inversion(self) -> bool:
+        return False
+
+    @property
+    def uses_cluster_inversion(self) -> bool:
         return False
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
@@ -164,16 +193,21 @@ class PhaseImaging(Phase):
                 'You have specified for a phase to use positions, but not input positions to the '
                 'pipeline when you ran it.')
 
-        lens_data = ld.LensData(ccd_data=data, mask=mask,
-                                sub_grid_size=self.sub_grid_size,
-                                image_psf_shape=self.image_psf_shape,
-                                positions=positions,
-                                interp_pixel_scale=self.interp_pixel_scale,
-                                cluster_pixel_scale=self.cluster_pixel_scale,
-                                uses_inversion=self.uses_inversion)
+        lens_data = ld.LensData(
+            ccd_data=data,
+            mask=mask,
+            sub_grid_size=self.sub_grid_size,
+            image_psf_shape=self.image_psf_shape,
+            positions=positions,
+            interp_pixel_scale=self.interp_pixel_scale,
+            cluster_pixel_scale=self.cluster_pixel_scale,
+            cluster_pixel_limit=self.cluster_pixel_limit,
+            uses_inversion=self.uses_inversion,
+            uses_cluster_inversion=self.uses_cluster_inversion)
 
-        modified_image = self.modify_image(image=lens_data.unmasked_image,
-                                           results=results)
+        modified_image = self.modify_image(
+            image=lens_data.unmasked_image, results=results)
+
         lens_data = lens_data.new_lens_data_with_modified_image(
             modified_image=modified_image)
 
@@ -356,37 +390,44 @@ class PhaseImaging(Phase):
 
                 hyper_model_image_2d = lens_data.map_to_scaled_array(array_1d=hyper_model_image_1d)
 
-                cluster_image_1d_galaxy_dict = {}
+                if self.lens_data.uses_cluster_inversion:
 
-                for galaxy, galaxy_image_2d in self.last_results.image_2d_dict.items():
+                    cluster_image_1d_galaxy_dict = {}
 
-                    cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
-                        array_2d=galaxy_image_2d, bin_up_factor=lens_data.cluster.bin_up_factor)
+                    for galaxy, galaxy_image_2d in self.last_results.image_2d_dict.items():
 
-                    cluster_image_1d_galaxy_dict[galaxy] = \
-                        lens_data.cluster.mask.map_2d_array_to_masked_1d_array(array_2d=cluster_image_2d)
+                        cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+                            array_2d=galaxy_image_2d, bin_up_factor=lens_data.cluster.bin_up_factor)
 
-                hyper_galaxy_cluster_image_1d_path_dict = {}
-                hyper_galaxy_cluster_image_2d_path_dict = {}
+                        cluster_image_1d_galaxy_dict[galaxy] = \
+                            lens_data.cluster.mask.map_2d_array_to_masked_1d_array(array_2d=cluster_image_2d)
 
-                for path, galaxy in self.last_results.path_galaxy_tuples:
+                    hyper_galaxy_cluster_image_1d_path_dict = {}
+                    hyper_galaxy_cluster_image_2d_path_dict = {}
 
-                    galaxy_cluster_image_1d = cluster_image_1d_galaxy_dict[path]
+                    for path, galaxy in self.last_results.path_galaxy_tuples:
 
-                    minimum_cluster_value = self.hyper_minimum_percent * max(galaxy_cluster_image_1d)
-                    galaxy_cluster_image_1d[galaxy_cluster_image_1d < minimum_cluster_value] = minimum_cluster_value
+                        galaxy_cluster_image_1d = cluster_image_1d_galaxy_dict[path]
 
-                    hyper_galaxy_cluster_image_1d_path_dict[path] = galaxy_cluster_image_1d
+                        minimum_cluster_value = self.hyper_minimum_percent * max(galaxy_cluster_image_1d)
+                        galaxy_cluster_image_1d[galaxy_cluster_image_1d < minimum_cluster_value] = minimum_cluster_value
 
-                    hyper_galaxy_cluster_image_2d_path_dict[path] = \
-                        lens_data.cluster.scaled_array_2d_from_array_1d(array_1d=galaxy_cluster_image_1d)
+                        hyper_galaxy_cluster_image_1d_path_dict[path] = galaxy_cluster_image_1d
 
+                        hyper_galaxy_cluster_image_2d_path_dict[path] = \
+                            lens_data.cluster.scaled_array_2d_from_array_1d(array_1d=galaxy_cluster_image_1d)
+
+                else:
+
+                    hyper_galaxy_cluster_image_1d_path_dict = None
+                    hyper_galaxy_cluster_image_2d_path_dict = None
 
                 phase_plotters.plot_hyper_images_for_phase(
                     hyper_model_image=hyper_model_image_2d,
                     hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict,
                     hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_2d_path_dict,
                     mask=lens_data.mask_2d,
+                    cluster_mask=lens_data.cluster.mask,
                     extract_array_from_mask=self.extract_array_from_mask,
                     zoom_around_mask=self.zoom_around_mask,
                     units=self.plot_units,
@@ -459,7 +500,8 @@ class PhaseImaging(Phase):
                     if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
                         galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[galaxy_path]
-                        galaxy.hyper_galaxy_cluster_image_1d = self.hyper_galaxy_cluster_image_1d_path_dict[galaxy_path]
+                        if self.hyper_galaxy_cluster_image_1d_path_dict is not None:
+                            galaxy.hyper_galaxy_cluster_image_1d = self.hyper_galaxy_cluster_image_1d_path_dict[galaxy_path]
             return instance
 
         def add_grids_to_grid_stack(self, galaxies, grid_stack):
@@ -585,6 +627,7 @@ class MultiPlanePhase(PhaseImaging):
                  positions_threshold=None,
                  mask_function=None,
                  inner_mask_radii=None,
+                 inversion_pixel_limit=None,
                  cluster_pixel_scale=None,
                  cosmology=cosmo.Planck15,
                  auto_link_priors=False):
@@ -599,21 +642,30 @@ class MultiPlanePhase(PhaseImaging):
             The class of a non-linear optimizer
         sub_grid_size: int
             The side length of the subgrid
+        inversion_max_pixels : int or None
+            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+            up run.
+        cluster_pixel_scale : float or None
+            If *True*, the hyper image used to generate the cluster'grids weight map will be binned up to this higher \
+            pixel scale to speed up the KMeans clustering algorithm.
         """
 
-        super(MultiPlanePhase, self).__init__(phase_name=phase_name,
-                                              tag_phases=tag_phases,
-                                              phase_folders=phase_folders,
-                                              optimizer_class=optimizer_class,
-                                              sub_grid_size=sub_grid_size,
-                                              bin_up_factor=bin_up_factor,
-                                              image_psf_shape=image_psf_shape,
-                                              positions_threshold=positions_threshold,
-                                              mask_function=mask_function,
-                                              inner_mask_radii=inner_mask_radii,
-                                              cluster_pixel_scale=cluster_pixel_scale,
-                                              cosmology=cosmology,
-                                              auto_link_priors=auto_link_priors)
+        super(MultiPlanePhase, self).__init__(
+            phase_name=phase_name,
+            tag_phases=tag_phases,
+            phase_folders=phase_folders,
+            optimizer_class=optimizer_class,
+            sub_grid_size=sub_grid_size,
+            bin_up_factor=bin_up_factor,
+            image_psf_shape=image_psf_shape,
+            positions_threshold=positions_threshold,
+            mask_function=mask_function,
+            inner_mask_radii=inner_mask_radii,
+            inversion_pixel_limit=inversion_pixel_limit,
+            cluster_pixel_scale=cluster_pixel_scale,
+            cosmology=cosmology,
+            auto_link_priors=auto_link_priors)
+
         self.galaxies = galaxies
 
     @property
@@ -627,7 +679,15 @@ class MultiPlanePhase(PhaseImaging):
     def uses_inversion(self):
         if self.galaxies:
             for galaxy in self.galaxies:
-                if galaxy.pixelization is not None:
+                if galaxy.uses_inversion:
+                    return True
+        return False
+
+    @property
+    def uses_cluster_inversion(self):
+        if self.galaxies:
+            for galaxy in self.galaxies:
+                if galaxy.uses_cluster_inversion:
                     return True
         return False
 
@@ -676,7 +736,9 @@ class LensSourcePlanePhase(PhaseImaging):
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  positions_threshold=None,
                  mask_function=None,
-                 interp_pixel_scale=None, inner_mask_radii=None,
+                 inner_mask_radii=None,
+                 interp_pixel_scale=None,
+                 inversion_pixel_limit=None,
                  cluster_pixel_scale=None,
                  cosmology=cosmo.Planck15,
                  auto_link_priors=False):
@@ -693,21 +755,30 @@ class LensSourcePlanePhase(PhaseImaging):
             The class of a non-linear optimizer
         sub_grid_size: int
             The side length of the subgrid
+        inversion_max_pixels : int or None
+            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+            up run.
+        cluster_pixel_scale : float or None
+            If *True*, the hyper image used to generate the cluster'grids weight map will be binned up to this higher \
+            pixel scale to speed up the KMeans clustering algorithm.
         """
-        super(LensSourcePlanePhase, self).__init__(phase_name=phase_name,
-                                                   tag_phases=tag_phases,
-                                                   phase_folders=phase_folders,
-                                                   optimizer_class=optimizer_class,
-                                                   sub_grid_size=sub_grid_size,
-                                                   bin_up_factor=bin_up_factor,
-                                                   image_psf_shape=image_psf_shape,
-                                                   positions_threshold=positions_threshold,
-                                                   mask_function=mask_function,
-                                                   interp_pixel_scale=interp_pixel_scale,
-                                                   inner_mask_radii=inner_mask_radii,
-                                                   cluster_pixel_scale=cluster_pixel_scale,
-                                                   cosmology=cosmology,
-                                                   auto_link_priors=auto_link_priors)
+        super(LensSourcePlanePhase, self).__init__(
+            phase_name=phase_name,
+            tag_phases=tag_phases,
+            phase_folders=phase_folders,
+            optimizer_class=optimizer_class,
+            sub_grid_size=sub_grid_size,
+            bin_up_factor=bin_up_factor,
+            image_psf_shape=image_psf_shape,
+            positions_threshold=positions_threshold,
+            mask_function=mask_function,
+            interp_pixel_scale=interp_pixel_scale,
+            inner_mask_radii=inner_mask_radii,
+            inversion_pixel_limit=inversion_pixel_limit,
+            cluster_pixel_scale=cluster_pixel_scale,
+            cosmology=cosmology,
+            auto_link_priors=auto_link_priors)
+
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
 
@@ -716,12 +787,26 @@ class LensSourcePlanePhase(PhaseImaging):
 
         if self.lens_galaxies:
             for galaxy_model in self.lens_galaxies:
-                if galaxy_model.pixelization is not None:
+                if galaxy_model.uses_inversion:
                     return True
 
         if self.source_galaxies:
             for galaxy_model in self.source_galaxies:
-                if galaxy_model.pixelization is not None:
+                if galaxy_model.uses_inversion:
+                    return True
+        return False
+
+    @property
+    def uses_cluster_inversion(self):
+
+        if self.lens_galaxies:
+            for galaxy in self.lens_galaxies:
+                if galaxy.uses_cluster_inversion:
+                    return True
+
+        if self.source_galaxies:
+            for galaxy in self.source_galaxies:
+                if galaxy.uses_cluster_inversion:
                     return True
         return False
 
@@ -780,25 +865,33 @@ class LensPlanePhase(PhaseImaging):
 
     lens_galaxies = af.PhaseProperty("lens_galaxies")
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None,
+    def __init__(self,
+                 phase_name,
+                 tag_phases=True,
+                 phase_folders=None,
                  lens_galaxies=None,
                  optimizer_class=af.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None,
-                 image_psf_shape=None, mask_function=None, inner_mask_radii=None,
+                 sub_grid_size=2,
+                 bin_up_factor=None,
+                 image_psf_shape=None,
+                 mask_function=None,
+                 inner_mask_radii=None,
                  cosmology=cosmo.Planck15,
                  auto_link_priors=False):
 
-        super(LensPlanePhase, self).__init__(phase_name=phase_name,
-                                             tag_phases=tag_phases,
-                                             phase_folders=phase_folders,
-                                             optimizer_class=optimizer_class,
-                                             sub_grid_size=sub_grid_size,
-                                             bin_up_factor=bin_up_factor,
-                                             image_psf_shape=image_psf_shape,
-                                             mask_function=mask_function,
-                                             inner_mask_radii=inner_mask_radii,
-                                             cosmology=cosmology,
-                                             auto_link_priors=auto_link_priors)
+        super(LensPlanePhase, self).__init__(
+            phase_name=phase_name,
+            tag_phases=tag_phases,
+            phase_folders=phase_folders,
+            optimizer_class=optimizer_class,
+            sub_grid_size=sub_grid_size,
+            bin_up_factor=bin_up_factor,
+            image_psf_shape=image_psf_shape,
+            mask_function=mask_function,
+            inner_mask_radii=inner_mask_radii,
+            cosmology=cosmology,
+            auto_link_priors=auto_link_priors)
+
         self.lens_galaxies = lens_galaxies
 
     @property

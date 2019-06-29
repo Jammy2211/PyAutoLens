@@ -31,6 +31,8 @@ class MockLensData(object):
 
         self.cluster = cluster
 
+        self.uses_cluster_inversion = False
+
     @property
     def array_1d_from_array_2d(self):
         return self.grid_stack.regular.array_1d_from_array_2d
