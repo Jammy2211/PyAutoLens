@@ -456,23 +456,24 @@ class TestLensProfileFit:
 
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
                 self, lens_data_5x5):
+
             g0 = g.Galaxy(redshift=0.5,
                           light_profile=lp.EllipticalSersic(intensity=1.0),
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+
             g1 = g.Galaxy(redshift=1.0,
                           light_profile=lp.EllipticalSersic(intensity=1.0))
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
-                                                         source_galaxies=[g1],
-                                                         image_plane_grid_stack=lens_data_5x5.grid_stack)
+            tracer = ray_tracing.TracerImageSourcePlanes(
+                lens_galaxies=[g0], source_galaxies=[g1],
+                image_plane_grid_stack=lens_data_5x5.grid_stack)
 
             padded_tracer = ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=[g0], source_galaxies=[g1],
                 image_plane_grid_stack=lens_data_5x5.padded_grid_stack)
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5,
-                                                           tracer=tracer,
-                                                           padded_tracer=padded_tracer)
+            fit = lens_fit.LensDataFit.for_data_and_tracer(
+                lens_data=lens_data_5x5, tracer=tracer, padded_tracer=padded_tracer)
 
             blurred_profile_image_2d_of_planes = \
                 tracer.blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(
@@ -487,8 +488,7 @@ class TestLensProfileFit:
                 psf=lens_data_5x5.psf,
                 unmasked_image_1d=padded_tracer.profile_image_plane_image_1d)
 
-            assert (
-                        unmasked_blurred_profile_image == fit.unmasked_blurred_image_plane_image).all()
+            assert (unmasked_blurred_profile_image == fit.unmasked_blurred_image_plane_image).all()
 
             unmasked_blurred_profile_image_of_planes = \
                 padded_tracer.unmasked_blurred_profile_image_plane_image_of_planes_from_psf(
@@ -735,6 +735,7 @@ class TestLensInversionFit:
 
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
                 self, lens_data_5x5):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
             reg = regularization.Constant(coefficients=(1.0,))
 
@@ -756,7 +757,7 @@ class TestLensInversionFit:
                 noise_map_1d=lens_data_5x5.noise_map_1d,
                 convolver=lens_data_5x5.convolver_mapping_matrix)
 
-            assert None == fit.model_image_2d_of_planes[0]
+            assert (fit.model_image_2d_of_planes[0] == np.zeros((5,5))).all()
             assert inversion.reconstructed_data_2d == pytest.approx(
                 fit.model_image_2d_of_planes[1], 1.0e-4)
 

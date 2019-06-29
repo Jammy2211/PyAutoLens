@@ -495,10 +495,10 @@ from autolens.lens import plane as pl
 
 
 @pytest.fixture(name='plane_5x5')
-def make_plane_5x5(gal_x1_lp, grid_stack_5x5):
+def make_plane_5x5(gal_x1_lp_x1_mp, grid_stack_5x5):
 
     return pl.Plane(
-        galaxies=[gal_x1_lp], grid_stack=grid_stack_5x5, compute_deflections=False)
+        galaxies=[gal_x1_lp_x1_mp], grid_stack=grid_stack_5x5, compute_deflections=False)
 
 
 ### Ray Tracing ####

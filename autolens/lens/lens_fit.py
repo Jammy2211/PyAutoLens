@@ -269,7 +269,7 @@ class LensInversionFit(InversionFit):
 
     @property
     def model_image_2d_of_planes(self):
-        return [None, self.inversion.reconstructed_data_2d]
+        return [np.zeros(self.image_2d.shape), self.inversion.reconstructed_data_2d]
 
 
 class LensProfileInversionFit(InversionFit):

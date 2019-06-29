@@ -123,7 +123,7 @@ def plot_array(
         output_path='/path/to/output', output_format='png', output_filename='image')
     """
 
-    if array is None:
+    if array is None or np.all(array == 0):
         return
 
     if extract_array_from_mask and mask is not None:
