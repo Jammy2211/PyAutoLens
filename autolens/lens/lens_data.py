@@ -3,12 +3,11 @@ from autolens.data.convolution import ConvolverImage
 from autolens.data.array import mask as msk
 from autolens.model.inversion import convolution as inversion_convolution
 
-import numpy as np
-
 class LensData(object):
 
-    def __init__(self, ccd_data, mask, sub_grid_size=2, image_psf_shape=None, inversion_psf_shape=None,
-                 positions=None, interp_pixel_scale=None, cluster_pixel_scale=None, uses_inversion=True):
+    def __init__(self, ccd_data, mask, sub_grid_size=2, positions=None, image_psf_shape=None, inversion_psf_shape=None,
+                 interp_pixel_scale=None, cluster_pixel_scale=None, cluster_pixel_limit=None, uses_inversion=True,
+                 uses_cluster_inversion=True):
         """
         The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -37,6 +36,12 @@ class LensData(object):
         interp_pixel_scale : float
             If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
             interpolated to the regular, sub and blurring grids.
+        cluster_pixel_limit : int or None
+            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+            up run.
+        cluster_pixel_scale : float or None
+            If *True*, the hyper image used to generate the cluster'grids weight map will be binned up to this higher \
+            pixel scale to speed up the KMeans clustering algorithm.
         """
 
         self.ccd_data = ccd_data
@@ -100,37 +105,64 @@ class LensData(object):
         self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
         self.noise_map_2d = self.map_to_scaled_array(array_1d=self.noise_map_1d)
 
-        self.cluster_pixel_scale = cluster_pixel_scale
+        self.uses_cluster_inversion = uses_cluster_inversion
 
-        if self.cluster_pixel_scale is not None:
+        if uses_cluster_inversion:
 
-            self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-                mask=self.mask_2d, cluster_pixel_scale=cluster_pixel_scale)
+            self.cluster_pixel_limit = cluster_pixel_limit
+            self.cluster_pixel_scale = cluster_pixel_scale
+
+            if self.cluster_pixel_scale is not None:
+
+                self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                    mask=self.mask_2d, cluster_pixel_scale=cluster_pixel_scale, cluster_pixels_limit=cluster_pixel_limit)
+
+            else:
+
+                self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                    mask=self.mask_2d, cluster_pixel_scale=self.pixel_scale, cluster_pixels_limit=cluster_pixel_limit)
 
         else:
 
-            self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-                mask=self.mask_2d, cluster_pixel_scale=self.pixel_scale)
+            self.cluster = None
+            self.cluster_pixel_limit = None
+            self.cluster_pixel_scale = None
 
 
     def new_lens_data_with_modified_image(self, modified_image):
 
         ccd_data_with_modified_image = self.ccd_data.new_ccd_data_with_modified_image(modified_image=modified_image)
 
-        return LensData(ccd_data=ccd_data_with_modified_image, mask=self.mask_2d, sub_grid_size=self.sub_grid_size,
-                        image_psf_shape=self.image_psf_shape, inversion_psf_shape=self.inversion_psf_shape,
-                        positions=self.positions, interp_pixel_scale=self.interp_pixel_scale,
-                        cluster_pixel_scale=self.cluster_pixel_scale, uses_inversion=self.uses_inversion)
+        return LensData(
+            ccd_data=ccd_data_with_modified_image,
+            mask=self.mask_2d,
+            sub_grid_size=self.sub_grid_size,
+            positions=self.positions,
+            image_psf_shape=self.image_psf_shape,
+            inversion_psf_shape=self.inversion_psf_shape,
+            interp_pixel_scale=self.interp_pixel_scale,
+            cluster_pixel_scale=self.cluster_pixel_scale,
+            cluster_pixel_limit=self.cluster_pixel_limit,
+            uses_inversion=self.uses_inversion,
+            uses_cluster_inversion=self.uses_cluster_inversion)
 
     def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
 
         binned_up_ccd_data = self.ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=bin_up_factor)
         binned_up_mask = self.mask_2d.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
 
-        return LensData(ccd_data=binned_up_ccd_data, mask=binned_up_mask, sub_grid_size=self.sub_grid_size,
-                        image_psf_shape=self.image_psf_shape, inversion_psf_shape=self.inversion_psf_shape,
-                        positions=self.positions, interp_pixel_scale=self.interp_pixel_scale,
-                        cluster_pixel_scale=self.cluster_pixel_scale, uses_inversion=self.uses_inversion)
+        return LensData(
+            ccd_data=binned_up_ccd_data,
+            mask=binned_up_mask,
+            sub_grid_size=self.sub_grid_size,
+            positions=self.positions,
+            image_psf_shape=self.image_psf_shape,
+            inversion_psf_shape=self.inversion_psf_shape,
+            interp_pixel_scale=self.interp_pixel_scale,
+            cluster_pixel_scale=self.cluster_pixel_scale,
+            cluster_pixel_limit=self.cluster_pixel_limit,
+            uses_inversion=self.uses_inversion,
+            uses_cluster_inversion=self.uses_cluster_inversion)
 
     @property
     def array_1d_from_array_2d(self):
@@ -162,4 +194,6 @@ class LensData(object):
             self.border = obj.border
             self.positions = obj.positions
             self.interp_pixel_scale = obj.interp_pixel_scale
+            self.uses_cluster_inversion = obj.uses_cluster_inversion
             self.cluster = obj.cluster
+            self.cluster_pixel_limit = obj.cluster_pixel_limit

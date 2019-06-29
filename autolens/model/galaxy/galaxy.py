@@ -7,6 +7,7 @@ import autofit as af
 
 from autolens import exc, dimensions as dim
 from autolens import text_util
+from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
@@ -110,6 +111,14 @@ class Galaxy(af.ModelObject):
     @property
     def has_profile(self):
         return len(self.mass_profiles) + len(self.light_profiles) > 0
+
+    @property
+    def uses_inversion(self):
+        return self.has_pixelization
+
+    @property
+    def uses_cluster_inversion(self):
+        return type(self.pixelization) is pix.VoronoiBrightnessImage
 
     @property
     def uses_hyper_images(self):
