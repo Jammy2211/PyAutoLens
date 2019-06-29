@@ -1,8 +1,9 @@
 import numpy as np
 import scipy.spatial.qhull as qhull
-from sklearn.cluster import KMeans, MiniBatchKMeans
+from sklearn.cluster import KMeans
 from functools import wraps
 
+from autolens import exc
 from autolens import decorator_util
 from autolens.data.array import mask as msk, scaled_array
 from autolens.data.array.util import grid_util, mapping_util, array_util, mask_util, binning_util
@@ -840,7 +841,7 @@ class ClusterGrid(RegularGrid):
             self.cluster_to_regular_all = obj.cluster_to_regular_all
 
     @classmethod
-    def from_mask_and_cluster_pixel_scale(cls, mask, cluster_pixel_scale):
+    def from_mask_and_cluster_pixel_scale(cls, mask, cluster_pixel_scale, cluster_pixels_limit=None):
 
         if cluster_pixel_scale > mask.pixel_scale:
 
@@ -851,6 +852,20 @@ class ClusterGrid(RegularGrid):
             cluster_bin_up_factor = 1
 
         cluster_mask = mask.binned_up_mask_from_mask(bin_up_factor=cluster_bin_up_factor)
+
+        if cluster_pixels_limit is not None:
+
+            while cluster_mask.pixels_in_mask < cluster_pixels_limit:
+
+                if cluster_bin_up_factor == 1:
+                    raise exc.DataException(
+                        'The cluster hyper image cannot obtain more data points that the maximum number of pixels for a '
+                        'cluster pixelization, even without any binning up. Either increase the mask size or reduce the '
+                        'maximum number of pixels.')
+
+                cluster_bin_up_factor -= 1
+                cluster_mask = mask.binned_up_mask_from_mask(bin_up_factor=cluster_bin_up_factor)
+
         cluster_grid = RegularGrid.from_mask(mask=cluster_mask)
         cluster_to_regular_all, cluster_to_regular_sizes = \
             binning_util.binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(

@@ -79,27 +79,3 @@ def test__tracer_individuals__dependent_on_input(tracer_x2_plane_5x5, mask_5x5, 
     assert ray_tracing_plotter_path + 'tracer_deflections_y.png' not in plot_patch.paths
 
     assert ray_tracing_plotter_path + 'tracer_deflections_x.png' not in plot_patch.paths
-
-
-def test__plot_ray_tracing_for_phase__dependent_on_input(tracer_x2_plane_5x5, mask_5x5, ray_tracing_plotter_path, plot_patch):
-
-    ray_tracing_plotters.plot_ray_tracing_for_phase(
-        tracer=tracer_x2_plane_5x5, during_analysis=False, mask=mask_5x5, positions=None,
-        extract_array_from_mask=True, zoom_around_mask=True, units='arcsec',
-        should_plot_as_subplot=True,
-        should_plot_all_at_end_png=False,
-        should_plot_all_at_end_fits=False,
-        should_plot_image_plane_image=True,
-        should_plot_source_plane=True,
-        should_plot_convergence=False,
-        should_plot_potential=True,
-        should_plot_deflections=False,
-        visualize_path=ray_tracing_plotter_path)
-
-    assert ray_tracing_plotter_path + 'tracer.png' in plot_patch.paths
-    assert ray_tracing_plotter_path + 'tracer_image_plane_image.png' in plot_patch.paths
-    assert ray_tracing_plotter_path + 'tracer_source_plane.png' in plot_patch.paths
-    assert ray_tracing_plotter_path + 'tracer_convergence.png' not in plot_patch.paths
-    assert ray_tracing_plotter_path + 'tracer_potential.png' in plot_patch.paths
-    assert ray_tracing_plotter_path + 'tracer_deflections_y.png' not in plot_patch.paths
-    assert ray_tracing_plotter_path + 'tracer_deflections_x.png' not in plot_patch.paths

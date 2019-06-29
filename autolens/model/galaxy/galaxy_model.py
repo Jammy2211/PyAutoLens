@@ -3,6 +3,7 @@ import inspect
 
 import autofit as af
 from autolens.model.galaxy import galaxy
+from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles, mass_profiles
 
@@ -150,6 +151,16 @@ class GalaxyModel(af.AbstractPriorModel):
             hyper_galaxy) else hyper_galaxy
 
         self.hyper_galaxy_image_1d = None
+
+        if pixelization is not None:
+            self.uses_inversion = True
+        else:
+            self.uses_inversion = False
+
+        if pixelization is pix.VoronoiBrightnessImage:
+            self.uses_cluster_inversion = True
+        else:
+            self.uses_cluster_inversion = False
 
         if hyper_galaxy is not None:
             self.uses_hyper_images = True

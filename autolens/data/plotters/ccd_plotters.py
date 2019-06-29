@@ -7,39 +7,6 @@ from matplotlib import pyplot as plt
 from autolens.data.plotters import data_plotters
 from autolens.plotters import plotter_util
 
-def plot_ccd_for_phase(
-        ccd_data, mask, positions, extract_array_from_mask, zoom_around_mask, units,
-        should_plot_as_subplot,
-        should_plot_image,
-        should_plot_noise_map,
-        should_plot_psf,
-        should_plot_signal_to_noise_map,
-        should_plot_absolute_signal_to_noise_map,
-        should_plot_potential_chi_squared_map,
-        visualize_path):
-
-    output_path = visualize_path
-
-    if should_plot_as_subplot:
-
-        plot_ccd_subplot(
-            ccd_data=ccd_data, mask=mask, extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask, positions=positions,
-            units=units,
-            output_path=output_path, output_format='png')
-
-    plot_ccd_individual(
-        ccd_data=ccd_data, mask=mask, extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask, positions=positions,
-        should_plot_image=should_plot_image,
-        should_plot_noise_map=should_plot_noise_map,
-        should_plot_psf=should_plot_psf,
-        should_plot_signal_to_noise_map=should_plot_signal_to_noise_map,
-        should_plot_absolute_signal_to_noise_map=should_plot_absolute_signal_to_noise_map,
-        should_plot_potential_chi_squared_map=should_plot_potential_chi_squared_map,
-        units=units,
-        output_path=output_path, output_format='png')
-
 def plot_ccd_subplot(
         ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         should_plot_border=False, positions=None,
