@@ -422,12 +422,17 @@ class PhaseImaging(Phase):
                     hyper_galaxy_cluster_image_1d_path_dict = None
                     hyper_galaxy_cluster_image_2d_path_dict = None
 
+                if lens_data.cluster is not None:
+                    cluster_mask = lens_data.cluster.mask
+                else:
+                    cluster_mask = None
+
                 phase_plotters.plot_hyper_images_for_phase(
                     hyper_model_image=hyper_model_image_2d,
                     hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict,
                     hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_2d_path_dict,
                     mask=lens_data.mask_2d,
-                    cluster_mask=lens_data.cluster.mask,
+                    cluster_mask=cluster_mask,
                     extract_array_from_mask=self.extract_array_from_mask,
                     zoom_around_mask=self.zoom_around_mask,
                     units=self.plot_units,
