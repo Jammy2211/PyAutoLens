@@ -199,7 +199,7 @@ def plot_lens_fit_for_phase(
 
 def plot_hyper_images_for_phase(
         hyper_model_image, hyper_galaxy_image_path_dict, hyper_galaxy_cluster_image_path_dict,
-        mask, extract_array_from_mask, zoom_around_mask, units,
+        mask, cluster_mask, extract_array_from_mask, zoom_around_mask, units,
         should_plot_hyper_model_image,
         should_plot_hyper_galaxy_images,
         should_plot_hyper_galaxy_cluster_images,
@@ -223,10 +223,10 @@ def plot_hyper_images_for_phase(
             units=units,
             output_path=output_path, output_format='png')
 
-    if should_plot_hyper_galaxy_cluster_images:
+    if should_plot_hyper_galaxy_cluster_images and hyper_galaxy_cluster_image_path_dict is not None:
 
         hyper_plotters.plot_hyper_galaxy_cluster_images_subplot(
-            hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_path_dict, mask=mask,
+            hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_path_dict, mask=cluster_mask,
             extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path, output_format='png')

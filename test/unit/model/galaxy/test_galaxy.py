@@ -511,23 +511,72 @@ class TestHyperGalaxy(object):
             assert (hyper_noise_map == np.array([0.0, 2.0, 18.0])).all()
 
 
-class TestUsesHyperImages(object):
+class TestUsesBools(object):
 
-    def test__simple_tests_depending_on_hyper_galaxy_and_certain_pixelizations_and_regularizations(self):
+    def test__uses_cluster_inversion__tests_depend_on_any_pixelizations(self):
+
+        galaxy = g.Galaxy(
+            redshift=0.5)
+        assert galaxy.uses_inversion == False
+
+        galaxy = g.Galaxy(
+            redshift=0.5,
+            pixelization=pix.Rectangular(),
+            regularization=reg.Constant())
+
+        assert galaxy.uses_inversion == True
+
+        galaxy = g.Galaxy(
+            redshift=0.5,
+            pixelization=pix.VoronoiBrightnessImage(),
+            regularization=reg.AdaptiveBrightness())
+
+        assert galaxy.uses_inversion == True
+
+    def test__uses_cluster_inversion__tests_depend_specific_pixelizations(self):
+
+        galaxy = g.Galaxy(
+            redshift=0.5)
+        assert galaxy.uses_cluster_inversion == False
+
+        galaxy = g.Galaxy(
+            redshift=0.5,
+            pixelization=pix.Rectangular(),
+            regularization=reg.Constant())
+
+        assert galaxy.uses_cluster_inversion == False
+
+        galaxy = g.Galaxy(
+            redshift=0.5,
+            pixelization=pix.VoronoiBrightnessImage(),
+            regularization=reg.AdaptiveBrightness())
+
+        assert galaxy.uses_cluster_inversion == True
+
+    def test__uses_hyper_images__tests_depend_on_hyper_galaxy_and_specific_pixelizations_and_regularizations(self):
         
-        galaxy = g.Galaxy(redshift=0.5)
+        galaxy = g.Galaxy(
+            redshift=0.5)
 
         assert galaxy.uses_hyper_images == False
 
-        galaxy = g.Galaxy(redshift=0.5, hyper_galaxy=g.HyperGalaxy())
+        galaxy = g.Galaxy(
+            redshift=0.5,
+            hyper_galaxy=g.HyperGalaxy())
 
         assert galaxy.uses_hyper_images == True
 
-        galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant())
+        galaxy = g.Galaxy(
+            redshift=0.5,
+            pixelization=pix.Rectangular(),
+            regularization=reg.Constant())
 
         assert galaxy.uses_hyper_images == False
 
-        galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.AdaptiveBrightness())
+        galaxy = g.Galaxy(
+            redshift=0.5,
+            pixelization=pix.Rectangular(),
+            regularization=reg.AdaptiveBrightness())
 
         assert galaxy.uses_hyper_images == True
 

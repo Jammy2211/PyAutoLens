@@ -129,29 +129,32 @@ class TestPixelization(object):
 
 class TestImagePassing(object):
 
-    def test_path_galaxy_tuples(self, lens_result, lens_galaxy):
+    def test_path_galaxy_tuples(
+            self, lens_result, lens_galaxy):
         assert lens_result.path_galaxy_tuples == [
             (("lens_galaxies", "lens"), lens_galaxy)]
 
-    def test_lens_source_galaxy_dict(self, lens_source_result, lens_galaxy,
-                                     source_galaxy):
+    def test_lens_source_galaxy_dict(
+            self, lens_source_result, lens_galaxy, source_galaxy):
         assert lens_source_result.path_galaxy_tuples == [
             (("source_galaxies", "source"), source_galaxy),
             (("lens_galaxies", "lens"), lens_galaxy)
         ]
 
-    def test_multi_plane_galaxy_dict(self, multi_plane_result, lens_galaxy,
-                                     source_galaxy):
+    def test_multi_plane_galaxy_dict(
+            self, multi_plane_result, lens_galaxy, source_galaxy):
         assert multi_plane_result.path_galaxy_tuples == [
             (("galaxies", "lens"), lens_galaxy),
             (("galaxies", "source"), source_galaxy)
         ]
 
-    def test_lens_image_dict(self, lens_result):
+    def test_lens_image_dict(
+            self, lens_result):
         image_dict = lens_result.image_2d_dict
         assert isinstance(image_dict[("lens_galaxies", "lens")], np.ndarray)
 
-    def test_lens_source_image_dict(self, lens_source_result):
+    def test_lens_source_image_dict(
+            self, lens_source_result):
         image_dict = lens_source_result.image_2d_dict
         assert isinstance(image_dict[("lens_galaxies", "lens")], np.ndarray)
         assert isinstance(image_dict[("source_galaxies", "source")], np.ndarray)
@@ -159,7 +162,8 @@ class TestImagePassing(object):
         lens_source_result.constant.lens_galaxies.lens = g.Galaxy(redshift=0.5)
         lens_source_result.constant.source_galaxies.source = g.Galaxy(redshift=1.0)
 
-    def test_multi_plane_image_dict(self, multi_plane_result):
+    def test_multi_plane_image_dict(
+            self, multi_plane_result):
         image_dict = multi_plane_result.image_2d_dict
         assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
@@ -170,8 +174,8 @@ class TestImagePassing(object):
         assert (image_dict[("galaxies", "lens")] == np.zeros((5, 5))).all()
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
-    def test_galaxy_image_dict(self, lens_galaxy, source_galaxy, grid_stack_5x5,
-                               convolver_image_5x5):
+    def test_galaxy_image_dict(
+            self, lens_galaxy, source_galaxy, grid_stack_5x5, convolver_image_5x5):
         tracer = rt.TracerImageSourcePlanes([lens_galaxy], [source_galaxy],
                                             grid_stack_5x5)
 
@@ -182,8 +186,8 @@ class TestImagePassing(object):
         assert source_galaxy in tracer.galaxy_image_dict_from_convolver_image(
             convolver_image=convolver_image_5x5)
 
-    def test__results_are_passed_to_new_analysis__sets_up_hyper_images(self, mask_function_5x5, results_collection_5x5,
-            ccd_data_5x5):
+    def test__results_are_passed_to_new_analysis__sets_up_hyper_images(
+            self, mask_function_5x5, results_collection_5x5, ccd_data_5x5):
 
         results_collection_5x5[0].galaxy_images = [2.0*np.ones((5,5)), 2.0*np.ones((5,5))]
         results_collection_5x5[0].galaxy_images[0][2,1] = -1.0
@@ -236,8 +240,12 @@ class TestImagePassing(object):
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(
                     redshift=0.5,
-                    hyper_galaxy=g.HyperGalaxy)),
-            mask_function=mask_function_5x5, cluster_pixel_scale=None,
+                    hyper_galaxy=g.HyperGalaxy,
+                    pixelization=px.VoronoiBrightnessImage,
+                    regularization=rg.Constant)),
+            mask_function=mask_function_5x5,
+            inversion_pixel_limit=5,
+            cluster_pixel_scale=None,
             optimizer_class=mock_pipeline.MockNLO)
 
         analysis = phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
@@ -249,7 +257,10 @@ class TestImagePassing(object):
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(
                     redshift=0.5,
-                    hyper_galaxy=g.HyperGalaxy)),
+                    hyper_galaxy=g.HyperGalaxy,
+                    pixelization=px.VoronoiBrightnessImage,
+                    regularization=rg.Constant)),
+            inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
             cluster_pixel_scale=ccd_data_5x5.pixel_scale, phase_name='test_phase')
 
@@ -266,7 +277,10 @@ class TestImagePassing(object):
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(
                     redshift=0.5,
-                    hyper_galaxy=g.HyperGalaxy)),
+                    hyper_galaxy=g.HyperGalaxy,
+                    pixelization=px.VoronoiBrightnessImage,
+                    regularization=rg.Constant)),
+            inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
             cluster_pixel_scale=ccd_data_5x5.pixel_scale*2.0, phase_name='test_phase')
 
@@ -287,7 +301,10 @@ class TestImagePassing(object):
             lens_galaxies=dict(
                 lens=gm.GalaxyModel(
                     redshift=0.5,
-                    hyper_galaxy=g.HyperGalaxy)),
+                    hyper_galaxy=g.HyperGalaxy,
+                    pixelization=px.VoronoiBrightnessImage,
+                    regularization=rg.Constant)),
+            inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO, mask_function=mask_function_5x5,
             cluster_pixel_scale=ccd_data_5x5.pixel_scale*2.0, phase_name='test_phase')
 
@@ -317,7 +334,8 @@ class TestImagePassing(object):
         with pytest.raises(exc.PhaseException):
             phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
 
-    def test_associate_images_lens(self, lens_instance, lens_result, lens_data_5x5):
+    def test_associate_images_lens(
+            self, lens_instance, lens_result, lens_data_5x5):
 
         results_collection = af.ResultsCollection()
         results_collection.add("phase", lens_result)
@@ -336,8 +354,8 @@ class TestImagePassing(object):
         assert instance.lens_galaxies.lens.hyper_galaxy_image_1d == pytest.approx(
             hyper_model_image_1d, 1.0e-4)
 
-    def test_associate_images_lens_source(self, lens_source_instance,
-                                          lens_source_result, lens_data_5x5):
+    def test_associate_images_lens_source(
+            self, lens_source_instance, lens_source_result, lens_data_5x5):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", lens_source_result)
         analysis = phase_imaging.LensSourcePlanePhase.Analysis(
@@ -363,8 +381,8 @@ class TestImagePassing(object):
         assert instance.source_galaxies.source.hyper_galaxy_image_1d == pytest.approx(
             hyper_source_image_1d, 1.04e-4)
 
-    def test_associate_images_multi_plane(self, multi_plane_instance,
-                                          multi_plane_result, lens_data_5x5):
+    def test_associate_images_multi_plane(
+            self, multi_plane_instance, multi_plane_result, lens_data_5x5):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(
@@ -390,9 +408,8 @@ class TestImagePassing(object):
         assert instance.galaxies.source.hyper_model_image_1d == pytest.approx(
             hyper_model_image_1d, 1.0e-4)
 
-    def test_fit_uses_hyper_fit_correctly_multi_plane(self, multi_plane_instance,
-                                                      multi_plane_result,
-                                                      lens_data_5x5):
+    def test_fit_uses_hyper_fit_correctly_multi_plane(
+            self, multi_plane_instance, multi_plane_result, lens_data_5x5):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(

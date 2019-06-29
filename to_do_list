@@ -10,6 +10,7 @@ Big Picture:
 Small Picture:
 
 - Unit Test HyperNoise Maps
+- Add check to inverson pixel limit in phase.
 - PLot noormalized residuals + source recon specific plot.
 - Fix bug with liimit on source clutster size.
 - Implement Amy's branch.
