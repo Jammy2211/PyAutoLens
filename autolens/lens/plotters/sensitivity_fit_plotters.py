@@ -42,7 +42,7 @@ def plot_fit_subplot(
 
     lens_plotter_util.plot_image(
         fit=fit.fit_normal, mask=mask, extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask, positions=positions, image_plane_pix_grid=image_plane_pix_grid,
+        zoom_around_mask=zoom_around_mask, positions=positions, grid=image_plane_pix_grid,
         as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,

@@ -11,6 +11,7 @@ Small Picture:
 
 - Unit Test HyperNoise Maps
 - PLot noormalized residuals + source recon specific plot.
+- Fix bug with liimit on source clutster size.
 - Implement Amy's branch.
 - Summarize output
 - Fix model.info file

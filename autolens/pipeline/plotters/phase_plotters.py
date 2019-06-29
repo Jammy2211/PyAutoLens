@@ -101,27 +101,37 @@ def plot_lens_fit_for_phase(
         fit, during_analysis, extract_array_from_mask, zoom_around_mask, positions, units,
         should_plot_mask,
         should_plot_image_plane_pix,
-        should_plot_as_subplot,
         should_plot_all_at_end_png,
         should_plot_all_at_end_fits,
+        should_plot_fit_as_subplot,
+        should_plot_fit_of_planes_as_subplot,
         should_plot_image,
         should_plot_noise_map,
         should_plot_signal_to_noise_map,
-        should_plot_lens_subtracted_image,
         should_plot_model_image,
-        should_plot_lens_model_image,
-        should_plot_source_model_image,
-        should_plot_source_plane_image,
         should_plot_residual_map,
+        should_plot_normalized_residual_map,
         should_plot_chi_squared_map,
         should_plot_regularization_weights,
+        should_plot_subtracted_images_of_planes,
+        should_plot_model_images_of_planes,
+        should_plot_plane_images_of_planes,
         visualize_path):
 
     output_path = visualize_path
 
-    if should_plot_as_subplot:
+    if should_plot_fit_as_subplot:
 
         lens_fit_plotters.plot_fit_subplot(
+            fit=fit, should_plot_mask=should_plot_mask,
+            extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+            positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
+            units=units,
+            output_path=output_path, output_format='png')
+
+    if should_plot_fit_of_planes_as_subplot:
+
+        lens_fit_plotters.plot_fit_subplot_of_planes(
             fit=fit, should_plot_mask=should_plot_mask,
             extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
@@ -135,14 +145,14 @@ def plot_lens_fit_for_phase(
         should_plot_image=should_plot_image,
         should_plot_noise_map=should_plot_noise_map,
         should_plot_signal_to_noise_map=should_plot_signal_to_noise_map,
-        should_plot_lens_subtracted_image=should_plot_lens_subtracted_image,
         should_plot_model_image=should_plot_model_image,
-        should_plot_lens_model_image=should_plot_lens_model_image,
-        should_plot_source_model_image=should_plot_source_model_image,
-        should_plot_source_plane_image=should_plot_source_plane_image,
         should_plot_residual_map=should_plot_residual_map,
         should_plot_chi_squared_map=should_plot_chi_squared_map,
+        should_plot_normalized_residual_map=should_plot_normalized_residual_map,
         should_plot_regularization_weights=should_plot_regularization_weights,
+        should_plot_subtracted_images_of_planes=should_plot_subtracted_images_of_planes,
+        should_plot_model_images_of_planes=should_plot_model_images_of_planes,
+        should_plot_plane_images_of_planes=should_plot_plane_images_of_planes,
         units=units,
         output_path=output_path, output_format='png')
 
@@ -157,13 +167,14 @@ def plot_lens_fit_for_phase(
                 should_plot_image=True,
                 should_plot_noise_map=True,
                 should_plot_signal_to_noise_map=True,
-                should_plot_lens_subtracted_image=True,
                 should_plot_model_image=True,
-                should_plot_lens_model_image=True,
-                should_plot_source_model_image=True,
-                should_plot_source_plane_image=True,
                 should_plot_residual_map=True,
+                should_plot_normalized_residual_map=True,
                 should_plot_chi_squared_map=True,
+                should_plot_regularization_weights=True,
+                should_plot_subtracted_images_of_planes=True,
+                should_plot_model_images_of_planes=True,
+                should_plot_plane_images_of_planes=True,
                 units=units,
                 output_path=output_path, output_format='png')
 
@@ -176,13 +187,14 @@ def plot_lens_fit_for_phase(
                 should_plot_image=True,
                 should_plot_noise_map=True,
                 should_plot_signal_to_noise_map=True,
-                should_plot_lens_subtracted_image=True,
                 should_plot_model_image=True,
-                should_plot_lens_model_image=True,
-                should_plot_source_model_image=True,
-                should_plot_source_plane_image=True,
                 should_plot_residual_map=True,
+                should_plot_normalized_residual_map=True,
                 should_plot_chi_squared_map=True,
+                should_plot_regularization_weights=True,
+                should_plot_subtracted_images_of_planes=True,
+                should_plot_model_images_of_planes=True,
+                should_plot_plane_images_of_planes=True,
                 output_path=output_path + 'fits/', output_format='fits')
 
 def plot_hyper_images_for_phase(

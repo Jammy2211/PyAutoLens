@@ -229,73 +229,74 @@ class PhaseImaging(Phase):
 
             self.plot_data_as_subplot = \
                 af.conf.instance.visualize.get('plots', 'plot_data_as_subplot', bool)
+
             self.plot_data_image = \
                 af.conf.instance.visualize.get('plots', 'plot_data_image', bool)
+
             self.plot_data_noise_map = \
                 af.conf.instance.visualize.get('plots', 'plot_data_noise_map', bool)
+
             self.plot_data_psf = \
                 af.conf.instance.visualize.get('plots', 'plot_data_psf', bool)
+
             self.plot_data_signal_to_noise_map = \
-                af.conf.instance.visualize.get('plots', 'plot_data_signal_to_noise_map',
-                                             bool)
+                af.conf.instance.visualize.get('plots', 'plot_data_signal_to_noise_map', bool)
+
             self.plot_data_absolute_signal_to_noise_map = \
-                af.conf.instance.visualize.get('plots',
-                                             'plot_data_absolute_signal_to_noise_map',
-                                             bool)
+                af.conf.instance.visualize.get('plots', 'plot_data_absolute_signal_to_noise_map',bool)
+
             self.plot_data_potential_chi_squared_map = \
-                af.conf.instance.visualize.get('plots',
-                                             'plot_data_potential_chi_squared_map',
-                                             bool)
+                af.conf.instance.visualize.get('plots', 'plot_data_potential_chi_squared_map', bool)
+
 
             self.plot_lens_fit_all_at_end_png = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_all_at_end_png',
                                              bool)
             self.plot_lens_fit_all_at_end_fits = \
-                af.conf.instance.visualize.get('plots', 'plot_lens_fit_all_at_end_fits',
-                                             bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_all_at_end_fits', bool)
 
             self.plot_lens_fit_as_subplot = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_as_subplot', bool)
+
+            self.plot_lens_fit_of_planes_as_subplot = \
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_of_planes_as_subplot', bool)
+
             self.plot_lens_fit_image = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_image', bool)
+
             self.plot_lens_fit_noise_map = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_noise_map', bool)
+
             self.plot_lens_fit_signal_to_noise_map = \
-                af.conf.instance.visualize.get('plots',
-                                             'plot_lens_fit_signal_to_noise_map',
-                                             bool)
-            self.plot_lens_fit_lens_subtracted_image = \
-                af.conf.instance.visualize.get('plots', 'plot_lens_fit_lens_subtracted_image', bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_signal_to_noise_map', bool)
 
             self.plot_lens_fit_model_image = \
-                af.conf.instance.visualize.get('plots', 'plot_lens_fit_model_image',
-                                             bool)
-            self.plot_lens_fit_lens_model_image = \
-                af.conf.instance.visualize.get('plots', 'plot_lens_fit_lens_model_image',
-                                             bool)
-            self.plot_lens_fit_source_model_image = \
-                af.conf.instance.visualize.get('plots',
-                                             'plot_lens_fit_source_model_image',
-                                             bool)
-            self.plot_lens_fit_source_plane_image = \
-                af.conf.instance.visualize.get('plots',
-                                             'plot_lens_fit_source_plane_image',
-                                             bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_model_image', bool)
+
             self.plot_lens_fit_residual_map = \
-                af.conf.instance.visualize.get('plots', 'plot_lens_fit_residual_map',
-                                             bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_residual_map', bool)
+
+            self.plot_lens_fit_normalized_residual_map = \
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_normalized_residual_map', bool)
+
             self.plot_lens_fit_chi_squared_map = \
-                af.conf.instance.visualize.get('plots', 'plot_lens_fit_chi_squared_map',
-                                             bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_chi_squared_map', bool)
 
             self.plot_lens_fit_contribution_maps = \
-                af.conf.instance.visualize.get('plots',
-                                             'plot_lens_fit_contribution_maps',
-                                             bool)
+                af.conf.instance.visualize.get('plots','plot_lens_fit_contribution_maps', bool)
+
             self.plot_lens_fit_regularization_weights = \
-                af.conf.instance.visualize.get('plots',
-                                             'plot_lens_fit_regularization_weights',
-                                             bool)
+                af.conf.instance.visualize.get('plots','plot_lens_fit_regularization_weights', bool)
+
+            self.plot_lens_fit_subtracted_images_of_planes = \
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_subtracted_images_of_planes', bool)
+
+            self.plot_lens_fit_model_images_of_planes = \
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_model_images_of_planes', bool)
+
+            self.plot_lens_fit_plane_images_of_planes = \
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_plane_images_of_planes', bool)
+
 
             self.plot_hyper_model_image = \
                 af.conf.instance.visualize.get('plots', 'plot_hyper_model_image', bool)
@@ -529,20 +530,21 @@ class PhaseImaging(Phase):
                 zoom_around_mask=self.zoom_around_mask,
                 positions=positions,
                 should_plot_image_plane_pix=self.should_plot_image_plane_pix,
-                should_plot_as_subplot=self.plot_lens_fit_as_subplot,
                 should_plot_all_at_end_png=self.plot_lens_fit_all_at_end_png,
                 should_plot_all_at_end_fits=self.plot_lens_fit_all_at_end_fits,
+                should_plot_fit_as_subplot=self.plot_lens_fit_as_subplot,
+                should_plot_fit_of_planes_as_subplot=self.plot_lens_fit_of_planes_as_subplot,
                 should_plot_image=self.plot_lens_fit_image,
                 should_plot_noise_map=self.plot_lens_fit_noise_map,
                 should_plot_signal_to_noise_map=self.plot_lens_fit_signal_to_noise_map,
-                should_plot_lens_subtracted_image=self.plot_lens_fit_lens_subtracted_image,
                 should_plot_model_image=self.plot_lens_fit_model_image,
-                should_plot_lens_model_image=self.plot_lens_fit_lens_model_image,
-                should_plot_source_model_image=self.plot_lens_fit_source_model_image,
-                should_plot_source_plane_image=self.plot_lens_fit_source_plane_image,
                 should_plot_residual_map=self.plot_lens_fit_residual_map,
+                should_plot_normalized_residual_map=self.plot_lens_fit_normalized_residual_map,
                 should_plot_chi_squared_map=self.plot_lens_fit_chi_squared_map,
                 should_plot_regularization_weights=self.plot_lens_fit_regularization_weights,
+                should_plot_subtracted_images_of_planes=self.plot_lens_fit_subtracted_images_of_planes,
+                should_plot_model_images_of_planes=self.plot_lens_fit_model_images_of_planes,
+                should_plot_plane_images_of_planes=self.plot_lens_fit_plane_images_of_planes,
                 units=self.plot_units,
                 visualize_path=image_path)
 
@@ -841,6 +843,7 @@ class LensPlanePhase(PhaseImaging):
 
 
 class SensitivityPhase(PhaseImaging):
+
     lens_galaxies = af.PhaseProperty("lens_galaxies")
     source_galaxies = af.PhaseProperty("source_galaxies")
     sensitive_galaxies = af.PhaseProperty("sensitive_galaxies")
@@ -909,29 +912,39 @@ class SensitivityPhase(PhaseImaging):
 
             tracer_normal = self.tracer_normal_for_instance(instance)
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
-            fit = self.fit_for_tracers(tracer_normal=tracer_normal,
-                                       tracer_sensitive=tracer_sensitive)
 
-            ccd_plotters.plot_ccd_subplot(ccd_data=self.lens_data.ccd_data,
-                                          mask=self.lens_data.mask,
-                                          positions=self.lens_data.positions,
-                                          output_path=image_path, output_format='png')
+            fit = self.fit_for_tracers(
+                tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
-            ccd_plotters.plot_ccd_individual(ccd_data=self.lens_data.ccd_data,
-                                             mask=self.lens_data.mask,
-                                             positions=self.lens_data.positions,
-                                             output_path=image_path,
-                                             output_format='png')
+            phase_plotters.plot_ray_tracing_for_phase(
+                tracer=tracer_normal, during_analysis=during_analysis, mask=None, positions=None,
+                extract_array_from_mask=self.extract_array_from_mask,
+                zoom_around_mask=self.zoom_around_mask,
+                units=self.plot_units,
+                should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
+                should_plot_all_at_end_png=self.plot_ray_tracing_all_at_end_png,
+                should_plot_all_at_end_fits=self.plot_ray_tracing_all_at_end_fits,
+                should_plot_image_plane_image=self.plot_ray_tracing_image_plane_image,
+                should_plot_source_plane=self.plot_ray_tracing_source_plane,
+                should_plot_convergence=self.plot_ray_tracing_convergence,
+                should_plot_potential=self.plot_ray_tracing_potential,
+                should_plot_deflections=self.plot_ray_tracing_deflections,
+                visualize_path=image_path)
 
-            ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer_normal,
-                                                          output_path=image_path,
-                                                          output_format='png',
-                                                          output_filename='tracer_normal')
-
-            ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer_sensitive,
-                                                          output_path=image_path,
-                                                          output_format='png',
-                                                          output_filename='tracer_sensitive')
+            phase_plotters.plot_ray_tracing_for_phase(
+                tracer=tracer_sensitive, during_analysis=during_analysis, mask=None, positions=None,
+                extract_array_from_mask=self.extract_array_from_mask,
+                zoom_around_mask=self.zoom_around_mask,
+                units=self.plot_units,
+                should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
+                should_plot_all_at_end_png=self.plot_ray_tracing_all_at_end_png,
+                should_plot_all_at_end_fits=self.plot_ray_tracing_all_at_end_fits,
+                should_plot_image_plane_image=self.plot_ray_tracing_image_plane_image,
+                should_plot_source_plane=self.plot_ray_tracing_source_plane,
+                should_plot_convergence=self.plot_ray_tracing_convergence,
+                should_plot_potential=self.plot_ray_tracing_potential,
+                should_plot_deflections=self.plot_ray_tracing_deflections,
+                visualize_path=image_path)
 
             sensitivity_fit_plotters.plot_fit_subplot(fit=fit, output_path=image_path,
                                                       output_format='png')
