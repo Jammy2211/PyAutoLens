@@ -14,7 +14,7 @@ from autolens.pipeline.phase.phase import setup_phase_mask
 from autolens.pipeline.plotters import hyper_plotters
 
 
-class HyperPhase(af.HyperPhase):
+class HyperPhase(object):
     def __init__(self, phase):
         self.phase = phase
 
