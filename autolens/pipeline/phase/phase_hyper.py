@@ -16,7 +16,6 @@ from autolens.pipeline.plotters import hyper_plotters
 
 class HyperPhase(af.HyperPhase):
     def __init__(self, phase):
-        # phase_folders=f"{phase.phase_folders}/f{phase.phase_name}"
         self.phase = phase
 
     @property
