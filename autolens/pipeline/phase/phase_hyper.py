@@ -32,7 +32,14 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
         variable = copy.deepcopy(results.last.variable)
         HyperPixelizationPhase.transfer_classes(results.last.constant, variable)
         self.optimizer.variable = variable
-        return super().run(data, results=results, mask=mask, positions=positions)
+        result = results.last
+        result.pixelization = super().run(
+            data,
+            results=results,
+            mask=mask,
+            positions=positions
+        )
+        return results
 
     @staticmethod
     def transfer_classes(instance, mapper):
@@ -54,8 +61,9 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                 if not (isinstance(instance_value, px.Pixelization) or isinstance(
                         instance_value, rg.Regularization)):
                     try:
-                        HyperPixelizationPhase.transfer_classes(instance_value,
-                                                                mapper_value)
+                        HyperPixelizationPhase.transfer_classes(
+                            instance_value,
+                            mapper_value)
                     except AttributeError:
                         setattr(mapper, key, instance_value)
             except AttributeError:
@@ -256,7 +264,10 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                     galaxy_path
                 ).hyper_galaxy = result.constant.hyper_galaxy
 
-        return hyper_result
+        result = results.last
+        result.hyper_galaxy = hyper_result
+
+        return result
 
 
 class CombinedHyperPhase(ph.Phase):

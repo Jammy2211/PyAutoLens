@@ -134,8 +134,8 @@ class TestResult(object):
         result = phase.run(ccd_data_5x5, results)
 
         assert result is previous_result
-        assert hasattr(result, "hyper")
-        assert isinstance(result.hyper, MockResult)
+        assert hasattr(result, "hyper_galaxy")
+        assert isinstance(result.hyper_galaxy, MockResult)
 
 
 class TestPixelization(object):
