@@ -224,6 +224,7 @@ class PhaseImaging(Phase):
             positions_threshold=self.positions_threshold,
             image_path=self.optimizer.image_path,
             results=results,
+            inversion_pixel_limit=self.inversion_pixel_limit,
             uses_hyper_images=self.uses_hyper_images)
 
         return analysis
@@ -248,8 +249,8 @@ class PhaseImaging(Phase):
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
-        def __init__(self, lens_data, cosmology, positions_threshold, image_path=None, results=None,
-                     uses_hyper_images=False):
+        def __init__(self, lens_data, cosmology, positions_threshold, inversion_pixel_limit=None, image_path=None,
+                     results=None, uses_hyper_images=False):
 
             super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology,
                                                         results=results)
@@ -342,6 +343,8 @@ class PhaseImaging(Phase):
                 af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_cluster_images', bool)
 
             self.uses_hyper_images = uses_hyper_images
+
+            self.inversion_pixel_limit = inversion_pixel_limit
 
             mask = self.lens_data.mask_2d if self.should_plot_mask else None
             positions = self.lens_data.positions if self.should_plot_positions else None
@@ -466,6 +469,7 @@ class PhaseImaging(Phase):
                 A fractional value indicating how well this model fit and the model lens_data itself
             """
             self.check_positions_trace_within_threshold(instance=instance)
+            self.check_inversion_pixels_are_below_limit(instance=instance)
             tracer = self.tracer_for_instance(instance=instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=None)
             return fit.figure_of_merit
@@ -614,6 +618,9 @@ class PhaseImaging(Phase):
                         self.positions_threshold):
                     raise exc.RayTracingException
 
+        def check_inversion_pixels_are_below_limit(self, instance):
+            raise NotImplementedError
+
         def map_to_1d(self, data):
             """Convenience method"""
             return self.lens_data.mask.map_2d_array_to_masked_1d_array(data)
@@ -720,6 +727,15 @@ class MultiPlanePhase(PhaseImaging):
             return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
                                                  image_plane_grid_stack=self.lens_data.padded_grid_stack,
                                                  cosmology=self.cosmology)
+
+        def check_inversion_pixels_are_below_limit(self, instance):
+
+            if self.inversion_pixel_limit is not None:
+                if instance.galaxies:
+                    for galaxy in instance.galaxies:
+                        if galaxy.has_pixelization:
+                            if galaxy.pixelization.pixels > self.inversion_pixel_limit:
+                                raise exc.PixelizationException
 
         @classmethod
         def describe(cls, instance):
@@ -847,6 +863,23 @@ class LensSourcePlanePhase(PhaseImaging):
                 image_plane_grid_stack=self.lens_data.padded_grid_stack,
                 cosmology=self.cosmology)
 
+        def check_inversion_pixels_are_below_limit(self, instance):
+
+            if self.inversion_pixel_limit is not None:
+
+                if instance.lens_galaxies:
+                    for galaxy in instance.lens_galaxies:
+                        if galaxy.has_pixelization:
+                            if galaxy.pixelization.pixels > self.inversion_pixel_limit:
+                                raise exc.PixelizationException
+
+                if instance.source_galaxies:
+                    for galaxy in instance.source_galaxies:
+                        if galaxy.has_pixelization:
+                            if galaxy.pixelization.pixels > self.inversion_pixel_limit:
+                                raise exc.PixelizationException
+
+
         @classmethod
         def describe(cls, instance):
             return "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource " \
@@ -927,6 +960,10 @@ class LensPlanePhase(PhaseImaging):
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
                                                 image_plane_grid_stack=self.lens_data.padded_grid_stack,
                                                 cosmology=self.cosmology)
+
+        def check_inversion_pixels_are_below_limit(self, instance):
+
+            pass
 
         @classmethod
         def describe(cls, instance):
