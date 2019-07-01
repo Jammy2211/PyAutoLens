@@ -145,13 +145,18 @@ class TestPixelization(object):
         instance.source_galaxy = g.Galaxy(redshift=1.0,
                                           light=lp.EllipticalLightProfile())
 
-        phase_hyper.HyperPixelizationPhase.transfer_classes(
-            instance,
-            mapper,
+        # noinspection PyTypeChecker
+        phase = phase_hyper.VariableFixingHyperPhase(
+            MockPhase(),
             (
                 px.Pixelization,
                 rg.Regularization
             )
+        )
+
+        phase.transfer_classes(
+            instance,
+            mapper,
         )
 
         assert mapper.prior_count == 3
