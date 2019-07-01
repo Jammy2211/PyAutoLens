@@ -218,7 +218,7 @@ class PhaseImaging(Phase):
 
         self.output_phase_info()
 
-        analysis = self.__class__.Analysis(
+        analysis = self.Analysis(
             lens_data=lens_data,
             cosmology=self.cosmology,
             positions_threshold=self.positions_threshold,

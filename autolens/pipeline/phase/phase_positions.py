@@ -62,7 +62,7 @@ class PhasePositions(AbstractPhase):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
 
-        analysis = self.__class__.Analysis(positions=positions, pixel_scale=pixel_scale, cosmology=self.cosmology,
+        analysis = self.Analysis(positions=positions, pixel_scale=pixel_scale, cosmology=self.cosmology,
                                            results=results)
         return analysis
 

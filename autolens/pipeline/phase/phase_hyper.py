@@ -14,32 +14,63 @@ from autolens.pipeline.phase.phase import setup_phase_mask
 from autolens.pipeline.plotters import hyper_plotters
 
 
-class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
+class HyperPhase(af.HyperPhase):
+    def __init__(self, phase):
+        # phase_folders=f"{phase.phase_folders}/f{phase.phase_name}"
+        self.phase = phase
+
+    @property
+    def hyper_name(self):
+        raise NotImplementedError()
+
+    def run_hyper(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def run(self, data, results=None, mask=None, positions=None):
+        results = copy.deepcopy(results)
+        result = self.phase.run(
+            data,
+            results=results,
+            mask=mask,
+            positions=positions
+        )
+        results.add(self.phase.phase_name, result)
+        hyper_result = self.run_hyper(
+            data=data,
+            results=results,
+            mask=mask,
+            positions=positions
+        )
+        setattr(result, self.hyper_name, hyper_result)
+
+
+class HyperPixelizationPhase(HyperPhase):
     """
     Phase that makes everything in the variable from the previous phase equal to the
     corresponding value from the best fit except for variables associated with
     pixelization
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__("pixelization", *args, **kwargs)
+    @property
+    def hyper_name(self):
+        return "pixelization"
 
-    def run(self, data, results=None, mask=None, positions=None):
+    def run_hyper(self, data, results=None, mask=None, positions=None):
         """
         Run the phase, overriding the optimizer's variable instance with one created to
         only fit pixelization hyperparameters.
         """
         variable = copy.deepcopy(results.last.variable)
         HyperPixelizationPhase.transfer_classes(results.last.constant, variable)
-        self.optimizer.variable = variable
-        result = results.last
-        result.pixelization = super().run(
+        phase = copy.deepcopy(self.phase)
+        phase.optimizer.variable = variable
+
+        return phase.run(
             data,
             results=results,
             mask=mask,
             positions=positions
         )
-        return results
 
     @staticmethod
     def transfer_classes(instance, mapper):
@@ -90,9 +121,10 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                 results=results, uses_hyper_images=uses_hyper_images)
 
 
-class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
-    def __init__(self, *args, **kwargs):
-        super().__init__("hyper_galaxy", *args, **kwargs)
+class HyperGalaxyPhase(HyperPhase):
+    @property
+    def hyper_name(self):
+        return "hyper_galaxy"
 
     class Analysis(af.Analysis):
 
@@ -108,7 +140,6 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
             galaxy_image_2d: ndarray
                 The contribution of one galaxy to the model image
             """
-
             self.lens_data = lens_data
 
             self.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
@@ -138,7 +169,9 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                 hyper_galaxy_image_2d = self.lens_data.map_to_scaled_array(
                     array_1d=self.hyper_galaxy_image_1d)
 
-                contribution_map_2d = instance.hyper_galaxy.contribution_map_from_hyper_images(
+                hyper_galaxy = instance.hyper_galaxy
+
+                contribution_map_2d = hyper_galaxy.contribution_map_from_hyper_images(
                     hyper_model_image=hyper_model_image_2d,
                     hyper_galaxy_image=hyper_galaxy_image_2d)
 
@@ -149,7 +182,7 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                     model_image_1d=self.hyper_model_image_1d,
                     map_to_scaled_array=self.lens_data.map_to_scaled_array)
 
-                fit = self.fit_for_hyper_galaxy(hyper_galaxy=instance.hyper_galaxy)
+                fit = self.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
 
                 hyper_plotters.plot_hyper_galaxy_subplot(
                     hyper_galaxy_image=hyper_galaxy_image_2d,
@@ -195,7 +228,7 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
             return "Running hyper galaxy fit for HyperGalaxy:\n{}".format(
                 instance.hyper_galaxy)
 
-    def run(self, data, results=None, mask=None, positions=None):
+    def run_hyper(self, data, results=None, mask=None, positions=None):
         """
         Run a fit for each galaxy from the previous phase.
         Parameters
@@ -211,22 +244,23 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
         results: HyperGalaxyResults
             A collection of results, with one item per a galaxy
         """
+        phase = copy.deepcopy(self.phase)
 
         mask = setup_phase_mask(
             data=data,
             mask=mask,
-            mask_function=self.mask_function,
-            inner_mask_radii=self.inner_mask_radii
+            mask_function=phase.mask_function,
+            inner_mask_radii=phase.inner_mask_radii
         )
 
         lens_data = ld.LensData(
             ccd_data=data,
             mask=mask,
-            sub_grid_size=self.sub_grid_size,
-            image_psf_shape=self.image_psf_shape,
+            sub_grid_size=phase.sub_grid_size,
+            image_psf_shape=phase.image_psf_shape,
             positions=positions,
-            interp_pixel_scale=self.interp_pixel_scale,
-            uses_inversion=self.uses_inversion
+            interp_pixel_scale=phase.interp_pixel_scale,
+            uses_inversion=phase.uses_inversion
         )
 
         model_image_2d = results.last.most_likely_fit.model_image_2d
@@ -240,7 +274,7 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
 
         for galaxy_path, galaxy in results.last.path_galaxy_tuples:
 
-            optimizer = self.optimizer.copy_with_name_extension(
+            optimizer = phase.optimizer.copy_with_name_extension(
                 extension=galaxy_path[-1])
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
             galaxy_image_2d = results.last.image_2d_dict[galaxy_path]
@@ -253,7 +287,7 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                 ] = lens_data.array_1d_from_array_2d(
                     array_2d=galaxy_image_2d
                 )
-                analysis = self.__class__.Analysis(
+                analysis = self.Analysis(
                     lens_data=lens_data,
                     model_image_2d=model_image_2d,
                     galaxy_image_2d=galaxy_image_2d
@@ -264,10 +298,7 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                     galaxy_path
                 ).hyper_galaxy = result.constant.hyper_galaxy
 
-        result = results.last
-        result.hyper_galaxy = hyper_result
-
-        return result
+        return hyper_result
 
 
 class CombinedHyperPhase(ph.Phase):
