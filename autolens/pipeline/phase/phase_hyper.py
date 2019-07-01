@@ -115,7 +115,14 @@ class HyperPixelizationPhase(HyperPhase):
         only fit pixelization hyperparameters.
         """
         variable = copy.deepcopy(results.last.variable)
-        HyperPixelizationPhase.transfer_classes(results.last.constant, variable)
+        HyperPixelizationPhase.transfer_classes(
+            results.last.constant,
+            variable,
+            (
+                px.Pixelization,
+                rg.Regularization
+            )
+        )
         phase = self.make_hyper_phase()
         phase.optimizer.variable = variable
 
@@ -126,12 +133,15 @@ class HyperPixelizationPhase(HyperPhase):
         )
 
     @staticmethod
-    def transfer_classes(instance, mapper):
+    def transfer_classes(instance, mapper, classes):
         """
         Recursively overwrite priors in the mapper with constant values from the
-        instance except where the containing class is associated with pixelization.
+        instance except where the containing class is the decedent of a listed class.
+
         Parameters
         ----------
+        classes
+            The children of these classes should not be copied to the mapper object.
         instance
             The best fit from the previous phase
         mapper
@@ -142,12 +152,18 @@ class HyperPixelizationPhase(HyperPhase):
                 mapper_value = getattr(mapper, key)
                 if isinstance(mapper_value, af.Prior):
                     setattr(mapper, key, instance_value)
-                if not (isinstance(instance_value, px.Pixelization) or isinstance(
-                        instance_value, rg.Regularization)):
+                if not any(
+                        isinstance(
+                            instance_value,
+                            cls
+                        )
+                        for cls in classes
+                ):
                     try:
                         HyperPixelizationPhase.transfer_classes(
                             instance_value,
-                            mapper_value)
+                            mapper_value,
+                            classes)
                     except AttributeError:
                         setattr(mapper, key, instance_value)
             except AttributeError:
