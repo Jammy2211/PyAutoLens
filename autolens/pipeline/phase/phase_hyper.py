@@ -20,6 +20,7 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
     corresponding value from the best fit except for variables associated with
     pixelization
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__("pixelization", *args, **kwargs)
 
@@ -268,7 +269,9 @@ class CombinedHyperPhase(ph.Phase):
             phase_name=phase.phase_name
         )
         self.hyper_phases = list(map(
-            lambda cls: cls(phase.phase_name),
+            lambda cls: cls(
+                phase_folders=f"{self.phase_folders}/{phase.phase_name}"
+            ),
             hyper_phase_classes
         ))
         self.phase = phase

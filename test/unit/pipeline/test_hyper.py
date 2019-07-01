@@ -532,3 +532,8 @@ class TestHyperAPI(object):
             pixelization_phase,
             phase_hyper.HyperPixelizationPhase
         )
+
+        phase_folders = f"{combined.phase_folders}/{combined.phase_name}"
+
+        assert galaxy_phase.phase_folders == phase_folders
+        assert pixelization_phase.phase_folders == phase_folders
