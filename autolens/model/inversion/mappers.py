@@ -92,33 +92,35 @@ class Mapper(object):
         raise NotImplementedError("sub_to_pixelization should be overridden")
 
     @property
-    def pixelization_to_regular(self):
+    def pixelization_to_regular_all(self):
         """Compute the mappings between a pixelization's pixels and the unmasked regular-grid pixels. These mappings \
         are determined after the regular-grid is used to determine the pixelization.
 
         The pixelization's pixels map to different number of regular-grid pixels, thus a list of lists is used to \
         represent these mappings"""
-        pixelization_to_regular = [[] for _ in range(self.pixels)]
+
+        pixelization_to_regular_all = [[] for _ in range(self.pixels)]
 
         for regular_pixel, pix_pixel in enumerate(self.regular_to_pixelization):
 
-            pixelization_to_regular[pix_pixel].append(regular_pixel)
+            pixelization_to_regular_all[pix_pixel].append(regular_pixel)
 
-        return pixelization_to_regular
+        return pixelization_to_regular_all
 
     @property
-    def pixelization_to_sub(self):
+    def pixelization_to_sub_all(self):
         """Compute the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings \
         are determined after the regular-grid is used to determine the pixelization.
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
         represent these mappings"""
-        pixelization_to_sub = [[] for _ in range(self.pixels)]
+
+        pixelization_to_sub_all = [[] for _ in range(self.pixels)]
 
         for regular_pixel, pix_pixel in enumerate(self.sub_to_pixelization):
-            pixelization_to_sub[pix_pixel].append(regular_pixel)
+            pixelization_to_sub_all[pix_pixel].append(regular_pixel)
 
-        return pixelization_to_sub
+        return pixelization_to_sub_all
 
 
 class RectangularMapper(Mapper):

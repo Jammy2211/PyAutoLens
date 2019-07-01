@@ -2,7 +2,8 @@ from autolens import decorator_util
 import numpy as np
 
 @decorator_util.jit()
-def data_vector_from_blurred_mapping_matrix_and_data(blurred_mapping_matrix, image_1d, noise_map_1d):
+def data_vector_from_blurred_mapping_matrix_and_data(
+        blurred_mapping_matrix, image_1d, noise_map_1d):
     """Compute the hyper vector *D* from a blurred mapping matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
     
@@ -27,7 +28,8 @@ def data_vector_from_blurred_mapping_matrix_and_data(blurred_mapping_matrix, ima
 
     return data_vector
 
-def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_map_1d):
+def curvature_matrix_from_blurred_mapping_matrix(
+        blurred_mapping_matrix, noise_map_1d):
     """Compute the curvature matrix *F* from a blurred mapping matrix *f* and the 1D noise-map *\sigma* \
      (see Warren & Dye 2003).
 
@@ -44,7 +46,8 @@ def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_m
     return curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noise_map_1d, flist, iflist)
 
 @decorator_util.jit()
-def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noise_map_1d, flist, iflist):
+def curvature_matrix_from_blurred_mapping_matrix_jit(
+        blurred_mapping_matrix, noise_map_1d, flist, iflist):
     """Compute the curvature matrix *F* from a blurred mapping matrix *f* and the 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
 
@@ -83,7 +86,8 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noi
     return curvature_matrix
 
 @decorator_util.jit()
-def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(blurred_mapping_matrix, solution_vector):
+def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
+        blurred_mapping_matrix, solution_vector):
     """ Compute the reconstructed hyper vector from the blurrred mapping matrix *f* and solution vector *S*.
 
     Parameters
@@ -98,3 +102,51 @@ def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(bl
             reconstructed_data_vector[i] += solution_vector[j] * blurred_mapping_matrix[i, j]
 
     return reconstructed_data_vector
+
+# @decorator_util.jit()
+def pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+        pixelization_values, reconstructed_data_1d, sub_to_regular, pixelization_to_sub_all):
+
+    pixelization_residuals = np.zeros(shape=len(pixelization_to_sub_all))
+
+    reconstructed_data_1d = reconstructed_data_1d
+
+    for pixelization_index, sub_pixels in enumerate(pixelization_to_sub_all):
+        for sub_index in sub_pixels:
+            regular_index = sub_to_regular[sub_index]
+            residual = reconstructed_data_1d[regular_index] - pixelization_values[pixelization_index]
+            pixelization_residuals[pixelization_index] += residual
+
+    return pixelization_residuals
+
+# @decorator_util.jit()
+def pixelization_normalized_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+        pixelization_values, reconstructed_data_1d, noise_map_1d, sub_to_regular, pixelization_to_sub_all):
+
+    pixelization_normalized_residuals = np.zeros(shape=len(pixelization_to_sub_all))
+
+    reconstructed_data_1d = reconstructed_data_1d
+
+    for pixelization_index, sub_pixels in enumerate(pixelization_to_sub_all):
+        for sub_index in sub_pixels:
+            regular_index = sub_to_regular[sub_index]
+            residual = reconstructed_data_1d[regular_index] - pixelization_values[pixelization_index]
+            pixelization_normalized_residuals[pixelization_index] += residual / noise_map_1d[regular_index]
+
+    return pixelization_normalized_residuals
+
+# @decorator_util.jit()
+def pixelization_chi_squareds_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+        pixelization_values, reconstructed_data_1d, noise_map_1d, sub_to_regular, pixelization_to_sub_all):
+
+    pixelization_chi_squareds = np.zeros(shape=len(pixelization_to_sub_all))
+
+    reconstructed_data_1d = reconstructed_data_1d
+
+    for pixelization_index, sub_pixels in enumerate(pixelization_to_sub_all):
+        for sub_index in sub_pixels:
+            regular_index = sub_to_regular[sub_index]
+            residual = reconstructed_data_1d[regular_index] - pixelization_values[pixelization_index]
+            pixelization_chi_squareds[pixelization_index] += (residual / noise_map_1d[regular_index]) ** 2.0
+
+    return pixelization_chi_squareds
