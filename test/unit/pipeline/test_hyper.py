@@ -518,12 +518,11 @@ class TestHyperAPI(object):
         phase = phase_hyper.HyperPixelizationPhase(
             phase_5x5
         )
-        assert phase.hyper_name == "pixelization"
 
         hyper_phase = phase.make_hyper_phase()
         assert hyper_phase.phase_name == phase.hyper_name
-        assert hyper_phase.phase_folders == (f"{phase_5x5.phase_folders}/"
-                                             f"{phase_5x5.phase_name}")
+        assert hyper_phase.phase_path == (f"{phase_5x5.phase_path}/"
+                                          f"{phase_5x5.phase_name}")
 
     def test_instantiation(self, phase_5x5):
         combined = phase_hyper.CombinedHyperPhase(
