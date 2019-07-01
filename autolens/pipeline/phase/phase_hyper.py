@@ -28,7 +28,7 @@ class HyperPhase(af.HyperPhase):
 
     def make_hyper_phase(self):
         phase = copy.deepcopy(self.phase)
-        phase.phase_folders = f"{phase.phase_folders}/{phase.phase_name}"
+        phase.phase_path = f"{phase.phase_path}/{phase.phase_name}"
         phase.phase_name = self.hyper_name
         return phase
 
