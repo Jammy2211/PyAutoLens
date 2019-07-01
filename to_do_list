@@ -9,10 +9,17 @@ Big Picture:
 
 Small Picture:
 
+- Unit Test HyperNoise Maps
+- Add check to inverson pixel limit in phase.
+- PLot noormalized residuals + source recon specific plot.
+- Fix bug with liimit on source clutster size.
+- Implement Amy's branch.
+- Summarize output
+- Fix model.info file
+- Fit Summary with likelhood, evidence, RFF, etc.
+
 - 2d Grid mappings and arrays - build into profiles / galaxy modules
 - Ray tracing refactor.
-- Integration tests + pipelines for noise scaling.
-- Implment weighted kmeans (day before Rich if psosible)
 
 - point source ray tracing, modeling, etc.
 - classmethods using realistic lens units.
@@ -35,7 +42,6 @@ Small Picture:
 
 Rich:
 
-- Fix model mapper bug
 - Setup with unit test to get ideal output logging info.
 - New hyper phase stuff.
 - High level units stuff?

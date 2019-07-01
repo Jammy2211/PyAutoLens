@@ -1,5 +1,8 @@
+import autofit as af
+import matplotlib
+backend = af.conf.instance.visualize.get('figures', 'backend', str)
+matplotlib.use(backend)
 from autolens.plotters import array_plotters
-
 
 def plot_image(
         image, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,

@@ -1,12 +1,12 @@
 import numpy as np
 import scipy.spatial.qhull as qhull
-from sklearn.cluster import KMeans, MiniBatchKMeans
+from sklearn.cluster import KMeans
 from functools import wraps
 
+from autolens import exc
 from autolens import decorator_util
 from autolens.data.array import mask as msk, scaled_array
-from autolens.data.array.util import grid_util
-from autolens.data.array.util import mapping_util, array_util, mask_util
+from autolens.data.array.util import grid_util, mapping_util, array_util, mask_util, binning_util
 
 
 def sub_to_image_grid(func):
@@ -97,7 +97,6 @@ class GridStack(object):
         self.regular = regular
         self.sub = sub
         self.blurring = blurring
-
         self.pixelization = np.array([[0.0, 0.0]]) if pixelization is None else pixelization
 
     def unmasked_blurred_image_from_psf_and_unmasked_image(self, psf, unmasked_image_1d):
@@ -218,9 +217,10 @@ class GridStack(object):
             blurring = self.blurring.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
         else:
             blurring = np.array([[0.0, 0.0]])
+
         return GridStack(regular=regular, sub=sub, blurring=blurring, pixelization=self.pixelization)
 
-    def new_grid_stack_with_pixelization_grid_added(self, pixelization_grid, regular_to_pixelization):
+    def new_grid_stack_with_grids_added(self, pixelization=None):
         """Setup a grid-stack of grid_stack using an existing grid-stack.
         
         The new grid-stack has the same grid_stack (regular, sub, blurring, etc.) as before, but adds a pixelization-grid as a \
@@ -234,7 +234,13 @@ class GridStack(object):
         regular_to_pixelization : ndarray
             A 1D array that maps every regular-grid pixel to its nearest pixelization-grid pixel.
         """
-        pixelization = PixelizationGrid(arr=pixelization_grid, regular_to_pixelization=regular_to_pixelization)
+
+        # if cluster is None:
+        #     cluster = self.cluster
+
+        if pixelization is None:
+            pixelization = self.pixelization
+
         return GridStack(regular=self.regular, sub=self.sub, blurring=self.blurring, pixelization=pixelization)
 
     def apply_function(self, func):
@@ -242,13 +248,17 @@ class GridStack(object):
         
         This is used by the *ray-tracing* module to easily apply tracing operations to all grid_stack."""
         if self.blurring is not None and self.pixelization is not None:
-            return GridStack(func(self.regular), func(self.sub), func(self.blurring), func(self.pixelization))
+            return GridStack(regular=func(self.regular), sub=func(self.sub), blurring=func(self.blurring),
+                             pixelization=func(self.pixelization))
         elif self.blurring is None and self.pixelization is not None:
-            return GridStack(func(self.regular), func(self.sub), self.blurring, func(self.pixelization))
+            return GridStack(regular=func(self.regular), sub=func(self.sub), blurring=self.blurring,
+                            pixelization=func(self.pixelization))
         elif self.blurring is not None and self.pixelization is None:
-            return GridStack(func(self.regular), func(self.sub), func(self.blurring), self.pixelization)
+            return GridStack(regular=func(self.regular), sub=func(self.sub), blurring=func(self.blurring),
+                            pixelization=self.pixelization)
         else:
-            return GridStack(func(self.regular), func(self.sub), self.blurring, self.pixelization)
+            return GridStack(regular=func(self.regular), sub=func(self.sub), blurring=self.blurring,
+                            pixelization=self.pixelization)
 
     def map_function(self, func, *arg_lists):
         """Map a function to all grid_stack in a grid-stack"""
@@ -812,6 +822,61 @@ class SubGrid(RegularGrid):
         return mapping_util.sub_to_regular_from_mask(self.mask, self.sub_grid_size).astype('int')
 
 
+class ClusterGrid(RegularGrid):
+
+    def __init__(self, arr, mask, bin_up_factor, cluster_to_regular_all, cluster_to_regular_sizes, total_regular_pixels):
+        # noinspection PyArgumentList
+        super(ClusterGrid, self).__init__()
+        self.mask = mask
+        self.bin_up_factor = bin_up_factor
+        self.cluster_to_regular_all = cluster_to_regular_all
+        self.cluster_to_regular_sizes = cluster_to_regular_sizes
+        self.total_regular_pixels = total_regular_pixels
+
+    def __array_finalize__(self, obj):
+        super().__array_finalize__(obj)
+        if isinstance(obj, ClusterGrid):
+            self.mask = obj.mask
+            self.bin_up_factor = obj.bin_up_factor
+            self.cluster_to_regular_all = obj.cluster_to_regular_all
+
+    @classmethod
+    def from_mask_and_cluster_pixel_scale(cls, mask, cluster_pixel_scale, cluster_pixels_limit=None):
+
+        if cluster_pixel_scale > mask.pixel_scale:
+
+            cluster_bin_up_factor = int(cluster_pixel_scale / mask.pixel_scale)
+
+        else:
+
+            cluster_bin_up_factor = 1
+
+        cluster_mask = mask.binned_up_mask_from_mask(bin_up_factor=cluster_bin_up_factor)
+
+        if cluster_pixels_limit is not None:
+
+            while cluster_mask.pixels_in_mask < cluster_pixels_limit:
+
+                if cluster_bin_up_factor == 1:
+                    raise exc.DataException(
+                        'The cluster hyper image cannot obtain more data points that the maximum number of pixels for a '
+                        'cluster pixelization, even without any binning up. Either increase the mask size or reduce the '
+                        'maximum number of pixels.')
+
+                cluster_bin_up_factor -= 1
+                cluster_mask = mask.binned_up_mask_from_mask(bin_up_factor=cluster_bin_up_factor)
+
+        cluster_grid = RegularGrid.from_mask(mask=cluster_mask)
+        cluster_to_regular_all, cluster_to_regular_sizes = \
+            binning_util.binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
+                    mask_2d=mask, bin_up_factor=cluster_bin_up_factor)
+
+        return ClusterGrid(arr=cluster_grid, mask=cluster_mask, bin_up_factor=cluster_bin_up_factor,
+                           cluster_to_regular_all=cluster_to_regular_all.astype('int'),
+                           cluster_to_regular_sizes=cluster_to_regular_sizes.astype('int'),
+                           total_regular_pixels=mask.pixels_in_mask)
+
+
 class PixelizationGrid(np.ndarray):
 
     def __new__(cls, arr, regular_to_pixelization, *args, **kwargs):
@@ -943,24 +1008,30 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
                                    regular_to_sparse=regular_to_sparse)
 
     @classmethod
-    def from_total_pixels_regular_grid_and_cluster_weight_map(cls, total_pixels, regular_grid, cluster_weight_map,
-                                                              seed=None):
+    def from_total_pixels_cluster_grid_and_cluster_weight_map(
+            cls, total_pixels, regular_grid, cluster_grid, cluster_weight_map, n_iter=1, max_iter=5, seed=None):
         """Calculate the image-plane pixelization from a regular-grid of coordinates (and its mask).
 
         See *grid_stacks.SparseToRegularGrid* for details on how this grid is calculated.
 
         Parameters
         -----------
-        regular_grid : grids.RegularGrid
+        cluster_grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
-        kmeans = MiniBatchKMeans(n_clusters=total_pixels, random_state=seed, init_size=total_pixels, max_iter=3, n_init=1)
+        kmeans = KMeans(n_clusters=total_pixels, random_state=seed, n_init=n_iter, max_iter=max_iter)
 
-        kmeans = kmeans.fit(X=regular_grid, sample_weight=cluster_weight_map)
+        kmeans = kmeans.fit(X=cluster_grid, sample_weight=cluster_weight_map)
+
+        regular_to_sparse = mapping_util.regular_to_sparse_from_cluster_grid(
+            cluster_labels=kmeans.labels_,
+            cluster_to_regular_all=cluster_grid.cluster_to_regular_all,
+            cluster_to_regular_sizes=cluster_grid.cluster_to_regular_sizes,
+            total_regular_pixels=cluster_grid.total_regular_pixels)
 
         return SparseToRegularGrid(sparse_grid=kmeans.cluster_centers_, regular_grid=regular_grid,
-                                   regular_to_sparse=kmeans.labels_)
+                                   regular_to_sparse=regular_to_sparse.astype('int'))
 
     @property
     def total_sparse_pixels(self):
@@ -1233,7 +1304,7 @@ class Interpolator(object):
     @classmethod
     def from_mask_grid_and_interp_pixel_scales(cls, mask, grid, interp_pixel_scale):
         rescale_factor = mask.pixel_scale / interp_pixel_scale
-        rescaled_mask = mask_util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=rescale_factor)
+        rescaled_mask = mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=rescale_factor)
         interp_mask = mask_util.edge_buffed_mask_from_mask(mask=rescaled_mask)
         interp_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
             mask=interp_mask,

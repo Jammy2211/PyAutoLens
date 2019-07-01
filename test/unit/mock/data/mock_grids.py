@@ -43,12 +43,16 @@ class MockSubGrid(grids.SubGrid):
     def __init__(self, mask, pixel_scale=1.0, sub_grid_size=2):
         pass
 
+class MockClusterGrid(grids.ClusterGrid):
+
+    pass
+
 
 class MockGridStack(grids.GridStack):
 
-    def __init__(self, regular, sub, blurring):
+    def __init__(self, regular, sub, blurring, pixelization=None):
 
-        super(MockGridStack, self).__init__(regular=regular, sub=sub, blurring=blurring)
+        super(MockGridStack, self).__init__(regular=regular, sub=sub, blurring=blurring, pixelization=pixelization)
 
 
 class MockPaddedRegularGrid(grids.PaddedRegularGrid):

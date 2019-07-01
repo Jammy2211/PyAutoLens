@@ -12,6 +12,11 @@ class TestPipelineNameTag:
 
         assert pipeline_name == 'pl_fix_lens_light'
 
+        pipeline_tag = tagging.pipeline_name_from_name_and_settings(
+            pipeline_name='pl', fix_lens_light=True, pixelization=pix.Rectangular, regularization=reg.Constant)
+
+        assert pipeline_tag == 'pl_fix_lens_light_pix_rect_reg_const'
+
         pipeline_name = tagging.pipeline_name_from_name_and_settings(
             pipeline_name='pl2', fix_lens_light=True, align_bulge_disk_phi=True)
 
@@ -22,6 +27,11 @@ class TestPipelineNameTag:
         pipeline_tag = tagging.pipeline_tag_from_pipeline_settings(fix_lens_light=True)
 
         assert pipeline_tag == '_fix_lens_light'
+
+        pipeline_tag = tagging.pipeline_tag_from_pipeline_settings(fix_lens_light=True, pixelization=pix.Rectangular,
+                                                                   regularization=reg.Constant)
+
+        assert pipeline_tag == '_fix_lens_light_pix_rect_reg_const'
 
         pipeline_tag = tagging.pipeline_tag_from_pipeline_settings(fix_lens_light=True, align_bulge_disk_phi=True)
 
@@ -35,24 +45,24 @@ class TestPipelineTaggers:
         assert tag == ''
         tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=True)
         assert tag == '_fix_lens_light'
-    #
-    # def test__pixelization_tagger(self):
-    #
-    #     tag = tagging.pixelization_tag_from_pixelization(pixelization=None)
-    #     assert tag == ''
-    #     tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.Rectangular)
-    #     assert tag == 'rect'
-    #     tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.VoronoiBrightnessImage)
-    #     assert tag == 'voro_image'
-    #
-    # def test__regularization_tagger(self):
-    #
-    #     tag = tagging.regularization_tag_from_regularization(regularization=None)
-    #     assert tag == ''
-    #     tag = tagging.regularization_tag_from_regularization(regularization=reg.Constant)
-    #     assert tag == 'rectangular'
-    #     tag = tagging.regularization_tag_from_regularization(regularization=reg.AdaptiveBrightness)
-    #     assert tag == 'voron_image'
+
+    def test__pixelization_tagger(self):
+
+        tag = tagging.pixelization_tag_from_pixelization(pixelization=None)
+        assert tag == ''
+        tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.Rectangular)
+        assert tag == '_pix_rect'
+        tag = tagging.pixelization_tag_from_pixelization(pixelization=pix.VoronoiBrightnessImage)
+        assert tag == '_pix_voro_image'
+
+    def test__regularization_tagger(self):
+
+        tag = tagging.regularization_tag_from_regularization(regularization=None)
+        assert tag == ''
+        tag = tagging.regularization_tag_from_regularization(regularization=reg.Constant)
+        assert tag == '_reg_const'
+        tag = tagging.regularization_tag_from_regularization(regularization=reg.AdaptiveBrightness)
+        assert tag == '_reg_adapt_bright'
 
     def test__align_bulge_disk_taggers(self):
         tag = tagging.align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre=False)
@@ -99,7 +109,8 @@ class TestPhaseTag:
                                                           inversion_psf_shape=None,
                                                           inner_mask_radii=0.3,
                                                           positions_threshold=2.0,
-                                                          interp_pixel_scale=None)
+                                                          interp_pixel_scale=None,
+                                                          cluster_pixel_scale=None)
 
 
         assert phase_tag == '_sub_2_pos_2.00_inner_mask_0.30'
@@ -110,9 +121,10 @@ class TestPhaseTag:
                                                           inversion_psf_shape=(3,3),
                                                           inner_mask_radii=None,
                                                           positions_threshold=None,
-                                                          interp_pixel_scale=0.2)
+                                                          interp_pixel_scale=0.2,
+                                                          cluster_pixel_scale=0.3)
 
-        assert phase_tag == '_sub_1_bin_up_3_image_psf_2x2_inv_psf_3x3_interp_0.200'
+        assert phase_tag == '_sub_1_bin_up_3_image_psf_2x2_inv_psf_3x3_interp_0.200_cluster_0.300'
 
 
 class TestPhaseTaggers:
@@ -184,3 +196,14 @@ class TestPhaseTaggers:
         assert tag == '_interp_0.250'
         tag = tagging.interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=0.234)
         assert tag == '_interp_0.234'
+        
+    def test__cluster_pixel_scale_tagger(self):
+
+        tag = tagging.cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale=None)
+        assert tag == ''
+        tag = tagging.cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale=0.5)
+        assert tag == '_cluster_0.500'
+        tag = tagging.cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale=0.25)
+        assert tag == '_cluster_0.250'
+        tag = tagging.cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale=0.234)
+        assert tag == '_cluster_0.234'

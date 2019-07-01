@@ -422,6 +422,54 @@ def blurring_mask_from_mask_and_psf_shape(mask, psf_shape):
     return blurring_mask
 
 @decorator_util.jit()
+def mask_2d_to_mask_1d_index_from_mask_2d(mask_2d):
+    """Create a 2D array which maps every False entry of a 2D mask to its 1D mask array index 2D binned mask. Every \
+    True entry is given a value -1.
+
+    This is used as a convenience tool for creating arrays mapping between different grids and arrays.
+
+    For example, if we had a 3x4:
+
+    [[False, True, False, False],
+     [False, True, False, False],
+     [False, False, False, True]]]
+
+    The mask_2d_to_mask_1d array would be:
+
+    [[0, -1, 2, 3],
+     [4, -1, 5, 6],
+     [7, 8, 9, -1]]
+
+    Parameters
+    ----------
+    mask_2d : ndarray
+        The 2D mask that the mapping array is created for.
+
+    Returns
+    -------
+    ndarray
+        The 2D array mapping 2D mask entries to their 1D masked array indexes.
+
+    Examples
+    --------
+    mask_2d = np.full(fill_value=False, shape=(9,9))
+    mask_2d_to_mask_1d_index = mask_2d_to_mask_1d_index_from_mask_2d(mask_2d=mask_2d)
+    """
+
+    mask_2d_to_mask_1d_index = np.full(
+        fill_value=-1, shape=mask_2d.shape)
+
+    mask_index = 0
+
+    for mask_y in range(mask_2d.shape[0]):
+        for mask_x in range(mask_2d.shape[1]):
+            if mask_2d[mask_y, mask_x] == False:
+                mask_2d_to_mask_1d_index[mask_y, mask_x] = mask_index
+                mask_index += 1
+
+    return mask_2d_to_mask_1d_index
+
+@decorator_util.jit()
 def masked_grid_1d_index_to_2d_pixel_index_from_mask(mask):
     """Compute a 1D array that maps every unmasked pixel to its corresponding 2d pixel using its (y,x) pixel indexes.
 
@@ -657,61 +705,10 @@ def edge_buffed_mask_from_mask(mask):
 
     return edge_buffed_mask
 
-@decorator_util.jit()
-def bin_up_mask_2d(mask_2d, bin_up_factor):
-    """Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine \
-     the value of the new pixel.
 
-    If an array of shape (8,8) is input and the bin up size is 2, this would return a new array of size (4,4) where \
-    every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
+def rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d, rescale_factor):
 
-    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), an array is first \
-    extracted around the centre of that array.
-
-
-    Parameters
-    ----------
-    mask_2d : ndarray
-        The 2D array that is resized.
-    new_shape : (int, int)
-        The (y,x) new pixel dimension of the trimmed array.
-    origin : (int, int)
-        The oigin of the resized array, e.g. the central pixel around which the array is extracted.
-
-    Returns
-    -------
-    ndarray
-        The resized 2D array from the input 2D array.
-
-    Examples
-    --------
-    array_2d = np.ones((5,5))
-    resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
-    """
-
-    padded_array_2d = array_util.padded_array_2d_for_binning_up_with_bin_up_factor(
-        array_2d=mask_2d, bin_up_factor=bin_up_factor, pad_value=True)
-
-    binned_array_2d = np.zeros(shape=(padded_array_2d.shape[0] // bin_up_factor,
-                                      padded_array_2d.shape[1] // bin_up_factor))
-
-    for y in range(binned_array_2d.shape[0]):
-        for x in range(binned_array_2d.shape[1]):
-            value = True
-            for y1 in range(bin_up_factor):
-                for x1 in range(bin_up_factor):
-                    padded_y = y*bin_up_factor + y1
-                    padded_x = x*bin_up_factor + x1
-                    if padded_array_2d[padded_y, padded_x] == False:
-                        value = False
-
-            binned_array_2d[y,x] = value
-
-    return binned_array_2d
-
-def rescaled_mask_from_mask_and_rescale_factor(mask, rescale_factor):
-
-    rescaled_mask = rescale(image=mask, scale=rescale_factor, mode='edge', anti_aliasing=False, multichannel=False)
+    rescaled_mask = rescale(image=mask_2d, scale=rescale_factor, mode='edge', anti_aliasing=False, multichannel=False)
     rescaled_mask[0, :] = True
     rescaled_mask[rescaled_mask.shape[0]-1, :] = True
     rescaled_mask[:, 0] = True

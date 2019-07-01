@@ -42,6 +42,10 @@ class LensDataFit(af.DataFit1D):
         return self.map_to_scaled_array(array_1d=self.residual_map_1d)
 
     @property
+    def normalized_residual_map_2d(self):
+        return self.map_to_scaled_array(array_1d=self.normalized_residual_map_1d)
+
+    @property
     def chi_squared_map_2d(self):
         return self.map_to_scaled_array(array_1d=self.chi_squared_map_1d)
 
@@ -265,7 +269,7 @@ class LensInversionFit(InversionFit):
 
     @property
     def model_image_2d_of_planes(self):
-        return [None, self.inversion.reconstructed_data_2d]
+        return [np.zeros(self.image_2d.shape), self.inversion.reconstructed_data_2d]
 
 
 class LensProfileInversionFit(InversionFit):
