@@ -125,26 +125,6 @@ class MockPhase(object):
         return MockResult(None)
 
 
-class TestResult(object):
-    def test_hyper_result(self, ccd_data_5x5):
-        normal_phase = MockPhase()
-
-        phase = phase_hyper.HyperGalaxyPhase(
-            normal_phase
-        )
-
-        # noinspection PyUnusedLocal
-        def run_hyper(*args, **kwargs):
-            return MockResult(None)
-
-        phase.run_hyper = run_hyper
-
-        result = phase.run(ccd_data_5x5)
-
-        assert hasattr(result, "hyper_galaxy")
-        assert isinstance(result.hyper_galaxy, MockResult)
-
-
 class TestPixelization(object):
 
     def test_make_pixelization_variable(self):
@@ -513,7 +493,37 @@ class TestImagePassing(object):
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
 
+@pytest.fixture(name="combined")
+def make_combined():
+    normal_phase = MockPhase()
+
+    # noinspection PyTypeChecker
+    return phase_hyper.CombinedHyperPhase(
+        normal_phase,
+        hyper_phase_classes=(
+            phase_hyper.HyperGalaxyPhase,
+            phase_hyper.HyperPixelizationPhase
+        )
+    )
+
+
 class TestHyperAPI(object):
+    def test_combined_result(self, combined):
+        # noinspection PyUnusedLocal
+        def run_hyper(*args, **kwargs):
+            return MockResult(None)
+
+        for phase in combined.hyper_phases:
+            phase.run_hyper = run_hyper
+
+        result = combined.run(None)
+
+        assert hasattr(result, "hyper_galaxy")
+        assert isinstance(result.hyper_galaxy, MockResult)
+
+        assert hasattr(result, "pixelization")
+        assert isinstance(result.pixelization, MockResult)
+
     def test_hyper_phase(self, phase_5x5):
         phase = phase_hyper.HyperPixelizationPhase(
             phase_5x5
@@ -524,15 +534,7 @@ class TestHyperAPI(object):
         assert hyper_phase.phase_path == (f"{phase_5x5.phase_path}/"
                                           f"{phase_5x5.phase_name}")
 
-    def test_instantiation(self, phase_5x5):
-        combined = phase_hyper.CombinedHyperPhase(
-            phase_5x5,
-            hyper_phase_classes=(
-                phase_hyper.HyperGalaxyPhase,
-                phase_hyper.HyperPixelizationPhase
-            )
-        )
-
+    def test_instantiation(self, combined):
         assert len(combined.hyper_phases) == 2
 
         galaxy_phase = combined.hyper_phases[0]
@@ -549,3 +551,21 @@ class TestHyperAPI(object):
             pixelization_phase,
             phase_hyper.HyperPixelizationPhase
         )
+
+    def test_hyper_result(self, ccd_data_5x5):
+        normal_phase = MockPhase()
+
+        phase = phase_hyper.HyperGalaxyPhase(
+            normal_phase
+        )
+
+        # noinspection PyUnusedLocal
+        def run_hyper(*args, **kwargs):
+            return MockResult(None)
+
+        phase.run_hyper = run_hyper
+
+        result = phase.run(ccd_data_5x5)
+
+        assert hasattr(result, "hyper_galaxy")
+        assert isinstance(result.hyper_galaxy, MockResult)
