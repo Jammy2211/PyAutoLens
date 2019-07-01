@@ -33,7 +33,7 @@ class HyperPhase(af.HyperPhase):
         return phase
 
     def run(self, data, results=None, mask=None, positions=None):
-        results = copy.deepcopy(results)
+        results = copy.deepcopy(results) if results is not None else af.ResultsCollection()
         result = self.phase.run(
             data,
             results=results,
@@ -48,6 +48,7 @@ class HyperPhase(af.HyperPhase):
             positions=positions
         )
         setattr(result, self.hyper_name, hyper_result)
+        return result
 
 
 class HyperPixelizationPhase(HyperPhase):
