@@ -318,7 +318,7 @@ class CombinedHyperPhase(ph.Phase):
         )
         self.hyper_phases = list(map(
             lambda cls: cls(
-                phase_folders=f"{self.phase_folders}/{phase.phase_name}"
+                phase
             ),
             hyper_phase_classes
         ))
