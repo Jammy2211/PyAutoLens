@@ -42,6 +42,8 @@ class Inversion(object):
             The vector containing the reconstructed fit to the hyper.
         """
 
+        self.noise_map_1d = noise_map_1d
+
         self.mapper = mapper
         self.regularization = regularization
         self.blurred_mapping_matrix = convolver.convolve_mapping_matrix(mapping_matrix=mapper.mapping_matrix)
@@ -57,7 +59,7 @@ class Inversion(object):
         self.curvature_reg_matrix = np.add(self.curvature_matrix, self.regularization_matrix)
 
         try:
-            self.solution_vector = np.linalg.solve(self.curvature_reg_matrix, self.data_vector)
+            self.pixelization_values = np.linalg.solve(self.curvature_reg_matrix, self.data_vector)
         except np.linalg.LinAlgError:
             raise exc.InversionException()
 
@@ -68,20 +70,41 @@ class Inversion(object):
 
     @property
     def reconstructed_data_2d(self):
-        return self.mapper.grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=np.asarray(self.reconstructed_data_1d))
+        return self.mapper.grid_stack.regular.scaled_array_2d_from_array_1d(
+            array_1d=np.asarray(self.reconstructed_data_1d))
 
     @property
     def reconstructed_data_1d(self):
         return inversion_util.reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
-            blurred_mapping_matrix=self.blurred_mapping_matrix, solution_vector=self.solution_vector)
+            blurred_mapping_matrix=self.blurred_mapping_matrix, solution_vector=self.pixelization_values)
 
     @property
-    def reconstructed_errors(self):
+    def pixelization_errors_with_covariance(self):
         return np.linalg.inv(self.curvature_reg_matrix)
 
     @property
-    def reconstructed_pixel_errors(self):
-        return np.diagonal(self.reconstructed_errors)
+    def pixelization_errors(self):
+        return np.diagonal(self.pixelization_errors_with_covariance)
+
+    @property
+    def pixelization_residuals(self):
+        return inversion_util.pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            pixelization_values=self.pixelization_values, reconstructed_data_1d=self.reconstructed_data_1d,
+            sub_to_regular=self.mapper.sub_to_regular, pixelization_to_sub_all=self.mapper.pixelization_to_sub_all)
+
+    @property
+    def pixelization_normalized_residuals(self):
+        return inversion_util.pixelization_normalized_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            pixelization_values=self.pixelization_values, reconstructed_data_1d=self.reconstructed_data_1d,
+            noise_map_1d=self.noise_map_1d, sub_to_regular=self.mapper.sub_to_regular,
+            pixelization_to_sub_all=self.mapper.pixelization_to_sub_all)
+
+    @property
+    def pixelization_chi_squareds(self):
+        return inversion_util.pixelization_chi_squareds_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            pixelization_values=self.pixelization_values, reconstructed_data_1d=self.reconstructed_data_1d,
+            noise_map_1d=self.noise_map_1d, sub_to_regular=self.mapper.sub_to_regular,
+            pixelization_to_sub_all=self.mapper.pixelization_to_sub_all)
 
     @property
     def regularization_term(self):
@@ -95,7 +118,7 @@ class Inversion(object):
         The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens, \
         this is already in the regularization matrix and thus implicitly included in the matrix multiplication.
         """
-        return np.matmul(self.solution_vector.T, np.matmul(self.regularization_matrix, self.solution_vector))
+        return np.matmul(self.pixelization_values.T, np.matmul(self.regularization_matrix, self.pixelization_values))
 
     @property
     def log_det_curvature_reg_matrix_term(self):
