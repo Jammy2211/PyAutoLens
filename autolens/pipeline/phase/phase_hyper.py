@@ -98,16 +98,15 @@ class HyperPhase(object):
         return result
 
 
-class HyperPixelizationPhase(HyperPhase):
-    """
-    Phase that makes everything in the variable from the previous phase equal to the
-    corresponding value from the best fit except for variables associated with
-    pixelization
-    """
-
-    @property
-    def hyper_name(self):
-        return "pixelization"
+# noinspection PyAbstractClass
+class VariableFixingHyperPhase(HyperPhase):
+    def __init__(
+            self,
+            phase: ph.Phase,
+            variable_classes=tuple()
+    ):
+        super().__init__(phase)
+        self.variable_classes = variable_classes
 
     def run_hyper(self, data, results=None, **kwargs):
         """
@@ -115,13 +114,9 @@ class HyperPixelizationPhase(HyperPhase):
         only fit pixelization hyperparameters.
         """
         variable = copy.deepcopy(results.last.variable)
-        HyperPixelizationPhase.transfer_classes(
+        self.transfer_classes(
             results.last.constant,
-            variable,
-            (
-                px.Pixelization,
-                rg.Regularization
-            )
+            variable
         )
         phase = self.make_hyper_phase()
         phase.optimizer.variable = variable
@@ -132,16 +127,13 @@ class HyperPixelizationPhase(HyperPhase):
             **kwargs
         )
 
-    @staticmethod
-    def transfer_classes(instance, mapper, classes):
+    def transfer_classes(self, instance, mapper):
         """
         Recursively overwrite priors in the mapper with constant values from the
         instance except where the containing class is the decedent of a listed class.
 
         Parameters
         ----------
-        classes
-            The children of these classes should not be copied to the mapper object.
         instance
             The best fit from the previous phase
         mapper
@@ -157,17 +149,37 @@ class HyperPixelizationPhase(HyperPhase):
                             instance_value,
                             cls
                         )
-                        for cls in classes
+                        for cls in self.variable_classes
                 ):
                     try:
-                        HyperPixelizationPhase.transfer_classes(
+                        self.transfer_classes(
                             instance_value,
-                            mapper_value,
-                            classes)
+                            mapper_value)
                     except AttributeError:
                         setattr(mapper, key, instance_value)
             except AttributeError:
                 pass
+
+
+class HyperPixelizationPhase(VariableFixingHyperPhase):
+    """
+    Phase that makes everything in the variable from the previous phase equal to the
+    corresponding value from the best fit except for variables associated with
+    pixelization
+    """
+
+    def __init__(self, phase: ph.Phase):
+        super().__init__(
+            phase,
+            variable_classes=(
+                px.Pixelization,
+                rg.Regularization
+            )
+        )
+
+    @property
+    def hyper_name(self):
+        return "pixelization"
 
     @property
     def uses_inversion(self):
