@@ -122,11 +122,17 @@ class MockPhase(object):
 
 
 class TestResult(object):
-    def test_hyper_result(self, ccd_data_5x5, mask_function_5x5):
-        phase = phase_hyper.HyperGalaxyPhase(
-            MockPhase(),
+    def test_hyper_result(self, ccd_data_5x5, mask_function_5x5, gal_x1_lp, gal_x1_mp):
+        normal_phase = phase_imaging.LensSourcePlanePhase(
+            "name",
             inversion_pixel_limit=6,
-            mask_function=mask_function_5x5
+            mask_function=mask_function_5x5,
+            lens_galaxies=[gal_x1_mp],
+            source_galaxies=[gal_x1_lp]
+        )
+
+        phase = phase_hyper.HyperGalaxyPhase(
+            normal_phase
         )
         phase.analysis = MockAnalysis()
 
