@@ -1,6 +1,7 @@
 import copy
 
 import numpy as np
+from typing import cast
 
 import autofit as af
 from autolens import exc
@@ -15,36 +16,83 @@ from autolens.pipeline.plotters import hyper_plotters
 
 
 class HyperPhase(object):
-    def __init__(self, phase):
+    def __init__(self, phase: ph.Phase):
+        """
+        Abstract HyperPhase. Wraps a regular phase, performing that phase before performing the action
+        specified by the run_hyper.
+
+        Parameters
+        ----------
+        phase
+            A regular phase
+        """
         self.phase = phase
 
     @property
-    def hyper_name(self):
+    def hyper_name(self) -> str:
+        """
+        The name of the hyper form of the phase. This is used to generate folder names and also address the
+        hyper results in the Result object.
+        """
         raise NotImplementedError()
 
-    def run_hyper(self, *args, **kwargs):
+    def run_hyper(self, *args, **kwargs) -> af.Result:
+        """
+        Run the hyper phase.
+
+        Parameters
+        ----------
+        args
+        kwargs
+
+        Returns
+        -------
+        result
+            The result of the hyper phase.
+        """
         raise NotImplementedError()
 
-    def make_hyper_phase(self):
+    def make_hyper_phase(self) -> ph.Phase:
+        """
+        Returns
+        -------
+        hyper_phase
+            A copy of the original phase with a modified name and path
+        """
         phase = copy.deepcopy(self.phase)
         phase.phase_path = f"{phase.phase_path}/{phase.phase_name}"
         phase.phase_name = self.hyper_name
         return phase
 
-    def run(self, data, results=None, mask=None, positions=None):
+    def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
+        """
+        Run the normal phase and then the hyper phase.
+
+        Parameters
+        ----------
+        data
+            Data
+        results
+            Results from previous phases.
+        kwargs
+
+        Returns
+        -------
+        result
+            The result of the phase, with a hyper result attached as an attribute with the hyper_name of this
+            phase.
+        """
         results = copy.deepcopy(results) if results is not None else af.ResultsCollection()
         result = self.phase.run(
             data,
             results=results,
-            mask=mask,
-            positions=positions
+            **kwargs
         )
         results.add(self.phase.phase_name, result)
         hyper_result = self.run_hyper(
             data=data,
             results=results,
-            mask=mask,
-            positions=positions
+            **kwargs
         )
         setattr(result, self.hyper_name, hyper_result)
         return result
@@ -61,7 +109,7 @@ class HyperPixelizationPhase(HyperPhase):
     def hyper_name(self):
         return "pixelization"
 
-    def run_hyper(self, data, results=None, mask=None, positions=None):
+    def run_hyper(self, data, results=None, **kwargs):
         """
         Run the phase, overriding the optimizer's variable instance with one created to
         only fit pixelization hyperparameters.
@@ -74,8 +122,7 @@ class HyperPixelizationPhase(HyperPhase):
         return phase.run(
             data,
             results=results,
-            mask=mask,
-            positions=positions
+            **kwargs
         )
 
     @staticmethod
@@ -255,18 +302,18 @@ class HyperGalaxyPhase(HyperPhase):
         mask = setup_phase_mask(
             data=data,
             mask=mask,
-            mask_function=phase.mask_function,
-            inner_mask_radii=phase.inner_mask_radii
+            mask_function=cast(phase_imaging.PhaseImaging, phase).mask_function,
+            inner_mask_radii=cast(phase_imaging.PhaseImaging, phase).inner_mask_radii
         )
 
         lens_data = ld.LensData(
             ccd_data=data,
             mask=mask,
-            sub_grid_size=phase.sub_grid_size,
-            image_psf_shape=phase.image_psf_shape,
+            sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
+            image_psf_shape=cast(phase_imaging.PhaseImaging, phase).image_psf_shape,
             positions=positions,
-            interp_pixel_scale=phase.interp_pixel_scale,
-            uses_inversion=phase.uses_inversion
+            interp_pixel_scale=cast(phase_imaging.PhaseImaging, phase).interp_pixel_scale,
+            uses_inversion=cast(phase_imaging.PhaseImaging, phase).uses_inversion
         )
 
         model_image_2d = results.last.most_likely_fit.model_image_2d
@@ -310,9 +357,19 @@ class HyperGalaxyPhase(HyperPhase):
 class CombinedHyperPhase(ph.Phase):
     def __init__(
             self,
-            phase: phase_imaging.PhaseImaging,
+            phase: ph.Phase,
             hyper_phase_classes: (type,) = tuple()
     ):
+        """
+        A combined hyper phase that can run zero or more other hyper phases after the initial phase is run.
+
+        Parameters
+        ----------
+        phase
+            The phase wrapped by this hyper phase
+        hyper_phase_classes
+            The classes of hyper phases to be run following the initial phase
+        """
         super().__init__(
             phase_name=phase.phase_name
         )
@@ -324,13 +381,29 @@ class CombinedHyperPhase(ph.Phase):
         ))
         self.phase = phase
 
-    def run(self, data, results=None, mask=None, positions=None):
+    def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
+        """
+        Run the regular phase followed by the hyper phases. Each result of a hyper phase is attached to the
+        overall result object by the hyper_name of that phase.
+
+        Parameters
+        ----------
+        data
+            The data
+        results
+            Results from previous phases
+        kwargs
+
+        Returns
+        -------
+        result
+            The result of the regular phase, with hyper results attached by associated hyper names
+        """
         results = copy.deepcopy(results) if results is not None else af.ResultsCollection()
         result = self.phase.run(
             data,
             results=results,
-            mask=mask,
-            positions=positions
+            **kwargs
         )
         results.add(self.phase.phase_name, result)
 
@@ -338,8 +411,7 @@ class CombinedHyperPhase(ph.Phase):
             hyper_result = hyper_phase.run_hyper(
                 data=data,
                 results=results,
-                mask=mask,
-                positions=positions
+                **kwargs
             )
             setattr(result, hyper_phase.hyper_name, hyper_result)
         return result
