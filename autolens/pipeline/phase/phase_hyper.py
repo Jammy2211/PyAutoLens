@@ -8,6 +8,7 @@ from autolens.lens import lens_data as ld, lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
+from autolens.pipeline.phase import phase as ph
 from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline.phase.phase import setup_phase_mask
 from autolens.pipeline.plotters import hyper_plotters
@@ -28,10 +29,7 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
         variable = copy.deepcopy(results.last.variable)
         HyperPixelizationPhase.transfer_classes(results.last.constant, variable)
         self.optimizer.variable = variable
-        new_result = super().run(data, results=results, mask=mask, positions=positions)
-        result = results.last
-        result.hyper = new_result
-        return result
+        return super().run(data, results=results, mask=mask, positions=positions)
 
     @staticmethod
     def transfer_classes(instance, mapper):
@@ -252,7 +250,23 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                     galaxy_path
                 ).hyper_galaxy = result.constant.hyper_galaxy
 
-        result = results.last
-        result.hyper = hyper_result
+        return hyper_result
 
-        return result
+
+class CombinedHyperPhase(ph.Phase):
+    def __init__(
+            self,
+            phase: ph.Phase,
+            hyper_phase_classes: (type,) = tuple()
+    ):
+        super().__init__(
+            phase_name=phase.phase_name
+        )
+        self.hyper_phases = list(map(
+            lambda cls: cls(phase.phase_name),
+            hyper_phase_classes
+        ))
+        self.phase = phase
+
+    def run(self, image, results=None, mask=None):
+        pass
