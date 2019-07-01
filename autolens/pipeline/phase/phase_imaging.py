@@ -19,7 +19,7 @@ class PhaseImaging(Phase):
     def __init__(self,
                  phase_name,
                  tag_phases=True,
-                 phase_folders=None,
+                 phase_folders=tuple(),
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2,
                  bin_up_factor=None,
@@ -633,7 +633,7 @@ class MultiPlanePhase(PhaseImaging):
 
     galaxies = af.PhaseProperty("galaxies")
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(), galaxies=None,
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  positions_threshold=None,
@@ -751,7 +751,7 @@ class LensSourcePlanePhase(PhaseImaging):
     lens_galaxies = af.PhaseProperty("lens_galaxies")
     source_galaxies = af.PhaseProperty("source_galaxies")
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(),
                  lens_galaxies=None, source_galaxies=None,
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
@@ -906,7 +906,7 @@ class LensPlanePhase(PhaseImaging):
     def __init__(self,
                  phase_name,
                  tag_phases=True,
-                 phase_folders=None,
+                 phase_folders=tuple(),
                  lens_galaxies=None,
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2,
@@ -983,7 +983,7 @@ class SensitivityPhase(PhaseImaging):
     source_galaxies = af.PhaseProperty("source_galaxies")
     sensitive_galaxies = af.PhaseProperty("sensitive_galaxies")
 
-    def __init__(self, phase_name, tag_phases=None, phase_folders=None,
+    def __init__(self, phase_name, tag_phases=None, phase_folders=tuple(),
                  lens_galaxies=None, source_galaxies=None,
                  sensitive_galaxies=None,
                  optimizer_class=af.MultiNest, sub_grid_size=2,

@@ -13,7 +13,7 @@ class PhasePositions(AbstractPhase):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None, lens_galaxies=None,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(), lens_galaxies=None,
                  optimizer_class=af.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         super().__init__(phase_name=phase_name, phase_tag=None, phase_folders=phase_folders, tag_phases=tag_phases,
