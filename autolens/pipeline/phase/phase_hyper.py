@@ -20,6 +20,8 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
     corresponding value from the best fit except for variables associated with
     pixelization
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__("pixelization", *args, **kwargs)
 
     def run(self, data, results=None, mask=None, positions=None):
         """
@@ -80,6 +82,9 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
 
 
 class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
+    def __init__(self, *args, **kwargs):
+        super().__init__("hyper_galaxy", *args, **kwargs)
+
     class Analysis(af.Analysis):
 
         def __init__(self, lens_data, model_image_2d, galaxy_image_2d):
