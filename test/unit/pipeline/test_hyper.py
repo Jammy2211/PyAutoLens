@@ -120,31 +120,25 @@ class MockPhase(object):
     def __init__(self):
         self.phase_name = "phase name"
 
+    def run(self, *args, **kwargs):
+        return MockResult(None)
+
 
 class TestResult(object):
-    def test_hyper_result(self, ccd_data_5x5, mask_function_5x5, gal_x1_lp, gal_x1_mp):
-        normal_phase = phase_imaging.LensSourcePlanePhase(
-            "name",
-            inversion_pixel_limit=6,
-            mask_function=mask_function_5x5,
-            lens_galaxies=[gal_x1_mp],
-            source_galaxies=[gal_x1_lp]
-        )
+    def test_hyper_result(self, ccd_data_5x5):
+        normal_phase = MockPhase()
 
         phase = phase_hyper.HyperGalaxyPhase(
             normal_phase
         )
-        phase.analysis = MockAnalysis()
 
-        results = af.ResultsCollection()
-        previous_result = MockResult(
-            MostLikelyFit(ccd_data_5x5.image)
-        )
-        results.add("previous", previous_result)
+        def run_hyper(*args, **kwargs):
+            return MockResult(None)
 
-        result = phase.run(ccd_data_5x5, results)
+        phase.run_hyper = run_hyper
 
-        assert result is previous_result
+        result = phase.run(ccd_data_5x5)
+
         assert hasattr(result, "hyper_galaxy")
         assert isinstance(result.hyper_galaxy, MockResult)
 
