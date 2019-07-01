@@ -116,26 +116,13 @@ class MockAnalysis(object):
     pass
 
 
-class TestResult(object):
-    def test_hyper_result(self, ccd_data_5x5, mask_function_5x5):
-        phase = phase_hyper.HyperGalaxyPhase(
-            "phase name",
-            inversion_pixel_limit=6,
-            mask_function=mask_function_5x5
-        )
-        phase.analysis = MockAnalysis()
+class MockPhase(object):
+    def __init__(self):
+        self.phase_name = "phase name"
 
-        results = af.ResultsCollection()
-        previous_result = MockResult(
-            MostLikelyFit(ccd_data_5x5.image)
-        )
-        results.add("previous", previous_result)
-
-        result = phase.run(ccd_data_5x5, results)
-
-        assert result is previous_result
-        assert hasattr(result, "hyper")
-        assert isinstance(result.hyper, MockResult)
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
+    def run(self, *args, **kwargs):
+        return MockResult(None)
 
 
 class TestPixelization(object):
@@ -158,7 +145,19 @@ class TestPixelization(object):
         instance.source_galaxy = g.Galaxy(redshift=1.0,
                                           light=lp.EllipticalLightProfile())
 
-        phase_hyper.HyperPixelizationPhase.transfer_classes(instance, mapper)
+        # noinspection PyTypeChecker
+        phase = phase_hyper.VariableFixingHyperPhase(
+            MockPhase(),
+            (
+                px.Pixelization,
+                rg.Regularization
+            )
+        )
+
+        phase.transfer_classes(
+            instance,
+            mapper,
+        )
 
         assert mapper.prior_count == 3
         assert mapper.lens_galaxy.redshift == 1.0
@@ -314,10 +313,10 @@ class TestImagePassing(object):
                     ('g0',)] == 2.0 * np.ones(9)).all()
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[
                     ('g1',)] == 3.0 * np.ones(9)).all()
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
-               analysis.lens_data.cluster.shape[0]
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
-               analysis.lens_data.cluster.shape[0]
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) ==
+                analysis.lens_data.cluster.shape[0])
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) ==
+                analysis.lens_data.cluster.shape[0])
 
         phase_5x5 = phase_imaging.LensSourcePlanePhase(
             lens_galaxies=dict(
@@ -337,10 +336,10 @@ class TestImagePassing(object):
             [2.0, 1.0, 1.0, 0.5])).all()
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)] == np.array(
             [3.0, 1.5, 1.5, 0.75])).all()
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
-               analysis.lens_data.cluster.shape[0]
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
-               analysis.lens_data.cluster.shape[0]
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) ==
+                analysis.lens_data.cluster.shape[0])
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) ==
+                analysis.lens_data.cluster.shape[0])
 
         results_collection_5x5[0].galaxy_images = [2.0 * np.ones((5, 5)),
                                                    2.0 * np.ones((5, 5))]
@@ -365,10 +364,10 @@ class TestImagePassing(object):
             [1.25, 2.0, 2.0, 2.0])).all()
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)] == np.array(
             [2.0, 1.25, 2.0, 2.0])).all()
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
-               analysis.lens_data.cluster.shape[0]
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
-               analysis.lens_data.cluster.shape[0]
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) ==
+                analysis.lens_data.cluster.shape[0])
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) ==
+                analysis.lens_data.cluster.shape[0])
 
     def test__image_in_results_has_masked_value_passsed__raises_error(self,
                                                                       mask_function_5x5,
@@ -505,24 +504,81 @@ class TestImagePassing(object):
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
-    # def test__results_are_passed_to_new_analysis__associate_images_works(
-    #         self, lens_source_instance, mask_function_5x5, results_collection_5x5,
-    #         ccd_data_5x5):
-    #     Phase = phase_imaging.LensSourcePlanePhase
-    #
-    #     phase_5x5 = phase_imaging.LensSourcePlanePhase(optimizer_class=mock_pipeline.MockNLO,
-    #                       mask_function=mask_function_5x5,
-    #                       phase_name='test_phase')
-    #
-    #     analysis = phase_5x5.make_analysis(data=ccd_data_5x5,
-    #                                        results=results_collection_5x5)
-    #
-    #     instance = analysis.associate_images(instance=lens_source_instance)
-    #
-    #     assert (analysis.hyper_model_image_1d == 5.0 * np.ones(9)).all()
-    #
-    #     print(instance.lens_galaxies.lens.hyper_galaxy_image_1d)
-    #
-    #     assert (instance.lens_galaxies.lens.hyper_galaxy_image_1d == 2.0 * np.ones(
-    #         9)).all()
-    #     assert (instance.source_galaxies.source.hyper_galaxy_image_1d == 3.0 * np.ones(
+
+@pytest.fixture(name="combined")
+def make_combined():
+    normal_phase = MockPhase()
+
+    # noinspection PyTypeChecker
+    return phase_hyper.CombinedHyperPhase(
+        normal_phase,
+        hyper_phase_classes=(
+            phase_hyper.HyperGalaxyPhase,
+            phase_hyper.HyperPixelizationPhase
+        )
+    )
+
+
+class TestHyperAPI(object):
+    def test_combined_result(self, combined):
+        # noinspection PyUnusedLocal
+        def run_hyper(*args, **kwargs):
+            return MockResult(None)
+
+        for phase in combined.hyper_phases:
+            phase.run_hyper = run_hyper
+
+        result = combined.run(None)
+
+        assert hasattr(result, "hyper_galaxy")
+        assert isinstance(result.hyper_galaxy, MockResult)
+
+        assert hasattr(result, "pixelization")
+        assert isinstance(result.pixelization, MockResult)
+
+    def test_hyper_phase(self, phase_5x5):
+        phase = phase_hyper.HyperPixelizationPhase(
+            phase_5x5
+        )
+
+        hyper_phase = phase.make_hyper_phase()
+        assert hyper_phase.phase_name == phase.hyper_name
+        assert hyper_phase.phase_path == (f"{phase_5x5.phase_path}/"
+                                          f"{phase_5x5.phase_name}")
+
+    def test_instantiation(self, combined):
+        assert len(combined.hyper_phases) == 2
+
+        galaxy_phase = combined.hyper_phases[0]
+        pixelization_phase = combined.hyper_phases[1]
+
+        assert galaxy_phase.hyper_name == "hyper_galaxy"
+        assert isinstance(
+            galaxy_phase,
+            phase_hyper.HyperGalaxyPhase
+        )
+
+        assert pixelization_phase.hyper_name == "pixelization"
+        assert isinstance(
+            pixelization_phase,
+            phase_hyper.HyperPixelizationPhase
+        )
+
+    def test_hyper_result(self, ccd_data_5x5):
+        normal_phase = MockPhase()
+
+        # noinspection PyTypeChecker
+        phase = phase_hyper.HyperGalaxyPhase(
+            normal_phase
+        )
+
+        # noinspection PyUnusedLocal
+        def run_hyper(*args, **kwargs):
+            return MockResult(None)
+
+        phase.run_hyper = run_hyper
+
+        result = phase.run(ccd_data_5x5)
+
+        assert hasattr(result, "hyper_galaxy")
+        assert isinstance(result.hyper_galaxy, MockResult)
