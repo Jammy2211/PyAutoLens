@@ -208,6 +208,7 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
                     galaxy_path
                 ).hyper_galaxy = result.constant.hyper_galaxy
 
-        results.hyper = hyper_result
+        result = results.last
+        result.hyper = hyper_result
 
-        return results
+        return result
