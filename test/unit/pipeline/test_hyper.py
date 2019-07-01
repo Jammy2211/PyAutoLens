@@ -145,7 +145,14 @@ class TestPixelization(object):
         instance.source_galaxy = g.Galaxy(redshift=1.0,
                                           light=lp.EllipticalLightProfile())
 
-        phase_hyper.HyperPixelizationPhase.transfer_classes(instance, mapper)
+        phase_hyper.HyperPixelizationPhase.transfer_classes(
+            instance,
+            mapper,
+            (
+                px.Pixelization,
+                rg.Regularization
+            )
+        )
 
         assert mapper.prior_count == 3
         assert mapper.lens_galaxy.redshift == 1.0
@@ -555,6 +562,7 @@ class TestHyperAPI(object):
     def test_hyper_result(self, ccd_data_5x5):
         normal_phase = MockPhase()
 
+        # noinspection PyTypeChecker
         phase = phase_hyper.HyperGalaxyPhase(
             normal_phase
         )
