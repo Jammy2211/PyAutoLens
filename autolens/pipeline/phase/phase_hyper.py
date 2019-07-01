@@ -26,6 +26,12 @@ class HyperPhase(af.HyperPhase):
     def run_hyper(self, *args, **kwargs):
         raise NotImplementedError()
 
+    def make_hyper_phase(self):
+        phase = copy.deepcopy(self.phase)
+        phase.phase_folders = f"{phase.phase_folders}/{phase.phase_name}"
+        phase.phase_name = self.hyper_name
+        return phase
+
     def run(self, data, results=None, mask=None, positions=None):
         results = copy.deepcopy(results)
         result = self.phase.run(
@@ -62,7 +68,7 @@ class HyperPixelizationPhase(HyperPhase):
         """
         variable = copy.deepcopy(results.last.variable)
         HyperPixelizationPhase.transfer_classes(results.last.constant, variable)
-        phase = copy.deepcopy(self.phase)
+        phase = self.make_hyper_phase()
         phase.optimizer.variable = variable
 
         return phase.run(
@@ -244,7 +250,7 @@ class HyperGalaxyPhase(HyperPhase):
         results: HyperGalaxyResults
             A collection of results, with one item per a galaxy
         """
-        phase = copy.deepcopy(self.phase)
+        phase = self.make_hyper_phase()
 
         mask = setup_phase_mask(
             data=data,
