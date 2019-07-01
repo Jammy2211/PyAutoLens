@@ -76,6 +76,14 @@ class Inversion(object):
             blurred_mapping_matrix=self.blurred_mapping_matrix, solution_vector=self.solution_vector)
 
     @property
+    def reconstructed_errors(self):
+        return np.linalg.inv(self.curvature_reg_matrix)
+
+    @property
+    def reconstructed_pixel_errors(self):
+        return np.diagonal(self.reconstructed_errors)
+
+    @property
     def regularization_term(self):
         """ Compute the regularization term of an inversion. This term represents the sum of the difference in flux \
         between every pair of neighboring pixels. This is computed as:
