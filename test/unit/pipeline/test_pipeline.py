@@ -157,7 +157,7 @@ class DummyPhasePositions(af.AbstractPhase):
         self.phase_name = phase_name
         self.phase_tag = ''
         self.phase_path = phase_name
-        self.optimizer = Optimizer()
+        self.optimizer = Optimizer(phase_name)
 
     def run(self, positions, pixel_scale, results):
         self.positions = positions
