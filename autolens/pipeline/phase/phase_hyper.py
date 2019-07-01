@@ -82,7 +82,6 @@ class HyperPixelizationPhase(phase_imaging.PhaseImaging, af.HyperPhase):
 
 
 class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
-
     class Analysis(af.Analysis):
 
         def __init__(self, lens_data, model_image_2d, galaxy_image_2d):
@@ -109,7 +108,8 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
             self.check_for_previously_masked_values(array=self.hyper_galaxy_image_1d)
 
             self.plot_hyper_galaxy_subplot = \
-                af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_subplot', bool)
+                af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_subplot',
+                                               bool)
 
         @staticmethod
         def check_for_previously_masked_values(array):
@@ -121,12 +121,14 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
         def visualize(self, instance, image_path, during_analysis):
 
             if self.plot_hyper_galaxy_subplot:
-
-                hyper_model_image_2d = self.lens_data.map_to_scaled_array(array_1d=self.hyper_model_image_1d)
-                hyper_galaxy_image_2d = self.lens_data.map_to_scaled_array(array_1d=self.hyper_galaxy_image_1d)
+                hyper_model_image_2d = self.lens_data.map_to_scaled_array(
+                    array_1d=self.hyper_model_image_1d)
+                hyper_galaxy_image_2d = self.lens_data.map_to_scaled_array(
+                    array_1d=self.hyper_galaxy_image_1d)
 
                 contribution_map_2d = instance.hyper_galaxy.contribution_map_from_hyper_images(
-                    hyper_model_image=hyper_model_image_2d, hyper_galaxy_image=hyper_galaxy_image_2d)
+                    hyper_model_image=hyper_model_image_2d,
+                    hyper_galaxy_image=hyper_galaxy_image_2d)
 
                 fit_normal = lens_fit.LensDataFit(
                     image_1d=self.lens_data.image_1d,
@@ -163,9 +165,9 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
         def fit_for_hyper_galaxy(self, hyper_galaxy):
 
             hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
-                    hyper_model_image=self.hyper_model_image_1d,
-                    hyper_galaxy_image=self.hyper_galaxy_image_1d,
-                    noise_map=self.lens_data.noise_map_1d)
+                hyper_model_image=self.hyper_model_image_1d,
+                hyper_galaxy_image=self.hyper_galaxy_image_1d,
+                noise_map=self.lens_data.noise_map_1d)
 
             hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
 
@@ -198,23 +200,31 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
             A collection of results, with one item per a galaxy
         """
 
-        mask = setup_phase_mask(data=data, mask=mask, mask_function=self.mask_function,
-                                inner_mask_radii=self.inner_mask_radii)
+        mask = setup_phase_mask(
+            data=data,
+            mask=mask,
+            mask_function=self.mask_function,
+            inner_mask_radii=self.inner_mask_radii
+        )
 
-        lens_data = ld.LensData(ccd_data=data, mask=mask,
-                                sub_grid_size=self.sub_grid_size,
-                                image_psf_shape=self.image_psf_shape,
-                                positions=positions,
-                                interp_pixel_scale=self.interp_pixel_scale,
-                                uses_inversion=self.uses_inversion)
+        lens_data = ld.LensData(
+            ccd_data=data,
+            mask=mask,
+            sub_grid_size=self.sub_grid_size,
+            image_psf_shape=self.image_psf_shape,
+            positions=positions,
+            interp_pixel_scale=self.interp_pixel_scale,
+            uses_inversion=self.uses_inversion
+        )
 
         model_image_2d = results.last.most_likely_fit.model_image_2d
 
         hyper_result = copy.deepcopy(results.last)
         hyper_result.analysis.uses_hyper_images = True
         hyper_result.analysis.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
-            array_2d=model_image_2d)
-        hyper_result.analysis.hyper_galaxy_image_1d_path_dict = {}
+            array_2d=model_image_2d
+        )
+        hyper_result.analysis.hyper_galaxy_image_1d_path_dict = dict()
 
         for galaxy_path, galaxy in results.last.path_galaxy_tuples:
 
@@ -227,11 +237,15 @@ class HyperGalaxyPhase(phase_imaging.PhaseImaging, af.HyperPhase):
             # should be ignored
             if not np.all(galaxy_image_2d == 0):
                 hyper_result.analysis.hyper_galaxy_image_1d_path_dict[
-                    galaxy_path] = lens_data.array_1d_from_array_2d(
-                    array_2d=galaxy_image_2d)
-                analysis = self.__class__.Analysis(lens_data=lens_data,
-                                                   model_image_2d=model_image_2d,
-                                                   galaxy_image_2d=galaxy_image_2d)
+                    galaxy_path
+                ] = lens_data.array_1d_from_array_2d(
+                    array_2d=galaxy_image_2d
+                )
+                analysis = self.__class__.Analysis(
+                    lens_data=lens_data,
+                    model_image_2d=model_image_2d,
+                    galaxy_image_2d=galaxy_image_2d
+                )
                 result = optimizer.fit(analysis)
 
                 hyper_result.constant.object_for_path(

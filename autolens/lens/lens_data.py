@@ -1,13 +1,25 @@
 from autolens.data.array import grids
-from autolens.data.convolution import ConvolverImage
 from autolens.data.array import mask as msk
+from autolens.data.convolution import ConvolverImage
 from autolens.model.inversion import convolution as inversion_convolution
+
 
 class LensData(object):
 
-    def __init__(self, ccd_data, mask, sub_grid_size=2, positions=None, image_psf_shape=None, inversion_psf_shape=None,
-                 interp_pixel_scale=None, cluster_pixel_scale=None, cluster_pixel_limit=None, uses_inversion=True,
-                 uses_cluster_inversion=True):
+    def __init__(
+            self,
+            ccd_data,
+            mask,
+            sub_grid_size=2,
+            positions=None,
+            image_psf_shape=None,
+            inversion_psf_shape=None,
+            interp_pixel_scale=None,
+            cluster_pixel_scale=None,
+            cluster_pixel_limit=None,
+            uses_inversion=True,
+            uses_cluster_inversion=True
+    ):
         """
         The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -52,7 +64,8 @@ class LensData(object):
         self.psf = ccd_data.psf
         self.mask_1d = mask.map_2d_array_to_masked_1d_array(array_2d=mask)
         self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=ccd_data.image)
-        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=ccd_data.noise_map)
+        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(
+            array_2d=ccd_data.noise_map)
 
         self.sub_grid_size = sub_grid_size
 
@@ -62,8 +75,10 @@ class LensData(object):
             self.image_psf_shape = image_psf_shape
 
         self.convolver_image = ConvolverImage(
-            mask=mask, blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=self.image_psf_shape),
-            psf=self.psf.resized_scaled_array_from_array(new_shape=self.image_psf_shape))
+            mask=mask, blurring_mask=mask.blurring_mask_for_psf_shape(
+                psf_shape=self.image_psf_shape),
+            psf=self.psf.resized_scaled_array_from_array(
+                new_shape=self.image_psf_shape))
 
         if inversion_psf_shape is None:
             self.inversion_psf_shape = self.psf.shape
@@ -75,7 +90,8 @@ class LensData(object):
         if uses_inversion:
 
             self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(
-                 mask=mask, psf=self.psf.resized_scaled_array_from_array(new_shape=self.inversion_psf_shape))
+                mask=mask, psf=self.psf.resized_scaled_array_from_array(
+                    new_shape=self.inversion_psf_shape))
 
         else:
 
@@ -90,7 +106,6 @@ class LensData(object):
         self.interp_pixel_scale = interp_pixel_scale
 
         if interp_pixel_scale is not None:
-
             self.grid_stack = self.grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
                 interp_pixel_scale=interp_pixel_scale)
 
@@ -115,12 +130,14 @@ class LensData(object):
             if self.cluster_pixel_scale is not None:
 
                 self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-                    mask=self.mask_2d, cluster_pixel_scale=cluster_pixel_scale, cluster_pixels_limit=cluster_pixel_limit)
+                    mask=self.mask_2d, cluster_pixel_scale=cluster_pixel_scale,
+                    cluster_pixels_limit=cluster_pixel_limit)
 
             else:
 
                 self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-                    mask=self.mask_2d, cluster_pixel_scale=self.pixel_scale, cluster_pixels_limit=cluster_pixel_limit)
+                    mask=self.mask_2d, cluster_pixel_scale=self.pixel_scale,
+                    cluster_pixels_limit=cluster_pixel_limit)
 
         else:
 
@@ -128,10 +145,10 @@ class LensData(object):
             self.cluster_pixel_limit = None
             self.cluster_pixel_scale = None
 
-
     def new_lens_data_with_modified_image(self, modified_image):
 
-        ccd_data_with_modified_image = self.ccd_data.new_ccd_data_with_modified_image(modified_image=modified_image)
+        ccd_data_with_modified_image = self.ccd_data.new_ccd_data_with_modified_image(
+            modified_image=modified_image)
 
         return LensData(
             ccd_data=ccd_data_with_modified_image,
@@ -148,8 +165,10 @@ class LensData(object):
 
     def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
 
-        binned_up_ccd_data = self.ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=bin_up_factor)
-        binned_up_mask = self.mask_2d.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
+        binned_up_ccd_data = self.ccd_data.new_ccd_data_with_binned_up_arrays(
+            bin_up_factor=bin_up_factor)
+        binned_up_mask = self.mask_2d.binned_up_mask_from_mask(
+            bin_up_factor=bin_up_factor)
 
         return LensData(
             ccd_data=binned_up_ccd_data,
