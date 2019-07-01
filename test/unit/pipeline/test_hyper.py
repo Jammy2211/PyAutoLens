@@ -507,13 +507,28 @@ class TestImagePassing(object):
 
 
 class TestHyperAPI(object):
-    def test_paths(self, phase_5x5):
+    def test_instantiation(self, phase_5x5):
         combined = phase_hyper.CombinedHyperPhase(
             phase_5x5,
             hyper_phase_classes=(
                 phase_hyper.HyperGalaxyPhase,
+                phase_hyper.HyperPixelizationPhase
             )
         )
 
-        assert len(combined.hyper_phases) == 1
-        assert isinstance(combined.hyper_phases[0], phase_hyper.HyperGalaxyPhase)
+        assert len(combined.hyper_phases) == 2
+
+        galaxy_phase = combined.hyper_phases[0]
+        pixelization_phase = combined.hyper_phases[1]
+
+        assert galaxy_phase.phase_name == "hyper_galaxy"
+        assert isinstance(
+            galaxy_phase,
+            phase_hyper.HyperGalaxyPhase
+        )
+
+        assert pixelization_phase.phase_name == "pixelization"
+        assert isinstance(
+            pixelization_phase,
+            phase_hyper.HyperPixelizationPhase
+        )
