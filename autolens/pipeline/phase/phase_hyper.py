@@ -310,7 +310,7 @@ class HyperGalaxyPhase(HyperPhase):
 class CombinedHyperPhase(ph.Phase):
     def __init__(
             self,
-            phase: ph.Phase,
+            phase: phase_imaging.PhaseImaging,
             hyper_phase_classes: (type,) = tuple()
     ):
         super().__init__(
@@ -324,5 +324,22 @@ class CombinedHyperPhase(ph.Phase):
         ))
         self.phase = phase
 
-    def run(self, image, results=None, mask=None):
-        pass
+    def run(self, data, results=None, mask=None, positions=None):
+        results = copy.deepcopy(results) if results is not None else af.ResultsCollection()
+        result = self.phase.run(
+            data,
+            results=results,
+            mask=mask,
+            positions=positions
+        )
+        results.add(self.phase.phase_name, result)
+
+        for hyper_phase in self.hyper_phases:
+            hyper_result = hyper_phase.run_hyper(
+                data=data,
+                results=results,
+                mask=mask,
+                positions=positions
+            )
+            setattr(result, hyper_phase.hyper_name, hyper_result)
+        return result
