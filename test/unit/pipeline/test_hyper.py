@@ -538,19 +538,14 @@ class TestHyperAPI(object):
         galaxy_phase = combined.hyper_phases[0]
         pixelization_phase = combined.hyper_phases[1]
 
-        assert galaxy_phase.phase_name == "hyper_galaxy"
+        assert galaxy_phase.hyper_name == "hyper_galaxy"
         assert isinstance(
             galaxy_phase,
             phase_hyper.HyperGalaxyPhase
         )
 
-        assert pixelization_phase.phase_name == "pixelization"
+        assert pixelization_phase.hyper_name == "pixelization"
         assert isinstance(
             pixelization_phase,
             phase_hyper.HyperPixelizationPhase
         )
-
-        phase_folders = f"{combined.phase_folders}/{combined.phase_name}"
-
-        assert galaxy_phase.phase_folders == phase_folders
-        assert pixelization_phase.phase_folders == phase_folders
