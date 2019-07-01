@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from autolens.data.array.util import mask_util as util
+from autolens.data.array.util import binning_util
 from autolens.data.array.util import mapping_util
 from autolens.data.array import mask as msk
 from autolens.data.array.util import grid_util
@@ -633,14 +634,14 @@ class TestBinnedMaskFromMask:
         mask[4, 9] = False
         mask[11, 10] = False
 
-        binned_up_mask_util = util.bin_up_mask_2d(mask_2d=mask, bin_up_factor=2)
+        binned_up_mask_util = binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(mask_2d=mask, bin_up_factor=2)
 
         mask = msk.Mask(array=mask, pixel_scale=1.0)
         mask = mask.binned_up_mask_from_mask(bin_up_factor=2)
         assert (mask == binned_up_mask_util).all()
         assert mask.pixel_scale == 2.0
 
-        binned_up_mask_util = util.bin_up_mask_2d(mask_2d=mask, bin_up_factor=3)
+        binned_up_mask_util = binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(mask_2d=mask, bin_up_factor=3)
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
         mask = mask.binned_up_mask_from_mask(bin_up_factor=3)
@@ -658,7 +659,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, True, True],
                          [True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=1.0)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=1.0)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True],
                                            [True, True, True, True, True],
@@ -674,7 +675,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, True, True],
                          [True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=2.0)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=2.0)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True, True, True, True, True, True],
                                            [True, True, True, True, True, True, True,  True, True, True],
@@ -695,7 +696,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, False, True],
                          [True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=2.0)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=2.0)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True, True, True, True, True, True],
                                            [True, False, False, False, False, True, True,  True, True, True],
@@ -717,7 +718,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, True, True],
                          [True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=1.2)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=1.2)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True, True],
                                            [True, True, True, True, True, True],
@@ -727,7 +728,7 @@ class TestRescaledMaskFromMask(object):
                                            [True, True, True, True, True, True],
                                            [True, True, True, True, True, True]])).all()
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=0.8)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=0.8)
 
         assert (rescaled_mask == np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -743,7 +744,7 @@ class TestRescaledMaskFromMask(object):
                          [True, True, True, True, True, True],
                          [True, True, True, True, True, True]])
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=1.2)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=1.2)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True, True, True],
                                            [True, True, True, True, True, True, True],
@@ -752,7 +753,7 @@ class TestRescaledMaskFromMask(object):
                                            [True, True, True, True, True, True, True],
                                            [True, True, True, True, True, True, True]])).all()
 
-        rescaled_mask = util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=0.8)
+        rescaled_mask = util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d=mask, rescale_factor=0.8)
 
         assert (rescaled_mask == np.array([[True, True, True, True, True],
                                            [True, False, False, False, True],

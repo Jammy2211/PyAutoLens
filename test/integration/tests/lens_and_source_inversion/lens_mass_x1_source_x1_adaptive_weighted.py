@@ -1,10 +1,9 @@
 import os
 
 import autofit as af
-import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.pipeline.phase import phase_imaging as ph
+from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -29,13 +28,13 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensSourcePlanePhase(
+    phase1 = phase_imaging.LensSourcePlanePhase(
         phase_name='phase_1', phase_folders=[test_type, test_name],
         lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)),
         source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
-    class InversionPhase(ph.LensSourcePlanePhase):
+    class InversionPhase(phase_imaging.LensSourcePlanePhase):
 
         def pass_priors(self, results):
 
@@ -49,13 +48,60 @@ def make_pipeline(test_name):
                                                shear=mp.ExternalShear)),
         source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiBrightnessImage,
                                                    regularization=reg.AdaptiveBrightness)),
-        optimizer_class=nl.MultiNest)
+        optimizer_class=af.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
+    
+    class InversionPhase(phase_imaging.LensSourcePlanePhase):
 
-    return pl.PipelineImaging(test_name, phase1, phase2)
+        def pass_priors(self, results):
+
+            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
+
+            self.lens_galaxies.lens = results.from_phase('phase_1').\
+                variable.lens_galaxies.lens
+            
+            self.source_galaxies.source = results.from_phase('phase_2_weighted_regularization').\
+                constant.source_galaxies.source
+
+    phase3 = InversionPhase(
+        phase_name='phase_3', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal,
+                                               shear=mp.ExternalShear)),
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiBrightnessImage,
+                                                   regularization=reg.AdaptiveBrightness)),
+        optimizer_class=af.MultiNest)
+
+    phase3.optimizer.const_efficiency_mode = True
+    phase3.optimizer.n_live_points = 40
+    phase3.optimizer.sampling_efficiency = 0.8
+
+    class InversionPhase(phase_imaging.LensSourcePlanePhase):
+
+        def pass_priors(self, results):
+
+            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
+
+            self.lens_galaxies.lens = results.from_phase('phase_3').constant.lens_galaxies.lens
+
+            self.source_galaxies.source = results.from_phase('phase_2_weighted_regularization').\
+                variable.source_galaxies.source
+
+    phase4 = InversionPhase(
+        phase_name='phase_4_weighted_regularization', phase_folders=[test_type, test_name],
+        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal,
+                                               shear=mp.ExternalShear)),
+        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, pixelization=pix.VoronoiBrightnessImage,
+                                                   regularization=reg.AdaptiveBrightness)),
+        optimizer_class=af.MultiNest)
+
+    phase4.optimizer.const_efficiency_mode = True
+    phase4.optimizer.n_live_points = 40
+    phase4.optimizer.sampling_efficiency = 0.8
+
+    return pl.PipelineImaging(test_name, phase1, phase2, phase3, phase4)
 
 
 if __name__ == "__main__":

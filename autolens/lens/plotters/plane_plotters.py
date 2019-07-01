@@ -1,3 +1,7 @@
+import autofit as af
+import matplotlib
+backend = af.conf.instance.visualize.get('figures', 'backend', str)
+matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 from autolens.plotters import plotter_util, grid_plotters, array_plotters

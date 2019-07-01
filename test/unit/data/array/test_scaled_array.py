@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data.array.util import array_util, grid_util
+from autolens.data.array.util import array_util, grid_util, binning_util
 from autolens.data.array import mask as msk
 from autolens.data.array import scaled_array
 
@@ -739,15 +739,15 @@ class TestScaledSquarePixelArray:
 
             array_2d = scaled_array.ScaledSquarePixelArray(array=array_2d, pixel_scale=0.1)
 
-            binned_up_array_2d_util = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=4)
+            binned_up_array_2d_util = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
             binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=4, method='mean')
             assert (binned_up_array_2d_util == binned_up_scaled_array).all()
 
-            binned_up_array_2d_util = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=4)
+            binned_up_array_2d_util = binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
             binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=4, method='quadrature')
             assert (binned_up_array_2d_util == binned_up_scaled_array).all()
 
-            binned_up_array_2d_util = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=4)
+            binned_up_array_2d_util = binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(array_2d=array_2d, bin_up_factor=4)
             binned_up_scaled_array = array_2d.binned_up_array_from_array(bin_up_factor=4, method='sum')
             assert (binned_up_array_2d_util == binned_up_scaled_array).all()
 

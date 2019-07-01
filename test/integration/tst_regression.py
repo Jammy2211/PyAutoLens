@@ -119,7 +119,7 @@ class TestPhaseModelMapper(object):
             noise_map_path=path + '/test_files/data/' + test_name + '/noise_map.fits',
             pixel_scale=0.1)
 
-        class MMPhase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
+        class MMPhase(phase_imaging.LensPlanePhase):
 
             def pass_priors(self, results):
                 self.lens_galaxies.lens.sersic.intensity = self.lens_galaxies.lens.sersic.axis_ratio
@@ -174,7 +174,7 @@ class TestPhaseModelMapper(object):
             noise_map_path=path + '/test_files/data/' + test_name + '/noise_map.fits',
             pixel_scale=0.1)
 
-        class MMPhase(autolens.pipeline.phase.phase_imaging.LensPlanePhase):
+        class MMPhase(phase_imaging.LensPlanePhase):
 
             def pass_priors(self, results):
                 self.lens_galaxies.lens.sersic.axis_ratio = 0.2

@@ -2,7 +2,9 @@
 class MockLensData(object):
 
     def __init__(self, ccd_data, mask, grid_stack, padded_grid_stack, border, convolver_image,
-                 convolver_mapping_matrix):
+                 convolver_mapping_matrix, cluster):
+
+        self.ccd_data = ccd_data
 
         self.unmasked_image = ccd_data.image
         self.unmasked_noise_map = ccd_data.noise_map
@@ -26,6 +28,10 @@ class MockLensData(object):
         self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
         self.noise_map_2d = self.map_to_scaled_array(array_1d=self.noise_map_1d)
         self.positions = None
+
+        self.cluster = cluster
+
+        self.uses_cluster_inversion = False
 
     @property
     def array_1d_from_array_2d(self):

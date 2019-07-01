@@ -10,9 +10,7 @@ from astropy.coordinates import Angle
 from autolens import exc
 from autolens.data.array import scaled_array
 from autolens.data import ccd
-from autolens.data.array.util import array_util
-from autolens.data.array.util import grid_util
-from autolens.data.array.util import mapping_util
+from autolens.data.array.util import array_util, grid_util, mapping_util, binning_util
 
 test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 test_positions_dir = "{}/../test_files/positions/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -473,26 +471,26 @@ class TestCCDData:
 
             image_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
             image_array[3:5, 3] = 2.0
-            binned_image_util = array_util.bin_up_array_2d_using_mean(array_2d=image_array, bin_up_factor=2)
+            binned_image_util = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(array_2d=image_array, bin_up_factor=2)
 
             noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
             noise_map_array[3,3:5] = 3.0
-            binned_noise_map_util = array_util.bin_up_array_2d_using_quadrature(array_2d=noise_map_array,
-                                                                                      bin_up_factor=2)
+            binned_noise_map_util = binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(array_2d=noise_map_array,
+                                                                                                                bin_up_factor=2)
 
             background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
             background_noise_map_array[3:5,3] = 4.0
-            binned_background_noise_map_util = array_util.bin_up_array_2d_using_quadrature(
+            binned_background_noise_map_util = binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
                 array_2d=background_noise_map_array, bin_up_factor=2)
 
             exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
             exposure_time_map_array[3,3:5] = 5.0
-            binned_exposure_time_map_util = array_util.bin_up_array_2d_using_sum(array_2d=exposure_time_map_array,
-                                                                                       bin_up_factor=2)
+            binned_exposure_time_map_util = binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(array_2d=exposure_time_map_array,
+                                                                                                                 bin_up_factor=2)
 
             background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
             background_sky_map_array[3,3:5] = 6.0
-            binned_background_sky_map_util = array_util.bin_up_array_2d_using_mean(
+            binned_background_sky_map_util = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=background_sky_map_array, bin_up_factor=2)
 
             psf = ccd.PSF(array=np.ones((3,5)), pixel_scale=1.0)

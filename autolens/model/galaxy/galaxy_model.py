@@ -3,6 +3,7 @@ import inspect
 
 import autofit as af
 from autolens.model.galaxy import galaxy
+from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles, mass_profiles
 
@@ -151,6 +152,16 @@ class GalaxyModel(af.AbstractPriorModel):
 
         self.hyper_galaxy_image_1d = None
 
+        if pixelization is not None:
+            self.uses_inversion = True
+        else:
+            self.uses_inversion = False
+
+        if pixelization is pix.VoronoiBrightnessImage:
+            self.uses_cluster_inversion = True
+        else:
+            self.uses_cluster_inversion = False
+
         if hyper_galaxy is not None:
             self.uses_hyper_images = True
         elif regularization is reg.AdaptiveBrightness:
@@ -233,7 +244,7 @@ class GalaxyModel(af.AbstractPriorModel):
         Returns
         -------
         priors: [PriorTuple]
-            A list of priors associated with prior models in this galaxy prior.
+            A list of priors associated with prior models in this galaxy af.prior.
         """
         return [prior for prior_model in self.prior_models for prior in
                 prior_model.prior_tuples]
@@ -245,7 +256,7 @@ class GalaxyModel(af.AbstractPriorModel):
         Returns
         -------
         constant: [ConstantTuple]
-            A list of constants associated with prior models in this galaxy prior.
+            A list of constants associated with prior models in this galaxy af.prior.
         """
         return [constant for prior_model in self.prior_models for constant in
                 prior_model.constant_tuples]
