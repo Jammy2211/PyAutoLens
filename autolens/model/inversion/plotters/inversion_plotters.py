@@ -39,7 +39,7 @@ def plot_reconstructed_pixelization(
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     plot_inversion_with_source_values(
-        inversion=inversion, source_pixel_values=inversion.solution_vector,
+        inversion=inversion, source_pixel_values=inversion.pixelization_values,
         plot_origin=plot_origin, positions=positions, should_plot_centres=should_plot_centres,
         should_plot_grid=should_plot_grid, should_plot_border=should_plot_border,
         image_pixels=image_pixels, source_pixels=source_pixels, as_subplot=as_subplot,
@@ -52,6 +52,72 @@ def plot_reconstructed_pixelization(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
     plotter_util.close_figure(as_subplot=as_subplot)
+
+def plot_reconstructed_residuals(
+        inversion, plot_origin=True, positions=None, should_plot_centres=False,
+        should_plot_grid=False, should_plot_border=False, image_pixels=None,
+        source_pixels=None, as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
+        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
+        linscale=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
+        title='Reconstructed Pixelization', titlesize=16, xlabelsize=16, ylabelsize=16,
+        xyticksize=16,
+        output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
+
+    if output_format is 'fits':
+        return
+
+    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+
+    plot_inversion_with_source_values(
+        inversion=inversion, source_pixel_values=inversion.pixelization_residuals,
+        plot_origin=plot_origin, positions=positions, should_plot_centres=should_plot_centres,
+        should_plot_grid=should_plot_grid, should_plot_border=should_plot_border,
+        image_pixels=image_pixels, source_pixels=source_pixels, as_subplot=as_subplot,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        output_path=output_path, output_format=output_format, output_filename=output_filename)
+
+    plotter_util.close_figure(as_subplot=as_subplot)
+
+
+def plot_reconstructed_chi_squareds(
+        inversion, plot_origin=True, positions=None, should_plot_centres=False,
+        should_plot_grid=False, should_plot_border=False, image_pixels=None,
+        source_pixels=None, as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
+        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
+        linscale=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
+        title='Reconstructed Pixelization', titlesize=16, xlabelsize=16, ylabelsize=16,
+        xyticksize=16,
+        output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
+
+    if output_format is 'fits':
+        return
+
+    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+
+    plot_inversion_with_source_values(
+        inversion=inversion, source_pixel_values=inversion.pixelization_chi_squareds,
+        plot_origin=plot_origin, positions=positions, should_plot_centres=should_plot_centres,
+        should_plot_grid=should_plot_grid, should_plot_border=should_plot_border,
+        image_pixels=image_pixels, source_pixels=source_pixels, as_subplot=as_subplot,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        output_path=output_path, output_format=output_format, output_filename=output_filename)
+
+    plotter_util.close_figure(as_subplot=as_subplot)
+
 
 def plot_regularization_weights(
         inversion, plot_origin=True, positions=None, should_plot_centres=False,
