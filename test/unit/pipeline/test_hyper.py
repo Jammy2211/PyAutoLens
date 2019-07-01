@@ -100,8 +100,16 @@ def make_multi_plane_result(lens_data_5x5, multi_plane_instance):
         optimizer=None)
 
 
+class MostLikelyFit(object):
+    def __init__(self, model_image_2d):
+        self.model_image_2d = model_image_2d
+
+
 class MockResult(object):
-    pass
+    def __init__(self, most_likely_fit):
+        self.most_likely_fit = most_likely_fit
+        self.analysis = MockAnalysis()
+        self.path_galaxy_tuples = []
 
 
 class MockAnalysis(object):
@@ -109,12 +117,20 @@ class MockAnalysis(object):
 
 
 class TestResult(object):
-    def test_hyper_result(self, ccd_data_5x5):
-        phase = phase_hyper.HyperGalaxyPhase("phase name", inversion_pixel_limit=6)
+    def test_hyper_result(self, ccd_data_5x5, mask_function_5x5):
+        phase = phase_hyper.HyperGalaxyPhase(
+            "phase name",
+            inversion_pixel_limit=6,
+            mask_function=mask_function_5x5
+        )
         phase.analysis = MockAnalysis()
+
         results = af.ResultsCollection()
-        previous_result = MockResult()
+        previous_result = MockResult(
+            MostLikelyFit(ccd_data_5x5.image)
+        )
         results.add("previous", previous_result)
+
         result = phase.run(ccd_data_5x5, results)
 
         assert result is previous_result
