@@ -116,10 +116,15 @@ class MockAnalysis(object):
     pass
 
 
+class MockPhase(object):
+    def __init__(self):
+        self.phase_name = "phase name"
+
+
 class TestResult(object):
     def test_hyper_result(self, ccd_data_5x5, mask_function_5x5):
         phase = phase_hyper.HyperGalaxyPhase(
-            "phase name",
+            MockPhase(),
             inversion_pixel_limit=6,
             mask_function=mask_function_5x5
         )

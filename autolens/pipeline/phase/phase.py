@@ -370,7 +370,7 @@ class GalaxyFitPhase(AbstractPhase):
                                            use_deflections_y=self.use_deflections,
                                            use_deflections_x=self.use_deflections)
 
-            return self.__class__.AnalysisSingle(galaxy_data=galaxy_data,
+            return self.AnalysisSingle(galaxy_data=galaxy_data,
                                                  cosmology=self.cosmology,
                                                  results=results)
 
@@ -394,7 +394,7 @@ class GalaxyFitPhase(AbstractPhase):
                                              use_deflections_y=False,
                                              use_deflections_x=self.use_deflections)
 
-            return self.__class__.AnalysisDeflections(galaxy_data_y=galaxy_data_y,
+            return self.AnalysisDeflections(galaxy_data_y=galaxy_data_y,
                                                       galaxy_data_x=galaxy_data_x,
                                                       cosmology=self.cosmology,
                                                       results=results)
