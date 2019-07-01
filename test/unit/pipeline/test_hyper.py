@@ -120,6 +120,7 @@ class MockPhase(object):
     def __init__(self):
         self.phase_name = "phase name"
 
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def run(self, *args, **kwargs):
         return MockResult(None)
 
@@ -132,6 +133,7 @@ class TestResult(object):
             normal_phase
         )
 
+        # noinspection PyUnusedLocal
         def run_hyper(*args, **kwargs):
             return MockResult(None)
 
@@ -319,10 +321,10 @@ class TestImagePassing(object):
                     ('g0',)] == 2.0 * np.ones(9)).all()
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[
                     ('g1',)] == 3.0 * np.ones(9)).all()
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
-               analysis.lens_data.cluster.shape[0]
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
-               analysis.lens_data.cluster.shape[0]
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) ==
+                analysis.lens_data.cluster.shape[0])
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) ==
+                analysis.lens_data.cluster.shape[0])
 
         phase_5x5 = phase_imaging.LensSourcePlanePhase(
             lens_galaxies=dict(
@@ -342,10 +344,10 @@ class TestImagePassing(object):
             [2.0, 1.0, 1.0, 0.5])).all()
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)] == np.array(
             [3.0, 1.5, 1.5, 0.75])).all()
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
-               analysis.lens_data.cluster.shape[0]
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
-               analysis.lens_data.cluster.shape[0]
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) ==
+                analysis.lens_data.cluster.shape[0])
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) ==
+                analysis.lens_data.cluster.shape[0])
 
         results_collection_5x5[0].galaxy_images = [2.0 * np.ones((5, 5)),
                                                    2.0 * np.ones((5, 5))]
@@ -370,10 +372,10 @@ class TestImagePassing(object):
             [1.25, 2.0, 2.0, 2.0])).all()
         assert (analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)] == np.array(
             [2.0, 1.25, 2.0, 2.0])).all()
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) == \
-               analysis.lens_data.cluster.shape[0]
-        assert len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) == \
-               analysis.lens_data.cluster.shape[0]
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g0',)]) ==
+                analysis.lens_data.cluster.shape[0])
+        assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) ==
+                analysis.lens_data.cluster.shape[0])
 
     def test__image_in_results_has_masked_value_passsed__raises_error(self,
                                                                       mask_function_5x5,
