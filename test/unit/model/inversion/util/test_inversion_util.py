@@ -108,7 +108,7 @@ class TestPixelizationResiduals(object):
         pixelization_to_sub_all = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
 
         pixelization_residuals = \
-            inversion_util.pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
                 pixelization_values=pixelization_values, reconstructed_data_1d=reconstructed_data_1d,
                 sub_to_regular=sub_to_regular, pixelization_to_sub_all=pixelization_to_sub_all)
 
@@ -122,7 +122,7 @@ class TestPixelizationResiduals(object):
         pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_residuals = \
-            inversion_util.pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
                 pixelization_values=pixelization_values, reconstructed_data_1d=reconstructed_data_1d,
                 sub_to_regular=sub_to_regular, pixelization_to_sub_all=pixelization_to_sub_all)
 
@@ -134,7 +134,7 @@ class TestPixelizationResiduals(object):
         pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_residuals = \
-            inversion_util.pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
                 pixelization_values=pixelization_values, reconstructed_data_1d=reconstructed_data_1d,
                 sub_to_regular=sub_to_regular, pixelization_to_sub_all=pixelization_to_sub_all)
 
@@ -151,7 +151,7 @@ class TestPixelizationNormalizedResiduals(object):
         pixelization_to_sub_all = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
 
         pixelization_normalized_residuals = \
-            inversion_util.pixelization_normalized_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
                 pixelization_values=pixelization_values, reconstructed_data_1d=reconstructed_data_1d,
                 noise_map_1d=noise_map_1d, sub_to_regular=sub_to_regular,
                 pixelization_to_sub_all=pixelization_to_sub_all)
@@ -167,7 +167,7 @@ class TestPixelizationNormalizedResiduals(object):
         pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_normalized_residuals = \
-            inversion_util.pixelization_normalized_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
                 pixelization_values=pixelization_values, reconstructed_data_1d=reconstructed_data_1d,
                 noise_map_1d=noise_map_1d, sub_to_regular=sub_to_regular,
                 pixelization_to_sub_all=pixelization_to_sub_all)
@@ -181,7 +181,7 @@ class TestPixelizationNormalizedResiduals(object):
         pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_normalized_residuals = \
-            inversion_util.pixelization_normalized_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
                 pixelization_values=pixelization_values, reconstructed_data_1d=reconstructed_data_1d,
                 noise_map_1d=noise_map_1d,  sub_to_regular=sub_to_regular,
                 pixelization_to_sub_all=pixelization_to_sub_all)
@@ -200,7 +200,7 @@ class TestPixelizationChiSquareds(object):
         pixelization_to_sub_all = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
 
         pixelization_chi_squareds = \
-            inversion_util.pixelization_chi_squareds_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
                 pixelization_values=pixelization_values, reconstructed_data_1d=reconstructed_data_1d,
                 noise_map_1d=noise_map_1d, sub_to_regular=sub_to_regular,
                 pixelization_to_sub_all=pixelization_to_sub_all)
@@ -216,7 +216,7 @@ class TestPixelizationChiSquareds(object):
         pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_chi_squareds = \
-            inversion_util.pixelization_chi_squareds_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
                 pixelization_values=pixelization_values, reconstructed_data_1d=reconstructed_data_1d,
                 noise_map_1d=noise_map_1d, sub_to_regular=sub_to_regular,
                 pixelization_to_sub_all=pixelization_to_sub_all)
@@ -230,7 +230,7 @@ class TestPixelizationChiSquareds(object):
         pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_chi_squareds = \
-            inversion_util.pixelization_chi_squareds_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+            inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
                 pixelization_values=pixelization_values, reconstructed_data_1d=reconstructed_data_1d,
                 noise_map_1d=noise_map_1d,  sub_to_regular=sub_to_regular,
                 pixelization_to_sub_all=pixelization_to_sub_all)

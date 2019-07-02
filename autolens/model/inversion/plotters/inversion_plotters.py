@@ -31,7 +31,7 @@ def plot_pixelization_values(
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Reconstructed Pixelization', titlesize=16, xlabelsize=16, ylabelsize=16,
         xyticksize=16,
-        output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
+        output_path=None, output_format='show', output_filename='pixelization_values'):
 
     if output_format is 'fits':
         return
@@ -53,7 +53,7 @@ def plot_pixelization_values(
 
     plotter_util.close_figure(as_subplot=as_subplot)
 
-def plot_pixelization_residuals(
+def plot_pixelization_residual_map(
         inversion, plot_origin=True, positions=None, should_plot_centres=False,
         should_plot_grid=False, should_plot_border=False, image_pixels=None,
         source_pixels=None, as_subplot=False,
@@ -63,7 +63,7 @@ def plot_pixelization_residuals(
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Reconstructed Pixelization', titlesize=16, xlabelsize=16, ylabelsize=16,
         xyticksize=16,
-        output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
+        output_path=None, output_format='show', output_filename='pixelization_residual_map'):
 
     if output_format is 'fits':
         return
@@ -71,7 +71,7 @@ def plot_pixelization_residuals(
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     plot_inversion_with_source_values(
-        inversion=inversion, source_pixel_values=inversion.pixelization_residuals,
+        inversion=inversion, source_pixel_values=inversion.pixelization_residual_map,
         plot_origin=plot_origin, positions=positions, should_plot_centres=should_plot_centres,
         should_plot_grid=should_plot_grid, should_plot_border=should_plot_border,
         image_pixels=image_pixels, source_pixels=source_pixels, as_subplot=as_subplot,
@@ -85,7 +85,7 @@ def plot_pixelization_residuals(
 
     plotter_util.close_figure(as_subplot=as_subplot)
 
-def plot_pixelization_normalized_residuals(
+def plot_pixelization_normalized_residual_map(
         inversion, plot_origin=True, positions=None, should_plot_centres=False,
         should_plot_grid=False, should_plot_border=False, image_pixels=None,
         source_pixels=None, as_subplot=False,
@@ -95,7 +95,7 @@ def plot_pixelization_normalized_residuals(
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Reconstructed Pixelization', titlesize=16, xlabelsize=16, ylabelsize=16,
         xyticksize=16,
-        output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
+        output_path=None, output_format='show', output_filename='pixelization_normalized_residual_map'):
 
     if output_format is 'fits':
         return
@@ -103,7 +103,7 @@ def plot_pixelization_normalized_residuals(
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     plot_inversion_with_source_values(
-        inversion=inversion, source_pixel_values=inversion.pixelization_normalized_residuals,
+        inversion=inversion, source_pixel_values=inversion.pixelization_normalized_residual_map,
         plot_origin=plot_origin, positions=positions, should_plot_centres=should_plot_centres,
         should_plot_grid=should_plot_grid, should_plot_border=should_plot_border,
         image_pixels=image_pixels, source_pixels=source_pixels, as_subplot=as_subplot,
@@ -117,7 +117,7 @@ def plot_pixelization_normalized_residuals(
 
     plotter_util.close_figure(as_subplot=as_subplot)
 
-def plot_pixelization_chi_squareds(
+def plot_pixelization_chi_squared_map(
         inversion, plot_origin=True, positions=None, should_plot_centres=False,
         should_plot_grid=False, should_plot_border=False, image_pixels=None,
         source_pixels=None, as_subplot=False,
@@ -127,7 +127,7 @@ def plot_pixelization_chi_squareds(
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Reconstructed Pixelization', titlesize=16, xlabelsize=16, ylabelsize=16,
         xyticksize=16,
-        output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
+        output_path=None, output_format='show', output_filename='pixelization_chi_squared_map'):
 
     if output_format is 'fits':
         return
@@ -135,7 +135,7 @@ def plot_pixelization_chi_squareds(
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     plot_inversion_with_source_values(
-        inversion=inversion, source_pixel_values=inversion.pixelization_chi_squareds,
+        inversion=inversion, source_pixel_values=inversion.pixelization_chi_squared_map,
         plot_origin=plot_origin, positions=positions, should_plot_centres=should_plot_centres,
         should_plot_grid=should_plot_grid, should_plot_border=should_plot_border,
         image_pixels=image_pixels, source_pixels=source_pixels, as_subplot=as_subplot,
@@ -160,7 +160,7 @@ def plot_pixelization_regularization_weights(
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Reconstructed Pixelization', titlesize=16, xlabelsize=16, ylabelsize=16,
         xyticksize=16,
-        output_path=None, output_format='show', output_filename='regularization_weights'):
+        output_path=None, output_format='show', output_filename='pixelization_regularization_weights'):
 
     if output_format is 'fits':
         return
@@ -197,7 +197,7 @@ def plot_inversion_with_source_values(
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Reconstructed Pixelization', titlesize=16, xlabelsize=16, ylabelsize=16,
         xyticksize=16,
-        output_path=None, output_format='show', output_filename='regularization_weights'):
+        output_path=None, output_format='show', output_filename='pixelization_source_values'):
 
     if isinstance(inversion.mapper, mappers.RectangularMapper):
 
