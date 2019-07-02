@@ -23,8 +23,9 @@ class MockMask(object):
 
 
 class Optimizer(object):
-    def __init__(self):
-        self.phase_name = "dummy_phase"
+    def __init__(self, phase_name="dummy_phase"):
+        self.phase_name = phase_name
+        self.phase_path = ""
 
 
 class DummyPhaseImaging(af.AbstractPhase):
@@ -41,7 +42,7 @@ class DummyPhaseImaging(af.AbstractPhase):
         self.phase_path = phase_path or phase_name
         self.mask = None
 
-        self.optimizer = Optimizer()
+        self.optimizer = Optimizer(phase_name)
 
     def run(self, data, results, mask=None, positions=None):
         self.data = data
@@ -88,7 +89,8 @@ def make_mock_file(monkeypatch):
 
 class TestMetaData(object):
     def test_files(self, mock_files):
-        pipeline = pl.PipelineImaging("pipeline_name", DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"))
+        pipeline = pl.PipelineImaging("pipeline_name",
+                                      DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"))
         pipeline.run(MockCCDData(), data_name="data_name")
 
         assert "phase_name//.metadata" in mock_files[1].filename
@@ -125,6 +127,7 @@ class TestPipelineImaging(object):
     def test_run_pipeline(self):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
+
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
 
         pipeline.run(MockCCDData())
@@ -154,7 +157,7 @@ class DummyPhasePositions(af.AbstractPhase):
         self.phase_name = phase_name
         self.phase_tag = ''
         self.phase_path = phase_name
-        self.optimizer = Optimizer()
+        self.optimizer = Optimizer(phase_name)
 
     def run(self, positions, pixel_scale, results):
         self.positions = positions
@@ -182,5 +185,3 @@ class TestPipelinePositions(object):
         pipeline2 = pl.PipelinePositions("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
-
-
