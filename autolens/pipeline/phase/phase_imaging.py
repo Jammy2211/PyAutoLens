@@ -296,6 +296,9 @@ class PhaseImaging(Phase):
             self.plot_lens_fit_of_planes_as_subplot = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_of_planes_as_subplot', bool)
 
+            self.plot_lens_fit_inversion_as_subplot = \
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_inversion_as_subplot', bool)
+
             self.plot_lens_fit_image = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_image', bool)
 
@@ -594,6 +597,7 @@ class PhaseImaging(Phase):
                 should_plot_all_at_end_fits=self.plot_lens_fit_all_at_end_fits,
                 should_plot_fit_as_subplot=self.plot_lens_fit_as_subplot,
                 should_plot_fit_of_planes_as_subplot=self.plot_lens_fit_of_planes_as_subplot,
+                should_plot_inversion_as_subplot=self.plot_lens_fit_inversion_as_subplot,
                 should_plot_image=self.plot_lens_fit_image,
                 should_plot_noise_map=self.plot_lens_fit_noise_map,
                 should_plot_signal_to_noise_map=self.plot_lens_fit_signal_to_noise_map,

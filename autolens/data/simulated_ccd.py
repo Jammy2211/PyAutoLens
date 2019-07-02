@@ -139,6 +139,7 @@ class SimulatedCCDData(ccd.CCDData):
         else:
             noise_map = ccd.NoiseMap.single_value(value=noise_if_add_noise_false, shape=image.shape,
                                                   pixel_scale=pixel_scale)
+            noise_realization = None
 
         if np.isnan(noise_map).any():
             raise exc.DataException('The noise-map has NaN values in it. This suggests your exposure time and / or'

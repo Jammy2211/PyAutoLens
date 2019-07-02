@@ -1,6 +1,7 @@
 from autolens.data.plotters import ccd_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.plotters import lens_fit_plotters
+from autolens.model.inversion.plotters import inversion_plotters
 from autolens.pipeline.plotters import hyper_plotters
 
 def plot_ccd_for_phase(
@@ -105,6 +106,7 @@ def plot_lens_fit_for_phase(
         should_plot_all_at_end_fits,
         should_plot_fit_as_subplot,
         should_plot_fit_of_planes_as_subplot,
+        should_plot_inversion_as_subplot,
         should_plot_image,
         should_plot_noise_map,
         should_plot_signal_to_noise_map,
@@ -139,6 +141,13 @@ def plot_lens_fit_for_phase(
             extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             positions=positions, should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units,
+            output_path=output_path, output_format='png')
+
+    if should_plot_inversion_as_subplot and fit.tracer.has_pixelization:
+
+        inversion_plotters.plot_inversion_subplot(
+            inversion=fit.inversion, mask=fit.mask_2d, positions=positions,
+            extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             output_path=output_path, output_format='png')
 
     lens_fit_plotters.plot_fit_individuals(
