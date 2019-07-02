@@ -320,8 +320,17 @@ class PhaseImaging(Phase):
             self.plot_lens_fit_contribution_maps = \
                 af.conf.instance.visualize.get('plots','plot_lens_fit_contribution_maps', bool)
 
-            self.plot_lens_fit_regularization_weights = \
-                af.conf.instance.visualize.get('plots','plot_lens_fit_regularization_weights', bool)
+            self.plot_lens_fit_pixelization_residuals = \
+                af.conf.instance.visualize.get('plots','plot_lens_fit_pixelization_residuals', bool)
+
+            self.plot_lens_fit_pixelization_normalized_residuals = \
+                af.conf.instance.visualize.get('plots','plot_lens_fit_pixelization_normalized_residuals', bool)
+
+            self.plot_lens_fit_pixelization_chi_squareds = \
+                af.conf.instance.visualize.get('plots','plot_lens_fit_pixelization_chi_squareds', bool)
+
+            self.plot_lens_fit_pixelization_regularization_weights = \
+                af.conf.instance.visualize.get('plots','plot_lens_fit_pixelization_regularization_weights', bool)
 
             self.plot_lens_fit_subtracted_images_of_planes = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_subtracted_images_of_planes', bool)
@@ -592,7 +601,7 @@ class PhaseImaging(Phase):
                 should_plot_residual_map=self.plot_lens_fit_residual_map,
                 should_plot_normalized_residual_map=self.plot_lens_fit_normalized_residual_map,
                 should_plot_chi_squared_map=self.plot_lens_fit_chi_squared_map,
-                should_plot_regularization_weights=self.plot_lens_fit_regularization_weights,
+                should_plot_pixelization_regularization_weights=self.plot_lens_fit_pixelization_regularization_weights,
                 should_plot_subtracted_images_of_planes=self.plot_lens_fit_subtracted_images_of_planes,
                 should_plot_model_images_of_planes=self.plot_lens_fit_model_images_of_planes,
                 should_plot_plane_images_of_planes=self.plot_lens_fit_plane_images_of_planes,
