@@ -87,23 +87,29 @@ class Inversion(object):
         return np.diagonal(self.pixelization_errors_with_covariance)
 
     @property
-    def pixelization_residuals(self):
-        return inversion_util.pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
-            pixelization_values=self.pixelization_values, reconstructed_data_1d=self.reconstructed_data_1d,
-            sub_to_regular=self.mapper.sub_to_regular, pixelization_to_sub_all=self.mapper.pixelization_to_sub_all)
-
-    @property
-    def pixelization_normalized_residuals(self):
-        return inversion_util.pixelization_normalized_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
-            pixelization_values=self.pixelization_values, reconstructed_data_1d=self.reconstructed_data_1d,
-            noise_map_1d=self.noise_map_1d, sub_to_regular=self.mapper.sub_to_regular,
+    def pixelization_residual_map(self):
+        return inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+            pixelization_values=self.pixelization_values,
+            reconstructed_data_1d=self.reconstructed_data_1d,
+            sub_to_regular=self.mapper.grid_stack.sub.sub_to_regular,
             pixelization_to_sub_all=self.mapper.pixelization_to_sub_all)
 
     @property
-    def pixelization_chi_squareds(self):
-        return inversion_util.pixelization_chi_squareds_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
-            pixelization_values=self.pixelization_values, reconstructed_data_1d=self.reconstructed_data_1d,
-            noise_map_1d=self.noise_map_1d, sub_to_regular=self.mapper.sub_to_regular,
+    def pixelization_normalized_residual_map(self):
+        return inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+            pixelization_values=self.pixelization_values,
+            reconstructed_data_1d=self.reconstructed_data_1d,
+            noise_map_1d=self.noise_map_1d,
+            sub_to_regular=self.mapper.grid_stack.sub.sub_to_regular,
+            pixelization_to_sub_all=self.mapper.pixelization_to_sub_all)
+
+    @property
+    def pixelization_chi_squared_map(self):
+        return inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+            pixelization_values=self.pixelization_values,
+            reconstructed_data_1d=self.reconstructed_data_1d,
+            noise_map_1d=self.noise_map_1d,
+            sub_to_regular=self.mapper.grid_stack.sub.sub_to_regular,
             pixelization_to_sub_all=self.mapper.pixelization_to_sub_all)
 
     @property

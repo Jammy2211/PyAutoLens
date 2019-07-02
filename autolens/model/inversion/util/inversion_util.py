@@ -104,7 +104,7 @@ def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
     return reconstructed_data_vector
 
 # @decorator_util.jit()
-def pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
         pixelization_values, reconstructed_data_1d, sub_to_regular, pixelization_to_sub_all):
 
     pixelization_residuals = np.zeros(shape=len(pixelization_to_sub_all))
@@ -120,7 +120,7 @@ def pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_ma
     return pixelization_residuals
 
 # @decorator_util.jit()
-def pixelization_normalized_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+def pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
         pixelization_values, reconstructed_data_1d, noise_map_1d, sub_to_regular, pixelization_to_sub_all):
 
     pixelization_normalized_residuals = np.zeros(shape=len(pixelization_to_sub_all))
@@ -136,7 +136,7 @@ def pixelization_normalized_residuals_from_pixelization_values_reconstructed_dat
     return pixelization_normalized_residuals
 
 # @decorator_util.jit()
-def pixelization_chi_squareds_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
+def pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
         pixelization_values, reconstructed_data_1d, noise_map_1d, sub_to_regular, pixelization_to_sub_all):
 
     pixelization_chi_squareds = np.zeros(shape=len(pixelization_to_sub_all))

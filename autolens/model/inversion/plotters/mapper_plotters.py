@@ -119,7 +119,7 @@ def plot_voronoi_mapper(mapper, source_pixel_values, should_plot_centres=True, s
     color_values = source_pixel_values[:] / np.max(source_pixel_values)
     cmap = plt.get_cmap('jet')
 
-    set_colorbar(cmap=cmap, color_values=color_values, cb_fraction=cb_fraction, cb_pad=cb_pad,
+    set_colorbar(cmap=cmap, color_values=source_pixel_values, cb_fraction=cb_fraction, cb_pad=cb_pad,
                  cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels)
 
     for region, index in zip(regions_SP, range(mapper.pixels)):
