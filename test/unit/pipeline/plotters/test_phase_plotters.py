@@ -70,7 +70,7 @@ def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
         should_plot_residual_map=False,
         should_plot_normalized_residual_map=True,
         should_plot_chi_squared_map=True,
-        should_plot_regularization_weights=False,
+        should_plot_pixelization_regularization_weights=False,
         should_plot_subtracted_images_of_planes=True,
         should_plot_model_images_of_planes=False,
         should_plot_plane_images_of_planes=True,
