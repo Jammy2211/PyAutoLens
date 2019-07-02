@@ -29,7 +29,7 @@ def setup_phase_mask(data, mask, mask_function, inner_mask_radii):
 
 class AbstractPhase(af.AbstractPhase):
 
-    def __init__(self, phase_name, phase_tag=None, phase_folders=None, tag_phases=True,
+    def __init__(self, phase_name, phase_tag=None, phase_folders=tuple(), tag_phases=True,
                  optimizer_class=af.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         """
@@ -145,7 +145,6 @@ class AbstractPhase(af.AbstractPhase):
                                      analysis=analysis, optimizer=self.optimizer)
 
     class Result(af.Result):
-
         def __init__(self, constant, figure_of_merit, previous_variable,
                      gaussian_tuples, analysis, optimizer):
             """
@@ -274,7 +273,7 @@ class Phase(AbstractPhase):
 class GalaxyFitPhase(AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(), galaxies=None,
                  use_intensities=False,
                  use_convergence=False,
                  use_potential=False,
@@ -370,7 +369,7 @@ class GalaxyFitPhase(AbstractPhase):
                                            use_deflections_y=self.use_deflections,
                                            use_deflections_x=self.use_deflections)
 
-            return self.__class__.AnalysisSingle(galaxy_data=galaxy_data,
+            return self.AnalysisSingle(galaxy_data=galaxy_data,
                                                  cosmology=self.cosmology,
                                                  results=results)
 
@@ -394,7 +393,7 @@ class GalaxyFitPhase(AbstractPhase):
                                              use_deflections_y=False,
                                              use_deflections_x=self.use_deflections)
 
-            return self.__class__.AnalysisDeflections(galaxy_data_y=galaxy_data_y,
+            return self.AnalysisDeflections(galaxy_data_y=galaxy_data_y,
                                                       galaxy_data_x=galaxy_data_x,
                                                       cosmology=self.cosmology,
                                                       results=results)
