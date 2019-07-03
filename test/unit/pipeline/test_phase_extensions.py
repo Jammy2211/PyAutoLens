@@ -12,7 +12,7 @@ from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.pipeline.phase import phase_hyper
+from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase import phase_imaging
 from test.unit.mock.pipeline import mock_pipeline
 
@@ -146,7 +146,7 @@ class TestPixelization(object):
                                           light=lp.EllipticalLightProfile())
 
         # noinspection PyTypeChecker
-        phase = phase_hyper.VariableFixingHyperPhase(
+        phase = phase_extensions.VariableFixingHyperPhase(
             MockPhase(),
             (
                 px.Pixelization,
@@ -510,16 +510,17 @@ def make_combined():
     normal_phase = MockPhase()
 
     # noinspection PyTypeChecker
-    return phase_hyper.CombinedHyperPhase(
+    return phase_extensions.CombinedHyperPhase(
         normal_phase,
         hyper_phase_classes=(
-            phase_hyper.HyperGalaxyPhase,
-            phase_hyper.HyperPixelizationPhase
+            phase_extensions.HyperGalaxyPhase,
+            phase_extensions.InversionPhase
         )
     )
 
 
 class TestHyperAPI(object):
+
     def test_combined_result(self, combined):
         # noinspection PyUnusedLocal
         def run_hyper(*args, **kwargs):
@@ -533,11 +534,12 @@ class TestHyperAPI(object):
         assert hasattr(result, "hyper_galaxy")
         assert isinstance(result.hyper_galaxy, MockResult)
 
-        assert hasattr(result, "pixelization")
-        assert isinstance(result.pixelization, MockResult)
+        assert hasattr(result, "inversion")
+        assert isinstance(result.inversion, MockResult)
 
     def test_hyper_phase(self, phase_5x5):
-        phase = phase_hyper.HyperPixelizationPhase(
+
+        phase = phase_extensions.InversionPhase(
             phase_5x5
         )
 
@@ -555,20 +557,20 @@ class TestHyperAPI(object):
         assert galaxy_phase.hyper_name == "hyper_galaxy"
         assert isinstance(
             galaxy_phase,
-            phase_hyper.HyperGalaxyPhase
+            phase_extensions.HyperGalaxyPhase
         )
 
-        assert pixelization_phase.hyper_name == "pixelization"
+        assert pixelization_phase.hyper_name == "inversion"
         assert isinstance(
             pixelization_phase,
-            phase_hyper.HyperPixelizationPhase
+            phase_extensions.InversionPhase
         )
 
     def test_hyper_result(self, ccd_data_5x5):
         normal_phase = MockPhase()
 
         # noinspection PyTypeChecker
-        phase = phase_hyper.HyperGalaxyPhase(
+        phase = phase_extensions.HyperGalaxyPhase(
             normal_phase
         )
 

@@ -560,10 +560,7 @@ class RegularGrid(np.ndarray):
         array_1d : ndarray
             The 1D array which is mapped to its masked 2D array.
         """
-        return mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(
-            array_2d=array_2d,
-            mask=self.mask
-        )
+        return self.mask.array_1d_from_array_2d(array_2d=array_2d)
 
     def grid_1d_from_grid_2d(self, grid_2d):
         """ Map a 2D grid to its masked 1D grid.. 

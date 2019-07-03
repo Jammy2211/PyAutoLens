@@ -145,6 +145,7 @@ class AbstractPhase(af.AbstractPhase):
                                      analysis=analysis, optimizer=self.optimizer)
 
     class Result(af.Result):
+
         def __init__(self, constant, figure_of_merit, previous_variable,
                      gaussian_tuples, analysis, optimizer):
             """

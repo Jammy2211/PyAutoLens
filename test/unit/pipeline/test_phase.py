@@ -1007,6 +1007,26 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
+    def test__extended_with_hyper_and_pixelizations(self, phase_5x5):
+
+        from autolens.pipeline.phase import phase_extensions
+
+        phase_extended = phase_5x5.extend_with_inversion_phase()
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
+
+        phase_extended = phase_5x5.extend_with_hyper_and_inversion_phases(hyper_galaxy=False, inversion=False)
+        assert phase_extended.hyper_phases == []
+
+        phase_extended = phase_5x5.extend_with_hyper_and_inversion_phases(hyper_galaxy=True, inversion=False)
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.HyperGalaxyPhase
+
+        phase_extended = phase_5x5.extend_with_hyper_and_inversion_phases(hyper_galaxy=False, inversion=True)
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
+
+        phase_extended = phase_5x5.extend_with_hyper_and_inversion_phases(hyper_galaxy=True, inversion=True)
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.HyperGalaxyPhase
+        assert type(phase_extended.hyper_phases[1]) == phase_extensions.InversionPhase
+
 
 class TestResult(object):
 

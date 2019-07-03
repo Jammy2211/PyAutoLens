@@ -2,6 +2,7 @@ import copy
 
 import numpy as np
 from typing import cast
+import os
 
 import autofit as af
 from autolens import exc
@@ -62,6 +63,10 @@ class HyperPhase(object):
         phase = copy.deepcopy(self.phase)
         phase.phase_path = f"{phase.phase_path}/{phase.phase_name}"
         phase.phase_name = self.hyper_name
+        try:
+            os.makedirs(phase.make_path())
+        except FileExistsError:
+            pass
         return phase
 
     def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
@@ -161,7 +166,7 @@ class VariableFixingHyperPhase(HyperPhase):
                 pass
 
 
-class HyperPixelizationPhase(VariableFixingHyperPhase):
+class InversionPhase(VariableFixingHyperPhase):
     """
     Phase that makes everything in the variable from the previous phase equal to the
     corresponding value from the best fit except for variables associated with
@@ -179,7 +184,7 @@ class HyperPixelizationPhase(VariableFixingHyperPhase):
 
     @property
     def hyper_name(self):
-        return "pixelization"
+        return "inversion"
 
     @property
     def uses_inversion(self):
@@ -196,13 +201,14 @@ class HyperPixelizationPhase(VariableFixingHyperPhase):
 
         def __init__(self, lens_data, cosmology, positions_threshold, results=None,
                      uses_hyper_images=False):
-            super(HyperPixelizationPhase.Analysis, self).__init__(
+            super(InversionPhase.Analysis, self).__init__(
                 lens_data=lens_data, cosmology=cosmology,
                 positions_threshold=positions_threshold,
                 results=results, uses_hyper_images=uses_hyper_images)
 
 
 class HyperGalaxyPhase(HyperPhase):
+
     @property
     def hyper_name(self):
         return "hyper_galaxy"
@@ -357,6 +363,13 @@ class HyperGalaxyPhase(HyperPhase):
 
             optimizer = phase.optimizer.copy_with_name_extension(
                 extension=galaxy_path[-1])
+
+            # TODO : This is a HACK :O
+
+            optimizer.variable.lens_galaxies = []
+            optimizer.variable.source_galaxies = []
+            optimizer.variable.galaxies = []
+
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
             galaxy_image_2d = results.last.image_2d_dict[galaxy_path]
 

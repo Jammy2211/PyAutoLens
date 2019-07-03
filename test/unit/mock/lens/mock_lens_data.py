@@ -14,7 +14,7 @@ class MockLensData(object):
         self.psf = ccd_data.psf
 
         self.mask_2d = mask
-        self.mask_1d = self.mask_2d.map_2d_array_to_masked_1d_array(
+        self.mask_1d = self.mask_2d.array_1d_from_array_2d(
             array_2d=self.mask_2d)
 
         self.grid_stack = grid_stack
@@ -24,9 +24,9 @@ class MockLensData(object):
         self.convolver_image = convolver_image
         self.convolver_mapping_matrix = convolver_mapping_matrix
 
-        self.image_1d = self.mask_2d.map_2d_array_to_masked_1d_array(
+        self.image_1d = self.mask_2d.array_1d_from_array_2d(
             array_2d=self.unmasked_image)
-        self.noise_map_1d = self.mask_2d.map_2d_array_to_masked_1d_array(
+        self.noise_map_1d = self.mask_2d.array_1d_from_array_2d(
             array_2d=self.unmasked_noise_map)
 
         self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
