@@ -117,8 +117,8 @@ class LensData(object):
         self.positions = positions
 
         self.mask_2d = mask
-        self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
-        self.noise_map_2d = self.map_to_scaled_array(array_1d=self.noise_map_1d)
+        self.image_2d = self.scaled_array_2d_from_array_1d(array_1d=self.image_1d)
+        self.noise_map_2d = self.scaled_array_2d_from_array_1d(array_1d=self.noise_map_1d)
 
         self.uses_cluster_inversion = uses_cluster_inversion
 
@@ -188,7 +188,7 @@ class LensData(object):
         return self.grid_stack.regular.array_1d_from_array_2d
 
     @property
-    def map_to_scaled_array(self):
+    def scaled_array_2d_from_array_1d(self):
         return self.grid_stack.scaled_array_2d_from_array_1d
 
     def __array_finalize__(self, obj):

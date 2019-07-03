@@ -429,9 +429,9 @@ class PhaseImaging(Phase):
                     hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
                     hyper_model_image_1d += galaxy_image_1d
 
-                    hyper_galaxy_image_2d_path_dict[path] = lens_data.map_to_scaled_array(array_1d=galaxy_image_1d)
+                    hyper_galaxy_image_2d_path_dict[path] = lens_data.scaled_array_2d_from_array_1d(array_1d=galaxy_image_1d)
 
-                hyper_model_image_2d = lens_data.map_to_scaled_array(array_1d=hyper_model_image_1d)
+                hyper_model_image_2d = lens_data.scaled_array_2d_from_array_1d(array_1d=hyper_model_image_1d)
 
                 if self.lens_data.uses_cluster_inversion:
 

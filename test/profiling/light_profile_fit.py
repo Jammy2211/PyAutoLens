@@ -56,7 +56,7 @@ for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
         blurred_profile_image_1d = lens_fit_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.profile_image_plane_image_1d, blurring_image_1d=tracer.profile_image_plane_blurring_image_1d,
             convolver=lens_data.convolver_image)
-        blurred_profile_image = lens_data.map_to_scaled_array(array_1d=blurred_profile_image_1d)
+        blurred_profile_image = lens_data.scaled_array_2d_from_array_1d(array_1d=blurred_profile_image_1d)
     diff = time.time() - start
     print("Time to perform PSF convolution = {}".format(diff/repeats))
 

@@ -33,6 +33,294 @@ def make_grid_stack(centre_mask):
     return grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(centre_mask, 2, (3, 3))
 
 
+class TestMaskMappings:
+    
+    def test__scaled_array_from_array_1d__compare_to_util(self):
+
+        mask = np.array([[True, True, False, False],
+                         [True, False, True, True],
+                         [True, True, False, False]])
+
+        array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
+        one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
+
+        array_2d_util = mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
+            array_1d=array_1d, shape=(3, 4), one_to_two=one_to_two)
+
+        mask = msk.Mask(array=mask, pixel_scale=3.0)
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+
+        array_2d = regular_grid.array_2d_from_array_1d(array_1d=array_1d)
+
+        assert (array_2d == array_2d_util).all()
+
+        scaled_array_2d = regular_grid.scaled_array_2d_from_array_1d(array_1d=array_1d)
+
+        assert (scaled_array_2d == array_2d_util).all()
+        assert (scaled_array_2d.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
+        assert (scaled_array_2d.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
+        assert scaled_array_2d.shape_arcsec == (9.0, 12.0)
+        assert scaled_array_2d.pixel_scale == 3.0
+        assert scaled_array_2d.origin == (0.0, 0.0)
+
+    def test__array_1d_from_array_2d__compare_to_util(self):
+
+        array_2d = np.array([[1, 2, 3, 4],
+                             [5, 6, 7, 8],
+                             [9, 10, 11, 12]])
+
+        mask = np.array([[True, False, True, True],
+                         [False, False, False, True],
+                         [True, False, True, False]])
+
+        array_1d_util = mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(array_2d=array_2d, mask=mask)
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        array_1d = regular_grid.array_1d_from_array_2d(array_2d=array_2d)
+
+        assert (array_1d_util == array_1d).all()
+
+    def test__grid_2d_from_grid_1d__compare_to_util(self):
+
+        mask = np.array([[True, True, False, False],
+                         [True, False, True, True],
+                         [True, True, False, False]])
+
+        grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
+        one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
+
+        grid_2d_util = mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
+            grid_1d=grid_1d, shape=(3, 4), one_to_two=one_to_two)
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        grid_2d = regular_grid.grid_2d_from_grid_1d(grid_1d=grid_1d)
+
+        assert (grid_2d_util == grid_2d).all()
+
+    def test__grid_1d_from_grid_2d__compare_to_util(self):
+
+        grid_2d = np.array([[[1,1], [2,2], [3,3], [4,4]],
+                             [[5,5], [6,6], [7,7], [8,8]],
+                             [[9,9], [10,10], [11,11], [12,12]]])
+
+        mask = np.array([[True, False, True, True],
+                         [False, False, False, True],
+                         [True, False, True, False]])
+
+        grid_1d_util = mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        grid_1d = regular_grid.grid_1d_from_grid_2d(grid_2d=grid_2d)
+
+        assert (grid_1d_util == grid_1d).all()
+
+    def test__sub_array_2d_from_sub_array_1d__use_real_mask_and_grid(self):
+
+        mask = np.array([[False, True],
+                         [False, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_array_1d = np.array([1.0, 2.0, 3.0, 4.0,
+                                 9.0, 10.0, 11.0, 12.0,
+                                 13.0, 14.0, 15.0, 16.0])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        sub_array_2d = sub_grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
+
+        assert (sub_array_2d == np.array([[1.0, 2.0, 0.0, 0.0],
+                                          [3.0, 4.0, 0.0, 0.0],
+                                          [9.0, 10.0, 13.0, 14.0],
+                                          [11.0, 12.0, 15.0, 16.0]])).all()
+
+    def test__sub_array_2d_from_sub_array_1d__use_2x3_mask(self):
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_array_1d = np.array([1.0, 1.0, 1.0, 1.0,
+                                 2.0, 2.0, 2.0, 2.0,
+                                 3.0, 3.0, 3.0, 3.0,
+                                 4.0, 4.0, 4.0, 4.0])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+
+        sub_array_2d = sub_grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
+
+        assert (sub_array_2d == np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
+                                          [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
+                                          [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
+                                          [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])).all()
+
+    def test__scaled_sub_array_2d_from_sub_array_1d(self):
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_array_1d = np.array([1.0, 1.0, 1.0, 1.0,
+                                 2.0, 2.0, 2.0, 2.0,
+                                 3.0, 3.0, 3.0, 3.0,
+                                 4.0, 4.0, 4.0, 4.0])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
+
+        scaled_sub_array_2d = sub_grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+            sub_array_1d=sub_array_1d)
+
+        assert (scaled_sub_array_2d == np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
+                                                 [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
+                                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
+                                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])).all()
+
+        assert scaled_sub_array_2d.pixel_scales == (1.5, 1.5)
+        assert scaled_sub_array_2d.origin == (0.0, 0.0)
+
+    def test__scaled_array_from_sub_array_1d_by_binning_up(self):
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_array_1d = np.array([1.0, 10.0, 2.0, 1.0,
+                                 2.0, 2.0, 2.0, 2.0,
+                                 3.0, 3.0, 3.0, 3.0,
+                                 4.0, 0.0, 0.0, 4.0])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+
+        scaled_array_2d = sub_grid.scaled_array_2d_binned_up_from_sub_array_1d(sub_array_1d=sub_array_1d)
+
+        assert (scaled_array_2d == np.array([[3.5, 2.0, 0.0],
+                                             [3.0, 0.0, 2.0]])).all()
+
+        assert scaled_array_2d.pixel_scales == (3.0, 3.0)
+        assert scaled_array_2d.origin == (0.0, 0.0)
+
+    def test__sub_grid_2d_from_sub_grid_1d__use_real_mask_and_grid(self):
+
+        mask = np.array([[False, True],
+                         [False, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
+                                [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        sub_grid_2d = sub_grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+        assert (sub_grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
+                                         [[3.0, 3.0], [4.0,4.0], [0.0, 0.0], [0.0, 0.0]],
+                                         [[9.0, 9.0],  [10.0, 10.0], [13.0, 13.0], [14.0, 14.0]],
+                                         [[11.0, 11.0], [12.0, 12.0], [15.0, 15.0], [16.0, 16.0]]])).all()
+
+    def test__sub_grid_2d_from_sub_grid_1d__use_2x3_mask(self):
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+                                 [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0],
+                                 [3.0, 3.0], [3.0, 3.0], [3.0, 3.0], [3.0, 3.0],
+                                 [4.0, 4.0], [4.0, 4.0], [4.0, 4.0], [4.0, 4.0]])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+
+        sub_grid_2d = sub_grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+        assert (sub_grid_2d == np.array([[[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
+                                          [[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
+                                          [[3.0, 3.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [4.0, 4.0], [4.0, 4.0]],
+                                          [[3.0, 3.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [4.0, 4.0], [4.0, 4.0]]])).all()
+
+    def test__sub_array_1d_from_sub_array_2d__numerical_values(self):
+
+        sub_array_2d = np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
+                                 [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
+                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
+                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        sub_array_1d = sub_grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
+
+        assert (sub_array_1d == np.array([1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0])).all()
+
+    def test__sub_array_1d_from_sub_array_2d__compare_to_util(self):
+
+        sub_array_2d = np.array([[1.0, 1.0, 2.0, 2.0, 3.0, 10.0],
+                                 [1.0, 1.0, 2.0, 2.0, 3.0, 10.0],
+                                 [3.0, 3.0, 8.0, 1.0, 4.0, 4.0],
+                                 [3.0, 3.0, 7.0, 2.0, 4.0, 4.0]])
+
+        mask = np.array([[False, False, False],
+                         [True, True, False]])
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        sub_array_1d = sub_grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
+
+        sub_array_1d_util = mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
+
+        assert (sub_array_1d == sub_array_1d_util).all()
+
+    def test__map_sub_array_to_1d_and_2d_and_back__returns_original_array(self):
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_array_1d = np.array([1.0, 10.0, 2.0, 1.0,
+                                 2.0, 2.0, 2.0, 2.0,
+                                 3.0, 3.0, 3.0, 3.0,
+                                 4.0, 0.0, 0.0, 4.0])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+
+        sub_array_2d = sub_grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
+        sub_array_1d_new = sub_grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
+
+        assert (sub_array_1d == sub_array_1d_new).all()
+
+    def test__sub_data_to_image(self, sub_grid):
+        assert (sub_grid.array_1d_binned_up_from_sub_array_1d(np.array(range(5))) == np.array(range(5))).all()
+
+    def test__sub_to_image__compare_to_util(self):
+
+        mask = np.array([[True, False, True],
+                         [False, False, False],
+                         [True, False, False]])
+
+        sub_to_image_util = mapping_util.sub_to_regular_from_mask(mask, sub_grid_size=2)
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        assert sub_grid.sub_grid_size == 2
+        assert sub_grid.sub_grid_fraction == (1.0 / 4.0)
+        assert (sub_grid.sub_to_regular == sub_to_image_util).all()
+
+
 class TestRegularGrid:
 
     def test__regular_grid_from_mask__compare_to_array_util(self):
@@ -129,83 +417,6 @@ class TestRegularGrid:
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scale == 2.0
         assert (blurring_grid.mask.masked_grid_index_to_pixel == blurring_mask.masked_grid_index_to_pixel).all()
-
-    def test__mapping__scaled_array_from_array_1d__compare_to_util(self):
-
-        mask = np.array([[True, True, False, False],
-                         [True, False, True, True],
-                         [True, True, False, False]])
-
-        array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
-        one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
-
-        array_2d_util = mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
-            array_1d=array_1d, shape=(3, 4), one_to_two=one_to_two)
-
-        mask = msk.Mask(array=mask, pixel_scale=3.0)
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
-        scaled_array_2d = regular_grid.scaled_array_2d_from_array_1d(array_1d=array_1d)
-
-        assert (scaled_array_2d == array_2d_util).all()
-        assert (scaled_array_2d.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
-        assert (scaled_array_2d.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
-        assert scaled_array_2d.shape_arcsec == (9.0, 12.0)
-        assert scaled_array_2d.pixel_scale == 3.0
-        assert scaled_array_2d.origin == (0.0, 0.0)
-
-    def test__mapping__grid_2d_from_grid_1d__compare_to_util(self):
-
-        mask = np.array([[True, True, False, False],
-                         [True, False, True, True],
-                         [True, True, False, False]])
-
-        grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
-        one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
-
-        grid_2d_util = mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
-            grid_1d=grid_1d, shape=(3, 4), one_to_two=one_to_two)
-
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
-        grid_2d = regular_grid.grid_2d_from_grid_1d(grid_1d=grid_1d)
-
-        assert (grid_2d_util == grid_2d).all()
-
-    def test__mapping__array_1d_from_array_2d__compare_to_util(self):
-
-        array_2d = np.array([[1, 2, 3, 4],
-                             [5, 6, 7, 8],
-                             [9, 10, 11, 12]])
-
-        mask = np.array([[True, False, True, True],
-                         [False, False, False, True],
-                         [True, False, True, False]])
-
-        array_1d_util = mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(array_2d=array_2d, mask=mask)
-
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
-        array_1d = regular_grid.array_1d_from_array_2d(array_2d=array_2d)
-
-        assert (array_1d_util == array_1d).all()
-        
-    def test__mapping__grid_1d_from_grid_2d__compare_to_util(self):
-
-        grid_2d = np.array([[[1,1], [2,2], [3,3], [4,4]],
-                             [[5,5], [6,6], [7,7], [8,8]],
-                             [[9,9], [10,10], [11,11], [12,12]]])
-
-        mask = np.array([[True, False, True, True],
-                         [False, False, False, True],
-                         [True, False, True, False]])
-
-        grid_1d_util = mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
-
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
-        grid_1d = regular_grid.grid_1d_from_grid_2d(grid_2d=grid_2d)
-
-        assert (grid_1d_util == grid_1d).all()
 
     def test__new_grid__with_interpolator__returns_grid_with_interpolator(self):
 
@@ -338,207 +549,6 @@ class TestSubGrid(object):
         assert (sub_grid.mask == np.full(fill_value=False, shape=(3,3))).all()
 
         assert (sub_grid.sub_grid_size == 1)
-
-    def test__mapping__sub_array_2d_from_sub_array_1d__use_real_mask_and_grid(self):
-
-        mask = np.array([[False, True],
-                         [False, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_array_1d = np.array([1.0, 2.0, 3.0, 4.0,
-                                 9.0, 10.0, 11.0, 12.0,
-                                 13.0, 14.0, 15.0, 16.0])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
-
-        sub_array_2d = sub_grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
-
-        assert (sub_array_2d == np.array([[1.0, 2.0, 0.0, 0.0],
-                                          [3.0, 4.0, 0.0, 0.0],
-                                          [9.0, 10.0, 13.0, 14.0],
-                                          [11.0, 12.0, 15.0, 16.0]])).all()
-
-    def test__mapping__sub_array_2d_from_sub_array_1d__use_2x3_mask(self):
-
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_array_1d = np.array([1.0, 1.0, 1.0, 1.0,
-                                 2.0, 2.0, 2.0, 2.0,
-                                 3.0, 3.0, 3.0, 3.0,
-                                 4.0, 4.0, 4.0, 4.0])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
-
-        sub_array_2d = sub_grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
-
-        assert (sub_array_2d == np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                          [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                          [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
-                                          [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])).all()
-
-    def test__mapping__scaled_sub_array_2d_from_sub_array_1d(self):
-
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_array_1d = np.array([1.0, 1.0, 1.0, 1.0,
-                                 2.0, 2.0, 2.0, 2.0,
-                                 3.0, 3.0, 3.0, 3.0,
-                                 4.0, 4.0, 4.0, 4.0])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
-
-        scaled_sub_array_2d = sub_grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(sub_array_1d=sub_array_1d)
-
-        assert (scaled_sub_array_2d == np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                                 [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
-                                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])).all()
-
-        assert scaled_sub_array_2d.pixel_scales == (1.5, 1.5)
-        assert scaled_sub_array_2d.origin == (0.0, 0.0)
-
-    def test__mapping__scaled_array_from_sub_array_1d_by_binning_up(self):
-
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_array_1d = np.array([1.0, 10.0, 2.0, 1.0,
-                                 2.0, 2.0, 2.0, 2.0,
-                                 3.0, 3.0, 3.0, 3.0,
-                                 4.0, 0.0, 0.0, 4.0])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
-
-        scaled_array_2d = sub_grid.scaled_array_2d_with_regular_dimensions_from_binned_up_sub_array_1d(sub_array_1d=sub_array_1d)
-
-        assert (scaled_array_2d == np.array([[3.5, 2.0, 0.0],
-                                             [3.0, 0.0, 2.0]])).all()
-
-        assert scaled_array_2d.pixel_scales == (3.0, 3.0)
-        assert scaled_array_2d.origin == (0.0, 0.0)
-
-    def test__mapping__sub_grid_2d_from_sub_grid_1d__use_real_mask_and_grid(self):
-
-        mask = np.array([[False, True],
-                         [False, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
-                                [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
-
-        sub_grid_2d = sub_grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-        assert (sub_grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
-                                         [[3.0, 3.0], [4.0,4.0], [0.0, 0.0], [0.0, 0.0]],
-                                         [[9.0, 9.0],  [10.0, 10.0], [13.0, 13.0], [14.0, 14.0]],
-                                         [[11.0, 11.0], [12.0, 12.0], [15.0, 15.0], [16.0, 16.0]]])).all()
-
-    def test__mapping__sub_grid_2d_from_sub_grid_1d__use_2x3_mask(self):
-
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                                 [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0],
-                                 [3.0, 3.0], [3.0, 3.0], [3.0, 3.0], [3.0, 3.0],
-                                 [4.0, 4.0], [4.0, 4.0], [4.0, 4.0], [4.0, 4.0]])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
-
-        sub_grid_2d = sub_grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-        assert (sub_grid_2d == np.array([[[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
-                                          [[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
-                                          [[3.0, 3.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [4.0, 4.0], [4.0, 4.0]],
-                                          [[3.0, 3.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [4.0, 4.0], [4.0, 4.0]]])).all()
-
-    def test__mapping__sub_array_1d_from_sub_array_2d__numerical_values(self):
-
-        sub_array_2d = np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                 [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
-                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])
-
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
-
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
-        sub_array_1d = sub_grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
-
-        assert (sub_array_1d == np.array([1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0])).all()
-
-    def test__mapping__sub_array_1d_from_sub_array_2d__compare_to_util(self):
-
-        sub_array_2d = np.array([[1.0, 1.0, 2.0, 2.0, 3.0, 10.0],
-                                 [1.0, 1.0, 2.0, 2.0, 3.0, 10.0],
-                                 [3.0, 3.0, 8.0, 1.0, 4.0, 4.0],
-                                 [3.0, 3.0, 7.0, 2.0, 4.0, 4.0]])
-
-        mask = np.array([[False, False, False],
-                         [True, True, False]])
-
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
-
-        sub_array_1d = sub_grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
-
-        sub_array_1d_util = mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
-
-        assert (sub_array_1d == sub_array_1d_util).all()
-
-    def test__mapping__map_sub_array_to_1d_and_2d_and_back__returns_original_array(self):
-
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_array_1d = np.array([1.0, 10.0, 2.0, 1.0,
-                                 2.0, 2.0, 2.0, 2.0,
-                                 3.0, 3.0, 3.0, 3.0,
-                                 4.0, 0.0, 0.0, 4.0])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
-
-        sub_array_2d = sub_grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
-        sub_array_1d_new = sub_grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
-
-        assert (sub_array_1d == sub_array_1d_new).all()
-
-    def test__mapping__sub_data_to_image(self, sub_grid):
-        assert (sub_grid.regular_array_1d_from_binned_up_sub_array_1d(np.array(range(5))) == np.array(range(5))).all()
-
-    def test__mapping__sub_to_image__compare_to_util(self):
-
-        mask = np.array([[True, False, True],
-                         [False, False, False],
-                         [True, False, False]])
-
-        sub_to_image_util = mapping_util.sub_to_regular_from_mask(mask, sub_grid_size=2)
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
-        assert sub_grid.sub_grid_size == 2
-        assert sub_grid.sub_grid_fraction == (1.0 / 4.0)
-        assert (sub_grid.sub_to_regular == sub_to_image_util).all()
 
     def test__sub_mask__is_mask_at_sub_grid_resolution(self):
 
@@ -1251,7 +1261,7 @@ class TestPaddedGrids:
                                  5.0, 6.0, 7.0, 8.0,
                                  9.0, 1.0, 2.0, 3.0,
                                  4.0, 5.0, 6.0, 7.0])
-            array_2d = regular_padded_grid.array_2d_from_array_1d(padded_array_1d=array_1d)
+            array_2d = regular_padded_grid.trimmed_array_2d_from_padded_array_1d(padded_array_1d=array_1d)
 
             assert (array_2d == np.array([[6.0, 7.0],
                                           [1.0, 2.0]])).all()
@@ -1266,7 +1276,7 @@ class TestPaddedGrids:
                                  7.0, 8.0, 9.0,
                                  1.0, 2.0, 3.0,
                                  4.0, 5.0, 6.0])
-            array_2d = regular_padded_grid.array_2d_from_array_1d(padded_array_1d=array_1d)
+            array_2d = regular_padded_grid.trimmed_array_2d_from_padded_array_1d(padded_array_1d=array_1d)
 
             assert (array_2d == np.array([[5.0],
                                           [8.0],
@@ -1280,13 +1290,14 @@ class TestPaddedGrids:
             array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0,
                                  6.0, 7.0, 8.0, 9.0, 1.0,
                                  2.0, 3.0, 4.0, 5.0, 6.0])
-            array_2d = regular_padded_grid.array_2d_from_array_1d(padded_array_1d=array_1d)
+            array_2d = regular_padded_grid.trimmed_array_2d_from_padded_array_1d(padded_array_1d=array_1d)
 
             assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
 
     class TestUnmaskedBlurredImage:
 
         def test__convolve_1d_array_with_psf_and_trims_to_original_size(self):
+
             mask = msk.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
 
             regular_padded_grid = grids.PaddedRegularGrid(arr=np.empty((0)), mask=mask, image_shape=(2, 2))
