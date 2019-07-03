@@ -29,7 +29,10 @@ def make_pipeline(test_name):
 
     phase1 = phase_imaging.LensPlanePhase(
         phase_name='phase_1', phase_folders=[test_type, test_name],
-        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+        lens_galaxies=dict(
+            lens=gm.GalaxyModel(
+                redshift=0.5,
+                light=lp.EllipticalSersic)),
         optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
@@ -50,7 +53,11 @@ def make_pipeline(test_name):
 
     phase2 = HyperLensPlanePhase(
         phase_name='phase_2', phase_folders=[test_type, test_name],
-        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic, hyper_galaxy=g.HyperGalaxy)),
+        lens_galaxies=dict(
+            lens=gm.GalaxyModel(
+                redshift=0.5,
+                light=lp.EllipticalSersic,
+                hyper_galaxy=g.HyperGalaxy)),
         optimizer_class=af.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True

@@ -63,7 +63,7 @@ def make_pipeline(test_name):
                 regularization=reg.AdaptiveBrightness)),
         optimizer_class=af.MultiNest)
 
-    phase2.extend_with_hyper_and_inversion_phases(inversion=True)
+    phase2 = phase2.extend_with_hyper_and_inversion_phases(inversion=True)
 
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
 
@@ -74,7 +74,7 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens = results.from_phase('phase_1').\
                 variable.lens_galaxies.lens
             
-            self.source_galaxies.source = results.from_phase('phase_2').hyper_pixelization.\
+            self.source_galaxies.source = results.from_phase('phase_2').inversion.\
                 constant.source_galaxies.source
 
     phase3 = InversionPhase(
@@ -97,7 +97,7 @@ def make_pipeline(test_name):
 
     phase3 = phase3.extend_with_hyper_and_inversion_phases(inversion=True)
 
-    return pl.PipelineImaging(test_name, phase1, phase2, phase3)
+    return pl.PipelineImaging(test_name, phase1, phase2)
 
 
 if __name__ == "__main__":

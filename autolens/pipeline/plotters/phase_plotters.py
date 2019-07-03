@@ -219,8 +219,8 @@ def plot_lens_fit_for_phase(
                 output_path=output_path + 'fits/', output_format='fits')
 
 def plot_hyper_images_for_phase(
-        hyper_model_image, hyper_galaxy_image_path_dict, hyper_galaxy_cluster_image_path_dict,
-        mask, cluster_mask, extract_array_from_mask, zoom_around_mask, units,
+        hyper_model_image_2d, hyper_galaxy_image_2d_path_dict, hyper_galaxy_cluster_image_2d_path_dict,
+        mask, cluster, extract_array_from_mask, zoom_around_mask, units,
         should_plot_hyper_model_image,
         should_plot_hyper_galaxy_images,
         should_plot_hyper_galaxy_cluster_images,
@@ -231,7 +231,7 @@ def plot_hyper_images_for_phase(
     if should_plot_hyper_model_image:
 
         hyper_plotters.plot_hyper_model_image(
-            hyper_model_image=hyper_model_image, mask=mask,
+            hyper_model_image=hyper_model_image_2d, mask=mask,
             extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path, output_format='png')
@@ -239,15 +239,15 @@ def plot_hyper_images_for_phase(
     if should_plot_hyper_galaxy_images:
 
         hyper_plotters.plot_hyper_galaxy_images_subplot(
-            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict, mask=mask,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict, mask=mask,
             extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path, output_format='png')
 
-    if should_plot_hyper_galaxy_cluster_images and hyper_galaxy_cluster_image_path_dict is not None:
+    if should_plot_hyper_galaxy_cluster_images and hyper_galaxy_cluster_image_2d_path_dict is not None:
 
         hyper_plotters.plot_hyper_galaxy_cluster_images_subplot(
-            hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_path_dict, mask=cluster_mask,
+            hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_2d_path_dict, mask=cluster.mask,
             extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path, output_format='png')

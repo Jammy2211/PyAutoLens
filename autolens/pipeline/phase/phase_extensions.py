@@ -60,13 +60,21 @@ class HyperPhase(object):
         hyper_phase
             A copy of the original phase with a modified name and path
         """
+
         phase = copy.deepcopy(self.phase)
         phase.phase_path = f"{phase.phase_path}/{phase.phase_name}"
-        phase.phase_name = self.hyper_name
-        try:
-            os.makedirs(phase.make_path())
-        except FileExistsError:
-            pass
+  #      phase.phase_name = self.hyper_name
+
+        phase_folders = phase.phase_folders
+        phase_folders.append(phase.phase_name)
+
+        phase.optimizer = af.MultiNest(
+            phase_name=self.hyper_name,
+            phase_tag=phase.phase_tag[8:], # Hack to remove first 'settngs'
+            phase_folders=phase_folders,
+            model_mapper=phase.optimizer.variable,
+            sigma_limit=phase.optimizer.sigma_limit)
+
         return phase
 
     def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
@@ -88,11 +96,7 @@ class HyperPhase(object):
             phase.
         """
         results = copy.deepcopy(results) if results is not None else af.ResultsCollection()
-        result = self.phase.run(
-            data,
-            results=results,
-            **kwargs
-        )
+        result = self.phase.run(data,results=results,**kwargs)
         results.add(self.phase.phase_name, result)
         hyper_result = self.run_hyper(
             data=data,
@@ -125,6 +129,7 @@ class VariableFixingHyperPhase(HyperPhase):
         )
         phase = self.make_hyper_phase()
         phase.optimizer.variable = variable
+
 
         return phase.run(
             data,
@@ -174,6 +179,7 @@ class InversionPhase(VariableFixingHyperPhase):
     """
 
     def __init__(self, phase: ph.Phase):
+
         super().__init__(
             phase,
             variable_classes=(
@@ -199,12 +205,12 @@ class InversionPhase(VariableFixingHyperPhase):
         def figure_of_merit_for_fit(self, tracer):
             pass
 
-        def __init__(self, lens_data, cosmology, positions_threshold, results=None,
-                     uses_hyper_images=False):
+        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
+
             super(InversionPhase.Analysis, self).__init__(
                 lens_data=lens_data, cosmology=cosmology,
                 positions_threshold=positions_threshold,
-                results=results, uses_hyper_images=uses_hyper_images)
+                results=results)
 
 
 class HyperGalaxyPhase(HyperPhase):
@@ -347,7 +353,10 @@ class HyperGalaxyPhase(HyperPhase):
             image_psf_shape=cast(phase_imaging.PhaseImaging, phase).image_psf_shape,
             positions=positions,
             interp_pixel_scale=cast(phase_imaging.PhaseImaging, phase).interp_pixel_scale,
-            uses_inversion=cast(phase_imaging.PhaseImaging, phase).uses_inversion
+            cluster_pixel_scale=cast(phase_imaging.PhaseImaging, phase).cluster_pixel_scale,
+            cluster_pixel_limit=cast(phase_imaging.PhaseImaging, phase).cluster_pixel_limit,
+            uses_inversion=cast(phase_imaging.PhaseImaging, phase).uses_inversion,
+            uses_cluster_inversion=cast(phase_imaging.PhaseImaging, phase).uses_cluster_inversion
         )
 
         model_image_2d = results.last.most_likely_fit.model_image_2d
@@ -395,10 +404,10 @@ class HyperGalaxyPhase(HyperPhase):
         return hyper_result
 
 
-class CombinedHyperPhase(ph.Phase):
+class CombinedHyperPhase(phase_imaging.PhaseImaging):
     def __init__(
             self,
-            phase: ph.Phase,
+            phase: phase_imaging.PhaseImaging,
             hyper_phase_classes: (type,) = tuple()
     ):
         """
@@ -406,20 +415,30 @@ class CombinedHyperPhase(ph.Phase):
 
         Parameters
         ----------
-        phase
+        phase : phase_imaging.PhaseImaging
             The phase wrapped by this hyper phase
         hyper_phase_classes
             The classes of hyper phases to be run following the initial phase
         """
         super().__init__(
-            phase_name=phase.phase_name
-        )
-        self.hyper_phases = list(map(
-            lambda cls: cls(
-                phase
-            ),
-            hyper_phase_classes
-        ))
+            phase_name=phase.phase_name,
+            phase_folders=phase.phase_folders,
+            tag_phases=phase.tag_phases,
+            optimizer_class=af.MultiNest,
+            sub_grid_size=phase.sub_grid_size,
+            bin_up_factor=phase.bin_up_factor,
+            image_psf_shape=phase.image_psf_shape,
+            inversion_psf_shape=phase.inversion_psf_shape,
+            positions_threshold=phase.positions_threshold,
+            mask_function=phase.mask_function,
+            inner_mask_radii=phase.inner_mask_radii,
+            interp_pixel_scale=phase.interp_pixel_scale,
+            inversion_pixel_limit=phase.inversion_pixel_limit,
+            cluster_pixel_scale=phase.cluster_pixel_scale,
+            cosmology=phase.cosmology,
+            auto_link_priors=phase.auto_link_priors)
+
+        self.hyper_phases = list(map(lambda cls: cls(phase),hyper_phase_classes))
         self.phase = phase
 
     def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:

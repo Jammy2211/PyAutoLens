@@ -2,7 +2,6 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.data.array.util import binning_util
 from autolens import exc
 from autolens.data.array import grids
 from autolens.lens import ray_tracing, lens_data as ld, lens_fit, sensitivity_fit
@@ -225,8 +224,7 @@ class PhaseImaging(Phase):
             positions_threshold=self.positions_threshold,
             image_path=self.optimizer.image_path,
             results=results,
-            inversion_pixel_limit=self.inversion_pixel_limit,
-            uses_hyper_images=self.uses_hyper_images)
+            inversion_pixel_limit=self.inversion_pixel_limit)
 
         return analysis
 
@@ -270,7 +268,7 @@ class PhaseImaging(Phase):
     class Analysis(Phase.Analysis):
 
         def __init__(self, lens_data, cosmology, positions_threshold, inversion_pixel_limit=None, image_path=None,
-                     results=None, uses_hyper_images=False):
+                     results=None):
 
             super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology,
                                                         results=results)
@@ -364,21 +362,6 @@ class PhaseImaging(Phase):
             self.plot_lens_fit_plane_images_of_planes = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_plane_images_of_planes', bool)
 
-
-            self.plot_hyper_model_image = \
-                af.conf.instance.visualize.get('plots', 'plot_hyper_model_image', bool)
-
-            self.plot_hyper_galaxy_images = \
-                af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_images', bool)
-
-            self.plot_hyper_galaxy_cluster_images = \
-                af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_cluster_images', bool)
-
-            self.hyper_minimum_percent = \
-                af.conf.instance.general.get('hyper', 'hyper_minimum_percent', float)
-
-            self.uses_hyper_images = uses_hyper_images
-
             self.inversion_pixel_limit = inversion_pixel_limit
 
             mask = self.lens_data.mask_2d if self.should_plot_mask else None
@@ -398,82 +381,34 @@ class PhaseImaging(Phase):
                 should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
                 visualize_path=image_path)
 
+            self.plot_hyper_model_image = \
+                af.conf.instance.visualize.get('plots', 'plot_hyper_model_image', bool)
+
+            self.plot_hyper_galaxy_images = \
+                af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_images', bool)
+
+            self.plot_hyper_galaxy_cluster_images = \
+                af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_cluster_images', bool)
+
             if self.last_results is not None:
 
-                if hasattr(self.results.last, 'hyper_pixelization'):
-                    stop
-                    self.preload_pixelization_grid = self.results.last.hyper_pixelization.most_likely_image_plane_pixelization_grid
+                self.hyper_galaxy_image_1d_path_dict = self.last_results.hyper_galaxy_image_1d_path_dict_from_mask(
+                    mask=lens_data.mask_2d)
 
-                self.hyper_minimum_percent = af.conf.instance.general.get('hyper', 'hyper_minimum_percent', float)
+                self.hyper_model_image_1d = self.last_results.hyper_model_image_1d_from_mask(mask=lens_data.mask_2d)
 
-                image_1d_galaxy_dict = {}
-
-                hyper_model_image_1d = np.zeros(lens_data.mask_1d.shape)
-
-                for galaxy, galaxy_image_2d in self.last_results.image_2d_dict.items():
-
-                    image_1d_galaxy_dict[galaxy] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image_2d)
-
-                    if self.uses_hyper_images:
-                        self.check_for_previously_masked_values(array=image_1d_galaxy_dict[galaxy])
-
-                hyper_galaxy_image_1d_path_dict = {}
-                hyper_galaxy_image_2d_path_dict = {}
-
-                for path, galaxy in self.last_results.path_galaxy_tuples:
-                    galaxy_image_1d = image_1d_galaxy_dict[path]
-
-                    minimum_galaxy_value = self.hyper_minimum_percent * max(galaxy_image_1d)
-                    galaxy_image_1d[galaxy_image_1d < minimum_galaxy_value] = minimum_galaxy_value
-
-                    hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
-                    hyper_model_image_1d += galaxy_image_1d
-
-                    hyper_galaxy_image_2d_path_dict[path] = lens_data.scaled_array_2d_from_array_1d(array_1d=galaxy_image_1d)
-
-                hyper_model_image_2d = lens_data.scaled_array_2d_from_array_1d(array_1d=hyper_model_image_1d)
-
-                if self.lens_data.uses_cluster_inversion:
-
-                    cluster_image_1d_galaxy_dict = {}
-
-                    for galaxy, galaxy_image_2d in self.last_results.image_2d_dict.items():
-                        cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
-                            array_2d=galaxy_image_2d, bin_up_factor=lens_data.cluster.bin_up_factor)
-
-                        cluster_image_1d_galaxy_dict[galaxy] = \
-                            lens_data.cluster.mask.array_1d_from_array_2d(array_2d=cluster_image_2d)
-
-                    hyper_galaxy_cluster_image_1d_path_dict = {}
-                    hyper_galaxy_cluster_image_2d_path_dict = {}
-
-                    for path, galaxy in self.last_results.path_galaxy_tuples:
-                        galaxy_cluster_image_1d = cluster_image_1d_galaxy_dict[path]
-
-                        minimum_cluster_value = self.hyper_minimum_percent * max(galaxy_cluster_image_1d)
-                        galaxy_cluster_image_1d[galaxy_cluster_image_1d < minimum_cluster_value] = minimum_cluster_value
-
-                        hyper_galaxy_cluster_image_1d_path_dict[path] = galaxy_cluster_image_1d
-
-                        hyper_galaxy_cluster_image_2d_path_dict[path] = \
-                            lens_data.cluster.scaled_array_2d_from_array_1d(array_1d=galaxy_cluster_image_1d)
-
-                else:
-
-                    hyper_galaxy_cluster_image_1d_path_dict = None
-                    hyper_galaxy_cluster_image_2d_path_dict = None
-
-                if lens_data.cluster is not None:
-                    cluster_mask = lens_data.cluster.mask
-                else:
-                    cluster_mask = None
+                self.hyper_galaxy_cluster_image_1d_path_dict = \
+                    self.last_results.hyper_galaxy_cluster_image_1d_path_dict_from_cluster(cluster=lens_data.cluster)
 
                 phase_plotters.plot_hyper_images_for_phase(
-                    hyper_model_image=hyper_model_image_2d,
-                    hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict,
-                    hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_2d_path_dict,
+                    hyper_model_image_2d=mask.scaled_array_2d_from_array_1d(
+                        array_1d=self.hyper_model_image_1d),
+                    hyper_galaxy_image_2d_path_dict=
+                    self.last_results.hyper_galaxy_image_2d_path_dict_from_mask(mask=mask),
+                    hyper_galaxy_cluster_image_2d_path_dict=
+                    self.last_results.hyper_galaxy_cluster_image_2d_path_dict_from_cluster(cluster=lens_data.cluster),
                     mask=lens_data.mask_2d,
-                    cluster_mask=cluster_mask,
+                    cluster=lens_data.cluster,
                     extract_array_from_mask=self.extract_array_from_mask,
                     zoom_around_mask=self.zoom_around_mask,
                     units=self.plot_units,
@@ -482,47 +417,12 @@ class PhaseImaging(Phase):
                     should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
                     visualize_path=image_path)
 
-            else:
-
-                hyper_galaxy_image_1d_path_dict = None
-                hyper_galaxy_cluster_image_1d_path_dict = None
-                hyper_model_image_1d = None
-
-            self.hyper_galaxy_image_1d_path_dict = hyper_galaxy_image_1d_path_dict
-            self.hyper_galaxy_cluster_image_1d_path_dict = hyper_galaxy_cluster_image_1d_path_dict
-            self.hyper_model_image_1d = hyper_model_image_1d
-
             self.preload_pixelization_grid = None
 
-            # if self.last_results is not None:
-            #     if hasattr(self.results.last, 'inversion'):
-            #         stop
-            #         self.preload_pixelization_grid = self.results.last.inversion.most_likely_image_plane_pixelization_grid
-
-        # def hyper_galaxy_image_path_dict_from_mask(self, lens_data, return_in_1d=True):
-        #
-        #     image_galaxy_1d_dict = {}
-        #
-        #     for galaxy, galaxy_image_2d in self.last_results.image_2d_dict.items():
-        #
-        #         image_galaxy_1d_dict[galaxy] = lens_data.array_1d_from_array_2d(array_2d=galaxy_image_2d)
-        #         self.check_for_previously_masked_values(array=image_galaxy_1d_dict[galaxy])
-        #
-        #     hyper_galaxy_image_path_dict = {}
-        #
-        #     for path, galaxy in self.last_results.path_galaxy_tuples:
-        #
-        #         galaxy_image_1d = image_galaxy_1d_dict[path]
-        #
-        #         minimum_galaxy_value = self.hyper_minimum_percent * max(galaxy_image_1d)
-        #         galaxy_image_1d[galaxy_image_1d < minimum_galaxy_value] = minimum_galaxy_value
-        #
-        #         if return_in_1d:
-        #             hyper_galaxy_image_path_dict[path] = galaxy_image_1d
-        #         else:
-        #             hyper_galaxy_image_path_dict[path] = lens_data.map_to_scaled_array(array_1d=galaxy_image_1d)
-        #
-        #     return hyper_galaxy_image_path_dict
+            if self.last_results is not None:
+                if hasattr(self.results.last, 'inversion'):
+                    stop
+                    self.preload_pixelization_grid = self.results.last.inversion.most_likely_image_plane_pixelization_grid
 
         def fit(self, instance):
             """
@@ -545,11 +445,10 @@ class PhaseImaging(Phase):
             return fit.figure_of_merit
 
         def check_for_previously_masked_values(self, array):
-            if self.uses_hyper_images:
-                if not np.all(array) != 0.0 and not np.all(array == 0):
-                    raise exc.PhaseException(
-                        'When mapping a 2D array to a 1D array using lens data, a value '
-                        'encountered was 0.0 and therefore masked in a previous phase.')
+            if not np.all(array) != 0.0 and not np.all(array == 0):
+                raise exc.PhaseException(
+                    'When mapping a 2D array to a 1D array using lens data, a value '
+                    'encountered was 0.0 and therefore masked in a previous phase.')
 
         def associate_images(self, instance: af.ModelInstance) -> af.ModelInstance:
             """
@@ -575,7 +474,7 @@ class PhaseImaging(Phase):
             instance
                The input instance with images associated with galaxies where possible.
             """
-            if self.last_results is not None and self.hyper_galaxy_image_1d_path_dict is not None:
+            if hasattr(self, 'hyper_galaxy_image_1d_path_dict'):
                 for galaxy_path, galaxy in instance.path_instance_tuples_for_class(g.Galaxy):
                     if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
@@ -586,43 +485,35 @@ class PhaseImaging(Phase):
 
         def add_grids_to_grid_stack(self, galaxies, grid_stack):
 
-            if self.preload_pixelization_grid is None:
+            for galaxy in galaxies:
+                if galaxy.pixelization is not None:
+                    if galaxy.pixelization.uses_pixelization_grid:
 
-                for galaxy in galaxies:
-                    if galaxy.pixelization is not None:
-                        if galaxy.pixelization.uses_pixelization_grid:
+                        if isinstance(galaxy.pixelization, px.VoronoiMagnification):
 
-                            if isinstance(galaxy.pixelization, px.VoronoiMagnification):
+                            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                                unmasked_sparse_shape=galaxy.pixelization.shape, regular_grid=grid_stack.regular)
 
-                                sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-                                    unmasked_sparse_shape=galaxy.pixelization.shape, regular_grid=grid_stack.regular)
+                        elif isinstance(galaxy.pixelization, px.VoronoiBrightnessImage):
 
-                            elif isinstance(galaxy.pixelization, px.VoronoiBrightnessImage):
+                            cluster_weight_map = galaxy.pixelization.cluster_weight_map_from_hyper_image(
+                                    hyper_image=galaxy.hyper_galaxy_cluster_image_1d)
 
-                                cluster_weight_map = galaxy.pixelization.cluster_weight_map_from_hyper_image(
-                                        hyper_image=galaxy.hyper_galaxy_cluster_image_1d)
+                            sparse_to_regular_grid = \
+                                grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+                                    total_pixels=galaxy.pixelization.pixels, cluster_grid=self.lens_data.cluster,
+                                    regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map,
+                                    seed=1)
 
-                                sparse_to_regular_grid = \
-                                    grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
-                                        total_pixels=galaxy.pixelization.pixels, cluster_grid=self.lens_data.cluster,
-                                        regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map,
-                                        seed=1)
+                        else:
 
-                            else:
+                            raise exc.PhaseException('The pixelization of a galaxy uses a pixelization grid, but was not a viable'
+                                                     'type in the grid stack calculation method')
 
-                                raise exc.PhaseException('The pixelization of a galaxy uses a pixelization grid, but was not a viable'
-                                                         'type in the grid stack calculation method')
+                        pixelization_grid = grids.PixelizationGrid(
+                            arr=sparse_to_regular_grid.sparse, regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
 
-                            pixelization_grid = grids.PixelizationGrid(
-                                arr=sparse_to_regular_grid.sparse, regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
-
-                            return grid_stack.new_grid_stack_with_grids_added(pixelization=pixelization_grid)
-
-            elif self.preload_pixelization_grid is not None:
-
-                pixelization_grid = self.preload_pixelization_grid
-
-                return grid_stack.new_grid_stack_with_grids_added(pixelization=pixelization_grid)
+                        return grid_stack.new_grid_stack_with_grids_added(pixelization=pixelization_grid)
 
             return grid_stack
 
