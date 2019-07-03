@@ -871,6 +871,8 @@ class ClusterGrid(RegularGrid):
             self.mask = obj.mask
             self.bin_up_factor = obj.bin_up_factor
             self.cluster_to_regular_all = obj.cluster_to_regular_all
+            self.cluster_to_regular_sizes = obj.cluster_to_regular_sizes
+            self.total_regular_pixels = obj.total_regular_pixels
 
     @classmethod
     def from_mask_and_cluster_pixel_scale(cls, mask, cluster_pixel_scale,
@@ -909,8 +911,7 @@ class ClusterGrid(RegularGrid):
         return ClusterGrid(arr=cluster_grid, mask=cluster_mask,
                            bin_up_factor=cluster_bin_up_factor,
                            cluster_to_regular_all=cluster_to_regular_all.astype('int'),
-                           cluster_to_regular_sizes=cluster_to_regular_sizes.astype(
-                               'int'),
+                           cluster_to_regular_sizes=cluster_to_regular_sizes.astype('int'),
                            total_regular_pixels=mask.pixels_in_mask)
 
 

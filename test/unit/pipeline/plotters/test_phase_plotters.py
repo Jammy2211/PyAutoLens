@@ -96,13 +96,13 @@ def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
     assert phase_plotter_path + 'fit_plane_image_of_plane_1.png' in plot_patch.paths
 
 def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
-        hyper_model_image_5x5, mask_5x5, phase_plotter_path, plot_patch):
+        hyper_model_image_5x5, cluster_grid_5x5, mask_5x5, phase_plotter_path, plot_patch):
 
     phase_plotters.plot_hyper_images_for_phase(
-        hyper_model_image=hyper_model_image_5x5,
-        hyper_galaxy_image_path_dict=None, hyper_galaxy_cluster_image_path_dict=None,
+        hyper_model_image_2d=hyper_model_image_5x5,
+        hyper_galaxy_image_2d_path_dict=None, hyper_galaxy_cluster_image_2d_path_dict=None,
         mask=mask_5x5,
-        cluster_mask=mask_5x5,
+        cluster=cluster_grid_5x5,
         extract_array_from_mask=True, zoom_around_mask=True, units='arcsec',
         should_plot_hyper_model_image=True,
         should_plot_hyper_galaxy_images=False,

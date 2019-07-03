@@ -185,16 +185,32 @@ class TestImagePassing(object):
             (("galaxies", "source"), source_galaxy)
         ]
 
-    def test_lens_image_dict(
-            self, lens_result):
-        image_dict = lens_result.image_2d_dict
-        assert isinstance(image_dict[("lens_galaxies", "lens")], np.ndarray)
+    def test_lens_image_dict_2d_and_1d(
+            self, lens_result, mask_5x5):
+
+        image_2d_dict = lens_result.image_2d_dict
+
+        assert isinstance(image_2d_dict[("lens_galaxies", "lens")], np.ndarray)
+        assert image_2d_dict[("lens_galaxies", "lens")].shape == (5,5)
+
+        image_1d_dict = lens_result.image_1d_dict_from_mask(mask=mask_5x5)
+        assert image_1d_dict[("lens_galaxies", "lens")].shape == (9,)
 
     def test_lens_source_image_dict(
-            self, lens_source_result):
-        image_dict = lens_source_result.image_2d_dict
-        assert isinstance(image_dict[("lens_galaxies", "lens")], np.ndarray)
-        assert isinstance(image_dict[("source_galaxies", "source")], np.ndarray)
+            self, lens_source_result, mask_5x5):
+
+        image_2d_dict = lens_source_result.image_2d_dict
+
+        assert isinstance(image_2d_dict[("lens_galaxies", "lens")], np.ndarray)
+        assert isinstance(image_2d_dict[("source_galaxies", "source")], np.ndarray)
+
+        assert image_2d_dict[("lens_galaxies", "lens")].shape == (5,5)
+        assert image_2d_dict[("source_galaxies", "source")].shape == (5,5)
+
+        image_1d_dict = lens_source_result.image_1d_dict_from_mask(mask=mask_5x5)
+
+        assert image_1d_dict[("lens_galaxies", "lens")].shape == (9,)
+        assert image_1d_dict[("source_galaxies", "source")].shape == (9,)
 
         lens_source_result.constant.lens_galaxies.lens = g.Galaxy(redshift=0.5)
         lens_source_result.constant.source_galaxies.source = g.Galaxy(redshift=1.0)
@@ -369,32 +385,33 @@ class TestImagePassing(object):
         assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) ==
                 analysis.lens_data.cluster.shape[0])
 
-    def test__image_in_results_has_masked_value_passsed__raises_error(self,
-                                                                      mask_function_5x5,
-                                                                      results_collection_5x5,
-                                                                      ccd_data_5x5):
-        phase_5x5 = phase_imaging.LensSourcePlanePhase(
-            lens_galaxies=dict(
-                lens=gm.GalaxyModel(
-                    redshift=0.5,
-                    hyper_galaxy=g.HyperGalaxy)),
-            optimizer_class=mock_pipeline.MockNLO,
-            mask_function=mask_function_5x5,
-            phase_name='test_phase')
-
-        results_collection_5x5[0].galaxy_images[0][2, 2] = 0.0
-
-        with pytest.raises(exc.PhaseException):
-            phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
+    # def test__image_in_results_has_masked_value_passsed__raises_error(self,
+    #                                                                   mask_function_5x5,
+    #                                                                   results_collection_5x5,
+    #                                                                   ccd_data_5x5):
+    #     phase_5x5 = phase_imaging.LensSourcePlanePhase(
+    #         lens_galaxies=dict(
+    #             lens=gm.GalaxyModel(
+    #                 redshift=0.5,
+    #                 hyper_galaxy=g.HyperGalaxy)),
+    #         optimizer_class=mock_pipeline.MockNLO,
+    #         mask_function=mask_function_5x5,
+    #         phase_name='test_phase')
+    #
+    #     results_collection_5x5[0].galaxy_images[0][2, 2] = 0.0
+    #
+    #     with pytest.raises(exc.PhaseException):
+    #         phase_5x5.make_analysis(data=ccd_data_5x5, results=results_collection_5x5)
 
     def test_associate_images_lens(
             self, lens_instance, lens_result, lens_data_5x5):
+
         results_collection = af.ResultsCollection()
         results_collection.add("phase", lens_result)
 
         analysis = phase_imaging.LensPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
-            results=results_collection, uses_hyper_images=True)
+            results=results_collection)
 
         instance = analysis.associate_images(instance=lens_instance)
 
@@ -408,11 +425,12 @@ class TestImagePassing(object):
 
     def test_associate_images_lens_source(
             self, lens_source_instance, lens_source_result, lens_data_5x5):
+
         results_collection = af.ResultsCollection()
         results_collection.add("phase", lens_source_result)
         analysis = phase_imaging.LensSourcePlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
-            results=results_collection, uses_hyper_images=True)
+            results=results_collection)
 
         instance = analysis.associate_images(lens_source_instance)
 
@@ -435,11 +453,12 @@ class TestImagePassing(object):
 
     def test_associate_images_multi_plane(
             self, multi_plane_instance, multi_plane_result, lens_data_5x5):
+
         results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=None, positions_threshold=None,
-            results=results_collection, uses_hyper_images=True)
+            results=results_collection)
 
         instance = analysis.associate_images(instance=multi_plane_instance)
 
@@ -462,11 +481,12 @@ class TestImagePassing(object):
 
     def test_fit_uses_hyper_fit_correctly_multi_plane(
             self, multi_plane_instance, multi_plane_result, lens_data_5x5):
+
         results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(
             lens_data=lens_data_5x5, cosmology=cosmo.Planck15, positions_threshold=None,
-            results=results_collection, uses_hyper_images=True)
+            results=results_collection)
 
         hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0,
                                      noise_power=1.0)
