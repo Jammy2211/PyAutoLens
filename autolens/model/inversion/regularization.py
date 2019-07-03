@@ -228,7 +228,7 @@ class AdaptiveBrightness(Regularization):
 
         pixel_signals = self.pixel_signals_from_images(
             pixels=mapper.pixels, sub_to_pix=mapper.sub_to_pixelization,
-            sub_to_regular=mapper.grid_stack.sub.sub_to_regular, hyper_image=mapper.hyper_image)
+            sub_to_regular=mapper.grid_stack.sub.sub_to_regular_from_sub_grid_size, hyper_image=mapper.hyper_image)
 
         return self.regularization_weights_from_pixel_signals(pixel_signals=pixel_signals)
 

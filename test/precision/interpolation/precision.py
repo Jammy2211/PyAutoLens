@@ -51,9 +51,9 @@ for data_resolution in ['HST_Up']:
 
     true_deflections = mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
 
-    true_deflections_y_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    true_deflections_y_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
         sub_array_1d=true_deflections[:,0])
-    true_deflections_x_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    true_deflections_x_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
         sub_array_1d=true_deflections[:,1])
 
     difference_y = deflections[:,0] - true_deflections[:, 0]
@@ -66,9 +66,9 @@ for data_resolution in ['HST_Up']:
     print("interpolation x uncertainty: ", np.std(difference_x))
     print("interpolation x max error: ", np.max(difference_x))
 
-    difference_y_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    difference_y_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
         sub_array_1d=difference_y)
-    difference_x_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    difference_x_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
         sub_array_1d=difference_x)
 
     array_plotters.plot_array(array=true_deflections_y_2d)

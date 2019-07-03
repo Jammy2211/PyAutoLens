@@ -69,14 +69,14 @@ class TestSensitivityProfileFit:
         model_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
             convolver_image=ld_blur.convolver_image)
 
-        model_image_2d = ld_blur.map_to_scaled_array(array_1d=model_image_1d)
+        model_image_2d = ld_blur.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
         assert (fit.fit_normal.model_image_2d == model_image_2d).all()
 
         residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
             data=ld_blur.image_1d, mask=ld_blur.mask_1d, model_data=model_image_1d)
 
-        residual_map_2d = ld_blur.map_to_scaled_array(array_1d=residual_map_1d)
+        residual_map_2d = ld_blur.scaled_array_2d_from_array_1d(array_1d=residual_map_1d)
         assert (fit.fit_normal.residual_map_2d == residual_map_2d).all()
 
         chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
@@ -127,7 +127,7 @@ class TestSensitivityProfileFit:
         model_image_1d = tracer_normal.blurred_profile_image_plane_image_1d_from_convolver_image(
             convolver_image=ld_blur.convolver_image)
 
-        model_image_2d = ld_blur.map_to_scaled_array(array_1d=model_image_1d)
+        model_image_2d = ld_blur.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
         assert (fit.fit_normal.model_image_2d == model_image_2d).all()
 
@@ -148,7 +148,7 @@ class TestSensitivityProfileFit:
         model_image_1d = tracer_sensitive.blurred_profile_image_plane_image_1d_from_convolver_image(
             convolver_image=ld_blur.convolver_image)
 
-        model_image_2d = ld_blur.map_to_scaled_array(array_1d=model_image_1d)
+        model_image_2d = ld_blur.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
         assert (fit.fit_sensitive.model_image_2d == model_image_2d).all()
 

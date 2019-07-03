@@ -251,9 +251,9 @@ class HyperGalaxyPhase(HyperPhase):
         def visualize(self, instance, image_path, during_analysis):
 
             if self.plot_hyper_galaxy_subplot:
-                hyper_model_image_2d = self.lens_data.map_to_scaled_array(
+                hyper_model_image_2d = self.lens_data.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_model_image_1d)
-                hyper_galaxy_image_2d = self.lens_data.map_to_scaled_array(
+                hyper_galaxy_image_2d = self.lens_data.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_galaxy_image_1d)
 
                 hyper_galaxy = instance.hyper_galaxy
@@ -267,7 +267,7 @@ class HyperGalaxyPhase(HyperPhase):
                     noise_map_1d=self.lens_data.noise_map_1d,
                     mask_1d=self.lens_data.mask_1d,
                     model_image_1d=self.hyper_model_image_1d,
-                    map_to_scaled_array=self.lens_data.map_to_scaled_array)
+                    scaled_array_2d_from_array_1d=self.lens_data.scaled_array_2d_from_array_1d)
 
                 fit = self.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
 
@@ -308,7 +308,7 @@ class HyperGalaxyPhase(HyperPhase):
                 noise_map_1d=hyper_noise_map_1d,
                 mask_1d=self.lens_data.mask_1d,
                 model_image_1d=self.hyper_model_image_1d,
-                map_to_scaled_array=self.lens_data.map_to_scaled_array)
+                scaled_array_2d_from_array_1d=self.lens_data.scaled_array_2d_from_array_1d)
 
         @classmethod
         def describe(cls, instance):

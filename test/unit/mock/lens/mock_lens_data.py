@@ -29,8 +29,8 @@ class MockLensData(object):
         self.noise_map_1d = self.mask_2d.array_1d_from_array_2d(
             array_2d=self.unmasked_noise_map)
 
-        self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
-        self.noise_map_2d = self.map_to_scaled_array(array_1d=self.noise_map_1d)
+        self.image_2d = self.scaled_array_2d_from_array_1d(array_1d=self.image_1d)
+        self.noise_map_2d = self.scaled_array_2d_from_array_1d(array_1d=self.noise_map_1d)
         self.noise_map = self.noise_map_2d
         self.positions = None
 
@@ -43,5 +43,5 @@ class MockLensData(object):
         return self.grid_stack.regular.array_1d_from_array_2d
 
     @property
-    def map_to_scaled_array(self):
+    def scaled_array_2d_from_array_1d(self):
         return self.grid_stack.scaled_array_2d_from_array_1d

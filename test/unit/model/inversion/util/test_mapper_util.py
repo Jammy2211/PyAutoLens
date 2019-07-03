@@ -24,10 +24,11 @@ class TestMappingMatrix:
         grids = MockPixGridStack(regular=three_pixels, sub=MockPixSubGrid(three_pixels, sub_to_regular,
                                                                           sub_grid_size=1))
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=6,
-                                                                regular_pixels=grids.regular.shape[0],
-                                                                sub_to_regular=grids.sub.sub_to_regular,
-                                                                sub_grid_fraction=grids.sub.sub_grid_fraction)
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+            sub_to_pix=sub_to_pix, pixels=6,
+            regular_pixels=grids.regular.shape[0],
+            sub_to_regular=grids.sub.sub_to_regular,
+            sub_grid_fraction=grids.sub.sub_grid_fraction)
 
         assert (mapping_matrix == np.array([[1, 0, 0, 0, 0, 0],  # CCD pixel 0 maps to pix pixel 0.
                                             [0, 1, 0, 0, 0, 0],  # CCD pixel 1 maps to pix pixel 1.
@@ -41,10 +42,12 @@ class TestMappingMatrix:
         grids = MockPixGridStack(regular=five_pixels, sub=MockPixSubGrid(five_pixels, sub_to_regular,
                                                                          sub_grid_size=1))
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=8,
-                                                                regular_pixels=grids.regular.shape[0],
-                                                                sub_to_regular=grids.sub.sub_to_regular,
-                                                                sub_grid_fraction=grids.sub.sub_grid_fraction)
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+            sub_to_pix=sub_to_pix, pixels=8,
+            regular_pixels=grids.regular.shape[0],
+            sub_to_regular=grids.sub.sub_to_regular,
+            sub_grid_fraction=grids.sub.sub_grid_fraction)
+
         assert (mapping_matrix == np.array(
             [[1, 0, 0, 0, 0, 0, 0, 0],  # CCD image_to_pixel 0 and 3 mappers to pix pixel 0.
              [0, 1, 0, 0, 0, 0, 0, 0],  # CCD image_to_pixel 1 and 4 mappers to pix pixel 1.
@@ -60,10 +63,11 @@ class TestMappingMatrix:
         grids = MockPixGridStack(regular=five_pixels, sub=MockPixSubGrid(five_pixels, sub_to_regular,
                                                                          sub_grid_size=2))
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=8,
-                                                                regular_pixels=grids.regular.shape[0],
-                                                                sub_to_regular=grids.sub.sub_to_regular,
-                                                                sub_grid_fraction=grids.sub.sub_grid_fraction)
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+            sub_to_pix=sub_to_pix, pixels=8,
+            regular_pixels=grids.regular.shape[0],
+            sub_to_regular=grids.sub.sub_to_regular,
+            sub_grid_fraction=grids.sub.sub_grid_fraction)
 
         assert (mapping_matrix == np.array(
             [[0.25, 0.25, 0.25, 0.25, 0, 0, 0, 0],
@@ -80,10 +84,11 @@ class TestMappingMatrix:
         grids = MockPixGridStack(regular=five_pixels, sub=MockPixSubGrid(five_pixels, sub_to_regular,
                                                                          sub_grid_size=2))
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=8,
-                                                                regular_pixels=grids.regular.shape[0],
-                                                                sub_to_regular=grids.sub.sub_to_regular,
-                                                                sub_grid_fraction=grids.sub.sub_grid_fraction)
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+            sub_to_pix=sub_to_pix, pixels=8,
+            regular_pixels=grids.regular.shape[0],
+            sub_to_regular=grids.sub.sub_to_regular,
+            sub_grid_fraction=grids.sub.sub_grid_fraction)
 
         assert (mapping_matrix == np.array(
             [[0.75, 0.25, 0, 0, 0, 0, 0, 0],
@@ -105,10 +110,11 @@ class TestMappingMatrix:
         grids = MockPixGridStack(regular=three_pixels, sub=MockPixSubGrid(three_pixels, sub_to_regular,
                                                                           sub_grid_size=4))
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=6,
-                                                                regular_pixels=grids.regular.shape[0],
-                                                                sub_to_regular=grids.sub.sub_to_regular,
-                                                                sub_grid_fraction=grids.sub.sub_grid_fraction)
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+            sub_to_pix=sub_to_pix, pixels=6,
+            regular_pixels=grids.regular.shape[0],
+            sub_to_regular=grids.sub.sub_to_regular,
+            sub_grid_fraction=grids.sub.sub_grid_fraction)
 
         assert (mapping_matrix == np.array(
             [[0.75, 0.25, 0, 0, 0, 0],

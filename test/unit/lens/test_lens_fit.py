@@ -273,14 +273,14 @@ class TestLensProfileFit:
 
             model_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=lens_data_5x5.convolver_image)
-            model_image_2d = lens_data_5x5.map_to_scaled_array(array_1d=model_image_1d)
+            model_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
             assert model_image_1d == pytest.approx(fit.model_image_1d, 1e-4)
             assert model_image_2d == pytest.approx(fit.model_image_2d, 1e-4)
 
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d, model_data=model_image_1d)
-            residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=residual_map_1d)
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
@@ -290,7 +290,7 @@ class TestLensProfileFit:
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
                 noise_map=lens_data_5x5.noise_map_1d)
 
-            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            normalized_residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=normalized_residual_map_1d)
 
             assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
@@ -300,7 +300,7 @@ class TestLensProfileFit:
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
                 noise_map=lens_data_5x5.noise_map_1d)
 
-            chi_squared_map_2d = lens_data_5x5.map_to_scaled_array(
+            chi_squared_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=chi_squared_map_1d)
             
             assert chi_squared_map_1d == pytest.approx(fit.chi_squared_map_1d, 1e-4)
@@ -362,9 +362,9 @@ class TestLensProfileFit:
             assert fit.model_image_1d == pytest.approx(
                 fit.galaxy_image_1d_dict[g0] + fit.galaxy_image_1d_dict[g1], 1.0e-4)
 
-            g0_blurred_image_plane_image_2d = lens_data_5x5.map_to_scaled_array(
+            g0_blurred_image_plane_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=g0_blurred_image_plane_image_1d)
-            g1_blurred_image_plane_image_2d = lens_data_5x5.map_to_scaled_array(
+            g1_blurred_image_plane_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=g1_blurred_image_plane_image_1d)
 
             assert fit.galaxy_image_2d_dict[g0] == pytest.approx(
@@ -402,7 +402,7 @@ class TestLensProfileFit:
                 noise_map_1d=lens_data_5x5.noise_map_1d)
 
             hyper_noise_map_1d = lens_data_5x5.noise_map_1d + hyper_noise_1d
-            hyper_noise_map_2d = lens_data_5x5.map_to_scaled_array(
+            hyper_noise_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d)
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map_2d, 1e-4)
@@ -410,7 +410,7 @@ class TestLensProfileFit:
             model_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=lens_data_5x5.convolver_image)
 
-            model_image_2d = lens_data_5x5.map_to_scaled_array(array_1d=model_image_1d)
+            model_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
             assert model_image_1d == pytest.approx(fit.model_image_1d, 1e-4)
             assert model_image_2d == pytest.approx(fit.model_image_2d, 1e-4)
@@ -418,7 +418,7 @@ class TestLensProfileFit:
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d,
                 model_data=model_image_1d)
-            residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=residual_map_1d)
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
@@ -427,7 +427,7 @@ class TestLensProfileFit:
             normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d, noise_map=hyper_noise_map_1d)
 
-            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            normalized_residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=normalized_residual_map_1d)
 
             assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
@@ -436,7 +436,7 @@ class TestLensProfileFit:
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d, noise_map=hyper_noise_map_1d)
 
-            chi_squared_map_2d = lens_data_5x5.map_to_scaled_array(
+            chi_squared_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=chi_squared_map_1d)
 
             assert chi_squared_map_1d == pytest.approx(fit.chi_squared_map_1d, 1e-4)
@@ -544,7 +544,7 @@ class TestLensInversionFit:
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d,
                 model_data=inversion.reconstructed_data_1d)
-            residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=residual_map_1d)
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
@@ -554,7 +554,7 @@ class TestLensInversionFit:
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
                 noise_map=lens_data_5x5.noise_map_1d)
 
-            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            normalized_residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=normalized_residual_map_1d)
 
             assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
@@ -563,7 +563,7 @@ class TestLensInversionFit:
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
                 noise_map=lens_data_5x5.noise_map_1d)
-            chi_squared_map_2d = lens_data_5x5.map_to_scaled_array(
+            chi_squared_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=chi_squared_map_1d)
 
             assert chi_squared_map_1d == pytest.approx(fit.chi_squared_map_1d, 1e-4)
@@ -658,7 +658,7 @@ class TestLensInversionFit:
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=lens_data_5x5.noise_map_1d)
             hyper_noise_map_1d = lens_data_5x5.noise_map_1d + hyper_noise_1d
-            hyper_noise_map_2d = lens_data_5x5.map_to_scaled_array(
+            hyper_noise_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d)
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map_2d, 1e-4)
@@ -678,7 +678,7 @@ class TestLensInversionFit:
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d,
                 model_data=inversion.reconstructed_data_1d)
-            residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=residual_map_1d)
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
@@ -688,7 +688,7 @@ class TestLensInversionFit:
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
                 noise_map=hyper_noise_map_1d)
 
-            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            normalized_residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=normalized_residual_map_1d)
 
             assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
@@ -697,7 +697,7 @@ class TestLensInversionFit:
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
                 noise_map=hyper_noise_map_1d)
-            chi_squared_map_2d = lens_data_5x5.map_to_scaled_array(
+            chi_squared_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=chi_squared_map_1d)
 
             assert chi_squared_map_1d == pytest.approx(fit.chi_squared_map_1d, 1e-4)
@@ -790,7 +790,7 @@ class TestLensProfileInversionFit:
             blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=lens_data_5x5.convolver_image)
 
-            blurred_profile_image_2d = lens_data_5x5.map_to_scaled_array(
+            blurred_profile_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=blurred_profile_image_1d)
 
             assert blurred_profile_image_1d == pytest.approx(
@@ -799,7 +799,7 @@ class TestLensProfileInversionFit:
                 fit.blurred_profile_image_2d, 1e-4)
 
             profile_subtracted_image_1d = lens_data_5x5.image_1d - blurred_profile_image_1d
-            profile_subtracted_image_2d = lens_data_5x5.map_to_scaled_array(
+            profile_subtracted_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=profile_subtracted_image_1d)
 
             assert profile_subtracted_image_1d == pytest.approx(
@@ -817,7 +817,7 @@ class TestLensProfileInversionFit:
                 regularization=reg)
 
             model_image_1d = blurred_profile_image_1d + inversion.reconstructed_data_1d
-            model_image_2d = lens_data_5x5.map_to_scaled_array(array_1d=model_image_1d)
+            model_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
             assert model_image_1d == pytest.approx(fit.model_image_1d, 1e-4)
             assert model_image_2d == pytest.approx(fit.model_image_2d, 1e-4)
@@ -825,7 +825,7 @@ class TestLensProfileInversionFit:
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d,
                 model_data=model_image_1d)
-            residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=residual_map_1d)
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
@@ -835,7 +835,7 @@ class TestLensProfileInversionFit:
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
                 noise_map=lens_data_5x5.noise_map_1d)
 
-            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            normalized_residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=normalized_residual_map_1d)
 
             assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
@@ -844,7 +844,7 @@ class TestLensProfileInversionFit:
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d,
                 noise_map=lens_data_5x5.noise_map_1d)
-            chi_squared_map_2d = lens_data_5x5.map_to_scaled_array(
+            chi_squared_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=chi_squared_map_1d)
 
             assert chi_squared_map_1d == pytest.approx(fit.chi_squared_map_1d, 1e-4)
@@ -942,9 +942,9 @@ class TestLensProfileInversionFit:
                 fit.galaxy_image_1d_dict[g0] + fit.galaxy_image_1d_dict[g1] +
                 fit.galaxy_image_1d_dict[galaxy_pix], 1.0e-4)
 
-            g0_blurred_image_plane_image_2d = lens_data_5x5.map_to_scaled_array(
+            g0_blurred_image_plane_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=g0_blurred_image_plane_image_1d)
-            g1_blurred_image_plane_image_2d = lens_data_5x5.map_to_scaled_array(
+            g1_blurred_image_plane_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=g1_blurred_image_plane_image_1d)
 
             assert fit.galaxy_image_2d_dict[g0] == pytest.approx(
@@ -984,7 +984,7 @@ class TestLensProfileInversionFit:
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=lens_data_5x5.noise_map_1d)
             hyper_noise_map_1d = lens_data_5x5.noise_map_1d + hyper_noise_1d
-            hyper_noise_map_2d = lens_data_5x5.map_to_scaled_array(
+            hyper_noise_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d)
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map_2d, 1e-4)
@@ -992,7 +992,7 @@ class TestLensProfileInversionFit:
             blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=lens_data_5x5.convolver_image)
 
-            blurred_profile_image_2d = lens_data_5x5.map_to_scaled_array(
+            blurred_profile_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=blurred_profile_image_1d)
 
             assert blurred_profile_image_1d == pytest.approx(
@@ -1001,7 +1001,7 @@ class TestLensProfileInversionFit:
                 fit.blurred_profile_image_2d, 1e-4)
 
             profile_subtracted_image_1d = lens_data_5x5.image_1d - blurred_profile_image_1d
-            profile_subtracted_image_2d = lens_data_5x5.map_to_scaled_array(
+            profile_subtracted_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=profile_subtracted_image_1d)
 
             assert profile_subtracted_image_1d == pytest.approx(
@@ -1018,7 +1018,7 @@ class TestLensProfileInversionFit:
                 regularization=reg)
 
             model_image_1d = blurred_profile_image_1d + inversion.reconstructed_data_1d
-            model_image_2d = lens_data_5x5.map_to_scaled_array(array_1d=model_image_1d)
+            model_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
             assert model_image_1d == pytest.approx(fit.model_image_1d, 1e-4)
             assert model_image_2d == pytest.approx(fit.model_image_2d, 1e-4)
@@ -1026,7 +1026,7 @@ class TestLensProfileInversionFit:
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d, model_data=model_image_1d)
 
-            residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=residual_map_1d)
 
             assert residual_map_1d == pytest.approx(fit.residual_map_1d, 1e-4)
@@ -1035,7 +1035,7 @@ class TestLensProfileInversionFit:
             normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d, noise_map=hyper_noise_map_1d)
 
-            normalized_residual_map_2d = lens_data_5x5.map_to_scaled_array(
+            normalized_residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=normalized_residual_map_1d)
 
             assert normalized_residual_map_1d == pytest.approx(fit.normalized_residual_map_1d, 1e-4)
@@ -1044,7 +1044,7 @@ class TestLensProfileInversionFit:
             chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1d, mask=lens_data_5x5.mask_1d, noise_map=hyper_noise_map_1d)
 
-            chi_squared_map_2d = lens_data_5x5.map_to_scaled_array(
+            chi_squared_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=chi_squared_map_1d)
 
             assert chi_squared_map_1d == pytest.approx(fit.chi_squared_map_1d, 1e-4)
@@ -1100,7 +1100,7 @@ class TestLensProfileInversionFit:
             blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
                 convolver_image=lens_data_5x5.convolver_image)
 
-            blurred_profile_image_2d = lens_data_5x5.map_to_scaled_array(
+            blurred_profile_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=blurred_profile_image_1d)
 
             profile_subtracted_image_1d = lens_data_5x5.image_1d - blurred_profile_image_1d
