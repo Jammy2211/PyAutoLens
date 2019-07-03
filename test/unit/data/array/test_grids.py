@@ -104,6 +104,7 @@ class TestRegularGrid:
         assert (regular_grid.mask == np.full(fill_value=False, shape=(3,3))).all()
 
     def test__blurring_grid_from_mask__compare_to_array_util(self):
+
         mask = np.array([[True, True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True, True],
                          [True, True, False, True, True, True, False, True, True],
@@ -1418,7 +1419,8 @@ class TestGridStack(object):
         assert padded_grids.sub.image_shape == (2, 2)
         assert padded_grids.sub.padded_shape == (4, 4)
 
-    def test__scaled_array_from_array_1d(self, grid_stack):
+    def test__scaled_array_2d_from_array_1d(self, grid_stack):
+
         scaled_array_from_grid_stack = grid_stack.scaled_array_2d_from_array_1d(array_1d=np.ones(5))
         scaled_array_from_regular = grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=np.ones(5))
 

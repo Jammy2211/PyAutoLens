@@ -175,13 +175,13 @@ def make_mask_6x6():
 
 @pytest.fixture(name="image_1d_5x5")
 def make_image_1d_5x5(image_5x5, mask_5x5):
-    return mask_5x5.map_2d_array_to_masked_1d_array(
+    return mask_5x5.array_1d_from_array_2d(
         array_2d=image_5x5)
 
 
 @pytest.fixture(name="noise_map_1d_5x5")
 def make_noise_map_1d_5x5(noise_map_5x5, mask_5x5):
-    return mask_5x5.map_2d_array_to_masked_1d_array(
+    return mask_5x5.array_1d_from_array_2d(
         array_2d=noise_map_5x5)
 
 

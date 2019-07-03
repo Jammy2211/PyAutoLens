@@ -228,7 +228,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(
             self, sub_grid_size=sub_grid_size).astype('int')
 
-    def map_2d_array_to_masked_1d_array(self, array_2d):
+    def array_1d_from_array_2d(self, array_2d):
         """For a 2D array (e.g. an image, noise_map, etc.) map it to a masked 1D array of valuees using this mask.
 
         Parameters
@@ -239,6 +239,20 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         if array_2d is None or isinstance(array_2d, float):
             return array_2d
         return mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(self, array_2d)
+
+    def array_2d_from_array_1d(self, array_1d):
+        """ Map a 1D array the same dimension as the grid to its original 2D array.
+
+        Values which were masked in the mapping to the 1D array are returned as zeros.
+
+        Parameters
+        -----------
+        array_1d : ndarray
+            The 1D array which is mapped to its masked 2D array.
+        """
+        return mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
+            array_1d=array_1d, shape=self.shape,
+            one_to_two=self.masked_grid_index_to_pixel)
 
     @array_util.Memoizer()
     def blurring_mask_for_psf_shape(self, psf_shape):
@@ -308,6 +322,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         y0, x0 = np.amin(where, axis=1)
         y1, x1 = np.amax(where, axis=1)
         return [y0, y1+1, x0, x1+1]
+
 
 def load_mask_from_fits(mask_path, pixel_scale, mask_hdu=0):
     return Mask.from_fits_with_pixel_scale(file_path=mask_path, hdu=mask_hdu, pixel_scale=pixel_scale)

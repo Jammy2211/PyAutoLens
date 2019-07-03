@@ -6,9 +6,12 @@ def pipeline_name_from_name_and_settings(
         align_bulge_disk_centre=False, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False):
 
     pipeline_tag = pipeline_tag_from_pipeline_settings(
-        fix_lens_light=fix_lens_light, align_bulge_disk_centre=align_bulge_disk_centre,
-        pixelization=pixelization, regularization=regularization,
-        align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio, align_bulge_disk_phi=align_bulge_disk_phi)
+        fix_lens_light=fix_lens_light,
+        align_bulge_disk_centre=align_bulge_disk_centre,
+        pixelization=pixelization,
+        regularization=regularization,
+        align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
+        align_bulge_disk_phi=align_bulge_disk_phi)
 
     return pipeline_name + pipeline_tag
 
@@ -17,15 +20,19 @@ def pipeline_tag_from_pipeline_settings(
         pixelization=None, regularization=None,
         align_bulge_disk_centre=False, align_bulge_disk_axis_ratio=False, align_bulge_disk_phi=False):
 
-    fix_lens_light_tag = fix_lens_light_tag_from_fix_lens_light(fix_lens_light=fix_lens_light)
+    fix_lens_light_tag = fix_lens_light_tag_from_fix_lens_light(
+        fix_lens_light=fix_lens_light)
 
-    pixelization_tag = pixelization_tag_from_pixelization(pixelization=pixelization)
+    pixelization_tag = pixelization_tag_from_pixelization(
+        pixelization=pixelization)
 
-    regularization_tag = regularization_tag_from_regularization(regularization=regularization)
+    regularization_tag = regularization_tag_from_regularization(
+        regularization=regularization)
 
-    bulge_disk_tag = bulge_disk_tag_from_align_bulge_disks(align_bulge_disk_centre=align_bulge_disk_centre,
-                                                           align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
-                                                           align_bulge_disk_phi=align_bulge_disk_phi)
+    bulge_disk_tag = bulge_disk_tag_from_align_bulge_disks(
+        align_bulge_disk_centre=align_bulge_disk_centre,
+        align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
+        align_bulge_disk_phi=align_bulge_disk_phi)
 
     return fix_lens_light_tag + pixelization_tag + regularization_tag + bulge_disk_tag
 

@@ -62,9 +62,9 @@ class LensData(object):
         self.unmasked_noise_map = ccd_data.noise_map
         self.pixel_scale = ccd_data.pixel_scale
         self.psf = ccd_data.psf
-        self.mask_1d = mask.map_2d_array_to_masked_1d_array(array_2d=mask)
-        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=ccd_data.image)
-        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(
+        self.mask_1d = mask.array_1d_from_array_2d(array_2d=mask)
+        self.image_1d = mask.array_1d_from_array_2d(array_2d=ccd_data.image)
+        self.noise_map_1d = mask.array_1d_from_array_2d(
             array_2d=ccd_data.noise_map)
 
         self.sub_grid_size = sub_grid_size

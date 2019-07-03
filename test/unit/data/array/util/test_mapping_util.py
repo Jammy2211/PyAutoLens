@@ -347,7 +347,6 @@ class TestMap2DSubArrayTo1D(object):
         assert (sub_array_1d == np.array([1, 2, 3, 7, 8, 9, 13, 14, 15, 4, 5, 6, 10, 11, 12, 16, 17, 18])).all()
 
 
-
 class TestMapMasked1DArrayTo2d(object):
 
     def test__2d_array_is_2x2__is_not_masked__maps_correctly(self):

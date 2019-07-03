@@ -9,10 +9,12 @@ Big Picture:
 
 Small Picture:
 
+- Refactor Phase
+- Template API
+- Grid Stack PReload
+- MultiNest settings of hyper phases.
+- Include Background in Hyper phases.
 - Unit Test HyperNoise Maps
-- Add check to inverson pixel limit in phase.
-- PLot noormalized residuals + source recon specific plot.
-- Fix bug with liimit on source clutster size.
 - Implement Amy's branch.
 - Summarize output
 - Fix model.info file
