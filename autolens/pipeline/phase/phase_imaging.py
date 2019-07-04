@@ -20,6 +20,8 @@ class PhaseImaging(Phase):
                  phase_name,
                  tag_phases=True,
                  phase_folders=tuple(),
+                 hyper_image_sky=None,
+                 hyper_background_noise=None,
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2,
                  bin_up_factor=None,
@@ -99,6 +101,9 @@ class PhaseImaging(Phase):
         else:
 
             self.cluster_pixel_limit = inversion_pixel_limit_from_prior
+
+        self.hyper_image_sky = hyper_image_sky
+        self.hyper_background_noise = hyper_background_noise
 
     @property
     def uses_hyper_images(self) -> bool:
@@ -610,9 +615,12 @@ class MultiPlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
+    hyper_image_sky = af.PhaseProperty("hyper_image_sky")
+    hyper_background_noise = af.PhaseProperty("hyper_background_noise")
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(), galaxies=None,
+                 hyper_image_sky=None, hyper_background_noise=None,
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  positions_threshold=None,
@@ -645,6 +653,8 @@ class MultiPlanePhase(PhaseImaging):
             phase_name=phase_name,
             tag_phases=tag_phases,
             phase_folders=phase_folders,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
             optimizer_class=optimizer_class,
             sub_grid_size=sub_grid_size,
             bin_up_factor=bin_up_factor,
@@ -727,13 +737,22 @@ class LensSourcePlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
+    hyper_image_sky = af.PhaseProperty("hyper_image_sky")
+    hyper_background_noise = af.PhaseProperty("hyper_background_noise")
     lens_galaxies = af.PhaseProperty("lens_galaxies")
     source_galaxies = af.PhaseProperty("source_galaxies")
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(),
-                 lens_galaxies=None, source_galaxies=None,
+    def __init__(self,
+                 phase_name,
+                 tag_phases=True,
+                 phase_folders=tuple(),
+                 lens_galaxies=None,
+                 source_galaxies=None,
+                 hyper_image_sky=None,
+                 hyper_background_noise=None,
                  optimizer_class=af.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
+                 sub_grid_size=2, bin_up_factor=None,
+                 image_psf_shape=None,
                  positions_threshold=None,
                  mask_function=None,
                  inner_mask_radii=None,
@@ -766,6 +785,8 @@ class LensSourcePlanePhase(PhaseImaging):
             phase_name=phase_name,
             tag_phases=tag_phases,
             phase_folders=phase_folders,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
             optimizer_class=optimizer_class,
             sub_grid_size=sub_grid_size,
             bin_up_factor=bin_up_factor,
@@ -880,6 +901,8 @@ class LensPlanePhase(PhaseImaging):
     Fit only the lens galaxy light.
     """
 
+    hyper_image_sky = af.PhaseProperty("hyper_image_sky")
+    hyper_background_noise = af.PhaseProperty("hyper_background_noise")
     lens_galaxies = af.PhaseProperty("lens_galaxies")
 
     def __init__(self,
@@ -887,6 +910,8 @@ class LensPlanePhase(PhaseImaging):
                  tag_phases=True,
                  phase_folders=tuple(),
                  lens_galaxies=None,
+                 hyper_image_sky=None,
+                 hyper_background_noise=None,
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2,
                  bin_up_factor=None,
@@ -900,6 +925,8 @@ class LensPlanePhase(PhaseImaging):
             phase_name=phase_name,
             tag_phases=tag_phases,
             phase_folders=phase_folders,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
             optimizer_class=optimizer_class,
             sub_grid_size=sub_grid_size,
             bin_up_factor=bin_up_factor,
