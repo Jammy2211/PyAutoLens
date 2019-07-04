@@ -6,11 +6,11 @@ import pytest
 from astropy import cosmology as cosmo
 
 import autofit as af
-import autolens.pipeline.phase.phase_imaging
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
+from autolens.model.hyper import hyper_data as hd
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
@@ -259,7 +259,6 @@ class TestPhase(object):
         with pytest.raises(exc.PixelizationException):
             analysis.check_inversion_pixels_are_below_limit(instance=instance)
             analysis.fit(instance=instance)
-
 
     def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(
             self, phase_5x5, ccd_data_5x5):
@@ -1006,6 +1005,27 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].sis.centre[1] == 0.5
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
+
+    def test__phase_can_receive_hyper_image_and_noise_maps(self):
+
+        phase_5x5 = phase_imaging.LensPlanePhase(
+            lens_galaxies=dict(
+                lens=gm.GalaxyModel(
+                    redshift=g.Redshift),
+                lens1=gm.GalaxyModel(
+                    redshift=g.Redshift)),
+            hyper_image_sky=hd.HyperImageSky,
+            hyper_background_noise=hd.HyperNoiseBackground,
+            optimizer_class=af.MultiNest,
+            phase_name='test_phase')
+
+        instance = phase_5x5.optimizer.variable.instance_from_physical_vector(
+            [0.1, 0.2, 0.3, 0.4])
+
+        assert instance.lens_galaxies[0].redshift == 0.1
+        assert instance.lens_galaxies[1].redshift == 0.2
+        assert instance.hyper_image_sky.background_sky_scale == 0.3
+        assert instance.hyper_background_noise.background_noise_scale == 0.4
 
     def test__extended_with_hyper_and_pixelizations(self, phase_5x5):
 

@@ -183,12 +183,12 @@ class LensProfileFit(LensTracerFit):
         """
 
         if hyper_image_sky is not None:
-            image_1d = hyper_image_sky.hyper_image_from_image(image=lens_data.image_1d)
+            image_1d = hyper_image_sky.image_scaled_sky_from_image(image=lens_data.image_1d)
         else:
             image_1d = lens_data.image_1d
 
         if hyper_background_noise is not None:
-            noise_map_1d = hyper_background_noise.hyper_noise_map_from_noise_map(noise_map=lens_data.noise_map_1d)
+            noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(noise_map=lens_data.noise_map_1d)
         else:
             noise_map_1d = lens_data.noise_map_1d
 
@@ -278,12 +278,12 @@ class LensInversionFit(InversionFit):
         """
 
         if hyper_image_sky is not None:
-            image_1d = hyper_image_sky.hyper_image_from_image(image=lens_data.image_1d)
+            image_1d = hyper_image_sky.image_scaled_sky_from_image(image=lens_data.image_1d)
         else:
             image_1d = lens_data.image_1d
 
         if hyper_background_noise is not None:
-            noise_map_1d = hyper_background_noise.hyper_noise_map_from_noise_map(noise_map=lens_data.noise_map_1d)
+            noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(noise_map=lens_data.noise_map_1d)
         else:
             noise_map_1d = lens_data.noise_map_1d
 
@@ -348,12 +348,12 @@ class LensProfileInversionFit(InversionFit):
         """
 
         if hyper_image_sky is not None:
-            image_1d = hyper_image_sky.hyper_image_from_image(image=lens_data.image_1d)
+            image_1d = hyper_image_sky.image_scaled_sky_from_image(image=lens_data.image_1d)
         else:
             image_1d = lens_data.image_1d
 
         if hyper_background_noise is not None:
-            noise_map_1d = hyper_background_noise.hyper_noise_map_from_noise_map(noise_map=lens_data.noise_map_1d)
+            noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(noise_map=lens_data.noise_map_1d)
         else:
             noise_map_1d = lens_data.noise_map_1d
 

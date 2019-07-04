@@ -7,7 +7,7 @@ from autolens.data import ccd
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.lens import ray_tracing, lens_fit
-from autolens.model.hyper import image as hi
+from autolens.model.hyper import hyper_data as hi
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import inversions
@@ -346,7 +346,7 @@ class TestLensProfileFit:
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0],
                                                   image_plane_grid_stack=lens_data_5x5.grid_stack)
 
-            hyper_background_noise = hi.HyperNoiseMapBackground(background_noise_scale=1.0)
+            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
 
             fit = lens_fit.LensProfileFit(lens_data=lens_data_5x5, tracer=tracer,
                                           hyper_background_noise=hyper_background_noise)
@@ -533,11 +533,11 @@ class TestLensProfileFit:
 
             hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
 
-            hyper_background_noise = hi.HyperNoiseMapBackground(background_noise_scale=1.0)
+            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
 
-            image_1d = hyper_image_sky.hyper_image_from_image(image=lens_data_5x5.image_1d)
+            image_1d = hyper_image_sky.image_scaled_sky_from_image(image=lens_data_5x5.image_1d)
 
-            hyper_noise_map_background_1d = hyper_background_noise.hyper_noise_map_from_noise_map(
+            hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
                 noise_map=lens_data_5x5.noise_map_1d)
 
             g0 = g.Galaxy(
@@ -808,11 +808,11 @@ class TestLensInversionFit:
 
             hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
 
-            hyper_background_noise = hi.HyperNoiseMapBackground(background_noise_scale=1.0)
+            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
 
-            image_1d = hyper_image_sky.hyper_image_from_image(image=lens_data_5x5.image_1d)
+            image_1d = hyper_image_sky.image_scaled_sky_from_image(image=lens_data_5x5.image_1d)
 
-            hyper_noise_map_background_1d = hyper_background_noise.hyper_noise_map_from_noise_map(
+            hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
                 noise_map=lens_data_5x5.noise_map_1d)
             
             pix = pixelizations.Rectangular(shape=(3, 3))
@@ -1143,11 +1143,11 @@ class TestLensProfileInversionFit:
 
             hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
 
-            hyper_background_noise = hi.HyperNoiseMapBackground(background_noise_scale=1.0)
+            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
 
-            image_1d = hyper_image_sky.hyper_image_from_image(image=lens_data_5x5.image_1d)
+            image_1d = hyper_image_sky.image_scaled_sky_from_image(image=lens_data_5x5.image_1d)
 
-            hyper_noise_map_background_1d = hyper_background_noise.hyper_noise_map_from_noise_map(
+            hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
                 noise_map=lens_data_5x5.noise_map_1d)
 
             galaxy_light = g.Galaxy(redshift=0.5,
