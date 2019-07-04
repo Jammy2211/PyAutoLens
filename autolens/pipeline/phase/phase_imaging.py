@@ -390,6 +390,8 @@ class PhaseImaging(Phase):
             self.plot_hyper_galaxy_cluster_images = \
                 af.conf.instance.visualize.get('plots', 'plot_hyper_galaxy_cluster_images', bool)
 
+            self.preload_pixelization_grid = None
+
             if self.last_results is not None:
 
                 self.hyper_galaxy_image_1d_path_dict = self.last_results.hyper_galaxy_image_1d_path_dict_from_mask(
@@ -417,11 +419,8 @@ class PhaseImaging(Phase):
                     should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
                     visualize_path=image_path)
 
-            self.preload_pixelization_grid = None
-
-            if self.last_results is not None:
                 if hasattr(self.results.last, 'inversion'):
-                    stop
+
                     self.preload_pixelization_grid = self.results.last.inversion.most_likely_image_plane_pixelization_grid
 
         def fit(self, instance):
@@ -485,35 +484,41 @@ class PhaseImaging(Phase):
 
         def add_grids_to_grid_stack(self, galaxies, grid_stack):
 
-            for galaxy in galaxies:
-                if galaxy.pixelization is not None:
-                    if galaxy.pixelization.uses_pixelization_grid:
+            if self.preload_pixelization_grid is None:
 
-                        if isinstance(galaxy.pixelization, px.VoronoiMagnification):
+                for galaxy in galaxies:
+                    if galaxy.pixelization is not None:
+                        if galaxy.pixelization.uses_pixelization_grid:
 
-                            sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-                                unmasked_sparse_shape=galaxy.pixelization.shape, regular_grid=grid_stack.regular)
+                            if isinstance(galaxy.pixelization, px.VoronoiMagnification):
 
-                        elif isinstance(galaxy.pixelization, px.VoronoiBrightnessImage):
+                                sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+                                    unmasked_sparse_shape=galaxy.pixelization.shape, regular_grid=grid_stack.regular)
 
-                            cluster_weight_map = galaxy.pixelization.cluster_weight_map_from_hyper_image(
-                                    hyper_image=galaxy.hyper_galaxy_cluster_image_1d)
+                            elif isinstance(galaxy.pixelization, px.VoronoiBrightnessImage):
 
-                            sparse_to_regular_grid = \
-                                grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
-                                    total_pixels=galaxy.pixelization.pixels, cluster_grid=self.lens_data.cluster,
-                                    regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map,
-                                    seed=1)
+                                cluster_weight_map = galaxy.pixelization.cluster_weight_map_from_hyper_image(
+                                        hyper_image=galaxy.hyper_galaxy_cluster_image_1d)
 
-                        else:
+                                sparse_to_regular_grid = \
+                                    grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+                                        total_pixels=galaxy.pixelization.pixels, cluster_grid=self.lens_data.cluster,
+                                        regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map,
+                                        seed=1)
 
-                            raise exc.PhaseException('The pixelization of a galaxy uses a pixelization grid, but was not a viable'
-                                                     'type in the grid stack calculation method')
+                            else:
 
-                        pixelization_grid = grids.PixelizationGrid(
-                            arr=sparse_to_regular_grid.sparse, regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
+                                raise exc.PhaseException('The pixelization of a galaxy uses a pixelization grid, but was not a viable'
+                                                         'type in the grid stack calculation method')
 
-                        return grid_stack.new_grid_stack_with_grids_added(pixelization=pixelization_grid)
+                            pixelization_grid = grids.PixelizationGrid(
+                                arr=sparse_to_regular_grid.sparse, regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
+
+                            return grid_stack.new_grid_stack_with_grids_added(pixelization=pixelization_grid)
+
+            else:
+
+                return grid_stack.new_grid_stack_with_grids_added(pixelization=self.preload_pixelization_grid)
 
             return grid_stack
 

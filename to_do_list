@@ -9,11 +9,10 @@ Big Picture:
 
 Small Picture:
 
-- Refactor Phase
 - Template API
-- Grid Stack PReload
 - MultiNest settings of hyper phases.
 - Include Background in Hyper phases.
+- Refactor Phase
 - Unit Test HyperNoise Maps
 - Implement Amy's branch.
 - Summarize output
