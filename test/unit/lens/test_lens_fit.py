@@ -349,7 +349,7 @@ class TestLensProfileFit:
             hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
 
             fit = lens_fit.LensProfileFit(lens_data=lens_data_5x5, tracer=tracer,
-                                          hyper_background_noise=hyper_background_noise)
+                                          hyper_noise_background=hyper_background_noise)
 
 
             assert (fit.mask_1d == np.array([False, False])).all()
@@ -561,7 +561,7 @@ class TestLensProfileFit:
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_5x5, tracer=tracer, padded_tracer=padded_tracer,
-                hyper_image_sky=hyper_image_sky, hyper_background_noise=hyper_background_noise)
+                hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_background_noise)
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=lens_data_5x5.noise_map_1d)
@@ -831,7 +831,7 @@ class TestLensInversionFit:
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_5x5, tracer=tracer,
-                hyper_image_sky=hyper_image_sky, hyper_background_noise=hyper_background_noise)
+                hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_background_noise)
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=lens_data_5x5.noise_map_1d)
@@ -1169,7 +1169,7 @@ class TestLensProfileInversionFit:
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_5x5, tracer=tracer,
-                hyper_image_sky=hyper_image_sky, hyper_background_noise=hyper_background_noise)
+                hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_background_noise)
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=lens_data_5x5.noise_map_1d)

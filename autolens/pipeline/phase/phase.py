@@ -134,7 +134,7 @@ class AbstractPhase(af.AbstractPhase):
         def padded_tracer_for_instance(self, instance):
             raise NotImplementedError()
 
-        def fit_for_tracers(self, tracer, padded_tracer):
+        def fit_for_tracers(self, tracer, padded_tracer, hyper_image_sky, hyper_noise_background):
             raise NotImplementedError()
 
         def figure_of_merit_for_fit(self, tracer):

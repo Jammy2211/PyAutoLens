@@ -40,7 +40,7 @@ def make_pipeline(test_name):
                 redshift=0.5,
                 sersic=lp.EllipticalSersic)),
         hyper_image_sky=hi.HyperImageSky,
-        hyper_background_noise=hi.HyperNoiseBackground,
+        hyper_noise_background=hi.HyperNoiseBackground,
         optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
