@@ -1,6 +1,7 @@
 from autolens.data.plotters import ccd_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.plotters import lens_fit_plotters
+from autolens.model.inversion.plotters import inversion_plotters
 from autolens.pipeline.plotters import hyper_plotters
 
 def plot_ccd_for_phase(
@@ -105,6 +106,7 @@ def plot_lens_fit_for_phase(
         should_plot_all_at_end_fits,
         should_plot_fit_as_subplot,
         should_plot_fit_of_planes_as_subplot,
+        should_plot_inversion_as_subplot,
         should_plot_image,
         should_plot_noise_map,
         should_plot_signal_to_noise_map,
@@ -112,7 +114,10 @@ def plot_lens_fit_for_phase(
         should_plot_residual_map,
         should_plot_normalized_residual_map,
         should_plot_chi_squared_map,
-        should_plot_regularization_weights,
+        should_plot_pixelization_residual_map,
+        should_plot_pixelization_normalized_residual_map,
+        should_plot_pixelization_chi_squared_map,
+        should_plot_pixelization_regularization_weights,
         should_plot_subtracted_images_of_planes,
         should_plot_model_images_of_planes,
         should_plot_plane_images_of_planes,
@@ -138,6 +143,13 @@ def plot_lens_fit_for_phase(
             units=units,
             output_path=output_path, output_format='png')
 
+    if should_plot_inversion_as_subplot and fit.tracer.has_pixelization:
+
+        inversion_plotters.plot_inversion_subplot(
+            inversion=fit.inversion, mask=fit.mask_2d, positions=positions,
+            extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+            output_path=output_path, output_format='png')
+
     lens_fit_plotters.plot_fit_individuals(
         fit=fit, should_plot_mask=should_plot_mask,
         extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
@@ -149,7 +161,10 @@ def plot_lens_fit_for_phase(
         should_plot_residual_map=should_plot_residual_map,
         should_plot_chi_squared_map=should_plot_chi_squared_map,
         should_plot_normalized_residual_map=should_plot_normalized_residual_map,
-        should_plot_regularization_weights=should_plot_regularization_weights,
+        should_plot_pixelization_residual_map=should_plot_pixelization_residual_map,
+        should_plot_pixelization_normalized_residual_map=should_plot_pixelization_normalized_residual_map,
+        should_plot_pixelization_chi_squared_map=should_plot_pixelization_chi_squared_map,
+        should_plot_pixelization_regularization_weight_map=should_plot_pixelization_regularization_weights,
         should_plot_subtracted_images_of_planes=should_plot_subtracted_images_of_planes,
         should_plot_model_images_of_planes=should_plot_model_images_of_planes,
         should_plot_plane_images_of_planes=should_plot_plane_images_of_planes,
@@ -171,7 +186,10 @@ def plot_lens_fit_for_phase(
                 should_plot_residual_map=True,
                 should_plot_normalized_residual_map=True,
                 should_plot_chi_squared_map=True,
-                should_plot_regularization_weights=True,
+                should_plot_pixelization_residual_map=True,
+                should_plot_pixelization_normalized_residual_map=True,
+                should_plot_pixelization_chi_squared_map=True,
+                should_plot_pixelization_regularization_weight_map=True,
                 should_plot_subtracted_images_of_planes=True,
                 should_plot_model_images_of_planes=True,
                 should_plot_plane_images_of_planes=True,
@@ -191,15 +209,18 @@ def plot_lens_fit_for_phase(
                 should_plot_residual_map=True,
                 should_plot_normalized_residual_map=True,
                 should_plot_chi_squared_map=True,
-                should_plot_regularization_weights=True,
+                should_plot_pixelization_residual_map=True,
+                should_plot_pixelization_normalized_residual_map=True,
+                should_plot_pixelization_chi_squared_map=True,
+                should_plot_pixelization_regularization_weight_map=True,
                 should_plot_subtracted_images_of_planes=True,
                 should_plot_model_images_of_planes=True,
                 should_plot_plane_images_of_planes=True,
                 output_path=output_path + 'fits/', output_format='fits')
 
 def plot_hyper_images_for_phase(
-        hyper_model_image, hyper_galaxy_image_path_dict, hyper_galaxy_cluster_image_path_dict,
-        mask, cluster_mask, extract_array_from_mask, zoom_around_mask, units,
+        hyper_model_image_2d, hyper_galaxy_image_2d_path_dict, hyper_galaxy_cluster_image_2d_path_dict,
+        mask, cluster, extract_array_from_mask, zoom_around_mask, units,
         should_plot_hyper_model_image,
         should_plot_hyper_galaxy_images,
         should_plot_hyper_galaxy_cluster_images,
@@ -210,7 +231,7 @@ def plot_hyper_images_for_phase(
     if should_plot_hyper_model_image:
 
         hyper_plotters.plot_hyper_model_image(
-            hyper_model_image=hyper_model_image, mask=mask,
+            hyper_model_image=hyper_model_image_2d, mask=mask,
             extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path, output_format='png')
@@ -218,15 +239,15 @@ def plot_hyper_images_for_phase(
     if should_plot_hyper_galaxy_images:
 
         hyper_plotters.plot_hyper_galaxy_images_subplot(
-            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict, mask=mask,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict, mask=mask,
             extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path, output_format='png')
 
-    if should_plot_hyper_galaxy_cluster_images and hyper_galaxy_cluster_image_path_dict is not None:
+    if should_plot_hyper_galaxy_cluster_images and hyper_galaxy_cluster_image_2d_path_dict is not None:
 
         hyper_plotters.plot_hyper_galaxy_cluster_images_subplot(
-            hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_path_dict, mask=cluster_mask,
+            hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_2d_path_dict, mask=cluster.mask,
             extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path, output_format='png')

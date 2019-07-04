@@ -209,24 +209,26 @@ class AdaptiveBrightness(Regularization):
         super(AdaptiveBrightness, self).__init__(coefficients)
         self.signal_scale = signal_scale
 
-    def pixel_signals_from_images(self, pixels, regular_to_pix, hyper_image):
+    def pixel_signals_from_images(self, pixels, sub_to_pix, sub_to_regular, hyper_image):
         return regularization_util.adaptive_pixel_signals_from_images(
-            pixels=pixels, signal_scale=self.signal_scale, regular_to_pix=regular_to_pix,
-            hyper_image=hyper_image)
+            pixels=pixels, signal_scale=self.signal_scale, sub_to_pix=sub_to_pix,
+            sub_to_regular=sub_to_regular, hyper_image=hyper_image)
 
     def regularization_weights_from_pixel_signals(self, pixel_signals):
         return regularization_util.adaptive_regularization_weights_from_pixel_signals(coefficients=self.coefficients,
                                                                                       pixel_signals=pixel_signals)
 
-    def regularization_matrix_from_regularization_weights_and_pixel_neighbors(self, regularization_weights,
-                                                                              pixel_neighbors, pixel_neighbors_size):
+    def regularization_matrix_from_regularization_weights_and_pixel_neighbors(
+            self, regularization_weights, pixel_neighbors, pixel_neighbors_size):
         return regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
                                                  pixel_neighbors_size=pixel_neighbors_size)
 
     def regularization_weights_from_mapper(self, mapper):
-        pixel_signals = self.pixel_signals_from_images(pixels=mapper.pixels, regular_to_pix=mapper.regular_to_pixelization,
-                                                       hyper_image=mapper.hyper_image)
+
+        pixel_signals = self.pixel_signals_from_images(
+            pixels=mapper.pixels, sub_to_pix=mapper.sub_to_pixelization,
+            sub_to_regular=mapper.grid_stack.sub.sub_to_regular, hyper_image=mapper.hyper_image)
 
         return self.regularization_weights_from_pixel_signals(pixel_signals=pixel_signals)
 

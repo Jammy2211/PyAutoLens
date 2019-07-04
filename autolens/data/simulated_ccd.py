@@ -139,6 +139,7 @@ class SimulatedCCDData(ccd.CCDData):
         else:
             noise_map = ccd.NoiseMap.single_value(value=noise_if_add_noise_false, shape=image.shape,
                                                   pixel_scale=pixel_scale)
+            noise_realization = None
 
         if np.isnan(noise_map).any():
             raise exc.DataException('The noise-map has NaN values in it. This suggests your exposure time and / or'
@@ -162,7 +163,8 @@ class SimulatedCCDData(ccd.CCDData):
 
         return SimulatedCCDData(image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
                                 background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                                exposure_time_map=exposure_time_map, background_sky_map=background_sky_map, name=name)
+                                exposure_time_map=exposure_time_map, background_sky_map=background_sky_map,
+                                noise_realization=noise_realization, name=name)
 
     def __array_finalize__(self, obj):
         if isinstance(obj, SimulatedCCDData):

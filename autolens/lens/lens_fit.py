@@ -8,10 +8,10 @@ from autolens.model.galaxy import galaxy as g
 
 class LensDataFit(af.DataFit1D):
 
-    def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d, map_to_scaled_array):
+    def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d, scaled_array_2d_from_array_1d):
 
         super().__init__(data_1d=image_1d, noise_map_1d=noise_map_1d, mask_1d=mask_1d, model_data_1d=model_image_1d)
-        self.map_to_scaled_array = map_to_scaled_array
+        self.scaled_array_2d_from_array_1d = scaled_array_2d_from_array_1d
 
     @property
     def image_1d(self):
@@ -19,15 +19,15 @@ class LensDataFit(af.DataFit1D):
 
     @property
     def image_2d(self):
-        return self.map_to_scaled_array(array_1d=self.image_1d)
+        return self.scaled_array_2d_from_array_1d(array_1d=self.image_1d)
 
     @property
     def noise_map_2d(self):
-        return self.map_to_scaled_array(array_1d=self.noise_map_1d)
+        return self.scaled_array_2d_from_array_1d(array_1d=self.noise_map_1d)
 
     @property
     def signal_to_noise_map_2d(self):
-        return self.map_to_scaled_array(array_1d=self.signal_to_noise_map_1d)
+        return self.scaled_array_2d_from_array_1d(array_1d=self.signal_to_noise_map_1d)
 
     @property
     def model_image_1d(self):
@@ -35,19 +35,19 @@ class LensDataFit(af.DataFit1D):
 
     @property
     def model_image_2d(self):
-        return self.map_to_scaled_array(array_1d=self.model_image_1d)
+        return self.scaled_array_2d_from_array_1d(array_1d=self.model_image_1d)
 
     @property
     def residual_map_2d(self):
-        return self.map_to_scaled_array(array_1d=self.residual_map_1d)
+        return self.scaled_array_2d_from_array_1d(array_1d=self.residual_map_1d)
 
     @property
     def normalized_residual_map_2d(self):
-        return self.map_to_scaled_array(array_1d=self.normalized_residual_map_1d)
+        return self.scaled_array_2d_from_array_1d(array_1d=self.normalized_residual_map_1d)
 
     @property
     def chi_squared_map_2d(self):
-        return self.map_to_scaled_array(array_1d=self.chi_squared_map_1d)
+        return self.scaled_array_2d_from_array_1d(array_1d=self.chi_squared_map_1d)
 
     @property
     def figure_of_merit(self):
@@ -82,7 +82,7 @@ class LensDataFit(af.DataFit1D):
 
 class LensTracerFit(LensDataFit):
 
-    def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d, tracer, psf, map_to_scaled_array,
+    def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d, tracer, psf, scaled_array_2d_from_array_1d,
                  mask_2d, padded_tracer=None):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper.
@@ -94,14 +94,14 @@ class LensTracerFit(LensDataFit):
         padded_tracer : ray_tracing.TracerNonStack or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
-        map_to_scaled_array : func
+        scaled_array_2d_from_array_1d : func
             A function which maps the 1D lens hyper to its unmasked 2D array.
         """
 
         self.mask_2d = mask_2d
 
         super().__init__(image_1d=image_1d, noise_map_1d=noise_map_1d, mask_1d=mask_1d, model_image_1d=model_image_1d,
-                         map_to_scaled_array=map_to_scaled_array)
+                         scaled_array_2d_from_array_1d=scaled_array_2d_from_array_1d)
 
         self.tracer = tracer
         self.padded_tracer = padded_tracer
@@ -124,7 +124,7 @@ class LensTracerFit(LensDataFit):
 
         for galalxy, galaxy_image in self.galaxy_image_1d_dict.items():
 
-            galaxy_image_2d_dict[galalxy] = self.map_to_scaled_array(array_1d=galaxy_image)
+            galaxy_image_2d_dict[galalxy] = self.scaled_array_2d_from_array_1d(array_1d=galaxy_image)
 
         return galaxy_image_2d_dict
 
@@ -180,7 +180,7 @@ class LensProfileFit(LensTracerFit):
             image_1d=lens_data.image_1d, noise_map_1d=noise_map_1d, mask_1d=lens_data.mask_1d,
             model_image_1d=blurred_profile_image_1d, mask_2d=lens_data.mask_2d, tracer=tracer,
             padded_tracer=padded_tracer,
-            psf=lens_data.psf, map_to_scaled_array=lens_data.map_to_scaled_array)
+            psf=lens_data.psf, scaled_array_2d_from_array_1d=lens_data.scaled_array_2d_from_array_1d)
 
         self.convolver_image = lens_data.convolver_image
 
@@ -206,7 +206,7 @@ class InversionFit(LensTracerFit):
     def __init__(self, lens_data, noise_map_1d, model_image_1d, tracer, inversion, padded_tracer=None):
         super().__init__(image_1d=lens_data.image_1d, noise_map_1d=noise_map_1d, mask_1d=lens_data.mask_1d,
                          model_image_1d=model_image_1d, mask_2d=lens_data.mask_2d, psf=lens_data.psf, tracer=tracer,
-                         padded_tracer=padded_tracer, map_to_scaled_array=lens_data.map_to_scaled_array)
+                         padded_tracer=padded_tracer, scaled_array_2d_from_array_1d=lens_data.scaled_array_2d_from_array_1d)
 
         self.inversion = inversion
 
@@ -330,11 +330,11 @@ class LensProfileInversionFit(InversionFit):
 
     @property
     def blurred_profile_image_2d(self):
-        return self.map_to_scaled_array(array_1d=self.blurred_profile_image_1d)
+        return self.scaled_array_2d_from_array_1d(array_1d=self.blurred_profile_image_1d)
 
     @property
     def profile_subtracted_image_2d(self):
-        return self.map_to_scaled_array(array_1d=self.profile_subtracted_image_1d)
+        return self.scaled_array_2d_from_array_1d(array_1d=self.profile_subtracted_image_1d)
 
     @property
     def model_image_2d_of_planes(self):

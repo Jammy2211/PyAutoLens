@@ -3,7 +3,7 @@ import os
 import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.pipeline.phase import phase_imaging, phase_hyper
+from autolens.pipeline.phase import phase_imaging, phase_extensions
 from autolens.pipeline import pipeline as pl
 from test.integration import integration_util
 from test.simulation import simulation_util
@@ -55,7 +55,7 @@ def make_pipeline():
     phase2.optimizer.n_live_points = 60
     phase2.optimizer.sampling_efficiency = 0.7
 
-    phase2h = phase_hyper.HyperGalaxyPhase(phase_name='phase_2_hyper', phase_folders=[test_type, test_name])
+    phase2h = phase_extensions.HyperGalaxyPhase(phase_name='phase_2_hyper', phase_folders=[test_type, test_name])
 
     phase2h.optimizer.const_efficiency_mode = True
     phase2h.optimizer.n_live_points = 60

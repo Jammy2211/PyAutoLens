@@ -247,7 +247,7 @@ def plot_fit_subplot_for_plane(
 
         plt.subplot(rows, columns, 4, aspect=float(aspect_inv))
 
-        inversion_plotters.plot_reconstructed_pixelization(
+        inversion_plotters.plot_pixelization_values(
             inversion=fit.inversion, positions=None, should_plot_grid=False, should_plot_centres=False, as_subplot=True,
             units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=None,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -271,7 +271,10 @@ def plot_fit_individuals(
         should_plot_residual_map=False,
         should_plot_normalized_residual_map=False,
         should_plot_chi_squared_map=False,
-        should_plot_regularization_weights=False,
+        should_plot_pixelization_residual_map=False,
+        should_plot_pixelization_normalized_residual_map=False,
+        should_plot_pixelization_chi_squared_map=False,
+        should_plot_pixelization_regularization_weight_map=False,
         should_plot_subtracted_images_of_planes=False,
         should_plot_model_images_of_planes=False,
         should_plot_plane_images_of_planes=False,
@@ -351,11 +354,38 @@ def plot_fit_individuals(
             units=units, kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path, output_format=output_format)
 
-    if should_plot_regularization_weights:
+    if should_plot_pixelization_residual_map:
 
         if fit.total_inversions == 1:
 
-            inversion_plotters.plot_regularization_weights(
+            inversion_plotters.plot_pixelization_residual_map(
+                inversion=fit.inversion, should_plot_grid=True,
+                units=units, figsize=(20, 20),
+                output_path=output_path, output_format=output_format)
+
+    if should_plot_pixelization_normalized_residual_map:
+
+        if fit.total_inversions == 1:
+
+            inversion_plotters.plot_pixelization_normalized_residual_map(
+                inversion=fit.inversion, should_plot_grid=True,
+                units=units, figsize=(20, 20),
+                output_path=output_path, output_format=output_format)
+
+    if should_plot_pixelization_chi_squared_map:
+
+        if fit.total_inversions == 1:
+
+            inversion_plotters.plot_pixelization_chi_squared_map(
+                inversion=fit.inversion, should_plot_grid=True,
+                units=units, figsize=(20, 20),
+                output_path=output_path, output_format=output_format)
+
+    if should_plot_pixelization_regularization_weight_map:
+
+        if fit.total_inversions == 1:
+
+            inversion_plotters.plot_pixelization_regularization_weights(
                 inversion=fit.inversion, should_plot_grid=True,
                 units=units, figsize=(20, 20),
                 output_path=output_path, output_format=output_format)
