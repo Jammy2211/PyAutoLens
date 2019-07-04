@@ -10,7 +10,6 @@ Big Picture:
 Small Picture:
 
 - Template API
-- MultiNest settings of hyper phases.
 - Include Background in Hyper phases.
 - Refactor Phase
 - Unit Test HyperNoise Maps
