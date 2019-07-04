@@ -1015,7 +1015,7 @@ class TestPhase(object):
                 lens1=gm.GalaxyModel(
                     redshift=g.Redshift)),
             hyper_image_sky=hd.HyperImageSky,
-            hyper_background_noise=hd.HyperNoiseBackground,
+            hyper_noise_background=hd.HyperNoiseBackground,
             optimizer_class=af.MultiNest,
             phase_name='test_phase')
 
@@ -1127,6 +1127,35 @@ class TestResult(object):
 
         assert fit.likelihood == fit_figure_of_merit
 
+    def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
+            self, ccd_data_5x5, mask_function_5x5):
+
+        hyper_image_sky = hd.HyperImageSky(background_sky_scale=1.0)
+        hyper_noise_background = hd.HyperNoiseBackground(background_noise_scale=1.0)
+
+        lens_galaxy = g.Galaxy(
+            redshift=0.5,
+            light=lp.EllipticalSersic(intensity=0.1))
+
+        phase_5x5 = phase_imaging.LensPlanePhase(
+            mask_function=mask_function_5x5,
+            lens_galaxies=[lens_galaxy],
+            hyper_image_sky=hyper_image_sky,
+            hyper_noise_background=hyper_noise_background,
+            cosmology=cosmo.FLRW,
+            phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(data=ccd_data_5x5)
+        instance = phase_5x5.variable.instance_from_unit_vector([])
+        fit_figure_of_merit = analysis.fit(instance=instance)
+
+        mask = phase_5x5.mask_function(image=ccd_data_5x5.image)
+        lens_data = ld.LensData(ccd_data=ccd_data_5x5, mask=mask)
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer,
+                                      hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_noise_background)
+
+        assert fit.likelihood == fit_figure_of_merit
 
 class TestPhasePickle(object):
 
