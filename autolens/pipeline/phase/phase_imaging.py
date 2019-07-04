@@ -445,10 +445,17 @@ class PhaseImaging(Phase):
             self.check_positions_trace_within_threshold(instance=instance)
             self.check_inversion_pixels_are_below_limit(instance=instance)
             tracer = self.tracer_for_instance(instance=instance)
+
+            hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
+
+            hyper_noise_background = self.hyper_noise_background_for_instance(instance=instance)
+
             fit = self.fit_for_tracers(
-                tracer=tracer, padded_tracer=None,
-                hyper_image_sky=instance.hyper_image_sky,
-                hyper_noise_background=instance.hyper_noise_background)
+                tracer=tracer,
+                padded_tracer=None,
+                hyper_image_sky=hyper_image_sky,
+                hyper_noise_background=hyper_noise_background)
+
             return fit.figure_of_merit
 
         def check_for_previously_masked_values(self, array):
@@ -586,10 +593,28 @@ class PhaseImaging(Phase):
                 units=self.plot_units,
                 visualize_path=image_path)
 
+        def hyper_image_sky_for_instance(self, instance):
+
+            if hasattr(instance, 'hyper_image_sky'):
+                return instance.hyper_image_sky
+            else:
+                return None
+
+        def hyper_noise_background_for_instance(self, instance):
+
+            if hasattr(instance, 'hyper_noise_background'):
+                return instance.hyper_noise_background
+            else:
+                return None
+
         def fit_for_tracers(self, tracer, padded_tracer, hyper_image_sky, hyper_noise_background):
+
             return lens_fit.LensDataFit.for_data_and_tracer(
-                lens_data=self.lens_data, tracer=tracer, padded_tracer=padded_tracer,
-                hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_noise_background)
+                lens_data=self.lens_data,
+                tracer=tracer,
+                padded_tracer=padded_tracer,
+                hyper_image_sky=hyper_image_sky,
+                hyper_noise_background=hyper_noise_background)
 
         def check_positions_trace_within_threshold(self, instance):
 

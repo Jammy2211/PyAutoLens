@@ -172,9 +172,18 @@ class AbstractPhase(af.AbstractPhase):
 
         @property
         def most_likely_fit(self):
+
+            hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
+                instance=self.constant)
+
+            hyper_noise_background= self.analysis.hyper_noise_background_for_instance(
+                instance=self.constant)
+
             return self.analysis.fit_for_tracers(
                 tracer=self.most_likely_tracer,
-                padded_tracer=self.most_likely_padded_tracer)
+                padded_tracer=self.most_likely_padded_tracer,
+                hyper_image_sky=hyper_image_sky,
+                hyper_noise_background=hyper_noise_background)
 
         @property
         def most_likely_image_plane_pixelization_grid(self):
