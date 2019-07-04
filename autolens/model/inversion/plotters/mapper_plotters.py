@@ -119,7 +119,7 @@ def plot_voronoi_mapper(mapper, source_pixel_values, should_plot_centres=True, s
     color_values = source_pixel_values[:] / np.max(source_pixel_values)
     cmap = plt.get_cmap('jet')
 
-    set_colorbar(cmap=cmap, color_values=color_values, cb_fraction=cb_fraction, cb_pad=cb_pad,
+    set_colorbar(cmap=cmap, color_values=source_pixel_values, cb_fraction=cb_fraction, cb_pad=cb_pad,
                  cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels)
 
     for region, index in zip(regions_SP, range(mapper.pixels)):
@@ -332,8 +332,8 @@ def plot_image_plane_source_pixels(grid, mapper, source_pixels, point_colors):
         for source_pixel_set in source_pixels:
             color = next(point_colors)
             for source_pixel in source_pixel_set:
-                plt.scatter(y=np.asarray(grid[mapper.pixelization_to_regular[source_pixel], 0]),
-                            x=np.asarray(grid[mapper.pixelization_to_regular[source_pixel], 1]), s=8, color=color)
+                plt.scatter(y=np.asarray(grid[mapper.pixelization_to_regular_all[source_pixel], 0]),
+                            x=np.asarray(grid[mapper.pixelization_to_regular_all[source_pixel], 1]), s=8, color=color)
 
 def plot_source_plane_image_pixels(grid, image_pixels, point_colors):
 
@@ -351,8 +351,8 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
         for source_pixel_set in source_pixels:
             color = next(point_colors)
             for source_pixel in source_pixel_set:
-                plt.scatter(y=np.asarray(grid[mapper.pixelization_to_regular[source_pixel], 0]),
-                            x=np.asarray(grid[mapper.pixelization_to_regular[source_pixel], 1]), s=8, color=color)
+                plt.scatter(y=np.asarray(grid[mapper.pixelization_to_regular_all[source_pixel], 0]),
+                            x=np.asarray(grid[mapper.pixelization_to_regular_all[source_pixel], 1]), s=8, color=color)
 
 def convert_grid(grid, units, kpc_per_arcsec):
 

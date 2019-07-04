@@ -23,8 +23,8 @@ class TestRegularizationConstant:
         reg = regularization.Constant(coefficients=(1.0,))
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pixel_neighbors, pixel_neighbors_size)
 
-        regularization_matrix_util = reg_util.constant_regularization_matrix_from_pixel_neighbors(coefficients=(1.0,),
-                pixel_neighbors=pixel_neighbors,  pixel_neighbors_size=pixel_neighbors_size)
+        regularization_matrix_util = reg_util.constant_regularization_matrix_from_pixel_neighbors(
+            coefficients=(1.0,), pixel_neighbors=pixel_neighbors,  pixel_neighbors_size=pixel_neighbors_size)
 
         assert (regularization_matrix == regularization_matrix_util).all()
 
@@ -35,15 +35,15 @@ class TestRegularizationWeighted:
         
         reg = regularization.AdaptiveBrightness(signal_scale=2.0)
 
-        regular_to_pix = np.array([0, 1, 2, 3, 3, 4, 5])
+        sub_to_pix = np.array([0, 1, 2, 3, 3, 4, 5])
+        sub_to_regular = np.array([0, 1, 2, 3, 3, 4, 5])
         galaxy_image = np.array([2.0, 1.0, 1.0, 4.0, 5.0, 6.0, 1.0])
 
-        pixel_signals = reg.pixel_signals_from_images(pixels=6, regular_to_pix=regular_to_pix,
-                                                      hyper_image=galaxy_image)
+        pixel_signals = reg.pixel_signals_from_images(
+            pixels=6, sub_to_pix=sub_to_pix, sub_to_regular=sub_to_regular, hyper_image=galaxy_image)
         
-        pixel_signals_util = reg_util.adaptive_pixel_signals_from_images(pixels=6, signal_scale=2.0,
-                                                                         regular_to_pix=regular_to_pix,
-                                                                         hyper_image=galaxy_image)
+        pixel_signals_util = reg_util.adaptive_pixel_signals_from_images(
+            pixels=6, signal_scale=2.0, sub_to_pix=sub_to_pix, sub_to_regular=sub_to_regular, hyper_image=galaxy_image)
 
         assert (pixel_signals == pixel_signals_util).all()
 

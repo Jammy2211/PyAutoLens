@@ -1,7 +1,0 @@
-Optimizer = MultiNest 
-Sub-grid size = 2 
-Image PSF shape = None 
-Pixelization PSF shape = None 
-Positions Threshold = None 
-Cosmology = <class 'astropy.cosmology.core.FLRW'> 
-Auto Link Priors = False 

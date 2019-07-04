@@ -3,6 +3,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens.data.array import mask as msk
+from autolens.data.array.util import binning_util
 from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.model.inversion import pixelizations as pix
@@ -29,7 +30,7 @@ def setup_phase_mask(data, mask, mask_function, inner_mask_radii):
 
 class AbstractPhase(af.AbstractPhase):
 
-    def __init__(self, phase_name, phase_tag=None, phase_folders=None, tag_phases=True,
+    def __init__(self, phase_name, phase_tag=None, phase_folders=tuple(), tag_phases=True,
                  optimizer_class=af.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         """
@@ -43,6 +44,8 @@ class AbstractPhase(af.AbstractPhase):
         phase_name: str
             The name of this phase
         """
+
+        self.phase_folders = phase_folders
 
         super().__init__(phase_name=phase_name, phase_tag=phase_tag,
                          phase_folders=phase_folders, tag_phases=tag_phases,
@@ -223,6 +226,130 @@ class AbstractPhase(af.AbstractPhase):
             return {galaxy_path: self.image_2d_for_galaxy(galaxy) for
                     galaxy_path, galaxy in self.path_galaxy_tuples}
 
+        def image_1d_dict_from_mask(self, mask) -> {str: g.Galaxy}:
+            """
+            A dictionary associating galaxy names with model images of those galaxies
+            """
+
+            image_1d_dict = {}
+
+            for galaxy, galaxy_image_2d in self.image_2d_dict.items():
+
+                image_1d_dict[galaxy] = mask.array_1d_from_array_2d(array_2d=galaxy_image_2d)
+
+            return image_1d_dict
+
+        def hyper_galaxy_image_1d_path_dict_from_mask(self, mask):
+            """
+            A dictionary associating 1D hyper galaxy images with their names.
+            """
+
+            hyper_minimum_percent = \
+                af.conf.instance.general.get('hyper', 'hyper_minimum_percent', float)
+
+            image_galaxy_1d_dict = self.image_1d_dict_from_mask(mask=mask)
+
+            hyper_galaxy_image_1d_path_dict = {}
+
+            for path, galaxy in self.path_galaxy_tuples:
+
+                galaxy_image_1d = image_galaxy_1d_dict[path]
+
+                minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
+                galaxy_image_1d[galaxy_image_1d < minimum_galaxy_value] = minimum_galaxy_value
+                hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
+
+            return hyper_galaxy_image_1d_path_dict
+
+        def hyper_galaxy_image_2d_path_dict_from_mask(self, mask):
+            """
+            A dictionary associating 2D hyper galaxy images with their names.
+            """
+
+            hyper_galaxy_image_1d_path_dict = self.hyper_galaxy_image_1d_path_dict_from_mask(mask=mask)
+
+            hyper_galaxy_image_2d_path_dict = {}
+
+            for path, galaxy in self.path_galaxy_tuples:
+
+                hyper_galaxy_image_2d_path_dict[path] = \
+                    mask.scaled_array_2d_from_array_1d(array_1d=hyper_galaxy_image_1d_path_dict[path])
+
+            return hyper_galaxy_image_2d_path_dict
+
+        def cluster_image_1d_dict_from_cluster(self, cluster) -> {str: g.Galaxy}:
+            """
+            A dictionary associating 1D cluster images with their names.
+            """
+
+            cluster_image_1d_dict = {}
+
+            for galaxy, galaxy_image_2d in self.image_2d_dict.items():
+
+                cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+                    array_2d=galaxy_image_2d, bin_up_factor=cluster.bin_up_factor)
+
+                cluster_image_1d_dict[galaxy] = \
+                    cluster.mask.array_1d_from_array_2d(array_2d=cluster_image_2d)
+
+            return cluster_image_1d_dict
+
+        def hyper_galaxy_cluster_image_1d_path_dict_from_cluster(self, cluster):
+            """
+            A dictionary associating 1D hyper galaxy cluster images with their names.
+            """
+
+            if cluster is not None:
+
+                hyper_minimum_percent = \
+                    af.conf.instance.general.get('hyper', 'hyper_minimum_percent', float)
+
+                cluster_image_1d_galaxy_dict = self.cluster_image_1d_dict_from_cluster(cluster=cluster)
+
+                hyper_galaxy_cluster_image_path_dict = {}
+
+                for path, galaxy in self.path_galaxy_tuples:
+
+                    galaxy_cluster_image_1d = cluster_image_1d_galaxy_dict[path]
+
+                    minimum_cluster_value = hyper_minimum_percent * max(galaxy_cluster_image_1d)
+                    galaxy_cluster_image_1d[galaxy_cluster_image_1d < minimum_cluster_value] = minimum_cluster_value
+
+                    hyper_galaxy_cluster_image_path_dict[path] = galaxy_cluster_image_1d
+
+                return hyper_galaxy_cluster_image_path_dict
+
+        def hyper_galaxy_cluster_image_2d_path_dict_from_cluster(
+                self, cluster):
+            """
+            A dictionary associating "D hyper galaxy images cluster images with their names.
+            """
+
+            if cluster is not None:
+
+                hyper_galaxy_cluster_image_1d_path_dict = \
+                    self.hyper_galaxy_cluster_image_1d_path_dict_from_cluster(cluster=cluster)
+
+                hyper_galaxy_cluster_image_2d_path_dict = {}
+
+                for path, galaxy in self.path_galaxy_tuples:
+
+                    hyper_galaxy_cluster_image_2d_path_dict[path] = \
+                        cluster.mask.scaled_array_2d_from_array_1d(array_1d=hyper_galaxy_cluster_image_1d_path_dict[path])
+
+                return hyper_galaxy_cluster_image_2d_path_dict
+
+        def hyper_model_image_1d_from_mask(self, mask):
+
+            hyper_galaxy_image_1d_path_dict = self.hyper_galaxy_image_1d_path_dict_from_mask(mask=mask)
+
+            hyper_model_image_1d = np.zeros(mask.pixels_in_mask)
+
+            for path, galaxy in self.path_galaxy_tuples:
+                hyper_model_image_1d += hyper_galaxy_image_1d_path_dict[path]
+
+            return hyper_model_image_1d
+
 
 class Phase(AbstractPhase):
 
@@ -274,7 +401,7 @@ class Phase(AbstractPhase):
 class GalaxyFitPhase(AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(), galaxies=None,
                  use_intensities=False,
                  use_convergence=False,
                  use_potential=False,
@@ -370,7 +497,7 @@ class GalaxyFitPhase(AbstractPhase):
                                            use_deflections_y=self.use_deflections,
                                            use_deflections_x=self.use_deflections)
 
-            return self.__class__.AnalysisSingle(galaxy_data=galaxy_data,
+            return self.AnalysisSingle(galaxy_data=galaxy_data,
                                                  cosmology=self.cosmology,
                                                  results=results)
 
@@ -394,7 +521,7 @@ class GalaxyFitPhase(AbstractPhase):
                                              use_deflections_y=False,
                                              use_deflections_x=self.use_deflections)
 
-            return self.__class__.AnalysisDeflections(galaxy_data_y=galaxy_data_y,
+            return self.AnalysisDeflections(galaxy_data_y=galaxy_data_y,
                                                       galaxy_data_x=galaxy_data_x,
                                                       cosmology=self.cosmology,
                                                       results=results)

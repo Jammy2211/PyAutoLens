@@ -70,9 +70,9 @@ class GalaxyFitData(object):
         self.pixel_scale = galaxy_data.pixel_scale
         self.unmasked_noise_map = galaxy_data.noise_map
 
-        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=self.unmasked_image)
-        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=self.unmasked_noise_map)
-        self.mask_1d = mask.map_2d_array_to_masked_1d_array(array_2d=mask)
+        self.image_1d = mask.array_1d_from_array_2d(array_2d=self.unmasked_image)
+        self.noise_map_1d = mask.array_1d_from_array_2d(array_2d=self.unmasked_noise_map)
+        self.mask_1d = mask.array_1d_from_array_2d(array_2d=mask)
 
         self.sub_grid_size = sub_grid_size
 

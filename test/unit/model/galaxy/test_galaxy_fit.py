@@ -10,6 +10,7 @@ from test.unit.mock.model.mock_galaxy import MockGalaxy
 
 
 class TestGalaxyFit:
+
     class TestLikelihood:
 
         def test__1x1_image__light_profile_fits_data_perfectly__lh_is_noise(self):
@@ -143,7 +144,7 @@ class TestGalaxyFit:
 
             model_data_1d = galaxy.intensities_from_grid(
                 grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(
+            model_data_1d = galaxy_fit_data.grid_stack.sub.array_1d_binned_up_from_sub_array_1d(
                 sub_array_1d=model_data_1d)
             model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
             residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
@@ -184,7 +185,7 @@ class TestGalaxyFit:
 
             model_data_1d = galaxy.convergence_from_grid(
                 grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(
+            model_data_1d = galaxy_fit_data.grid_stack.sub.array_1d_binned_up_from_sub_array_1d(
                 sub_array_1d=model_data_1d)
             model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
 
@@ -225,7 +226,7 @@ class TestGalaxyFit:
 
             model_data_1d = galaxy.potential_from_grid(
                 grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(
+            model_data_1d = galaxy_fit_data.grid_stack.sub.array_1d_binned_up_from_sub_array_1d(
                 sub_array_1d=model_data_1d)
             model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
 
@@ -268,7 +269,7 @@ class TestGalaxyFit:
 
             model_data_1d = galaxy.deflections_from_grid(
                 grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(
+            model_data_1d = galaxy_fit_data.grid_stack.sub.array_1d_binned_up_from_sub_array_1d(
                 sub_array_1d=model_data_1d[:, 0])
             model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
 
@@ -310,7 +311,7 @@ class TestGalaxyFit:
 
             model_data_1d = galaxy.deflections_from_grid(
                 grid=galaxy_fit_data.grid_stack.sub)
-            model_data_1d = galaxy_fit_data.grid_stack.sub.regular_array_1d_from_binned_up_sub_array_1d(
+            model_data_1d = galaxy_fit_data.grid_stack.sub.array_1d_binned_up_from_sub_array_1d(
                 sub_array_1d=model_data_1d[:, 1])
             model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
             residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(

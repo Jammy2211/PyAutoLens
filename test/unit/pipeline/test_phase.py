@@ -181,6 +181,86 @@ class TestPhase(object):
 
         assert analysis.lens_data.positions is None
 
+    def test_make_analysis__inversion_resolution_error_raised_if_above_inversion_pixel_limit(
+            self, phase_5x5, ccd_data_5x5, mask_function_5x5):
+
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
+            source_galaxies=dict(
+                source=g.Galaxy(
+                    redshift=0.5,
+                    pixelization=pix.Rectangular(shape=(3, 3)),
+                    regularization=reg.Constant())),
+            mask_function=mask_function_5x5,
+            inversion_pixel_limit=10,
+            cosmology=cosmo.FLRW,
+            phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(
+            data=ccd_data_5x5)
+
+        instance = phase_5x5.variable.instance_from_unit_vector([])
+
+        analysis.check_inversion_pixels_are_below_limit(instance=instance)
+
+        phase_5x5 = phase_imaging.LensSourcePlanePhase(
+            source_galaxies=dict(
+                source=g.Galaxy(
+                    redshift=0.5,
+                    pixelization=pix.Rectangular(shape=(4, 4)),
+                    regularization=reg.Constant())),
+            mask_function=mask_function_5x5,
+            inversion_pixel_limit=10,
+            cosmology=cosmo.FLRW,
+            phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(
+            data=ccd_data_5x5)
+
+        instance = phase_5x5.variable.instance_from_unit_vector([])
+
+        with pytest.raises(exc.PixelizationException):
+            analysis.check_inversion_pixels_are_below_limit(instance=instance)
+            analysis.fit(instance=instance)
+
+        phase_5x5 = phase_imaging.MultiPlanePhase(
+            galaxies=dict(
+                source=g.Galaxy(
+                    redshift=0.5,
+                    pixelization=pix.Rectangular(shape=(3, 3)),
+                    regularization=reg.Constant())),
+            mask_function=mask_function_5x5,
+            inversion_pixel_limit=10,
+            cosmology=cosmo.FLRW,
+            phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(
+            data=ccd_data_5x5)
+
+        instance = phase_5x5.variable.instance_from_unit_vector([])
+
+        analysis.check_inversion_pixels_are_below_limit(instance=instance)
+
+        phase_5x5 = phase_imaging.MultiPlanePhase(
+            galaxies=dict(
+                source=g.Galaxy(
+                    redshift=0.5,
+                    pixelization=pix.Rectangular(shape=(4, 4)),
+                    regularization=reg.Constant())),
+            mask_function=mask_function_5x5,
+            inversion_pixel_limit=10,
+            cosmology=cosmo.FLRW,
+            phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(
+            data=ccd_data_5x5)
+
+        instance = phase_5x5.variable.instance_from_unit_vector([])
+
+        with pytest.raises(exc.PixelizationException):
+            analysis.check_inversion_pixels_are_below_limit(instance=instance)
+            analysis.fit(instance=instance)
+
+
     def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(
             self, phase_5x5, ccd_data_5x5):
         # If use positions is true and positions are input, make the positions part of the lens data.
@@ -927,6 +1007,26 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
+    def test__extended_with_hyper_and_pixelizations(self, phase_5x5):
+
+        from autolens.pipeline.phase import phase_extensions
+
+        phase_extended = phase_5x5.extend_with_inversion_phase()
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
+
+        phase_extended = phase_5x5.extend_with_hyper_and_inversion_phases(hyper_galaxy=False, inversion=False)
+        assert phase_extended.hyper_phases == []
+
+        phase_extended = phase_5x5.extend_with_hyper_and_inversion_phases(hyper_galaxy=True, inversion=False)
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.HyperGalaxyPhase
+
+        phase_extended = phase_5x5.extend_with_hyper_and_inversion_phases(hyper_galaxy=False, inversion=True)
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
+
+        phase_extended = phase_5x5.extend_with_hyper_and_inversion_phases(hyper_galaxy=True, inversion=True)
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.HyperGalaxyPhase
+        assert type(phase_extended.hyper_phases[1]) == phase_extensions.InversionPhase
+
 
 class TestResult(object):
 
@@ -975,7 +1075,7 @@ class TestResult(object):
                     redshift=1.0,
                     pixelization=pix.VoronoiBrightnessImage(pixels=6),
                     regularization=reg.Constant())),
-            inversion_pixel_limit=1,
+            inversion_pixel_limit=6,
             phase_name='test_phase_2')
 
         phase_5x5.source_galaxies.source.hyper_galaxy_cluster_image_1d = np.ones(9)

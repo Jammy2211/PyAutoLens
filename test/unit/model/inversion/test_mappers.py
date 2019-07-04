@@ -61,8 +61,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
-            assert pix.pixelization_to_sub == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
 
         def test__3x3_grid_of_pixel_grid__1_coordinate_per_square_pixel__near_edges_of_pixels(self):
             #   _ _ _
@@ -86,8 +86,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
-            assert pix.pixelization_to_sub == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
 
         def test__3x3_grid_of_pixel_grid__add_multiple_grid_to_1_pixel_pixel(self):
             #                  _ _ _
@@ -111,8 +111,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])).all()
             assert (pix.sub_to_pixelization == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])).all()
-            assert pix.pixelization_to_regular == [[0], [], [2], [], [1, 3, 4, 5, 7], [], [6], [], [8]]
-            assert pix.pixelization_to_sub == [[0], [], [2], [], [1, 3, 4, 5, 7], [], [6], [], [8]]
+            assert pix.pixelization_to_regular_all == [[0], [], [2], [], [1, 3, 4, 5, 7], [], [6], [], [8]]
+            assert pix.pixelization_to_sub_all == [[0], [], [2], [], [1, 3, 4, 5, 7], [], [6], [], [8]]
 
         def test__4x3_grid_of_pixel_grid__1_coordinate_in_each_pixel(self):
             #   _ _ _
@@ -146,8 +146,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 2, 3, 8, 11])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 2, 3, 8, 11])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [2], [3], [], [], [], [], [4], [], [], [5]]
-            assert pix.pixelization_to_sub == [[0], [1], [2], [3], [], [], [], [], [4], [], [], [5]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [2], [3], [], [], [], [], [4], [], [], [5]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [2], [3], [], [], [], [], [4], [], [], [5]]
 
         def test__3x4_grid_of_pixel_grid__1_coordinate_in_each_pixel(self):
             #   _ _ _ _
@@ -179,8 +179,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 2, 6, 9, 11])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 2, 6, 9, 11])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [2], [], [], [], [3], [], [], [4], [], [5]]
-            assert pix.pixelization_to_sub == [[0], [1], [2], [], [], [], [3], [], [], [4], [], [5]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [2], [], [], [], [3], [], [], [4], [], [5]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [2], [], [], [], [3], [], [], [4], [], [5]]
 
         def test__3x3_grid__change_arcsecond_dimensions_size__grid_adapts_accordingly(self):
             #   _ _ _
@@ -202,8 +202,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 2, 7, 8])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 2, 7, 8])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [2], [], [], [], [], [3], [4]]
-            assert pix.pixelization_to_sub == [[0], [1], [2], [], [], [], [], [3], [4]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [2], [], [], [], [], [3], [4]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [2], [], [], [], [], [3], [4]]
 
         def test__3x3_grid__change_arcsecond_dimensions__not_symmetric(self):
             #   _ _ _
@@ -225,8 +225,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 3, 5, 8])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 3, 5, 8])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [], [2], [], [3], [], [], [4]]
-            assert pix.pixelization_to_sub == [[0], [1], [], [2], [], [3], [], [], [4]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [], [2], [], [3], [], [], [4]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [], [2], [], [3], [], [], [4]]
 
         def test__4x3_grid__change_arcsecond_dimensions__not_symmetric(self):
             #   _ _ _
@@ -249,8 +249,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 3, 10, 11])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 3, 10, 11])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [], [2], [], [], [], [], [], [], [3], [4]]
-            assert pix.pixelization_to_sub == [[0], [1], [], [2], [], [], [], [], [], [], [3], [4]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [], [2], [], [], [], [], [], [], [3], [4]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [], [2], [], [], [], [], [], [], [3], [4]]
 
         def test__3x4_grid__change_arcsecond_dimensions__not_symmetric(self):
             #   _ _ _ _
@@ -272,8 +272,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 4, 10, 11])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 4, 10, 11])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [], [], [2], [], [], [], [], [], [3], [4]]
-            assert pix.pixelization_to_sub == [[0], [1], [], [], [2], [], [], [], [], [], [3], [4]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [], [], [2], [], [], [], [], [], [3], [4]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [], [], [2], [], [], [], [], [], [3], [4]]
 
         def test__different_image_and_sub_grids(self):
             #                  _ _ _
@@ -301,8 +301,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
-            assert pix.pixelization_to_regular == [[0], [], [2], [], [1, 3, 4, 5, 7], [], [6], [], [8]]
-            assert pix.pixelization_to_sub == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
+            assert pix.pixelization_to_regular_all == [[0], [], [2], [], [1, 3, 4, 5, 7], [], [6], [], [8]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
 
         def test__3x3_grid_of_pixel_grid___shift_coordinates_to_new_centre__centre_adjusts_based_on_grid(self):
             #   _ _ _
@@ -326,8 +326,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
-            assert pix.pixelization_to_sub == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
 
         def test__4x3_grid__non_symmetric_centre_shift(self):
             #   _ _ _
@@ -350,8 +350,8 @@ class TestRectangularMapper:
 
             assert (pix.regular_to_pixelization == np.array([0, 1, 3, 10, 11])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 3, 10, 11])).all()
-            assert pix.pixelization_to_regular == [[0], [1], [], [2], [], [], [], [], [], [], [3], [4]]
-            assert pix.pixelization_to_sub == [[0], [1], [], [2], [], [], [], [], [], [], [3], [4]]
+            assert pix.pixelization_to_regular_all == [[0], [1], [], [2], [], [], [], [], [], [], [3], [4]]
+            assert pix.pixelization_to_sub_all == [[0], [1], [], [2], [], [], [], [], [], [], [3], [4]]
 
     class TestReconstructedPixelization:
 

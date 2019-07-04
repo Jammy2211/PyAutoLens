@@ -3,7 +3,7 @@ import os
 import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.pipeline.phase import phase_imaging, phase_hyper
+from autolens.pipeline.phase import phase_imaging, phase_extensions
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import integration_util
@@ -48,7 +48,9 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1p = phase_hyper.HyperPixelizationPhase(
+    phase1
+
+    phase1p = phase_extensions.InversionPhase(
         phase_name='phase_1_pix', phase_folders=[test_type, test_name])
 
     class SourcePix(phase_imaging.LensSourcePlanePhase):
@@ -75,7 +77,7 @@ def make_pipeline(test_name):
     phase2.optimizer.n_live_points = 60
     phase2.optimizer.sampling_efficiency = 0.8
 
-    phase2p = phase_hyper.HyperPixelizationPhase(
+    phase2p = phase_extensions.InversionPhase(
         phase_name='phase_1_pix', phase_folders=[test_type, test_name])
 
     return pl.PipelineImaging(test_name, phase1, phase1p)

@@ -164,7 +164,8 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @property
     def profile_image_plane_image_2d(self):
-        return self.image_plane.grid_stack.scaled_array_2d_from_array_1d(array_1d=self.profile_image_plane_image_1d)
+        return self.image_plane.grid_stack.scaled_array_2d_from_array_1d(
+            array_1d=self.profile_image_plane_image_1d)
 
     @property
     def profile_image_plane_image_2d_for_simulation(self):

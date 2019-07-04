@@ -228,7 +228,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(
             self, sub_grid_size=sub_grid_size).astype('int')
 
-    def map_2d_array_to_masked_1d_array(self, array_2d):
+    def array_1d_from_array_2d(self, array_2d):
         """For a 2D array (e.g. an image, noise_map, etc.) map it to a masked 1D array of valuees using this mask.
 
         Parameters
@@ -239,6 +239,167 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         if array_2d is None or isinstance(array_2d, float):
             return array_2d
         return mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(self, array_2d)
+
+    def array_2d_from_array_1d(self, array_1d):
+        """ Map a 1D array the same dimension as the grid to its original 2D array.
+
+        Values which were masked in the mapping to the 1D array are returned as zeros.
+
+        Parameters
+        -----------
+        array_1d : ndarray
+            The 1D array which is mapped to its masked 2D array.
+        """
+        return mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
+            array_1d=array_1d, shape=self.shape,
+            one_to_two=self.masked_grid_index_to_pixel)
+
+    def scaled_array_2d_from_array_1d(self, array_1d):
+        """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a scaled \
+        array.
+
+        Parameters
+        -----------
+        array_1d : ndarray
+            The 1D array of which is mapped to a 2D scaled array.
+        """
+        return scaled_array.ScaledSquarePixelArray(
+            array=self.array_2d_from_array_1d(array_1d=array_1d),
+            pixel_scale=self.pixel_scale,
+            origin=self.origin)
+
+    def grid_2d_from_grid_1d(self, grid_1d):
+        """Map a 1D grid the same dimension as the grid to its original 2D grid.
+
+        Values which were masked in the mapping to the 1D array are returned as zeros.
+
+        Parameters
+        -----------
+        grid_1d : ndarray
+            The 1D grid which is mapped to its masked 2D array.
+        """
+        return mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
+            grid_1d=grid_1d, shape=self.shape,
+            one_to_two=self.masked_grid_index_to_pixel)
+
+    def grid_1d_from_grid_2d(self, grid_2d):
+        """ Map a 2D grid to its masked 1D grid..
+
+        Values which are masked in the mapping to the 1D grid are returned as zeros.
+
+        Parameters
+        -----------
+        grid_1d : ndgrid
+            The 1D grid which is mapped to its masked 2D grid.
+        """
+        return mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(
+            grid_2d=grid_2d, mask=self)
+
+    def sub_array_2d_from_sub_array_1d_and_sub_grid_size(self, sub_array_1d, sub_grid_size):
+        """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub array.
+
+        Parameters
+        -----------
+        sub_array_1d : ndarray
+            The 1D sub_array which is mapped to its masked 2D sub-array.
+        """
+        sub_shape = (self.shape[0] * sub_grid_size,
+                     self.shape[1] * sub_grid_size)
+        sub_one_to_two = self.masked_sub_grid_index_to_sub_pixel(sub_grid_size=sub_grid_size)
+        return mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
+            array_1d=sub_array_1d, shape=sub_shape, one_to_two=sub_one_to_two)
+
+    def scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(self, sub_array_1d, sub_grid_size):
+        """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
+        a scaled array.
+
+        Parameters
+        -----------
+        sub_array_1d : ndarray
+            The 1D sub-array of which is mapped to a 2D scaled sub-array the dimensions.
+        """
+        return scaled_array.ScaledSquarePixelArray(
+            array=self.sub_array_2d_from_sub_array_1d_and_sub_grid_size(sub_array_1d=sub_array_1d, sub_grid_size=sub_grid_size),
+            pixel_scale=self.pixel_scale / sub_grid_size,
+            origin=self.origin)
+
+    def scaled_array_2d_binned_up_from_sub_array_1d_and_sub_grid_size(self, sub_array_1d, sub_grid_size):
+        """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
+        a scaled array.
+
+        Parameters
+        -----------
+        sub_array_1d : ndarray
+            The 1D sub-array of which is mapped to a 2D scaled sub-array the dimensions.
+        """
+
+        array_1d = self.array_1d_binned_up_from_sub_array_1d_and_sub_grid_size(
+            sub_array_1d=sub_array_1d, sub_grid_size=sub_grid_size)
+
+        return scaled_array.ScaledSquarePixelArray(
+            array=self.array_2d_from_array_1d(array_1d=array_1d),
+            pixel_scale=self.pixel_scale,
+            origin=self.origin)
+
+    def array_1d_binned_up_from_sub_array_1d_and_sub_grid_size(self, sub_array_1d, sub_grid_size):
+        """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
+        values and dividing by the total number of sub-pixels.
+
+        Parameters
+        -----------
+        sub_array_1d : ndarray
+            A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
+            a 1d regular array.
+        """
+
+        sub_grid_length = int(sub_grid_size ** 2.0)
+        sub_grid_fraction = 1.0 / sub_grid_length
+
+        return np.multiply(sub_grid_fraction, sub_array_1d.reshape(-1, sub_grid_length).sum(axis=1))
+
+    def sub_array_1d_from_sub_array_2d_and_sub_grid_size(self, sub_array_2d, sub_grid_size):
+        """ Map a 2D sub-array to its masked 1D sub-array.
+
+        Values which are masked in the mapping to the 1D array are returned as zeros.
+
+        Parameters
+        -----------
+        su_array_2d : ndarray
+            The 2D sub-array which is mapped to its masked 1D sub-array.
+        """
+        return mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, mask=self, sub_grid_size=sub_grid_size)
+
+    def sub_grid_2d_from_sub_grid_1d_and_sub_grid_size(self, sub_grid_1d, sub_grid_size):
+        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub grid.
+
+        Parameters
+        -----------
+        sub_grid_1d : ndgrid
+            The 1D sub_grid which is mapped to its masked 2D sub-grid.
+        """
+        sub_shape = (self.shape[0] * sub_grid_size,
+                     self.shape[1] * sub_grid_size)
+
+        sub_one_to_two = self.masked_sub_grid_index_to_sub_pixel(
+            sub_grid_size=sub_grid_size)
+
+        return mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
+            grid_1d=sub_grid_1d, shape=sub_shape, one_to_two=sub_one_to_two)
+
+    @array_util.Memoizer()
+    def sub_to_regular_from_sub_grid_size(self, sub_grid_size):
+        """The mapping between every sub-pixel and its host regular-pixel.
+
+        For example:
+
+        - sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd regular pixel.
+        - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th regular pixel.
+        """
+        return mapping_util.sub_to_regular_from_mask(
+            mask=self, sub_grid_size=sub_grid_size).astype('int')
 
     @array_util.Memoizer()
     def blurring_mask_for_psf_shape(self, psf_shape):
@@ -308,6 +469,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         y0, x0 = np.amin(where, axis=1)
         y1, x1 = np.amax(where, axis=1)
         return [y0, y1+1, x0, x1+1]
+
 
 def load_mask_from_fits(mask_path, pixel_scale, mask_hdu=0):
     return Mask.from_fits_with_pixel_scale(file_path=mask_path, hdu=mask_hdu, pixel_scale=pixel_scale)
