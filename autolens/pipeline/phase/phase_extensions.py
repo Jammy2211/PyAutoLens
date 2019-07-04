@@ -109,12 +109,11 @@ class HyperPhase(object):
 
 # noinspection PyAbstractClass
 class VariableFixingHyperPhase(HyperPhase):
-    def __init__(
-            self,
-            phase: ph.Phase,
-            variable_classes=tuple()
-    ):
+
+    def __init__(self, phase: ph.Phase, variable_classes=tuple()):
+
         super().__init__(phase)
+
         self.variable_classes = variable_classes
 
     def run_hyper(self, data, results=None, **kwargs):
@@ -122,20 +121,24 @@ class VariableFixingHyperPhase(HyperPhase):
         Run the phase, overriding the optimizer's variable instance with one created to
         only fit pixelization hyperparameters.
         """
+
         variable = copy.deepcopy(results.last.variable)
-        self.transfer_classes(
-            results.last.constant,
-            variable
-        )
+        self.transfer_classes(results.last.constant, variable)
+
         phase = self.make_hyper_phase()
         phase.optimizer.variable = variable
 
+        phase.const_efficiency_mode = \
+            af.conf.instance.non_linear.get('MultiNest', 'extension_inversion_const_efficiency_mode', bool)
 
-        return phase.run(
-            data,
-            results=results,
-            **kwargs
-        )
+        phase.optimizer.sampling_efficiency = \
+            af.conf.instance.non_linear.get('MultiNest', 'extension_inversion_sampling_efficiency', float)
+
+        phase.optimizer.n_live_points = \
+            af.conf.instance.non_linear.get('MultiNest', 'extension_inversion_n_live_points', int)
+
+
+        return phase.run(data, results=results, **kwargs)
 
     def transfer_classes(self, instance, mapper):
         """
@@ -180,13 +183,8 @@ class InversionPhase(VariableFixingHyperPhase):
 
     def __init__(self, phase: ph.Phase):
 
-        super().__init__(
-            phase,
-            variable_classes=(
-                px.Pixelization,
-                rg.Regularization
-            )
-        )
+        super().__init__(phase=phase,
+                         variable_classes=(px.Pixelization, rg.Regularization))
 
     @property
     def hyper_name(self):
@@ -379,37 +377,38 @@ class HyperGalaxyPhase(HyperPhase):
             optimizer.variable.source_galaxies = []
             optimizer.variable.galaxies = []
 
+            phase.const_efficiency_mode = \
+                af.conf.instance.non_linear.get('MultiNest', 'extension_hyper_galaxy_const_efficiency_mode', bool)
+
+            phase.optimizer.sampling_efficiency = \
+                af.conf.instance.non_linear.get('MultiNest', 'extension_hyper_galaxy_sampling_efficiency', float)
+
+            phase.optimizer.n_live_points = \
+                af.conf.instance.non_linear.get('MultiNest', 'extension_hyper_galaxy_n_live_points', int)
+
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
             galaxy_image_2d = results.last.image_2d_dict[galaxy_path]
 
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
             if not np.all(galaxy_image_2d == 0):
-                hyper_result.analysis.hyper_galaxy_image_1d_path_dict[
-                    galaxy_path
-                ] = lens_data.array_1d_from_array_2d(
-                    array_2d=galaxy_image_2d
-                )
+
+                hyper_result.analysis.hyper_galaxy_image_1d_path_dict[galaxy_path] = \
+                    lens_data.array_1d_from_array_2d(array_2d=galaxy_image_2d)
+
                 analysis = self.Analysis(
-                    lens_data=lens_data,
-                    model_image_2d=model_image_2d,
-                    galaxy_image_2d=galaxy_image_2d
-                )
+                    lens_data=lens_data, model_image_2d=model_image_2d, galaxy_image_2d=galaxy_image_2d)
+
                 result = optimizer.fit(analysis)
 
-                hyper_result.constant.object_for_path(
-                    galaxy_path
-                ).hyper_galaxy = result.constant.hyper_galaxy
+                hyper_result.constant.object_for_path(galaxy_path).hyper_galaxy = result.constant.hyper_galaxy
 
         return hyper_result
 
 
 class CombinedHyperPhase(phase_imaging.PhaseImaging):
-    def __init__(
-            self,
-            phase: phase_imaging.PhaseImaging,
-            hyper_phase_classes: (type,) = tuple()
-    ):
+
+    def __init__(self, phase: phase_imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()):
         """
         A combined hyper phase that can run zero or more other hyper phases after the initial phase is run.
 

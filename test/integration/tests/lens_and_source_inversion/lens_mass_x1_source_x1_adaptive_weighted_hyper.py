@@ -30,11 +30,17 @@ def make_pipeline(test_name):
 
     phase1 = phase_imaging.LensSourcePlanePhase(
         phase_name='phase_1', phase_folders=[test_type, test_name],
-        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)),
-        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)),
+        lens_galaxies=dict(
+            lens=gm.GalaxyModel(
+                redshift=0.5,
+                mass=mp.EllipticalIsothermal)),
+        source_galaxies=dict(
+            source=gm.GalaxyModel(
+                redshift=1.0,
+                light=lp.EllipticalSersic)),
         optimizer_class=af.MultiNest)
     
-    phase1.extend_with_hyper_and_inversion_phases(hyper_galaxy=True)
+    phase1 = phase1.extend_with_hyper_and_inversion_phases(hyper_galaxy=True)
 
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
 
@@ -65,7 +71,7 @@ def make_pipeline(test_name):
                 regularization=reg.AdaptiveBrightness)),
         optimizer_class=af.MultiNest)
 
-    phase2.extend_with_hyper_and_inversion_phases(hyper_galaxy=True, inversion=True)
+    phase2 = phase2.extend_with_hyper_and_inversion_phases(hyper_galaxy=True, inversion=True)
 
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
 
@@ -76,7 +82,7 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens = results.from_phase('phase_1').\
                 variable.lens_galaxies.lens
             
-            self.source_galaxies.source = results.from_phase('phase_2').hyper_pixelization.\
+            self.source_galaxies.source = results.from_phase('phase_2').inversion.\
                 constant.source_galaxies.source
 
             self.lens_galaxies.lens.hyper_galaxy = results.from_phase('phase_2').hyper_galaxy. \

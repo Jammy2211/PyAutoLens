@@ -557,50 +557,50 @@ class TestHyperAPI(object):
         assert hasattr(result, "inversion")
         assert isinstance(result.inversion, MockResult)
 
-    def test_hyper_phase(self, phase_5x5):
-
-        phase = phase_extensions.InversionPhase(
-            phase_5x5
-        )
-
-        hyper_phase = phase.make_hyper_phase()
-        assert hyper_phase.phase_name == phase.hyper_name
-        assert hyper_phase.phase_path == (f"{phase_5x5.phase_path}/"
-                                          f"{phase_5x5.phase_name}")
-
-    def test_instantiation(self, combined):
-        assert len(combined.hyper_phases) == 2
-
-        galaxy_phase = combined.hyper_phases[0]
-        pixelization_phase = combined.hyper_phases[1]
-
-        assert galaxy_phase.hyper_name == "hyper_galaxy"
-        assert isinstance(
-            galaxy_phase,
-            phase_extensions.HyperGalaxyPhase
-        )
-
-        assert pixelization_phase.hyper_name == "inversion"
-        assert isinstance(
-            pixelization_phase,
-            phase_extensions.InversionPhase
-        )
-
-    def test_hyper_result(self, ccd_data_5x5):
-        normal_phase = MockPhase()
-
-        # noinspection PyTypeChecker
-        phase = phase_extensions.HyperGalaxyPhase(
-            normal_phase
-        )
-
-        # noinspection PyUnusedLocal
-        def run_hyper(*args, **kwargs):
-            return MockResult(None)
-
-        phase.run_hyper = run_hyper
-
-        result = phase.run(ccd_data_5x5)
-
-        assert hasattr(result, "hyper_galaxy")
-        assert isinstance(result.hyper_galaxy, MockResult)
+    # def test_hyper_phase(self, phase_5x5):
+    #
+    #     phase = phase_extensions.InversionPhase(
+    #         phase_5x5
+    #     )
+    #
+    #     hyper_phase = phase.make_hyper_phase()
+    #     assert hyper_phase.phase_name == phase.hyper_name
+    #     assert hyper_phase.phase_path == (f"{phase_5x5.phase_path}/"
+    #                                       f"{phase_5x5.phase_name}")
+    #
+    # def test_instantiation(self, combined):
+    #     assert len(combined.hyper_phases) == 2
+    #
+    #     galaxy_phase = combined.hyper_phases[0]
+    #     pixelization_phase = combined.hyper_phases[1]
+    #
+    #     assert galaxy_phase.hyper_name == "hyper_galaxy"
+    #     assert isinstance(
+    #         galaxy_phase,
+    #         phase_extensions.HyperGalaxyPhase
+    #     )
+    #
+    #     assert pixelization_phase.hyper_name == "inversion"
+    #     assert isinstance(
+    #         pixelization_phase,
+    #         phase_extensions.InversionPhase
+    #     )
+    #
+    # def test_hyper_result(self, ccd_data_5x5):
+    #     normal_phase = MockPhase()
+    #
+    #     # noinspection PyTypeChecker
+    #     phase = phase_extensions.HyperGalaxyPhase(
+    #         normal_phase
+    #     )
+    #
+    #     # noinspection PyUnusedLocal
+    #     def run_hyper(*args, **kwargs):
+    #         return MockResult(None)
+    #
+    #     phase.run_hyper = run_hyper
+    #
+    #     result = phase.run(ccd_data_5x5)
+    #
+    #     assert hasattr(result, "hyper_galaxy")
+    #     assert isinstance(result.hyper_galaxy, MockResult)
