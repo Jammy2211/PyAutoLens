@@ -3,7 +3,6 @@ import pytest
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens import exc
 from autolens.lens import lens_fit
 from autolens.lens import ray_tracing as rt
 from autolens.model.galaxy import galaxy as g

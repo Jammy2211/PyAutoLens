@@ -1025,7 +1025,7 @@ class TestPhase(object):
         assert instance.lens_galaxies[0].redshift == 0.1
         assert instance.lens_galaxies[1].redshift == 0.2
         assert instance.hyper_image_sky.background_sky_scale == 0.3
-        assert instance.hyper_background_noise.background_noise_scale == 0.4
+        assert instance.hyper_noise_background.background_noise_scale == 0.4
 
     def test__extended_with_hyper_and_pixelizations(self, phase_5x5):
 
@@ -1152,8 +1152,10 @@ class TestResult(object):
         mask = phase_5x5.mask_function(image=ccd_data_5x5.image)
         lens_data = ld.LensData(ccd_data=ccd_data_5x5, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer,
-                                      hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_noise_background)
+        fit = lens_fit.LensProfileFit(
+            lens_data=lens_data, tracer=tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_noise_background=hyper_noise_background)
 
         assert fit.likelihood == fit_figure_of_merit
 
