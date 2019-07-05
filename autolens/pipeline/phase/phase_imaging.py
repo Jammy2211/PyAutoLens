@@ -258,10 +258,14 @@ class PhaseImaging(Phase):
             include_background_sky=False, include_background_noise=False):
 
         if hyper_galaxy:
-            if not include_background_noise:
+            if not include_background_sky and not include_background_noise:
                 phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
+            elif include_background_sky and not include_background_noise:
+                phase_hyper_galaxy = phase_extensions.HyperGalaxyBackgroundSkyPhase
+            elif not include_background_sky and include_background_noise:
+                phase_hyper_galaxy = phase_extensions.HyperGalaxyBackgroundNoisePhase
             else:
-                phase_hyper_galaxy = phase_extensions.HyperGalaxyBackgroundPhase
+                phase_hyper_galaxy = phase_extensions.HyperGalaxyBackgroundBoth
         else:
             phase_hyper_galaxy = None
 
