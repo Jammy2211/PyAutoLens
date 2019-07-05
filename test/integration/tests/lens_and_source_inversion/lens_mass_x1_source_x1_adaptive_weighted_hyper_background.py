@@ -52,10 +52,10 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens = results.from_phase('phase_1'). \
                 constant.lens_galaxies.lens
             
-            self.lens_galaxies.lens.hyper_galaxy = results.from_phase('phase_1').hyper_galaxy.\
+            self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy.\
                 constant.lens_galaxies.lens.hyper_galaxy
             
-            self.source_galaxies.source.hyper_galaxy = results.from_phase('phase_1').hyper_galaxy.\
+            self.source_galaxies.source.hyper_galaxy = results.last.hyper_galaxy.\
                 constant.source_galaxies.source.hyper_galaxy
 
     phase2 = InversionPhase(
@@ -84,13 +84,13 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens = results.from_phase('phase_1').\
                 variable.lens_galaxies.lens
             
-            self.source_galaxies.source = results.from_phase('phase_2').inversion.\
+            self.source_galaxies.source = results.last.inversion.\
                 constant.source_galaxies.source
 
-            self.lens_galaxies.lens.hyper_galaxy = results.from_phase('phase_2').hyper_galaxy. \
+            self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy. \
                 constant.lens_galaxies.lens.hyper_galaxy
 
-            self.source_galaxies.source.hyper_galaxy = results.from_phase('phase_2').hyper_galaxy. \
+            self.source_galaxies.source.hyper_galaxy = results.last.hyper_galaxy. \
                 constant.source_galaxies.source.hyper_galaxy
 
     phase3 = InversionPhase(
