@@ -253,11 +253,15 @@ class PhaseImaging(Phase):
     def extend_with_inversion_phase(self):
         return phase_extensions.CombinedHyperPhase(phase=self, hyper_phase_classes=(phase_extensions.InversionPhase,))
 
-    def extend_with_hyper_and_inversion_phases(self, hyper_galaxy=False, inversion=False,
-                                               include_background_sky=False, include_background_noise=False):
+    def extend_with_hyper_and_inversion_phases(
+            self, hyper_galaxy=False, inversion=False,
+            include_background_sky=False, include_background_noise=False):
 
         if hyper_galaxy:
-            phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
+            if not include_background_noise:
+                phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
+            else:
+                phase_hyper_galaxy = phase_extensions.HyperGalaxyBackgroundPhase
         else:
             phase_hyper_galaxy = None
 

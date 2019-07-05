@@ -289,13 +289,6 @@ class HyperGalaxyPhase(HyperPhase):
             self.hyper_model_image_1d = model_image_1d
             self.hyper_galaxy_image_1d = galaxy_image_1d
 
-            print(self.hyper_galaxy_image_1d)
-            print(np.max(self.hyper_galaxy_image_1d))
-            print(np.min(self.hyper_galaxy_image_1d))
-
-            print(self.hyper_galaxy_image_1d.shape[0])
-            print(self.hyper_galaxy_image_1d.shape[0])
-
             self.check_for_previously_masked_values(array=self.hyper_model_image_1d)
             self.check_for_previously_masked_values(array=self.hyper_galaxy_image_1d)
 
@@ -319,6 +312,8 @@ class HyperGalaxyPhase(HyperPhase):
                 hyper_galaxy_image_2d = self.lens_data.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_galaxy_image_1d)
 
+                hyper_noise_background = self.hyper_noise_background_for_instance(
+                    instance=instance)
                 hyper_galaxy = instance.hyper_galaxy
 
                 contribution_map_2d = hyper_galaxy.contribution_map_from_hyper_images(
@@ -332,7 +327,9 @@ class HyperGalaxyPhase(HyperPhase):
                     model_image_1d=self.hyper_model_image_1d,
                     scaled_array_2d_from_array_1d=self.lens_data.scaled_array_2d_from_array_1d)
 
-                fit = self.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+                fit = self.fit_for_hyper_galaxy(
+                    hyper_galaxy=hyper_galaxy,
+                    hyper_noise_background=hyper_noise_background)
 
                 hyper_plotters.plot_hyper_galaxy_subplot(
                     hyper_galaxy_image=hyper_galaxy_image_2d,
@@ -354,17 +351,33 @@ class HyperGalaxyPhase(HyperPhase):
             -------
             fit: float
             """
-            fit = self.fit_for_hyper_galaxy(hyper_galaxy=instance.hyper_galaxy)
+            hyper_noise_background = self.hyper_noise_background_for_instance(instance=instance)
+            fit = self.fit_for_hyper_galaxy(
+                hyper_galaxy=instance.hyper_galaxy,
+                hyper_noise_background=hyper_noise_background)
             return fit.figure_of_merit
 
-        def fit_for_hyper_galaxy(self, hyper_galaxy):
+        def hyper_noise_background_for_instance(self, instance):
+
+            if hasattr(instance, 'hyper_noise_background'):
+                return instance.hyper_noise_background
+            else:
+                return None
+
+        def fit_for_hyper_galaxy(self, hyper_galaxy, hyper_noise_background):
+
+            if hyper_noise_background is not None:
+                noise_map_1d = hyper_noise_background.noise_map_scaled_noise_from_noise_map(
+                    noise_map=self.lens_data.noise_map_1d)
+            else:
+                noise_map_1d = self.lens_data.noise_map_1d
 
             hyper_noise_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
                 hyper_model_image=self.hyper_model_image_1d,
                 hyper_galaxy_image=self.hyper_galaxy_image_1d,
                 noise_map=self.lens_data.noise_map_1d)
 
-            hyper_noise_map_1d = self.lens_data.noise_map_1d + hyper_noise_1d
+            hyper_noise_map_1d = noise_map_1d + hyper_noise_1d
 
             return lens_fit.LensDataFit(
                 image_1d=self.lens_data.image_1d,
@@ -378,7 +391,7 @@ class HyperGalaxyPhase(HyperPhase):
             return "Running hyper galaxy fit for HyperGalaxy:\n{}".format(
                 instance.hyper_galaxy)
 
-    def run_hyper(self, data, results=None, mask=None, positions=None):
+    def run_hyper(self, data, results=None, mask=None, positions=None, include_background=False):
         """
         Run a fit for each galaxy from the previous phase.
         Parameters
@@ -425,7 +438,6 @@ class HyperGalaxyPhase(HyperPhase):
         hyper_result.analysis.hyper_model_image_1d = model_image_1d
         hyper_result.analysis.hyper_galaxy_image_1d_path_dict = hyper_galaxy_image_1d_path_dict
 
-
         for path, galaxy in results.last.path_galaxy_tuples:
 
             optimizer = phase.optimizer.copy_with_name_extension(
@@ -448,6 +460,9 @@ class HyperGalaxyPhase(HyperPhase):
 
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
 
+            if include_background:
+                optimizer.variable.hyper_noise_background = hd.HyperNoiseBackground
+
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
             if not np.all(hyper_galaxy_image_1d_path_dict[path] == 0):
@@ -459,10 +474,26 @@ class HyperGalaxyPhase(HyperPhase):
 
                 result = optimizer.fit(analysis)
 
+                # TODO : include background breaks the code, because it means that he hyper galaxy object is not
+                # TODO : passed corretly. Deleting it as an attribute doesn't help :/.
+
                 hyper_result.constant.object_for_path(path).hyper_galaxy = result.constant.hyper_galaxy
+
+                if include_background:
+                    hyper_result.constant.object_for_path(path).hyper_noise_background = result.constant.hyper_noise_background
 
         return hyper_result
 
+
+class HyperGalaxyBackgroundPhase(HyperGalaxyPhase):
+
+    def run_hyper(self, data, results=None, mask=None, positions=None, include_background=True):
+
+        return super().run_hyper(data=data,
+                                 results=results,
+                                 mask=mask,
+                                 positions=positions,
+                                include_background=include_background)
 
 class CombinedHyperPhase(phase_imaging.PhaseImaging):
 
@@ -477,6 +508,7 @@ class CombinedHyperPhase(phase_imaging.PhaseImaging):
         hyper_phase_classes
             The classes of hyper phases to be run following the initial phase
         """
+
         super().__init__(
             phase_name=phase.phase_name,
             phase_folders=phase.phase_folders,
@@ -517,11 +549,7 @@ class CombinedHyperPhase(phase_imaging.PhaseImaging):
             The result of the regular phase, with hyper results attached by associated hyper names
         """
         results = copy.deepcopy(results) if results is not None else af.ResultsCollection()
-        result = self.phase.run(
-            data,
-            results=results,
-            **kwargs
-        )
+        result = self.phase.run(data, results=results, **kwargs)
         results.add(self.phase.phase_name, result)
 
         for hyper_phase in self.hyper_phases:
