@@ -22,7 +22,7 @@ af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_pa
 def pipeline():
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
     ccd_data = simulation_util.load_test_ccd_data(
-        data_type='no_lens_light_and_source_smooth', data_resolution='Euclid')
+        data_type='no_lens_light_and_source_smooth', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
     results = pipeline.run(data=ccd_data)
 
