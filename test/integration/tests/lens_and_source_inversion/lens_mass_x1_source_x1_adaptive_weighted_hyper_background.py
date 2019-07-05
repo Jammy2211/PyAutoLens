@@ -21,7 +21,7 @@ af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_pa
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution='Euclid')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
@@ -70,6 +70,7 @@ def make_pipeline(test_name):
                 redshift=1.0,
                 pixelization=pix.VoronoiBrightnessImage,
                 regularization=reg.AdaptiveBrightness)),
+        inversion_pixel_limit=50,
         optimizer_class=af.MultiNest)
 
     phase2 = phase2.extend_with_hyper_and_inversion_phases(
@@ -105,6 +106,7 @@ def make_pipeline(test_name):
                 redshift=1.0,
                 pixelization=pix.VoronoiBrightnessImage,
                 regularization=reg.AdaptiveBrightness)),
+        inversion_pixel_limit=50,
         optimizer_class=af.MultiNest)
 
     phase3.optimizer.const_efficiency_mode = True
