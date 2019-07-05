@@ -124,6 +124,12 @@ Create a conda environment:
 conda create -n autolens python=3.7 anaconda
 ```
 
+Activate the conda environment:
+
+```
+conda activate autolens
+```
+
 Install multinest:
 
 ```
@@ -134,12 +140,6 @@ Tell matplotlib what backend to use:
 
 ```
 echo "backend : TKAgg" > ~/.matplotlib/matplotlibrc
-```
-
-Activate the conda environment:
-
-```
-conda activate autolens
 ```
 
 Install autolens:

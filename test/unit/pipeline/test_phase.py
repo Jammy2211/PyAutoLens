@@ -6,11 +6,11 @@ import pytest
 from astropy import cosmology as cosmo
 
 import autofit as af
-import autolens.pipeline.phase.phase_imaging
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
+from autolens.model.hyper import hyper_data as hd
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
@@ -259,7 +259,6 @@ class TestPhase(object):
         with pytest.raises(exc.PixelizationException):
             analysis.check_inversion_pixels_are_below_limit(instance=instance)
             analysis.fit(instance=instance)
-
 
     def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(
             self, phase_5x5, ccd_data_5x5):
@@ -1007,6 +1006,27 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
+    def test__phase_can_receive_hyper_image_and_noise_maps(self):
+
+        phase_5x5 = phase_imaging.LensPlanePhase(
+            lens_galaxies=dict(
+                lens=gm.GalaxyModel(
+                    redshift=g.Redshift),
+                lens1=gm.GalaxyModel(
+                    redshift=g.Redshift)),
+            hyper_image_sky=hd.HyperImageSky,
+            hyper_noise_background=hd.HyperNoiseBackground,
+            optimizer_class=af.MultiNest,
+            phase_name='test_phase')
+
+        instance = phase_5x5.optimizer.variable.instance_from_physical_vector(
+            [0.1, 0.2, 0.3, 0.4])
+
+        assert instance.lens_galaxies[0].redshift == 0.1
+        assert instance.lens_galaxies[1].redshift == 0.2
+        assert instance.hyper_image_sky.background_sky_scale == 0.3
+        assert instance.hyper_noise_background.background_noise_scale == 0.4
+
     def test__extended_with_hyper_and_pixelizations(self, phase_5x5):
 
         from autolens.pipeline.phase import phase_extensions
@@ -1107,6 +1127,37 @@ class TestResult(object):
 
         assert fit.likelihood == fit_figure_of_merit
 
+    def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
+            self, ccd_data_5x5, mask_function_5x5):
+
+        hyper_image_sky = hd.HyperImageSky(background_sky_scale=1.0)
+        hyper_noise_background = hd.HyperNoiseBackground(background_noise_scale=1.0)
+
+        lens_galaxy = g.Galaxy(
+            redshift=0.5,
+            light=lp.EllipticalSersic(intensity=0.1))
+
+        phase_5x5 = phase_imaging.LensPlanePhase(
+            mask_function=mask_function_5x5,
+            lens_galaxies=[lens_galaxy],
+            hyper_image_sky=hyper_image_sky,
+            hyper_noise_background=hyper_noise_background,
+            cosmology=cosmo.FLRW,
+            phase_name='test_phase')
+
+        analysis = phase_5x5.make_analysis(data=ccd_data_5x5)
+        instance = phase_5x5.variable.instance_from_unit_vector([])
+        fit_figure_of_merit = analysis.fit(instance=instance)
+
+        mask = phase_5x5.mask_function(image=ccd_data_5x5.image)
+        lens_data = ld.LensData(ccd_data=ccd_data_5x5, mask=mask)
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = lens_fit.LensProfileFit(
+            lens_data=lens_data, tracer=tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_noise_background=hyper_noise_background)
+
+        assert fit.likelihood == fit_figure_of_merit
 
 class TestPhasePickle(object):
 

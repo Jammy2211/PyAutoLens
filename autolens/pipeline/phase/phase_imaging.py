@@ -20,6 +20,8 @@ class PhaseImaging(Phase):
                  phase_name,
                  tag_phases=True,
                  phase_folders=tuple(),
+                 hyper_image_sky=None,
+                 hyper_noise_background=None,
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2,
                  bin_up_factor=None,
@@ -99,6 +101,9 @@ class PhaseImaging(Phase):
         else:
 
             self.cluster_pixel_limit = inversion_pixel_limit_from_prior
+
+        self.hyper_image_sky = hyper_image_sky
+        self.hyper_noise_background = hyper_noise_background
 
     @property
     def uses_hyper_images(self) -> bool:
@@ -248,21 +253,34 @@ class PhaseImaging(Phase):
     def extend_with_inversion_phase(self):
         return phase_extensions.CombinedHyperPhase(phase=self, hyper_phase_classes=(phase_extensions.InversionPhase,))
 
-    def extend_with_hyper_and_inversion_phases(self, hyper_galaxy=False, inversion=False):
+    def extend_with_hyper_and_inversion_phases(
+            self, hyper_galaxy=False, inversion=False,
+            include_background_sky=False, include_background_noise=False):
 
         if hyper_galaxy:
-            phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
+            if not include_background_noise:
+                phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
+            else:
+                phase_hyper_galaxy = phase_extensions.HyperGalaxyBackgroundPhase
         else:
             phase_hyper_galaxy = None
 
         if inversion:
-            phase_hyper_pixelization = phase_extensions.InversionPhase
+            if not include_background_sky and not include_background_noise:
+                phase_inversion = phase_extensions.InversionPhase
+            elif include_background_sky and not include_background_noise:
+                phase_inversion = phase_extensions.InversionBackgroundSkyPhase
+            elif not include_background_sky and include_background_noise:
+                phase_inversion = phase_extensions.InversionBackgroundNoisePhase
+            else:
+                phase_inversion = phase_extensions.InversionBackgroundBothPhase
         else:
-            phase_hyper_pixelization = None
+            phase_inversion = None
 
-        hyper_phase_classes = filter(None, (phase_hyper_galaxy, phase_hyper_pixelization))
+        hyper_phase_classes = filter(None, (phase_hyper_galaxy, phase_inversion))
 
-        return phase_extensions.CombinedHyperPhase(phase=self, hyper_phase_classes=hyper_phase_classes)
+        return phase_extensions.CombinedHyperPhase(
+            phase=self, hyper_phase_classes=hyper_phase_classes)
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
@@ -440,7 +458,17 @@ class PhaseImaging(Phase):
             self.check_positions_trace_within_threshold(instance=instance)
             self.check_inversion_pixels_are_below_limit(instance=instance)
             tracer = self.tracer_for_instance(instance=instance)
-            fit = self.fit_for_tracers(tracer=tracer, padded_tracer=None)
+
+            hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
+
+            hyper_noise_background = self.hyper_noise_background_for_instance(instance=instance)
+
+            fit = self.fit_for_tracers(
+                tracer=tracer,
+                padded_tracer=None,
+                hyper_image_sky=hyper_image_sky,
+                hyper_noise_background=hyper_noise_background)
+
             return fit.figure_of_merit
 
         def check_for_previously_masked_values(self, array):
@@ -546,8 +574,14 @@ class PhaseImaging(Phase):
                 should_plot_deflections=self.plot_ray_tracing_deflections,
                 visualize_path=image_path)
 
-            padded_tracer = self.padded_tracer_for_instance(instance)
-            fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
+            hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
+
+            hyper_noise_background = self.hyper_noise_background_for_instance(instance=instance)
+
+            padded_tracer = self.padded_tracer_for_instance(instance=instance)
+            fit = self.fit_for_tracers(
+                tracer=tracer, padded_tracer=padded_tracer,
+                hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_noise_background)
 
             phase_plotters.plot_lens_fit_for_phase(
                 fit=fit, during_analysis=during_analysis,
@@ -578,10 +612,28 @@ class PhaseImaging(Phase):
                 units=self.plot_units,
                 visualize_path=image_path)
 
-        def fit_for_tracers(self, tracer, padded_tracer):
-            return lens_fit.LensDataFit.for_data_and_tracer(lens_data=self.lens_data,
-                                                            tracer=tracer,
-                                                            padded_tracer=padded_tracer)
+        def hyper_image_sky_for_instance(self, instance):
+
+            if hasattr(instance, 'hyper_image_sky'):
+                return instance.hyper_image_sky
+            else:
+                return None
+
+        def hyper_noise_background_for_instance(self, instance):
+
+            if hasattr(instance, 'hyper_noise_background'):
+                return instance.hyper_noise_background
+            else:
+                return None
+
+        def fit_for_tracers(self, tracer, padded_tracer, hyper_image_sky, hyper_noise_background):
+
+            return lens_fit.LensDataFit.for_data_and_tracer(
+                lens_data=self.lens_data,
+                tracer=tracer,
+                padded_tracer=padded_tracer,
+                hyper_image_sky=hyper_image_sky,
+                hyper_noise_background=hyper_noise_background)
 
         def check_positions_trace_within_threshold(self, instance):
 
@@ -610,9 +662,12 @@ class MultiPlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
+    hyper_image_sky = af.PhaseProperty("hyper_image_sky")
+    hyper_noise_background = af.PhaseProperty("hyper_noise_background")
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(), galaxies=None,
+                 hyper_image_sky=None, hyper_noise_background=None,
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  positions_threshold=None,
@@ -645,6 +700,8 @@ class MultiPlanePhase(PhaseImaging):
             phase_name=phase_name,
             tag_phases=tag_phases,
             phase_folders=phase_folders,
+            hyper_image_sky=hyper_image_sky,
+            hyper_noise_background=hyper_noise_background,
             optimizer_class=optimizer_class,
             sub_grid_size=sub_grid_size,
             bin_up_factor=bin_up_factor,
@@ -727,13 +784,22 @@ class LensSourcePlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
+    hyper_image_sky = af.PhaseProperty("hyper_image_sky")
+    hyper_noise_background = af.PhaseProperty("hyper_noise_background")
     lens_galaxies = af.PhaseProperty("lens_galaxies")
     source_galaxies = af.PhaseProperty("source_galaxies")
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(),
-                 lens_galaxies=None, source_galaxies=None,
+    def __init__(self,
+                 phase_name,
+                 tag_phases=True,
+                 phase_folders=tuple(),
+                 lens_galaxies=None,
+                 source_galaxies=None,
+                 hyper_image_sky=None,
+                 hyper_noise_background=None,
                  optimizer_class=af.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
+                 sub_grid_size=2, bin_up_factor=None,
+                 image_psf_shape=None,
                  positions_threshold=None,
                  mask_function=None,
                  inner_mask_radii=None,
@@ -766,6 +832,8 @@ class LensSourcePlanePhase(PhaseImaging):
             phase_name=phase_name,
             tag_phases=tag_phases,
             phase_folders=phase_folders,
+            hyper_image_sky=hyper_image_sky,
+            hyper_noise_background=hyper_noise_background,
             optimizer_class=optimizer_class,
             sub_grid_size=sub_grid_size,
             bin_up_factor=bin_up_factor,
@@ -858,7 +926,6 @@ class LensSourcePlanePhase(PhaseImaging):
                             if galaxy.pixelization.pixels > self.inversion_pixel_limit:
                                 raise exc.PixelizationException
 
-
         @classmethod
         def describe(cls, instance):
             return "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource " \
@@ -880,6 +947,8 @@ class LensPlanePhase(PhaseImaging):
     Fit only the lens galaxy light.
     """
 
+    hyper_image_sky = af.PhaseProperty("hyper_image_sky")
+    hyper_noise_background = af.PhaseProperty("hyper_noise_background")
     lens_galaxies = af.PhaseProperty("lens_galaxies")
 
     def __init__(self,
@@ -887,6 +956,8 @@ class LensPlanePhase(PhaseImaging):
                  tag_phases=True,
                  phase_folders=tuple(),
                  lens_galaxies=None,
+                 hyper_image_sky=None,
+                 hyper_noise_background=None,
                  optimizer_class=af.MultiNest,
                  sub_grid_size=2,
                  bin_up_factor=None,
@@ -900,6 +971,8 @@ class LensPlanePhase(PhaseImaging):
             phase_name=phase_name,
             tag_phases=tag_phases,
             phase_folders=phase_folders,
+            hyper_image_sky=hyper_image_sky,
+            hyper_noise_background=hyper_noise_background,
             optimizer_class=optimizer_class,
             sub_grid_size=sub_grid_size,
             bin_up_factor=bin_up_factor,

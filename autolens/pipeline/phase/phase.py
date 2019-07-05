@@ -134,7 +134,7 @@ class AbstractPhase(af.AbstractPhase):
         def padded_tracer_for_instance(self, instance):
             raise NotImplementedError()
 
-        def fit_for_tracers(self, tracer, padded_tracer):
+        def fit_for_tracers(self, tracer, padded_tracer, hyper_image_sky, hyper_noise_background):
             raise NotImplementedError()
 
         def figure_of_merit_for_fit(self, tracer):
@@ -172,9 +172,18 @@ class AbstractPhase(af.AbstractPhase):
 
         @property
         def most_likely_fit(self):
+
+            hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
+                instance=self.constant)
+
+            hyper_noise_background= self.analysis.hyper_noise_background_for_instance(
+                instance=self.constant)
+
             return self.analysis.fit_for_tracers(
                 tracer=self.most_likely_tracer,
-                padded_tracer=self.most_likely_padded_tracer)
+                padded_tracer=self.most_likely_padded_tracer,
+                hyper_image_sky=hyper_image_sky,
+                hyper_noise_background=hyper_noise_background)
 
         @property
         def most_likely_image_plane_pixelization_grid(self):
@@ -255,8 +264,11 @@ class AbstractPhase(af.AbstractPhase):
 
                 galaxy_image_1d = image_galaxy_1d_dict[path]
 
-                minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
-                galaxy_image_1d[galaxy_image_1d < minimum_galaxy_value] = minimum_galaxy_value
+                if not np.all(galaxy_image_1d == 0):
+
+                    minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
+                    galaxy_image_1d[galaxy_image_1d < minimum_galaxy_value] = minimum_galaxy_value
+
                 hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
 
             return hyper_galaxy_image_1d_path_dict
