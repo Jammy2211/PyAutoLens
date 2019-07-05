@@ -40,7 +40,7 @@ def make_pipeline(test_name):
     phase1.optimizer.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_hyper_and_inversion_phases(
-        hyper_galaxy=True, include_background_noise=True)
+        hyper_galaxy=True, include_background_sky=True, include_background_noise=True)
 
     class HyperLensPlanePhase(phase_imaging.LensPlanePhase):
 
@@ -51,6 +51,9 @@ def make_pipeline(test_name):
 
             self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy.\
                 constant.lens_galaxies.lens.hyper_galaxy
+
+            self.hyper_image_sky = results.last.hyper_galaxy.\
+                constant.lens_galaxies.lens.hyper_image_sky
 
             self.hyper_noise_background = results.last.hyper_galaxy.\
                 constant.lens_galaxies.lens.hyper_noise_background
