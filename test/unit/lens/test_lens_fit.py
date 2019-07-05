@@ -7,6 +7,7 @@ from autolens.data import ccd
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.lens import ray_tracing, lens_fit
+from autolens.model.hyper import hyper_data as hi
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import inversions
@@ -168,8 +169,7 @@ class TestLensProfileFit:
             assert fit.likelihood == -0.5 * (
                         16.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
 
-        def test_hyper_galaxy_changes_noise_above_from_1_to_2__reflected_in_likelihood(
-                self):
+        def test_hyper_galaxy_changes_noise_above_from_1_to_2__reflected_in_likelihood(self):
             # This PSF changes the blurred image plane image from [1.0, 1.0] to [1.0, 5.0]
 
             # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
@@ -246,6 +246,160 @@ class TestLensProfileFit:
             assert fit.reduced_chi_squared == 4.0 / 2.0
             assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 2.0 ** 2.0))
             assert fit.likelihood == -0.5 * (4.0 + 2.0 * np.log(2 * np.pi * 2.0 ** 2.0))
+
+        def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
+
+            psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
+                                           [0.0, 1.0, 0.0],
+                                           [0.0, 0.0, 0.0]])), pixel_scale=1.0)
+
+            ccd_data = ccd.CCDData(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf,
+                                   noise_map=np.ones((3, 4)))
+            ccd_data.image[1, 2] = 4.0
+
+            mask = msk.Mask(array=np.array([[True, True, True, True],
+                                            [True, False, False, True],
+                                            [True, True, True, True]]), pixel_scale=1.0)
+
+            lens_data_5x5 = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+
+            # Setup as a ray trace instance, using a light profile for the lens
+
+            g0 = g.Galaxy(redshift=0.5,
+                          light_profile=MockLightProfile(value=1.0, size=2))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0],
+                                                  image_plane_grid_stack=lens_data_5x5.grid_stack)
+
+            hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
+
+            fit = lens_fit.LensProfileFit(lens_data=lens_data_5x5, tracer=tracer, hyper_image_sky=hyper_image_sky)
+
+            assert (fit.mask_1d == np.array([False, False])).all()
+            assert (fit.mask_2d == np.array(
+                [[True, True, True, True],
+                 [True, False, False, True],
+                 [True, True, True, True]])).all()
+
+            assert (fit.image_1d == np.array([6.0, 5.0])).all()
+            assert (fit.image_2d == np.array(
+               [[0.0, 0.0, 0.0, 0.0],
+                [0.0, 6.0, 5.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.noise_map_1d == np.array([1.0, 1.0])).all()
+            assert (fit.noise_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 1.0, 1.0, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.model_image_1d == np.array([1.0, 1.0])).all()
+            assert (fit.model_image_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 1.0, 1.0, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.residual_map_1d == np.array([5.0, 4.0])).all()
+            assert (fit.residual_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 5.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.normalized_residual_map_1d == np.array([5.0, 4.0])).all()
+            assert (fit.normalized_residual_map_2d == np.array(
+               [[0.0, 0.0, 0.0, 0.0],
+                [0.0, 5.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
+
+
+            assert (fit.chi_squared_map_1d == np.array([25.0, 16.0])).all()
+            assert (fit.chi_squared_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 25.0, 16.0, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert fit.chi_squared == 41.0
+            assert fit.reduced_chi_squared == 41.0 / 2.0
+            assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
+            assert fit.likelihood == -0.5 * (
+                        41.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
+
+        def test__hyper_background_changes_background_noise_map__reflected_in_likelihood(self):
+
+            psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
+                                           [0.0, 1.0, 0.0],
+                                           [0.0, 0.0, 0.0]])), pixel_scale=1.0)
+
+            ccd_data = ccd.CCDData(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf,
+                                   noise_map=np.ones((3, 4)))
+            ccd_data.image[1, 2] = 4.0
+
+            mask = msk.Mask(array=np.array([[True, True, True, True],
+                                            [True, False, False, True],
+                                            [True, True, True, True]]), pixel_scale=1.0)
+
+            lens_data_5x5 = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+
+            # Setup as a ray trace instance, using a light profile for the lens
+
+            g0 = g.Galaxy(redshift=0.5,
+                          light_profile=MockLightProfile(value=1.0, size=2))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0],
+                                                  image_plane_grid_stack=lens_data_5x5.grid_stack)
+
+            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
+
+            fit = lens_fit.LensProfileFit(lens_data=lens_data_5x5, tracer=tracer,
+                                          hyper_noise_background=hyper_background_noise)
+
+
+            assert (fit.mask_1d == np.array([False, False])).all()
+            assert (fit.mask_2d == np.array(
+                [[True, True, True, True],
+                 [True, False, False, True],
+                 [True, True, True, True]])).all()
+
+            assert (fit.image_1d == np.array([5.0, 4.0])).all()
+            assert (fit.image_2d == np.array(
+               [[0.0, 0.0, 0.0, 0.0],
+                [0.0, 5.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.noise_map_1d == np.array([2.0, 2.0])).all()
+            assert (fit.noise_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 2.0, 2.0, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.model_image_1d == np.array([1.0, 1.0])).all()
+            assert (fit.model_image_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 1.0, 1.0, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.residual_map_1d == np.array([4.0, 3.0])).all()
+            assert (fit.residual_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 4.0, 3.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.normalized_residual_map_1d == np.array([2.0, 1.5])).all()
+            assert (fit.normalized_residual_map_2d == np.array(
+               [[0.0, 0.0, 0.0, 0.0],
+                [0.0, 2.0, 1.5, 0.0],
+                [0.0, 0.0, 0.0, 0.0]])).all()
+
+
+            assert (fit.chi_squared_map_1d == np.array([4.0, 2.25])).all()
+            assert (fit.chi_squared_map_2d == np.array(
+                [[0.0, 0.0, 0.0, 0.0],
+                 [0.0, 4.0, 2.25, 0.0],
+                 [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert fit.chi_squared == 6.25
+            assert fit.reduced_chi_squared == 6.25 / 2.0
+            assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 2.0 ** 2.0))
+            assert fit.likelihood == -0.5 * (
+                        6.25 + 2.0 * np.log(2 * np.pi * 2.0 ** 2.0))
 
     class TestCompareToManual:
 
@@ -376,34 +530,46 @@ class TestLensProfileFit:
                 fit.galaxy_image_2d_dict[g0] + fit.galaxy_image_2d_dict[g1], 1.0e-4)
 
         def test___all_lens_fit_quantities__including_hyper_methods(self, lens_data_5x5):
-            
-            g0 = g.Galaxy(redshift=0.5,
-                          light_profile=lp.EllipticalSersic(intensity=1.0),
-                          mass_profile=mp.SphericalIsothermal(einstein_radius=1.0),
-                          hyper_galaxy=g.HyperGalaxy(contribution_factor=1.0,
-                                                     noise_factor=1.0, noise_power=1.0),
-                          hyper_model_image_1d=np.ones(9),
-                          hyper_galaxy_image_1d=np.ones(9), hyper_minimum_value=0.0)
-            g1 = g.Galaxy(redshift=1.0,
-                          light_profile=lp.EllipticalSersic(intensity=1.0))
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
-                                                         source_galaxies=[g1],
-                                                         image_plane_grid_stack=lens_data_5x5.grid_stack)
+            hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
+
+            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
+
+            image_1d = hyper_image_sky.image_scaled_sky_from_image(image=lens_data_5x5.image_1d)
+
+            hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
+                noise_map=lens_data_5x5.noise_map_1d)
+
+            g0 = g.Galaxy(
+                redshift=0.5,
+                light_profile=lp.EllipticalSersic(intensity=1.0),
+                mass_profile=mp.SphericalIsothermal(einstein_radius=1.0),
+                hyper_galaxy=g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0),
+                hyper_model_image_1d=np.ones(9),
+                hyper_galaxy_image_1d=np.ones(9), hyper_minimum_value=0.0)
+            g1 = g.Galaxy(
+                redshift=1.0,
+                light_profile=lp.EllipticalSersic(intensity=1.0))
+
+            tracer = ray_tracing.TracerImageSourcePlanes(
+                lens_galaxies=[g0], source_galaxies=[g1],
+                image_plane_grid_stack=lens_data_5x5.grid_stack)
 
             padded_tracer = ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=[g0], source_galaxies=[g1],
                 image_plane_grid_stack=lens_data_5x5.padded_grid_stack)
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
-                lens_data=lens_data_5x5, tracer=tracer, padded_tracer=padded_tracer)
+                lens_data=lens_data_5x5, tracer=tracer, padded_tracer=padded_tracer,
+                hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_background_noise)
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=lens_data_5x5.noise_map_1d)
 
-            hyper_noise_map_1d = lens_data_5x5.noise_map_1d + hyper_noise_1d
+            hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
             hyper_noise_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d)
+
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map_2d, 1e-4)
 
@@ -416,7 +582,7 @@ class TestLensProfileFit:
             assert model_image_2d == pytest.approx(fit.model_image_2d, 1e-4)
 
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
-                data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d,
+                data=image_1d, mask=lens_data_5x5.mask_1d,
                 model_data=model_image_1d)
             residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=residual_map_1d)
@@ -515,7 +681,8 @@ class TestLensInversionFit:
     
     class TestCompareToManual:
 
-        def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_5x5):
+        def test___all_lens_fit_quantities__no_hyper_methods(
+                self, lens_data_5x5):
             pix = pixelizations.Rectangular(shape=(3, 3))
             reg = regularization.Constant(coefficients=(1.0,))
 
@@ -599,8 +766,8 @@ class TestLensInversionFit:
             assert evidence == fit.evidence
             assert evidence == fit.figure_of_merit
 
-        def test___lens_fit_galaxy_image_dict__has_inversion_reconstructed_data(self,
-                                                                                lens_data_5x5):
+        def test___lens_fit_galaxy_image_dict__has_inversion_reconstructed_data(
+                self, lens_data_5x5):
             pix = pixelizations.Rectangular(shape=(3, 3))
             reg = regularization.Constant(coefficients=(1.0,))
 
@@ -636,7 +803,17 @@ class TestLensInversionFit:
             assert fit.model_image_2d == pytest.approx(fit.galaxy_image_2d_dict[g1],
                                                        1.0e-4)
 
-        def test___all_lens_fit_quantities__include_hyper_methods(self, lens_data_5x5):
+        def test___all_lens_fit_quantities__include_hyper_methods(
+                self, lens_data_5x5):
+
+            hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
+
+            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
+
+            image_1d = hyper_image_sky.image_scaled_sky_from_image(image=lens_data_5x5.image_1d)
+
+            hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
+                noise_map=lens_data_5x5.noise_map_1d)
             
             pix = pixelizations.Rectangular(shape=(3, 3))
             reg = regularization.Constant(coefficients=(1.0,))
@@ -652,12 +829,13 @@ class TestLensInversionFit:
                 image_plane_grid_stack=lens_data_5x5.grid_stack,
                 border=None)
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5,
-                                                           tracer=tracer)
+            fit = lens_fit.LensDataFit.for_data_and_tracer(
+                lens_data=lens_data_5x5, tracer=tracer,
+                hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_background_noise)
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=lens_data_5x5.noise_map_1d)
-            hyper_noise_map_1d = lens_data_5x5.noise_map_1d + hyper_noise_1d
+            hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
             hyper_noise_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d)
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
@@ -666,7 +844,7 @@ class TestLensInversionFit:
             mapper = pix.mapper_from_grid_stack_and_border(
                 grid_stack=lens_data_5x5.grid_stack, border=None)
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
-                mapper=mapper, regularization=reg, image_1d=lens_data_5x5.image_1d,
+                mapper=mapper, regularization=reg, image_1d=image_1d,
                 noise_map_1d=hyper_noise_map_1d,
                 convolver=lens_data_5x5.convolver_mapping_matrix)
 
@@ -676,7 +854,7 @@ class TestLensInversionFit:
                                                                     1e-4)
 
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
-                data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d,
+                data=image_1d, mask=lens_data_5x5.mask_1d,
                 model_data=inversion.reconstructed_data_1d)
             residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=residual_map_1d)
@@ -771,7 +949,8 @@ class TestLensProfileInversionFit:
     
     class TestCompareToManual:
 
-        def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_5x5):
+        def test___all_lens_fit_quantities__no_hyper_methods(
+                self, lens_data_5x5):
             galaxy_light = g.Galaxy(redshift=0.5,
                                     light_profile=lp.EllipticalSersic(intensity=1.0))
 
@@ -959,7 +1138,18 @@ class TestLensProfileInversionFit:
                                                        inversion.reconstructed_data_2d,
                                                        1.0e-4)
 
-        def test___all_lens_fit_quantities__include_hyper_methods(self, lens_data_5x5):
+        def test___all_lens_fit_quantities__include_hyper_methods(
+                self, lens_data_5x5):
+
+            hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
+
+            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
+
+            image_1d = hyper_image_sky.image_scaled_sky_from_image(image=lens_data_5x5.image_1d)
+
+            hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
+                noise_map=lens_data_5x5.noise_map_1d)
+
             galaxy_light = g.Galaxy(redshift=0.5,
                                     light_profile=lp.EllipticalSersic(intensity=1.0),
                                     hyper_galaxy=g.HyperGalaxy(contribution_factor=1.0,
@@ -973,19 +1163,20 @@ class TestLensProfileInversionFit:
             reg = regularization.Constant(coefficients=(1.0,))
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light],
-                                                         source_galaxies=[galaxy_pix],
-                                                         image_plane_grid_stack=lens_data_5x5.grid_stack,
-                                                         border=None)
+            tracer = ray_tracing.TracerImageSourcePlanes(
+                lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
+                image_plane_grid_stack=lens_data_5x5.grid_stack, border=None)
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_5x5,
-                                                           tracer=tracer)
+            fit = lens_fit.LensDataFit.for_data_and_tracer(
+                lens_data=lens_data_5x5, tracer=tracer,
+                hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_background_noise)
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=lens_data_5x5.noise_map_1d)
-            hyper_noise_map_1d = lens_data_5x5.noise_map_1d + hyper_noise_1d
+            hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
             hyper_noise_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d)
+
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map_2d, 1e-4)
 
@@ -1000,7 +1191,7 @@ class TestLensProfileInversionFit:
             assert blurred_profile_image_2d == pytest.approx(
                 fit.blurred_profile_image_2d, 1e-4)
 
-            profile_subtracted_image_1d = lens_data_5x5.image_1d - blurred_profile_image_1d
+            profile_subtracted_image_1d = image_1d - blurred_profile_image_1d
             profile_subtracted_image_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=profile_subtracted_image_1d)
 
@@ -1024,7 +1215,7 @@ class TestLensProfileInversionFit:
             assert model_image_2d == pytest.approx(fit.model_image_2d, 1e-4)
 
             residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
-                data=lens_data_5x5.image_1d, mask=lens_data_5x5.mask_1d, model_data=model_image_1d)
+                data=image_1d, mask=lens_data_5x5.mask_1d, model_data=model_image_1d)
 
             residual_map_2d = lens_data_5x5.scaled_array_2d_from_array_1d(
                 array_1d=residual_map_1d)

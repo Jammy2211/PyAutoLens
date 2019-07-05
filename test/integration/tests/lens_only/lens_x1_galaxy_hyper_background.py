@@ -10,7 +10,7 @@ from test.integration import integration_util
 from test.simulation import simulation_util
 
 test_type = 'lens_only'
-test_name = "lens_x1_galaxy_hyper"
+test_name = "lens_x1_galaxy_hyper_background"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
@@ -39,7 +39,8 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1 = phase1.extend_with_hyper_and_inversion_phases(hyper_galaxy=True)
+    phase1 = phase1.extend_with_hyper_and_inversion_phases(
+        hyper_galaxy=True, include_background_noise=True)
 
     class HyperLensPlanePhase(phase_imaging.LensPlanePhase):
 
@@ -50,6 +51,9 @@ def make_pipeline(test_name):
 
             self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy.\
                 constant.lens_galaxies.lens.hyper_galaxy
+
+            self.hyper_noise_background = results.last.hyper_galaxy.\
+                constant.lens_galaxies.lens.hyper_noise_background
 
     phase2 = HyperLensPlanePhase(
         phase_name='phase_2', phase_folders=[test_type, test_name],

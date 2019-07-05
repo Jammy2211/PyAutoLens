@@ -48,13 +48,13 @@ def make_pipeline(test_name):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.lens_galaxies.lens = results.from_phase('phase_1'). \
+            self.lens_galaxies.lens = results.last. \
                 constant.lens_galaxies.lens
             
-            self.lens_galaxies.lens.hyper_galaxy = results.from_phase('phase_1').hyper_galaxy.\
+            self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy.\
                 constant.lens_galaxies.lens.hyper_galaxy
             
-            self.source_galaxies.source.hyper_galaxy = results.from_phase('phase_1').hyper_galaxy.\
+            self.source_galaxies.source.hyper_galaxy = results.last.hyper_galaxy.\
                 constant.source_galaxies.source.hyper_galaxy
 
     phase2 = InversionPhase(
@@ -71,7 +71,8 @@ def make_pipeline(test_name):
                 regularization=reg.AdaptiveBrightness)),
         optimizer_class=af.MultiNest)
 
-    phase2 = phase2.extend_with_hyper_and_inversion_phases(hyper_galaxy=True, inversion=True)
+    phase2 = phase2.extend_with_hyper_and_inversion_phases(
+        hyper_galaxy=True, inversion=True)
 
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
 
@@ -82,13 +83,13 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens = results.from_phase('phase_1').\
                 variable.lens_galaxies.lens
             
-            self.source_galaxies.source = results.from_phase('phase_2').inversion.\
+            self.source_galaxies.source = results.last.inversion.\
                 constant.source_galaxies.source
 
-            self.lens_galaxies.lens.hyper_galaxy = results.from_phase('phase_2').hyper_galaxy. \
+            self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy. \
                 constant.lens_galaxies.lens.hyper_galaxy
 
-            self.source_galaxies.source.hyper_galaxy = results.from_phase('phase_2').hyper_galaxy. \
+            self.source_galaxies.source.hyper_galaxy = results.last.hyper_galaxy. \
                 constant.source_galaxies.source.hyper_galaxy
 
     phase3 = InversionPhase(
@@ -109,7 +110,8 @@ def make_pipeline(test_name):
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    phase3 = phase3.extend_with_hyper_and_inversion_phases(inversion=True)
+    phase3 = phase3.extend_with_hyper_and_inversion_phases(
+        hyper_galaxy=True, inversion=True)
 
     return pl.PipelineImaging(test_name, phase1, phase2, phase3)
 
