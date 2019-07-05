@@ -253,7 +253,8 @@ class PhaseImaging(Phase):
     def extend_with_inversion_phase(self):
         return phase_extensions.CombinedHyperPhase(phase=self, hyper_phase_classes=(phase_extensions.InversionPhase,))
 
-    def extend_with_hyper_and_inversion_phases(self, hyper_galaxy=False, inversion=False):
+    def extend_with_hyper_and_inversion_phases(self, hyper_galaxy=False, inversion=False,
+                                               include_background_sky=False, include_background_noise=False):
 
         if hyper_galaxy:
             phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
@@ -261,13 +262,21 @@ class PhaseImaging(Phase):
             phase_hyper_galaxy = None
 
         if inversion:
-            phase_hyper_pixelization = phase_extensions.InversionPhase
+            if not include_background_sky and not include_background_noise:
+                phase_inversion = phase_extensions.InversionPhase
+            elif include_background_sky and not include_background_noise:
+                phase_inversion = phase_extensions.InversionBackgroundSkyPhase
+            elif not include_background_sky and include_background_noise:
+                phase_inversion = phase_extensions.InversionBackgroundNoisePhase
+            else:
+                phase_inversion = phase_extensions.InversionBackgroundBothPhase
         else:
-            phase_hyper_pixelization = None
+            phase_inversion = None
 
-        hyper_phase_classes = filter(None, (phase_hyper_galaxy, phase_hyper_pixelization))
+        hyper_phase_classes = filter(None, (phase_hyper_galaxy, phase_inversion))
 
-        return phase_extensions.CombinedHyperPhase(phase=self, hyper_phase_classes=hyper_phase_classes)
+        return phase_extensions.CombinedHyperPhase(
+            phase=self, hyper_phase_classes=hyper_phase_classes)
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
@@ -561,8 +570,14 @@ class PhaseImaging(Phase):
                 should_plot_deflections=self.plot_ray_tracing_deflections,
                 visualize_path=image_path)
 
-            padded_tracer = self.padded_tracer_for_instance(instance)
-            fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
+            hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
+
+            hyper_noise_background = self.hyper_noise_background_for_instance(instance=instance)
+
+            padded_tracer = self.padded_tracer_for_instance(instance=instance)
+            fit = self.fit_for_tracers(
+                tracer=tracer, padded_tracer=padded_tracer,
+                hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_noise_background)
 
             phase_plotters.plot_lens_fit_for_phase(
                 fit=fit, during_analysis=during_analysis,

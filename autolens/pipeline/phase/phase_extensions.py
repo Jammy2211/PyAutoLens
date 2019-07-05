@@ -8,6 +8,7 @@ import autofit as af
 from autolens import exc
 from autolens.lens import lens_data as ld, lens_fit
 from autolens.model.galaxy import galaxy as g
+from autolens.model.hyper import hyper_data as hd
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.pipeline.phase import phase as ph
@@ -183,8 +184,10 @@ class InversionPhase(VariableFixingHyperPhase):
 
     def __init__(self, phase: ph.Phase):
 
-        super().__init__(phase=phase,
-                         variable_classes=(px.Pixelization, rg.Regularization))
+            super().__init__(
+                phase=phase,
+                variable_classes=(px.Pixelization,
+                                  rg.Regularization))
 
     @property
     def hyper_name(self):
@@ -211,6 +214,55 @@ class InversionPhase(VariableFixingHyperPhase):
                 results=results)
 
 
+class InversionBackgroundSkyPhase(VariableFixingHyperPhase):
+    """
+    Phase that makes everything in the variable from the previous phase equal to the
+    corresponding value from the best fit except for variables associated with
+    pixelization
+    """
+
+    def __init__(self, phase: ph.Phase):
+
+            super().__init__(
+                phase=phase,
+                variable_classes=(px.Pixelization,
+                                  rg.Regularization,
+                                  hd.HyperImageSky))
+
+
+class InversionBackgroundNoisePhase(VariableFixingHyperPhase):
+    """
+    Phase that makes everything in the variable from the previous phase equal to the
+    corresponding value from the best fit except for variables associated with
+    pixelization
+    """
+
+    def __init__(self, phase: ph.Phase):
+
+            super().__init__(
+                phase=phase,
+                variable_classes=(px.Pixelization,
+                                  rg.Regularization,
+                                  hd.HyperNoiseBackground))
+
+
+class InversionBackgroundBothPhase(VariableFixingHyperPhase):
+    """
+    Phase that makes everything in the variable from the previous phase equal to the
+    corresponding value from the best fit except for variables associated with
+    pixelization
+    """
+
+    def __init__(self, phase: ph.Phase):
+
+            super().__init__(
+                phase=phase,
+                variable_classes=(px.Pixelization,
+                                  rg.Regularization,
+                                  hd.HyperImageSky,
+                                  hd.HyperNoiseBackground))
+
+
 class HyperGalaxyPhase(HyperPhase):
 
     @property
@@ -219,24 +271,30 @@ class HyperGalaxyPhase(HyperPhase):
 
     class Analysis(af.Analysis):
 
-        def __init__(self, lens_data, model_image_2d, galaxy_image_2d):
+        def __init__(self, lens_data, model_image_1d, galaxy_image_1d):
             """
             An analysis to fit the noise for a single galaxy image.
             Parameters
             ----------
             lens_data: LensData
                 Lens data, including an image and noise
-            model_image_2d: ndarray
+            model_image_1d: ndarray
                 An image produce of the overall system by a model
-            galaxy_image_2d: ndarray
+            galaxy_image_1d: ndarray
                 The contribution of one galaxy to the model image
             """
+
             self.lens_data = lens_data
 
-            self.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
-                array_2d=model_image_2d)
-            self.hyper_galaxy_image_1d = lens_data.array_1d_from_array_2d(
-                array_2d=galaxy_image_2d)
+            self.hyper_model_image_1d = model_image_1d
+            self.hyper_galaxy_image_1d = galaxy_image_1d
+
+            print(self.hyper_galaxy_image_1d)
+            print(np.max(self.hyper_galaxy_image_1d))
+            print(np.min(self.hyper_galaxy_image_1d))
+
+            print(self.hyper_galaxy_image_1d.shape[0])
+            print(self.hyper_galaxy_image_1d.shape[0])
 
             self.check_for_previously_masked_values(array=self.hyper_model_image_1d)
             self.check_for_previously_masked_values(array=self.hyper_galaxy_image_1d)
@@ -255,6 +313,7 @@ class HyperGalaxyPhase(HyperPhase):
         def visualize(self, instance, image_path, during_analysis):
 
             if self.plot_hyper_galaxy_subplot:
+
                 hyper_model_image_2d = self.lens_data.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_model_image_1d)
                 hyper_galaxy_image_2d = self.lens_data.scaled_array_2d_from_array_1d(
@@ -357,19 +416,20 @@ class HyperGalaxyPhase(HyperPhase):
             uses_cluster_inversion=cast(phase_imaging.PhaseImaging, phase).uses_cluster_inversion
         )
 
-        model_image_2d = results.last.most_likely_fit.model_image_2d
+        model_image_1d = results.last.hyper_model_image_1d_from_mask(mask=lens_data.mask_2d)
+        hyper_galaxy_image_1d_path_dict = \
+            results.last.hyper_galaxy_image_1d_path_dict_from_mask(mask=lens_data.mask_2d)
 
         hyper_result = copy.deepcopy(results.last)
         hyper_result.analysis.uses_hyper_images = True
-        hyper_result.analysis.hyper_model_image_1d = lens_data.array_1d_from_array_2d(
-            array_2d=model_image_2d
-        )
-        hyper_result.analysis.hyper_galaxy_image_1d_path_dict = dict()
+        hyper_result.analysis.hyper_model_image_1d = model_image_1d
+        hyper_result.analysis.hyper_galaxy_image_1d_path_dict = hyper_galaxy_image_1d_path_dict
 
-        for galaxy_path, galaxy in results.last.path_galaxy_tuples:
+
+        for path, galaxy in results.last.path_galaxy_tuples:
 
             optimizer = phase.optimizer.copy_with_name_extension(
-                extension=galaxy_path[-1])
+                extension=path[-1])
 
             # TODO : This is a HACK :O
 
@@ -387,21 +447,19 @@ class HyperGalaxyPhase(HyperPhase):
                 af.conf.instance.non_linear.get('MultiNest', 'extension_hyper_galaxy_n_live_points', int)
 
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
-            galaxy_image_2d = results.last.image_2d_dict[galaxy_path]
 
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
-            if not np.all(galaxy_image_2d == 0):
-
-                hyper_result.analysis.hyper_galaxy_image_1d_path_dict[galaxy_path] = \
-                    lens_data.array_1d_from_array_2d(array_2d=galaxy_image_2d)
+            if not np.all(hyper_galaxy_image_1d_path_dict[path] == 0):
 
                 analysis = self.Analysis(
-                    lens_data=lens_data, model_image_2d=model_image_2d, galaxy_image_2d=galaxy_image_2d)
+                    lens_data=lens_data,
+                    model_image_1d=model_image_1d,
+                    galaxy_image_1d=hyper_galaxy_image_1d_path_dict[path])
 
                 result = optimizer.fit(analysis)
 
-                hyper_result.constant.object_for_path(galaxy_path).hyper_galaxy = result.constant.hyper_galaxy
+                hyper_result.constant.object_for_path(path).hyper_galaxy = result.constant.hyper_galaxy
 
         return hyper_result
 
