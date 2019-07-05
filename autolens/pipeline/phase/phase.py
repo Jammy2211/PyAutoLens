@@ -264,8 +264,11 @@ class AbstractPhase(af.AbstractPhase):
 
                 galaxy_image_1d = image_galaxy_1d_dict[path]
 
-                minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
-                galaxy_image_1d[galaxy_image_1d < minimum_galaxy_value] = minimum_galaxy_value
+                if not np.all(galaxy_image_1d == 0):
+
+                    minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
+                    galaxy_image_1d[galaxy_image_1d < minimum_galaxy_value] = minimum_galaxy_value
+
                 hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
 
             return hyper_galaxy_image_1d_path_dict

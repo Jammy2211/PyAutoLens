@@ -143,6 +143,7 @@ class MockPhase(object):
 class TestPixelization(object):
 
     def test_make_pixelization_variable(self):
+
         instance = af.ModelInstance()
         mapper = af.ModelMapper()
 

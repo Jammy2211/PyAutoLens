@@ -68,7 +68,8 @@ def make_pipeline(test_name):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    phase2 = phase2.extend_with_inversion_phase()
+    phase2 = phase2.extend_with_hyper_and_inversion_phases(
+        hyper_galaxy=True, inversion=True)
     
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
 
@@ -101,7 +102,8 @@ def make_pipeline(test_name):
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    phase3 = phase3.extend_with_inversion_phase()
+    phase3 = phase3.extend_with_hyper_and_inversion_phases(
+        hyper_galaxy=True, inversion=True)
 
     return pl.PipelineImaging(test_name, phase1, phase2, phase3)
 
