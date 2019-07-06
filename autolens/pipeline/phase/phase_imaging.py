@@ -97,6 +97,7 @@ class PhaseImaging(Phase):
         if self.inversion_pixel_limit is not None:
 
             self.cluster_pixel_limit = min(inversion_pixel_limit_from_prior, self.inversion_pixel_limit)
+            self.inversion_pixel_limit = self.cluster_pixel_limit
 
         else:
 
