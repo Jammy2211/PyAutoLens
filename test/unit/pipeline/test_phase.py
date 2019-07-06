@@ -710,7 +710,7 @@ class TestPhase(object):
             mask_function=mask_function_5x5,
             inversion_pixel_limit=None)
 
-        assert phase_5x5.inversion_pixel_limit == None
+        assert phase_5x5.inversion_pixel_limit == 1500
         assert phase_5x5.cluster_pixel_limit == 1500
 
         phase_5x5 = phase_imaging.LensSourcePlanePhase(
