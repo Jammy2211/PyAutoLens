@@ -101,6 +101,7 @@ class PhaseImaging(Phase):
         else:
 
             self.cluster_pixel_limit = inversion_pixel_limit_from_prior
+            self.inversion_pixel_limit = self.cluster_pixel_limit
 
         self.hyper_image_sky = hyper_image_sky
         self.hyper_noise_background = hyper_noise_background
