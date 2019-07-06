@@ -214,6 +214,8 @@ class InversionPhase(VariableFixingHyperPhase):
                 results=results)
 
 
+# TODO : OBviously this isn't how we reallly want to implement this...
+
 class InversionBackgroundSkyPhase(VariableFixingHyperPhase):
     """
     Phase that makes everything in the variable from the previous phase equal to the
@@ -229,6 +231,29 @@ class InversionBackgroundSkyPhase(VariableFixingHyperPhase):
                                   rg.Regularization,
                                   hd.HyperImageSky))
 
+    @property
+    def hyper_name(self):
+        return "inversion"
+
+    @property
+    def uses_inversion(self):
+        return True
+
+    @property
+    def uses_hyper_images(self):
+        return True
+
+    class Analysis(phase_imaging.LensSourcePlanePhase.Analysis):
+
+        def figure_of_merit_for_fit(self, tracer):
+            pass
+
+        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
+
+            super(InversionBackgroundSkyPhase.Analysis, self).__init__(
+                lens_data=lens_data, cosmology=cosmology,
+                positions_threshold=positions_threshold,
+                results=results)
 
 class InversionBackgroundNoisePhase(VariableFixingHyperPhase):
     """
@@ -245,6 +270,29 @@ class InversionBackgroundNoisePhase(VariableFixingHyperPhase):
                                   rg.Regularization,
                                   hd.HyperNoiseBackground))
 
+    @property
+    def hyper_name(self):
+        return "inversion"
+
+    @property
+    def uses_inversion(self):
+        return True
+
+    @property
+    def uses_hyper_images(self):
+        return True
+
+    class Analysis(phase_imaging.LensSourcePlanePhase.Analysis):
+
+        def figure_of_merit_for_fit(self, tracer):
+            pass
+
+        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
+
+            super(InversionBackgroundNoisePhase.Analysis, self).__init__(
+                lens_data=lens_data, cosmology=cosmology,
+                positions_threshold=positions_threshold,
+                results=results)
 
 class InversionBackgroundBothPhase(VariableFixingHyperPhase):
     """
@@ -262,6 +310,29 @@ class InversionBackgroundBothPhase(VariableFixingHyperPhase):
                                   hd.HyperImageSky,
                                   hd.HyperNoiseBackground))
 
+    @property
+    def hyper_name(self):
+        return "inversion"
+
+    @property
+    def uses_inversion(self):
+        return True
+
+    @property
+    def uses_hyper_images(self):
+        return True
+
+    class Analysis(phase_imaging.LensSourcePlanePhase.Analysis):
+
+        def figure_of_merit_for_fit(self, tracer):
+            pass
+
+        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
+
+            super(InversionBackgroundBothPhase.Analysis, self).__init__(
+                lens_data=lens_data, cosmology=cosmology,
+                positions_threshold=positions_threshold,
+                results=results)
 
 class HyperGalaxyPhase(HyperPhase):
 
@@ -500,9 +571,6 @@ class HyperGalaxyPhase(HyperPhase):
                     galaxy_image_1d=hyper_galaxy_image_1d_path_dict[path])
 
                 result = optimizer.fit(analysis)
-
-                # TODO : include background breaks the code, because it means that he hyper galaxy object is not
-                # TODO : passed corretly. Deleting it as an attribute doesn't help :/.
 
                 hyper_result.constant.object_for_path(path).hyper_galaxy = result.constant.hyper_galaxy
 
