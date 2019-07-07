@@ -283,6 +283,7 @@ class VoronoiMagnification(Voronoi):
         """
         super(VoronoiMagnification, self).__init__()
         self.shape = (int(shape[0]), int(shape[1]))
+        self.pixels = self.shape[0] * self.shape[1]
 
     def pixelization_grid_from_grid_stack(self, grid_stack, cluster=None, hyper_image=None, seed=1):
 
