@@ -129,9 +129,8 @@ class Rectangular(Pixelization):
         return mappers.RectangularMapper(pixels=self.pixels, grid_stack=relocated_grid_stack, border=border,
                                          shape=self.shape, geometry=geometry, hyper_image=hyper_image)
 
-    @property
-    def uses_pixelization_grid(self):
-        return False
+    def pixelization_grid_from_grid_stack(self, grid_stack, cluster=None, hyper_image=None, seed=1):
+        return None
 
 
 class Voronoi(Pixelization):
@@ -285,9 +284,14 @@ class VoronoiMagnification(Voronoi):
         super(VoronoiMagnification, self).__init__()
         self.shape = (int(shape[0]), int(shape[1]))
 
-    @property
-    def uses_pixelization_grid(self):
-        return True
+    def pixelization_grid_from_grid_stack(self, grid_stack, cluster=None, hyper_image=None, seed=1):
+
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+            unmasked_sparse_shape=self.shape, regular_grid=grid_stack.regular)
+
+        return grids.PixelizationGrid(
+            arr=sparse_to_regular_grid.sparse,
+            regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
 
 class VoronoiBrightnessImage(Voronoi):
 
@@ -313,6 +317,17 @@ class VoronoiBrightnessImage(Voronoi):
 
         return np.power(cluster_weight_map, self.weight_power)
 
-    @property
-    def uses_pixelization_grid(self):
-        return True
+    def pixelization_grid_from_grid_stack(self, grid_stack, cluster=None, hyper_image=None, seed=0):
+
+        cluster_weight_map = self.cluster_weight_map_from_hyper_image(
+            hyper_image=hyper_image)
+
+        sparse_to_regular_grid = \
+            grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+                total_pixels=self.pixels, cluster_grid=cluster,
+                regular_grid=grid_stack.regular, cluster_weight_map=cluster_weight_map,
+                seed=seed)
+
+        return grids.PixelizationGrid(
+            arr=sparse_to_regular_grid.sparse,
+            regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
