@@ -521,33 +521,14 @@ class PhaseImaging(Phase):
 
                 for galaxy in galaxies:
                     if galaxy.pixelization is not None:
-                        if galaxy.pixelization.uses_pixelization_grid:
 
-                            if isinstance(galaxy.pixelization, px.VoronoiMagnification):
+                        pixelization_grid = galaxy.pixelization.pixelization_grid_from_grid_stack(
+                            grid_stack=grid_stack,
+                            hyper_image=galaxy.hyper_galaxy_cluster_image_1d,
+                            cluster=self.lens_data.cluster,
+                            seed=1)
 
-                                sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-                                    unmasked_sparse_shape=galaxy.pixelization.shape, regular_grid=grid_stack.regular)
-
-                            elif isinstance(galaxy.pixelization, px.VoronoiBrightnessImage):
-
-                                cluster_weight_map = galaxy.pixelization.cluster_weight_map_from_hyper_image(
-                                        hyper_image=galaxy.hyper_galaxy_cluster_image_1d)
-
-                                sparse_to_regular_grid = \
-                                    grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
-                                        total_pixels=galaxy.pixelization.pixels, cluster_grid=self.lens_data.cluster,
-                                        regular_grid=self.lens_data.grid_stack.regular, cluster_weight_map=cluster_weight_map,
-                                        seed=1)
-
-                            else:
-
-                                raise exc.PhaseException('The pixelization of a galaxy uses a pixelization grid, but was not a viable'
-                                                         'type in the grid stack calculation method')
-
-                            pixelization_grid = grids.PixelizationGrid(
-                                arr=sparse_to_regular_grid.sparse, regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
-
-                            return grid_stack.new_grid_stack_with_grids_added(pixelization=pixelization_grid)
+                        return grid_stack.new_grid_stack_with_grids_added(pixelization=pixelization_grid)
 
             else:
 
