@@ -193,7 +193,7 @@ def plot_ccd_individual(
             output_path=output_path, output_format=output_format)
 
 def plot_image(
-        ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
+        ccd_data, plot_origin=True, grid=None, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         should_plot_border=False, positions=None,
         as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
@@ -217,7 +217,8 @@ def plot_image(
         over the immage.
     """
     data_plotters.plot_image(
-        image=ccd_data.image, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        image=ccd_data.image, plot_origin=plot_origin, grid=grid, mask=mask,
+        extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, should_plot_border=should_plot_border, positions=positions,
         as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,

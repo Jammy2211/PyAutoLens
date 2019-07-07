@@ -9,6 +9,11 @@ Big Picture:
 
 Small Picture:
 
+- Use Magnification adaptive before Brightness.
+- Rruns with BG Noise scaling only.
+- Chi squared plotts are weird
+- Colour norms from HYper Model images.
+
 - Refactor Phase
 - Unit Test HyperNoise Maps
 - Implement Amy's branch.

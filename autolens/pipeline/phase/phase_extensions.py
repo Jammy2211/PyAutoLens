@@ -255,6 +255,7 @@ class InversionBackgroundSkyPhase(VariableFixingHyperPhase):
                 positions_threshold=positions_threshold,
                 results=results)
 
+
 class InversionBackgroundNoisePhase(VariableFixingHyperPhase):
     """
     Phase that makes everything in the variable from the previous phase equal to the
@@ -293,6 +294,7 @@ class InversionBackgroundNoisePhase(VariableFixingHyperPhase):
                 lens_data=lens_data, cosmology=cosmology,
                 positions_threshold=positions_threshold,
                 results=results)
+
 
 class InversionBackgroundBothPhase(VariableFixingHyperPhase):
     """
@@ -333,6 +335,7 @@ class InversionBackgroundBothPhase(VariableFixingHyperPhase):
                 lens_data=lens_data, cosmology=cosmology,
                 positions_threshold=positions_threshold,
                 results=results)
+
 
 class HyperGalaxyPhase(HyperPhase):
 
@@ -620,6 +623,7 @@ class HyperGalaxyBackgroundBoth(HyperGalaxyPhase):
                                  positions=positions,
                                  include_sky_background=True,
                                  include_noise_background=True)
+
 
 class CombinedHyperPhase(phase_imaging.PhaseImaging):
 
