@@ -2,12 +2,9 @@ import numpy as np
 import pytest
 import scipy.spatial
 
-from autolens.data.array import mask as msk
 from autolens.data.array import grids
 from autolens.model.inversion import pixelizations
 from autolens.model.inversion.util import pixelization_util
-from autolens.model.inversion import regularization
-from autolens.model.galaxy import galaxy as g
 
 
 class TestRectangular:
@@ -15,6 +12,7 @@ class TestRectangular:
     class TestConstructor:
 
         def test__number_of_pixels_and_regularization_set_up_correctly(self):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
 
             assert pix.shape == (3, 3)
@@ -129,6 +127,14 @@ class TestRectangular:
 
             assert (pixel_neighbors == pixel_neighbors_util).all()
             assert (pixel_neighbors_size == pixel_neighbors_size_util).all()
+
+    class TestPixelizationGrid:
+
+        def test__pixelization_grid_returns_none_as_not_used(self, grid_stack_5x5):
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+
+            assert pix.pixelization_grid_from_grid_stack(grid_stack=grid_stack_5x5) == None
 
 
 class TestVoronoi:
@@ -274,6 +280,17 @@ class TestVoronoiMagnification:
 
         assert pix.shape == (3, 3)
 
+    def test__pixelization_grid_returns_same_as_computed_from_grids_module(self, grid_stack_5x5):
+
+        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
+
+        pixelization_grid = pix.pixelization_grid_from_grid_stack(grid_stack=grid_stack_5x5)
+
+        pixelization_grid_manual = grids.PixelizationGrid.from_unmasked_2d_grid_shape_and_regular_grid(
+            unmasked_sparse_shape=(3, 3), regular_grid=grid_stack_5x5.regular)
+
+        assert (pixelization_grid_manual == pixelization_grid).all()
+        assert (pixelization_grid_manual.regular_to_pixelization == pixelization_grid.regular_to_pixelization).all()
 
 class TestVoronoiBrightness:
 
@@ -336,3 +353,26 @@ class TestVoronoiBrightness:
             print(cluster_weight_map)
 
             assert (cluster_weight_map == np.array([3.0, 3.5, 4.0])).all()
+
+        def test__pixelization_grid_returns_same_as_computed_from_grids_module(self, grid_stack_5x5, lens_data_5x5):
+
+            pix = pixelizations.VoronoiBrightnessImage(pixels=6, weight_floor=0.1, weight_power=2.0)
+
+            hyper_image = np.array([0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0])
+
+            pixelization_grid = pix.pixelization_grid_from_grid_stack(
+                grid_stack=grid_stack_5x5, hyper_image=hyper_image, cluster=lens_data_5x5.cluster, seed=1)
+
+            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(hyper_image=hyper_image)
+
+            sparse_to_regular_grid = \
+                grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+                    total_pixels=pix.pixels, cluster_grid=lens_data_5x5.cluster,
+                    regular_grid=grid_stack_5x5.regular, cluster_weight_map=cluster_weight_map,
+                    seed=1)
+
+            pixelization_grid_manual = grids.PixelizationGrid(
+                arr=sparse_to_regular_grid.sparse, regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
+
+            assert (pixelization_grid_manual == pixelization_grid).all()
+            assert (pixelization_grid_manual.regular_to_pixelization == pixelization_grid.regular_to_pixelization).all()
