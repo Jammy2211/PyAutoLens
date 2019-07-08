@@ -261,12 +261,6 @@ class PhaseImaging(Phase):
         if hyper_galaxy:
             if not include_background_sky and not include_background_noise:
                 phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
-            elif include_background_sky and not include_background_noise:
-                phase_hyper_galaxy = phase_extensions.HyperGalaxyBackgroundSkyPhase
-            elif not include_background_sky and include_background_noise:
-                phase_hyper_galaxy = phase_extensions.HyperGalaxyBackgroundNoisePhase
-            else:
-                phase_hyper_galaxy = phase_extensions.HyperGalaxyBackgroundBoth
         else:
             phase_hyper_galaxy = None
 
@@ -282,7 +276,7 @@ class PhaseImaging(Phase):
         else:
             phase_inversion = None
 
-        hyper_phase_classes = filter(None, (phase_hyper_galaxy, phase_inversion))
+        hyper_phase_classes = tuple(filter(None, (phase_hyper_galaxy, phase_inversion)))
 
         return phase_extensions.CombinedHyperPhase(
             phase=self, hyper_phase_classes=hyper_phase_classes)
