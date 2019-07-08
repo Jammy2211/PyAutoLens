@@ -106,7 +106,7 @@ class MostLikelyFit(object):
 
 
 class MockResult(object):
-    def __init__(self, most_likely_fit):
+    def __init__(self, most_likely_fit=None):
         self.most_likely_fit = most_likely_fit
         self.analysis = MockAnalysis()
         self.path_galaxy_tuples = []
@@ -137,7 +137,7 @@ class MockPhase(object):
 
     # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def run(self, *args, **kwargs):
-        return MockResult(None)
+        return MockResult()
 
 
 class TestVariableFixing(object):
@@ -590,8 +590,12 @@ class TestImagePassing(object):
 def make_combined():
     normal_phase = MockPhase()
 
+    # noinspection PyUnusedLocal
+    def run_hyper(*args, **kwargs):
+        return MockResult()
+
     # noinspection PyTypeChecker
-    return phase_extensions.CombinedHyperPhase(
+    combined = phase_extensions.CombinedHyperPhase(
         normal_phase,
         hyper_phase_classes=(
             phase_extensions.HyperGalaxyPhase,
@@ -599,17 +603,15 @@ def make_combined():
         )
     )
 
+    for phase in combined.hyper_phases:
+        phase.run_hyper = run_hyper
+
+    return combined
+
 
 class TestHyperAPI(object):
 
     def test_combined_result(self, combined):
-        # noinspection PyUnusedLocal
-        def run_hyper(*args, **kwargs):
-            return MockResult(None)
-
-        for phase in combined.hyper_phases:
-            phase.run_hyper = run_hyper
-
         result = combined.run(None)
 
         assert hasattr(result, "hyper_galaxy")
@@ -618,16 +620,32 @@ class TestHyperAPI(object):
         assert hasattr(result, "inversion")
         assert isinstance(result.inversion, MockResult)
 
-    # def test_hyper_phase(self, phase_5x5):
-    #
-    #     phase = phase_extensions.InversionPhase(
-    #         phase_5x5
-    #     )
-    #
-    #     hyper_phase = phase.make_hyper_phase()
-    #     assert hyper_phase.phase_name == phase.hyper_name
-    #     assert hyper_phase.phase_path == (f"{phase_5x5.phase_path}/"
-    #                                       f"{phase_5x5.phase_name}")
+        assert hasattr(result, "combined")
+        assert isinstance(result.combined, MockResult)
+
+    def test_combine_variables(self, combined):
+        result = MockResult()
+        hyper_galaxy_result = MockResult()
+        inversion_result = MockResult()
+
+        hyper_galaxy_result.variable = af.ModelMapper()
+        inversion_result.variable = af.ModelMapper()
+
+        hyper_galaxy_result.variable.hyper_galaxy = g.HyperGalaxy
+        # hyper_galaxy_result.variable.hyper_galaxy = px.Pixelization()
+        inversion_result.variable.pixelization = px.Pixelization
+        # inversion_result.variable.pixelization = g.HyperGalaxy()
+
+        result.hyper_galaxy = hyper_galaxy_result
+        result.inversion = inversion_result
+
+        variable = combined.combine_variables(result)
+
+        assert isinstance(variable.hyper_galaxy, af.PriorModel)
+        assert isinstance(variable.pixelization, af.PriorModel)
+
+        assert variable.hyper_galaxy.cls == g.HyperGalaxy
+        assert variable.pixelization.cls == px.Pixelization
 
     def test_instantiation(self, combined):
         assert len(combined.hyper_phases) == 2
@@ -657,7 +675,7 @@ class TestHyperAPI(object):
 
         # noinspection PyUnusedLocal
         def run_hyper(*args, **kwargs):
-            return MockResult(None)
+            return MockResult()
 
         phase.run_hyper = run_hyper
 
