@@ -7,6 +7,7 @@ from autolens.lens import lens_fit
 from autolens.lens import ray_tracing as rt
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_model as gm
+from autolens.model.hyper import hyper_data as hd
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.model.profiles import light_profiles as lp
@@ -139,7 +140,31 @@ class MockPhase(object):
         return MockResult(None)
 
 
-class TestPixelization(object):
+class TestVariableFixing(object):
+    def test_defaults(self):
+        # noinspection PyTypeChecker
+        phase = phase_extensions.VariableFixingHyperPhase(
+            MockPhase(),
+            "mock_phase",
+            default_classes={
+                "hyper_image_sky": hd.HyperImageSky,
+                "hyper_noise_background": hd.HyperNoiseBackground
+            }
+        )
+        mapper = af.ModelMapper()
+        mapper.hyper_image_sky = hd.HyperImageSky
+
+        prior_model = mapper.hyper_image_sky
+
+        phase.add_defaults(mapper)
+
+        assert isinstance(mapper.hyper_image_sky, af.PriorModel)
+        assert isinstance(mapper.hyper_noise_background, af.PriorModel)
+
+        assert mapper.hyper_image_sky.cls == hd.HyperImageSky
+        assert mapper.hyper_noise_background.cls == hd.HyperNoiseBackground
+
+        assert mapper.hyper_image_sky is prior_model
 
     def test_make_pixelization_variable(self):
         instance = af.ModelInstance()
