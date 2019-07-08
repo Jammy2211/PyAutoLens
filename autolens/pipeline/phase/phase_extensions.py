@@ -610,6 +610,8 @@ class CombinedHyperPhase(HyperPhase):
         Run the regular phase followed by the hyper phases. Each result of a hyper phase is attached to the
         overall result object by the hyper_name of that phase.
 
+        Finally, a phase in run with all of the variable results from all the individual hyper phases.
+
         Parameters
         ----------
         data
