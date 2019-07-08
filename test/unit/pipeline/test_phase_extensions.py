@@ -632,9 +632,9 @@ class TestHyperAPI(object):
         inversion_result.variable = af.ModelMapper()
 
         hyper_galaxy_result.variable.hyper_galaxy = g.HyperGalaxy
-        # hyper_galaxy_result.variable.hyper_galaxy = px.Pixelization()
+        hyper_galaxy_result.variable.pixelization = px.Pixelization()
         inversion_result.variable.pixelization = px.Pixelization
-        # inversion_result.variable.pixelization = g.HyperGalaxy()
+        inversion_result.variable.hyper_galaxy = g.HyperGalaxy()
 
         result.hyper_galaxy = hyper_galaxy_result
         result.inversion = inversion_result
