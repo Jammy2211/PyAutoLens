@@ -99,6 +99,9 @@ class HyperPhase(object):
         setattr(result, self.hyper_name, hyper_result)
         return result
 
+    def __getattr__(self, item):
+        return getattr(self.phase, item)a
+
 
 # noinspection PyAbstractClass
 class VariableFixingHyperPhase(HyperPhase):
