@@ -9,7 +9,8 @@ Big Picture:
 
 Small Picture:
 
-- Use Magnification adaptive before Brightness.
+- Inversion phase uses hyper oise map?
+- subplot_ infront of subplot filename
 - Rruns with BG Noise scaling only.
 - Chi squared plotts are weird
 - Colour norms from HYper Model images.

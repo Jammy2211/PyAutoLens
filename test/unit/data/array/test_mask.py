@@ -1016,6 +1016,7 @@ class TestRescaledMaskFromMask(object):
 class TestEdgeBuffedMaskFromMask(object):
 
     def test__5x5_mask_false_centre_pixel__3x3_falses_in_centre_of_edge_buffed_mask(self):
+
         mask = np.array([[True, True, True, True, True],
                          [True, True, True, True, True],
                          [True, True, False, True, True],
