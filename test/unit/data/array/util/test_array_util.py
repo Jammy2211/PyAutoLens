@@ -83,7 +83,8 @@ class TestResize:
         array = np.ones((7, 7))
         array[3, 3] = 2.0
 
-        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(3, 3))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(
+            array_2d=array, resized_shape=(3, 3))
 
         assert (modified == np.array([[1.0, 1.0, 1.0],
                                       [1.0, 2.0, 1.0],

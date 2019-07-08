@@ -1322,45 +1322,35 @@ class TestBorderPixels(object):
 
         assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
-    def test__7x7_annulus_mask__inner_pixels_excluded(self):
+    def test__9x9_annulus_mask__inner_pixels_excluded(self):
 
-        mask = np.array([[False, False, False, False, False, False, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True, False,  True, False,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False, False, False, False, False, False, False]])
-
-        border_pixels = mask_util.border_pixels_from_mask(mask)
-
-        assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
-                                           26, 27, 28, 29, 30, 31])).all()
-
-    def test__same_as_above_but_8x7_annulus_mask__true_values_at_top_or_bottom(self):
-
-        mask = np.array([[False, False, False, False, False, False, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True, False,  True, False,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False, False, False, False, False, False, False],
-                         [ True,  True,  True,  True,  True,  True,  True]])
+        mask = np.array([[True,  True , True,  True,  True,  True,  True,  True, True],
+                         [True, False, False, False, False, False, False, False, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True],
+                         [True, False,  True, False, False, False,  True, False, True],
+                         [True, False,  True, False,  True, False,  True, False, True],
+                         [True, False,  True, False, False, False,  True, False, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True],
+                         [True, False, False, False, False, False, False, False, True],
+                         [True,  True , True,  True,  True,  True,  True,  True, True]])
 
         border_pixels = mask_util.border_pixels_from_mask(mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
                                            26, 27, 28, 29, 30, 31])).all()
 
-        mask = np.array([[ True,  True,  True,  True,  True,  True,  True],
-                         [False, False, False, False, False, False, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True, False,  True, False,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False, False, False, False, False, False, False]])
+    def test__same_as_above_but_10x9_annulus_mask__true_values_at_top_or_bottom(self):
+
+        mask = np.array([[True,  True , True,  True,  True,  True,  True,  True, True],
+                         [True, False, False, False, False, False, False, False, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True],
+                         [True, False,  True, False, False, False,  True, False, True],
+                         [True, False,  True, False,  True, False,  True, False, True],
+                         [True, False,  True, False, False, False,  True, False, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True],
+                         [True, False, False, False, False, False, False, False, True],
+                         [ True,  True,  True,  True,  True,  True,  True, True, True],
+                         [True,  True , True,  True,  True,  True,  True,  True, True]])
 
         border_pixels = mask_util.border_pixels_from_mask(mask)
 
@@ -1369,26 +1359,15 @@ class TestBorderPixels(object):
 
     def test__same_as_above_but_7x8_annulus_mask__true_values_at_right_or_left(self):
 
-        mask = np.array([[False, False, False, False, False, False, False, True],
-                         [False,  True,  True,  True,  True,  True, False, True],
-                         [False,  True, False, False, False,  True, False, True],
-                         [False,  True, False,  True, False,  True, False, True],
-                         [False,  True, False, False, False,  True, False, True],
-                         [False,  True,  True,  True,  True,  True, False, True],
-                         [False, False, False, False, False, False, False, True]])
-
-        border_pixels = mask_util.border_pixels_from_mask(mask)
-
-        assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
-                                           26, 27, 28, 29, 30, 31])).all()
-
-        mask = np.array([[True, False, False, False, False, False, False, False],
-                         [True, False,  True,  True,  True,  True,  True, False],
-                         [True, False,  True, False, False, False,  True, False],
-                         [True, False,  True, False,  True, False,  True, False],
-                         [True, False,  True, False, False, False,  True, False],
-                         [True, False,  True,  True,  True,  True,  True, False],
-                         [True, False, False, False, False, False, False, False]])
+        mask = np.array([[True,  True , True,  True,  True,  True,  True,  True, True, True],
+                         [True, False, False, False, False, False, False, False, True, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True, True],
+                         [True, False,  True, False, False, False,  True, False, True, True],
+                         [True, False,  True, False,  True, False,  True, False, True, True],
+                         [True, False,  True, False, False, False,  True, False, True, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True, True],
+                         [True, False, False, False, False, False, False, False, True, True],
+                         [True,  True,  True,  True,  True,  True,  True,  True, True, True]])
 
         border_pixels = mask_util.border_pixels_from_mask(mask)
 

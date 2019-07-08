@@ -17,6 +17,9 @@ class TestBinnedPaddingArray:
         array_2d_padded = binning_util.padded_binning_array_2d_from_array_2d_and_bin_up_factor(
             array_2d=array_2d, bin_up_factor=1)
 
+        print(array_2d)
+        print(array_2d_padded)
+
         assert (array_2d_padded == array_2d).all()
 
     def test__bin_up_factor_gives_no_remainder__array_2d_does_not_change_shape(self):
