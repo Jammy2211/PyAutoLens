@@ -140,19 +140,6 @@ class MockPhase(object):
         self.phase_path = "phase_path"
         self.optimizer = MockOptimizer()
         self.phase_folders = ['']
-        self.tag_phases = True
-        self.sub_grid_size = 1
-        self.bin_up_factor = 1
-        self.image_psf_shape = None
-        self.inversion_psf_shape = None
-        self.positions_threshold = None
-        self.mask_function = None
-        self.inner_mask_radii = None
-        self.interp_pixel_scale = None
-        self.inversion_pixel_limit = None
-        self.cluster_pixel_scale = None
-        self.cosmology = None
-        self.auto_link_priors = False
 
     # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def run(self, *args, **kwargs):
@@ -468,24 +455,6 @@ class TestImagePassing(object):
                 analysis.lens_data.cluster.shape[0])
         assert (len(analysis.hyper_galaxy_cluster_image_1d_path_dict[('g1',)]) ==
                 analysis.lens_data.cluster.shape[0])
-
-    # def test__image_in_results_has_masked_value_passsed__raises_error(self,
-    #                                                                   mask_function_7x7,
-    #                                                                   results_collection_7x7,
-    #                                                                   ccd_data_7x7):
-    #     phase_7x7 = phase_imaging.LensSourcePlanePhase(
-    #         lens_galaxies=dict(
-    #             lens=gm.GalaxyModel(
-    #                 redshift=0.5,
-    #                 hyper_galaxy=g.HyperGalaxy)),
-    #         optimizer_class=mock_pipeline.MockNLO,
-    #         mask_function=mask_function_7x7,
-    #         phase_name='test_phase')
-    #
-    #     results_collection_7x7[0].galaxy_images[0][2, 2] = 0.0
-    #
-    #     with pytest.raises(exc.PhaseException):
-    #         phase_7x7.make_analysis(data=ccd_data_7x7, results=results_collection_7x7)
 
     def test_associate_images_lens(
             self, lens_instance, lens_result, lens_data_7x7):
