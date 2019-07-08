@@ -100,7 +100,7 @@ class HyperPhase(object):
         return result
 
     def __getattr__(self, item):
-        return getattr(self.phase, item)a
+        return getattr(self.phase, item)
 
 
 # noinspection PyAbstractClass
