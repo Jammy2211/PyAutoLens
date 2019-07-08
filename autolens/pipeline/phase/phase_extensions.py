@@ -619,6 +619,15 @@ class CombinedHyperPhase(HyperPhase):
                 **kwargs
             )
             setattr(result, hyper_phase.hyper_name, hyper_result)
+
+        setattr(
+            result,
+            self.hyper_name,
+            self.run_hyper(
+                data,
+                results
+            )
+        )
         return result
 
     def combine_variables(self, result) -> af.ModelMapper:
@@ -627,5 +636,12 @@ class CombinedHyperPhase(HyperPhase):
             variable += getattr(result, name).variable
         return variable
 
-    def run_hyper(self, *args, **kwargs) -> af.Result:
-        hyper_phase = self.make_hyper_phase()
+    def run_hyper(self, data, results, **kwargs) -> af.Result:
+        variable = self.combine_variables(
+            results.last
+        )
+
+        phase = self.make_hyper_phase()
+        phase.optimizer.variable = variable
+
+        return phase.run(data, results=results, **kwargs)

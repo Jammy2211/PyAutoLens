@@ -110,16 +110,35 @@ class MockResult(object):
         self.most_likely_fit = most_likely_fit
         self.analysis = MockAnalysis()
         self.path_galaxy_tuples = []
+        self.variable = af.ModelMapper()
 
 
 class MockAnalysis(object):
     pass
 
 
+class MockOptimizer(af.NonLinearOptimizer):
+    def __init__(self, phase_name="mock_optimizer", phase_tag="tag", phase_folders=tuple(),
+                 model_mapper=None):
+        super().__init__(phase_folders=phase_folders, phase_tag=phase_tag,
+                         phase_name=phase_name,
+                         model_mapper=model_mapper)
+
+    def fit(self, analysis):
+        # noinspection PyTypeChecker
+        return af.Result(
+            None,
+            analysis.fit(None),
+            None
+        )
+
+
 class MockPhase(object):
 
     def __init__(self):
         self.phase_name = "phase name"
+        self.phase_path = "phase_path"
+        self.optimizer = MockOptimizer()
         self.phase_folders = ['']
         self.tag_phases = True
         self.sub_grid_size = 1
