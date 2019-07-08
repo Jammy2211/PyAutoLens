@@ -66,7 +66,7 @@ class HyperPhase(object):
 
         phase.optimizer = phase.optimizer.__class__(
             phase_name=self.hyper_name,
-            phase_tag=phase.phase_tag[8:],  # Hack to remove first 'settngs'
+            phase_tag=phase.phase_tag[8:],  # Hack to remove first 'settings'
             phase_folders=phase_folders,
             model_mapper=phase.optimizer.variable,
             sigma_limit=phase.optimizer.sigma_limit
