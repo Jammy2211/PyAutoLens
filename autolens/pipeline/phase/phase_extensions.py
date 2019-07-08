@@ -153,10 +153,22 @@ class VariableFixingHyperPhase(HyperPhase):
 
         return phase.run(data, results=results, **kwargs)
 
-    def add_defaults(self, mapper):
+    def add_defaults(self, variable: af.ModelMapper):
+        """
+        Add default prior models for each of the items in the defaults dictionary.
+
+        Provides a way of specifying new prior models to be included at the top level
+        in this phase.
+
+        Parameters
+        ----------
+        variable
+            The variable object to be used in this phase to which default prior
+            models are attached.
+        """
         for key, value in self.default_classes.items():
-            if not hasattr(mapper, key):
-                setattr(mapper, key, value)
+            if not hasattr(variable, key):
+                setattr(variable, key, value)
 
     def transfer_classes(self, instance, mapper):
         """
@@ -583,7 +595,10 @@ class CombinedHyperPhase(HyperPhase):
         ))
 
     @property
-    def phase_names(self):
+    def phase_names(self) -> [str]:
+        """
+        The names of phases included in this combined phase
+        """
         return [
             phase.hyper_name
             for phase
@@ -631,6 +646,22 @@ class CombinedHyperPhase(HyperPhase):
         return result
 
     def combine_variables(self, result) -> af.ModelMapper:
+        """
+        Combine the variable objects from all previous results in this combined hyper phase.
+
+        Iterates through the hyper names of the included hyper phases, extracting a result
+        for each name and adding the variable of that result to a new variable.
+
+        Parameters
+        ----------
+        result
+            The last result (with attribute results associated with phases in this phase)
+
+        Returns
+        -------
+        combined_variable
+            A variable object including all variables from results in this phase.
+        """
         variable = af.ModelMapper()
         for name in self.phase_names:
             variable += getattr(result, name).variable
