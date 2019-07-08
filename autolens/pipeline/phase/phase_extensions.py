@@ -64,12 +64,13 @@ class HyperPhase(object):
         phase_folders = phase.phase_folders
         phase_folders.append(phase.phase_name)
 
-        phase.optimizer = af.MultiNest(
+        phase.optimizer = phase.optimizer.__class__(
             phase_name=self.hyper_name,
             phase_tag=phase.phase_tag[8:],  # Hack to remove first 'settngs'
             phase_folders=phase_folders,
             model_mapper=phase.optimizer.variable,
-            sigma_limit=phase.optimizer.sigma_limit)
+            sigma_limit=phase.optimizer.sigma_limit
+        )
 
         return phase
 
