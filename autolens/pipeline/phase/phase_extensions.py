@@ -149,6 +149,7 @@ class VariableFixingHyperPhase(HyperPhase):
 
         variable = copy.deepcopy(results.last.variable)
         self.transfer_classes(results.last.constant, variable)
+        self.add_defaults(variable)
 
         phase = self.make_hyper_phase()
         phase.optimizer.variable = variable
@@ -207,12 +208,14 @@ class InversionPhase(VariableFixingHyperPhase):
             variable_classes=(
                     px.Pixelization,
                     rg.Regularization
-            )
+            ),
+            default_classes=None
     ):
         super().__init__(
             phase=phase,
             variable_classes=variable_classes,
-            hyper_name="inversion"
+            hyper_name="inversion",
+            default_classes=default_classes
         )
 
     @property
@@ -238,7 +241,10 @@ class InversionBackgroundSkyPhase(InversionPhase):
                 px.Pixelization,
                 rg.Regularization,
                 hd.HyperImageSky
-            )
+            ),
+            default_classes={
+                "hyper_image_sky": hd.HyperImageSky
+            }
         )
 
 
@@ -256,7 +262,10 @@ class InversionBackgroundNoisePhase(InversionPhase):
                 px.Pixelization,
                 rg.Regularization,
                 hd.HyperNoiseBackground
-            )
+            ),
+            default_classes={
+                "hyper_noise_background": hd.HyperNoiseBackground
+            }
         )
 
 
@@ -275,7 +284,11 @@ class InversionBackgroundBothPhase(InversionPhase):
                 rg.Regularization,
                 hd.HyperImageSky,
                 hd.HyperNoiseBackground
-            )
+            ),
+            default_classes={
+                "hyper_image_sky": hd.HyperImageSky,
+                "hyper_noise_background": hd.HyperNoiseBackground
+            }
         )
 
 
