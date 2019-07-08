@@ -640,11 +640,11 @@ def total_edge_pixels_from_mask(mask):
 
     edge_pixel_total = 0
 
-    for y in range(1, mask.shape[0]-1):
-        for x in range(1, mask.shape[1]-1):
+    for y in range(1, mask.shape[0] - 1):
+        for x in range(1, mask.shape[1] - 1):
             if not mask[y, x]:
                 if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
-                   mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
+                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
                     edge_pixel_total += 1
 
     return edge_pixel_total
@@ -678,7 +678,6 @@ def edge_pixels_from_mask(mask):
 
 @decorator_util.jit()
 def check_if_border_pixel(mask, edge_pixel_1d, masked_grid_index_to_pixel):
-
     edge_pixel_index = int(edge_pixel_1d)
 
     y = int(masked_grid_index_to_pixel[edge_pixel_index, 0])
@@ -742,25 +741,24 @@ def border_pixels_from_mask(mask):
 
 @decorator_util.jit()
 def edge_buffed_mask_from_mask(mask):
-
     edge_buffed_mask = mask.copy()
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
-                if y+1 <= mask.shape[0]-1:
+                if y + 1 <= mask.shape[0] - 1:
                     edge_buffed_mask[y + 1, x] = False
-                if y-1 >= 0:
+                if y - 1 >= 0:
                     edge_buffed_mask[y - 1, x] = False
-                if x+1 <= mask.shape[1]-1:
+                if x + 1 <= mask.shape[1] - 1:
                     edge_buffed_mask[y, x + 1] = False
-                if x-1 >= 0:
+                if x - 1 >= 0:
                     edge_buffed_mask[y, x - 1] = False
-                if y+1 <= mask.shape[0]-1 and x+1 <= mask.shape[1]-1:
+                if y + 1 <= mask.shape[0] - 1 and x + 1 <= mask.shape[1] - 1:
                     edge_buffed_mask[y + 1, x + 1] = False
-                if y+1 <= mask.shape[0]-1 and x-1 >= 0:
+                if y + 1 <= mask.shape[0] - 1 and x - 1 >= 0:
                     edge_buffed_mask[y + 1, x - 1] = False
-                if y-1 >= 0 and x+1 <= mask.shape[1]-1:
+                if y - 1 >= 0 and x + 1 <= mask.shape[1] - 1:
                     edge_buffed_mask[y - 1, x + 1] = False
                 if y - 1 >= 0 and x >= 0:
                     edge_buffed_mask[y - 1, x - 1] = False
@@ -769,12 +767,11 @@ def edge_buffed_mask_from_mask(mask):
 
 
 def rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d, rescale_factor):
-
     rescaled_mask = rescale(image=mask_2d, scale=rescale_factor, mode='edge',
                             anti_aliasing=False, multichannel=False)
 
-    rescaled_mask[0, :] = True
-    rescaled_mask[rescaled_mask.shape[0] - 1, :] = True
-    rescaled_mask[:, 0] = True
-    rescaled_mask[:, rescaled_mask.shape[1] - 1] = True
-    return rescaled_mask == 1
+    rescaled_mask[0, :] = 1
+    rescaled_mask[rescaled_mask.shape[0] - 1, :] = 1
+    rescaled_mask[:, 0] = 1
+    rescaled_mask[:, rescaled_mask.shape[1] - 1] = 1
+    return np.isclose(rescaled_mask, 1)
