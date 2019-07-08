@@ -764,6 +764,8 @@ def rescaled_mask_2d_from_mask_2d_and_rescale_factor(
         mask_2d,
         rescale_factor
 ):
+    if rescale_factor == 1.0:
+        return mask_2d
     rescaled_mask = rescale(
         image=mask_2d,
         scale=rescale_factor,
