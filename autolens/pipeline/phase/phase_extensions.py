@@ -17,7 +17,11 @@ from autolens.pipeline.plotters import hyper_plotters
 
 
 class HyperPhase(object):
-    def __init__(self, phase: ph.Phase):
+    def __init__(
+            self,
+            phase: ph.Phase,
+            hyper_name: str
+    ):
         """
         Abstract HyperPhase. Wraps a regular phase, performing that phase before performing the action
         specified by the run_hyper.
@@ -28,14 +32,7 @@ class HyperPhase(object):
             A regular phase
         """
         self.phase = phase
-
-    @property
-    def hyper_name(self) -> str:
-        """
-        The name of the hyper form of the phase. This is used to generate folder names and also address the
-        hyper results in the Result object.
-        """
-        raise NotImplementedError()
+        self.hyper_name = hyper_name
 
     def run_hyper(self, *args, **kwargs) -> af.Result:
         """
@@ -109,9 +106,16 @@ class HyperPhase(object):
 # noinspection PyAbstractClass
 class VariableFixingHyperPhase(HyperPhase):
 
-    def __init__(self, phase: ph.Phase, variable_classes=tuple()):
-
-        super().__init__(phase)
+    def __init__(
+            self,
+            phase: ph.Phase,
+            hyper_name: str,
+            variable_classes=tuple()
+    ):
+        super().__init__(
+            phase=phase,
+            hyper_name=hyper_name
+        )
 
         self.variable_classes = variable_classes
 
@@ -179,15 +183,19 @@ class InversionPhase(VariableFixingHyperPhase):
     pixelization
     """
 
-    def __init__(self, phase: ph.Phase):
+    def __init__(
+            self,
+            phase: ph.Phase,
+            variable_classes=(
+                    px.Pixelization,
+                    rg.Regularization
+            )
+    ):
         super().__init__(
             phase=phase,
-            variable_classes=(px.Pixelization,
-                              rg.Regularization))
-
-    @property
-    def hyper_name(self):
-        return "inversion"
+            variable_classes=variable_classes,
+            hyper_name="inversion"
+        )
 
     @property
     def uses_inversion(self):
@@ -197,21 +205,8 @@ class InversionPhase(VariableFixingHyperPhase):
     def uses_hyper_images(self):
         return True
 
-    class Analysis(phase_imaging.LensSourcePlanePhase.Analysis):
 
-        def figure_of_merit_for_fit(self, tracer):
-            pass
-
-        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
-            super(InversionPhase.Analysis, self).__init__(
-                lens_data=lens_data, cosmology=cosmology,
-                positions_threshold=positions_threshold,
-                results=results)
-
-
-# TODO : OBviously this isn't how we reallly want to implement this...
-
-class InversionBackgroundSkyPhase(VariableFixingHyperPhase):
+class InversionBackgroundSkyPhase(InversionPhase):
     """
     Phase that makes everything in the variable from the previous phase equal to the
     corresponding value from the best fit except for variables associated with
@@ -221,35 +216,15 @@ class InversionBackgroundSkyPhase(VariableFixingHyperPhase):
     def __init__(self, phase: ph.Phase):
         super().__init__(
             phase=phase,
-            variable_classes=(px.Pixelization,
-                              rg.Regularization,
-                              hd.HyperImageSky))
-
-    @property
-    def hyper_name(self):
-        return "inversion"
-
-    @property
-    def uses_inversion(self):
-        return True
-
-    @property
-    def uses_hyper_images(self):
-        return True
-
-    class Analysis(phase_imaging.LensSourcePlanePhase.Analysis):
-
-        def figure_of_merit_for_fit(self, tracer):
-            pass
-
-        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
-            super(InversionBackgroundSkyPhase.Analysis, self).__init__(
-                lens_data=lens_data, cosmology=cosmology,
-                positions_threshold=positions_threshold,
-                results=results)
+            variable_classes=(
+                px.Pixelization,
+                rg.Regularization,
+                hd.HyperImageSky
+            )
+        )
 
 
-class InversionBackgroundNoisePhase(VariableFixingHyperPhase):
+class InversionBackgroundNoisePhase(InversionPhase):
     """
     Phase that makes everything in the variable from the previous phase equal to the
     corresponding value from the best fit except for variables associated with
@@ -259,35 +234,15 @@ class InversionBackgroundNoisePhase(VariableFixingHyperPhase):
     def __init__(self, phase: ph.Phase):
         super().__init__(
             phase=phase,
-            variable_classes=(px.Pixelization,
-                              rg.Regularization,
-                              hd.HyperNoiseBackground))
-
-    @property
-    def hyper_name(self):
-        return "inversion"
-
-    @property
-    def uses_inversion(self):
-        return True
-
-    @property
-    def uses_hyper_images(self):
-        return True
-
-    class Analysis(phase_imaging.LensSourcePlanePhase.Analysis):
-
-        def figure_of_merit_for_fit(self, tracer):
-            pass
-
-        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
-            super(InversionBackgroundNoisePhase.Analysis, self).__init__(
-                lens_data=lens_data, cosmology=cosmology,
-                positions_threshold=positions_threshold,
-                results=results)
+            variable_classes=(
+                px.Pixelization,
+                rg.Regularization,
+                hd.HyperNoiseBackground
+            )
+        )
 
 
-class InversionBackgroundBothPhase(VariableFixingHyperPhase):
+class InversionBackgroundBothPhase(InversionPhase):
     """
     Phase that makes everything in the variable from the previous phase equal to the
     corresponding value from the best fit except for variables associated with
@@ -297,40 +252,29 @@ class InversionBackgroundBothPhase(VariableFixingHyperPhase):
     def __init__(self, phase: ph.Phase):
         super().__init__(
             phase=phase,
-            variable_classes=(px.Pixelization,
-                              rg.Regularization,
-                              hd.HyperImageSky,
-                              hd.HyperNoiseBackground))
-
-    @property
-    def hyper_name(self):
-        return "inversion"
-
-    @property
-    def uses_inversion(self):
-        return True
-
-    @property
-    def uses_hyper_images(self):
-        return True
-
-    class Analysis(phase_imaging.LensSourcePlanePhase.Analysis):
-
-        def figure_of_merit_for_fit(self, tracer):
-            pass
-
-        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
-            super(InversionBackgroundBothPhase.Analysis, self).__init__(
-                lens_data=lens_data, cosmology=cosmology,
-                positions_threshold=positions_threshold,
-                results=results)
+            variable_classes=(
+                px.Pixelization,
+                rg.Regularization,
+                hd.HyperImageSky,
+                hd.HyperNoiseBackground
+            )
+        )
 
 
 class HyperGalaxyPhase(HyperPhase):
 
-    @property
-    def hyper_name(self):
-        return "hyper_galaxy"
+    def __init__(
+            self,
+            phase,
+            include_sky_background=False,
+            include_noise_background=False
+    ):
+        super().__init__(
+            phase=phase,
+            hyper_name="hyper_galaxy"
+        )
+        self.include_sky_background = include_sky_background
+        self.include_noise_background = include_noise_background
 
     class Analysis(af.Analysis):
 
@@ -477,16 +421,12 @@ class HyperGalaxyPhase(HyperPhase):
             data,
             results=None,
             mask=None,
-            positions=None,
-            include_sky_background=False,
-            include_noise_background=False
+            positions=None
     ):
         """
         Run a fit for each galaxy from the previous phase.
         Parameters
         ----------
-        include_noise_background
-        include_sky_background
         data: LensData
         results: ResultsCollection
             Results from all previous phases
@@ -553,10 +493,10 @@ class HyperGalaxyPhase(HyperPhase):
 
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
 
-            if include_sky_background:
+            if self.include_sky_background:
                 optimizer.variable.hyper_image_sky = hd.HyperImageSky
 
-            if include_noise_background:
+            if self.include_noise_background:
                 optimizer.variable.hyper_noise_background = hd.HyperNoiseBackground
 
             # If array is all zeros, galaxy did not have image in previous phase and
@@ -572,56 +512,24 @@ class HyperGalaxyPhase(HyperPhase):
 
                 hyper_result.constant.object_for_path(path).hyper_galaxy = result.constant.hyper_galaxy
 
-                if include_sky_background:
+                if self.include_sky_background:
                     hyper_result.constant.object_for_path(
                         path).hyper_image_sky = result.constant.hyper_image_sky
 
-                if include_noise_background:
+                if self.include_noise_background:
                     hyper_result.constant.object_for_path(
                         path).hyper_noise_background = result.constant.hyper_noise_background
 
         return hyper_result
 
 
-class HyperGalaxyBackgroundSkyPhase(HyperGalaxyPhase):
+class CombinedHyperPhase(object):
 
-    def run_hyper(self, data, results=None, mask=None, positions=None,
-                  include_sky_background=True, include_noise_background=False):
-        return super().run_hyper(data=data,
-                                 results=results,
-                                 mask=mask,
-                                 positions=positions,
-                                 include_sky_background=True,
-                                 include_noise_background=False)
-
-
-class HyperGalaxyBackgroundNoisePhase(HyperGalaxyPhase):
-
-    def run_hyper(self, data, results=None, mask=None, positions=None,
-                  include_sky_background=False, include_noise_background=True):
-        return super().run_hyper(data=data,
-                                 results=results,
-                                 mask=mask,
-                                 positions=positions,
-                                 include_sky_background=False,
-                                 include_noise_background=True)
-
-
-class HyperGalaxyBackgroundBoth(HyperGalaxyPhase):
-
-    def run_hyper(self, data, results=None, mask=None, positions=None,
-                  include_sky_background=True, include_noise_background=True):
-        return super().run_hyper(data=data,
-                                 results=results,
-                                 mask=mask,
-                                 positions=positions,
-                                 include_sky_background=True,
-                                 include_noise_background=True)
-
-
-class CombinedHyperPhase(phase_imaging.PhaseImaging):
-
-    def __init__(self, phase: phase_imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()):
+    def __init__(
+            self,
+            phase: phase_imaging.PhaseImaging,
+            hyper_phase_classes: (type,) = tuple()
+    ):
         """
         A combined hyper phase that can run zero or more other hyper phases after the initial phase is run.
 
@@ -632,26 +540,10 @@ class CombinedHyperPhase(phase_imaging.PhaseImaging):
         hyper_phase_classes
             The classes of hyper phases to be run following the initial phase
         """
-
-        super().__init__(
-            phase_name=phase.phase_name,
-            phase_folders=phase.phase_folders,
-            tag_phases=phase.tag_phases,
-            optimizer_class=af.MultiNest,
-            sub_grid_size=phase.sub_grid_size,
-            bin_up_factor=phase.bin_up_factor,
-            image_psf_shape=phase.image_psf_shape,
-            inversion_psf_shape=phase.inversion_psf_shape,
-            positions_threshold=phase.positions_threshold,
-            mask_function=phase.mask_function,
-            inner_mask_radii=phase.inner_mask_radii,
-            interp_pixel_scale=phase.interp_pixel_scale,
-            inversion_pixel_limit=phase.inversion_pixel_limit,
-            cluster_pixel_scale=phase.cluster_pixel_scale,
-            cosmology=phase.cosmology,
-            auto_link_priors=phase.auto_link_priors)
-
-        self.hyper_phases = list(map(lambda cls: cls(phase), hyper_phase_classes))
+        self.hyper_phases = list(map(
+            lambda cls: cls(phase),
+            hyper_phase_classes
+        ))
         self.phase = phase
 
     def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
