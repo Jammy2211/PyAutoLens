@@ -765,16 +765,17 @@ def rescaled_mask_2d_from_mask_2d_and_rescale_factor(
         rescale_factor
 ):
     if rescale_factor == 1.0:
-        return mask_2d
-    rescaled_mask = rescale(
-        image=mask_2d,
-        scale=rescale_factor,
-        mode='edge',
-        anti_aliasing=False,
-        multichannel=False
-    )
-    rescaled_mask[0, :] = True
-    rescaled_mask[rescaled_mask.shape[0] - 1, :] = True
-    rescaled_mask[:, 0] = True
-    rescaled_mask[:, rescaled_mask.shape[1] - 1] = True
+        rescaled_mask = mask_2d.copy()
+    else:
+        rescaled_mask = rescale(
+            image=mask_2d,
+            scale=rescale_factor,
+            mode='edge',
+            anti_aliasing=False,
+            multichannel=False
+        )
+    rescaled_mask[0, :] = 1
+    rescaled_mask[rescaled_mask.shape[0] - 1, :] = 1
+    rescaled_mask[:, 0] = 1
+    rescaled_mask[:, rescaled_mask.shape[1] - 1] = 1
     return np.isclose(rescaled_mask, 1)
