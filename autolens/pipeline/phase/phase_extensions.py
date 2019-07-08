@@ -557,8 +557,7 @@ class HyperGalaxyPhase(HyperPhase):
         return hyper_result
 
 
-class CombinedHyperPhase(object):
-
+class CombinedHyperPhase(HyperPhase):
     def __init__(
             self,
             phase: phase_imaging.PhaseImaging,
@@ -574,11 +573,22 @@ class CombinedHyperPhase(object):
         hyper_phase_classes
             The classes of hyper phases to be run following the initial phase
         """
+        super().__init__(
+            phase,
+            "combined"
+        )
         self.hyper_phases = list(map(
             lambda cls: cls(phase),
             hyper_phase_classes
         ))
-        self.phase = phase
+
+    @property
+    def phase_names(self):
+        return [
+            phase.hyper_name
+            for phase
+            in self.hyper_phases
+        ]
 
     def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
         """
@@ -610,3 +620,12 @@ class CombinedHyperPhase(object):
             )
             setattr(result, hyper_phase.hyper_name, hyper_result)
         return result
+
+    def combine_variables(self, result) -> af.ModelMapper:
+        variable = af.ModelMapper()
+        for name in self.phase_names:
+            variable += getattr(result, name).variable
+        return variable
+
+    def run_hyper(self, *args, **kwargs) -> af.Result:
+        hyper_phase = self.make_hyper_phase()
