@@ -638,18 +638,16 @@ def mask_from_shape_and_one_to_two(shape, one_to_two):
 def total_edge_pixels_from_mask(mask):
     """Compute the total number of borders-pixels in a mask."""
 
-    border_pixel_total = 0
+    edge_pixel_total = 0
 
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
+    for y in range(1, mask.shape[0]-1):
+        for x in range(1, mask.shape[1]-1):
             if not mask[y, x]:
-                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[
-                    y, x - 1] or \
-                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[
-                    y - 1, x + 1] or mask[y - 1, x - 1]:
-                    border_pixel_total += 1
+                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
+                   mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
+                    edge_pixel_total += 1
 
-    return border_pixel_total
+    return edge_pixel_total
 
 
 @decorator_util.jit()
@@ -663,8 +661,8 @@ def edge_pixels_from_mask(mask):
     edge_index = 0
     regular_index = 0
 
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
+    for y in range(1, mask.shape[0] - 1):
+        for x in range(1, mask.shape[1] - 1):
             if not mask[y, x]:
                 if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[
                     y, x - 1] or \
@@ -680,6 +678,7 @@ def edge_pixels_from_mask(mask):
 
 @decorator_util.jit()
 def check_if_border_pixel(mask, edge_pixel_1d, masked_grid_index_to_pixel):
+
     edge_pixel_index = int(edge_pixel_1d)
 
     y = int(masked_grid_index_to_pixel[edge_pixel_index, 0])
@@ -743,19 +742,28 @@ def border_pixels_from_mask(mask):
 
 @decorator_util.jit()
 def edge_buffed_mask_from_mask(mask):
+
     edge_buffed_mask = mask.copy()
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
-                edge_buffed_mask[y + 1, x] = False
-                edge_buffed_mask[y - 1, x] = False
-                edge_buffed_mask[y, x + 1] = False
-                edge_buffed_mask[y, x - 1] = False
-                edge_buffed_mask[y + 1, x + 1] = False
-                edge_buffed_mask[y + 1, x - 1] = False
-                edge_buffed_mask[y - 1, x + 1] = False
-                edge_buffed_mask[y - 1, x - 1] = False
+                if y+1 <= mask.shape[0]-1:
+                    edge_buffed_mask[y + 1, x] = False
+                if y-1 >= 0:
+                    edge_buffed_mask[y - 1, x] = False
+                if x+1 <= mask.shape[0]-1:
+                    edge_buffed_mask[y, x + 1] = False
+                if x-1 >= 0:
+                    edge_buffed_mask[y, x - 1] = False
+                if y+1 <= mask.shape[0]-1 and x+1 <= mask.shape[0]-1:
+                    edge_buffed_mask[y + 1, x + 1] = False
+                if y+1 <= mask.shape[0]-1 and x-1 >= 0:
+                    edge_buffed_mask[y + 1, x - 1] = False
+                if y-1 >= 0 and x+1 <= mask.shape[0]-1:
+                    edge_buffed_mask[y - 1, x + 1] = False
+                if y - 1 >= 0 and x >= 0:
+                    edge_buffed_mask[y - 1, x - 1] = False
 
     return edge_buffed_mask
 
