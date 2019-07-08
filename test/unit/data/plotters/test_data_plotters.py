@@ -12,17 +12,17 @@ def make_data_plotter_setup():
     return data_plotter_path
 
 def test__all_data_types_are_output(
-        image_5x5, noise_map_5x5, psf_3x3, positions_5x5, mask_5x5, data_plotter_path, plot_patch):
+        image_7x7, noise_map_7x7, psf_3x3, positions_7x7, mask_7x7, data_plotter_path, plot_patch):
     
     data_plotters.plot_image(
-        image=image_5x5, positions=positions_5x5, mask=mask_5x5, extract_array_from_mask=True,
+        image=image_7x7, positions=positions_7x7, mask=mask_7x7, extract_array_from_mask=True,
         zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
         output_path=data_plotter_path, output_format='png')
     
     assert data_plotter_path + 'image.png' in plot_patch.paths
 
     data_plotters.plot_noise_map(
-        noise_map=noise_map_5x5, mask=mask_5x5, extract_array_from_mask=True, zoom_around_mask=True,
+        noise_map=noise_map_7x7, mask=mask_7x7, extract_array_from_mask=True, zoom_around_mask=True,
         cb_tick_values=[1.0], cb_tick_labels=['1.0'],
         output_path=data_plotter_path, output_format='png')
 
@@ -35,14 +35,14 @@ def test__all_data_types_are_output(
     assert data_plotter_path + 'psf.png' in plot_patch.paths
 
     data_plotters.plot_signal_to_noise_map(
-        signal_to_noise_map=image_5x5 / noise_map_5x5, mask=mask_5x5, extract_array_from_mask=True,
+        signal_to_noise_map=image_7x7 / noise_map_7x7, mask=mask_7x7, extract_array_from_mask=True,
         zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
         output_path=data_plotter_path, output_format='png')
 
     assert data_plotter_path + 'signal_to_noise_map.png' in plot_patch.paths
 
     data_plotters.plot_absolute_signal_to_noise_map(
-        absolute_signal_to_noise_map=image_5x5 / noise_map_5x5, mask=mask_5x5,
+        absolute_signal_to_noise_map=image_7x7 / noise_map_7x7, mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
         output_path=data_plotter_path, output_format='png')
@@ -50,7 +50,7 @@ def test__all_data_types_are_output(
     assert data_plotter_path + 'absolute_signal_to_noise_map.png' in plot_patch.paths
     
     data_plotters.plot_potential_chi_squared_map(
-        potential_chi_squared_map=image_5x5 / noise_map_5x5, mask=mask_5x5,
+        potential_chi_squared_map=image_7x7 / noise_map_7x7, mask=mask_7x7,
         extract_array_from_mask=True, zoom_around_mask=True,
         cb_tick_values=[1.0], cb_tick_labels=['1.0'],
         output_path=data_plotter_path, output_format='png')
