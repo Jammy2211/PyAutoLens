@@ -1373,7 +1373,6 @@ class Interpolator(object):
     def __init__(self, grid, interp_grid):
         self.grid = grid
         self.interp_grid = interp_grid
-
         self.vtx, self.wts = self.interp_weights
 
     @property
@@ -1390,9 +1389,11 @@ class Interpolator(object):
     @classmethod
     def from_mask_grid_and_interp_pixel_scales(cls, mask, grid, interp_pixel_scale):
         rescale_factor = mask.pixel_scale / interp_pixel_scale
+
         rescaled_mask = mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=rescale_factor)
         interp_mask = mask_util.edge_buffed_mask_from_mask(mask=rescaled_mask)
+
         interp_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
             mask=interp_mask,
             pixel_scales=(
