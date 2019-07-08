@@ -586,6 +586,8 @@ class TestClusterGrid:
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
             mask=mask_5x5, cluster_pixel_scale=1.0)
 
+        print(cluster_grid)
+
         assert (cluster_grid == regular_grid_5x5).all()
         assert (cluster_grid.mask == mask_5x5).all()
         assert cluster_grid.bin_up_factor == 1
@@ -1631,13 +1633,16 @@ class TestImageGridBorder(object):
     class TestFromMask:
 
         def test__simple_mask_border_pixels_is_border(self):
-            mask = np.array([[False, False, False, False, False, False, False, True],
-                             [False, True, True, True, True, True, False, True],
-                             [False, True, False, False, False, True, False, True],
-                             [False, True, False, True, False, True, False, True],
-                             [False, True, False, False, False, True, False, True],
-                             [False, True, True, True, True, True, False, True],
-                             [False, False, False, False, False, False, False, True]])
+            
+            mask = np.array([[True, True, True, True, True, True, True, True, True, True],
+                             [True, False, False, False, False, False, False, False, True, True],
+                             [True, False, True, True, True, True, True, False, True, True],
+                             [True, False, True, False, False, False, True, False, True, True],
+                             [True, False, True, False, True, False, True, False, True, True],
+                             [True, False, True, False, False, False, True, False, True, True],
+                             [True, False, True, True, True, True, True, False, True, True],
+                             [True, False, False, False, False, False, False, False, True, True],
+                             [True, True, True, True, True, True, True, True, True, True]])
 
             mask = msk.Mask(mask, pixel_scale=3.0)
 
