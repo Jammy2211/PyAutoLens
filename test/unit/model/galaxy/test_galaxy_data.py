@@ -76,7 +76,8 @@ class TestGalaxyFitData(object):
 
         noise_map = sca.ScaledSquarePixelArray(array=2.0 * np.ones((5, 5)), pixel_scale=3.0)
         gal_data_5x5 = gd.GalaxyData(image=image_5x5, noise_map=noise_map, pixel_scale=3.0)
-        gal_data_5x5 = gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, interp_pixel_scale=1.0, use_intensities=True)
+        gal_data_5x5 = gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5, interp_pixel_scale=1.0,
+                                        use_intensities=True)
 
         grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
                         mask=mask_5x5, sub_grid_size=2, psf_shape=(3, 3))

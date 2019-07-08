@@ -752,15 +752,15 @@ def edge_buffed_mask_from_mask(mask):
                     edge_buffed_mask[y + 1, x] = False
                 if y-1 >= 0:
                     edge_buffed_mask[y - 1, x] = False
-                if x+1 <= mask.shape[0]-1:
+                if x+1 <= mask.shape[1]-1:
                     edge_buffed_mask[y, x + 1] = False
                 if x-1 >= 0:
                     edge_buffed_mask[y, x - 1] = False
-                if y+1 <= mask.shape[0]-1 and x+1 <= mask.shape[0]-1:
+                if y+1 <= mask.shape[0]-1 and x+1 <= mask.shape[1]-1:
                     edge_buffed_mask[y + 1, x + 1] = False
                 if y+1 <= mask.shape[0]-1 and x-1 >= 0:
                     edge_buffed_mask[y + 1, x - 1] = False
-                if y-1 >= 0 and x+1 <= mask.shape[0]-1:
+                if y-1 >= 0 and x+1 <= mask.shape[1]-1:
                     edge_buffed_mask[y - 1, x + 1] = False
                 if y - 1 >= 0 and x >= 0:
                     edge_buffed_mask[y - 1, x - 1] = False
@@ -768,22 +768,13 @@ def edge_buffed_mask_from_mask(mask):
     return edge_buffed_mask
 
 
-def rescaled_mask_2d_from_mask_2d_and_rescale_factor(
-        mask_2d,
-        rescale_factor
-):
-    if rescale_factor == 1.0:
-        rescaled_mask = mask_2d.copy()
-    else:
-        rescaled_mask = rescale(
-            image=mask_2d,
-            scale=rescale_factor,
-            mode='edge',
-            anti_aliasing=False,
-            multichannel=False
-        )
-    rescaled_mask[0, :] = 1
-    rescaled_mask[rescaled_mask.shape[0] - 1, :] = 1
-    rescaled_mask[:, 0] = 1
-    rescaled_mask[:, rescaled_mask.shape[1] - 1] = 1
-    return np.isclose(rescaled_mask, 1)
+def rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d, rescale_factor):
+
+    rescaled_mask = rescale(image=mask_2d, scale=rescale_factor, mode='edge',
+                            anti_aliasing=False, multichannel=False)
+
+    rescaled_mask[0, :] = True
+    rescaled_mask[rescaled_mask.shape[0] - 1, :] = True
+    rescaled_mask[:, 0] = True
+    rescaled_mask[:, rescaled_mask.shape[1] - 1] = True
+    return rescaled_mask == 1
