@@ -503,7 +503,8 @@ class HyperGalaxyPhase(HyperPhase):
         for path, galaxy in results.last.path_galaxy_tuples:
 
             optimizer = phase.optimizer.copy_with_name_extension(
-                extension=path[-1])
+                extension=path[-1]
+            )
 
             # TODO : This is a HACK :O
 
