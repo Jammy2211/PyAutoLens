@@ -118,7 +118,6 @@ class MockAnalysis(object):
 class MockPhase(object):
 
     def __init__(self):
-
         self.phase_name = "phase name"
         self.phase_folders = ['']
         self.tag_phases = True
@@ -143,28 +142,36 @@ class MockPhase(object):
 class TestPixelization(object):
 
     def test_make_pixelization_variable(self):
-
         instance = af.ModelInstance()
         mapper = af.ModelMapper()
 
-        mapper.lens_galaxy = gm.GalaxyModel(redshift=g.Redshift,
-                                            pixelization=px.Rectangular,
-                                            regularization=rg.Constant)
+        mapper.lens_galaxy = gm.GalaxyModel(
+            redshift=g.Redshift,
+            pixelization=px.Rectangular,
+            regularization=rg.Constant
+        )
         mapper.source_galaxy = gm.GalaxyModel(
             redshift=g.Redshift,
-            light=lp.EllipticalLightProfile)
+            light=lp.EllipticalLightProfile
+        )
 
         assert mapper.prior_count == 9
 
-        instance.lens_galaxy = g.Galaxy(pixelization=px.Rectangular(),
-                                        regularization=rg.Constant(), redshift=1.0)
-        instance.source_galaxy = g.Galaxy(redshift=1.0,
-                                          light=lp.EllipticalLightProfile())
+        instance.lens_galaxy = g.Galaxy(
+            pixelization=px.Rectangular(),
+            regularization=rg.Constant(),
+            redshift=1.0
+        )
+        instance.source_galaxy = g.Galaxy(
+            redshift=1.0,
+            light=lp.EllipticalLightProfile()
+        )
 
         # noinspection PyTypeChecker
         phase = phase_extensions.VariableFixingHyperPhase(
             MockPhase(),
-            (
+            "mock_phase",
+            variable_classes=(
                 px.Pixelization,
                 rg.Regularization
             )
@@ -172,7 +179,7 @@ class TestPixelization(object):
 
         phase.transfer_classes(
             instance,
-            mapper,
+            mapper
         )
 
         assert mapper.prior_count == 3
@@ -203,25 +210,23 @@ class TestImagePassing(object):
 
     def test_lens_image_dict_2d_and_1d(
             self, lens_result, mask_5x5):
-
         image_2d_dict = lens_result.image_2d_dict
 
         assert isinstance(image_2d_dict[("lens_galaxies", "lens")], np.ndarray)
-        assert image_2d_dict[("lens_galaxies", "lens")].shape == (5,5)
+        assert image_2d_dict[("lens_galaxies", "lens")].shape == (5, 5)
 
         image_1d_dict = lens_result.image_1d_dict_from_mask(mask=mask_5x5)
         assert image_1d_dict[("lens_galaxies", "lens")].shape == (9,)
 
     def test_lens_source_image_dict(
             self, lens_source_result, mask_5x5):
-
         image_2d_dict = lens_source_result.image_2d_dict
 
         assert isinstance(image_2d_dict[("lens_galaxies", "lens")], np.ndarray)
         assert isinstance(image_2d_dict[("source_galaxies", "source")], np.ndarray)
 
-        assert image_2d_dict[("lens_galaxies", "lens")].shape == (5,5)
-        assert image_2d_dict[("source_galaxies", "source")].shape == (5,5)
+        assert image_2d_dict[("lens_galaxies", "lens")].shape == (5, 5)
+        assert image_2d_dict[("source_galaxies", "source")].shape == (5, 5)
 
         image_1d_dict = lens_source_result.image_1d_dict_from_mask(mask=mask_5x5)
 
@@ -421,7 +426,6 @@ class TestImagePassing(object):
 
     def test_associate_images_lens(
             self, lens_instance, lens_result, lens_data_5x5):
-
         results_collection = af.ResultsCollection()
         results_collection.add("phase", lens_result)
 
@@ -441,7 +445,6 @@ class TestImagePassing(object):
 
     def test_associate_images_lens_source(
             self, lens_source_instance, lens_source_result, lens_data_5x5):
-
         results_collection = af.ResultsCollection()
         results_collection.add("phase", lens_source_result)
         analysis = phase_imaging.LensSourcePlanePhase.Analysis(
@@ -469,7 +472,6 @@ class TestImagePassing(object):
 
     def test_associate_images_multi_plane(
             self, multi_plane_instance, multi_plane_result, lens_data_5x5):
-
         results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(
@@ -497,7 +499,6 @@ class TestImagePassing(object):
 
     def test_fit_uses_hyper_fit_correctly_multi_plane(
             self, multi_plane_instance, multi_plane_result, lens_data_5x5):
-
         results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
         analysis = phase_imaging.MultiPlanePhase.Analysis(
