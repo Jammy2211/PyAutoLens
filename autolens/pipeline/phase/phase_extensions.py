@@ -110,14 +110,36 @@ class VariableFixingHyperPhase(HyperPhase):
             self,
             phase: ph.Phase,
             hyper_name: str,
-            variable_classes=tuple()
+            variable_classes=tuple(),
+            default_classes=None
     ):
         super().__init__(
             phase=phase,
             hyper_name=hyper_name
         )
-
+        self.default_classes = default_classes or dict()
         self.variable_classes = variable_classes
+
+    def make_hyper_phase(self):
+        phase = super().make_hyper_phase()
+
+        phase.const_efficiency_mode = af.conf.instance.non_linear.get(
+            'MultiNest',
+            'extension_inversion_const_efficiency_mode',
+            bool
+        )
+        phase.optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
+            'MultiNest',
+            'extension_inversion_sampling_efficiency',
+            float
+        )
+        phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
+            'MultiNest',
+            'extension_inversion_n_live_points',
+            int
+        )
+
+        return phase
 
     def run_hyper(self, data, results=None, **kwargs):
         """
@@ -131,16 +153,12 @@ class VariableFixingHyperPhase(HyperPhase):
         phase = self.make_hyper_phase()
         phase.optimizer.variable = variable
 
-        phase.const_efficiency_mode = \
-            af.conf.instance.non_linear.get('MultiNest', 'extension_inversion_const_efficiency_mode', bool)
-
-        phase.optimizer.sampling_efficiency = \
-            af.conf.instance.non_linear.get('MultiNest', 'extension_inversion_sampling_efficiency', float)
-
-        phase.optimizer.n_live_points = \
-            af.conf.instance.non_linear.get('MultiNest', 'extension_inversion_n_live_points', int)
-
         return phase.run(data, results=results, **kwargs)
+
+    def add_defaults(self, mapper):
+        for key, value in self.default_classes.items():
+            if not hasattr(mapper, key):
+                setattr(mapper, key, value)
 
     def transfer_classes(self, instance, mapper):
         """
