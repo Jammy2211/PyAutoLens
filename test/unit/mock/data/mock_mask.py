@@ -6,7 +6,7 @@ class MockMask(msk.Mask):
 
     def __new__(cls, array, pixel_scale=1.0, *args, **kwargs):
 
-        obj = np.array(array, dtype='float64').view(cls)
+        obj = np.array(array, dtype='bool').view(cls)
         obj.pixel_scale = pixel_scale
         obj.origin = (0.0, 0.0)
 
