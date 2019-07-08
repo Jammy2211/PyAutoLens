@@ -130,8 +130,8 @@ class TestGalaxyFit:
 
     class TestCompareToManual:
 
-        def test__intensities(self, gal_data_5x5, mask_5x5):
-            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5,
+        def test__intensities(self, gal_data_7x7, mask_7x7):
+            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_7x7, mask=mask_7x7,
                                                sub_grid_size=2,
                                                use_intensities=True)
 
@@ -160,7 +160,7 @@ class TestGalaxyFit:
             assert chi_squared_map_2d == pytest.approx(fit.chi_squared_map_2d, 1e-4)
 
             chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-                chi_squared_map=chi_squared_map_2d, mask=mask_5x5)
+                chi_squared_map=chi_squared_map_2d, mask=mask_7x7)
 
             noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
                 mask=galaxy_fit_data.mask_2d, noise_map=galaxy_fit_data.noise_map_2d)
@@ -170,8 +170,8 @@ class TestGalaxyFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-        def test__convergence(self, gal_data_5x5, mask_5x5):
-            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5,
+        def test__convergence(self, gal_data_7x7, mask_7x7):
+            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_7x7, mask=mask_7x7,
                                                sub_grid_size=2,
                                                use_convergence=True)
 
@@ -200,7 +200,7 @@ class TestGalaxyFit:
             assert chi_squared_map_2d == pytest.approx(fit.chi_squared_map_2d, 1e-4)
 
             chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-                chi_squared_map=chi_squared_map_2d, mask=mask_5x5)
+                chi_squared_map=chi_squared_map_2d, mask=mask_7x7)
 
             noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
                 mask=galaxy_fit_data.mask_2d, noise_map=galaxy_fit_data.noise_map_2d)
@@ -210,8 +210,8 @@ class TestGalaxyFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-        def test__potential(self, gal_data_5x5, mask_5x5):
-            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5,
+        def test__potential(self, gal_data_7x7, mask_7x7):
+            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_7x7, mask=mask_7x7,
                                                sub_grid_size=2,
                                                use_potential=True)
 
@@ -243,7 +243,7 @@ class TestGalaxyFit:
             assert chi_squared_map_2d == pytest.approx(fit.chi_squared_map_2d, 1e-4)
 
             chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-                chi_squared_map=chi_squared_map_2d, mask=mask_5x5)
+                chi_squared_map=chi_squared_map_2d, mask=mask_7x7)
 
             noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
                 mask=galaxy_fit_data.mask_2d, noise_map=galaxy_fit_data.noise_map_2d)
@@ -253,8 +253,8 @@ class TestGalaxyFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-        def test__deflections_y(self, gal_data_5x5, mask_5x5):
-            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5,
+        def test__deflections_y(self, gal_data_7x7, mask_7x7):
+            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_7x7, mask=mask_7x7,
                                                sub_grid_size=2,
                                                use_deflections_y=True)
 
@@ -286,7 +286,7 @@ class TestGalaxyFit:
             assert chi_squared_map_2d == pytest.approx(fit.chi_squared_map_2d, 1e-4)
 
             chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-                chi_squared_map=chi_squared_map_2d, mask=mask_5x5)
+                chi_squared_map=chi_squared_map_2d, mask=mask_7x7)
 
             noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
                 mask=galaxy_fit_data.mask_2d, noise_map=galaxy_fit_data.noise_map_2d)
@@ -296,8 +296,8 @@ class TestGalaxyFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-        def test__deflections_x(self, gal_data_5x5, mask_5x5):
-            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_5x5, mask=mask_5x5,
+        def test__deflections_x(self, gal_data_7x7, mask_7x7):
+            galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_7x7, mask=mask_7x7,
                                                sub_grid_size=2,
                                                use_deflections_x=True)
 
@@ -327,7 +327,7 @@ class TestGalaxyFit:
             assert chi_squared_map_2d == pytest.approx(fit.chi_squared_map_2d, 1e-4)
 
             chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-                chi_squared_map=chi_squared_map_2d, mask=mask_5x5)
+                chi_squared_map=chi_squared_map_2d, mask=mask_7x7)
 
             noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
                 mask=galaxy_fit_data.mask_2d, noise_map=galaxy_fit_data.noise_map_2d)

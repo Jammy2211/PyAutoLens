@@ -9,41 +9,41 @@ def make_galaxy_fitting_plotter_setup():
 
 
 def test__fit_sub_plot__all_types_of_galaxy_fit(
-        gal_fit_5x5_intensities, gal_fit_5x5_convergence, gal_fit_5x5_potential, gal_fit_5x5_deflections_y,
-        gal_fit_5x5_deflections_x,  positions_5x5, plot_patch, galaxy_fitting_plotter_path):
+        gal_fit_7x7_intensities, gal_fit_7x7_convergence, gal_fit_7x7_potential, gal_fit_7x7_deflections_y,
+        gal_fit_7x7_deflections_x,  positions_7x7, plot_patch, galaxy_fitting_plotter_path):
 
-    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_5x5_intensities,
+    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_7x7_intensities,
                                          should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True,
-                                         positions=positions_5x5, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                         positions=positions_7x7, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                          output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
 
-    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_5x5_convergence,
+    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_7x7_convergence,
                                          should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True,
-                                         positions=positions_5x5, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                         positions=positions_7x7, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                          output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
 
-    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_5x5_potential,
+    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_7x7_potential,
                                          should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True,
-                                         positions=positions_5x5, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                         positions=positions_7x7, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                          output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
 
 
-    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_5x5_deflections_y,
+    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_7x7_deflections_y,
                                          should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True,
-                                         positions=positions_5x5, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                         positions=positions_7x7, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                          output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
 
-    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_5x5_deflections_x,
+    galaxy_fit_plotters.plot_fit_subplot(fit=gal_fit_7x7_deflections_x,
                                          should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True,
-                                         positions=positions_5x5, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                         positions=positions_7x7, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                          output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
