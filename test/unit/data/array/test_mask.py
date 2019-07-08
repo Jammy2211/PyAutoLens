@@ -904,6 +904,7 @@ class TestBinnedMaskFromMask:
 class TestRescaledMaskFromMask(object):
 
     def test__mask_5x5_central_pixel__rescale_factor_is_1__returns_same_mask(self):
+
         mask = np.array([[True, True, True, True, True],
                          [True, True, True, True, True],
                          [True, True, False, True, True],
