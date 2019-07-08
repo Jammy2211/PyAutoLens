@@ -589,8 +589,8 @@ def masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask, sub_grid_size
                 for y1 in range(sub_grid_size):
                     for x1 in range(sub_grid_size):
                         sub_grid_to_sub_pixel[sub_pixel_count, :] = (
-                                                                                y * sub_grid_size) + y1, (
-                                                                                x * sub_grid_size) + x1
+                                                                            y * sub_grid_size) + y1, (
+                                                                            x * sub_grid_size) + x1
                         sub_pixel_count += 1
 
     return sub_grid_to_sub_pixel
@@ -760,11 +760,19 @@ def edge_buffed_mask_from_mask(mask):
     return edge_buffed_mask
 
 
-def rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d, rescale_factor):
-    rescaled_mask = rescale(image=mask_2d, scale=rescale_factor, mode='edge',
-                            anti_aliasing=False, multichannel=False)
+def rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        mask_2d,
+        rescale_factor
+):
+    rescaled_mask = rescale(
+        image=mask_2d,
+        scale=rescale_factor,
+        mode='edge',
+        anti_aliasing=False,
+        multichannel=False
+    )
     rescaled_mask[0, :] = True
     rescaled_mask[rescaled_mask.shape[0] - 1, :] = True
     rescaled_mask[:, 0] = True
     rescaled_mask[:, rescaled_mask.shape[1] - 1] = True
-    return rescaled_mask == 1
+    return np.isclose(rescaled_mask, 1)
