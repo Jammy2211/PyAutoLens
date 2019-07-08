@@ -580,67 +580,67 @@ class TestSubGrid(object):
 class TestClusterGrid:
 
     def test__from_mask_and_cluster_pixel_scale__correct_cluster_bin_up_calculated(
-            self, mask_5x5, regular_grid_5x5):
+            self, mask_7x7, regular_grid_7x7):
 
-        mask_5x5.pixel_scale = 1.0
+        mask_7x7.pixel_scale = 1.0
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_5x5, cluster_pixel_scale=1.0)
+            mask=mask_7x7, cluster_pixel_scale=1.0)
 
-        print(cluster_grid)
-
-        assert (cluster_grid == regular_grid_5x5).all()
-        assert (cluster_grid.mask == mask_5x5).all()
+        assert (cluster_grid == regular_grid_7x7).all()
+        assert (cluster_grid.mask == mask_7x7).all()
         assert cluster_grid.bin_up_factor == 1
         assert (cluster_grid.cluster_to_regular_all == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])).all()
 
-        mask_5x5.pixel_scale = 1.0
+        mask_7x7.pixel_scale = 1.0
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_5x5, cluster_pixel_scale=1.9)
+            mask=mask_7x7, cluster_pixel_scale=1.9)
 
         assert cluster_grid.bin_up_factor == 1
-        assert (cluster_grid.mask == mask_5x5).all()
+        assert (cluster_grid.mask == mask_7x7).all()
         assert (cluster_grid.cluster_to_regular_all == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])).all()
 
-        mask_5x5.pixel_scale = 1.0
+        mask_7x7.pixel_scale = 1.0
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_5x5, cluster_pixel_scale=2.0)
+            mask=mask_7x7, cluster_pixel_scale=2.0)
 
         assert cluster_grid.bin_up_factor == 2
-        assert (cluster_grid.mask == np.array([[True, True, True],
-                                               [True, False, False],
-                                               [True, False, False]])).all()
-        assert (cluster_grid == np.array([[0.0, 0.0], [0.0, 2.0], [-2.0, 0.0], [-2.0, 2.0]])).all()
-        assert (cluster_grid.cluster_to_regular_all == np.array(
-            [[0, 1, 3, 4],
-             [2, 5, -1, -1],
-             [6, 7, -1, -1],
-             [8, -1, -1, -1]])).all()
+        assert (cluster_grid.mask == np.array([[True, True, True, True],
+                                               [True, False, False, True],
+                                               [True, False, False, True],
+                                               [True, True, True, True]])).all()
 
-        mask_5x5.pixel_scale = 2.0
+        assert (cluster_grid == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])).all()
+        assert (cluster_grid.cluster_to_regular_all == np.array(
+            [[0, -1, -1, -1],
+             [1, 2, -1, -1],
+             [3, 6, -1, -1],
+             [4, 5, 7, 8]])).all()
+
+        mask_7x7.pixel_scale = 2.0
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_5x5, cluster_pixel_scale=1.0)
+            mask=mask_7x7, cluster_pixel_scale=1.0)
 
         assert cluster_grid.bin_up_factor == 1
 
     def test__from_mask_and_cluster_pixel_scale__maximum_cluster_pixels_changes_bin_up_factor(
-            self, mask_5x5, regular_grid_5x5):
+            self, mask_7x7, regular_grid_7x7):
 
-        mask_5x5.pixel_scale = 1.0
+        mask_7x7.pixel_scale = 1.0
 
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_5x5, cluster_pixel_scale=4.0, cluster_pixels_limit=None)
+            mask=mask_7x7, cluster_pixel_scale=4.0, cluster_pixels_limit=None)
 
         assert cluster_grid.bin_up_factor == 4
 
         cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_5x5, cluster_pixel_scale=4.0, cluster_pixels_limit=9)
+            mask=mask_7x7, cluster_pixel_scale=4.0, cluster_pixels_limit=9)
 
         assert cluster_grid.bin_up_factor == 1
 
         with pytest.raises(exc.DataException):
 
             grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-                mask=mask_5x5, cluster_pixel_scale=4.0, cluster_pixels_limit=10)
+                mask=mask_7x7, cluster_pixel_scale=4.0, cluster_pixels_limit=10)
 
 
 class TestPixelizationGrid:
@@ -807,9 +807,9 @@ class TestSparseToRegularGrid:
             assert (sparse_to_regular_grid.sparse == np.array([[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0],
                                                       [-2.0, 2.0]])).all()
 
-        def test__from_shape_and_regular__sets_up_with_correct_shape_and_pixel_scales(self, mask_5x5):
+        def test__from_shape_and_regular__sets_up_with_correct_shape_and_pixel_scales(self, mask_7x7):
 
-            regular_grid = grids.RegularGrid.from_mask(mask=mask_5x5)
+            regular_grid = grids.RegularGrid.from_mask(mask=mask_7x7)
 
             sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
                 unmasked_sparse_shape=(3, 3), regular_grid=regular_grid)
