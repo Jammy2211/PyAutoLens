@@ -98,8 +98,8 @@ def deflections_of_galaxies_from_grid(grid, galaxies):
         deflections = np.full((grid.shape[0], 2), 0.0)
 
     if isinstance(grid, grids.SubGrid):
-        return np.asarray([grid.array_1d_binned_up_from_sub_array_1d(deflections[:, 0]),
-                           grid.array_1d_binned_up_from_sub_array_1d(deflections[:, 1])]).T
+        return np.asarray([grid.array_1d_binned_from_sub_array_1d(deflections[:, 0]),
+                           grid.array_1d_binned_from_sub_array_1d(deflections[:, 1])]).T
 
     return deflections
 

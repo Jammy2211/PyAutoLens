@@ -35,51 +35,48 @@ def make_grid_stack(centre_mask):
 
 class TestMaskMappings:
     
-    def test__scaled_array_from_array_1d__compare_to_util(self):
-
-        mask = np.array([[True, True, False, False],
-                         [True, False, True, True],
-                         [True, True, False, False]])
+    def test__scaled_array_from_array_1d__compare_to_mask(self):
 
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
-        one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
 
-        array_2d_util = mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
-            array_1d=array_1d, shape=(3, 4), one_to_two=one_to_two)
+        mask = msk.Mask(array=np.array([[True, True, False, False],
+                                         [True, False, True, True],
+                                         [True, True, False, False]]), pixel_scale=3.0)
 
-        mask = msk.Mask(array=mask, pixel_scale=3.0)
         regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
         array_2d = regular_grid.array_2d_from_array_1d(array_1d=array_1d)
 
-        assert (array_2d == array_2d_util).all()
+        array_2d_mask = mask.array_2d_from_array_1d(
+            array_1d=array_1d)
+
+        assert (array_2d == array_2d_mask).all()
 
         scaled_array_2d = regular_grid.scaled_array_2d_from_array_1d(array_1d=array_1d)
 
-        assert (scaled_array_2d == array_2d_util).all()
+        assert (scaled_array_2d == array_2d_mask).all()
         assert (scaled_array_2d.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
         assert (scaled_array_2d.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
         assert scaled_array_2d.shape_arcsec == (9.0, 12.0)
         assert scaled_array_2d.pixel_scale == 3.0
         assert scaled_array_2d.origin == (0.0, 0.0)
 
-    def test__array_1d_from_array_2d__compare_to_util(self):
+    def test__array_1d_from_array_2d__compare_to_mask(self):
 
         array_2d = np.array([[1, 2, 3, 4],
                              [5, 6, 7, 8],
                              [9, 10, 11, 12]])
 
-        mask = np.array([[True, False, True, True],
-                         [False, False, False, True],
-                         [True, False, True, False]])
+        mask = msk.Mask(array=np.array([[True, False, True, True],
+                                         [False, False, False, True],
+                                         [True, False, True, False]]), pixel_scale=2.0)
 
-        array_1d_util = mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(array_2d=array_2d, mask=mask)
+        array_1d_mask = mask.array_1d_from_array_2d(array_2d=array_2d)
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
         regular_grid = grids.RegularGrid.from_mask(mask=mask)
         array_1d = regular_grid.array_1d_from_array_2d(array_2d=array_2d)
 
-        assert (array_1d_util == array_1d).all()
+        assert (array_1d_mask == array_1d).all()
 
     def test__grid_2d_from_grid_1d__compare_to_util(self):
 
@@ -88,87 +85,65 @@ class TestMaskMappings:
                          [True, True, False, False]])
 
         grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
-        one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
-
-        grid_2d_util = mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
-            grid_1d=grid_1d, shape=(3, 4), one_to_two=one_to_two)
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        grid_2d_mask = mask.grid_2d_from_grid_1d(grid_1d=grid_1d)
+
         regular_grid = grids.RegularGrid.from_mask(mask=mask)
         grid_2d = regular_grid.grid_2d_from_grid_1d(grid_1d=grid_1d)
 
-        assert (grid_2d_util == grid_2d).all()
+        assert (grid_2d_mask == grid_2d).all()
 
-    def test__grid_1d_from_grid_2d__compare_to_util(self):
+    def test__grid_1d_from_grid_2d__compare_to_mask(self):
 
         grid_2d = np.array([[[1,1], [2,2], [3,3], [4,4]],
                              [[5,5], [6,6], [7,7], [8,8]],
                              [[9,9], [10,10], [11,11], [12,12]]])
 
-        mask = np.array([[True, False, True, True],
-                         [False, False, False, True],
-                         [True, False, True, False]])
+        mask = msk.Mask(array=np.array([[True, False, True, True],
+                                         [False, False, False, True],
+                                         [True, False, True, False]]), pixel_scale=2.0)
 
-        grid_1d_util = mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(grid_2d=grid_2d, mask=mask)
+        grid_1d_mask = mask.grid_1d_from_grid_2d(grid_2d=grid_2d)
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
         regular_grid = grids.RegularGrid.from_mask(mask=mask)
         grid_1d = regular_grid.grid_1d_from_grid_2d(grid_2d=grid_2d)
 
-        assert (grid_1d_util == grid_1d).all()
+        assert (grid_1d_mask == grid_1d).all()
 
-    def test__sub_array_2d_from_sub_array_1d__use_real_mask_and_grid(self):
+    def test__sub_array_2d_from_sub_array_1d__compare_to_mask(self):
 
-        mask = np.array([[False, True],
-                         [False, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
+        mask = msk.Mask(array=np.array([[False, True],
+                                        [False, False]]), pixel_scale=3.0)
 
         sub_array_1d = np.array([1.0, 2.0, 3.0, 4.0,
                                  9.0, 10.0, 11.0, 12.0,
                                  13.0, 14.0, 15.0, 16.0])
 
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        sub_array_2d_mask = mask.sub_array_2d_from_sub_array_1d_and_sub_grid_size(
+            sub_array_1d=sub_array_1d, sub_grid_size=2)
 
-        sub_array_2d = sub_grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
 
-        assert (sub_array_2d == np.array([[1.0, 2.0, 0.0, 0.0],
-                                          [3.0, 4.0, 0.0, 0.0],
-                                          [9.0, 10.0, 13.0, 14.0],
-                                          [11.0, 12.0, 15.0, 16.0]])).all()
+        sub_array_2d = sub_grid.sub_array_2d_from_sub_array_1d(
+            sub_array_1d=sub_array_1d)
 
-    def test__sub_array_2d_from_sub_array_1d__use_2x3_mask(self):
+        assert (sub_array_2d_mask == sub_array_2d).all()
 
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
+    def test__scaled_sub_array_2d_with_sub_dimensions_from_sub_array_1d__compare_to_mask(self):
 
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_array_1d = np.array([1.0, 1.0, 1.0, 1.0,
-                                 2.0, 2.0, 2.0, 2.0,
-                                 3.0, 3.0, 3.0, 3.0,
-                                 4.0, 4.0, 4.0, 4.0])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
-
-        sub_array_2d = sub_grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
-
-        assert (sub_array_2d == np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                          [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                          [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
-                                          [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])).all()
-
-    def test__scaled_sub_array_2d_from_sub_array_1d(self):
-
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
+        mask = msk.Mask(array=np.array([[False, False, True],
+                                         [False, True, False]]), pixel_scale=3.0)
 
         sub_array_1d = np.array([1.0, 1.0, 1.0, 1.0,
                                  2.0, 2.0, 2.0, 2.0,
                                  3.0, 3.0, 3.0, 3.0,
                                  4.0, 4.0, 4.0, 4.0])
+
+        scaled_array_2d_mask = mask.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
+            sub_array_1d=sub_array_1d, sub_grid_size=2)
 
         sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=2)
@@ -176,15 +151,15 @@ class TestMaskMappings:
         scaled_sub_array_2d = sub_grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
             sub_array_1d=sub_array_1d)
 
-        assert (scaled_sub_array_2d == np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                                 [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
-                                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])).all()
+        assert (scaled_array_2d_mask == scaled_sub_array_2d).all()
+
+        assert scaled_array_2d_mask.pixel_scales == scaled_sub_array_2d.pixel_scales
+        assert scaled_array_2d_mask.origin == scaled_sub_array_2d.origin
 
         assert scaled_sub_array_2d.pixel_scales == (1.5, 1.5)
         assert scaled_sub_array_2d.origin == (0.0, 0.0)
 
-    def test__scaled_array_from_sub_array_1d_by_binning_up(self):
+    def test__scaled_array_2d_from_sub_array_1d_by_binning_up__compare_to_mask(self):
 
         mask = np.array([[False, False, True],
                          [False, True, False]])
@@ -195,93 +170,98 @@ class TestMaskMappings:
                                  2.0, 2.0, 2.0, 2.0,
                                  3.0, 3.0, 3.0, 3.0,
                                  4.0, 0.0, 0.0, 4.0])
+        
+        scaled_array_2d_binned_mask = mask.scaled_array_2d_binned_from_sub_array_1d_and_sub_grid_size(
+            sub_array_1d=sub_array_1d, sub_grid_size=2)
 
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
 
-        scaled_array_2d = sub_grid.scaled_array_2d_binned_up_from_sub_array_1d(sub_array_1d=sub_array_1d)
+        scaled_array_2d_binned = sub_grid.scaled_array_2d_binned_from_sub_array_1d(sub_array_1d=sub_array_1d)
 
-        assert (scaled_array_2d == np.array([[3.5, 2.0, 0.0],
-                                             [3.0, 0.0, 2.0]])).all()
+        assert (scaled_array_2d_binned_mask == scaled_array_2d_binned).all()
 
-        assert scaled_array_2d.pixel_scales == (3.0, 3.0)
-        assert scaled_array_2d.origin == (0.0, 0.0)
+        assert scaled_array_2d_binned_mask.pixel_scales == scaled_array_2d_binned.pixel_scales
+        assert scaled_array_2d_binned_mask.origin == scaled_array_2d_binned.origin
 
-    def test__sub_grid_2d_from_sub_grid_1d__use_real_mask_and_grid(self):
+        assert scaled_array_2d_binned.pixel_scales == (3.0, 3.0)
+        assert scaled_array_2d_binned.origin == (0.0, 0.0)
 
-        mask = np.array([[False, True],
-                         [False, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
-                                [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
-
-        sub_grid_2d = sub_grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-        assert (sub_grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
-                                         [[3.0, 3.0], [4.0,4.0], [0.0, 0.0], [0.0, 0.0]],
-                                         [[9.0, 9.0],  [10.0, 10.0], [13.0, 13.0], [14.0, 14.0]],
-                                         [[11.0, 11.0], [12.0, 12.0], [15.0, 15.0], [16.0, 16.0]]])).all()
-
-    def test__sub_grid_2d_from_sub_grid_1d__use_2x3_mask(self):
-
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
-
-        mask = msk.Mask(mask, pixel_scale=3.0)
-
-        sub_grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                                 [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0],
-                                 [3.0, 3.0], [3.0, 3.0], [3.0, 3.0], [3.0, 3.0],
-                                 [4.0, 4.0], [4.0, 4.0], [4.0, 4.0], [4.0, 4.0]])
-
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
-
-        sub_grid_2d = sub_grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-        assert (sub_grid_2d == np.array([[[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
-                                          [[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
-                                          [[3.0, 3.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [4.0, 4.0], [4.0, 4.0]],
-                                          [[3.0, 3.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [4.0, 4.0], [4.0, 4.0]]])).all()
-
-    def test__sub_array_1d_from_sub_array_2d__numerical_values(self):
-
-        sub_array_2d = np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                 [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
-                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
-                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])
-
-        mask = np.array([[False, False, True],
-                         [False, True, False]])
-
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
-        sub_array_1d = sub_grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
-
-        assert (sub_array_1d == np.array([1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0])).all()
-
-    def test__sub_array_1d_from_sub_array_2d__compare_to_util(self):
+    def test__sub_array_1d_from_sub_array_2d__compare_to_mask(self):
 
         sub_array_2d = np.array([[1.0, 1.0, 2.0, 2.0, 3.0, 10.0],
                                  [1.0, 1.0, 2.0, 2.0, 3.0, 10.0],
                                  [3.0, 3.0, 8.0, 1.0, 4.0, 4.0],
                                  [3.0, 3.0, 7.0, 2.0, 4.0, 4.0]])
 
-        mask = np.array([[False, False, False],
-                         [True, True, False]])
+        mask = msk.Mask(array=np.array([[False, False, False],
+                                         [True, True, False]]), pixel_scale=2.0)
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        sub_array_1d_mask = mask.sub_array_1d_from_sub_array_2d_and_sub_grid_size(
+            sub_array_2d=sub_array_2d, sub_grid_size=2)
+
         sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         sub_array_1d = sub_grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
-        sub_array_1d_util = mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
+        assert (sub_array_1d == sub_array_1d_mask).all()
 
-        assert (sub_array_1d == sub_array_1d_util).all()
+    def test__sub_grid_2d_with_sub_dimensions_from_sub_grid_1d__compare_to_mask(self):
+
+        mask = msk.Mask(array=np.array([[False, True],
+                                       [False, False]]),
+                        pixel_scale=3.0)
+
+        sub_grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
+                                [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
+
+        sub_grid_2d_mask = mask.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d_and_sub_grid_size(
+            sub_grid_1d=sub_grid_1d, sub_grid_size=2)
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        sub_grid_2d = sub_grid.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+        assert (sub_grid_2d_mask == sub_grid_2d).all()
+
+    def test__grid_1d_binned_from_sub_grid_1d__compare_to_mask(self):
+
+        mask = msk.Mask(array=np.array([[False, True],
+                                         [False, False]]),
+                        pixel_scale=3.0)
+
+        sub_grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
+                                [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
+
+        grid_1d_binned_mask = mask.grid_1d_binned_from_sub_grid_1d_and_sub_grid_size(
+            sub_grid_1d=sub_grid_1d, sub_grid_size=2)
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        grid_1d_binned = sub_grid.grid_1d_binned_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+        assert (grid_1d_binned_mask == grid_1d_binned).all()
+
+    def test__grid_2d_binned_from_sub_grid_1d__compare_to_mask(self):
+
+        mask = msk.Mask(array=np.array([[False, True],
+                                         [False, False]]),
+                        pixel_scale=3.0)
+
+        sub_grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
+                                [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
+
+        grid_2d_binned_mask = mask.grid_2d_binned_from_sub_grid_1d_and_sub_grid_size(
+            sub_grid_1d=sub_grid_1d, sub_grid_size=2)
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        grid_2d_binned = sub_grid.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+        assert (grid_2d_binned_mask == grid_2d_binned).all()
 
     def test__map_sub_array_to_1d_and_2d_and_back__returns_original_array(self):
 
@@ -303,7 +283,7 @@ class TestMaskMappings:
         assert (sub_array_1d == sub_array_1d_new).all()
 
     def test__sub_data_to_image(self, sub_grid):
-        assert (sub_grid.array_1d_binned_up_from_sub_array_1d(np.array(range(5))) == np.array(range(5))).all()
+        assert (sub_grid.array_1d_binned_from_sub_array_1d(np.array(range(5))) == np.array(range(5))).all()
 
     def test__sub_to_image__compare_to_util(self):
 
@@ -2016,3 +1996,287 @@ class TestInterpolator:
 
         assert np.max(true_deflections[:, 0] - interpolated_deflections_y) < 0.1
         assert np.max(true_deflections[:, 1] - interpolated_deflections_x) < 0.1
+
+
+class MockProfile(object):
+
+    def __init__(self, values_1d):
+
+        self.values_1d = values_1d
+
+    @grids.return_array_format
+    def array_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+        return self.values_1d
+
+    @grids.return_grid_format
+    def grid_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+        return self.values_1d
+
+
+class TestReturnArrayFormat(object):
+
+    def test__array_1d_from_function__regular_grid_in__decorator_changes_array_dimensions_to_2d(self):
+
+        profile = MockProfile(values_1d=np.ones(4))
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2,2), pixel_scale=0.1)
+
+        array_from_grid = profile.array_from_grid(
+            grid=regular_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (array_from_grid == np.array(np.ones(4))).all()
+
+        array_from_grid = profile.array_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert (array_from_grid == np.array(np.ones((2,2)))).all()
+
+    def test__array_1d_from_function__sub_grid_in__decorator_changes_array_dimensions_to_2d(self):
+
+        profile = MockProfile(values_1d=np.ones(4))
+
+        sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(2,2), pixel_scale=0.1, sub_grid_size=1)
+
+        array_from_grid = profile.array_from_grid(
+            grid=sub_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (array_from_grid == np.ones(4)).all()
+
+        array_from_grid = profile.array_from_grid(
+            grid=sub_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert (array_from_grid == np.ones((2,2))).all()
+
+        profile = MockProfile(values_1d=np.ones(16))
+
+        sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(2, 2), pixel_scale=0.1, sub_grid_size=2)
+
+        array_from_grid = profile.array_from_grid(
+            grid=sub_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (array_from_grid == np.ones(16)).all()
+
+        array_from_grid = profile.array_from_grid(
+            grid=sub_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert (array_from_grid == np.ones((4,4))).all()
+
+    def test__array_1d_from_function__sub_grid_in__binned_up_function_is_used_if_true__maintains_correct_dimensions(self):
+
+        sub_array = np.array([1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0])
+
+        profile = MockProfile(values_1d=sub_array)
+
+        sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(2, 2), pixel_scale=0.1, sub_grid_size=2)
+
+        array_from_grid = profile.array_from_grid(
+            grid=sub_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (array_from_grid == sub_array).all()
+
+        array_from_grid = profile.array_from_grid(
+            grid=sub_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert (array_from_grid == np.array(
+            [[1.0, 1.0, 2.0, 2.0],
+             [1.0, 1.0, 2.0, 2.0],
+             [3.0, 3.0, 4.0, 4.0],
+             [3.0, 3.0, 4.0, 4.0]])).all()
+
+        array_from_grid = profile.array_from_grid(
+            grid=sub_grid, return_in_2d=False, return_binned_sub_grid=True)
+
+        assert (array_from_grid == np.array(
+            [1.0, 2.0, 3.0, 4.0])).all()
+
+        array_from_grid = profile.array_from_grid(
+            grid=sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+
+        assert (array_from_grid == np.array(
+            [[1.0, 2.0],
+             [3.0, 4.0]])).all()
+
+    def test__only_needs_input_grid_as_type_grid_if_there_is_a_mapping_to_2d_or_bin_up(self):
+
+        profile = MockProfile(values_1d=np.ones(4))
+
+        grid = np.ones(shape=(4, 2))
+
+        array_from_grid = profile.array_from_grid(
+            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (array_from_grid == np.array(np.ones(4))).all()
+
+        with pytest.raises(exc.GridException):
+
+            profile.array_from_grid(
+                grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+
+            profile.array_from_grid(
+                grid=grid, return_in_2d=False, return_binned_sub_grid=True)
+
+            profile.array_from_grid(
+                grid=grid, return_in_2d=True, return_binned_sub_grid=True)
+
+    def test__if_return_binned_sub_grid__raises_error_when_input_grid_not_type_subgrid(self):
+
+        profile = MockProfile(values_1d=np.ones(4))
+
+        grid = np.ones(shape=(4,2))
+
+        with pytest.raises(exc.GridException):
+
+            profile.array_from_grid(
+                grid=grid, return_in_2d=False, return_binned_sub_grid=True)
+
+            profile.array_from_grid(
+                grid=grid, return_in_2d=True, return_binned_sub_grid=True)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(2,2), pixel_scale=0.1)
+
+        with pytest.raises(exc.GridException):
+            profile.array_from_grid(
+                grid=grid, return_in_2d=False, return_binned_sub_grid=True)
+
+            profile.array_from_grid(
+                grid=grid, return_in_2d=True, return_binned_sub_grid=True)
+
+
+class TestReturnGridFormat(object):
+
+    def test__grid_1d_from_function__regular_grid_in__decorator_changes_grid_dimensions_to_2d(self):
+
+        profile = MockProfile(values_1d=np.ones(shape=(4,2)))
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2,2), pixel_scale=0.1)
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=regular_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (grid_from_grid == np.array(np.ones(shape=(4,2)))).all()
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert (grid_from_grid == np.array(np.ones(shape=(2,2,2)))).all()
+
+    def test__grid_1d_from_function__sub_grid_in__decorator_changes_grid_dimensions_to_2d(self):
+
+        profile = MockProfile(values_1d=np.ones(shape=(4,2)))
+
+        sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(2,2), pixel_scale=0.1, sub_grid_size=1)
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=sub_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (grid_from_grid == np.ones((4,2))).all()
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=sub_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert (grid_from_grid == np.ones((2,2,2))).all()
+
+        profile = MockProfile(values_1d=np.ones(shape=(16, 2)))
+
+        sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(2, 2), pixel_scale=0.1, sub_grid_size=2)
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=sub_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (grid_from_grid == np.ones(shape=(16, 2))).all()
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=sub_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert (grid_from_grid == np.ones(shape=(4,4,2))).all()
+
+    def test__grid_1d_from_function__sub_grid_in__binned_up_function_is_used_if_true__maintains_correct_dimensions(self):
+
+        sub_grid_values = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+                             [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0],
+                             [3.0, 3.0], [3.0, 3.0], [3.0, 3.0], [3.0, 3.0],
+                             [4.0, 4.0], [4.0, 4.0], [4.0, 4.0], [4.0, 4.0]])
+
+        profile = MockProfile(values_1d=sub_grid_values)
+
+        sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(2, 2), pixel_scale=0.1, sub_grid_size=2)
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=sub_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (grid_from_grid == sub_grid_values).all()
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=sub_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert (grid_from_grid == np.array(
+            [[[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0]],
+             [[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0]],
+             [[3.0, 3.0], [3.0, 3.0], [4.0, 4.0], [4.0, 4.0]],
+             [[3.0, 3.0], [3.0, 3.0], [4.0, 4.0], [4.0, 4.0]]])).all()
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=sub_grid, return_in_2d=False, return_binned_sub_grid=True)
+
+        assert (grid_from_grid == np.array(
+            [[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])).all()
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+
+        assert (grid_from_grid == np.array(
+            [[[1.0, 1.0], [2.0, 2.0]],
+             [[3.0, 3.0], [4.0, 4.0]]])).all()
+
+    def test__only_needs_input_grid_as_type_grid_if_there_is_a_mapping_to_2d_or_bin_up(self):
+
+        profile = MockProfile(values_1d=np.ones(shape=(4,2)))
+
+        grid = np.ones(shape=(4, 2))
+
+        grid_from_grid = profile.grid_from_grid(
+            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        assert (grid_from_grid == np.ones(shape=(4,2))).all()
+
+        with pytest.raises(exc.GridException):
+
+            profile.grid_from_grid(
+                grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+
+            profile.grid_from_grid(
+                grid=grid, return_in_2d=False, return_binned_sub_grid=True)
+
+            profile.grid_from_grid(
+                grid=grid, return_in_2d=True, return_binned_sub_grid=True)
+
+    def test__if_return_binned_sub_grid__raises_error_when_input_grid_not_type_subgrid(self):
+
+        profile = MockProfile(values_1d=np.ones(shape=(4,2)))
+
+        grid = np.ones(shape=(4,2))
+
+        with pytest.raises(exc.GridException):
+
+            profile.grid_from_grid(
+                grid=grid, return_in_2d=False, return_binned_sub_grid=True)
+
+            profile.grid_from_grid(
+                grid=grid, return_in_2d=True, return_binned_sub_grid=True)
+
+        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(2,2), pixel_scale=0.1)
+
+        with pytest.raises(exc.GridException):
+            profile.grid_from_grid(
+                grid=grid, return_in_2d=False, return_binned_sub_grid=True)
+
+            profile.grid_from_grid(
+                grid=grid, return_in_2d=True, return_binned_sub_grid=True)

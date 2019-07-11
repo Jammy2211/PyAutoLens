@@ -265,7 +265,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid)
             potential_2d = grid.array_2d_from_array_1d(array_1d=potential_1d)
         elif type(grid) is grids.SubGrid:
-            grid_2d = grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=grid)
+            grid_2d = grid.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(sub_grid_1d=grid)
             potential_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=potential_1d)
 
         alpha_x_2d = np.gradient(potential_2d, grid_2d[0,:,1], axis=1)
@@ -283,8 +283,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             if return_sub_grid:
                 return np.stack((alpha_y_1d, alpha_x_1d), axis=-1)
             else:
-                alpha_x_1d_binned = grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=alpha_x_1d)
-                alpha_y_1d_binned = grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=alpha_y_1d)
+                alpha_x_1d_binned = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=alpha_x_1d)
+                alpha_y_1d_binned = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=alpha_y_1d)
                 return np.stack((alpha_y_1d_binned, alpha_x_1d_binned), axis=-1)
 
     def lensing_jacobian_from_grid(self, grid, return_sub_grid=False):
@@ -296,7 +296,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             alpha_x_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 1])
             alpha_y_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 0])
         elif type(grid) is grids.SubGrid:
-            grid_2d = grid.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=grid)
+            grid_2d = grid.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(sub_grid_1d=grid)
             alpha_x_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=alpha_1d[:, 1])
             alpha_y_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=alpha_1d[:, 0])
 
@@ -325,10 +325,10 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                 A21_1d_sub = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A21_2d)
                 A22_1d_sub = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A22_2d)
 
-                A11_1d = grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=A11_1d_sub)
-                A12_1d = grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=A12_1d_sub)
-                A21_1d = grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=A21_1d_sub)
-                A22_1d = grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=A22_1d_sub)
+                A11_1d = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=A11_1d_sub)
+                A12_1d = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=A12_1d_sub)
+                A21_1d = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=A21_1d_sub)
+                A22_1d = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=A22_1d_sub)
                 return np.array([[A11_1d, A12_1d], [A21_1d, A22_1d]])
 
     def convergence_from_jacobian(self, grid, return_sub_grid=False):
@@ -343,7 +343,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             if return_sub_grid:
                 return convergence
             else:
-                return grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=convergence)
+                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=convergence)
 
     def shear_from_jacobian(self, grid, return_sub_grid=False):
 
@@ -361,7 +361,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             if return_sub_grid:
                 return shear
             else:
-                return grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=shear)
+                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=shear)
 
     def tangential_eigenvalue_from_shear_and_convergence(self, grid, return_sub_grid=False):
 
@@ -377,7 +377,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             if return_sub_grid:
                 return lambda_t
             else:
-                return grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=lambda_t)
+                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=lambda_t)
 
     def radial_eigenvalue_from_shear_and_convergence(self, grid, return_sub_grid=False):
 
@@ -393,7 +393,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             if return_sub_grid:
                 return lambda_r
             else:
-                return grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=lambda_r)
+                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=lambda_r)
 
     def tangential_critical_curve_from_grid(self, grid):
 
@@ -481,7 +481,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             if return_sub_grid:
                 return mag
             else:
-                return grid.array_1d_binned_up_from_sub_array_1d(sub_array_1d=mag)
+                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=mag)
 
     def critical_curves_from_grid(self, grid):
 
