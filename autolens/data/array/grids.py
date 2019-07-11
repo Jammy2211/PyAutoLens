@@ -53,9 +53,149 @@ def sub_to_image_grid(func):
         result = func(grid, galaxies, *args, *kwargs)
 
         if isinstance(grid, SubGrid):
-            return grid.array_1d_binned_up_from_sub_array_1d(result)
+            return grid.array_1d_binned_from_sub_array_1d(result)
         else:
             return result
+
+    return wrapper
+
+
+def check_input_grid_and_options_are_compatible(grid, return_in_2d, return_binned_sub_grid):
+
+    if not isinstance(grid, RegularGrid):
+        raise exc.GridException(
+            'You are trying to return an array from a _from_grid function that is mapped to 2d or a binned up '
+            'sub grid. However, the input grid is not an instance of the RegularGrid class. You must make the'
+            'input grid a RegularGrid.')
+
+    if type(grid) is not SubGrid and return_binned_sub_grid:
+        raise exc.GridException \
+            ('You have trie tto return a binned up sub-grid from a _from_grid function, but not supplied an'
+             'input grid of type SubGrid. Either turn this flag to False or make grid as a SubGrid.')
+
+
+def return_array_format(func):
+
+    @wraps(func)
+    def wrapper(profile, grid, return_in_2d=False, return_binned_sub_grid=False, *args, **kwargs):
+        """
+        
+        This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
+        (e.g. intensities, convergences, potentials). Depending on the input variables, it determines whether the
+        returned array is reshaped to 2D from 1D and if a sub-grid is input, it can bin the sub-gridded values to
+        regular gridded values.
+
+        Parameters
+        ----------
+        profile : autolens.model.geometry_profiles.Profile
+            The profiles that owns the function
+        grid : ndarray or RegularGrid or SubGrid
+            (y,x) in either cartesian or profiles coordinate system
+        args
+        kwargs
+
+        Returns
+        -------
+            An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
+        """
+
+        result_1d = func(profile, grid, *args, *kwargs)
+
+        if not return_in_2d and not return_binned_sub_grid:
+            return result_1d
+
+        check_input_grid_and_options_are_compatible(
+            grid=grid, return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
+
+        if type(grid) is RegularGrid:
+
+            if not return_in_2d:
+
+                return result_1d
+
+            elif return_in_2d:
+
+                return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
+
+        elif type(grid) is SubGrid:
+
+            if not return_in_2d and not return_binned_sub_grid:
+
+                return result_1d
+
+            elif not return_in_2d and return_binned_sub_grid:
+
+                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=result_1d)
+
+            elif return_in_2d and not return_binned_sub_grid:
+
+                return grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(sub_array_1d=result_1d)
+
+            elif return_in_2d and return_binned_sub_grid:
+
+                return grid.scaled_array_2d_binned_from_sub_array_1d(sub_array_1d=result_1d)
+
+    return wrapper
+
+
+def return_grid_format(func):
+
+    @wraps(func)
+    def wrapper(profile, grid, return_in_2d=False, return_binned_sub_grid=False, *args, **kwargs):
+        """
+
+        This wrapper decorates the _from_grid functions of profiles, which return 2D grids of physical quantities \
+        (e.g. deflection angles). Depending on the input variables, it determines whether the
+        returned grid is reshaped to 2D from 1D and if a sub-grid is input, it can bin the sub-gridded values to
+        regular gridded values.
+
+        Parameters
+        ----------
+        profile : autolens.model.geometry_profiles.Profile
+            The profiles that owns the function
+        grid : ndgrid or RegularGrid or SubGrid
+            (y,x) in either cartesian or profiles coordinate system
+
+        Returns
+        -------
+            An grid of (y,x) coordinates that may be in 1D or 2D and binned up from a sub-grid.
+        """
+
+        result_1d = func(profile, grid, *args, *kwargs)
+
+        if not return_in_2d and not return_binned_sub_grid:
+            return result_1d
+
+        check_input_grid_and_options_are_compatible(
+            grid=grid, return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
+
+        if type(grid) is RegularGrid:
+
+            if not return_in_2d:
+
+                return result_1d
+
+            elif return_in_2d:
+
+                return grid.grid_2d_from_grid_1d(grid_1d=result_1d)
+
+        elif type(grid) is SubGrid:
+
+            if not return_in_2d and not return_binned_sub_grid:
+
+                return result_1d
+
+            elif not return_in_2d and return_binned_sub_grid:
+
+                return grid.grid_1d_binned_from_sub_grid_1d(sub_grid_1d=result_1d)
+
+            elif return_in_2d and not return_binned_sub_grid:
+
+                return grid.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(sub_grid_1d=result_1d)
+
+            elif return_in_2d and return_binned_sub_grid:
+
+                return grid.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=result_1d)
 
     return wrapper
 
@@ -782,7 +922,7 @@ class SubGrid(RegularGrid):
         return self.mask.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
             sub_array_1d=sub_array_1d, sub_grid_size=self.sub_grid_size)
 
-    def scaled_array_2d_binned_up_from_sub_array_1d(self, sub_array_1d):
+    def scaled_array_2d_binned_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
         a scaled array.
 
@@ -791,10 +931,10 @@ class SubGrid(RegularGrid):
         sub_array_1d : ndarray
             The 1D sub-array of which is mapped to a 2D scaled sub-array the dimensions.
         """
-        return self.mask.scaled_array_2d_binned_up_from_sub_array_1d_and_sub_grid_size(
+        return self.mask.scaled_array_2d_binned_from_sub_array_1d_and_sub_grid_size(
             sub_array_1d=sub_array_1d, sub_grid_size=self.sub_grid_size)
 
-    def array_1d_binned_up_from_sub_array_1d(self, sub_array_1d):
+    def array_1d_binned_from_sub_array_1d(self, sub_array_1d):
         """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
         values and dividing by the total number of sub-pixels.
 
@@ -804,7 +944,7 @@ class SubGrid(RegularGrid):
             A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
             a 1d regular array.
         """
-        return self.mask.array_1d_binned_up_from_sub_array_1d_and_sub_grid_size(
+        return self.mask.array_1d_binned_from_sub_array_1d_and_sub_grid_size(
             sub_array_1d=sub_array_1d, sub_grid_size=self.sub_grid_size)
 
     def sub_array_1d_from_sub_array_2d(self, sub_array_2d):
@@ -820,7 +960,7 @@ class SubGrid(RegularGrid):
         return self.mask.sub_array_1d_from_sub_array_2d_and_sub_grid_size(
             sub_array_2d=sub_array_2d, sub_grid_size=self.sub_grid_size)
 
-    def sub_grid_2d_from_sub_grid_1d(self, sub_grid_1d):
+    def grid_1d_binned_from_sub_grid_1d(self, sub_grid_1d):
         """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
         2D sub grid.
 
@@ -829,7 +969,31 @@ class SubGrid(RegularGrid):
         sub_grid_1d : ndgrid
             The 1D sub_grid which is mapped to its masked 2D sub-grid.
         """
-        return self.mask.sub_grid_2d_from_sub_grid_1d_and_sub_grid_size(
+        return self.mask.grid_1d_binned_from_sub_grid_1d_and_sub_grid_size(
+            sub_grid_1d=sub_grid_1d, sub_grid_size=self.sub_grid_size)
+
+    def grid_2d_binned_from_sub_grid_1d(self, sub_grid_1d):
+        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub grid.
+
+        Parameters
+        -----------
+        sub_grid_1d : ndgrid
+            The 1D sub_grid which is mapped to its masked 2D sub-grid.
+        """
+        return self.mask.grid_2d_binned_from_sub_grid_1d_and_sub_grid_size(
+            sub_grid_1d=sub_grid_1d, sub_grid_size=self.sub_grid_size)
+
+    def sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(self, sub_grid_1d):
+        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub grid.
+
+        Parameters
+        -----------
+        sub_grid_1d : ndgrid
+            The 1D sub_grid which is mapped to its masked 2D sub-grid.
+        """
+        return self.mask.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d_and_sub_grid_size(
             sub_grid_1d=sub_grid_1d, sub_grid_size=self.sub_grid_size)
 
     @property

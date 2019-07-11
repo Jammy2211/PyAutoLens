@@ -2,7 +2,6 @@ import numpy as np
 from functools import wraps
 
 import autofit as af
-import autofit as af
 from autolens import dimensions as dim
 
 

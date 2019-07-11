@@ -5,6 +5,10 @@ class ScaledArrayException(Exception):
     pass
 
 
+class GridException(Exception):
+    pass
+
+
 class DataException(Exception):
     pass
 

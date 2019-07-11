@@ -438,6 +438,7 @@ class TestMaskMappings:
         assert scaled_sub_array_2d.origin == (0.0, 0.0)
 
     def test__scaled_array_from_sub_array_1d_by_binning_up(self):
+
         mask = np.array([[False, False, True],
                          [False, True, False]])
 
@@ -448,7 +449,7 @@ class TestMaskMappings:
                                  3.0, 3.0, 3.0, 3.0,
                                  4.0, 0.0, 0.0, 4.0])
 
-        scaled_array_2d = mask.scaled_array_2d_binned_up_from_sub_array_1d_and_sub_grid_size(
+        scaled_array_2d = mask.scaled_array_2d_binned_from_sub_array_1d_and_sub_grid_size(
             sub_array_1d=sub_array_1d, sub_grid_size=2)
 
         assert (scaled_array_2d == np.array([[3.5, 2.0, 0.0],
@@ -457,7 +458,42 @@ class TestMaskMappings:
         assert scaled_array_2d.pixel_scales == (3.0, 3.0)
         assert scaled_array_2d.origin == (0.0, 0.0)
 
-    def test__sub_grid_2d_from_sub_grid_1d__use_real_mask_and_grid(self):
+    def test__grid_1d_binned_from_sub_grid_1d__use_real_mask_and_grid(self):
+
+        mask = np.array([[False, True],
+                         [False, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 6.0],
+                                [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
+                                [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
+
+        grid_1d_binned = mask.grid_1d_binned_from_sub_grid_1d_and_sub_grid_size(
+            sub_grid_1d=grid_1d, sub_grid_size=2)
+
+        assert (grid_1d_binned == np.array([[2.5, 3.0], [10.5, 10.5], [14.5, 14.5]])).all()
+
+    def test__grid_2d_binned_from_sub_grid_1d__use_real_mask_and_grid(self):
+
+        mask = np.array([[False, True],
+                         [False, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 6.0],
+                                [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
+                                [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
+
+        grid_2d_binned = mask.grid_2d_binned_from_sub_grid_1d_and_sub_grid_size(
+            sub_grid_1d=sub_grid_1d, sub_grid_size=2)
+
+        assert (grid_2d_binned == np.array(
+            [[[2.5, 3.0], [0.0, 0.0]],
+            [[10.5, 10.5], [14.5, 14.5]]])).all()
+
+    def test__sub_grid_2d_with_sub_dimensions_from_sub_grid_1d__use_real_mask_and_grid(self):
+
         mask = np.array([[False, True],
                          [False, False]])
 
@@ -467,7 +503,7 @@ class TestMaskMappings:
                                 [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0],
                                 [13.0, 13.0], [14.0, 14.0], [15.0, 15.0], [16.0, 16.0]])
 
-        sub_grid_2d = mask.sub_grid_2d_from_sub_grid_1d_and_sub_grid_size(
+        sub_grid_2d = mask.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d_and_sub_grid_size(
             sub_grid_1d=sub_grid_1d, sub_grid_size=2)
 
         assert (sub_grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
@@ -486,7 +522,7 @@ class TestMaskMappings:
                                 [3.0, 3.0], [3.0, 3.0], [3.0, 3.0], [3.0, 3.0],
                                 [4.0, 4.0], [4.0, 4.0], [4.0, 4.0], [4.0, 4.0]])
 
-        sub_grid_2d = mask.sub_grid_2d_from_sub_grid_1d_and_sub_grid_size(
+        sub_grid_2d = mask.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d_and_sub_grid_size(
             sub_grid_1d=sub_grid_1d, sub_grid_size=2)
 
         assert (sub_grid_2d == np.array(
