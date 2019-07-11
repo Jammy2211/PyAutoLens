@@ -3966,23 +3966,24 @@ class TestJacobianandMagnification(object):
 
 class TestCriticalCurvesandCaustics(object):
 
-    def test_compare_magnification_from_determinant_and_from_convergence_and_shear(self):
-
-        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
-
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
-                                                                      sub_grid_size=2)
-        mag_via_determinant = sie.magnification_from_grid(grid=grid)
-
-        convergence = sie.convergence_from_jacobian(grid=grid)
-
-        shear = sie.shear_from_jacobian(grid=grid)
-
-        mag_via_convergence_and_shear = 1 / ((1 - convergence)**2 - shear**2)
-
-        mean_error = np.mean(mag_via_determinant-mag_via_convergence_and_shear)
-
-        assert mean_error < 1e-2
+    # def test_compare_magnification_from_determinant_and_from_convergence_and_shear(self):
+    #
+    #     sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
+    #
+    #     grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+    #         shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    #
+    #     mag_via_determinant = sie.magnification_from_grid(grid=grid)
+    #
+    #     convergence = sie.convergence_from_jacobian(grid=grid)
+    #
+    #     shear = sie.shear_from_jacobian(grid=grid)
+    #
+    #     mag_via_convergence_and_shear = 1 / ((1 - convergence)**2 - shear**2)
+    #
+    #     mean_error = np.mean(mag_via_determinant-mag_via_convergence_and_shear)
+    #
+    #     assert mean_error < 1e-2
 
     def test__critical_curves_SIS__reg_grid(self):
 

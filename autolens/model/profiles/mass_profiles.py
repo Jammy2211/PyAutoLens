@@ -385,7 +385,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             else:
                 return grid.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=convergence)
 
-
     def shear_from_jacobian(self, grid, return_sub_grid=False):
 
         if type(grid) is grids.RegularGrid:
@@ -403,7 +402,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                 return shear
             else:
                 return grid.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=shear)
-
 
     def tangential_eigenvalue_from_shear_and_convergence(self, grid, return_sub_grid=False):
 
@@ -461,7 +459,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                                                                         grid.pixel_scale / grid.sub_grid_size),
                                                                         origin=(0.0, 0.0))
 
-
     def tangential_caustic_from_grid(self, grid):
 
         tan_critical_curve = self.tangential_critical_curve_from_grid(grid=grid)
@@ -470,7 +467,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         tan_xcaustic = tan_critical_curve[:, 1] - alpha[:, 1]
 
         return np.stack((tan_ycaustic, tan_xcaustic), axis=-1)
-
 
     def radial_critical_curve_from_grid(self, grid):
 
@@ -527,7 +523,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             else:
                 return grid.regular_array_1d_from_binned_up_sub_array_1d(sub_array_1d=mag)
 
-
     def critical_curves_from_grid(self, grid):
 
         if type(grid) is grids.RegularGrid:
@@ -582,10 +577,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             caustics.append(caustic)
 
         return caustics
-
-
-
-
 
     @dim.convert_units_to_input_units
     def summarize_in_units(self, radii, prefix='', whitespace=80,
@@ -1007,6 +998,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         deflection_y = np.arctanh(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
         deflection_x = np.arctan(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
         return self.rotate_grid_from_profile(np.multiply(factor, np.vstack((deflection_y, deflection_x)).T))
+
 
 class SphericalIsothermal(EllipticalIsothermal):
 
