@@ -518,6 +518,8 @@ class HyperGalaxyPhase(HyperPhase):
                 extension=path[-1]
             )
 
+            optimizer.phase_tag = ''
+
             # TODO : This is a HACK :O
 
             optimizer.variable.lens_galaxies = []
@@ -678,6 +680,10 @@ class CombinedHyperPhase(HyperPhase):
         )
 
         phase = self.make_hyper_phase()
+        phase.optimizer.phase_tag = ''
         phase.optimizer.variable = variable
+
+        phase.phase_tag = ''
+        phase.optimizer.phase_tag = ''
 
         return phase.run(data, results=results, **kwargs)

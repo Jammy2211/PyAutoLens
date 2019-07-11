@@ -24,7 +24,7 @@ def plot_image(
     """
 
     array_plotters.plot_array(
-        array=fit.image_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=fit.image_2d, grid=grid, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,

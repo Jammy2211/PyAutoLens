@@ -35,8 +35,8 @@ def plot_fit_subplot(
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
     lens_plotter_util.plot_image(
-        fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
-        positions=positions, as_subplot=True,
+        fit=fit, grid=image_plane_pix_grid, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
