@@ -2,7 +2,7 @@ from os import path
 
 import pytest
 
-from autofit import aggregator as a
+import autofit as af
 
 directory = path.dirname(path.realpath(__file__))
 aggregator_directory = "{}/test_files/aggregator".format(directory)
@@ -10,11 +10,12 @@ aggregator_directory = "{}/test_files/aggregator".format(directory)
 
 @pytest.fixture(name="aggregator")
 def make_aggregator():
-    return a.Aggregator(aggregator_directory)
+    return af.Aggregator(aggregator_directory)
 
 
 def filter_phases(aggregator, folder):
-    return list(filter(lambda ag: "/{}/.metadata".format(folder) in ag.file_path, aggregator.phases))[0]
+    return list(filter(lambda ag: "/{}/.metadata".format(folder) in ag.file_path,
+                       aggregator.phases))[0]
 
 
 @pytest.fixture(name="one")
@@ -84,17 +85,21 @@ class TestCase(object):
         assert three.header == "pipeline_1/phase_2/lens_2"
 
     def test_aggregator_model_results(self, aggregator):
-        assert sorted(aggregator.model_results()) == sorted("pipeline_2/phase_1/lens_1\n\n"
-                                                            "results_two\n\n"
-                                                            "pipeline_1/phase_2/lens_2\n\n"
-                                                            "results_three\n\n"
-                                                            "pipeline_1/phase_1/lens_1\n\n"
-                                                            "results_one")
+        assert sorted(aggregator.model_results()) == sorted(
+            "pipeline_2/phase_1/lens_1\n\n"
+            "results_two\n\n"
+            "pipeline_1/phase_2/lens_2\n\n"
+            "results_three\n\n"
+            "pipeline_1/phase_1/lens_1\n\n"
+            "results_one"
+        )
 
-        assert sorted(aggregator.model_results(phase="phase_1")) == sorted("pipeline_2/phase_1/lens_1\n\n"
-                                                                           "results_two\n\n"
-                                                                           "pipeline_1/phase_1/lens_1\n\n"
-                                                                           "results_one")
+        assert sorted(aggregator.model_results(phase="phase_1")) == sorted(
+            "pipeline_2/phase_1/lens_1\n\n"
+            "results_two\n\n"
+            "pipeline_1/phase_1/lens_1\n\n"
+            "results_one"
+        )
 
     def test_nlo(self, one, two, three):
         assert one.optimizer is not None

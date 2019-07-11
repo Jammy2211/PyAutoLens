@@ -1,3 +1,7 @@
+import autofit as af
+import matplotlib
+backend = af.conf.instance.visualize.get('figures', 'backend', str)
+matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 from autolens import exc
@@ -154,7 +158,7 @@ def plot_galaxy_data_array(
         raise exc.PlottingException('The galaxy data array does not have a True use_profile_type')
 
     array_plotters.plot_array(
-        array=galaxy_data.image, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=galaxy_data.image_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions,
         as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,

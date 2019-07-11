@@ -424,19 +424,6 @@ class TestFrameLengths(object):
         assert (convolver.blurring_frame_lengths == np.array([5, 5, 5, 5])).all()
 
 
-@pytest.fixture(name="convolver_4_edges")
-def make_convolver_4_edges():
-    mask = np.array(
-        [[True, True, True, True],
-         [True, False, False, True],
-         [True, False, False, True],
-         [True, True, True, True]]
-    )
-
-    convolver = convolution.ConvolverImage(mask)
-    return convolver.convolver_for_kernel_shape((3, 3), mask)
-
-
 class TestConvolution(object):
 
     def test_cross_mask_with_blurring_entries(self, cross_mask):
@@ -458,17 +445,6 @@ class TestConvolution(object):
         assert (np.round(result, 1) == np.array([0.6, 0.2, 0.2, 0., 0.])).all()
 
 
-@pytest.fixture(name='sim_image_31x31', scope='function')
-def sim_grid_9x9():
-    sim_grid_9x9.ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arcsec=(5.5, 5.5), pixel_scale=0.5,
-                                                               pad_size=(3, 3))
-    sim_grid_9x9.image_grid = sim_grid_9x9.ma.coordinates_collection_for_subgrid_size_and_blurring_shape(
-        sub_grid_size=1,
-        blurring_shape=(3, 3))
-    sim_grid_9x9.mapping = sim_grid_9x9.ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
-    return sim_grid_9x9
-
-
 class TestCompareToFull2dConv:
 
     def test__compare_convolver_to_2d_convolution(self):
@@ -478,14 +454,14 @@ class TestCompareToFull2dConv:
         psf = ccd.PSF(array=np.arange(49).reshape(7, 7), pixel_scale=1.0)
         blurred_im = psf.convolve(im)
         msk = mask.Mask.circular(shape=(30, 30), pixel_scale=1.0, radius_arcsec=4.0)
-        blurred_masked_im_0 = msk.map_2d_array_to_masked_1d_array(blurred_im)
+        blurred_masked_im_0 = msk.array_1d_from_array_2d(blurred_im)
 
         # Now reproduce this datas_ using the frame convolver_image
 
         blurring_mask = msk.blurring_mask_for_psf_shape(psf.shape)
         convolver = convolution.ConvolverImage(mask=msk, blurring_mask=blurring_mask, psf=psf)
-        im_1d = msk.map_2d_array_to_masked_1d_array(im)
-        blurring_im_1d = blurring_mask.map_2d_array_to_masked_1d_array(im)
+        im_1d = msk.array_1d_from_array_2d(im)
+        blurring_im_1d = blurring_mask.array_1d_from_array_2d(im)
         blurred_masked_im_1 = convolver.convolve_image(image_array=im_1d, blurring_array=blurring_im_1d)
 
         assert blurred_masked_im_0 == pytest.approx(blurred_masked_im_1, 1e-4)

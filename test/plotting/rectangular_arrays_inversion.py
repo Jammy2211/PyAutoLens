@@ -30,7 +30,7 @@ mask = msk.Mask.elliptical(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scal
 # via a tracer, setup the rectangular mapper, etc.
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6,
                                                     axis_ratio=0.7, phi=45.0))
-source_galaxy = g.Galaxy(pixelization=pix.AdaptiveMagnification(shape=(20, 20)),
+source_galaxy = g.Galaxy(pixelization=pix.VoronoiMagnification(shape=(20, 20)),
                          regularization=reg.Constant(coefficients=(1.0,)))
 
 lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)

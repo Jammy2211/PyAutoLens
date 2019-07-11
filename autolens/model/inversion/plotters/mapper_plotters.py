@@ -1,6 +1,10 @@
-import numpy as np
+import autofit as af
+import matplotlib
+backend = af.conf.instance.visualize.get('figures', 'backend', str)
+matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import numpy as np
 import itertools
 from scipy.spatial import Voronoi
 
@@ -98,7 +102,7 @@ def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=
                                output_format=output_format)
     plotter_util.close_figure(as_subplot=as_subplot)
 
-def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, should_plot_grid=True, should_plot_border=False,
+def plot_voronoi_mapper(mapper, source_pixel_values, should_plot_centres=True, should_plot_grid=True, should_plot_border=False,
                         image_pixels=None, source_pixels=None, as_subplot=False,
                         units='arcsec', kpc_per_arcsec=None,
                         xyticksize=16, figsize=(7, 7),
@@ -112,10 +116,10 @@ def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, shoul
 
     regions_SP, vertices_SP = voronoi_finite_polygons_2d(mapper.voronoi)
 
-    color_values = solution_vector[:] / np.max(solution_vector)
+    color_values = source_pixel_values[:] / np.max(source_pixel_values)
     cmap = plt.get_cmap('jet')
 
-    set_colorbar(cmap=cmap, color_values=color_values, cb_fraction=cb_fraction, cb_pad=cb_pad,
+    set_colorbar(cmap=cmap, color_values=source_pixel_values, cb_fraction=cb_fraction, cb_pad=cb_pad,
                  cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels)
 
     for region, index in zip(regions_SP, range(mapper.pixels)):
@@ -328,8 +332,8 @@ def plot_image_plane_source_pixels(grid, mapper, source_pixels, point_colors):
         for source_pixel_set in source_pixels:
             color = next(point_colors)
             for source_pixel in source_pixel_set:
-                plt.scatter(y=np.asarray(grid[mapper.pix_to_regular[source_pixel], 0]),
-                            x=np.asarray(grid[mapper.pix_to_regular[source_pixel], 1]), s=8, color=color)
+                plt.scatter(y=np.asarray(grid[mapper.pixelization_to_regular_all[source_pixel], 0]),
+                            x=np.asarray(grid[mapper.pixelization_to_regular_all[source_pixel], 1]), s=8, color=color)
 
 def plot_source_plane_image_pixels(grid, image_pixels, point_colors):
 
@@ -347,8 +351,8 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
         for source_pixel_set in source_pixels:
             color = next(point_colors)
             for source_pixel in source_pixel_set:
-                plt.scatter(y=np.asarray(grid[mapper.pix_to_regular[source_pixel], 0]),
-                            x=np.asarray(grid[mapper.pix_to_regular[source_pixel], 1]), s=8, color=color)
+                plt.scatter(y=np.asarray(grid[mapper.pixelization_to_regular_all[source_pixel], 0]),
+                            x=np.asarray(grid[mapper.pixelization_to_regular_all[source_pixel], 1]), s=8, color=color)
 
 def convert_grid(grid, units, kpc_per_arcsec):
 

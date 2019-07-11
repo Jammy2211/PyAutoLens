@@ -686,7 +686,7 @@ class TestMaskBlurring(object):
                          [True, False, True],
                          [True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
 
         assert (blurring_mask == np.array([[False, False, False],
                                            [False, True, False],
@@ -701,7 +701,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
 
         assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
                                            [True, True, True, True, True, True, True],
@@ -720,7 +720,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
 
         assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
                                            [True, False, False, False, False, False, True],
@@ -739,7 +739,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(5, 3))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(5, 3))
 
         assert (blurring_mask == np.rot90(np.array([[True, True, True, True, True, True, True],
                                                     [True, True, True, True, True, True, True],
@@ -758,7 +758,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(3, 5))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(3, 5))
 
         assert (blurring_mask == np.rot90(np.array([[True, True, True, True, True, True, True],
                                                     [True, True, False, False, False, True, True],
@@ -777,7 +777,7 @@ class TestMaskBlurring(object):
                          [True, False, True, True, True, False, True],
                          [True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
 
         assert (blurring_mask == np.array([[False, False, False, True, False, False, False],
                                            [False, True, False, True, False, True, False],
@@ -798,7 +798,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
 
         assert (blurring_mask == np.array([[False, False, False, False, False, False, False, False, False],
                                            [False, False, False, False, False, False, False, False, False],
@@ -822,7 +822,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(5, 3))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(5, 3))
 
         assert (blurring_mask == np.rot90(np.array([[True, True, True, True, True, True, True, True, True],
                                                     [False, False, False, False, False, False, False, False, False],
@@ -845,7 +845,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(3, 5))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(3, 5))
 
         assert (blurring_mask == np.rot90(np.array([[True, False, False, False, True, False, False, False, True],
                                                     [True, False, False, False, True, False, False, False, True],
@@ -868,7 +868,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
 
         assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True],
                                            [False, True, False, True, False, True, False, True],
@@ -889,7 +889,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
 
         assert (blurring_mask == np.array([[True, True, True, True, True, True, True, True],
                                            [True, True, True, True, True, True, True, True],
@@ -910,7 +910,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
 
         assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True, True],
                                            [False, True, False, True, False, True, False, True, True],
@@ -932,7 +932,7 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True]])
 
-        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(3, 3))
 
         assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True],
                                            [False, True, False, True, False, True, False, True],
@@ -954,7 +954,77 @@ class TestMaskBlurring(object):
                          [True, True, True, True, True, True, True]])
 
         with pytest.raises(exc.MaskException):
-            mask_util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
+            mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
+
+
+class TestMask2dToMask1DIndex(object):
+
+    def test__mask_if_full_of_false__indexes_are_ascending_order(self):
+
+        mask_2d = np.full(fill_value=False, shape=(3, 3))
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, 1, 2],
+                                                      [3, 4, 5],
+                                                      [6, 7, 8]])).all()
+
+        mask_2d = np.full(fill_value=False, shape=(2, 3))
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, 1, 2],
+                                                      [3, 4, 5]])).all()
+
+        mask_2d = np.full(fill_value=False, shape=(3, 2))
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, 1],
+                                                      [2, 3],
+                                                      [4, 5]])).all()
+
+
+    def test__mask_has_true_and_falses__minus_ones_in_place_of_trues_and_falses_count_correctly(self):
+
+        mask_2d = np.array([[False, True, False],
+                            [True, True, False],
+                            [False, False, True]])
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, -1, 1],
+                                                      [-1, -1, 2],
+                                                      [3, 4, -1]])).all()
+
+        mask_2d = np.array([[False, True, True, False],
+                            [True, True, False, False],
+                            [False, False, True, False]])
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, -1, -1, 1],
+                                                      [-1, -1, 2, 3],
+                                                      [4, 5, -1, 6]])).all()
+
+
+        mask_2d = np.array([[False, True, False],
+                            [True, True, False],
+                            [False, False, True],
+                            [False, False, True]])
+
+        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
+                mask_2d=mask_2d)
+
+        assert (mask_2d_to_mask_1d_index == np.array([[0, -1, 1],
+                                                      [-1, -1, 2],
+                                                      [3, 4, -1],
+                                                      [5, 6, -1]])).all()
 
 
 class TestGridToMaskedPixel(object):
@@ -1250,49 +1320,37 @@ class TestBorderPixels(object):
 
         border_pixels = mask_util.border_pixels_from_mask(mask)
 
-        print(border_pixels)
-
         assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
-    def test__7x7_annulus_mask__inner_pixels_excluded(self):
+    def test__9x9_annulus_mask__inner_pixels_excluded(self):
 
-        mask = np.array([[False, False, False, False, False, False, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True, False,  True, False,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False, False, False, False, False, False, False]])
-
-        border_pixels = mask_util.border_pixels_from_mask(mask)
-
-        assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
-                                           26, 27, 28, 29, 30, 31])).all()
-
-    def test__same_as_above_but_8x7_annulus_mask__true_values_at_top_or_bottom(self):
-
-        mask = np.array([[False, False, False, False, False, False, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True, False,  True, False,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False, False, False, False, False, False, False],
-                         [ True,  True,  True,  True,  True,  True,  True]])
+        mask = np.array([[True,  True , True,  True,  True,  True,  True,  True, True],
+                         [True, False, False, False, False, False, False, False, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True],
+                         [True, False,  True, False, False, False,  True, False, True],
+                         [True, False,  True, False,  True, False,  True, False, True],
+                         [True, False,  True, False, False, False,  True, False, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True],
+                         [True, False, False, False, False, False, False, False, True],
+                         [True,  True , True,  True,  True,  True,  True,  True, True]])
 
         border_pixels = mask_util.border_pixels_from_mask(mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
                                            26, 27, 28, 29, 30, 31])).all()
 
-        mask = np.array([[ True,  True,  True,  True,  True,  True,  True],
-                         [False, False, False, False, False, False, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True, False,  True, False,  True, False],
-                         [False,  True, False, False, False,  True, False],
-                         [False,  True,  True,  True,  True,  True, False],
-                         [False, False, False, False, False, False, False]])
+    def test__same_as_above_but_10x9_annulus_mask__true_values_at_top_or_bottom(self):
+
+        mask = np.array([[True,  True , True,  True,  True,  True,  True,  True, True],
+                         [True, False, False, False, False, False, False, False, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True],
+                         [True, False,  True, False, False, False,  True, False, True],
+                         [True, False,  True, False,  True, False,  True, False, True],
+                         [True, False,  True, False, False, False,  True, False, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True],
+                         [True, False, False, False, False, False, False, False, True],
+                         [ True,  True,  True,  True,  True,  True,  True, True, True],
+                         [True,  True , True,  True,  True,  True,  True,  True, True]])
 
         border_pixels = mask_util.border_pixels_from_mask(mask)
 
@@ -1301,117 +1359,17 @@ class TestBorderPixels(object):
 
     def test__same_as_above_but_7x8_annulus_mask__true_values_at_right_or_left(self):
 
-        mask = np.array([[False, False, False, False, False, False, False, True],
-                         [False,  True,  True,  True,  True,  True, False, True],
-                         [False,  True, False, False, False,  True, False, True],
-                         [False,  True, False,  True, False,  True, False, True],
-                         [False,  True, False, False, False,  True, False, True],
-                         [False,  True,  True,  True,  True,  True, False, True],
-                         [False, False, False, False, False, False, False, True]])
+        mask = np.array([[True,  True , True,  True,  True,  True,  True,  True, True, True],
+                         [True, False, False, False, False, False, False, False, True, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True, True],
+                         [True, False,  True, False, False, False,  True, False, True, True],
+                         [True, False,  True, False,  True, False,  True, False, True, True],
+                         [True, False,  True, False, False, False,  True, False, True, True],
+                         [True, False,  True,  True,  True,  True,  True, False, True, True],
+                         [True, False, False, False, False, False, False, False, True, True],
+                         [True,  True,  True,  True,  True,  True,  True,  True, True, True]])
 
         border_pixels = mask_util.border_pixels_from_mask(mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
                                            26, 27, 28, 29, 30, 31])).all()
-
-        mask = np.array([[True, False, False, False, False, False, False, False],
-                         [True, False,  True,  True,  True,  True,  True, False],
-                         [True, False,  True, False, False, False,  True, False],
-                         [True, False,  True, False,  True, False,  True, False],
-                         [True, False,  True, False, False, False,  True, False],
-                         [True, False,  True,  True,  True,  True,  True, False],
-                         [True, False, False, False, False, False, False, False]])
-
-        border_pixels = mask_util.border_pixels_from_mask(mask)
-
-        assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
-                                           26, 27, 28, 29, 30, 31])).all()
-
-
-class TestBinUpMask2d:
-
-    def test__mask_4x4_to_2x2__creates_correct_binned_up_mask(self):
-        mask_2d = np.array([[True, False, True, True],
-                            [True, True, True, True],
-                            [True, True, False, False],
-                            [False, True, True, True]])
-
-        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
-
-        assert (binned_mask_2d == np.array([[False, True],
-                                            [False, False]])).all()
-
-        mask_2d = np.array([[True, True, True, True],
-                            [True, True, True, True],
-                            [True, True, False, False],
-                            [True, True, True, True]])
-
-        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
-
-        assert (binned_mask_2d == np.array([[True, True],
-                                            [True, False]])).all()
-
-    def test__mask_6x3_to_2x1_and_3x6_to_1x2__sets_up_correct_mask(self):
-        mask_2d = np.array([[True, True, True],
-                            [True, True, True],
-                            [True, True, True],
-                            [True, True, True],
-                            [True, True, True],
-                            [True, True, True]])
-
-        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
-
-        assert (binned_mask_2d == np.array([[True],
-                                            [True]])).all()
-
-        mask_2d = np.array([[True, True, True],
-                            [True, True, False],
-                            [True, True, True],
-                            [True, True, True],
-                            [True, True, True],
-                            [True, True, True]])
-
-        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
-        assert (binned_mask_2d == np.array([[False],
-                                            [True]])).all()
-
-        mask_2d = np.array([[True, True, True, True, True, True],
-                            [True, True, True, True, True, True],
-                            [True, True, True, True, True, True]])
-
-        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
-        assert (binned_mask_2d == np.array([[True, True]])).all()
-
-        mask_2d = np.array([[True, True, True, True, True, True],
-                            [True, True, True, True, True, True],
-                            [True, True, True, True, True, False]])
-
-        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
-        assert (binned_mask_2d == np.array([[True, False]])).all()
-
-    def test__bin_includes_padding_image_with_zeros(self):
-        # Padded mask:
-
-        # [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
-        #  [0.0, 1.0, 2.0, 1.0, 1.0, 0.0],
-        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
-        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
-        #  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
-
-        mask_2d = np.full(shape=(4, 4), fill_value=True)
-        mask_2d[1, 1] = False
-        mask_2d[3, 3] = False
-        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
-        assert (binned_mask_2d == np.array([[False, True],
-                                            [True, False]])).all()
-
-        # Padded Array:
-
-        # np.array([[0.0, 1.0, 1.0, 1.0],
-        #           [0.0, 1.0, 2.0, 1.0]]
-
-        mask_2d = np.full(shape=(2, 3), fill_value=True)
-        mask_2d[1, 2] = False
-        binned_2d_mask = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
-        assert (binned_2d_mask == np.array([[True, False]])).all()

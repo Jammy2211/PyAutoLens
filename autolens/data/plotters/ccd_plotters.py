@@ -1,40 +1,11 @@
+import autofit as af
+import matplotlib
+backend = af.conf.instance.visualize.get('figures', 'backend', str)
+matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 from autolens.data.plotters import data_plotters
 from autolens.plotters import plotter_util
-
-def plot_ccd_for_phase(
-        ccd_data, mask, positions, extract_array_from_mask, zoom_around_mask, units,
-        should_plot_as_subplot,
-        should_plot_image,
-        should_plot_noise_map,
-        should_plot_psf,
-        should_plot_signal_to_noise_map,
-        should_plot_absolute_signal_to_noise_map,
-        should_plot_potential_chi_squared_map,
-        visualize_path):
-
-    output_path = visualize_path
-
-    if should_plot_as_subplot:
-
-        plot_ccd_subplot(
-            ccd_data=ccd_data, mask=mask, extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask, positions=positions,
-            units=units,
-            output_path=output_path, output_format='png')
-
-    plot_ccd_individual(
-        ccd_data=ccd_data, mask=mask, extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask, positions=positions,
-        should_plot_image=should_plot_image,
-        should_plot_noise_map=should_plot_noise_map,
-        should_plot_psf=should_plot_psf,
-        should_plot_signal_to_noise_map=should_plot_signal_to_noise_map,
-        should_plot_absolute_signal_to_noise_map=should_plot_absolute_signal_to_noise_map,
-        should_plot_potential_chi_squared_map=should_plot_potential_chi_squared_map,
-        units=units,
-        output_path=output_path, output_format='png')
 
 def plot_ccd_subplot(
         ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
@@ -222,7 +193,7 @@ def plot_ccd_individual(
             output_path=output_path, output_format=output_format)
 
 def plot_image(
-        ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
+        ccd_data, plot_origin=True, grid=None, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         should_plot_border=False, positions=None,
         as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
@@ -246,7 +217,8 @@ def plot_image(
         over the immage.
     """
     data_plotters.plot_image(
-        image=ccd_data.image, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        image=ccd_data.image, plot_origin=plot_origin, grid=grid, mask=mask,
+        extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, should_plot_border=should_plot_border, positions=positions,
         as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,

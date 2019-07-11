@@ -125,45 +125,49 @@ class TestRegularizationWeightedPixelSignals:
 
     def test__x3_image_pixels_signals_1s__pixel_scale_1__pixel_signals_all_1s(self):
 
-        regular_to_pix = np.array([0, 1, 2])
+        sub_to_pix = np.array([0, 1, 2])
+        sub_to_regular = np.array([0, 1, 2])
         galaxy_image = np.array([1.0, 1.0, 1.0])
 
-        pixel_signals = reg_util.weighted_pixel_signals_from_images(pixels=3, signal_scale=1.0,  
-                                                                    regular_to_pix=regular_to_pix,
-                                                                    galaxy_image=galaxy_image)
+        pixel_signals = reg_util.adaptive_pixel_signals_from_images(
+            pixels=3, signal_scale=1.0, sub_to_pix=sub_to_pix, sub_to_regular=sub_to_regular,
+            hyper_image=galaxy_image)
 
         assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
 
     def test__x4_image_pixels_signals_1s__pixel_signals_still_all_1s(self):
 
-        regular_to_pix = np.array([0, 1, 2, 0])
+        sub_to_pix = np.array([0, 1, 2, 0])
+        sub_to_regular = np.array([0, 1, 2, 0])
         galaxy_image = np.array([1.0, 1.0, 1.0, 1.0])
 
-        pixel_signals = reg_util.weighted_pixel_signals_from_images(pixels=3, signal_scale=1.0,
-                                                                    regular_to_pix=regular_to_pix,
-                                                                    galaxy_image=galaxy_image)
+        pixel_signals = reg_util.adaptive_pixel_signals_from_images(
+            pixels=3, signal_scale=1.0, sub_to_pix=sub_to_pix, sub_to_regular=sub_to_regular,
+            hyper_image=galaxy_image)
 
         assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
 
     def test__galaxy_flux_in_a_pixel_pixel_is_double_the_others__pixel_signal_is_1_others_a_half(self):
 
-        regular_to_pix = np.array([0, 1, 2])
+        sub_to_pix = np.array([0, 1, 2])
+        sub_to_regular = np.array([0, 1, 2])
         galaxy_image = np.array([2.0, 1.0, 1.0])
 
-        pixel_signals = reg_util.weighted_pixel_signals_from_images(pixels=3, signal_scale=1.0,
-                                                                    regular_to_pix=regular_to_pix,
-                                                                    galaxy_image=galaxy_image)
+        pixel_signals = reg_util.adaptive_pixel_signals_from_images(
+            pixels=3, signal_scale=1.0, sub_to_pix=sub_to_pix, sub_to_regular=sub_to_regular,
+            hyper_image=galaxy_image)
 
         assert (pixel_signals == np.array([1.0, 0.5, 0.5])).all()
 
     def test__same_as_above_but_pixel_scale_2__scales_pixel_signals(self):
 
-        regular_to_pix = np.array([0, 1, 2])
+        sub_to_pix = np.array([0, 1, 2])
+        sub_to_regular = np.array([0, 1, 2])
         galaxy_image = np.array([2.0, 1.0, 1.0])
 
-        pixel_signals = reg_util.weighted_pixel_signals_from_images(pixels=3, signal_scale=2.0,
-                                                                    regular_to_pix=regular_to_pix,
-                                                                    galaxy_image=galaxy_image)
+        pixel_signals = reg_util.adaptive_pixel_signals_from_images(
+            pixels=3, signal_scale=2.0, sub_to_pix=sub_to_pix, sub_to_regular=sub_to_regular,
+            hyper_image=galaxy_image)
 
         assert (pixel_signals == np.array([1.0, 0.25, 0.25])).all()
 
@@ -174,8 +178,8 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([1.0, 1.0, 1.0])
 
-        weights = reg_util.weighted_regularization_weights_from_pixel_signals(coefficients=(1.0, 1.0),
-                                                                              pixel_signals=pixel_signals)
+        weights = reg_util.adaptive_regularization_weights_from_pixel_signals(
+            coefficients=(1.0, 1.0), pixel_signals=pixel_signals)
 
         assert (weights == np.array([1.0, 1.0, 1.0])).all()
 
@@ -183,8 +187,8 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = reg_util.weighted_regularization_weights_from_pixel_signals(coefficients=(1.0, 1.0),
-                                                                              pixel_signals=pixel_signals)
+        weights = reg_util.adaptive_regularization_weights_from_pixel_signals(
+            coefficients=(1.0, 1.0), pixel_signals=pixel_signals)
 
         assert (weights == np.array([1.0, 1.0, 1.0])).all()
 
@@ -192,8 +196,8 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = reg_util.weighted_regularization_weights_from_pixel_signals(coefficients=(1.0, 0.0),
-                                                                              pixel_signals=pixel_signals)
+        weights = reg_util.adaptive_regularization_weights_from_pixel_signals(
+            coefficients=(1.0, 0.0), pixel_signals=pixel_signals)
 
         assert (weights == np.array([0.25 ** 2.0, 0.5 ** 2.0, 0.75 ** 2.0])).all()
 
@@ -201,8 +205,8 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = reg_util.weighted_regularization_weights_from_pixel_signals(coefficients=(0.0, 1.0),
-                                                                              pixel_signals=pixel_signals)
+        weights = reg_util.adaptive_regularization_weights_from_pixel_signals(
+            coefficients=(0.0, 1.0), pixel_signals=pixel_signals)
 
         assert (weights == np.array([0.75 ** 2.0, 0.5 ** 2.0, 0.25 ** 2.0])).all()
 
@@ -227,8 +231,9 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((4,))
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(regularization_weights,
-                                                                               pixel_neighbors, pixel_neighbors_size)
+        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+            regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -261,9 +266,9 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((3))
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(regularization_weights,
-                                                                               pixel_neighbors,
-                                                                               pixel_neighbors_size)
+        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+            regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -294,8 +299,9 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((4,))
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(regularization_weights,
-                                                                               pixel_neighbors, pixel_neighbors_size)
+        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+            regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -353,8 +359,9 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((6))
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(regularization_weights,
-                                                                               pixel_neighbors, pixel_neighbors_size)
+        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+            regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -393,8 +400,9 @@ class TestRegularizationWeightedMatrix:
 
         pixel_neighbors_size = np.array([2, 3, 2, 1])
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(regularization_weights,
-                                                                               pixel_neighbors, pixel_neighbors_size)
+        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+            regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -451,7 +459,8 @@ class TestRegularizationWeightedMatrix:
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
                                      test_regularization_matrix_3 + test_regularization_matrix_4
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(regularization_weights,
-                                                                               pixel_neighbors, pixel_neighbors_size)
+        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+            regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size)
 
         assert (regularization_matrix == test_regularization_matrix).all()
