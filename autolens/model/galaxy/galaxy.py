@@ -9,7 +9,8 @@ from autolens import exc, dimensions as dim
 from autolens import text_util
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
 
 
 def is_light_profile(obj):

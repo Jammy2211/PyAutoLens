@@ -4,7 +4,8 @@ import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline as pl
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
 from test.integration import integration_util
 from test.simulation import simulation_util
 
