@@ -43,6 +43,7 @@ __pycache__
 error.log
 workspace/scraps
 workspace_jam
+workspace_amy
 test/integration/hyper/
 test/integration/image/
 test/integration/hyper/
