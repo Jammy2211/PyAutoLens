@@ -74,7 +74,7 @@ def check_input_grid_and_options_are_compatible(grid, return_in_2d, return_binne
              'input grid of type SubGrid. Either turn this flag to False or make grid as a SubGrid.')
 
 
-def return_array_format(func):
+def reshape_returned_array(func):
 
     @wraps(func)
     def wrapper(profile, grid, return_in_2d=False, return_binned_sub_grid=False, *args, **kwargs):
@@ -138,7 +138,7 @@ def return_array_format(func):
     return wrapper
 
 
-def return_grid_format(func):
+def reshape_returned_grid(func):
 
     @wraps(func)
     def wrapper(profile, grid, return_in_2d=False, return_binned_sub_grid=False, *args, **kwargs):
@@ -1592,7 +1592,7 @@ def grid_interpolate(func):
     """
 
     @wraps(func)
-    def wrapper(profile, grid, grid_radial_minimum=None, *args, **kwargs):
+    def wrapper(profile, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None, *args, **kwargs):
         if hasattr(grid, "interpolator"):
             interpolator = grid.interpolator
             if grid.interpolator is not None:

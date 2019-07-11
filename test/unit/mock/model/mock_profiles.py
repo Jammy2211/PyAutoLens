@@ -21,8 +21,8 @@ class MockMassProfile(object):
     def surface_density_from_grid(self, grid):
         return np.array([self.value])
 
-    def potential_from_grid(self, grid):
+    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.array([self.value])
 
-    def deflections_from_grid(self, grid):
+    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.array([self.value, self.value])

@@ -11,6 +11,7 @@ from test.unit.mock.model import mock_cosmology
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
+
 class TestAbstractNFW(object):
 
     def test__coord_function_f__correct_values(self):
@@ -638,6 +639,45 @@ class TestGeneralizedNFW(object):
     #     assert elliptical.potential_from_grid(grid) == pytest.approx(spherical.potential_from_grid(grid), 1e-4)
     #     assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
 
+    def test__reshape_decorators(self):
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2, 2), pixel_scale=1.0)
+
+        # gnfw = mp.EllipticalGeneralizedNFW()
+        #
+        # convergence = gnfw.convergence_from_grid(
+        #     grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+        #
+        # assert convergence.shape == (2, 2)
+        #
+        # potential = gnfw.potential_from_grid(
+        #     grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+        #
+        # assert potential.shape == (2, 2)
+        #
+        # deflections = gnfw.deflections_from_grid(
+        #     grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+        #
+        # assert deflections.shape == (2, 2, 2)
+
+        gnfw = mp.SphericalGeneralizedNFW()
+
+        convergence = gnfw.convergence_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert convergence.shape == (2, 2)
+
+        potential = gnfw.potential_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert potential.shape == (2, 2)
+
+        deflections = gnfw.deflections_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert deflections.shape == (2, 2, 2)
+
 
 class TestTruncatedNFW(object):
 
@@ -860,6 +900,28 @@ class TestTruncatedNFW(object):
         assert summary_text[i] == 'nfw_mass_at_200x_cosmic_density                   2.4517e+13 solMass' ; i += 1
         assert summary_text[i] == 'nfw_mass_at_truncation_radius                     1.3190e+13 solMass' ; i += 1
 
+    def test__reshape_decorators(self):
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2, 2), pixel_scale=1.0)
+
+        truncated_nfw = mp.SphericalTruncatedNFW()
+
+        convergence = truncated_nfw.convergence_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert convergence.shape == (2, 2)
+
+        potential = truncated_nfw.potential_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert potential.shape == (2, 2)
+
+        deflections = truncated_nfw.deflections_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert deflections.shape == (2, 2, 2)
+
 
 class TestTruncatedNFWChallenge(object):
 
@@ -1072,3 +1134,42 @@ class TestNFW(object):
 
         assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
         assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
+
+    def test__reshape_decorators(self):
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2, 2), pixel_scale=1.0)
+
+        nfw = mp.EllipticalNFW()
+
+        convergence = nfw.convergence_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert convergence.shape == (2, 2)
+
+        potential = nfw.potential_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert potential.shape == (2, 2)
+
+        deflections = nfw.deflections_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert deflections.shape == (2, 2, 2)
+
+        nfw = mp.SphericalNFW()
+
+        convergence = nfw.convergence_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert convergence.shape == (2, 2)
+
+        potential = nfw.potential_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert potential.shape == (2, 2)
+
+        deflections = nfw.deflections_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert deflections.shape == (2, 2, 2)

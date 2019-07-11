@@ -1837,7 +1837,7 @@ class TestInterpolator:
 
         # noinspection PyUnusedLocal
         @grids.grid_interpolate
-        def func(profile, grid, grid_radial_minimum=None):
+        def func(profile, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None):
             result = np.zeros(grid.shape[0])
             result[0] = 1
             return result
@@ -1866,7 +1866,7 @@ class TestInterpolator:
 
         # noinspection PyUnusedLocal
         @grids.grid_interpolate
-        def func(profile, grid, grid_radial_minimum=None):
+        def func(profile, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None):
             result = np.zeros((grid.shape[0], 2))
             result[0,:] = 1
             return result
@@ -2004,11 +2004,11 @@ class MockProfile(object):
 
         self.values_1d = values_1d
 
-    @grids.return_array_format
+    @grids.reshape_returned_array
     def array_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return self.values_1d
 
-    @grids.return_grid_format
+    @grids.reshape_returned_grid
     def grid_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return self.values_1d
 

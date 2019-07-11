@@ -206,7 +206,6 @@ def make_sub_grid_7x7(mask_7x7):
     return mock_grids.MockSubGrid(
         mask=mask_7x7)
 
-
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
     return mock_grids.MockRegularGrid(mask=blurring_mask_7x7)

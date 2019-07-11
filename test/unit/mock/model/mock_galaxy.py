@@ -10,13 +10,13 @@ class MockGalaxy(object):
     def intensities_from_grid(self, grid):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    def convergence_from_grid(self, grid):
+    def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    def potential_from_grid(self, grid):
+    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    def deflections_from_grid(self, grid):
+    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.full(shape=(self.shape, 2), fill_value=self.value)
 
 

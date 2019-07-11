@@ -21,15 +21,15 @@ class MassProfile(object):
     def convergence_func(self, eta):
         raise NotImplementedError("surface_density_func should be overridden")
 
-    def convergence_from_grid(self, grid):
+    def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         pass
         # raise NotImplementedError("surface_density_from_grid should be overridden")
 
-    def potential_from_grid(self, grid):
+    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         pass
         # raise NotImplementedError("potential_from_grid should be overridden")
 
-    def deflections_from_grid(self, grid):
+    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
     def mass_within_circle_in_units(self, radius: dim.Length, redshift_profile=None,
