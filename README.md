@@ -212,14 +212,22 @@ The following papers use **PyAutoLens**:
 
 ## Credits
 
+##### Contributors
+
 [James Nightingale](https://github.com/Jammy2211) - Lead developer & PyAutoLens guru.
 
 [Richard Hayes](https://github.com/rhayes777) - Lead developer & [PyAutoFit](https://github.com/rhayes777/PyAutoFit) guru.
 
 [Ashley Kelly](https://github.com/AshKelly) - Developer of [pyquad](https://github.com/AshKelly/pyquad) for fast deflections computations.
 
+[Amy Etherington](https://github.com/amyetherington) - Magnification, Critical Curves and Caustic Calculations.
+
 [Nan Li](https://github.com/linan7788626) - Docker integration & support.
+
+##### Code Donors
 
 [Andrew Robertson](https://github.com/Andrew-Robertson) - Critical curve & caustic calculations.
 
 [Andrea Enia](https://github.com/AndreaEnia) - Voronoi source-plane plotting tools.
+
+[Aristeidis Amvrosiadis](https://github.com/Sketos) - ALMA imaging data loading.
