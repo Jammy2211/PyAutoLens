@@ -11,7 +11,8 @@ from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import inversions as inv
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
 
 
 @pytest.fixture(name="sersic")

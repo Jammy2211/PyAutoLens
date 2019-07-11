@@ -5,7 +5,8 @@ import autofit as af
 from autolens.model.galaxy import galaxy
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
-from autolens.model.profiles import light_profiles, mass_profiles
+from autolens.model.profiles import light_profiles
+from autolens.model.profiles import mass_profiles
 
 
 def is_light_profile_class(cls):

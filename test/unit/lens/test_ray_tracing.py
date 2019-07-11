@@ -12,7 +12,8 @@ from autolens.model import cosmology_util
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import pixelizations, regularization
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
 
 from test.unit.mock.data import mock_grids
 from test.unit.mock.model import mock_inversion as mock_inv
