@@ -7,6 +7,8 @@ from autolens.data.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
+from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
+
 class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
 
     @af.map_types
@@ -26,15 +28,18 @@ class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
         super(MassSheet, self).__init__(centre=centre)
         self.kappa = kappa
 
-    def convergence_from_grid(self, grid):
+    @reshape_returned_array
+    def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.full(shape=grid.shape[0], fill_value=self.kappa)
 
-    def potential_from_grid(self, grid):
+    @reshape_returned_array
+    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.zeros((grid.shape[0],))
 
+    @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid):
+    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return self.grid_to_grid_cartesian(grid=grid, radius=self.kappa * grid_radii)
 
@@ -73,15 +78,18 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
                                cosmology=cosmo.Planck15, **kwargs):
         return 0.0
 
-    def convergence_from_grid(self, grid):
+    @reshape_returned_array
+    def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.zeros((grid.shape[0],))
 
-    def potential_from_grid(self, grid):
+    @reshape_returned_array
+    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.zeros((grid.shape[0],))
 
+    @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid):
+    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 

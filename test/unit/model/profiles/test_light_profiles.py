@@ -8,10 +8,10 @@ import scipy.special
 
 import autofit as af
 from autolens import dimensions as dim
+from autolens.data.array import grids
 from autolens.model.profiles import light_profiles as lp
 
 from test.unit.mock.model import mock_cosmology
-
 
 @pytest.fixture(autouse=True)
 def reset_config():
@@ -22,7 +22,6 @@ def reset_config():
 
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
-
 
 class TestGaussian:
 
@@ -88,6 +87,7 @@ class TestGaussian:
         assert gaussian.intensities_from_grid_radii(grid_radii=3.0) == pytest.approx(0.0647, 1e-2)
 
     def test__intensity_from_grid__same_values_as_above(self):
+
         gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                          sigma=1.0)
         assert gaussian.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(0.24197, 1e-2)
@@ -142,6 +142,25 @@ class TestGaussian:
         spherical = lp.SphericalGaussian(intensity=3.0, sigma=2.0)
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
+
+    def test__reshape_decorators(self):
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2, 2), pixel_scale=1.0)
+
+        gaussian = lp.EllipticalGaussian()
+
+        intensities = gaussian.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
+
+        gaussian = lp.SphericalGaussian()
+
+        intensities = gaussian.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
 
 
 class TestSersic:
@@ -256,6 +275,24 @@ class TestSersic:
         assert summary_text[i] == 'sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps' ; i += 1
         assert summary_text[i] == 'sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps' ; i += 1
 
+    def test__reshape_decorators(self):
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2, 2), pixel_scale=1.0)
+
+        sersic = lp.EllipticalSersic()
+
+        intensities = sersic.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
+
+        sersic = lp.SphericalSersic()
+
+        intensities = sersic.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
 
 class TestExponential:
 
@@ -358,6 +395,24 @@ class TestExponential:
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
+    def test__reshape_decorators(self):
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2, 2), pixel_scale=1.0)
+
+        exponential = lp.EllipticalExponential()
+
+        intensities = exponential.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
+
+        exponential = lp.SphericalExponential()
+
+        intensities = exponential.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
 
 class TestDevVaucouleurs:
 
@@ -462,6 +517,24 @@ class TestDevVaucouleurs:
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
+    def test__reshape_decorators(self):
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2, 2), pixel_scale=1.0)
+
+        dev_vaucouleurs = lp.EllipticalDevVaucouleurs()
+
+        intensities = dev_vaucouleurs.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
+
+        dev_vaucouleurs = lp.SphericalDevVaucouleurs()
+
+        intensities = dev_vaucouleurs.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
 
 class TestCoreSersic(object):
 
@@ -574,6 +647,24 @@ class TestCoreSersic(object):
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
+    def test__reshape_decorators(self):
+
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(2, 2), pixel_scale=1.0)
+
+        core_sersic = lp.EllipticalCoreSersic()
+
+        intensities = core_sersic.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
+
+        core_sersic = lp.SphericalCoreSersic()
+
+        intensities = core_sersic.intensities_from_grid(
+            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        assert intensities.shape == (2, 2)
 
 def luminosity_from_radius_and_profile(radius, profile):
 

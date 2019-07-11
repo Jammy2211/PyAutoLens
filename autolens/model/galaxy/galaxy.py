@@ -227,7 +227,7 @@ class Galaxy(af.ModelObject):
                            self.light_profiles))
         return None
 
-    def convergence_from_grid(self, grid):
+    def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         """Compute the summed convergence of the galaxy's mass profiles using a grid \
         of Cartesian (y,x) coordinates.
 
@@ -244,7 +244,7 @@ class Galaxy(af.ModelObject):
             return sum(map(lambda p: p.convergence_from_grid(grid), self.mass_profiles))
         return np.zeros((grid.shape[0],))
 
-    def potential_from_grid(self, grid):
+    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         """Compute the summed gravitational potential of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
 
@@ -261,7 +261,7 @@ class Galaxy(af.ModelObject):
             return sum(map(lambda p: p.potential_from_grid(grid), self.mass_profiles))
         return np.zeros((grid.shape[0],))
 
-    def deflections_from_grid(self, grid):
+    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         """Compute the summed (y,x) deflection angles of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
 

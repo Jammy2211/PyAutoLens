@@ -7,6 +7,8 @@ from autolens import dimensions as dim
 from autolens import text_util
 from autolens.model.profiles import geometry_profiles
 
+from autolens.data.array.grids import reshape_returned_array
+
 
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
@@ -23,7 +25,7 @@ class LightProfile(object):
         raise NotImplementedError("intensity_at_radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
-    def intensities_from_grid(self, grid, grid_radial_minimum=None):
+    def intensities_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None):
         """
         Abstract method for obtaining intensity at a grid of Cartesian (y,x) coordinates.
 
@@ -209,9 +211,10 @@ class EllipticalGaussian(EllipticalLightProfile):
         return np.multiply(np.divide(self.intensity, self.sigma * np.sqrt(2.0 * np.pi)),
                            np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))))
 
+    @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def intensities_from_grid(self, grid, grid_radial_minimum=None):
+    def intensities_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None):
         """
         Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
@@ -375,9 +378,10 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
                         np.add(np.power(np.divide(grid_radii, self.effective_radius),
                                         1. / self.sersic_index), -1))))
 
+    @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def intensities_from_grid(self, grid, grid_radial_minimum=None):
+    def intensities_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None):
         """ Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
