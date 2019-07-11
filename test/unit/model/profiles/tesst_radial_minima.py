@@ -1,10 +1,10 @@
 from __future__ import division, print_function
 
-from autofit import conf
+import autofit as af
 import os
 
 test_path = '{}/config/'.format(os.path.dirname(os.path.realpath(__file__)))
-conf.instance = conf.Config(config_path=test_path)
+af.conf.instance = af.conf.Config(config_path=test_path)
 
 import numpy as np
 import pytest

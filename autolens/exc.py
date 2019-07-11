@@ -1,4 +1,4 @@
-from autofit import exc
+import autofit as af
 
 
 class ScaledArrayException(Exception):
@@ -25,15 +25,15 @@ class GalaxyException(Exception):
     pass
 
 
-class RayTracingException(exc.FitException):
+class RayTracingException(af.exc.FitException):
     pass
 
 
-class PixelizationException(exc.FitException):
+class PixelizationException(af.exc.FitException):
     pass
 
 
-class InversionException(exc.FitException):
+class InversionException(af.exc.FitException):
     pass
 
 

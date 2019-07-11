@@ -1,8 +1,11 @@
+import autofit as af
+import matplotlib
+backend = af.conf.instance.visualize.get('figures', 'backend', str)
+matplotlib.use(backend)
 from autolens.plotters import array_plotters
 
-
 def plot_image(
-        image, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
+        image, plot_origin=True, grid=None, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         should_plot_border=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -27,7 +30,7 @@ def plot_image(
     origin = get_origin(array=image, plot_origin=plot_origin)
 
     array_plotters.plot_array(
-        array=image, origin=origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=image, origin=origin, grid=grid, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         should_plot_border=should_plot_border, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,

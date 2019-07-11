@@ -2,7 +2,8 @@ import numpy as np
 from autolens import decorator_util
 
 @decorator_util.jit()
-def constant_regularization_matrix_from_pixel_neighbors(coefficients, pixel_neighbors, pixel_neighbors_size):
+def constant_regularization_matrix_from_pixel_neighbors(
+        coefficients, pixel_neighbors, pixel_neighbors_size):
     """From the pixel-neighbors, setup the regularization matrix using the constant regularization scheme.
 
     Parameters
@@ -33,7 +34,8 @@ def constant_regularization_matrix_from_pixel_neighbors(coefficients, pixel_neig
     return regularization_matrix
 
 @decorator_util.jit()
-def weighted_pixel_signals_from_images(pixels, signal_scale, regular_to_pix, galaxy_image):
+def adaptive_pixel_signals_from_images(
+        pixels, signal_scale, sub_to_pix, sub_to_regular, hyper_image):
     """Compute the (scaled) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
     These pixel-signals are used to compute the effective regularization weight of each pixel.
 
@@ -57,23 +59,26 @@ def weighted_pixel_signals_from_images(pixels, signal_scale, regular_to_pix, gal
         low signal regions.
     regular_to_pix : ndarray
         A 1D array mapping every pixel on the regular-grid to a pixel on the pixelization.
-    galaxy_image : ndarray
+    hyper_image : ndarray
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
     pixel_signals = np.zeros((pixels,))
     pixel_sizes = np.zeros((pixels,))
 
-    for regular_index in range(galaxy_image.shape[0]):
-        pixel_signals[regular_to_pix[regular_index]] += galaxy_image[regular_index]
-        pixel_sizes[regular_to_pix[regular_index]] += 1
+    for sub_index in range(len(sub_to_pix)):
+        regular_index = sub_to_regular[sub_index]
+        pixel_signals[sub_to_pix[sub_index]] += hyper_image[regular_index]
+        pixel_sizes[sub_to_pix[sub_index]] += 1
 
+    pixel_sizes[pixel_sizes == 0] = 1
     pixel_signals /= pixel_sizes
     pixel_signals /= np.max(pixel_signals)
 
     return pixel_signals ** signal_scale
 
-def weighted_regularization_weights_from_pixel_signals(coefficients, pixel_signals):
+def adaptive_regularization_weights_from_pixel_signals(
+        coefficients, pixel_signals):
     """Compute the regularization weights, which are the effective regularization coefficient of every \
     pixel. They are computed using the (scaled) pixel-signal of each pixel.
 
@@ -91,11 +96,13 @@ def weighted_regularization_weights_from_pixel_signals(coefficients, pixel_signa
         The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal \
         and low signal pixelizations.
     """
-    return (coefficients[0] * pixel_signals + coefficients[1] * (1.0 - pixel_signals)) ** 2.0
+    regs = (coefficients[0] * pixel_signals + coefficients[1] * (1.0 - pixel_signals)) ** 2.0
+
+    return regs
 
 @decorator_util.jit()
-def weighted_regularization_matrix_from_pixel_neighbors(regularization_weights, pixel_neighbors,
-                                                        pixel_neighbors_size):
+def weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_weights, pixel_neighbors, pixel_neighbors_size):
     """From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
 
     Parameters

@@ -1,11 +1,10 @@
 import copy
 import inspect
 
-from autofit import exc
-from autofit.mapper import model_mapper
-from autofit.mapper import prior_model as pm
-from autofit.mapper.prior import PriorNameValue, ConstantNameValue, cast_collection
+import autofit as af
 from autolens.model.galaxy import galaxy
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles, mass_profiles
 
 
@@ -54,17 +53,19 @@ def is_profile_class(cls):
     return is_light_profile_class(cls) or is_mass_profile_class(cls)
 
 
-class GalaxyModel(model_mapper.AbstractPriorModel):
+class GalaxyModel(af.AbstractPriorModel):
     """
     @DynamicAttrs
     """
 
     @property
     def flat_prior_model_tuples(self):
-        return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
+        return [flat_prior_model for prior_model in self.prior_models for
+                flat_prior_model in
                 prior_model.flat_prior_model_tuples]
 
-    def __init__(self, align_centres=False, align_axis_ratios=False, align_orientations=False, redshift=None,
+    def __init__(self, redshift, align_centres=False, align_axis_ratios=False,
+                 align_orientations=False,
                  pixelization=None, regularization=None, hyper_galaxy=None, **kwargs):
         """Class to produce Galaxy instances from sets of profile classes and other model-fitting attributes (e.g. \
          pixelizations, regularization schemes, hyper-galaxyes) using the model mapper.
@@ -107,7 +108,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
 
         for name, cls in kwargs.items():
             if is_mass_profile_class(cls) or is_light_profile_class(cls):
-                model = pm.PriorModel(cls)
+                model = af.PriorModel(cls)
                 profile_models.append(model)
                 setattr(self, name, model)
             else:
@@ -129,19 +130,44 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                 for profile_model in profile_models:
                     profile_model.phi = phi
 
-        self.redshift = pm.PriorModel(redshift) if inspect.isclass(redshift) else redshift
+        self.redshift = af.PriorModel(redshift) if inspect.isclass(
+            redshift) else redshift
 
         if pixelization is not None and regularization is None:
-            raise exc.PriorException('If the galaxy prior has a pixelization, it must also have a regularization.')
+            raise af.exc.PriorException(
+                'If the galaxy prior has a pixelization, it must also have a '
+                'regularization.')
         if pixelization is None and regularization is not None:
-            raise exc.PriorException('If the galaxy prior has a regularization, it must also have a pixelization.')
+            raise af.exc.PriorException(
+                'If the galaxy prior has a regularization, it must also have a '
+                'pixelization.')
 
-        self.pixelization = pm.PriorModel(pixelization) if inspect.isclass(
+        self.pixelization = af.PriorModel(pixelization) if inspect.isclass(
             pixelization) else pixelization
-        self.regularization = pm.PriorModel(regularization) if inspect.isclass(
+        self.regularization = af.PriorModel(regularization) if inspect.isclass(
             regularization) else regularization
 
-        self.hyper_galaxy = pm.PriorModel(hyper_galaxy) if inspect.isclass(hyper_galaxy) else hyper_galaxy
+        self.hyper_galaxy = af.PriorModel(hyper_galaxy) if inspect.isclass(
+            hyper_galaxy) else hyper_galaxy
+
+        self.hyper_galaxy_image_1d = None
+
+        if pixelization is not None:
+            self.uses_inversion = True
+        else:
+            self.uses_inversion = False
+
+        if pixelization is pix.VoronoiBrightnessImage:
+            self.uses_cluster_inversion = True
+        else:
+            self.uses_cluster_inversion = False
+
+        if hyper_galaxy is not None:
+            self.uses_hyper_images = True
+        elif regularization is reg.AdaptiveBrightness:
+            self.uses_hyper_images = True
+        else:
+            self.uses_hyper_images = False
 
     @property
     def constant_light_profiles(self):
@@ -151,7 +177,8 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         light_profiles: [light_profiles.LightProfile]
             Light profiles with set variables
         """
-        return [value for value in self.__dict__.values() if galaxy.is_light_profile(value)]
+        return [value for value in self.__dict__.values() if
+                galaxy.is_light_profile(value)]
 
     @property
     def constant_mass_profiles(self):
@@ -161,7 +188,8 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         mass_profiles: [mass_profiles.MassProfile]
             Mass profiles with set variables
         """
-        return [value for value in self.__dict__.values() if galaxy.is_mass_profile(value)]
+        return [value for value in self.__dict__.values() if
+                galaxy.is_mass_profile(value)]
 
     @property
     def prior_models(self):
@@ -172,7 +200,8 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             A list of the prior models (e.g. variable profiles) attached to this galaxy prior
         """
         return [value for _, value in
-                filter(lambda t: isinstance(t[1], pm.PriorModel), self.__dict__.items())]
+                filter(lambda t: isinstance(t[1], af.PriorModel),
+                       self.__dict__.items())]
 
     @property
     def profile_prior_model_dict(self):
@@ -183,18 +212,19 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             A dictionary mapping_matrix instance variable names to variable profiles.
         """
         return {key: value for key, value in
-                filter(lambda t: isinstance(t[1], pm.PriorModel) and is_profile_class(t[1].cls),
+                filter(lambda t: isinstance(t[1], af.PriorModel) and is_profile_class(
+                    t[1].cls),
                        self.__dict__.items())}
 
     @property
     def light_profile_prior_models(self):
         return [item for item in self.__dict__.values() if
-                isinstance(item, pm.PriorModel) and is_light_profile_class(item.cls)]
+                isinstance(item, af.PriorModel) and is_light_profile_class(item.cls)]
 
     @property
     def mass_profile_prior_models(self):
         return [item for item in self.__dict__.values() if
-                isinstance(item, pm.PriorModel) and is_mass_profile_class(item.cls)]
+                isinstance(item, af.PriorModel) and is_mass_profile_class(item.cls)]
 
     @property
     def constant_profile_dict(self):
@@ -208,26 +238,28 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                 galaxy.is_light_profile(value) or galaxy.is_mass_profile(value)}
 
     @property
-    @cast_collection(PriorNameValue)
+    @af.cast_collection(af.PriorNameValue)
     def prior_tuples(self):
         """
         Returns
         -------
         priors: [PriorTuple]
-            A list of priors associated with prior models in this galaxy prior.
+            A list of priors associated with prior models in this galaxy af.prior.
         """
-        return [prior for prior_model in self.prior_models for prior in prior_model.prior_tuples]
+        return [prior for prior_model in self.prior_models for prior in
+                prior_model.prior_tuples]
 
     @property
-    @cast_collection(ConstantNameValue)
+    @af.cast_collection(af.ConstantNameValue)
     def constant_tuples(self):
         """
         Returns
         -------
         constant: [ConstantTuple]
-            A list of constants associated with prior models in this galaxy prior.
+            A list of constants associated with prior models in this galaxy af.prior.
         """
-        return [constant for prior_model in self.prior_models for constant in prior_model.constant_tuples]
+        return [constant for prior_model in self.prior_models for constant in
+                prior_model.constant_tuples]
 
     @property
     def prior_class_dict(self):
@@ -255,23 +287,25 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         """
         profiles = {**{key: value.instance_for_arguments(arguments)
                        for key, value
-                       in self.profile_prior_model_dict.items()}, **self.constant_profile_dict}
+                       in self.profile_prior_model_dict.items()},
+                    **self.constant_profile_dict}
 
         try:
             redshift = self.redshift.instance_for_arguments(arguments)
         except AttributeError:
             redshift = self.redshift
         pixelization = self.pixelization.instance_for_arguments(arguments) \
-            if isinstance(self.pixelization, pm.PriorModel) \
+            if isinstance(self.pixelization, af.PriorModel) \
             else self.pixelization
         regularization = self.regularization.instance_for_arguments(arguments) \
-            if isinstance(self.regularization, pm.PriorModel) \
+            if isinstance(self.regularization, af.PriorModel) \
             else self.regularization
         hyper_galaxy = self.hyper_galaxy.instance_for_arguments(arguments) \
-            if isinstance(self.hyper_galaxy, pm.PriorModel) \
+            if isinstance(self.hyper_galaxy, af.PriorModel) \
             else self.hyper_galaxy
 
-        return galaxy.Galaxy(redshift=redshift, pixelization=pixelization, regularization=regularization,
+        return galaxy.Galaxy(redshift=redshift, pixelization=pixelization,
+                             regularization=regularization,
                              hyper_galaxy=hyper_galaxy, **profiles)
 
     def gaussian_prior_model_for_arguments(self, arguments):
@@ -291,7 +325,8 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         """
         new_model = copy.deepcopy(self)
 
-        for key, value in filter(lambda t: isinstance(t[1], pm.PriorModel), self.__dict__.items()):
+        for key, value in filter(lambda t: isinstance(t[1], af.PriorModel),
+                                 self.__dict__.items()):
             setattr(new_model, key, value.gaussian_prior_model_for_arguments(arguments))
 
         return new_model

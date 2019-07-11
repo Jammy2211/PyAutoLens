@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from os import path
-from autofit import conf
+import autofit as af
 from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles as gp
 
@@ -13,7 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
-    conf.instance = conf.Config(config_path='{}/../../test_files/configs/radial_min'.format(directory))
+    af.conf.instance = af.conf.Config(config_path='{}/../../test_files/config/radial_min'.format(directory))
 
 
 class TestMemoize(object):

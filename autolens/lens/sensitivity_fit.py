@@ -83,7 +83,7 @@ class SensitivityProfileFit(AbstractSensitivityFit):
 class SensitivityInversionFit(AbstractSensitivityFit):
 
     def __init__(self, lens_data, tracer_normal, tracer_sensitive):
-        """Evaluate the sensitivity of an invesion fit to a specific component of a lens model and tracer. This is \
+        """Evaluate the sensitivity of an inversion fit to a specific component of a lens model and tracer. This is \
         performed by evaluating the likelihood of a fit to an image using two tracers:
 
         1) A 'normal tracer', which uses the same lens model as a the simulated lens data. This gives a baseline \

@@ -4,6 +4,7 @@ import shutil
 import numpy as np
 import pytest
 
+from autolens.data import simulated_ccd as sim_ccd
 from autolens.data import ccd
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, mask as msk
@@ -23,17 +24,18 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     grid_stack = grids.GridStack.grid_stack_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape,
                                                            sub_grid_size=2)
 
-    lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
+    lens_galaxy = g.Galaxy(redshift=0.5,
+                           light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
 
-    source_galaxy = g.Galaxy(light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5))
+    source_galaxy = g.Galaxy(redshift=1.0, light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5))
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=grid_stack)
 
-    ccd_simulated = ccd.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
-                                         exposure_time=300.0, psf=psf, background_sky_level=None,
-                                         add_noise=False)
+    ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
+        image=tracer.profile_image_plane_image_2d_for_simulation, pixel_scale=0.2, exposure_time=300.0, psf=psf,
+        background_sky_level=0.0, add_noise=False)
     ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
 
     path = "{}/data_temp/simulate_and_fit".format(
@@ -75,20 +77,19 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
 def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    psf = ccd.PSF.simulate_as_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
+    psf = ccd.PSF.from_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
 
     grid_stack = grids.GridStack.grid_stack_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape,
                                                            sub_grid_size=1)
 
-    lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
+    lens_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
-    source_galaxy = g.Galaxy(light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5))
+    source_galaxy = g.Galaxy(redshift=1.0, light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=grid_stack)
 
-    ccd_simulated = ccd.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
-                                         exposure_time=300.0, psf=psf, background_sky_level=None,
-                                         add_noise=False)
+    ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(image=tracer.profile_image_plane_image_2d_for_simulation, pixel_scale=0.2,
+                                                                            exposure_time=300.0, psf=psf, background_sky_level=0.0, add_noise=False)
     ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
 
     path = "{}/data_temp/simulate_and_fit".format(

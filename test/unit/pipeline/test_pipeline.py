@@ -2,8 +2,7 @@ import builtins
 import numpy as np
 import pytest
 
-from autofit.mapper import model_mapper
-from autofit.optimize import non_linear
+import autofit as af
 from autolens.pipeline import pipeline as pl
 
 
@@ -24,12 +23,17 @@ class MockMask(object):
 
 
 class Optimizer(object):
-    def __init__(self):
-        self.phase_name = "dummy_phase"
+    def __init__(self, phase_name="dummy_phase"):
+        self.phase_name = phase_name
+        self.phase_path = ""
 
 
-class DummyPhaseImaging(object):
+class DummyPhaseImaging(af.AbstractPhase):
+    def make_result(self, result, analysis):
+        pass
+
     def __init__(self, phase_name, phase_tag='', phase_path=None):
+        super().__init__(phase_name, phase_tag=phase_tag)
         self.data = None
         self.positions = None
         self.results = None
@@ -38,14 +42,15 @@ class DummyPhaseImaging(object):
         self.phase_path = phase_path or phase_name
         self.mask = None
 
-        self.optimizer = Optimizer()
+        self.optimizer = Optimizer(phase_name)
 
     def run(self, data, results, mask=None, positions=None):
         self.data = data
         self.results = results
         self.mask = mask
         self.positions = positions
-        return non_linear.Result(model_mapper.ModelInstance(), 1)
+        self.assert_and_save_pickle()
+        return af.Result(af.ModelInstance(), 1)
 
 
 class MockCCDData(object):
@@ -71,27 +76,27 @@ class MockFile(object):
 def make_mock_file(monkeypatch):
     files = []
 
-    def mock_open(filename, flag):
-        assert flag in ("w+", "w+b")
+    def mock_open(filename, flag, *args, **kwargs):
+        assert flag in ("w+", "w+b", "a")
         file = MockFile()
         file.filename = filename
         files.append(file)
         return file
 
     monkeypatch.setattr(builtins, 'open', mock_open)
-    return files
+    yield files
 
 
 class TestMetaData(object):
     def test_files(self, mock_files):
-        pipeline = pl.PipelineImaging("pipeline_name", DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"))
+        pipeline = pl.PipelineImaging("pipeline_name",
+                                      DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"))
         pipeline.run(MockCCDData(), data_name="data_name")
 
-
-        assert "phase_name//.metadata" in mock_files[1].filename
+        assert "phase_name///.metadata" in mock_files[1].filename
         assert mock_files[1].text == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
 
-        assert "phase_name//.optimizer.pickle" in mock_files[0].filename
+        assert "phase_name///.optimizer.pickle" in mock_files[2].filename
 
 
 class TestPassMask(object):
@@ -122,6 +127,7 @@ class TestPipelineImaging(object):
     def test_run_pipeline(self):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
+
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
 
         pipeline.run(MockCCDData())
@@ -139,21 +145,25 @@ class TestPipelineImaging(object):
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
 
 
-class DummyPhasePositions(object):
+class DummyPhasePositions(af.AbstractPhase):
+    def make_result(self, result, analysis):
+        pass
+
     def __init__(self, phase_name):
+        super().__init__(phase_name)
         self.positions = None
         self.results = None
         self.pixel_scale = None
         self.phase_name = phase_name
         self.phase_tag = ''
         self.phase_path = phase_name
-        self.optimizer = Optimizer()
+        self.optimizer = Optimizer(phase_name)
 
     def run(self, positions, pixel_scale, results):
         self.positions = positions
         self.pixel_scale = pixel_scale
         self.results = results
-        return non_linear.Result(model_mapper.ModelInstance(), 1)
+        return af.Result(af.ModelInstance(), 1)
 
 
 class TestPipelinePositions(object):
@@ -175,5 +185,3 @@ class TestPipelinePositions(object):
         pipeline2 = pl.PipelinePositions("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
-
-

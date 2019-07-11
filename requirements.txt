@@ -1,4 +1,4 @@
-autofit==0.23.4
+autofit==0.28.0
 argh==0.26.2
 asteval==0.9.12
 astropy==3.0
@@ -72,12 +72,11 @@ readme-renderer==22.0
 requests==2.19.1
 requests-toolbelt==0.8.0
 scikit-image==0.14.2
-scikit-learn==0.19.1
+scikit-learn==0.21.2
 scipy==1.2.0
 Send2Trash==1.5.0
 simplegeneric==0.8.1
 six==1.11.0
-sklearn==0.0
 terminado==0.8.1
 testpath==0.3.1
 tornado==5.0.2
