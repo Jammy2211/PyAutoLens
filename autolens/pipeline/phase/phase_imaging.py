@@ -436,9 +436,9 @@ class PhaseImaging(Phase):
                     should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
                     visualize_path=image_path)
 
-                if hasattr(self.results.last, 'inversion'):
+            #    if hasattr(self.results.last, 'inversion'):
 
-                    self.preload_pixelization_grid = self.results.last.inversion.most_likely_image_plane_pixelization_grid
+            #        self.preload_pixelization_grid = self.results.last.inversion.most_likely_image_plane_pixelization_grid
 
         def fit(self, instance):
             """

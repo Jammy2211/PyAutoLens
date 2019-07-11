@@ -7,10 +7,37 @@ Big Picture:
 - RJLens pipelines.
 - CTI Results section.
 
+Hyper Galaxies:
+
+- Implement Preload grid stack properly, including config
+
+- Currentl iplementation over scales noise in source. Fixes:
+
+-> Optimizing lens + source noise maps simultaneously? (They are currently summed for indepedent fits).
+-> Combined phase?
+-> Remove from magnification init phase? (Maybe want to refine lens + source model first) Remove just the source?
+- Remember that the lack of an inner radii + no hyper galaxy will slow down slacs_pix runs
+
+- Not getting super adaption of source pixels around lensed source. Do we need background scaling simultaneously?
+
+- Turn Border off
+
+RICH:
+
+- Inversion phase not fixing lens model
+
+Bugs:
+
+- Positions are not being updated when the mask centre is offset, suggesting the origin shift is ignored. CHECK FOR OTHER GRIDS / PARAMS.
+- Rectangular plots of source recons are still skewing.
+- Different colorbar scales for parametric source and pixelization source.
+
 Small Picture:
 
+- Scale noise of all hyper galaxies simultaneously? -> inversion using this noise map
+- Use model image for norm range on sbplots.
 - Inversion phase uses hyper oise map?
-- subplot_ infront of subplot filename
+- Divide images into sub folders (fits, subplots, lens_fit, etc.)
 - Rruns with BG Noise scaling only.
 - Chi squared plotts are weird
 - Colour norms from HYper Model images.
@@ -81,11 +108,6 @@ Future:
 Possible:
 
 - position updating / thresholding.
-
-Bugs:
-
-- Rectangular plots of source recons are still skewing.
-- Different colorbar scales for parametric source and pixelization source.
 
 
 Notes:
