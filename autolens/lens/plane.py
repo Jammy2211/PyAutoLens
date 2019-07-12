@@ -398,17 +398,51 @@ class AbstractGriddedPlane(AbstractPlane):
 
     @reshape_returned_array
     def convergence(self, return_in_2d=False, return_binned_sub_grid=False):
+        """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
+        of each galaxy's mass profile.
+
+        The convergence is calculated on the sub-grid and binned-up to the original regular grid by taking the mean
+        value of every set of sub-pixels, provided the *returned_binned_sub_grid* bool is *True*.
+
+        If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
+        sub-grid is returned.
+
+        Parameters
+        -----------
+        grid : RegularGrid
+            The grid (regular or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
+            potential is calculated on.
+        galaxies : [galaxy.Galaxy]
+            The galaxies whose mass profiles are used to compute the surface densities.
+        """
         if self.galaxies:
             return sum(map(lambda g: g.convergence_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid), self.galaxies))
         else:
             return np.full((self.grid_stack.sub.shape[0]), 0.0)
 
-    @property
-    def potential(self):
-        potential_1d = galaxy_util.potential_of_galaxies_from_grid(
-            grid=self.grid_stack.sub.unlensed_sub_grid,
-            galaxies=self.galaxies)
-        return self.grid_stack.scaled_array_2d_from_array_1d(array_1d=potential_1d)
+    @reshape_returned_array
+    def potential(self, return_in_2d=False, return_binned_sub_grid=False):
+        """Compute the potential of the list of galaxies of the plane's sub-grid, by summing the individual potentials \
+        of each galaxy's mass profile.
+
+        The potential is calculated on the sub-grid and binned-up to the original regular grid by taking the mean
+        value of every set of sub-pixels, provided the *returned_binned_sub_grid* bool is *True*.
+
+        If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
+        sub-grid is returned.
+
+        Parameters
+        -----------
+        grid : RegularGrid
+            The grid (regular or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
+            potential is calculated on.
+        galaxies : [galaxy.Galaxy]
+            The galaxies whose mass profiles are used to compute the surface densities.
+        """
+        if self.galaxies:
+            return sum(map(lambda g: g.potential_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid), self.galaxies))
+        else:
+            return np.full((self.grid_stack.sub.shape[0]), 0.0)
 
     @property
     def deflections_y(self):

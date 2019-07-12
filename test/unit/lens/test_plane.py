@@ -983,94 +983,74 @@ class TestAbstractPlaneGridded(object):
 
     class TestPotential:
 
-        def test__potential_from_plane__same_as_its_mass_profile(self, grid_stack_7x7, gal_x1_mp):
-            mass_profile = gal_x1_mp.mass_profiles[0]
+        def test__potential_same_as_multiple_galaxies__include_reshape_mapping(self, grid_stack_7x7):
+            # The *unlensed* sub-grid must be used to compute the potential. This changes the subgrid to ensure this
+            # is the case.
 
-            mp_sub_potential = mass_profile.potential_from_grid(grid_stack_7x7.sub.unlensed_sub_grid)
+            grid_stack_7x7.sub[5] = np.array([5.0, 2.0])
 
-            # Perform sub gridding average manually
-            mp_potential_pixel_0 = (mp_sub_potential[0] + mp_sub_potential[1] + mp_sub_potential[2] + mp_sub_potential[
-                3]) / 4
-            mp_potential_pixel_1 = (mp_sub_potential[4] + mp_sub_potential[5] + mp_sub_potential[6] + mp_sub_potential[
-                7]) / 4
-
-            plane = pl.AbstractGriddedPlane(galaxies=[gal_x1_mp], grid_stack=grid_stack_7x7, compute_deflections=False,
-                                            border=None, redshift=None)
-
-            assert plane.potential.shape == (7, 7)
-            assert (plane.potential[2, 2] == mp_potential_pixel_0).all()
-            assert (plane.potential[2, 3] == mp_potential_pixel_1).all()
-
-        def test__same_as_above__use_multiple_galaxies(self, grid_stack_7x7):
-            # Overwrite one value so intensity in each pixel is different
-            grid_stack_7x7.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
-
-            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0, centre=(1.0, 0.0)))
+            g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0, centre=(1.0, 1.0)))
 
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_potential = mp0.potential_from_grid(grid_stack_7x7.sub.unlensed_sub_grid)
-            mp1_sub_potential = mp1.potential_from_grid(grid_stack_7x7.sub.unlensed_sub_grid)
+            mp0_sub_potential = mp0.potential_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
+            mp1_sub_potential = mp1.potential_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
+
+            mp_sub_potential = mp0_sub_potential + mp1_sub_potential
 
             # Perform sub gridding average manually
-            mp0_potential_pixel_0 = (mp0_sub_potential[0] + mp0_sub_potential[1] +
-                                     mp0_sub_potential[2] + mp0_sub_potential[3]) / 4
-            mp0_potential_pixel_1 = (mp0_sub_potential[4] + mp0_sub_potential[5] +
-                                     mp0_sub_potential[6] + mp0_sub_potential[7]) / 4
-            mp1_potential_pixel_0 = (mp1_sub_potential[0] + mp1_sub_potential[1] +
-                                     mp1_sub_potential[2] + mp1_sub_potential[3]) / 4
-            mp1_potential_pixel_1 = (mp1_sub_potential[4] + mp1_sub_potential[5] +
-                                     mp1_sub_potential[6] + mp1_sub_potential[7]) / 4
 
-            plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack_7x7, compute_deflections=False,
-                                            border=None, redshift=None)
+            mp_potential_pixel_0 = (mp_sub_potential[0] + mp_sub_potential[1] +
+                                      mp_sub_potential[2] + mp_sub_potential[3]) / 4
+            mp_potential_pixel_1 = (mp_sub_potential[4] + mp_sub_potential[5] +
+                                      mp_sub_potential[6] + mp_sub_potential[7]) / 4
 
-            assert plane.potential[2, 2] == pytest.approx(mp0_potential_pixel_0 +
-                                                          mp1_potential_pixel_0, 1.0e-4)
-            assert plane.potential[2, 3] == pytest.approx(mp0_potential_pixel_1 +
-                                                          mp1_potential_pixel_1, 1.0e-4)
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1], grid_stack=grid_stack_7x7, compute_deflections=False,
+                border=None, redshift=None)
 
-        def test__potential__same_as_its_galaxy(self, grid_stack_7x7, gal_x1_mp):
-            galaxy_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid,
-                                                                           galaxies=[gal_x1_mp])
+            potential = plane.potential(return_in_2d=True, return_binned_sub_grid=True)
 
-            galaxy_potential = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(galaxy_potential)
+            assert potential[2, 2] == pytest.approx(mp_potential_pixel_0, 1.0e-4)
+            assert potential[2, 3] == pytest.approx(mp_potential_pixel_1, 1.0e-4)
 
-            plane = pl.AbstractGriddedPlane(galaxies=[gal_x1_mp], grid_stack=grid_stack_7x7, compute_deflections=False,
-                                            border=None, redshift=None)
-
-            assert (plane.potential == galaxy_potential).all()
-
-        def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack_7x7):
-            # Overwrite one value so intensity in each pixel is different
-            grid_stack_7x7.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
-
+        def test__same_as_above_galaxies___use_galaxy_to_compute_potential(self, grid_stack_7x7):
             g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid,
-                                                                       galaxies=[g0])
-            g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid,
-                                                                       galaxies=[g1])
+            g0_potential = g0.potential_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=True)
 
-            g0_potential = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g0_potential)
-            g1_potential = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g1_potential)
+            g1_potential = g1.potential_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=True)
 
             plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack_7x7, compute_deflections=False,
                                             border=None, redshift=None)
 
-            assert plane.potential == pytest.approx(g0_potential + g1_potential, 1.0e-4)
+            potential = plane.potential(
+                return_in_2d=False, return_binned_sub_grid=True)
 
-        def test__plane_has_no_galaxies__potential_are_zeros_size_of_unlensed_regular_grid(self, grid_stack_7x7):
+            assert potential == pytest.approx(g0_potential + g1_potential, 1.0e-8)
+
+        def test__plane_has_no_galaxies__potential_is_zeros_size_of_reshaped_sub_grid_array(
+                self, grid_stack_7x7):
             plane = pl.AbstractGriddedPlane(galaxies=[], grid_stack=grid_stack_7x7, compute_deflections=False,
                                             border=None, redshift=None)
 
-            assert plane.potential.shape == (7, 7)
-            assert (plane.potential[2, 2] == 0.0).all()
-            assert (plane.potential[2, 3] == 0.0).all()
+            potential = plane.potential(return_in_2d=False, return_binned_sub_grid=False)
 
+            assert potential.shape[0] == grid_stack_7x7.sub.shape[0]
+
+            potential = plane.potential(return_in_2d=True, return_binned_sub_grid=False)
+
+            assert potential.shape == (14, 14)
+
+            potential = plane.potential(return_in_2d=True, return_binned_sub_grid=True)
+
+            assert potential.shape == (7, 7)
+            
     class TestDeflections:
 
         def test__deflections_from_plane__same_as_its_mass_profile(self, grid_stack_7x7, gal_x1_mp):

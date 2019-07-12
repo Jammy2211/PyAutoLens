@@ -91,8 +91,12 @@ def reshape_returned_array(func):
             The profiles that owns the function
         grid : ndarray or RegularGrid or SubGrid
             (y,x) in either cartesian or profiles coordinate system
-        args
-        kwargs
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
 
         Returns
         -------

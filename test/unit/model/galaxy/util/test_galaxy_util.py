@@ -73,64 +73,6 @@ class TestIntensitiesFromGrid:
         assert (intensities == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
 
 
-class TestPotentialFromGrid:
-
-    def test__no_galaxies__potential_returned_as_0s(self, grid_stack_7x7):
-        grid_stack_7x7.regular = np.array([[1.0, 1.0],
-                                         [2.0, 2.0],
-                                         [3.0, 3.0]])
-
-        potential = galaxy_util.potential_of_galaxies_from_grid(
-            grid=grid_stack_7x7.regular, galaxies=[g.Galaxy(redshift=0.5)])
-
-        assert (potential[0] == np.array([0.0, 0.0])).all()
-        assert (potential[1] == np.array([0.0, 0.0])).all()
-        assert (potential[2] == np.array([0.0, 0.0])).all()
-
-    def test__gal_x1_mp__potential_returned_as_correct_values(self, grid_stack_7x7, gal_x1_mp):
-        grid_stack_7x7.regular = np.array([[1.0, 1.0],
-                                         [1.0, 0.0],
-                                         [-1.0, 0.0]])
-
-        galaxy_potential = gal_x1_mp.potential_from_grid(grid_stack_7x7.regular)
-
-        util_potential = galaxy_util.potential_of_galaxies_from_grid(grid=grid_stack_7x7.regular, galaxies=[gal_x1_mp])
-
-        assert (galaxy_potential == util_potential).all()
-
-    def test__gal_x2_mp__potential_double_from_above(self, grid_stack_7x7, gal_x1_mp):
-        grid_stack_7x7.regular = np.array([[1.0, 1.0],
-                                         [1.0, 0.0],
-                                         [-1.0, 0.0]])
-
-        galaxy_potential = gal_x1_mp.potential_from_grid(grid_stack_7x7.regular)
-
-        util_potential = galaxy_util.potential_of_galaxies_from_grid(grid=grid_stack_7x7.regular,
-                                                                    galaxies=[gal_x1_mp, gal_x1_mp])
-
-        assert (2.0 * galaxy_potential == util_potential).all()
-
-    def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper(self, grid_stack_7x7, gal_x1_mp):
-        potential = gal_x1_mp.potential_from_grid(grid_stack_7x7.sub)
-
-        potential = (potential[0] + potential[1] + potential[2] +
-                        potential[3]) / 4.0
-
-        util_potential = galaxy_util.potential_of_galaxies_from_grid(grid=grid_stack_7x7.sub, galaxies=[gal_x1_mp])
-
-        assert util_potential[0] == potential
-
-    def test__no_galaxies__grid_shape_of_grid_returned(self, grid_stack_7x7):
-
-        potential = galaxy_util.potential_of_galaxies_from_grid(grid=grid_stack_7x7.regular, galaxies=[])
-
-        assert (potential == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
-
-        potential = galaxy_util.potential_of_galaxies_from_grid(grid=grid_stack_7x7.sub, galaxies=[])
-
-        assert (potential == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
-
-
 class TestDeflectionsFromGrid:
 
     def test__all_coordinates(self, grid_stack_simple, gal_x1_mp):

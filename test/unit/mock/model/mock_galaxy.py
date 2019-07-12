@@ -15,6 +15,7 @@ class MockGalaxy(object):
     def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.full(shape=self.shape, fill_value=self.value)
 
+    @reshape_returned_array
     def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.full(shape=self.shape, fill_value=self.value)
 

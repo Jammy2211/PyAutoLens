@@ -208,10 +208,9 @@ class AbstractTracer(AbstractTracerCosmology):
     def convergence(self, return_in_2d=False, return_binned_sub_grid=False):
         return sum([plane.convergence() for plane in self.planes])
 
-    @property
-    @check_tracer_for_mass_profile
-    def potential(self):
-        return sum([plane.potential for plane in self.planes])
+    @reshape_returned_array
+    def potential(self, return_in_2d=False, return_binned_sub_grid=False):
+        return sum([plane.potential() for plane in self.planes])
 
     @property
     @check_tracer_for_mass_profile

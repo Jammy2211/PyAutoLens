@@ -280,18 +280,18 @@ class TestGalaxyFitData(object):
 
         galaxy = mock_galaxy.MockGalaxy(value=1, shape=36)
 
-        potential = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
-                                                                              sub_grid=galaxy_fit_data.grid_stack.sub)
+        potential = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(
+            galaxies=[galaxy], sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (potential == np.ones(9)).all()
 
         galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
-        potential_gal = galaxy.potential_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        potential_gal = galaxy_fit_data.grid_stack.sub.array_1d_binned_from_sub_array_1d(sub_array_1d=potential_gal)
+        potential_gal = galaxy.potential_from_grid(
+            grid=galaxy_fit_data.grid_stack.sub, return_binned_sub_grid=True)
 
-        potential_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
-                                                                                 sub_grid=galaxy_fit_data.grid_stack.sub)
+        potential_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(
+            galaxies=[galaxy], sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (potential_gal == potential_gd).all()
         
