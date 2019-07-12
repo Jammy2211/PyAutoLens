@@ -12,6 +12,7 @@ from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
+from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
 
 def is_light_profile(obj):
     return isinstance(obj, lp.LightProfile)
@@ -227,6 +228,7 @@ class Galaxy(af.ModelObject):
                            self.light_profiles))
         return None
 
+    @reshape_returned_array
     def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         """Compute the summed convergence of the galaxy's mass profiles using a grid \
         of Cartesian (y,x) coordinates.
@@ -235,13 +237,16 @@ class Galaxy(af.ModelObject):
         
         See *profiles.mass_profiles* module for details of how this is performed.
 
+        The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
+        *grids.reshape_returned_array* for a description of the output.
+
         Parameters
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.convergence_from_grid(grid), self.mass_profiles))
+            return sum(map(lambda p: p.convergence_from_grid(grid=grid), self.mass_profiles))
         return np.zeros((grid.shape[0],))
 
     def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):

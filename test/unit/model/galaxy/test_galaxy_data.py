@@ -220,18 +220,20 @@ class TestGalaxyFitData(object):
 
         galaxy = mock_galaxy.MockGalaxy(value=1, shape=36)
 
-        convergence = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
-                                                                                    sub_grid=galaxy_fit_data.grid_stack.sub)
+        convergence = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(
+            galaxies=[galaxy], sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (convergence == np.ones(9)).all()
 
-        galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
+        galaxy = g.Galaxy(
+            redshift=0.5,
+            mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
-        convergence_gal = galaxy.convergence_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        convergence_gal = galaxy_fit_data.grid_stack.sub.array_1d_binned_from_sub_array_1d(sub_array_1d=convergence_gal)
+        convergence_gal = galaxy.convergence_from_grid(
+            grid=galaxy_fit_data.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
 
-        convergence_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
-                                                                                       sub_grid=galaxy_fit_data.grid_stack.sub)
+        convergence_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(
+            galaxies=[galaxy], sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (convergence_gal == convergence_gd).all()
         

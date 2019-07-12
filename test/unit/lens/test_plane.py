@@ -910,27 +910,12 @@ class TestAbstractPlaneGridded(object):
 
     class TestConvergence:
 
-        def test__convergence_from_plane__same_as_its_mass_profile(self, grid_stack_7x7, gal_x1_mp):
-            mass_profile = gal_x1_mp.mass_profiles[0]
+        def test__convergence_same_as_multiple_galaxies__include_reshape_mapping(self, grid_stack_7x7):
 
-            mp_sub_convergence = mass_profile.convergence_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
+            # The *unlensed* sub-grid must be used to compute the convergence. This changes the subgrid to ensure this
+            # is the case.
 
-            # Perform sub gridding average manually
-            mp_convergence_pixel_0 = (mp_sub_convergence[0] + mp_sub_convergence[1] +
-                                      mp_sub_convergence[2] + mp_sub_convergence[3]) / 4
-            mp_convergence_pixel_1 = (mp_sub_convergence[4] + mp_sub_convergence[5] +
-                                      mp_sub_convergence[6] + mp_sub_convergence[7]) / 4
-
-            plane = pl.AbstractGriddedPlane(galaxies=[gal_x1_mp], grid_stack=grid_stack_7x7, compute_deflections=False,
-                                            border=None, redshift=None)
-
-            assert plane.convergence.shape == (7, 7)
-            assert (plane.convergence[2, 2] == mp_convergence_pixel_0).all()
-            assert (plane.convergence[2, 3] == mp_convergence_pixel_1).all()
-
-        def test__same_as_above__use_multiple_galaxies(self, grid_stack_7x7):
-            # Overwrite one value so intensity in each pixel is different
-            grid_stack_7x7.sub[5] = np.array([2.0, 2.0])
+            grid_stack_7x7.sub[5] = np.array([5.0, 2.0])
 
             g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0, centre=(1.0, 0.0)))
             g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0, centre=(1.0, 1.0)))
@@ -940,62 +925,61 @@ class TestAbstractPlaneGridded(object):
 
             mp0_sub_convergence = mp0.convergence_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
             mp1_sub_convergence = mp1.convergence_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
+            
+            mp_sub_convergence = mp0_sub_convergence + mp1_sub_convergence
 
             # Perform sub gridding average manually
-            mp0_convergence_pixel_0 = (mp0_sub_convergence[0] + mp0_sub_convergence[1] +
-                                       mp0_sub_convergence[2] + mp0_sub_convergence[3]) / 4
-            mp0_convergence_pixel_1 = (mp0_sub_convergence[4] + mp0_sub_convergence[5] +
-                                       mp0_sub_convergence[6] + mp0_sub_convergence[7]) / 4
-            mp1_convergence_pixel_0 = (mp1_sub_convergence[0] + mp1_sub_convergence[1] +
-                                       mp1_sub_convergence[2] + mp1_sub_convergence[3]) / 4
-            mp1_convergence_pixel_1 = (mp1_sub_convergence[4] + mp1_sub_convergence[5] +
-                                       mp1_sub_convergence[6] + mp1_sub_convergence[7]) / 4
 
-            plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack_7x7, compute_deflections=False,
-                                            border=None, redshift=None)
+            mp_convergence_pixel_0 = (mp_sub_convergence[0] + mp_sub_convergence[1] +
+                                       mp_sub_convergence[2] + mp_sub_convergence[3]) / 4
+            mp_convergence_pixel_1 = (mp_sub_convergence[4] + mp_sub_convergence[5] +
+                                       mp_sub_convergence[6] + mp_sub_convergence[7]) / 4
 
-            assert plane.convergence[2, 2] == pytest.approx(mp0_convergence_pixel_0 +
-                                                            mp1_convergence_pixel_0, 1.0e-4)
-            assert plane.convergence[2, 3] == pytest.approx(mp0_convergence_pixel_1 +
-                                                            mp1_convergence_pixel_1, 1.0e-4)
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1], grid_stack=grid_stack_7x7, compute_deflections=False,
+                border=None, redshift=None)
 
-        def test__convergence__same_as_its_galaxy(self, grid_stack_7x7, gal_x1_mp):
-            galaxy_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid,
-                                                                               galaxies=[gal_x1_mp])
+            convergence = plane.convergence(return_in_2d=True, return_binned_sub_grid=True)
 
-            galaxy_convergence = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(galaxy_convergence)
+            assert convergence[2, 2] == pytest.approx(mp_convergence_pixel_0, 1.0e-4)
+            assert convergence[2, 3] == pytest.approx(mp_convergence_pixel_1, 1.0e-4)
 
-            plane = pl.AbstractGriddedPlane(galaxies=[gal_x1_mp], grid_stack=grid_stack_7x7, compute_deflections=False,
-                                            border=None, redshift=None)
+        def test__same_as_above_galaxies___use_galaxy_to_compute_convergence(self, grid_stack_7x7):
 
-            assert (plane.convergence == galaxy_convergence).all()
-
-        def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack_7x7):
             g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_convergence = galaxy_util.convergence_of_galaxies_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, galaxies=[g0])
+            g0_convergence = g0.convergence_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=True)
 
-            g1_convergence = galaxy_util.convergence_of_galaxies_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, galaxies=[g1])
-
-            g0_convergence = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g0_convergence)
-            g1_convergence = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g1_convergence)
+            g1_convergence = g1.convergence_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=True)
 
             plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack_7x7, compute_deflections=False,
                                             border=None, redshift=None)
 
-            assert plane.convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-4)
+            convergence = plane.convergence(
+                return_in_2d=False, return_binned_sub_grid=True)
 
-        def test__plane_has_no_galaxies__convergence_is_zeros_size_of_unlensed_regular_grid(self, grid_stack_7x7):
+            assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
+
+        def test__plane_has_no_galaxies__convergence_is_zeros_size_of_reshaped_sub_grid_array(
+                self, grid_stack_7x7):
 
             plane = pl.AbstractGriddedPlane(galaxies=[], grid_stack=grid_stack_7x7, compute_deflections=False,
                                             border=None, redshift=None)
 
-            assert plane.convergence.shape == (7, 7)
-            assert (plane.convergence[2, 2] == 0.0).all()
-            assert (plane.convergence[2, 3] == 0.0).all()
+            convergence = plane.convergence(return_in_2d=False, return_binned_sub_grid=False)
+
+            assert convergence.shape[0] == grid_stack_7x7.sub.shape[0]
+
+            convergence = plane.convergence(return_in_2d=True, return_binned_sub_grid=False)
+
+            assert convergence.shape == (14, 14)
+
+            convergence = plane.convergence(return_in_2d=True, return_binned_sub_grid=True)
+
+            assert convergence.shape == (7, 7)
 
     class TestPotential:
 
@@ -1687,6 +1671,7 @@ class TestAbstractDataPlane(object):
 
 
 class TestPlane(object):
+
     class TestGridLensing:
 
         def test__grid_stack_setup_for_regular_sub_and_blurring__no_deflections(self, grid_stack_7x7, gal_x1_mp):

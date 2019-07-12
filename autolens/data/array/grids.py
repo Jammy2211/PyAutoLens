@@ -77,7 +77,7 @@ def check_input_grid_and_options_are_compatible(grid, return_in_2d, return_binne
 def reshape_returned_array(func):
 
     @wraps(func)
-    def wrapper(profile, grid, return_in_2d=False, return_binned_sub_grid=False, *args, **kwargs):
+    def wrapper(profile, grid=None, return_in_2d=False, return_binned_sub_grid=False, *args, **kwargs):
         """
         
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -98,6 +98,9 @@ def reshape_returned_array(func):
         -------
             An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
         """
+
+        if grid is None:
+            grid = profile.grid_stack.sub
 
         result_1d = func(profile, grid, *args, *kwargs)
 

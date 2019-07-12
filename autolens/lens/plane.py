@@ -9,6 +9,7 @@ from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 from autolens.model.galaxy.util import galaxy_util
 
+from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
 
 class AbstractPlane(object):
 
@@ -395,11 +396,12 @@ class AbstractGriddedPlane(AbstractPlane):
         return galaxy_util.intensities_of_galaxies_from_grid(
             grid=self.grid_stack.blurring, galaxies=[galaxy])
 
-    @property
-    def convergence(self):
-        convergence_1d = galaxy_util.convergence_of_galaxies_from_grid(
-            grid=self.grid_stack.sub.unlensed_sub_grid, galaxies=self.galaxies)
-        return self.grid_stack.scaled_array_2d_from_array_1d(array_1d=convergence_1d)
+    @reshape_returned_array
+    def convergence(self, return_in_2d=False, return_binned_sub_grid=False):
+        if self.galaxies:
+            return sum(map(lambda g: g.convergence_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid), self.galaxies))
+        else:
+            return np.full((self.grid_stack.sub.shape[0]), 0.0)
 
     @property
     def potential(self):
