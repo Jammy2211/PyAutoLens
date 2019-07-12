@@ -1,5 +1,6 @@
 import numpy as np
 
+from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
 
 class MockGalaxy(object):
 
@@ -10,6 +11,7 @@ class MockGalaxy(object):
     def intensities_from_grid(self, grid):
         return np.full(shape=self.shape, fill_value=self.value)
 
+    @reshape_returned_array
     def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         return np.full(shape=self.shape, fill_value=self.value)
 

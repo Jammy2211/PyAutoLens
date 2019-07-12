@@ -177,8 +177,12 @@ class TestAbstractTracer(object):
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack_7x7)
 
-            assert image_plane.convergence.shape == (7, 7)
-            assert (image_plane.convergence == tracer.convergence).all()
+            image_plane_convergence = image_plane.convergence(return_in_2d=True, return_binned_sub_grid=True)
+
+            tracer_convergence = tracer.convergence(return_in_2d=True, return_binned_sub_grid=True)
+
+            assert image_plane_convergence.shape == (7, 7)
+            assert (image_plane_convergence == tracer_convergence).all()
 
         def test__galaxy_entered_3_times__both_planes__different_convergence_for_each(self, grid_stack_7x7):
 
@@ -186,40 +190,46 @@ class TestAbstractTracer(object):
             g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
             g2 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
-            g0_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid,
-                                                                           galaxies=[g0])
-            g1_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid,
-                                                                           galaxies=[g1])
-            g2_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid,
-                                                                           galaxies=[g2])
+            g0_convergence = g0.convergence_from_grid(
+                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
 
-            g0_convergence = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g0_convergence)
-            g1_convergence = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g1_convergence)
-            g2_convergence = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g2_convergence)
+            g1_convergence = g1.convergence_from_grid(
+                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
-                                                         image_plane_grid_stack=grid_stack_7x7)
+            g2_convergence = g2.convergence_from_grid(
+                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
 
-            assert tracer.image_plane.convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-4)
-            assert (tracer.source_plane.convergence == g2_convergence).all()
-            assert tracer.convergence == pytest.approx(g0_convergence + g1_convergence +
+            tracer = ray_tracing.TracerImageSourcePlanes(
+                lens_galaxies=[g0, g1], source_galaxies=[g2],
+                image_plane_grid_stack=grid_stack_7x7)
+
+            image_plane_convergence = tracer.image_plane.convergence(
+                return_in_2d=True, return_binned_sub_grid=True)
+
+            source_plane_convergence = tracer.source_plane.convergence(
+                return_in_2d=True, return_binned_sub_grid=True)
+
+            tracer_convergence = tracer.convergence(
+                return_in_2d=True, return_binned_sub_grid=True)
+
+            assert image_plane_convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-4)
+            assert (source_plane_convergence == g2_convergence).all()
+            assert tracer_convergence == pytest.approx(g0_convergence + g1_convergence +
                                                        g2_convergence, 1.0e-4)
 
-        def test__no_galaxy_has_mass_profile__convergence_returned_as_none(self, grid_stack_7x7):
+        def test__no_galaxy_has_mass_profile__convergence_returned_as_zeros(self, grid_stack_7x7):
 
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g.Galaxy(redshift=0.5)], image_plane_grid_stack=grid_stack_7x7)
+            tracer = ray_tracing.TracerImageSourcePlanes(
+                lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy(redshift=0.5)],
+                image_plane_grid_stack=grid_stack_7x7)
 
-            assert tracer.convergence is None
+            assert (tracer.convergence(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy(redshift=0.5)],
-                                                         image_plane_grid_stack=grid_stack_7x7)
+            tracer = ray_tracing.TracerMultiPlanes(
+                galaxies=[g.Galaxy(redshift=0.1), g.Galaxy(redshift=0.2)],
+                image_plane_grid_stack=grid_stack_7x7)
 
-            assert tracer.convergence is None
-
-            tracer = ray_tracing.TracerMultiPlanes(galaxies=[g.Galaxy(redshift=0.1), g.Galaxy(redshift=0.2)],
-                                                   image_plane_grid_stack=grid_stack_7x7)
-
-            assert tracer.convergence is None
+            assert (tracer.convergence(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
 
     class TestPotential:
 

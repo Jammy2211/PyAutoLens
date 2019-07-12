@@ -11,6 +11,7 @@ from autolens.model.inversion import inversions as inv
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.galaxy import galaxy as g
 
+from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
 
 def check_tracer_for_mass_profile(func):
     """If none of the tracer's galaxies have a mass profile, it surface density, potential and deflections cannot \
@@ -123,6 +124,10 @@ class AbstractTracer(AbstractTracerCosmology):
         return [plane for plane in self.planes if galaxy in plane.galaxies][0]
 
     @property
+    def grid_stack(self):
+        return self.planes[0].grid_stack
+
+    @property
     def image_plane(self):
         return self.planes[0]
 
@@ -199,10 +204,9 @@ class AbstractTracer(AbstractTracerCosmology):
     def regularizations_of_planes(self):
         return list(filter(None, [plane.regularization for plane in self.planes]))
 
-    @property
-    @check_tracer_for_mass_profile
-    def convergence(self):
-        return sum([plane.convergence for plane in self.planes])
+    @reshape_returned_array
+    def convergence(self, return_in_2d=False, return_binned_sub_grid=False):
+        return sum([plane.convergence() for plane in self.planes])
 
     @property
     @check_tracer_for_mass_profile
