@@ -141,7 +141,8 @@ class GalaxyFitData(object):
             return sum(map(lambda g: g.convergence_from_grid(
                 grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))
         elif self.use_potential:
-            return galaxy_util.potential_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
+            return sum(map(lambda g: g.potential_from_grid(
+                grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))
         elif self.use_deflections_y:
             return galaxy_util.deflections_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)[:, 0]
         elif self.use_deflections_x:

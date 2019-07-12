@@ -216,22 +216,75 @@ class TestMassProfiles(object):
 
     class TestPotential:
 
-        def test__galaxies_with_x1_and_x2_mass_profiles__potential_is_same_individual_profiles(self, mp_0, gal_x1_mp,
-                                                                                               mp_1, gal_x2_mp):
+        def test__no_mass_profiles__potential_returned_as_0s_of_shape_grid(self, grid_stack_7x7):
+            galaxy = g.Galaxy(redshift=0.5)
 
-            mp_potential = mp_0.potential_from_grid(grid=np.array([[1.05, -0.55]]))
+            potential = galaxy.potential_from_grid(
+                grid=grid_stack_7x7.regular)
 
-            gal_mp_potential = gal_x1_mp.potential_from_grid(grid=np.array([[1.05, -0.55]]))
+            assert (potential == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
+
+        def test__using_no_mass_profiles__check_reshaping_decorator_of_returned_potential(
+                self, grid_stack_7x7):
+            galaxy = g.Galaxy(redshift=0.5)
+
+            potential = galaxy.potential_from_grid(
+                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned_sub_grid=False)
+
+            assert (potential == np.zeros(shape=(7, 7))).all()
+
+            potential = galaxy.potential_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=False)
+
+            assert (potential == np.zeros(shape=grid_stack_7x7.sub.shape[0])).all()
+
+            potential = galaxy.potential_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+
+            assert (potential == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
+
+        def test__galaxies_with_x1_and_x2_mass_profiles__potential_is_same_individual_profiles(
+                self, mp_0, gal_x1_mp, mp_1, gal_x2_mp):
+            mp_potential = mp_0.potential_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+
+            gal_mp_potential = gal_x1_mp.potential_from_grid(
+                grid=np.array([[1.05, -0.55]]))
 
             assert mp_potential == gal_mp_potential
 
-            mp_potential = mp_0.potential_from_grid(grid=np.array([[1.05, -0.55]]))
-            mp_potential += mp_1.potential_from_grid(grid=np.array([[1.05, -0.55]]))
+            mp_potential = mp_0.potential_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+            mp_potential += mp_1.potential_from_grid(
+                grid=np.array([[1.05, -0.55]]))
 
-            gal_potential = gal_x2_mp.potential_from_grid(grid=np.array([[1.05, -0.55]]))
+            gal_potential = gal_x2_mp.potential_from_grid(
+                grid=np.array([[1.05, -0.55]]))
 
             assert mp_potential == gal_potential
 
+        def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper_by_binning_sum_of_mass_profile_values(
+                self, grid_stack_7x7, gal_x2_mp):
+            mp_0_potential = gal_x2_mp.mass_profile_0.potential_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+
+            mp_1_potential = gal_x2_mp.mass_profile_1.potential_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+
+            mp_potential = mp_0_potential + mp_1_potential
+
+            mp_potential_0 = (mp_potential[0] + mp_potential[1] +
+                                mp_potential[2] + mp_potential[3]) / 4.0
+
+            mp_potential_1 = (mp_potential[4] + mp_potential[5] +
+                                mp_potential[6] + mp_potential[7]) / 4.0
+
+            gal_potential = gal_x2_mp.potential_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+
+            assert gal_potential[0] == mp_potential_0
+            assert gal_potential[1] == mp_potential_1
+            
     class TestDeflectionAngles:
 
         def test__galaxies_with_x1_and_x2_mass_profiles__deflection_same_as_individual_profiles(self, mp_0, gal_x1_mp,

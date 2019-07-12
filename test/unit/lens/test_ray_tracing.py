@@ -233,7 +233,8 @@ class TestAbstractTracer(object):
 
     class TestPotential:
 
-        def test__galaxy_mass_sis__source_plane_no_mass_potential_is_ignored(self, grid_stack_7x7):
+        def test__galaxy_mass_sis__no_source_plane_potential(self, grid_stack_7x7):
+
             g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(redshift=0.5)
 
@@ -242,44 +243,59 @@ class TestAbstractTracer(object):
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack_7x7)
 
-            assert tracer.potential.shape == (7, 7)
-            assert (image_plane.potential == tracer.potential).all()
+            image_plane_potential = image_plane.potential(return_in_2d=True, return_binned_sub_grid=True)
 
-        def test__galaxy_entered_3_times__different_potential_for_each(self, grid_stack_7x7):
+            tracer_potential = tracer.potential(return_in_2d=True, return_binned_sub_grid=True)
+
+            assert image_plane_potential.shape == (7, 7)
+            assert (image_plane_potential == tracer_potential).all()
+
+        def test__galaxy_entered_3_times__both_planes__different_potential_for_each(self, grid_stack_7x7):
 
             g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
             g2 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
-            g0_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid, galaxies=[g0])
-            g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid, galaxies=[g1])
-            g2_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack_7x7.sub.unlensed_sub_grid, galaxies=[g2])
+            g0_potential = g0.potential_from_grid(
+                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
 
-            g0_potential = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g0_potential)
-            g1_potential = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g1_potential)
-            g2_potential = grid_stack_7x7.regular.scaled_array_2d_from_array_1d(g2_potential)
+            g1_potential = g1.potential_from_grid(
+                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
-                                                         image_plane_grid_stack=grid_stack_7x7)
+            g2_potential = g2.potential_from_grid(
+                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
 
-            assert tracer.image_plane.potential == pytest.approx(g0_potential + g1_potential, 1.0e-4)
-            assert (tracer.source_plane.potential == g2_potential).all()
-            assert tracer.potential == pytest.approx(g0_potential + g1_potential + g2_potential, 1.0e-4)
+            tracer = ray_tracing.TracerImageSourcePlanes(
+                lens_galaxies=[g0, g1], source_galaxies=[g2],
+                image_plane_grid_stack=grid_stack_7x7)
 
-        def test__no_galaxy_has_mass_profile__potential_returned_as_none(self, grid_stack_7x7):
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g.Galaxy(redshift=0.5)], image_plane_grid_stack=grid_stack_7x7)
+            image_plane_potential = tracer.image_plane.potential(
+                return_in_2d=True, return_binned_sub_grid=True)
 
-            assert tracer.potential is None
+            source_plane_potential = tracer.source_plane.potential(
+                return_in_2d=True, return_binned_sub_grid=True)
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy(redshift=0.5)],
-                                                         image_plane_grid_stack=grid_stack_7x7)
+            tracer_potential = tracer.potential(
+                return_in_2d=True, return_binned_sub_grid=True)
 
-            assert tracer.potential is None
+            assert image_plane_potential == pytest.approx(g0_potential + g1_potential, 1.0e-4)
+            assert (source_plane_potential == g2_potential).all()
+            assert tracer_potential == pytest.approx(g0_potential + g1_potential +
+                                                       g2_potential, 1.0e-4)
 
-            tracer = ray_tracing.TracerMultiPlanes(galaxies=[g.Galaxy(redshift=0.1), g.Galaxy(redshift=0.2)],
-                                                   image_plane_grid_stack=grid_stack_7x7)
+        def test__no_galaxy_has_mass_profile__potential_returned_as_zeros(self, grid_stack_7x7):
 
-            assert tracer.potential is None
+            tracer = ray_tracing.TracerImageSourcePlanes(
+                lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy(redshift=0.5)],
+                image_plane_grid_stack=grid_stack_7x7)
+
+            assert (tracer.potential(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
+
+            tracer = ray_tracing.TracerMultiPlanes(
+                galaxies=[g.Galaxy(redshift=0.1), g.Galaxy(redshift=0.2)],
+                image_plane_grid_stack=grid_stack_7x7)
+
+            assert (tracer.potential(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
 
     class TestDeflections:
 

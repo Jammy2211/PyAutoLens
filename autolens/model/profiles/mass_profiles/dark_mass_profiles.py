@@ -140,6 +140,12 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
         ----------
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the surface density is computed on.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
 
         surface_density_grid = np.zeros(shape=grid.shape[0])
@@ -372,6 +378,12 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         tabulate_bins : int
             The number of bins to tabulate the inner integral of this profile.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
 
         @jit_integrand
@@ -429,6 +441,12 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         tabulate_bins : int
             The number of bins to tabulate the inner integral of this profile.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
 
         @jit_integrand
@@ -802,6 +820,12 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         ----------
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
         potential_grid = quad_grid(self.potential_func, 0.0, 1.0, grid,
                                    args=(
@@ -824,6 +848,12 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         ----------
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
 
         def calculate_deflection_component(npow, index):
@@ -922,6 +952,12 @@ class SphericalNFW(EllipticalNFW):
         ----------
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
         eta = (1.0 / self.scale_radius) * self.grid_to_grid_radii(grid) + 0j
         return np.real(
@@ -938,6 +974,12 @@ class SphericalNFW(EllipticalNFW):
         ----------
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
         eta = np.multiply(1. / self.scale_radius, self.grid_to_grid_radii(grid=grid))
         deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius,

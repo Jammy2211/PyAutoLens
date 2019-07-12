@@ -7,7 +7,7 @@ def make_ray_tracing_plotter_setup():
     return "{}/../../test_files/plotting/ray_tracing/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
-def test__image_plane_image_is_output(tracer_x2_plane_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch):
+def test__all_individual_plotters(tracer_x2_plane_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch):
 
     ray_tracing_plotters.plot_image_plane_image(tracer=tracer_x2_plane_7x7, mask=mask_7x7, extract_array_from_mask=True,
                                                 zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
@@ -15,17 +15,11 @@ def test__image_plane_image_is_output(tracer_x2_plane_7x7, mask_7x7, ray_tracing
 
     assert ray_tracing_plotter_path + 'tracer_image_plane_image.png' in plot_patch.paths
 
-
-def test__convergence_is_output(tracer_x2_plane_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch):
-
     ray_tracing_plotters.plot_convergence(tracer=tracer_x2_plane_7x7, mask=mask_7x7, extract_array_from_mask=True,
                                           zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                           output_path=ray_tracing_plotter_path, output_format='png')
 
     assert ray_tracing_plotter_path + 'tracer_convergence.png' in plot_patch.paths
-
-
-def test__potential_is_output(tracer_x2_plane_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch):
 
     ray_tracing_plotters.plot_potential(tracer=tracer_x2_plane_7x7, mask=mask_7x7, extract_array_from_mask=True,
                                         zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
@@ -33,17 +27,11 @@ def test__potential_is_output(tracer_x2_plane_7x7, mask_7x7, ray_tracing_plotter
 
     assert ray_tracing_plotter_path + 'tracer_potential.png' in plot_patch.paths
 
-
-def test__deflections_y_is_output(tracer_x2_plane_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch):
-
     ray_tracing_plotters.plot_deflections_y(tracer=tracer_x2_plane_7x7, mask=mask_7x7, extract_array_from_mask=True,
                                             zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                             output_path=ray_tracing_plotter_path, output_format='png')
 
     assert ray_tracing_plotter_path + 'tracer_deflections_y.png' in plot_patch.paths
-
-
-def test__deflections_x_is_output(tracer_x2_plane_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch):
 
     ray_tracing_plotters.plot_deflections_x(tracer=tracer_x2_plane_7x7, mask=mask_7x7, extract_array_from_mask=True,
                                             zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],

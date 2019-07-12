@@ -244,11 +244,18 @@ class Galaxy(af.ModelObject):
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
         if self.has_mass_profile:
             return sum(map(lambda p: p.convergence_from_grid(grid=grid), self.mass_profiles))
         return np.zeros((grid.shape[0],))
 
+    @reshape_returned_array
     def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
         """Compute the summed gravitational potential of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
@@ -257,13 +264,22 @@ class Galaxy(af.ModelObject):
 
         See *profiles.mass_profiles* module for details of how this is performed.
 
+                The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
+        *grids.reshape_returned_array* for a description of the output.
+
         Parameters
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.potential_from_grid(grid), self.mass_profiles))
+            return sum(map(lambda p: p.potential_from_grid(grid=grid), self.mass_profiles))
         return np.zeros((grid.shape[0],))
 
     def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
