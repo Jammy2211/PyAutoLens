@@ -301,9 +301,15 @@ class TestSimulateCCD(object):
             deflections=deflections, pixel_scale=1.0, source_galaxies=[g1], exposure_time=10000.0,
             background_sky_level=100.0, add_noise=True, noise_seed=1)
 
+        tracer_profile_image_plane_image = tracer.profile_image_plane_image(
+            return_in_2d=True, return_binned_sub_grid=True)
+
         ccd_data_simulated = simulated_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-            image=tracer.profile_image_plane_image_2d, pixel_scale=1.0, exposure_time=10000.0,
+            image=tracer_profile_image_plane_image, pixel_scale=1.0, exposure_time=10000.0,
             background_sky_level=100.0, add_noise=True, noise_seed=1)
+
+        print(ccd_data_simulated_via_deflections.image.shape)
+        print(ccd_data_simulated.image.shape)
 
         assert (ccd_data_simulated_via_deflections.image == ccd_data_simulated.image).all()
         assert (ccd_data_simulated_via_deflections.psf == ccd_data_simulated.psf).all()
@@ -335,7 +341,7 @@ class TestSimulateCCD(object):
             add_noise=True, noise_seed=1)
 
         ccd_data_simulated = simulated_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-            image=tracer.profile_image_plane_image_2d_for_simulation, pixel_scale=0.1, exposure_time=10000.0, psf=psf,
+            image=tracer.profile_image_plane_image_for_simulation, pixel_scale=0.1, exposure_time=10000.0, psf=psf,
             background_sky_level=100.0, add_noise=True, noise_seed=1)
 
         assert (ccd_data_simulated_via_tracer.image == ccd_data_simulated.image).all()

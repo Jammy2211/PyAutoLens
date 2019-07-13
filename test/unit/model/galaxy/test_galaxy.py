@@ -13,22 +13,78 @@ class TestLightProfiles(object):
 
     class TestIntensity:
 
-        def test__galaxies_with_x1_and_x2_light_profiles__intensities_is_sum_of_profiles(self, lp_0, lp_1,
-                                                                                         gal_x1_lp, gal_x2_lp):
+        def test__no_light_profiles__intensities_returned_as_0s_of_shape_grid(self, grid_stack_7x7):
 
-            lp_intensity = lp_0.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
+            galaxy = g.Galaxy(redshift=0.5)
 
-            gal_lp_intensity = gal_x1_lp.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
+            intensities = galaxy.intensities_from_grid(
+                grid=grid_stack_7x7.regular)
 
-            assert lp_intensity == gal_lp_intensity
+            assert (intensities == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
 
-            intensity = lp_0.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
-            intensity += lp_1.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
+        def test__using_no_light_profiles__check_reshaping_decorator_of_returned_intensities(
+                self, grid_stack_7x7):
+            galaxy = g.Galaxy(redshift=0.5)
 
-            gal_intensity = gal_x2_lp.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
+            intensities = galaxy.intensities_from_grid(
+                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned_sub_grid=False)
 
-            assert intensity == gal_intensity
+            assert (intensities == np.zeros(shape=(7, 7))).all()
 
+            intensities = galaxy.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=False)
+
+            assert (intensities == np.zeros(shape=grid_stack_7x7.sub.shape[0])).all()
+
+            intensities = galaxy.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+
+            assert (intensities == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
+
+        def test__galaxies_with_x1_and_x2_light_profiles__intensities_is_same_individual_profiles(
+                self, lp_0, gal_x1_lp, lp_1, gal_x2_lp):
+
+            lp_intensities = lp_0.intensities_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+
+            gal_lp_intensities = gal_x1_lp.intensities_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+
+            assert lp_intensities == gal_lp_intensities
+
+            lp_intensities = lp_0.intensities_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+            lp_intensities += lp_1.intensities_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+
+            gal_intensities = gal_x2_lp.intensities_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+
+            assert lp_intensities == gal_intensities
+
+        def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper_by_binning_sum_of_light_profile_values(
+                self, grid_stack_7x7, gal_x2_lp):
+
+            lp_0_intensities = gal_x2_lp.light_profile_0.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+
+            lp_1_intensities = gal_x2_lp.light_profile_1.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+
+            lp_intensities = lp_0_intensities + lp_1_intensities
+
+            lp_intensities_0 = (lp_intensities[0] + lp_intensities[1] +
+                                lp_intensities[2] + lp_intensities[3]) / 4.0
+
+            lp_intensities_1 = (lp_intensities[4] + lp_intensities[5] +
+                                lp_intensities[6] + lp_intensities[7]) / 4.0
+
+            gal_intensities = gal_x2_lp.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+
+            assert gal_intensities[0] == lp_intensities_0
+            assert gal_intensities[1] == lp_intensities_1
+            
     class TestLuminosityWithin:
 
         def test__two_profile_galaxy__is_sum_of_individual_profiles(self, lp_0, lp_1, gal_x1_lp, gal_x2_lp):

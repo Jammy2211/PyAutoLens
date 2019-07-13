@@ -24,6 +24,8 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     grid_stack = grids.GridStack.grid_stack_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape,
                                                            sub_grid_size=2)
 
+    print(grid_stack.regular.shape)
+
     lens_galaxy = g.Galaxy(redshift=0.5,
                            light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
@@ -34,8 +36,11 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
                                                  image_plane_grid_stack=grid_stack)
 
     ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-        image=tracer.profile_image_plane_image_2d_for_simulation, pixel_scale=0.2, exposure_time=300.0, psf=psf,
+        image=tracer.profile_image_plane_image_for_simulation, pixel_scale=0.2, exposure_time=300.0, psf=psf,
         background_sky_level=0.0, add_noise=False)
+
+    print(ccd_simulated.image.shape)
+
     ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
 
     path = "{}/data_temp/simulate_and_fit".format(
@@ -88,7 +93,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=grid_stack)
 
-    ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(image=tracer.profile_image_plane_image_2d_for_simulation, pixel_scale=0.2,
+    ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(image=tracer.profile_image_plane_image_for_simulation, pixel_scale=0.2,
                                                                             exposure_time=300.0, psf=psf, background_sky_level=0.0, add_noise=False)
     ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
 

@@ -29,17 +29,17 @@ class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
         self.kappa = kappa
 
     @reshape_returned_array
-    def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         return np.full(shape=grid.shape[0], fill_value=self.kappa)
 
     @reshape_returned_array
-    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         return np.zeros((grid.shape[0],))
 
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return self.grid_to_grid_cartesian(grid=grid, radius=self.kappa * grid_radii)
 
@@ -79,17 +79,17 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
         return 0.0
 
     @reshape_returned_array
-    def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         return np.zeros((grid.shape[0],))
 
     @reshape_returned_array
-    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         return np.zeros((grid.shape[0],))
 
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 

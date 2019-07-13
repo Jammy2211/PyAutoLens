@@ -2005,11 +2005,11 @@ class MockProfile(object):
         self.values_1d = values_1d
 
     @grids.reshape_returned_array
-    def array_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def array_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         return self.values_1d
 
     @grids.reshape_returned_grid
-    def grid_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def grid_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         return self.values_1d
 
 

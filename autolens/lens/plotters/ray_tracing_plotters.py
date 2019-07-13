@@ -200,8 +200,10 @@ def plot_image_plane_image(
         mask_pointsize=10, position_pointsize=10.0,
         output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 
+    image_plane_image = tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+
     array_plotters.plot_array(
-        array=tracer.profile_image_plane_image_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=image_plane_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions,
         as_subplot=as_subplot,
         units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,

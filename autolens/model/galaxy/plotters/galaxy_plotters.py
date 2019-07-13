@@ -27,8 +27,7 @@ def plot_intensities(
     grid : ndarray or datas.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    intensities = galaxy.intensities_from_grid(grid=grid)
-    intensities = grid.scaled_array_2d_from_array_1d(intensities)
+    intensities = galaxy.intensities_from_grid(grid=grid, return_in_2d=True, return_binned_sub_grid=True)
 
     array_plotters.plot_array(
         array=intensities, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -60,8 +59,7 @@ def plot_convergence(
     grid : ndarray or datas.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    convergence = galaxy.convergence_from_grid(grid=grid)
-    convergence = grid.scaled_array_2d_from_array_1d(convergence)
+    convergence = galaxy.convergence_from_grid(grid=grid, return_in_2d=True, return_binned_sub_grid=True)
 
     array_plotters.plot_array(
         array=convergence, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -93,8 +91,7 @@ def plot_potential(
     grid : ndarray or datas.array.grid_stacks.RegularGrid
          The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
      """
-    potential = galaxy.potential_from_grid(grid=grid)
-    potential = grid.scaled_array_2d_from_array_1d(potential)
+    potential = galaxy.potential_from_grid(grid=grid, return_in_2d=True, return_binned_sub_grid=True)
 
     array_plotters.plot_array(
         array=potential, mask=mask, extract_array_from_mask=extract_array_from_mask,

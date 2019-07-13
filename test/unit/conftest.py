@@ -5,6 +5,7 @@ import pytest
 
 import autofit as af
 from autolens.data.array import grids
+from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_data as gd
 from autolens.model.galaxy import galaxy_fit
@@ -241,14 +242,17 @@ def make_grid_stack_simple(regular_grid_7x7, sub_grid_7x7, blurring_grid_7x7):
 
 @pytest.fixture(name="padded_regular_grid_7x7")
 def make_padded_regular_grid_7x7():
-    return mock_grids.MockPaddedRegularGrid(
-        image_shape=(7, 7), psf_shape=(3, 3))
+    return grids.PaddedRegularGrid.padded_grid_from_shape_psf_shape_and_pixel_scale(
+        shape=(7, 7), psf_shape=(3, 3), pixel_scale=1.0)
 
 
 @pytest.fixture(name="padded_sub_grid_7x7")
 def make_padded_sub_grid_7x7():
-    return mock_grids.MockPaddedSubGrid(
-        image_shape=(7, 7), psf_shape=(3, 3))
+
+    mask = msk.Mask(array=np.full(fill_value=False, shape=(7,7)), pixel_scale=1.0)
+
+    return grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
+        mask=mask, sub_grid_size=2, psf_shape=(3, 3))
 
 
 @pytest.fixture(name="padded_grid_stack_7x7")

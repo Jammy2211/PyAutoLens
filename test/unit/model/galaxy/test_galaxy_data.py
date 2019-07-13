@@ -168,9 +168,8 @@ class TestGalaxyFitData(object):
 
         galaxy = g.Galaxy(redshift=0.5, light=lp.SphericalSersic(intensity=1.0))
 
-        intensities_gal = galaxy.intensities_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        intensities_gal = galaxy_fit_data.grid_stack.sub.array_1d_binned_from_sub_array_1d(
-            sub_array_1d=intensities_gal)
+        intensities_gal = galaxy.intensities_from_grid(
+            grid=galaxy_fit_data.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
 
         intensities_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(
             galaxies=[galaxy], sub_grid=galaxy_fit_data.grid_stack.sub)

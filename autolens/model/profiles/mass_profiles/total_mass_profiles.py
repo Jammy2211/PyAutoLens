@@ -35,7 +35,7 @@ class PointMass(geometry_profiles.SphericalProfile, mp.MassProfile):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return self.grid_to_grid_cartesian(grid=grid,
                                            radius=self.einstein_radius / grid_radii)
@@ -88,7 +88,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
@@ -118,7 +118,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -146,7 +146,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -253,7 +253,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -356,7 +356,7 @@ class SphericalPowerLaw(EllipticalPowerLaw):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         eta = self.grid_to_grid_radii(grid)
         deflection_r = 2.0 * self.einstein_radius_rescaled * np.divide(
             np.power(eta, (3.0 - self.slope)),
@@ -464,7 +464,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -520,7 +520,7 @@ class SphericalIsothermal(EllipticalIsothermal):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -541,7 +541,7 @@ class SphericalIsothermal(EllipticalIsothermal):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
