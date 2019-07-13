@@ -62,9 +62,6 @@ class GalaxyFitData(object):
         grid_stacks : ccd.masks.GridStack
             Grids of (y,x) Cartesian coordinates which map over the masked 1D fit data array's pixels (includes an \
             regular-grid, sub-grid, etc.)
-        padded_grid_stack : ccd.masks.GridStack
-            Grids of padded (y,x) Cartesian coordinates which map over the every fit data array's pixel in 1D and a \
-            padded regioon to include edge's for accurate PSF convolution (includes an regular-grid, sub-grid, etc.)
         """
         self.unmasked_image = galaxy_data.image
         self.pixel_scale = galaxy_data.pixel_scale
@@ -79,17 +76,11 @@ class GalaxyFitData(object):
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
             mask=mask, sub_grid_size=sub_grid_size, psf_shape=(3, 3))
 
-        self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(3, 3))
-
         self.interp_pixel_scale = interp_pixel_scale
 
         if interp_pixel_scale is not None:
 
             self.grid_stack = self.grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
-                interp_pixel_scale=interp_pixel_scale)
-
-            self.padded_grid_stack = self.padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
                 interp_pixel_scale=interp_pixel_scale)
 
         self.mask_2d = mask
@@ -123,7 +114,6 @@ class GalaxyFitData(object):
             self.sub_grid_size = obj.sub_grid_size
             self.interp_pixel_scale = obj.interp_pixel_scale
             self.grid_stack = obj.grid_stack
-            self.padded_grid_stack = obj.padded_grid_stack
             self.use_intensities = obj.use_intensities
             self.use_convergence = obj.use_convergence
             self.use_potential = obj.use_potential

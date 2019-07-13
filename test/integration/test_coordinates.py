@@ -77,42 +77,6 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
     assert density_1d.argmax() == 24
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (4, 4)
 
-def test__same_as_above__but_grid_is_to_7x7_for_simulation():
-
-    grid_stack = grids.GridStack.grid_stack_for_simulation(shape=(5, 5), pixel_scale=1.0, psf_shape=(3, 3))
-
-    sersic = lp.SphericalSersic(centre=(2.0, -2.0))
-    image_1d = sersic.intensities_from_grid(grid=grid_stack.regular)
-    assert image_1d.argmax() == 8
-    image_2d = grid_stack.regular.trimmed_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
-    assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 0)
-    image_2d = grid_stack.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
-    assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (1, 1)
-
-    sersic = lp.SphericalSersic(centre=(2.0, 2.0))
-    image_1d = sersic.intensities_from_grid(grid=grid_stack.regular)
-    assert image_1d.argmax() == 12
-    image_2d = grid_stack.regular.trimmed_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
-    assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 4)
-    image_2d = grid_stack.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
-    assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (1, 5)
-
-    sersic = lp.SphericalSersic(centre=(-2.0, -2.0))
-    image_1d = sersic.intensities_from_grid(grid=grid_stack.regular)
-    assert image_1d.argmax() == 36
-    image_2d = grid_stack.regular.trimmed_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
-    assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 0)
-    image_2d = grid_stack.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
-    assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (5, 1)
-
-    sersic = lp.SphericalSersic(centre=(-2.0, 2.0))
-    image_1d = sersic.intensities_from_grid(grid=grid_stack.regular)
-    assert image_1d.argmax() == 40
-    image_2d = grid_stack.regular.trimmed_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
-    assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 4)
-    image_2d = grid_stack.regular.padded_array_2d_from_padded_array_1d(padded_array_1d=image_1d)
-    assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (5, 5)
-
 def test__deflection_angles():
 
     regular = grids.RegularGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)

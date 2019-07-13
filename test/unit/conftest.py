@@ -160,14 +160,6 @@ def make_blurring_mask_7x7():
     return mock_mask.MockMask(array=array)
 
 
-@pytest.fixture(name="padded_mask_7x7")
-def make_padded_mask_7x7():
-
-    array = np.full(fill_value=False, shape=(9, 9))
-
-    return mock_mask.MockMask(array=array)
-
-
 @pytest.fixture(name="mask_6x6")
 def make_mask_6x6():
     array = np.array([[True, True, True, True, True, True],
@@ -238,27 +230,6 @@ def make_grid_stack_simple(regular_grid_7x7, sub_grid_7x7, blurring_grid_7x7):
     grid_stack.blurring[0] = np.array([1.0, 0.0])
 
     return grid_stack
-
-
-@pytest.fixture(name="padded_regular_grid_7x7")
-def make_padded_regular_grid_7x7():
-    return grids.PaddedRegularGrid.padded_grid_from_shape_psf_shape_and_pixel_scale(
-        shape=(7, 7), psf_shape=(3, 3), pixel_scale=1.0)
-
-
-@pytest.fixture(name="padded_sub_grid_7x7")
-def make_padded_sub_grid_7x7():
-
-    mask = msk.Mask(array=np.full(fill_value=False, shape=(7,7)), pixel_scale=1.0)
-
-    return grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
-        mask=mask, sub_grid_size=2, psf_shape=(3, 3))
-
-
-@pytest.fixture(name="padded_grid_stack_7x7")
-def make_padded_grid_stack_7x7(padded_regular_grid_7x7, padded_sub_grid_7x7):
-    return mock_grids.MockPaddedGridStack(
-        regular=padded_regular_grid_7x7, sub=padded_sub_grid_7x7)
 
 
 # BORDERS #
@@ -447,13 +418,12 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 ##### Lens Data ###
 
 @pytest.fixture(name="lens_data_7x7")
-def make_lens_data_7x7(ccd_data_7x7, mask_7x7, grid_stack_7x7, padded_grid_stack_7x7,
+def make_lens_data_7x7(ccd_data_7x7, mask_7x7, grid_stack_7x7,
                        border_7x7,
                        convolver_image_7x7, convolver_mapping_matrix_7x7,
                        cluster_grid_7x7):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_7x7, mask=mask_7x7, grid_stack=grid_stack_7x7,
-        padded_grid_stack=padded_grid_stack_7x7,
         border=border_7x7, convolver_image=convolver_image_7x7,
         convolver_mapping_matrix=convolver_mapping_matrix_7x7,
         cluster=cluster_grid_7x7)

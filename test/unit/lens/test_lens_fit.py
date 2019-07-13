@@ -414,13 +414,8 @@ class TestLensProfileFit:
                                                          source_galaxies=[g1],
                                                          image_plane_grid_stack=lens_data_7x7.grid_stack)
 
-            padded_tracer = ray_tracing.TracerImageSourcePlanes(
-                lens_galaxies=[g0], source_galaxies=[g1],
-                image_plane_grid_stack=lens_data_7x7.padded_grid_stack)
-
-            fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_7x7,
-                                                           tracer=tracer,
-                                                           padded_tracer=padded_tracer)
+            fit = lens_fit.LensDataFit.for_data_and_tracer(
+                lens_data=lens_data_7x7, tracer=tracer)
 
             assert lens_data_7x7.noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert lens_data_7x7.noise_map_2d == pytest.approx(fit.noise_map_2d, 1e-4)
@@ -555,12 +550,8 @@ class TestLensProfileFit:
                 lens_galaxies=[g0], source_galaxies=[g1],
                 image_plane_grid_stack=lens_data_7x7.grid_stack)
 
-            padded_tracer = ray_tracing.TracerImageSourcePlanes(
-                lens_galaxies=[g0], source_galaxies=[g1],
-                image_plane_grid_stack=lens_data_7x7.padded_grid_stack)
-
             fit = lens_fit.LensDataFit.for_data_and_tracer(
-                lens_data=lens_data_7x7, tracer=tracer, padded_tracer=padded_tracer,
+                lens_data=lens_data_7x7, tracer=tracer,
                 hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_background_noise)
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
@@ -634,12 +625,8 @@ class TestLensProfileFit:
                 lens_galaxies=[g0], source_galaxies=[g1],
                 image_plane_grid_stack=lens_data_7x7.grid_stack)
 
-            padded_tracer = ray_tracing.TracerImageSourcePlanes(
-                lens_galaxies=[g0], source_galaxies=[g1],
-                image_plane_grid_stack=lens_data_7x7.padded_grid_stack)
-
             fit = lens_fit.LensDataFit.for_data_and_tracer(
-                lens_data=lens_data_7x7, tracer=tracer, padded_tracer=padded_tracer)
+                lens_data=lens_data_7x7, tracer=tracer)
 
             blurred_profile_image_2d_of_planes = \
                 tracer.blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(
@@ -650,33 +637,29 @@ class TestLensProfileFit:
             assert (blurred_profile_image_2d_of_planes[1] ==
                     fit.model_image_2d_of_planes[1]).all()
 
-            unmasked_image_1d = padded_tracer.profile_image_plane_image(
-                return_in_2d=False, return_binned_sub_grid=True)
+            unmasked_blurred_profile_image = \
+                tracer.unmasked_blurred_profile_image_plane_image_from_psf(psf=lens_data_7x7.psf)
 
-            unmasked_blurred_profile_image = lens_data_7x7.padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-                psf=lens_data_7x7.psf,
-                unmasked_image_1d=unmasked_image_1d)
-
-            assert (unmasked_blurred_profile_image == fit.unmasked_blurred_image_plane_image).all()
+            assert (unmasked_blurred_profile_image == fit.unmasked_blurred_profile_image_plane_image).all()
 
             unmasked_blurred_profile_image_of_planes = \
-                padded_tracer.unmasked_blurred_profile_image_plane_image_of_planes_from_psf(
+                tracer.unmasked_blurred_profile_image_plane_image_of_planes_from_psf(
                     psf=lens_data_7x7.psf)
 
             assert (unmasked_blurred_profile_image_of_planes[0] ==
-                    fit.unmasked_blurred_image_plane_image_of_planes[0]).all()
+                    fit.unmasked_blurred_profile_image_plane_image_of_planes[0]).all()
             assert (unmasked_blurred_profile_image_of_planes[1] ==
-                    fit.unmasked_blurred_image_plane_image_of_planes[1]).all()
+                    fit.unmasked_blurred_profile_image_plane_image_of_planes[1]).all()
 
             unmasked_blurred_profile_image_of_galaxies = \
-                padded_tracer.unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(
+                tracer.unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(
                     psf=lens_data_7x7.psf)
 
             assert (unmasked_blurred_profile_image_of_galaxies[0][0] ==
-                    fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies[0][
+                    fit.unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies[0][
                         0]).all()
             assert (unmasked_blurred_profile_image_of_galaxies[1][0] ==
-                    fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies[1][
+                    fit.unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies[1][
                         0]).all()
 
 
@@ -942,11 +925,6 @@ class TestLensInversionFit:
             assert (fit.model_image_2d_of_planes[0] == np.zeros((7,7))).all()
             assert inversion.reconstructed_data_2d == pytest.approx(
                 fit.model_image_2d_of_planes[1], 1.0e-4)
-
-            with pytest.raises(Exception):
-                fit.unmasked_blurred_image_plane_image
-                fit.unmasked_blurred_image_plane_image_of_planes
-                fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
 
 
 class TestLensProfileInversionFit:

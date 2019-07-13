@@ -820,44 +820,6 @@ class TestAbstractPlaneGridded(object):
 
             assert profile_image_plane_image == pytest.approx(g0_image + g1_image, 1.0e-4)
 
-        def test__padded_grid_stack_in__profile_image_plane_image_is_padded(self, padded_grid_stack_7x7, gal_x1_lp):
-
-            light_profile = gal_x1_lp.light_profiles[0]
-
-            lp_sub_image = light_profile.intensities_from_grid(
-                grid=padded_grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=False)
-
-            # Perform sub gridding average manually
-            lp_image_pixel_0 = (lp_sub_image[0] + lp_sub_image[1] + lp_sub_image[2] + lp_sub_image[3]) / 4
-            lp_image_pixel_1 = (lp_sub_image[4] + lp_sub_image[5] + lp_sub_image[6] + lp_sub_image[7]) / 4
-            lp_image_pixel_2 = (lp_sub_image[8] + lp_sub_image[9] + lp_sub_image[10] + lp_sub_image[11]) / 4
-            lp_image_pixel_3 = (lp_sub_image[12] + lp_sub_image[13] + lp_sub_image[14] + lp_sub_image[15]) / 4
-            lp_image_pixel_4 = (lp_sub_image[16] + lp_sub_image[17] + lp_sub_image[18] + lp_sub_image[19]) / 4
-            lp_image_pixel_5 = (lp_sub_image[20] + lp_sub_image[21] + lp_sub_image[22] + lp_sub_image[23]) / 4
-            lp_image_pixel_6 = (lp_sub_image[24] + lp_sub_image[25] + lp_sub_image[26] + lp_sub_image[27]) / 4
-            lp_image_pixel_7 = (lp_sub_image[28] + lp_sub_image[29] + lp_sub_image[30] + lp_sub_image[31]) / 4
-            lp_image_pixel_8 = (lp_sub_image[32] + lp_sub_image[33] + lp_sub_image[34] + lp_sub_image[35]) / 4
-            lp_image_pixel_9 = (lp_sub_image[36] + lp_sub_image[37] + lp_sub_image[38] + lp_sub_image[39]) / 4
-            lp_image_pixel_10 = (lp_sub_image[40] + lp_sub_image[41] + lp_sub_image[42] + lp_sub_image[43]) / 4
-
-            plane = pl.AbstractGriddedPlane(galaxies=[gal_x1_lp], grid_stack=padded_grid_stack_7x7,
-                                            compute_deflections=False, border=None, redshift=None)
-
-            profile_image_plane_image_for_simulation = plane.profile_image_plane_image_for_simulation
-
-            assert profile_image_plane_image_for_simulation.shape == (9, 9)
-            assert profile_image_plane_image_for_simulation[0, 0] == lp_image_pixel_0
-            assert profile_image_plane_image_for_simulation[0, 1] == lp_image_pixel_1
-            assert profile_image_plane_image_for_simulation[0, 2] == lp_image_pixel_2
-            assert profile_image_plane_image_for_simulation[0, 3] == lp_image_pixel_3
-            assert profile_image_plane_image_for_simulation[0, 4] == lp_image_pixel_4
-            assert profile_image_plane_image_for_simulation[0, 5] == lp_image_pixel_5
-            assert profile_image_plane_image_for_simulation[0, 6] == lp_image_pixel_6
-            assert profile_image_plane_image_for_simulation[0, 7] == lp_image_pixel_7
-            assert profile_image_plane_image_for_simulation[0, 8] == lp_image_pixel_8
-            assert profile_image_plane_image_for_simulation[1, 0] == lp_image_pixel_9
-            assert profile_image_plane_image_for_simulation[1, 1] == lp_image_pixel_10
-
         def test__plane_has_no_galaxies__image_is_zeros_size_of_unlensed_regular_grid(self, grid_stack_7x7):
 
             plane = pl.AbstractGriddedPlane(galaxies=[], grid_stack=grid_stack_7x7, compute_deflections=False,
@@ -1285,29 +1247,6 @@ class TestAbstractPlaneGridded(object):
             with pytest.raises(exc.PixelizationException):
                 print(plane.mapper)
 
-    class TestProperties:
-
-        def test__padded_grid_in__tracer_has_padded_grid_property(self, grid_stack_7x7, padded_grid_stack_7x7,
-                                                                  gal_x1_lp):
-            plane = pl.AbstractGriddedPlane(grid_stack=grid_stack_7x7, galaxies=[gal_x1_lp], compute_deflections=False,
-                                            redshift=None, border=None)
-            assert plane.has_padded_grid_stack is False
-
-            plane = pl.AbstractGriddedPlane(grid_stack=padded_grid_stack_7x7, galaxies=[gal_x1_lp],
-                                            compute_deflections=False,
-                                            redshift=None, border=None)
-            assert plane.has_padded_grid_stack is True
-
-            mask = msk.Mask(np.array([[True, False]]), pixel_scale=3.0)
-
-            padded_grid_stack_7x7 = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask, 2,
-                                                                                                            (3, 3))
-
-            plane = pl.AbstractGriddedPlane(grid_stack=padded_grid_stack_7x7, galaxies=[gal_x1_lp],
-                                            compute_deflections=False,
-                                            redshift=None, border=None)
-            assert plane.has_padded_grid_stack is True
-
     class TestPlaneImage:
 
         def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self, grid_stack_7x7):
@@ -1400,46 +1339,6 @@ class TestAbstractDataPlane(object):
             assert (blurred_images_1d_of_galaxies[0] == blurred_g0_image).all()
             assert (blurred_images_1d_of_galaxies[1] == blurred_g1_image).all()
 
-    class TestUnmaskedBlurrerImagePlaneImage:
-
-        def test__unmasked_blurred_images_1d_of_galaxies(self):
-            psf = ccd.PSF(array=(np.array([[0.0, 3.0, 0.0],
-                                           [0.0, 1.0, 2.0],
-                                           [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-
-            mask = msk.Mask(array=np.array([[True, True, True],
-                                            [True, False, True],
-                                            [True, True, True]]), pixel_scale=1.0)
-
-            padded_grid_stack_7x7 = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-                mask=mask, sub_grid_size=1, psf_shape=(3, 3))
-
-            g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=0.1))
-            g1 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=0.2))
-
-            plane = pl.AbstractDataPlane(redshift=0.5, galaxies=[g0, g1], grid_stack=padded_grid_stack_7x7,
-                                         compute_deflections=False, border=None)
-
-            manual_blurred_image_0 = plane.profile_image_plane_image_of_galaxies(
-                return_in_2d=True, return_binned_sub_grid=True)[0]
-
-            manual_blurred_image_0 = psf.convolve(array=manual_blurred_image_0)
-
-            manual_blurred_image_1 = plane.profile_image_plane_image_of_galaxies(
-                return_in_2d=True, return_binned_sub_grid=True)[1]
-
-            manual_blurred_image_1 = psf.convolve(array=manual_blurred_image_1)
-
-            unmasked_blurred_image_plane_images = plane.unmasked_blurred_profile_image_plane_images_of_galaxies_from_psf(
-                psf=psf)
-
-            assert (unmasked_blurred_image_plane_images[0] == manual_blurred_image_0[1:4, 1:4]).all()
-            assert (unmasked_blurred_image_plane_images[1] == manual_blurred_image_1[1:4, 1:4]).all()
-
-            unmasked_blurred_image_plane_image = plane.unmasked_blurred_profile_image_plane_image_from_psf(psf=psf)
-
-            assert unmasked_blurred_image_plane_image == \
-                   pytest.approx(manual_blurred_image_0[1:4, 1:4] + manual_blurred_image_1[1:4, 1:4], 1.0e-4)
 
     class TestContributionMaps:
 

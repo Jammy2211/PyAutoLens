@@ -100,16 +100,11 @@ class LensData(object):
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
             mask=mask, sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape)
 
-        self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape)
-
         self.interp_pixel_scale = interp_pixel_scale
 
         if interp_pixel_scale is not None:
+            
             self.grid_stack = self.grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
-                interp_pixel_scale=interp_pixel_scale)
-
-            self.padded_grid_stack = self.padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
                 interp_pixel_scale=interp_pixel_scale)
 
         self.border = grids.RegularGridBorder.from_mask(mask=mask)
@@ -209,7 +204,6 @@ class LensData(object):
             self.uses_inversion = obj.uses_inversion
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
             self.grid_stack = obj.grid_stack
-            self.padded_grid_stack = obj.padded_grid_stack
             self.border = obj.border
             self.positions = obj.positions
             self.interp_pixel_scale = obj.interp_pixel_scale

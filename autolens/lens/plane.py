@@ -391,16 +391,6 @@ class AbstractGriddedPlane(AbstractPlane):
         return galaxy.intensities_from_grid(
             grid=self.grid_stack.sub, return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
 
-    @property
-    def profile_image_plane_image_for_simulation(self):
-        if not self.has_padded_grid_stack:
-            raise exc.RayTracingException(
-                'To retrieve an image plane image for a simulation, the grid stack in the plane'
-                'must be a padded grid stack')
-        return self.profile_image_plane_image(
-            return_in_2d=True,
-            return_binned_sub_grid=True)
-
     @reshape_returned_array_blurring
     def profile_image_plane_blurring_image(self, return_in_2d=True):
         """Compute the profile-image plane blurring image of the list of galaxies of the plane's sub-grid, by summing \
@@ -506,10 +496,6 @@ class AbstractGriddedPlane(AbstractPlane):
             galaxies=self.galaxies)
 
     @property
-    def has_padded_grid_stack(self):
-        return issubclass(type(self.grid_stack.regular), grids.PaddedRegularGrid)
-
-    @property
     def plane_image(self):
         return lens_util.plane_image_of_galaxies_from_grid(
             shape=self.grid_stack.regular.mask.shape,
@@ -571,33 +557,6 @@ class AbstractDataPlane(AbstractGriddedPlane):
                                            blurring_array=profile_image_plane_blurring_image_1d),
             self.profile_image_plane_image_of_galaxies(return_in_2d=False, return_binned_sub_grid=True),
             self.profile_image_plane_blurring_image_of_galaxies(return_in_2d=False)))
-
-    def unmasked_blurred_profile_image_plane_image_from_psf(self, psf):
-
-        if not self.has_padded_grid_stack:
-            raise exc.RayTracingException(
-                'To retrieve an unmasked image, the grid stack of a plane tracer'
-                'must be a padded grid stack')
-
-        return self.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-            psf=psf, unmasked_image_1d=self.profile_image_plane_image(return_in_2d=False, return_binned_sub_grid=True))
-
-    def unmasked_blurred_profile_image_plane_images_of_galaxies_from_psf(self, psf):
-
-        if not self.has_padded_grid_stack:
-            raise exc.RayTracingException(
-                'To retrieve an unmasked image, the grid stack of a plane tracer'
-                'must be a padded grid stack')
-
-        if self.has_pixelization:
-            raise exc.RayTracingException(
-                'As unmasked blurred image plane image cannot be returned frmm a plane'
-                'with a pixelization')
-
-        return list(map(lambda image_plane_image_1d:
-                        self.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-                            psf=psf, unmasked_image_1d=image_plane_image_1d),
-                        self.profile_image_plane_image_of_galaxies(return_in_2d=False, return_binned_sub_grid=True)))
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
         hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(

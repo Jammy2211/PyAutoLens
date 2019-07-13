@@ -568,8 +568,7 @@ class TestImagePassing(object):
         )
 
         fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_7x7,
-                                                       tracer=tracer,
-                                                       padded_tracer=None)
+                                                       tracer=tracer)
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 

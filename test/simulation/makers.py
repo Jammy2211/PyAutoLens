@@ -37,7 +37,7 @@ def simulate_image_from_galaxies_and_output_to_fits(data_resolution, data_type, 
     # Simulate the CCD data, remembering that we use a special image-plane image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.g. the PSF convolution).
     simulated_ccd_data = simulated_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-        image=tracer.profile_image_plane_image_for_simulation, pixel_scale=pixel_scale, psf=psf,
+        image=tracer.padded_profile_image_plane_image_2d_from_psf_shape, pixel_scale=pixel_scale, psf=psf,
         exposure_time=exposure_time, background_sky_level=background_sky_level, add_noise=True)
 
     # Now, lets output this simulated ccd-data to the test/data folder.

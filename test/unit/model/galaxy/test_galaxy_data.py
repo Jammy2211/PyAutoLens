@@ -62,25 +62,6 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.grid_stack.regular == regular_grid_7x7).all()
         assert (galaxy_fit_data.grid_stack.sub == sub_grid_7x7).all()
 
-    def test__padded_grid_stack(self, gal_data_7x7, mask_7x7):
-
-        galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_7x7, mask=mask_7x7, use_intensities=True)
-
-        padded_image_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
-            mask=np.full((9, 9), False),  pixel_scales=galaxy_fit_data.unmasked_image.pixel_scales)
-
-        assert (galaxy_fit_data.padded_grid_stack.regular == padded_image_util).all()
-        assert galaxy_fit_data.padded_grid_stack.regular.image_shape == (7, 7)
-        assert galaxy_fit_data.padded_grid_stack.regular.padded_shape == (9, 9)
-
-        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-             mask=np.full((9,9), False), pixel_scales=galaxy_fit_data.unmasked_image.pixel_scales,
-            sub_grid_size=galaxy_fit_data.grid_stack.sub.sub_grid_size)
-
-        assert galaxy_fit_data.padded_grid_stack.sub == pytest.approx(padded_sub_util, 1e-4)
-        assert galaxy_fit_data.padded_grid_stack.sub.image_shape == (7, 7)
-        assert galaxy_fit_data.padded_grid_stack.sub.padded_shape == (9, 9)
-
     def test__interp_pixel_scale(self, image_7x7, mask_7x7):
 
         noise_map = sca.ScaledSquarePixelArray(array=2.0 * np.ones((7, 7)), pixel_scale=3.0)
@@ -103,21 +84,6 @@ class TestGalaxyFitData(object):
         assert (gal_data_7x7.grid_stack.blurring == new_grid_stack.blurring).all()
         assert (gal_data_7x7.grid_stack.blurring.interpolator.vtx == new_grid_stack.blurring.interpolator.vtx).all()
         assert (gal_data_7x7.grid_stack.blurring.interpolator.wts == new_grid_stack.blurring.interpolator.wts).all()
-
-        padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask_7x7, sub_grid_size=2, psf_shape=(3, 3))
-        new_padded_grid_stack = \
-            padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
-
-        assert (gal_data_7x7.padded_grid_stack.regular == new_padded_grid_stack.regular).all()
-        assert (
-                    gal_data_7x7.padded_grid_stack.regular.interpolator.vtx == new_padded_grid_stack.regular.interpolator.vtx).all()
-        assert (
-                    gal_data_7x7.padded_grid_stack.regular.interpolator.wts == new_padded_grid_stack.regular.interpolator.wts).all()
-
-        assert (gal_data_7x7.padded_grid_stack.sub == new_padded_grid_stack.sub).all()
-        assert (gal_data_7x7.padded_grid_stack.sub.interpolator.vtx == new_padded_grid_stack.sub.interpolator.vtx).all()
-        assert (gal_data_7x7.padded_grid_stack.sub.interpolator.wts == new_padded_grid_stack.sub.interpolator.wts).all()
 
     def test__gal_data_7x7_intensities(self, gal_data_7x7, mask_7x7):
 
