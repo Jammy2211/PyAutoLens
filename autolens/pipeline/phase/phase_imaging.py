@@ -462,9 +462,8 @@ class PhaseImaging(Phase):
 
             hyper_noise_background = self.hyper_noise_background_for_instance(instance=instance)
 
-            fit = self.fit_for_tracers(
+            fit = self.fit_for_tracer(
                 tracer=tracer,
-                padded_tracer=None,
                 hyper_image_sky=hyper_image_sky,
                 hyper_noise_background=hyper_noise_background)
 
@@ -558,9 +557,8 @@ class PhaseImaging(Phase):
 
             hyper_noise_background = self.hyper_noise_background_for_instance(instance=instance)
 
-            padded_tracer = self.padded_tracer_for_instance(instance=instance)
-            fit = self.fit_for_tracers(
-                tracer=tracer, padded_tracer=padded_tracer,
+            fit = self.fit_for_tracer(
+                tracer=tracer,
                 hyper_image_sky=hyper_image_sky, hyper_noise_background=hyper_noise_background)
 
             phase_plotters.plot_lens_fit_for_phase(
@@ -606,12 +604,11 @@ class PhaseImaging(Phase):
             else:
                 return None
 
-        def fit_for_tracers(self, tracer, padded_tracer, hyper_image_sky, hyper_noise_background):
+        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_noise_background):
 
             return lens_fit.LensDataFit.for_data_and_tracer(
                 lens_data=self.lens_data,
                 tracer=tracer,
-                padded_tracer=padded_tracer,
                 hyper_image_sky=hyper_image_sky,
                 hyper_noise_background=hyper_noise_background)
 
@@ -734,14 +731,6 @@ class MultiPlanePhase(PhaseImaging):
             return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
                                                  image_plane_grid_stack=image_plane_grid_stack,
                                                  border=self.lens_data.border,
-                                                 cosmology=self.cosmology)
-
-        def padded_tracer_for_instance(self, instance):
-
-            instance = self.associate_images(instance=instance)
-
-            return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
-                                                 image_plane_grid_stack=self.lens_data.padded_grid_stack,
                                                  cosmology=self.cosmology)
 
         def check_inversion_pixels_are_below_limit(self, instance):
@@ -880,16 +869,6 @@ class LensSourcePlanePhase(PhaseImaging):
                 image_plane_grid_stack=image_plane_grid_stack,
                 border=self.lens_data.border, cosmology=self.cosmology)
 
-        def padded_tracer_for_instance(self, instance):
-
-            instance = self.associate_images(instance=instance)
-
-            return ray_tracing.TracerImageSourcePlanes(
-                lens_galaxies=instance.lens_galaxies,
-                source_galaxies=instance.source_galaxies,
-                image_plane_grid_stack=self.lens_data.padded_grid_stack,
-                cosmology=self.cosmology)
-
         def check_inversion_pixels_are_below_limit(self, instance):
 
             if self.inversion_pixel_limit is not None:
@@ -915,11 +894,11 @@ class LensSourcePlanePhase(PhaseImaging):
     class Result(PhaseImaging.Result):
         @property
         def unmasked_lens_plane_model_image(self):
-            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes[0]
+            return self.most_likely_fit.unmasked_blurred_profile_image_plane_image_of_planes[0]
 
         @property
         def unmasked_source_plane_model_image(self):
-            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes[1]
+            return self.most_likely_fit.unmasked_blurred_profile_image_plane_image_of_planes[1]
 
 
 class LensPlanePhase(PhaseImaging):
@@ -987,12 +966,6 @@ class LensPlanePhase(PhaseImaging):
                                                 image_plane_grid_stack=self.lens_data.grid_stack,
                                                 cosmology=self.cosmology)
 
-        def padded_tracer_for_instance(self, instance):
-            instance = self.associate_images(instance=instance)
-            return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
-                                                image_plane_grid_stack=self.lens_data.padded_grid_stack,
-                                                cosmology=self.cosmology)
-
         def check_inversion_pixels_are_below_limit(self, instance):
 
             pass
@@ -1006,7 +979,7 @@ class LensPlanePhase(PhaseImaging):
 
         @property
         def unmasked_lens_plane_model_image(self):
-            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes[0]
+            return self.most_likely_fit.unmasked_blurred_profile_image_plane_image_of_planes[0]
 
 
 class SensitivityPhase(PhaseImaging):
@@ -1070,8 +1043,8 @@ class SensitivityPhase(PhaseImaging):
             """
             tracer_normal = self.tracer_normal_for_instance(instance)
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
-            fit = self.fit_for_tracers(tracer_normal=tracer_normal,
-                                       tracer_sensitive=tracer_sensitive)
+            fit = self.fit_for_tracer(tracer_normal=tracer_normal,
+                                      tracer_sensitive=tracer_sensitive)
             return fit.figure_of_merit
 
         def visualize(self, instance, image_path, during_analysis):
@@ -1080,7 +1053,7 @@ class SensitivityPhase(PhaseImaging):
             tracer_normal = self.tracer_normal_for_instance(instance)
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
 
-            fit = self.fit_for_tracers(
+            fit = self.fit_for_tracer(
                 tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
             phase_plotters.plot_ray_tracing_for_phase(
@@ -1132,7 +1105,7 @@ class SensitivityPhase(PhaseImaging):
                 image_plane_grid_stack=self.lens_data.grid_stack,
                 border=self.lens_data.border)
 
-        def fit_for_tracers(self, tracer_normal, tracer_sensitive):
+        def fit_for_tracer(self, tracer_normal, tracer_sensitive):
             return sensitivity_fit.fit_lens_data_with_sensitivity_tracers(
                 lens_data=self.lens_data,
                 tracer_normal=tracer_normal,

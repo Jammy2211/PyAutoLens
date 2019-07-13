@@ -131,10 +131,7 @@ class AbstractPhase(af.AbstractPhase):
         def tracer_for_instance(self, instance):
             raise NotImplementedError()
 
-        def padded_tracer_for_instance(self, instance):
-            raise NotImplementedError()
-
-        def fit_for_tracers(self, tracer, padded_tracer, hyper_image_sky, hyper_noise_background):
+        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_noise_background):
             raise NotImplementedError()
 
         def figure_of_merit_for_fit(self, tracer):
@@ -167,10 +164,6 @@ class AbstractPhase(af.AbstractPhase):
             return self.analysis.tracer_for_instance(instance=self.constant)
 
         @property
-        def most_likely_padded_tracer(self):
-            return self.analysis.padded_tracer_for_instance(instance=self.constant)
-
-        @property
         def most_likely_fit(self):
 
             hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
@@ -179,9 +172,8 @@ class AbstractPhase(af.AbstractPhase):
             hyper_noise_background= self.analysis.hyper_noise_background_for_instance(
                 instance=self.constant)
 
-            return self.analysis.fit_for_tracers(
+            return self.analysis.fit_for_tracer(
                 tracer=self.most_likely_tracer,
-                padded_tracer=self.most_likely_padded_tracer,
                 hyper_image_sky=hyper_image_sky,
                 hyper_noise_background=hyper_noise_background)
 
@@ -195,16 +187,16 @@ class AbstractPhase(af.AbstractPhase):
 
         @property
         def unmasked_model_image(self):
-            return self.most_likely_fit.unmasked_blurred_image_plane_image
+            return self.most_likely_fit.unmasked_blurred_profile_image_plane_image
 
         @property
         def unmasked_model_image_of_planes(self):
-            return self.most_likely_fit.unmasked_blurred_image_plane_image_of_planes
+            return self.most_likely_fit.unmasked_blurred_profile_image_plane_image_of_planes
 
         @property
         def unmasked_model_image_of_planes_and_galaxies(self):
             fit = self.most_likely_fit
-            return fit.unmasked_blurred_image_plane_image_of_planes_and_galaxies
+            return fit.unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies
 
         def image_2d_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
             """
