@@ -145,6 +145,7 @@ def reshape_returned_array(func):
 
 
 def reshape_returned_array_blurring(func):
+
     @wraps(func)
     def wrapper(profile, grid=None, galaxy=None, *args, **kwargs):
         """
@@ -202,7 +203,7 @@ def reshape_returned_array_blurring(func):
 def reshape_returned_grid(func):
 
     @wraps(func)
-    def wrapper(profile, grid, return_in_2d=False, return_binned_sub_grid=False, *args, **kwargs):
+    def wrapper(profile, grid, *args, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 2D grids of physical quantities \
@@ -222,7 +223,14 @@ def reshape_returned_grid(func):
             An grid of (y,x) coordinates that may be in 1D or 2D and binned up from a sub-grid.
         """
 
-        result_1d = func(profile, grid, *args, *kwargs)
+        return_in_2d = kwargs['return_in_2d'] if 'return_in_2d' in kwargs else False
+        return_binned_sub_grid = kwargs['return_binned_sub_grid'] if 'return_binned_sub_grid' in kwargs else False
+
+        if grid is None:
+            result_1d = func(profile)
+            grid = profile.grid_stack.sub
+        else:
+            result_1d = func(profile, grid)
 
         if not return_in_2d and not return_binned_sub_grid:
             return result_1d

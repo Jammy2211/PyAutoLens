@@ -288,6 +288,7 @@ class Galaxy(af.ModelObject):
             return sum(map(lambda p: p.potential_from_grid(grid=grid), self.mass_profiles))
         return np.zeros((grid.shape[0],))
 
+    @reshape_returned_grid
     def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
         """Compute the summed (y,x) deflection angles of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
