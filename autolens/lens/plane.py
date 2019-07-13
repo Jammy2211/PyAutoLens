@@ -3,11 +3,9 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens import exc, dimensions as dim
-from autolens.data.array import grids
 from autolens.data.array import scaled_array
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
-from autolens.model.galaxy.util import galaxy_util
 
 from autolens.data.array.grids import reshape_returned_array, reshape_returned_array_blurring, reshape_returned_grid
 
@@ -481,19 +479,22 @@ class AbstractGriddedPlane(AbstractPlane):
         else:
             return np.full((self.grid_stack.sub.shape[0]), 0.0)
 
-    @property
-    def deflections_y(self):
-        return self.grid_stack.scaled_array_2d_from_array_1d(self.deflections_1d[:, 0])
+    @reshape_returned_array
+    def deflections_y(self, return_in_2d=True, return_binned_sub_grid=True):
+        return self.deflections(return_in_2d=False, return_binned_sub_grid=False)[:,0]
 
-    @property
-    def deflections_x(self):
-        return self.grid_stack.scaled_array_2d_from_array_1d(self.deflections_1d[:, 1])
+    @reshape_returned_array
+    def deflections_x(self, return_in_2d=True, return_binned_sub_grid=True):
+        return self.deflections(return_in_2d=False, return_binned_sub_grid=False)[:,1]
 
-    @property
-    def deflections_1d(self):
-        return galaxy_util.deflections_of_galaxies_from_grid(
-            grid=self.grid_stack.sub.unlensed_sub_grid,
-            galaxies=self.galaxies)
+    @reshape_returned_grid
+    def deflections(self, return_in_2d=True, return_binned_sub_grid=True):
+        if self.galaxies:
+            return sum(map(lambda g :
+                           g.deflections_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid),
+                           self.galaxies))
+        else:
+            return np.full((self.grid_stack.sub.shape[0], 2), 0.0)
 
     @property
     def plane_image(self):

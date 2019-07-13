@@ -262,8 +262,10 @@ def plot_deflections_y(
         title='Tracer Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         output_path=None, output_format='show', output_filename='tracer_deflections_y'):
 
+    deflections_y = tracer.deflections_y(return_in_2d=True, return_binned_sub_grid=True)
+
     array_plotters.plot_array(
-        array=tracer.deflections_y, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=deflections_y, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -280,8 +282,10 @@ def plot_deflections_x(
         title='Tracer Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         output_path=None, output_format='show', output_filename='tracer_deflections_x'):
 
+    deflections_x = tracer.deflections_x(return_in_2d=True, return_binned_sub_grid=True)
+
     array_plotters.plot_array(
-        array=tracer.deflections_x, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=deflections_x, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,

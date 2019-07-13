@@ -203,7 +203,7 @@ def reshape_returned_array_blurring(func):
 def reshape_returned_grid(func):
 
     @wraps(func)
-    def wrapper(profile, grid, *args, **kwargs):
+    def wrapper(profile, grid=None, galaxy=None, *args, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 2D grids of physical quantities \

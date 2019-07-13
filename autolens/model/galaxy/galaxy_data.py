@@ -2,7 +2,6 @@ import numpy as np
 
 from autolens import exc
 from autolens.data.array import grids, mask as msk, scaled_array
-from autolens.model.galaxy.util import galaxy_util
 
 
 class GalaxyData(object):
@@ -135,6 +134,8 @@ class GalaxyFitData(object):
             return sum(map(lambda g: g.potential_from_grid(
                 grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))
         elif self.use_deflections_y:
-            return galaxy_util.deflections_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)[:, 0]
+            return sum(map(lambda g: g.deflections_from_grid(
+                grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))[:, 0]
         elif self.use_deflections_x:
-            return galaxy_util.deflections_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)[:, 1]
+            return sum(map(lambda g: g.deflections_from_grid(
+                grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))[:, 1]
