@@ -285,8 +285,8 @@ class TestSimulateCCD(object):
                                       [1.0, 2.0, 1.0],
                                       [0.0, 1.0, 0.0]]), pixel_scale=1.0)
 
-        image_plane_grid_stack = grids.GridStack.grid_stack_for_simulation(
-            shape=(10, 10), pixel_scale=1.0, psf_shape=psf.shape, sub_grid_size=1)
+        image_plane_grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(10, 10), pixel_scale=1.0, sub_grid_size=1)
 
         g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
 
@@ -308,9 +308,6 @@ class TestSimulateCCD(object):
             image=tracer_profile_image_plane_image, pixel_scale=1.0, exposure_time=10000.0,
             background_sky_level=100.0, add_noise=True, noise_seed=1)
 
-        print(ccd_data_simulated_via_deflections.image.shape)
-        print(ccd_data_simulated.image.shape)
-
         assert (ccd_data_simulated_via_deflections.image == ccd_data_simulated.image).all()
         assert (ccd_data_simulated_via_deflections.psf == ccd_data_simulated.psf).all()
         assert (ccd_data_simulated_via_deflections.noise_map == ccd_data_simulated.noise_map).all()
@@ -324,8 +321,8 @@ class TestSimulateCCD(object):
                                       [1.0, 2.0, 1.0],
                                       [0.0, 1.0, 0.0]]), pixel_scale=1.0)
 
-        image_plane_grid_stack = grids.GridStack.grid_stack_for_simulation(
-            shape=(20, 20), pixel_scale=0.05, psf_shape=psf.shape, sub_grid_size=1)
+        image_plane_grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(20, 20), pixel_scale=0.05, sub_grid_size=1)
 
         lens_galaxy = g.Galaxy(
             redshift=0.5, light=lp.EllipticalSersic(intensity=1.0), mass=mp.EllipticalIsothermal(einstein_radius=1.6))
@@ -341,8 +338,8 @@ class TestSimulateCCD(object):
             add_noise=True, noise_seed=1)
 
         ccd_data_simulated = simulated_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-            image=tracer.profile_image_plane_image_for_simulation, pixel_scale=0.1, exposure_time=10000.0, psf=psf,
-            background_sky_level=100.0, add_noise=True, noise_seed=1)
+            image=tracer.padded_profile_image_plane_image_2d_from_psf_shape(psf_shape=(3,3)), pixel_scale=0.1,
+            exposure_time=10000.0, psf=psf, background_sky_level=100.0, add_noise=True, noise_seed=1)
 
         assert (ccd_data_simulated_via_tracer.image == ccd_data_simulated.image).all()
         assert (ccd_data_simulated_via_tracer.psf == ccd_data_simulated.psf).all()

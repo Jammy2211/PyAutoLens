@@ -72,8 +72,14 @@ class SimulatedCCDData(ccd.CCDData):
         noise_seed: int
             A seed for random noise_maps generation
         """
+
+        if psf is not None:
+            image_plane_image_2d = tracer.padded_profile_image_plane_image_2d_from_psf_shape(psf_shape=psf.shape)
+        else:
+            image_plane_image_2d = tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+
         return cls.from_image_and_exposure_arrays(
-            image=tracer.profile_image_plane_image_for_simulation, pixel_scale=pixel_scale, exposure_time=exposure_time,
+            image=image_plane_image_2d, pixel_scale=pixel_scale, exposure_time=exposure_time,
             psf=psf, exposure_time_map=exposure_time_map, background_sky_level=background_sky_level,
             background_sky_map=background_sky_map, add_noise=add_noise, noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed, name=name)

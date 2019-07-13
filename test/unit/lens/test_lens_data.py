@@ -5,7 +5,6 @@ from autolens.data import ccd
 from autolens.data import convolution
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
-from autolens.data.array.util import grid_util
 from autolens.lens import lens_data as ld
 from autolens.model.inversion import convolution as inversion_convolution
 
@@ -80,28 +79,7 @@ class TestLensData(object):
         assert (lens_data_7x7.grid_stack.sub == sub_grid_7x7).all()
         assert (lens_data_7x7.grid_stack.blurring == blurring_grid_7x7).all()
 
-    def test__padded_grid_stack(
-            self, lens_data_7x7):
-
-        padded_image_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
-            mask=np.full((9, 9), False), pixel_scales=lens_data_7x7.unmasked_image.pixel_scales)
-
-        assert (lens_data_7x7.padded_grid_stack.regular == padded_image_util).all()
-        assert lens_data_7x7.padded_grid_stack.regular.image_shape == (7, 7)
-        assert lens_data_7x7.padded_grid_stack.regular.padded_shape == (9, 9)
-
-        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=np.full((9, 9), False), pixel_scales=lens_data_7x7.unmasked_image.pixel_scales,
-            sub_grid_size=lens_data_7x7.grid_stack.sub.sub_grid_size)
-
-        assert lens_data_7x7.padded_grid_stack.sub == pytest.approx(padded_sub_util, 1e-4)
-        assert lens_data_7x7.padded_grid_stack.sub.image_shape == (7, 7)
-        assert lens_data_7x7.padded_grid_stack.sub.padded_shape == (9, 9)
-
-        assert (lens_data_7x7.padded_grid_stack.blurring == np.array([[0.0, 0.0]])).all()
-
-    def test__interp_pixel_scale_input__grid_stack_and_padded_grid_stack_include_interpolators(
-            self, ccd_data_7x7, mask_7x7):
+    def test__interp_pixel_scale_input__grid_stack_include_interpolators(self, ccd_data_7x7, mask_7x7):
 
         lens_data_7x7 = ld.LensData(ccd_data=ccd_data_7x7, mask=mask_7x7, interp_pixel_scale=1.0)
 
@@ -120,29 +98,8 @@ class TestLensData(object):
         assert (lens_data_7x7.grid_stack.sub.interpolator.wts == new_grid_stack.sub.interpolator.wts).all()
 
         assert (lens_data_7x7.grid_stack.blurring == new_grid_stack.blurring).all()
-        assert (
-                    lens_data_7x7.grid_stack.blurring.interpolator.vtx == new_grid_stack.blurring.interpolator.vtx).all()
-        assert (
-                    lens_data_7x7.grid_stack.blurring.interpolator.wts == new_grid_stack.blurring.interpolator.wts).all()
-
-        padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask_7x7, sub_grid_size=2, psf_shape=(3, 3))
-        new_padded_grid_stack = \
-            padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
-
-        assert (lens_data_7x7.padded_grid_stack.regular == new_padded_grid_stack.regular).all()
-        assert (
-                    lens_data_7x7.padded_grid_stack.regular.interpolator.vtx == new_padded_grid_stack.regular.interpolator.vtx).all()
-        assert (
-                    lens_data_7x7.padded_grid_stack.regular.interpolator.wts == new_padded_grid_stack.regular.interpolator.wts).all()
-
-        assert (lens_data_7x7.padded_grid_stack.sub == new_padded_grid_stack.sub).all()
-        assert (
-                    lens_data_7x7.padded_grid_stack.sub.interpolator.vtx == new_padded_grid_stack.sub.interpolator.vtx).all()
-        assert (
-                    lens_data_7x7.padded_grid_stack.sub.interpolator.wts == new_padded_grid_stack.sub.interpolator.wts).all()
-
-        assert (lens_data_7x7.padded_grid_stack.blurring == np.array([[0.0, 0.0]])).all()
+        assert (lens_data_7x7.grid_stack.blurring.interpolator.vtx == new_grid_stack.blurring.interpolator.vtx).all()
+        assert (lens_data_7x7.grid_stack.blurring.interpolator.wts == new_grid_stack.blurring.interpolator.wts).all()
 
     def test__cluster_pixel_scale_is_input__correct_cluster_bin_up_calculated__inversion_max_pixels_changes_bin_up(
             self, ccd_data_7x7, mask_7x7, regular_grid_7x7):

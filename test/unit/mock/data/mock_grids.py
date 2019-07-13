@@ -55,60 +55,6 @@ class MockGridStack(grids.GridStack):
         super(MockGridStack, self).__init__(regular=regular, sub=sub, blurring=blurring, pixelization=pixelization)
 
 
-class MockPaddedRegularGrid(grids.PaddedRegularGrid):
-
-    def __new__(cls, image_shape, psf_shape, pixel_scale=1.0, *args, **kwargs):
-
-        padded_shape = (image_shape[0] + psf_shape[0] - 1, image_shape[1] + psf_shape[1] - 1)
-
-        padded_mask = mock_mask.MockMask(array=np.full(fill_value=False, shape=padded_shape), pixel_scale=pixel_scale)
-
-        regular_grid = grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(
-            shape=padded_mask.shape, pixel_scales=(pixel_scale, pixel_scale), origin=(0.0, 0.0))
-
-        obj = regular_grid.view(cls)
-        obj.image_shape = (5, 5)
-        obj.mask = padded_mask
-        obj.interpolator = None
-
-        return obj
-
-    def __init__(self, image_shape, psf_shape):
-        pass
-
-
-class MockPaddedSubGrid(grids.PaddedSubGrid):
-
-    def __new__(cls, image_shape, psf_shape, pixel_scale=1.0, sub_grid_size=2, *args, **kwargs):
-
-        padded_shape = (image_shape[0] + psf_shape[0] - 1, image_shape[1] + psf_shape[1] - 1)
-
-        padded_mask = mock_mask.MockMask(array=np.full(fill_value=False, shape=padded_shape), pixel_scale=pixel_scale)
-
-        sub_grid = grid_util.sub_grid_1d_from_shape_pixel_scales_and_sub_grid_size(
-            shape=padded_mask.shape, pixel_scales=(pixel_scale, pixel_scale), sub_grid_size=sub_grid_size)
-
-        obj = sub_grid.view(cls)
-        obj.image_shape = image_shape
-        obj.mask = padded_mask
-        obj.sub_grid_size = 2
-        obj.sub_grid_length = int(obj.sub_grid_size ** 2.0)
-        obj.sub_grid_fraction = 1.0 / obj.sub_grid_length
-        obj.interpolator = None
-
-        return obj
-
-    def __init__(self, image_shape, psf_shape):
-        pass
-
-
-class MockPaddedGridStack(grids.GridStack):
-
-    def __init__(self, regular, sub):
-
-        super(MockPaddedGridStack, self).__init__(regular=regular, sub=sub, blurring=np.array([[0.0, 0.0]]))
-
-
 class MockPixSubGrid(np.ndarray):
 
     def __new__(cls, sub_grid, *args, **kwargs):

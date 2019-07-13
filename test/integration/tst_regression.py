@@ -54,7 +54,7 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
     ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-        image=tracer.profile_image_plane_image_for_simulation,
+        image=tracer.padded_profile_image_plane_image_2d_from_psf_shape,
         pixel_scale=pixel_scale, exposure_time=100.0,
         background_sky_level=10.0, psf=psf, noise_seed=1)
 

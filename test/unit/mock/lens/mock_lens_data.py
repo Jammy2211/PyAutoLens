@@ -1,6 +1,6 @@
 class MockLensData(object):
 
-    def __init__(self, ccd_data, mask, grid_stack, padded_grid_stack, border,
+    def __init__(self, ccd_data, mask, grid_stack, border,
                  convolver_image,
                  convolver_mapping_matrix, cluster):
         self.ccd_data = ccd_data
@@ -18,7 +18,6 @@ class MockLensData(object):
             array_2d=self.mask_2d)
 
         self.grid_stack = grid_stack
-        self.padded_grid_stack = padded_grid_stack
         self.sub_grid_size = self.grid_stack.sub.sub_grid_size
         self.border = border
         self.convolver_image = convolver_image

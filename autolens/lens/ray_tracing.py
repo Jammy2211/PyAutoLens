@@ -99,6 +99,8 @@ class AbstractTracerCosmology(object):
     def angular_diameter_distance_from_image_to_source_plane_in_units(self, unit_length='arcsec'):
         return self.angular_diameter_distance_between_planes_in_units(i=0, j=-1, unit_length=unit_length)
 
+    def padded_tracer_from_psf_shape(self, psf_shape):
+        raise NotImplementedError()
 
 class AbstractTracer(AbstractTracerCosmology):
 
@@ -160,10 +162,6 @@ class AbstractTracer(AbstractTracerCosmology):
         return any(list(map(lambda plane: plane.has_hyper_galaxy, self.planes)))
 
     @property
-    def has_padded_grids(self):
-        return isinstance(self.planes[0].grids.regular, grids.PaddedRegularGrid)
-
-    @property
     def galaxies(self):
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
@@ -178,13 +176,11 @@ class AbstractTracer(AbstractTracerCosmology):
             return_binned_sub_grid=return_binned_sub_grid)
             for plane in self.planes]
 
-    @property
-    def profile_image_plane_image_for_simulation(self):
-        return sum(self.profile_image_plane_image_of_planes_for_simulation)
+    def padded_profile_image_plane_image_2d_from_psf_shape(self, psf_shape):
 
-    @property
-    def profile_image_plane_image_of_planes_for_simulation(self):
-        return [plane.profile_image_plane_image_for_simulation for plane in self.planes]
+        padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf_shape)
+
+        return padded_tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
 
     @reshape_returned_array_blurring
     def profile_image_plane_blurring_image(self, return_in_2d=True):
@@ -350,22 +346,55 @@ class AbstractTracerData(AbstractTracer):
 
     def unmasked_blurred_profile_image_plane_image_from_psf(self, psf):
 
-        if not self.image_plane.has_padded_grid_stack:
-            raise exc.RayTracingException('To retrieve an unmasked image, the grid stack of a plane tracer'
-                                          'must be a padded grid stack')
+        padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf.shape)
 
-        unmasked_image_1d = self.profile_image_plane_image(
+        padded_image_1d = padded_tracer.profile_image_plane_image(
             return_in_2d=False, return_binned_sub_grid=True)
 
-        return self.image_plane.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-            psf=psf, unmasked_image_1d=unmasked_image_1d)
+        return padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
+            padded_array_1d=padded_image_1d, psf=psf, image_shape=self.grid_stack.regular.mask.shape)
 
     def unmasked_blurred_profile_image_plane_image_of_planes_from_psf(self, psf):
-        return [plane.unmasked_blurred_profile_image_plane_image_from_psf(psf=psf) for plane in self.planes]
+
+        unmasked_blurred_profile_image_plane_image_of_planes = []
+
+        padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf.shape)
+
+        for padded_plane in padded_tracer.planes:
+
+            padded_image_1d = padded_plane.profile_image_plane_image(
+                return_in_2d=False, return_binned_sub_grid=True)
+
+            unmasked_blurred_array_2d = \
+                padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
+                padded_array_1d=padded_image_1d, psf=psf, image_shape=self.grid_stack.regular.mask.shape)
+
+            unmasked_blurred_profile_image_plane_image_of_planes.append(unmasked_blurred_array_2d)
+
+        return unmasked_blurred_profile_image_plane_image_of_planes
 
     def unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(self, psf):
-        return [plane.unmasked_blurred_profile_image_plane_images_of_galaxies_from_psf(psf=psf) for plane in
-                self.planes]
+
+        unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies = []
+
+        padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf.shape)
+
+        for padded_plane in padded_tracer.planes:
+
+            padded_image_1d_of_galaxies = padded_plane.profile_image_plane_image_of_galaxies(
+                return_in_2d=False, return_binned_sub_grid=True)
+
+            unmasked_blurred_array_2d_of_galaxies = \
+                list(map(lambda padded_image_1d_of_galaxy :
+                         padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
+                             padded_array_1d=padded_image_1d_of_galaxy,
+                             psf=psf,
+                             image_shape=self.grid_stack.regular.mask.shape),
+                         padded_image_1d_of_galaxies))
+
+            unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies.append(unmasked_blurred_array_2d_of_galaxies)
+
+        return unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies
 
     def inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(self, image_1d, noise_map_1d,
                                                                           convolver_mapping_matrix):
@@ -404,7 +433,6 @@ class AbstractTracerData(AbstractTracer):
                         galaxy=galaxy, return_in_2d=False, return_binned_sub_grid=True)
 
         return galaxy_image_dict
-
 
     def galaxy_image_dict_from_convolver_image(self, convolver_image) -> {g.Galaxy: np.ndarray}:
         """
@@ -464,6 +492,13 @@ class TracerImagePlane(AbstractTracerData):
     def critical_surface_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='solMass'):
         return 0.0
 
+    def padded_tracer_from_psf_shape(self, psf_shape):
+
+        padded_grid_stack = self.grid_stack.padded_grid_stack_from_psf_shape(psf_shape=psf_shape)
+
+        return TracerImagePlane(lens_galaxies=self.image_plane.galaxies, image_plane_grid_stack=padded_grid_stack,
+                                border=self.image_plane.border, cosmology=self.cosmology)
+
 
 class TracerImageSourcePlanes(AbstractTracerData):
 
@@ -512,6 +547,14 @@ class TracerImageSourcePlanes(AbstractTracerData):
 
     def einstein_mass_between_image_and_source_plane_in_units(self, unit_mass='solMass'):
         return self.einstein_mass_between_planes_in_units(i=0, j=1, unit_mass=unit_mass)
+
+    def padded_tracer_from_psf_shape(self, psf_shape):
+
+        padded_grid_stack = self.grid_stack.padded_grid_stack_from_psf_shape(psf_shape=psf_shape)
+
+        return TracerImageSourcePlanes(
+            source_galaxies=self.source_plane.galaxies, lens_galaxies=self.image_plane.galaxies,
+            image_plane_grid_stack=padded_grid_stack,border=self.image_plane.border, cosmology=self.cosmology)
 
 
 class TracerMultiPlanes(AbstractTracerData):
@@ -573,6 +616,14 @@ class TracerMultiPlanes(AbstractTracerData):
                                    compute_deflections=compute_deflections, cosmology=cosmology))
 
         super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
+
+    def padded_tracer_from_psf_shape(self, psf_shape):
+
+        padded_grid_stack = self.grid_stack.padded_grid_stack_from_psf_shape(psf_shape=psf_shape)
+
+        return TracerMultiPlanes(
+            galaxies=self.galaxies, image_plane_grid_stack=padded_grid_stack,
+            border=self.image_plane.border, cosmology=self.cosmology)
 
 
 class TracerMultiPlanesSliced(AbstractTracerData):

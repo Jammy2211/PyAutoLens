@@ -271,8 +271,6 @@ class TestPhase(object):
         assert hasattr(analysis.lens_data.grid_stack.regular, 'interpolator')
         assert hasattr(analysis.lens_data.grid_stack.sub, 'interpolator')
         assert hasattr(analysis.lens_data.grid_stack.blurring, 'interpolator')
-        assert hasattr(analysis.lens_data.padded_grid_stack.regular, 'interpolator')
-        assert hasattr(analysis.lens_data.padded_grid_stack.sub, 'interpolator')
 
     def test_make_analysis__cluster_pixel_limit__is_input__used_in_analysis(
             self, phase_7x7, ccd_data_7x7):
@@ -866,12 +864,9 @@ class TestPhase(object):
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
         instance = phase_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
-        padded_tracer = analysis.padded_tracer_for_instance(instance=instance)
 
         assert tracer.image_plane.galaxies[0] == lens_galaxy
         assert tracer.cosmology == cosmo.FLRW
-        assert padded_tracer.image_plane.galaxies[0] == lens_galaxy
-        assert padded_tracer.cosmology == cosmo.FLRW
 
         phase_7x7 = phase_imaging.LensSourcePlanePhase(
             mask_function=mask_function_7x7,
@@ -883,14 +878,10 @@ class TestPhase(object):
         analysis = phase_7x7.make_analysis(ccd_data_7x7)
         instance = phase_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
-        padded_tracer = analysis.padded_tracer_for_instance(instance)
 
         assert tracer.image_plane.galaxies[0] == lens_galaxy
         assert tracer.source_plane.galaxies[0] == source_galaxy
         assert tracer.cosmology == cosmo.FLRW
-        assert padded_tracer.image_plane.galaxies[0] == lens_galaxy
-        assert padded_tracer.source_plane.galaxies[0] == source_galaxy
-        assert padded_tracer.cosmology == cosmo.FLRW
 
         galaxy_0 = g.Galaxy(redshift=0.1)
         galaxy_1 = g.Galaxy(redshift=0.2)
@@ -905,16 +896,11 @@ class TestPhase(object):
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
         instance = phase_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
-        padded_tracer = analysis.padded_tracer_for_instance(instance)
 
         assert tracer.planes[0].galaxies[0] == galaxy_0
         assert tracer.planes[1].galaxies[0] == galaxy_1
         assert tracer.planes[2].galaxies[0] == galaxy_2
         assert tracer.cosmology == cosmo.WMAP7
-        assert padded_tracer.planes[0].galaxies[0] == galaxy_0
-        assert padded_tracer.planes[1].galaxies[0] == galaxy_1
-        assert padded_tracer.planes[2].galaxies[0] == galaxy_2
-        assert padded_tracer.cosmology == cosmo.WMAP7
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
             self, ccd_data_7x7, mask_function_7x7):
