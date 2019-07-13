@@ -8,7 +8,6 @@ from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 from autolens.model.inversion import inversions as inv
-from autolens.model.inversion import pixelizations as pix
 from autolens.model.galaxy import galaxy as g
 
 from autolens.data.array.grids import reshape_returned_array, reshape_returned_array_blurring, reshape_returned_grid
@@ -101,6 +100,7 @@ class AbstractTracerCosmology(object):
 
     def padded_tracer_from_psf_shape(self, psf_shape):
         raise NotImplementedError()
+
 
 class AbstractTracer(AbstractTracerCosmology):
 
@@ -205,15 +205,17 @@ class AbstractTracer(AbstractTracerCosmology):
     def potential(self, return_in_2d=True, return_binned_sub_grid=True):
         return sum([plane.potential() for plane in self.planes])
 
-    @property
-    @check_tracer_for_mass_profile
-    def deflections_y(self):
-        return sum([plane.deflections_y for plane in self.planes])
+    @reshape_returned_array
+    def deflections_y(self, return_in_2d=True, return_binned_sub_grid=True):
+        return sum([plane.deflections_y(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
 
-    @property
-    @check_tracer_for_mass_profile
-    def deflections_x(self):
-        return sum([plane.deflections_x for plane in self.planes])
+    @reshape_returned_array
+    def deflections_x(self, return_in_2d=True, return_binned_sub_grid=True):
+        return sum([plane.deflections_x(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
+
+    @reshape_returned_grid
+    def deflections(self, return_in_2d=True, return_binned_sub_grid=True):
+        return sum([plane.deflections(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
 
     def einstein_radius_of_plane_in_units(self, i, unit_length='arcsec'):
         return self.planes[i].einstein_radius_in_units(unit_length=unit_length)

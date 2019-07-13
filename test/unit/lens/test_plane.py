@@ -10,7 +10,6 @@ from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 from autolens.model.galaxy import galaxy as g
-from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -1074,33 +1073,8 @@ class TestAbstractPlaneGridded(object):
             
     class TestDeflections:
 
-        def test__deflections_from_plane__same_as_its_mass_profile(self, grid_stack_7x7, gal_x1_mp):
-            mp = gal_x1_mp.mass_profiles[0]
+        def test__deflections_from_plane__same_as_the_galaxy_mass_profiles(self, grid_stack_7x7):
 
-            mp_sub_image = mp.deflections_from_grid(grid_stack_7x7.sub.unlensed_sub_grid)
-
-            # Perform sub gridding average manually
-            mp_image_pixel_0x = (mp_sub_image[0, 0] + mp_sub_image[1, 0] + mp_sub_image[2, 0] + mp_sub_image[3, 0]) / 4
-            mp_image_pixel_1x = (mp_sub_image[4, 0] + mp_sub_image[5, 0] + mp_sub_image[6, 0] + mp_sub_image[7, 0]) / 4
-            mp_image_pixel_0y = (mp_sub_image[0, 1] + mp_sub_image[1, 1] + mp_sub_image[2, 1] + mp_sub_image[3, 1]) / 4
-            mp_image_pixel_1y = (mp_sub_image[4, 1] + mp_sub_image[5, 1] + mp_sub_image[6, 1] + mp_sub_image[7, 1]) / 4
-
-            plane = pl.AbstractGriddedPlane(galaxies=[gal_x1_mp], grid_stack=grid_stack_7x7, compute_deflections=False,
-                                            border=None, redshift=None)
-
-            assert (plane.deflections_1d[0, 0] == mp_image_pixel_0x).all()
-            assert (plane.deflections_1d[0, 1] == mp_image_pixel_0y).all()
-            assert (plane.deflections_1d[1, 0] == mp_image_pixel_1x).all()
-            assert (plane.deflections_1d[1, 1] == mp_image_pixel_1y).all()
-
-            assert plane.deflections_y.shape == (7, 7)
-            assert plane.deflections_x.shape == (7, 7)
-            assert (plane.deflections_y ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 0])).all()
-            assert (plane.deflections_x ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 1])).all()
-
-        def test__same_as_above__use_multiple_galaxies(self, grid_stack_7x7):
             # Overwrite one value so intensity in each pixel is different
             grid_stack_7x7.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
@@ -1110,8 +1084,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.deflections_from_grid(grid_stack_7x7.sub.unlensed_sub_grid)
-            mp1_sub_image = mp1.deflections_from_grid(grid_stack_7x7.sub.unlensed_sub_grid)
+            mp0_sub_image = mp0.deflections_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
+            mp1_sub_image = mp1.deflections_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
 
             # Perform sub gridding average manually
             mp0_image_pixel_0x = (mp0_sub_image[0, 0] + mp0_sub_image[1, 0] +
@@ -1135,65 +1109,75 @@ class TestAbstractPlaneGridded(object):
             plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack_7x7, compute_deflections=False,
                                             border=None, redshift=None)
 
-            assert plane.deflections_1d[0, 0] == pytest.approx(mp0_image_pixel_0x + mp1_image_pixel_0x, 1.0e-4)
-            assert plane.deflections_1d[1, 0] == pytest.approx(mp0_image_pixel_1x + mp1_image_pixel_1x, 1.0e-4)
-            assert plane.deflections_1d[0, 1] == pytest.approx(mp0_image_pixel_0y + mp1_image_pixel_0y, 1.0e-4)
-            assert plane.deflections_1d[1, 1] == pytest.approx(mp0_image_pixel_1y + mp1_image_pixel_1y, 1.0e-4)
-            assert (plane.deflections_y ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 0])).all()
-            assert (plane.deflections_x ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 1])).all()
+            deflections = plane.deflections(return_in_2d=False, return_binned_sub_grid=True)
 
-        def test__deflections__same_as_its_galaxy(self, grid_stack_7x7, gal_x1_mp):
-            galaxy_deflections = galaxy_util.deflections_of_galaxies_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid,
-                galaxies=[gal_x1_mp])
+            assert deflections[0, 0] == pytest.approx(mp0_image_pixel_0x + mp1_image_pixel_0x, 1.0e-4)
+            assert deflections[1, 0] == pytest.approx(mp0_image_pixel_1x + mp1_image_pixel_1x, 1.0e-4)
+            assert deflections[0, 1] == pytest.approx(mp0_image_pixel_0y + mp1_image_pixel_0y, 1.0e-4)
+            assert deflections[1, 1] == pytest.approx(mp0_image_pixel_1y + mp1_image_pixel_1y, 1.0e-4)
 
-            plane = pl.AbstractGriddedPlane(galaxies=[gal_x1_mp], grid_stack=grid_stack_7x7, compute_deflections=False,
-                                            border=None, redshift=None)
+            deflections = plane.deflections(return_in_2d=True, return_binned_sub_grid=True)
 
-            assert (plane.deflections_1d == galaxy_deflections).all()
-            assert (plane.deflections_y ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 0])).all()
-            assert (plane.deflections_x ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 1])).all()
+            deflections_y = plane.deflections_y(return_in_2d=True, return_binned_sub_grid=True)
 
-        def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack_7x7):
+            deflections_x = plane.deflections_x(return_in_2d=True, return_binned_sub_grid=True)
+
+            assert (deflections_y == deflections[:, :, 0]).all()
+            assert (deflections_x == deflections[:, :, 1]).all()
+
+        def test__deflections_same_as_its_galaxy___use_multiple_galaxies(self, grid_stack_7x7):
+
             # Overwrite one value so intensity in each pixel is different
             grid_stack_7x7.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid,
-                                                                           galaxies=[g0])
-            g1_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid,
-                                                                           galaxies=[g1])
+            g0_deflections = g0.deflections_from_grid(
+                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True)
+
+            g1_deflections = g1.deflections_from_grid(
+                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True)
 
             plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack_7x7, compute_deflections=False,
                                             border=None, redshift=None)
 
-            assert plane.deflections_1d == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
-            assert (plane.deflections_y ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 0])).all()
-            assert (plane.deflections_x ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 1])).all()
+            deflections = plane.deflections(return_in_2d=False, return_binned_sub_grid=True)
+
+            assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
+
+            deflections = plane.deflections(return_in_2d=True, return_binned_sub_grid=True)
+
+            deflections_y = plane.deflections_y(return_in_2d=True, return_binned_sub_grid=True)
+
+            deflections_x = plane.deflections_x(return_in_2d=True, return_binned_sub_grid=True)
+
+
+            assert (deflections_y == deflections[:, :, 0]).all()
+            assert (deflections_x == deflections[:, :, 1]).all()
 
         def test__plane_has_no_galaxies__deflections_are_zeros_size_of_unlensed_regular_grid(self, grid_stack_7x7):
+
             plane = pl.AbstractGriddedPlane(galaxies=[], grid_stack=grid_stack_7x7, compute_deflections=False,
                                             border=None, redshift=None)
 
-            assert (plane.deflections_1d[0, 0] == 0.0).all()
-            assert (plane.deflections_1d[0, 1] == 0.0).all()
-            assert (plane.deflections_1d[1, 0] == 0.0).all()
-            assert (plane.deflections_1d[1, 1] == 0.0).all()
+            deflections = plane.deflections(return_in_2d=True, return_binned_sub_grid=True)
 
-            assert plane.deflections_y.shape == (7, 7)
-            assert plane.deflections_x.shape == (7, 7)
-            assert (plane.deflections_y ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 0])).all()
-            assert (plane.deflections_x ==
-                    grid_stack_7x7.regular.scaled_array_2d_from_array_1d(plane.deflections_1d[:, 1])).all()
+            assert deflections.shape == (7, 7, 2)
+            assert (deflections[0, 0] == 0.0).all()
+            assert (deflections[0, 1] == 0.0).all()
+            assert (deflections[1, 0] == 0.0).all()
+            assert (deflections[1, 1] == 0.0).all()
+
+            deflections_y = plane.deflections_y(return_in_2d=True, return_binned_sub_grid=True)
+            deflections_x = plane.deflections_x(return_in_2d=True, return_binned_sub_grid=True)
+
+
+            assert deflections_y.shape == (7, 7)
+            assert deflections_x.shape == (7, 7)
+
+            assert (deflections_y == np.zeros(shape=(7, 7))).all()
+            assert (deflections_x == np.zeros(shape=(7, 7))).all()
 
     class TestMapper:
 

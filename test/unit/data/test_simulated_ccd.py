@@ -1,5 +1,4 @@
 import os
-import shutil
 
 import numpy as np
 import pytest
@@ -295,7 +294,7 @@ class TestSimulateCCD(object):
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                      image_plane_grid_stack=image_plane_grid_stack)
 
-        deflections = np.stack((tracer.deflections_y, tracer.deflections_x), axis=-1)
+        deflections = tracer.deflections(return_in_2d=True, return_binned_sub_grid=True)
 
         ccd_data_simulated_via_deflections = simulated_ccd.SimulatedCCDData.from_deflections_source_galaxies_and_exposure_arrays(
             deflections=deflections, pixel_scale=1.0, source_galaxies=[g1], exposure_time=10000.0,

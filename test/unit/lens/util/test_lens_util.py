@@ -5,7 +5,6 @@ from autolens import exc
 from autolens.data.array.util import mapping_util
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.galaxy import galaxy as g
-from autolens.model.galaxy.util import galaxy_util
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 
@@ -113,30 +112,22 @@ class TestPlaneImageFromGrid:
 class TestSetupTracedGrid:
 
     def test__simple_sis_model__deflection_angles(
-            self, grid_stack_simple, gal_x1_mp):
+            self, grid_stack_simple, gal_x1_mp, gal_x2_mp):
 
-        deflections = galaxy_util.deflections_of_galaxies_from_grid_stack(
-            grid_stack=grid_stack_simple, galaxies=[gal_x1_mp])
+        deflections = gal_x1_mp.deflections_from_grid(
+            grid=grid_stack_simple.regular)
 
-        grid_traced = lens_util.traced_collection_for_deflections(grid_stack_simple, deflections)
+        grid_traced = lens_util.traced_collection_for_deflections(
+            grid_stack=grid_stack_simple, deflections=deflections)
 
         assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-2)
 
-    def test_two_identical_lenses__deflection_angles_double(
-            self, grid_stack_simple, gal_x1_mp):
-        
-        deflections = galaxy_util.deflections_of_galaxies_from_grid_stack(
-            grid_stack=grid_stack_simple, galaxies=[gal_x1_mp, gal_x1_mp])
-
-        grid_traced = lens_util.traced_collection_for_deflections(grid_stack_simple, deflections)
+        grid_traced = lens_util.traced_collection_for_deflections(grid_stack_simple, 2.0 * deflections)
 
         assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3)
 
-    def test_one_lens_with_double_identical_mass_profiles__deflection_angles_double(
-            self, grid_stack_simple, gal_x2_mp):
-
-        deflections = galaxy_util.deflections_of_galaxies_from_grid_stack(
-            grid_stack=grid_stack_simple, galaxies=[gal_x2_mp])
+        deflections = gal_x2_mp.deflections_from_grid(
+            grid=grid_stack_simple.regular)
 
         grid_traced = lens_util.traced_collection_for_deflections(
             grid_stack=grid_stack_simple, deflections=deflections)

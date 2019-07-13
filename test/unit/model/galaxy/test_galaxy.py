@@ -342,26 +342,91 @@ class TestMassProfiles(object):
             assert gal_potential[1] == mp_potential_1
             
     class TestDeflectionAngles:
+        
+        def test__no_mass_profiles__deflections_returned_as_0s_of_shape_grid(self, grid_stack_7x7):
 
-        def test__galaxies_with_x1_and_x2_mass_profiles__deflection_same_as_individual_profiles(self, mp_0, gal_x1_mp,
-                                                                                                mp_1, gal_x2_mp):
+            galaxy = g.Galaxy(redshift=0.5)
 
-            mp_deflections = mp_0.deflections_from_grid(grid=np.array([[1.05, -0.55]]))
+            deflections = galaxy.deflections_from_grid(
+                grid=grid_stack_7x7.regular)
 
-            gal_mp_deflections = gal_x1_mp.deflections_from_grid(grid=np.array([[1.05, -0.55]]))
+            assert (deflections == np.zeros(shape=(grid_stack_7x7.regular.shape[0], 2))).all()
 
-            assert mp_deflections[0, 0] == gal_mp_deflections[0, 0]
-            assert mp_deflections[0, 1] == gal_mp_deflections[0, 1]
+        def test__using_no_mass_profiles__check_reshaping_decorator_of_returned_deflections(
+                self, grid_stack_7x7):
 
-            mp_deflections_0 = mp_0.deflections_from_grid(grid=np.array([[1.05, -0.55]]))
-            mp_deflections_1 = mp_1.deflections_from_grid(grid=np.array([[1.05, -0.55]]))
+            galaxy = g.Galaxy(redshift=0.5)
 
-            mp_deflections = mp_deflections_0 + mp_deflections_1
+            deflections = galaxy.deflections_from_grid(
+                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned_sub_grid=False)
 
-            gal_mp_deflections = gal_x2_mp.deflections_from_grid(grid=np.array([[1.05, -0.55]]))
+            assert (deflections == np.zeros(shape=(7, 7, 2))).all()
 
-            assert mp_deflections[0, 0] == gal_mp_deflections[0, 0]
-            assert mp_deflections[0, 1] == gal_mp_deflections[0, 1]
+            deflections = galaxy.deflections_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=False)
+
+            assert (deflections == np.zeros(shape=(grid_stack_7x7.sub.shape[0], 2))).all()
+
+            deflections = galaxy.deflections_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+
+            assert (deflections == np.zeros(shape=(grid_stack_7x7.regular.shape[0], 2))).all()
+
+        def test__galaxies_with_x1_and_x2_mass_profiles__deflections_is_same_individual_profiles(
+                self, mp_0, gal_x1_mp, mp_1, gal_x2_mp):
+
+            mp_deflections = mp_0.deflections_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+
+            gal_mp_deflections = gal_x1_mp.deflections_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+
+            assert (mp_deflections == gal_mp_deflections).all()
+
+            mp_deflections = mp_0.deflections_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+            mp_deflections += mp_1.deflections_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+
+            gal_deflections = gal_x2_mp.deflections_from_grid(
+                grid=np.array([[1.05, -0.55]]))
+
+            assert (mp_deflections == gal_deflections).all()
+
+        def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper_by_binning_sum_of_mass_profile_values(
+                self, grid_stack_7x7, gal_x2_mp):
+
+            mp_0_deflections = gal_x2_mp.mass_profile_0.deflections_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+
+            mp_1_deflections = gal_x2_mp.mass_profile_1.deflections_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+
+            mp_deflections = mp_0_deflections + mp_1_deflections
+
+            mp_deflections_y_0 = (mp_deflections[0,0] + mp_deflections[1,0] +
+                                mp_deflections[2,0] + mp_deflections[3,0]) / 4.0
+
+            mp_deflections_y_1 = (mp_deflections[4,0] + mp_deflections[5,0] +
+                                mp_deflections[6,0] + mp_deflections[7,0]) / 4.0
+
+            gal_deflections = gal_x2_mp.deflections_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+
+            assert gal_deflections[0,0] == mp_deflections_y_0
+            assert gal_deflections[1,0] == mp_deflections_y_1
+            
+            mp_deflections_x_0 = (mp_deflections[0,1] + mp_deflections[1,1] +
+                                mp_deflections[2,1] + mp_deflections[3,1]) / 4.0
+
+            mp_deflections_x_1 = (mp_deflections[4,1] + mp_deflections[5,1] +
+                                mp_deflections[6,1] + mp_deflections[7,1]) / 4.0
+
+            gal_deflections = gal_x2_mp.deflections_from_grid(
+                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+
+            assert gal_deflections[0,1] == mp_deflections_x_0
+            assert gal_deflections[1,1] == mp_deflections_x_1
 
     class TestMassWithin:
 

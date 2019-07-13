@@ -9,7 +9,6 @@ from autolens.lens import lens_data as ld
 from autolens.lens import ray_tracing, lens_fit
 from autolens.model.hyper import hyper_data as hi
 from autolens.model.galaxy import galaxy as g
-from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import inversions
 from autolens.model.inversion import pixelizations
 from autolens.model.inversion import regularization

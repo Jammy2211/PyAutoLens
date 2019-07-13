@@ -3,8 +3,7 @@ import logging
 from autolens import exc
 from autolens.data import ccd
 from autolens.data.array import grids
-from autolens.data.array.scaled_array import ScaledSquarePixelArray, Array
-from autolens.model.galaxy.util import galaxy_util
+from autolens.data.array.scaled_array import ScaledSquarePixelArray
 
 import numpy as np
 
