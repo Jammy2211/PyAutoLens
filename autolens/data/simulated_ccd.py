@@ -73,7 +73,7 @@ class SimulatedCCDData(ccd.CCDData):
             A seed for random noise_maps generation
         """
         return cls.from_image_and_exposure_arrays(
-            image=tracer.profile_image_plane_image_2d_for_simulation, pixel_scale=pixel_scale, exposure_time=exposure_time,
+            image=tracer.profile_image_plane_image_for_simulation, pixel_scale=pixel_scale, exposure_time=exposure_time,
             psf=psf, exposure_time_map=exposure_time_map, background_sky_level=background_sky_level,
             background_sky_map=background_sky_map, add_noise=add_noise, noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed, name=name)

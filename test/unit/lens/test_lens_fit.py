@@ -489,19 +489,19 @@ class TestLensProfileFit:
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_7x7,
                                                            tracer=tracer)
 
-            g0_image_plane_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
-                grid=lens_data_7x7.grid_stack.sub, galaxies=[g0])
-            g0_image_plane_bluring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
-                grid=lens_data_7x7.grid_stack.blurring, galaxies=[g0])
+            g0_image_plane_image_1d = g0.intensities_from_grid(
+                grid=lens_data_7x7.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+            g0_image_plane_bluring_image_1d = g0.intensities_from_grid(
+                grid=lens_data_7x7.grid_stack.blurring, return_in_2d=False, return_binned_sub_grid=False)
 
             g0_blurred_image_plane_image_1d = lens_data_7x7.convolver_image.convolve_image(
                 image_array=g0_image_plane_image_1d,
                 blurring_array=g0_image_plane_bluring_image_1d)
 
-            g1_image_plane_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
-                grid=tracer.source_plane.grid_stack.sub, galaxies=[g1])
-            g1_image_plane_bluring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
-                grid=tracer.source_plane.grid_stack.blurring, galaxies=[g1])
+            g1_image_plane_image_1d = g1.intensities_from_grid(
+                grid=tracer.source_plane.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+            g1_image_plane_bluring_image_1d = g1.intensities_from_grid(
+                grid=tracer.source_plane.grid_stack.blurring, return_in_2d=False, return_binned_sub_grid=False)
 
             g1_blurred_image_plane_image_1d = lens_data_7x7.convolver_image.convolve_image(
                 image_array=g1_image_plane_image_1d,
@@ -650,9 +650,12 @@ class TestLensProfileFit:
             assert (blurred_profile_image_2d_of_planes[1] ==
                     fit.model_image_2d_of_planes[1]).all()
 
+            unmasked_image_1d = padded_tracer.profile_image_plane_image(
+                return_in_2d=False, return_binned_sub_grid=True)
+
             unmasked_blurred_profile_image = lens_data_7x7.padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
                 psf=lens_data_7x7.psf,
-                unmasked_image_1d=padded_tracer.profile_image_plane_image_1d)
+                unmasked_image_1d=unmasked_image_1d)
 
             assert (unmasked_blurred_profile_image == fit.unmasked_blurred_image_plane_image).all()
 
@@ -784,6 +787,7 @@ class TestLensInversionFit:
 
             mapper = pix.mapper_from_grid_stack_and_border(
                 grid_stack=lens_data_7x7.grid_stack, border=None)
+
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
                 mapper=mapper, regularization=reg, image_1d=lens_data_7x7.image_1d,
                 noise_map_1d=lens_data_7x7.noise_map_1d,
@@ -1061,6 +1065,7 @@ class TestLensProfileInversionFit:
 
         def test___lens_fit_galaxy_image_dict__has_blurred_profile_images_and_inversion_reconstructed_data(
                 self, lens_data_7x7):
+
             g0 = g.Galaxy(redshift=0.5,
                           light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(redshift=0.5,
@@ -1079,19 +1084,19 @@ class TestLensProfileInversionFit:
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_7x7,
                                                            tracer=tracer)
 
-            g0_image_plane_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
-                grid=lens_data_7x7.grid_stack.sub, galaxies=[g0])
-            g0_image_plane_bluring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
-                grid=lens_data_7x7.grid_stack.blurring, galaxies=[g0])
+            g0_image_plane_image_1d = g0.intensities_from_grid(
+                grid=lens_data_7x7.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+            g0_image_plane_bluring_image_1d = g0.intensities_from_grid(
+                grid=lens_data_7x7.grid_stack.blurring, return_in_2d=False, return_binned_sub_grid=False)
 
             g0_blurred_image_plane_image_1d = lens_data_7x7.convolver_image.convolve_image(
                 image_array=g0_image_plane_image_1d,
                 blurring_array=g0_image_plane_bluring_image_1d)
 
-            g1_image_plane_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
-                grid=tracer.source_plane.grid_stack.sub, galaxies=[g1])
-            g1_image_plane_bluring_image_1d = galaxy_util.intensities_of_galaxies_from_grid(
-                grid=tracer.source_plane.grid_stack.blurring, galaxies=[g1])
+            g1_image_plane_image_1d = g1.intensities_from_grid(
+                grid=tracer.source_plane.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+            g1_image_plane_bluring_image_1d = g1.intensities_from_grid(
+                grid=tracer.source_plane.grid_stack.blurring, return_in_2d=False, return_binned_sub_grid=False)
 
             g1_blurred_image_plane_image_1d = lens_data_7x7.convolver_image.convolve_image(
                 image_array=g1_image_plane_image_1d,

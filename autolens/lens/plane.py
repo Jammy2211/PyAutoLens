@@ -9,7 +9,7 @@ from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 from autolens.model.galaxy.util import galaxy_util
 
-from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.data.array.grids import reshape_returned_array, reshape_returned_array_blurring, reshape_returned_grid
 
 class AbstractPlane(object):
 
@@ -355,49 +355,84 @@ class AbstractGriddedPlane(AbstractPlane):
 
         return self.grid_stack.map_function(minus, self.deflections_stack)
 
-    @property
-    def profile_image_plane_image_2d(self):
-        return self.grid_stack.scaled_array_2d_from_array_1d(
-            self.profile_image_plane_image_1d)
+    @reshape_returned_array
+    def profile_image_plane_image(self, return_in_2d=True, return_binned_sub_grid=True):
+        """Compute the profile-image plane image of the list of galaxies of the plane's sub-grid, by summing the
+        individual images of each galaxy's light profile.
+
+        The image is calculated on the sub-grid and binned-up to the original regular grid by taking the mean
+        value of every set of sub-pixels, provided the *returned_binned_sub_grid* bool is *True*.
+
+        If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
+        sub-grid is returned.
+
+        Parameters
+        -----------
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
+        """
+        if self.galaxies:
+            return sum(map(lambda g: g.intensities_from_grid(grid=self.grid_stack.sub), self.galaxies))
+        else:
+            return np.full((self.grid_stack.sub.shape[0]), 0.0)
+
+    def profile_image_plane_image_of_galaxies(self, return_in_2d=True, return_binned_sub_grid=True):
+        return list(map(lambda galaxy : self.profile_image_plane_image_of_galaxy(
+            galaxy=galaxy,
+            return_in_2d=return_in_2d,
+            return_binned_sub_grid=return_binned_sub_grid),
+                        self.galaxies))
+
+    def profile_image_plane_image_of_galaxy(self, galaxy, return_in_2d=True, return_binned_sub_grid=True):
+        return galaxy.intensities_from_grid(
+            grid=self.grid_stack.sub, return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
 
     @property
-    def profile_image_plane_image_2d_for_simulation(self):
+    def profile_image_plane_image_for_simulation(self):
         if not self.has_padded_grid_stack:
             raise exc.RayTracingException(
                 'To retrieve an image plane image for a simulation, the grid stack in the plane'
                 'must be a padded grid stack')
-        return self.grid_stack.regular.padded_array_2d_from_padded_array_1d(
-            padded_array_1d=self.profile_image_plane_image_1d)
+        return self.profile_image_plane_image(
+            return_in_2d=True,
+            return_binned_sub_grid=True)
 
-    @property
-    def profile_image_plane_image_1d(self):
-        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub,
-                                                             galaxies=self.galaxies)
+    @reshape_returned_array_blurring
+    def profile_image_plane_blurring_image(self, return_in_2d=True):
+        """Compute the profile-image plane blurring image of the list of galaxies of the plane's sub-grid, by summing \
+        the individual blurring images of each galaxy's light profile.
 
-    @property
-    def profile_image_plane_image_1d_of_galaxies(self):
-        return list(map(self.profile_image_plane_image_1d_of_galaxy, self.galaxies))
+        The blurring image is calculated on the blurring grid, which is not subgrided.
 
-    def profile_image_plane_image_1d_of_galaxy(self, galaxy):
-        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub,
-                                                             galaxies=[galaxy])
+        If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
+        blurring grid is returned.
 
-    @property
-    def profile_image_plane_blurring_image_1d(self):
-        return galaxy_util.intensities_of_galaxies_from_grid(
-            grid=self.grid_stack.blurring, galaxies=self.galaxies)
+        Parameters
+        -----------
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        """
+        if self.galaxies:
+            return sum(map(lambda g: g.intensities_from_grid(grid=self.grid_stack.blurring), self.galaxies))
+        else:
+            return np.full((self.grid_stack.bluring.shape[0]), 0.0)
 
-    @property
-    def profile_image_plane_blurring_image_1d_of_galaxies(self):
-        return list(
-            map(self.profile_image_plane_blurring_image_1d_of_galaxy, self.galaxies))
+    def profile_image_plane_blurring_image_of_galaxies(self, return_in_2d=False):
+        return list(map(lambda galaxy : self.profile_image_plane_blurring_image_of_galaxy(
+            galaxy=galaxy,
+            return_in_2d=return_in_2d),
+                        self.galaxies))
 
-    def profile_image_plane_blurring_image_1d_of_galaxy(self, galaxy):
-        return galaxy_util.intensities_of_galaxies_from_grid(
-            grid=self.grid_stack.blurring, galaxies=[galaxy])
+    def profile_image_plane_blurring_image_of_galaxy(self, galaxy, return_in_2d=False):
+        return galaxy.intensities_from_grid(
+            grid=self.grid_stack.blurring, return_in_2d=return_in_2d, return_binned_sub_grid=False)
 
     @reshape_returned_array
-    def convergence(self, return_in_2d=False, return_binned_sub_grid=False):
+    def convergence(self, return_in_2d=True, return_binned_sub_grid=True):
         """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
         of each galaxy's mass profile.
 
@@ -414,6 +449,12 @@ class AbstractGriddedPlane(AbstractPlane):
             potential is calculated on.
         galaxies : [galaxy.Galaxy]
             The galaxies whose mass profiles are used to compute the surface densities.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
         if self.galaxies:
             return sum(map(lambda g: g.convergence_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid), self.galaxies))
@@ -421,7 +462,7 @@ class AbstractGriddedPlane(AbstractPlane):
             return np.full((self.grid_stack.sub.shape[0]), 0.0)
 
     @reshape_returned_array
-    def potential(self, return_in_2d=False, return_binned_sub_grid=False):
+    def potential(self, return_in_2d=True, return_binned_sub_grid=True):
         """Compute the potential of the list of galaxies of the plane's sub-grid, by summing the individual potentials \
         of each galaxy's mass profile.
 
@@ -438,6 +479,12 @@ class AbstractGriddedPlane(AbstractPlane):
             potential is calculated on.
         galaxies : [galaxy.Galaxy]
             The galaxies whose mass profiles are used to compute the surface densities.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
         if self.galaxies:
             return sum(map(lambda g: g.potential_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid), self.galaxies))
@@ -506,11 +553,14 @@ class AbstractGriddedPlane(AbstractPlane):
 
 class AbstractDataPlane(AbstractGriddedPlane):
 
-    def blurred_profile_image_plane_image_1d_from_convolver_image(self,
-                                                                  convolver_image):
+    def blurred_profile_image_plane_image_1d_from_convolver_image(self, convolver_image):
+        
+        image_array = self.profile_image_plane_image(return_in_2d=False, return_binned_sub_grid=True)
+        blurring_array = self.profile_image_plane_blurring_image(return_in_2d=False)
+        
         return convolver_image.convolve_image(
-            image_array=self.profile_image_plane_image_1d,
-            blurring_array=self.profile_image_plane_blurring_image_1d)
+            image_array=image_array,
+            blurring_array=blurring_array)
 
     def blurred_profile_image_plane_images_1d_of_galaxies_from_convolver_image(self,
                                                                                convolver_image):
@@ -519,8 +569,8 @@ class AbstractDataPlane(AbstractGriddedPlane):
             lambda profile_image_plane_image_1d, profile_image_plane_blurring_image_1d:
             convolver_image.convolve_image(image_array=profile_image_plane_image_1d,
                                            blurring_array=profile_image_plane_blurring_image_1d),
-            self.profile_image_plane_image_1d_of_galaxies,
-            self.profile_image_plane_blurring_image_1d_of_galaxies))
+            self.profile_image_plane_image_of_galaxies(return_in_2d=False, return_binned_sub_grid=True),
+            self.profile_image_plane_blurring_image_of_galaxies(return_in_2d=False)))
 
     def unmasked_blurred_profile_image_plane_image_from_psf(self, psf):
 
@@ -530,7 +580,7 @@ class AbstractDataPlane(AbstractGriddedPlane):
                 'must be a padded grid stack')
 
         return self.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-            psf=psf, unmasked_image_1d=self.profile_image_plane_image_1d)
+            psf=psf, unmasked_image_1d=self.profile_image_plane_image(return_in_2d=False, return_binned_sub_grid=True))
 
     def unmasked_blurred_profile_image_plane_images_of_galaxies_from_psf(self, psf):
 
@@ -547,7 +597,7 @@ class AbstractDataPlane(AbstractGriddedPlane):
         return list(map(lambda image_plane_image_1d:
                         self.grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
                             psf=psf, unmasked_image_1d=image_plane_image_1d),
-                        self.profile_image_plane_image_1d_of_galaxies))
+                        self.profile_image_plane_image_of_galaxies(return_in_2d=False, return_binned_sub_grid=True)))
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
         hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(
