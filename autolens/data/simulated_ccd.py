@@ -36,9 +36,10 @@ class SimulatedCCDData(ccd.CCDData):
 
         deflected_grid_1d = grid_1d - deflections_1d
 
-        image_1d = galaxy_util.intensities_of_galaxies_from_grid(grid=deflected_grid_1d, galaxies=source_galaxies)
-
-        image_2d = grid_1d.scaled_array_2d_from_array_1d(array_1d=image_1d)
+        image_2d = sum(map(lambda g:
+                           g.intensities_from_grid(
+                               grid=deflected_grid_1d, return_in_2d=True, return_binned_sub_grid=False),
+                           source_galaxies))
 
         return cls.from_image_and_exposure_arrays(
             image=image_2d, pixel_scale=pixel_scale, exposure_time=exposure_time,
