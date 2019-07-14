@@ -54,7 +54,7 @@ class TestLensData(object):
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True]])).all()
 
-        assert (lens_data_7x7.image_2d == np.array(
+        assert (lens_data_7x7.image(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
@@ -63,7 +63,7 @@ class TestLensData(object):
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-        assert (lens_data_7x7.noise_map_2d == np.array(
+        assert (lens_data_7x7.noise_map(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],
@@ -231,7 +231,7 @@ class TestLensData(object):
 
         assert (lens_data_7x7.image_1d == 8.0 * np.ones(9)).all()
 
-        assert (lens_data_7x7.image_2d == np.array(
+        assert (lens_data_7x7.image(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 8.0, 8.0, 8.0, 0.0, 0.0],

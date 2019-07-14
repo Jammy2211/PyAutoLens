@@ -1,8 +1,7 @@
-import numpy as np
-
 from autolens import exc
 from autolens.data.array import grids, mask as msk, scaled_array
 
+from autolens.data.array.grids import reshape_returned_regular_array
 
 class GalaxyData(object):
 
@@ -68,6 +67,7 @@ class GalaxyFitData(object):
 
         self.image_1d = mask.array_1d_from_array_2d(array_2d=self.unmasked_image)
         self.noise_map_1d = mask.array_1d_from_array_2d(array_2d=self.unmasked_noise_map)
+        self.signal_to_noise_map_1d = self.image_1d / self.noise_map_1d
         self.mask_1d = mask.array_1d_from_array_2d(array_2d=mask)
 
         self.sub_grid_size = sub_grid_size
@@ -83,8 +83,6 @@ class GalaxyFitData(object):
                 interp_pixel_scale=interp_pixel_scale)
 
         self.mask_2d = mask
-        self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
-        self.noise_map_2d = self.map_to_scaled_array(array_1d=self.noise_map_1d)
 
         if all(not element for element in [use_intensities, use_convergence, use_potential,
                                            use_deflections_y, use_deflections_x]):
@@ -139,3 +137,21 @@ class GalaxyFitData(object):
         elif self.use_deflections_x:
             return sum(map(lambda g: g.deflections_from_grid(
                 grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))[:, 1]
+
+    def mask(self, return_in_2d=True):
+        if return_in_2d:
+            return self.mask_2d
+        else:
+            return self.mask_1d
+
+    @reshape_returned_regular_array
+    def image(self, return_in_2d=True):
+        return self.image_1d
+
+    @reshape_returned_regular_array
+    def noise_map(self, return_in_2d=True):
+        return self.noise_map_1d
+
+    @reshape_returned_regular_array
+    def signal_to_noise_map(self, return_in_2d=True):
+        return self.signal_to_noise_map_1d

@@ -58,7 +58,7 @@ class TestPhase(object):
         assert phase_7x7.optimizer.variable.lens_galaxies == [
             gm.GalaxyModel(redshift=0.5)]
 
-    def test_make_analysis(
+    def test__make_analysis(
             self, phase_7x7, ccd_data_7x7, lens_data_7x7):
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
@@ -66,8 +66,8 @@ class TestPhase(object):
         assert analysis.last_results is None
         assert analysis.lens_data.unmasked_image == ccd_data_7x7.image
         assert analysis.lens_data.unmasked_noise_map == ccd_data_7x7.noise_map
-        assert analysis.lens_data.image_2d == lens_data_7x7.image_2d
-        assert analysis.lens_data.noise_map_2d == lens_data_7x7.noise_map_2d
+        assert analysis.lens_data.image(return_in_2d=True) == lens_data_7x7.image(return_in_2d=True)
+        assert analysis.lens_data.noise_map(return_in_2d=True) == lens_data_7x7.noise_map(return_in_2d=True)
 
     def test_make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(
             self, phase_7x7, ccd_data_7x7):
@@ -840,9 +840,9 @@ class TestPhase(object):
         binned_up_lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(
             bin_up_factor=2)
 
-        assert (analysis.lens_data.image_2d == binned_up_lens_data.image_2d).all()
+        assert (analysis.lens_data.image(return_in_2d=True) == binned_up_lens_data.image(return_in_2d=True)).all()
         assert (analysis.lens_data.psf == binned_up_lens_data.psf).all()
-        assert (analysis.lens_data.noise_map_2d == binned_up_lens_data.noise_map_2d).all()
+        assert (analysis.lens_data.noise_map(return_in_2d=True) == binned_up_lens_data.noise_map(return_in_2d=True)).all()
 
         assert (analysis.lens_data.mask_2d == binned_up_lens_data.mask_2d).all()
 

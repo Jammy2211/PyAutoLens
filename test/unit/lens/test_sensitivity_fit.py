@@ -64,38 +64,38 @@ class TestSensitivityProfileFit:
                                                     tracer_normal=tracer,
                                                     tracer_sensitive=tracer)
 
-        assert (fit.fit_normal.image_2d == ld_blur.image_2d).all()
-        assert (fit.fit_normal.noise_map_2d == ld_blur.noise_map_2d).all()
+        assert (fit.fit_normal.image(return_in_2d=True) == ld_blur.image(return_in_2d=True)).all()
+        assert (fit.fit_normal.noise_map(return_in_2d=True) == ld_blur.noise_map(return_in_2d=True)).all()
 
         model_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
             convolver_image=ld_blur.convolver_image)
 
         model_image_2d = ld_blur.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
-        assert (fit.fit_normal.model_image_2d == model_image_2d).all()
+        assert (fit.fit_normal.model_image(return_in_2d=True) == model_image_2d).all()
 
         residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
             data=ld_blur.image_1d, mask=ld_blur.mask_1d, model_data=model_image_1d)
 
         residual_map_2d = ld_blur.scaled_array_2d_from_array_1d(array_1d=residual_map_1d)
-        assert (fit.fit_normal.residual_map_2d == residual_map_2d).all()
+        assert (fit.fit_normal.residual_map(return_in_2d=True) == residual_map_2d).all()
 
         chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d,
-            mask=ld_blur.mask_2d, noise_map=ld_blur.noise_map_2d)
+            mask=ld_blur.mask_2d, noise_map=ld_blur.noise_map(return_in_2d=True))
 
-        assert (fit.fit_normal.chi_squared_map_2d == chi_squared_map_2d).all()
+        assert (fit.fit_normal.chi_squared_map(return_in_2d=True) == chi_squared_map_2d).all()
 
-        assert (fit.fit_sensitive.image_2d == ld_blur.image_2d).all()
-        assert (fit.fit_sensitive.noise_map_2d == ld_blur.noise_map_2d).all()
-        assert (fit.fit_sensitive.model_image_2d == model_image_2d).all()
-        assert (fit.fit_sensitive.residual_map_2d == residual_map_2d).all()
-        assert (fit.fit_sensitive.chi_squared_map_2d == chi_squared_map_2d).all()
+        assert (fit.fit_sensitive.image(return_in_2d=True) == ld_blur.image(return_in_2d=True)).all()
+        assert (fit.fit_sensitive.noise_map(return_in_2d=True) == ld_blur.noise_map(return_in_2d=True)).all()
+        assert (fit.fit_sensitive.model_image(return_in_2d=True) == model_image_2d).all()
+        assert (fit.fit_sensitive.residual_map(return_in_2d=True) == residual_map_2d).all()
+        assert (fit.fit_sensitive.chi_squared_map(return_in_2d=True) == chi_squared_map_2d).all()
 
         chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=ld_blur.mask_2d)
         noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
-            mask=ld_blur.mask_2d, noise_map=ld_blur.noise_map_2d)
+            mask=ld_blur.mask_2d, noise_map=ld_blur.noise_map(return_in_2d=True))
 
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared + noise_normalization)
         assert fit.fit_sensitive.likelihood == -0.5 * (
@@ -122,54 +122,54 @@ class TestSensitivityProfileFit:
                                                     tracer_normal=tracer_normal,
                                                     tracer_sensitive=tracer_sensitive)
 
-        assert (fit.fit_normal.image_2d == ld_blur.image_2d).all()
-        assert (fit.fit_normal.noise_map_2d == ld_blur.noise_map_2d).all()
+        assert (fit.fit_normal.image(return_in_2d=True) == ld_blur.image(return_in_2d=True)).all()
+        assert (fit.fit_normal.noise_map(return_in_2d=True) == ld_blur.noise_map(return_in_2d=True)).all()
 
         model_image_1d = tracer_normal.blurred_profile_image_plane_image_1d_from_convolver_image(
             convolver_image=ld_blur.convolver_image)
 
         model_image_2d = ld_blur.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
-        assert (fit.fit_normal.model_image_2d == model_image_2d).all()
+        assert (fit.fit_normal.model_image(return_in_2d=True) == model_image_2d).all()
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
-            data=ld_blur.image_2d, mask=ld_blur.mask_2d, model_data=model_image_2d)
+            data=ld_blur.image(return_in_2d=True), mask=ld_blur.mask_2d, model_data=model_image_2d)
 
-        assert (fit.fit_normal.residual_map_2d == residual_map_2d).all()
+        assert (fit.fit_normal.residual_map(return_in_2d=True) == residual_map_2d).all()
 
         chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d, mask=ld_blur.mask_2d,
-            noise_map=ld_blur.noise_map_2d)
+            noise_map=ld_blur.noise_map(return_in_2d=True))
 
-        assert (fit.fit_normal.chi_squared_map_2d == chi_squared_map_2d).all()
+        assert (fit.fit_normal.chi_squared_map(return_in_2d=True) == chi_squared_map_2d).all()
 
-        assert (fit.fit_sensitive.image_2d == ld_blur.image_2d).all()
-        assert (fit.fit_sensitive.noise_map_2d == ld_blur.noise_map_2d).all()
+        assert (fit.fit_sensitive.image(return_in_2d=True) == ld_blur.image(return_in_2d=True)).all()
+        assert (fit.fit_sensitive.noise_map(return_in_2d=True) == ld_blur.noise_map(return_in_2d=True)).all()
 
         model_image_1d = tracer_sensitive.blurred_profile_image_plane_image_1d_from_convolver_image(
             convolver_image=ld_blur.convolver_image)
 
         model_image_2d = ld_blur.scaled_array_2d_from_array_1d(array_1d=model_image_1d)
 
-        assert (fit.fit_sensitive.model_image_2d == model_image_2d).all()
+        assert (fit.fit_sensitive.model_image(return_in_2d=True) == model_image_2d).all()
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
-            data=ld_blur.image_2d, mask=ld_blur.mask_2d, model_data=model_image_2d)
+            data=ld_blur.image(return_in_2d=True), mask=ld_blur.mask_2d, model_data=model_image_2d)
 
-        assert (fit.fit_sensitive.residual_map_2d == residual_map_2d).all()
+        assert (fit.fit_sensitive.residual_map(return_in_2d=True) == residual_map_2d).all()
 
         chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d, mask=ld_blur.mask_2d,
-            noise_map=ld_blur.noise_map_2d)
+            noise_map=ld_blur.noise_map(return_in_2d=True))
 
-        assert (fit.fit_sensitive.chi_squared_map_2d == chi_squared_map_2d).all()
+        assert (fit.fit_sensitive.chi_squared_map(return_in_2d=True) == chi_squared_map_2d).all()
 
         chi_squared_normal = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=fit.fit_normal.chi_squared_map_2d, mask=ld_blur.mask_2d)
+            chi_squared_map=fit.fit_normal.chi_squared_map(return_in_2d=True), mask=ld_blur.mask_2d)
         chi_squared_sensitive = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=fit.fit_sensitive.chi_squared_map_2d, mask=ld_blur.mask_2d)
+            chi_squared_map=fit.fit_sensitive.chi_squared_map(return_in_2d=True), mask=ld_blur.mask_2d)
         noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
-            mask=ld_blur.mask_2d, noise_map=ld_blur.noise_map_2d)
+            mask=ld_blur.mask_2d, noise_map=ld_blur.noise_map(return_in_2d=True))
 
         assert fit.fit_normal.likelihood == -0.5 * (
                 chi_squared_normal + noise_normalization)
@@ -206,8 +206,8 @@ class TestSensitivityInversionFit:
                                                       tracer_normal=tracer,
                                                       tracer_sensitive=tracer)
 
-        assert (fit.fit_normal.image_2d == ld_blur.image_2d).all()
-        assert (fit.fit_normal.noise_map_2d == ld_blur.noise_map_2d).all()
+        assert (fit.fit_normal.image(return_in_2d=True) == ld_blur.image(return_in_2d=True)).all()
+        assert (fit.fit_normal.noise_map(return_in_2d=True) == ld_blur.noise_map(return_in_2d=True)).all()
 
         mapper = pixelization.mapper_from_grid_stack_and_border(
             grid_stack=tracer.source_plane.grid_stack, border=None)
@@ -216,38 +216,38 @@ class TestSensitivityInversionFit:
             noise_map_1d=ld_blur.noise_map_1d,
             convolver=ld_blur.convolver_mapping_matrix)
 
-        assert fit.fit_normal.model_image_2d == pytest.approx(
+        assert fit.fit_normal.model_image(return_in_2d=True) == pytest.approx(
             inversion.reconstructed_data_2d, 1.0e-4)
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
-            data=ld_blur.image_2d, mask=ld_blur.mask_2d,
+            data=ld_blur.image(return_in_2d=True), mask=ld_blur.mask_2d,
             model_data=inversion.reconstructed_data_2d)
 
-        assert fit.fit_normal.residual_map_2d == pytest.approx(residual_map_2d, 1.0e-4)
+        assert fit.fit_normal.residual_map(return_in_2d=True) == pytest.approx(residual_map_2d, 1.0e-4)
 
         chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d, mask=ld_blur.mask_2d,
-            noise_map=ld_blur.noise_map_2d)
+            noise_map=ld_blur.noise_map(return_in_2d=True))
 
-        assert fit.fit_normal.chi_squared_map_2d == pytest.approx(chi_squared_map_2d,
-                                                                  1.0e-4)
-
-        assert fit.fit_sensitive.image_2d == pytest.approx(ld_blur.image_2d, 1.0e-4)
-        assert fit.fit_sensitive.noise_map_2d == pytest.approx(ld_blur.noise_map_2d,
+        assert fit.fit_normal.chi_squared_map(return_in_2d=True) == pytest.approx(chi_squared_map_2d,
                                                                1.0e-4)
-        assert fit.fit_sensitive.model_image_2d == pytest.approx(
+
+        assert fit.fit_sensitive.image(return_in_2d=True) == pytest.approx(ld_blur.image(return_in_2d=True), 1.0e-4)
+        assert fit.fit_sensitive.noise_map(return_in_2d=True) == pytest.approx(ld_blur.noise_map(return_in_2d=True),
+                                                            1.0e-4)
+        assert fit.fit_sensitive.model_image(return_in_2d=True) == pytest.approx(
             inversion.reconstructed_data_2d, 1.0e-4)
-        assert fit.fit_sensitive.residual_map_2d == pytest.approx(residual_map_2d,
+        assert fit.fit_sensitive.residual_map(return_in_2d=True) == pytest.approx(residual_map_2d,
+                                                               1.0e-4)
+        assert fit.fit_sensitive.chi_squared_map(return_in_2d=True) == pytest.approx(chi_squared_map_2d,
                                                                   1.0e-4)
-        assert fit.fit_sensitive.chi_squared_map_2d == pytest.approx(chi_squared_map_2d,
-                                                                     1.0e-4)
 
         chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d,
             mask=ld_blur.mask_2d)
         noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=ld_blur.mask_2d,
-            noise_map=ld_blur.noise_map_2d)
+            noise_map=ld_blur.noise_map(return_in_2d=True))
 
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared + noise_normalization)
         assert fit.fit_sensitive.likelihood == -0.5 * (
@@ -278,8 +278,8 @@ class TestSensitivityInversionFit:
                                                       tracer_normal=tracer_normal,
                                                       tracer_sensitive=tracer_sensitive)
 
-        assert (fit.fit_normal.image_2d == ld_blur.image_2d).all()
-        assert (fit.fit_normal.noise_map_2d == ld_blur.noise_map_2d).all()
+        assert (fit.fit_normal.image(return_in_2d=True) == ld_blur.image(return_in_2d=True)).all()
+        assert (fit.fit_normal.noise_map(return_in_2d=True) == ld_blur.noise_map(return_in_2d=True)).all()
 
         mapper = pixelization.mapper_from_grid_stack_and_border(
             grid_stack=tracer_normal.source_plane.grid_stack,
@@ -289,24 +289,24 @@ class TestSensitivityInversionFit:
             noise_map_1d=ld_blur.noise_map_1d,
             convolver=ld_blur.convolver_mapping_matrix)
 
-        assert fit.fit_normal.model_image_2d == pytest.approx(
+        assert fit.fit_normal.model_image(return_in_2d=True) == pytest.approx(
             inversion.reconstructed_data_2d, 1.0e-4)
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
-            data=ld_blur.image_2d, mask=ld_blur.mask_2d,
+            data=ld_blur.image(return_in_2d=True), mask=ld_blur.mask_2d,
             model_data=inversion.reconstructed_data_2d)
 
-        assert fit.fit_normal.residual_map_2d == pytest.approx(residual_map_2d, 1.0e-4)
+        assert fit.fit_normal.residual_map(return_in_2d=True) == pytest.approx(residual_map_2d, 1.0e-4)
 
         chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d, mask=ld_blur.mask_2d,
-            noise_map=ld_blur.noise_map_2d)
+            noise_map=ld_blur.noise_map(return_in_2d=True))
 
-        assert fit.fit_normal.chi_squared_map_2d == pytest.approx(chi_squared_map_2d,
-                                                                  1.0e-4)
+        assert fit.fit_normal.chi_squared_map(return_in_2d=True) == pytest.approx(chi_squared_map_2d,
+                                                               1.0e-4)
 
-        assert (fit.fit_sensitive.image_2d == ld_blur.image_2d).all()
-        assert (fit.fit_sensitive.noise_map_2d == ld_blur.noise_map_2d).all()
+        assert (fit.fit_sensitive.image(return_in_2d=True) == ld_blur.image(return_in_2d=True)).all()
+        assert (fit.fit_sensitive.noise_map(return_in_2d=True) == ld_blur.noise_map(return_in_2d=True)).all()
 
         mapper = pixelization.mapper_from_grid_stack_and_border(
             grid_stack=tracer_sensitive.source_plane.grid_stack,
@@ -316,29 +316,29 @@ class TestSensitivityInversionFit:
             noise_map_1d=ld_blur.noise_map_1d,
             convolver=ld_blur.convolver_mapping_matrix)
 
-        assert fit.fit_sensitive.model_image_2d == pytest.approx(
+        assert fit.fit_sensitive.model_image(return_in_2d=True) == pytest.approx(
             inversion.reconstructed_data_2d, 1.0e-4)
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
-            data=ld_blur.image_2d, mask=ld_blur.mask_2d,
+            data=ld_blur.image(return_in_2d=True), mask=ld_blur.mask_2d,
             model_data=inversion.reconstructed_data_2d)
 
-        assert fit.fit_sensitive.residual_map_2d == pytest.approx(residual_map_2d,
-                                                                  1.0e-4)
+        assert fit.fit_sensitive.residual_map(return_in_2d=True) == pytest.approx(residual_map_2d,
+                                                               1.0e-4)
 
         chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d, mask=ld_blur.mask_2d,
-            noise_map=ld_blur.noise_map_2d)
+            noise_map=ld_blur.noise_map(return_in_2d=True))
 
-        assert fit.fit_sensitive.chi_squared_map_2d == pytest.approx(chi_squared_map_2d,
-                                                                     1.0e-4)
+        assert fit.fit_sensitive.chi_squared_map(return_in_2d=True) == pytest.approx(chi_squared_map_2d,
+                                                                  1.0e-4)
 
         chi_squared_normal = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=fit.fit_normal.chi_squared_map_2d, mask=ld_blur.mask_2d)
+            chi_squared_map=fit.fit_normal.chi_squared_map(return_in_2d=True), mask=ld_blur.mask_2d)
         chi_squared_sensitive = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=fit.fit_sensitive.chi_squared_map_2d, mask=ld_blur.mask_2d)
+            chi_squared_map=fit.fit_sensitive.chi_squared_map(return_in_2d=True), mask=ld_blur.mask_2d)
         noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
-            mask=ld_blur.mask_2d, noise_map=ld_blur.noise_map_2d)
+            mask=ld_blur.mask_2d, noise_map=ld_blur.noise_map(return_in_2d=True))
 
         assert fit.fit_normal.likelihood == -0.5 * (
                 chi_squared_normal + noise_normalization)

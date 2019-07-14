@@ -12,36 +12,6 @@ from autolens.model.galaxy import galaxy as g
 
 from autolens.data.array.grids import reshape_returned_array, reshape_returned_array_blurring, reshape_returned_grid
 
-def check_tracer_for_mass_profile(func):
-    """If none of the tracer's galaxies have a mass profile, it surface density, potential and deflections cannot \
-    be computed. This wrapper makes these properties return *None*.
-
-    Parameters
-    ----------
-    func : (self) -> Object
-        A property function that requires galaxies to have a mass profile.
-    """
-
-    @wraps(func)
-    def wrapper(self):
-        """
-
-        Parameters
-        ----------
-        self
-
-        Returns
-        -------
-            A value or coordinate in the same coordinate system as those passed in.
-        """
-
-        if self.has_mass_profile is True:
-            return func(self)
-        else:
-            return None
-
-    return wrapper
-
 
 class AbstractTracerCosmology(object):
 
@@ -199,11 +169,11 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @reshape_returned_array
     def convergence(self, return_in_2d=True, return_binned_sub_grid=True):
-        return sum([plane.convergence() for plane in self.planes])
+        return sum([plane.convergence(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
 
     @reshape_returned_array
     def potential(self, return_in_2d=True, return_binned_sub_grid=True):
-        return sum([plane.potential() for plane in self.planes])
+        return sum([plane.potential(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
 
     @reshape_returned_array
     def deflections_y(self, return_in_2d=True, return_binned_sub_grid=True):

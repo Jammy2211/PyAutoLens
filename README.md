@@ -77,7 +77,7 @@ Unfortunately, Slack is invitation-only, so first send me an [email](https://git
 
 **PyAutoLens's** advanced modeling features include:
 
-- **Galaxies** - Use light & mass profiles to make galaxies & perform lensing calculations (potentials, deflections, etc).
+- **Galaxies** - Use light & mass profiles to make galaxies & perform lensing calculations.
 - **Pipelines** - Write automated analysis pipelines to fit complex lens models to large samples of strong lenses.
 - **Extended Sources** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
 - **Adaption** - Adapt the lensing analysis to the features of the observed strong lens imaging.
@@ -95,7 +95,7 @@ Included with **PyAutoLens** is the **HowToLens** lecture series, which provides
 
 ## Workspace
 
-**PyAutoLens** comes with a workspace, which can be found [here](https://github.com/Jammy2211/autolens_workspace) & which includes the following:
+**PyAutoLens** comes with a workspace, which can be found [here](https://github.com/Jammy2211/autolens_workspace) & which includes:
 
 - **Config** - Configuration files which customize the **PyAutoLens** analysis.
 - **Data** - Your data folder, including example data-sets distributed with **PyAutoLens**.
@@ -134,12 +134,6 @@ Install multinest:
 
 ```
 conda install -c conda-forge multinest
-```
-
-Tell matplotlib what backend to use:
-
-```
-echo "backend : TKAgg" > ~/.matplotlib/matplotlibrc
 ```
 
 Install autolens:
@@ -212,7 +206,7 @@ The following papers use **PyAutoLens**:
 
 ## Credits
 
-##### Contributors
+### Developers
 
 [James Nightingale](https://github.com/Jammy2211) - Lead developer & PyAutoLens guru.
 
@@ -224,7 +218,7 @@ The following papers use **PyAutoLens**:
 
 [Nan Li](https://github.com/linan7788626) - Docker integration & support.
 
-##### Code Donors
+### Code Donors
 
 [Andrew Robertson](https://github.com/Andrew-Robertson) - Critical curve & caustic calculations.
 

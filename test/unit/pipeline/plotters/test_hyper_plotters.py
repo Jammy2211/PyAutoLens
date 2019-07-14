@@ -1,8 +1,6 @@
 from autolens.pipeline.plotters import hyper_plotters
 from test.fixtures import *
 
-import numpy as np
-
 @pytest.fixture(name='hyper_plotter_path')
 def make_hyper_plotter_setup():
     return "{}/../../test_files/plotting/hyper/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -33,7 +31,7 @@ def test__plot_contribution_map(contribution_map_7x7, hyper_plotter_path, plot_p
         output_path=hyper_plotter_path, output_format='png')
 
     assert hyper_plotter_path + 'contribution_map.png' in plot_patch.paths
-    
+
 def test__plot_hyper_noise_map(hyper_noise_map_7x7, hyper_plotter_path, plot_patch):
 
     hyper_plotters.plot_hyper_noise_map(
@@ -46,7 +44,8 @@ def test__plot_hyper_noise_map(hyper_noise_map_7x7, hyper_plotter_path, plot_pat
 def test__plot_chi_squared_map(lens_fit_x1_plane_7x7, hyper_plotter_path, plot_patch):
 
     hyper_plotters.plot_chi_squared_map(
-        chi_squared_map=lens_fit_x1_plane_7x7.chi_squared_map_2d, extract_array_from_mask=True, zoom_around_mask=True,
+        chi_squared_map=lens_fit_x1_plane_7x7.chi_squared_map(return_in_2d=True),
+        extract_array_from_mask=True, zoom_around_mask=True,
         cb_tick_values=[1.0], cb_tick_labels=['1.0'],
         output_path=hyper_plotter_path, output_format='png')
 
@@ -56,7 +55,8 @@ def test__plot_chi_squared_map(lens_fit_x1_plane_7x7, hyper_plotter_path, plot_p
 def test__plot_hyper_chi_squared_map(lens_fit_x1_plane_7x7, hyper_plotter_path, plot_patch):
 
     hyper_plotters.plot_hyper_chi_squared_map(
-        hyper_chi_squared_map=lens_fit_x1_plane_7x7.chi_squared_map_2d, extract_array_from_mask=True, zoom_around_mask=True,
+        hyper_chi_squared_map=lens_fit_x1_plane_7x7.chi_squared_map(return_in_2d=True),
+        extract_array_from_mask=True, zoom_around_mask=True,
         cb_tick_values=[1.0], cb_tick_labels=['1.0'],
         output_path=hyper_plotter_path, output_format='png')
 
@@ -72,8 +72,8 @@ def test__plot_hyper_galaxy(
         contribution_map=contribution_map_7x7,
         noise_map=noise_map_7x7,
         hyper_noise_map=hyper_noise_map_7x7,
-        chi_squared_map=lens_fit_x1_plane_7x7.chi_squared_map_2d,
-        hyper_chi_squared_map=lens_fit_x1_plane_7x7.chi_squared_map_2d,
+        chi_squared_map=lens_fit_x1_plane_7x7.chi_squared_map(return_in_2d=True),
+        hyper_chi_squared_map=lens_fit_x1_plane_7x7.chi_squared_map(return_in_2d=True),
         extract_array_from_mask=True, zoom_around_mask=True,
         cb_tick_values=[1.0], cb_tick_labels=['1.0'],
         output_path=hyper_plotter_path, output_format='png')
