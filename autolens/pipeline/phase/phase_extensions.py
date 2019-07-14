@@ -388,10 +388,10 @@ class HyperGalaxyPhase(HyperPhase):
                 hyper_plotters.plot_hyper_galaxy_subplot(
                     hyper_galaxy_image=hyper_galaxy_image_2d,
                     contribution_map=contribution_map_2d,
-                    noise_map=self.lens_data.noise_map_2d,
-                    hyper_noise_map=fit.noise_map_2d,
-                    chi_squared_map=fit_normal.chi_squared_map_2d,
-                    hyper_chi_squared_map=fit.chi_squared_map_2d,
+                    noise_map=self.lens_data.noise_map(return_in_2d=True),
+                    hyper_noise_map=fit.noise_map(return_in_2d=True),
+                    chi_squared_map=fit_normal.chi_squared_map(return_in_2d=True),
+                    hyper_chi_squared_map=fit.chi_squared_map(return_in_2d=True),
                     output_path=image_path, output_format='png')
 
         def fit(self, instance):
