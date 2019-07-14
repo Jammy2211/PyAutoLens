@@ -463,6 +463,7 @@ class TestRegularGrid:
         assert padded_regular_grid.shape == (36, 2)
         assert (padded_regular_grid.mask == np.full(fill_value=False, shape=(6,6))).all()
         assert (padded_regular_grid == regular_padded_grid_util).all()
+        assert padded_regular_grid.interpolator is None
 
         regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
             shape=(4, 5), pixel_scale=2.0)
@@ -497,35 +498,25 @@ class TestRegularGrid:
         assert padded_regular_grid.shape == (54, 2)
         assert (padded_regular_grid == regular_padded_grid_util).all()
 
-    def test__sub_padded_grid_coordinates__match_grid_2d_after_padding(self):
+    def test__padded_grid_from_psf_shape__has_interpolator_grid_if_had_one_before(self):
 
-        mask = msk.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
+        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+            shape=(4, 4), pixel_scale=3.0)
 
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=2)
+        regular_grid = regular_grid.new_grid_with_interpolator(interp_pixel_scale=0.1)
 
-        padded_sub_grid = sub_grid.padded_grid_from_psf_shape(psf_shape=(3,3))
+        padded_regular_grid = regular_grid.padded_grid_from_psf_shape(psf_shape=(3,3))
 
-        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_grid_size=2)
+        assert padded_regular_grid.interpolator is not None
+        assert padded_regular_grid.interpolator.interp_pixel_scale == 0.1
 
-        assert padded_sub_grid.shape == (168, 2)
-        assert (padded_sub_grid.mask == np.full(fill_value=False, shape=(7,6))).all()
-        assert padded_sub_grid == pytest.approx(sub_padded_grid_util, 1e-4)
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(6,6), pixel_scale=3.0)
 
-        mask = msk.Mask(array=np.full((2, 5), False), pixel_scale=8.0)
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=padded_regular_grid, interp_pixel_scale=0.1)
 
-        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=4)
-
-        padded_sub_grid = sub_grid.padded_grid_from_psf_shape(psf_shape=(5,5))
-
-        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_grid_size=4)
-
-        assert padded_sub_grid.shape == (864, 2)
-        assert (padded_sub_grid.mask == np.full(fill_value=False, shape=(6,9))).all()
-        assert padded_sub_grid == pytest.approx(sub_padded_grid_util, 1e-4)
+        assert (padded_regular_grid.interpolator.vtx == interpolator.vtx).all()
+        assert (padded_regular_grid.interpolator.wts == interpolator.wts).all()
 
     def test__trimmed_array_2d_from_padded_array_1d_and_image_shape(self):
 
@@ -679,6 +670,59 @@ class TestSubGrid(object):
                                               [False, False, False, False, True, True],
                                               [False, False, True, True, False, False],
                                               [False, False, True, True, False, False]])).all()
+
+    def test__padded_sub_grid_from_psf_hape__sub_padded_grid_coordinates__match_grid_2d_after_padding(self):
+
+        mask = msk.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
+
+        padded_sub_grid = sub_grid.padded_grid_from_psf_shape(psf_shape=(3,3))
+
+        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+            mask=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_grid_size=2)
+
+        assert padded_sub_grid.shape == (168, 2)
+        assert (padded_sub_grid.mask == np.full(fill_value=False, shape=(7,6))).all()
+        assert padded_sub_grid == pytest.approx(sub_padded_grid_util, 1e-4)
+        assert padded_sub_grid.interpolator is None
+
+        mask = msk.Mask(array=np.full((2, 5), False), pixel_scale=8.0)
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=4)
+
+        padded_sub_grid = sub_grid.padded_grid_from_psf_shape(psf_shape=(5,5))
+
+        sub_padded_grid_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+            mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_grid_size=4)
+
+        assert padded_sub_grid.shape == (864, 2)
+        assert (padded_sub_grid.mask == np.full(fill_value=False, shape=(6,9))).all()
+        assert padded_sub_grid == pytest.approx(sub_padded_grid_util, 1e-4)
+
+    def test__padded_grid_from_psf_shape__has_interpolator_grid_if_had_one_before(self):
+
+        mask = msk.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
+
+        sub_grid = sub_grid.new_grid_with_interpolator(interp_pixel_scale=0.1)
+
+        padded_sub_grid = sub_grid.padded_grid_from_psf_shape(psf_shape=(3,3))
+
+        assert padded_sub_grid.interpolator is not None
+        assert padded_sub_grid.interpolator.interp_pixel_scale == 0.1
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(7,6), pixel_scale=2.0)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=padded_sub_grid, interp_pixel_scale=0.1)
+
+        assert (padded_sub_grid.interpolator.vtx == interpolator.vtx).all()
+        assert (padded_sub_grid.interpolator.wts == interpolator.wts).all()
 
 
 class TestClusterGrid:
@@ -1129,6 +1173,24 @@ class TestGridStack(object):
         assert padded_grid_stack.sub == pytest.approx(sub_padded_grid_util, 1e-4)
         assert (padded_grid_stack.blurring == np.array([0.0, 0.0])).all()
         assert (padded_grid_stack.pixelization == np.array([[0.0, 0.0]])).all()
+        assert padded_grid_stack.regular.interpolator is None
+        assert padded_grid_stack.sub.interpolator is None
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(6,6), pixel_scale=1.0)
+
+        regular_interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=padded_grid_stack.regular, interp_pixel_scale=1.0)
+
+        sub_interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=padded_grid_stack.sub, interp_pixel_scale=1.0)
+
+        grid_stack.regular.interpolator = regular_interpolator
+        grid_stack.sub.interpolator = sub_interpolator
+
+        padded_grid_stack = grid_stack.padded_grid_stack_from_psf_shape(psf_shape=(3, 3))
+
+        assert (padded_grid_stack.regular.interpolator.vtx == regular_interpolator.vtx).all()
+        assert (padded_grid_stack.sub.interpolator.vtx == sub_interpolator.vtx).all()
 
     def test__scaled_array_2d_from_array_1d(self, grid_stack):
 
