@@ -156,6 +156,7 @@ class TestPointMass(object):
 
         assert deflections.shape == (2, 2, 2)
 
+
 class TestCoredPowerLaw(object):
 
     def test__constructor_and_units(self):
@@ -1190,6 +1191,7 @@ class TestIsothermal(object):
 
         assert deflections.shape == (2, 2, 2)
 
+
         isothermal = mp.SphericalIsothermal()
 
         convergence = isothermal.convergence_from_grid(
@@ -1206,3 +1208,79 @@ class TestIsothermal(object):
             grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
 
         assert deflections.shape == (2, 2, 2)
+
+
+def test__reshape_decorators():
+
+    regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        shape=(2, 2), pixel_scale=1.0)
+
+    isothermal = mp.SphericalIsothermal()
+
+    convergence = isothermal.convergence_from_grid(
+        grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+    assert convergence.shape == (2, 2)
+
+    deflections = isothermal.deflections_from_grid(
+        grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+    assert deflections.shape == (2, 2, 2)
+
+    convergence = isothermal.convergence_from_grid(
+        grid=regular_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+    assert convergence.shape == (4,)
+
+    deflections = isothermal.deflections_from_grid(
+        grid=regular_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+    assert deflections.shape == (4, 2)
+
+
+
+    sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        shape=(3, 3), pixel_scale=1.0, sub_grid_size=2)
+
+    isothermal = mp.SphericalIsothermal()
+
+    convergence = isothermal.convergence_from_grid(
+        grid=sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+
+    assert convergence.shape == (3, 3)
+
+    deflections = isothermal.deflections_from_grid(
+        grid=sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+
+    assert deflections.shape == (3, 3, 2)
+
+    convergence = isothermal.convergence_from_grid(
+        grid=sub_grid, return_in_2d=False, return_binned_sub_grid=True)
+
+    assert convergence.shape == (9, )
+
+    deflections = isothermal.deflections_from_grid(
+        grid=sub_grid, return_in_2d=False, return_binned_sub_grid=True)
+
+    assert deflections.shape == (9, 2)
+
+
+    convergence = isothermal.convergence_from_grid(
+        grid=sub_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+    assert convergence.shape == (6, 6)
+
+    deflections = isothermal.deflections_from_grid(
+        grid=sub_grid, return_in_2d=True, return_binned_sub_grid=False)
+
+    assert deflections.shape == (6, 6, 2)
+
+    convergence = isothermal.convergence_from_grid(
+        grid=sub_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+    assert convergence.shape == (36, )
+
+    deflections = isothermal.deflections_from_grid(
+        grid=sub_grid, return_in_2d=False, return_binned_sub_grid=False)
+
+    assert deflections.shape == (36, 2)
