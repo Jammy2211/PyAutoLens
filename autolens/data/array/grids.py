@@ -732,7 +732,13 @@ class RegularGrid(np.ndarray):
         padded_mask = msk.Mask.unmasked_for_shape_and_pixel_scale(
             shape=padded_shape, pixel_scale=self.mask.pixel_scale)
 
-        return RegularGrid.from_mask(mask=padded_mask)
+        padded_regular_grid = RegularGrid.from_mask(mask=padded_mask)
+
+        if self.interpolator is None:
+            return padded_regular_grid
+        else:
+            return padded_regular_grid.new_grid_with_interpolator(
+                interp_pixel_scale=self.interpolator.interp_pixel_scale)
 
     def trimmed_array_2d_from_padded_array_1d_and_image_shape(self, padded_array_1d, image_shape):
         """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
@@ -1037,8 +1043,14 @@ class SubGrid(RegularGrid):
         padded_mask = msk.Mask.unmasked_for_shape_and_pixel_scale(
             shape=padded_shape, pixel_scale=self.mask.pixel_scale)
 
-        return SubGrid.from_mask_and_sub_grid_size(
+        padded_sub_grid = SubGrid.from_mask_and_sub_grid_size(
             mask=padded_mask, sub_grid_size=self.sub_grid_size)
+
+        if self.interpolator is None:
+            return padded_sub_grid
+        else:
+            return padded_sub_grid.new_grid_with_interpolator(
+                interp_pixel_scale=self.interpolator.interp_pixel_scale)
 
     def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
@@ -1514,9 +1526,10 @@ class RegularGridBorder(np.ndarray):
 
 class Interpolator(object):
 
-    def __init__(self, grid, interp_grid):
+    def __init__(self, grid, interp_grid, interp_pixel_scale):
         self.grid = grid
         self.interp_grid = interp_grid
+        self.interp_pixel_scale = interp_pixel_scale
         self.vtx, self.wts = self.interp_weights
 
     @property
@@ -1545,7 +1558,7 @@ class Interpolator(object):
                 interp_pixel_scale,
                 interp_pixel_scale),
             origin=mask.origin)
-        return Interpolator(grid=grid, interp_grid=interp_grid)
+        return Interpolator(grid=grid, interp_grid=interp_grid, interp_pixel_scale=interp_pixel_scale)
 
     def interpolated_values_from_values(self, values):
         return np.einsum('nj,nj->n', np.take(values, self.vtx), self.wts)
