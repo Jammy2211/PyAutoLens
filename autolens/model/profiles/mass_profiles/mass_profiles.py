@@ -15,6 +15,7 @@ from autolens.data.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.data.array.util import grid_util
 
+from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
 
 class MassProfile(object):
 
@@ -257,37 +258,18 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return self.mass_within_circle_in_units(radius=einstein_radius, unit_mass=unit_mass, redshift_profile=redshift_profile,
                                                 redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
-    def deflections_via_potential_from_grid(self, grid, return_sub_grid=False):
+    @reshape_returned_grid
+    def deflections_via_potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
 
-        potential_1d = self.potential_from_grid(grid=grid)
+        potential_2d = self.potential_from_grid(
+            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
 
-        if type(grid) is grids.RegularGrid:
-            grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid)
-            potential_2d = grid.array_2d_from_array_1d(array_1d=potential_1d)
-        elif type(grid) is grids.SubGrid:
-            grid_2d = grid.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(sub_grid_1d=grid)
-            potential_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=potential_1d)
+        deflections_y_2d = np.gradient(potential_2d, grid.in_2d[:,0,0], axis=0)
+        deflections_x_2d = np.gradient(potential_2d, grid.in_2d[0,:,1], axis=1)
+        deflections_2d = np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
+        return deflections_2d
 
-        alpha_x_2d = np.gradient(potential_2d, grid_2d[0,:,1], axis=1)
-        alpha_y_2d = np.gradient(potential_2d, grid_2d[:,0,0], axis=0)
-
-        if type(grid) is grids.RegularGrid:
-            alpha_x_1d = grid.array_1d_from_array_2d(array_2d=alpha_x_2d)
-            alpha_y_1d = grid.array_1d_from_array_2d(array_2d=alpha_y_2d)
-            return np.stack((alpha_y_1d, alpha_x_1d), axis=-1)
-
-        elif type(grid) is grids.SubGrid:
-            alpha_x_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=alpha_x_2d)
-            alpha_y_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=alpha_y_2d)
-
-            if return_sub_grid:
-                return np.stack((alpha_y_1d, alpha_x_1d), axis=-1)
-            else:
-                alpha_x_1d_binned = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=alpha_x_1d)
-                alpha_y_1d_binned = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=alpha_y_1d)
-                return np.stack((alpha_y_1d_binned, alpha_x_1d_binned), axis=-1)
-
-    def lensing_jacobian_from_grid(self, grid, return_sub_grid=False):
+    def lensing_jacobian_from_grid(self, grid, return_binned_sub_grid=True):
 
         alpha_1d = self.deflections_from_grid(grid=grid)
 
@@ -313,7 +295,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             A22_1d = grid.array_1d_from_array_2d(array_2d=A22_2d)
             return np.array([[A11_1d, A12_1d], [A21_1d, A22_1d]])
         elif type(grid) is grids.SubGrid:
-            if return_sub_grid:
+            if return_binned_sub_grid:
                 A11_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A11_2d)
                 A12_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A12_2d)
                 A21_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A21_2d)
@@ -331,21 +313,21 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                 A22_1d = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=A22_1d_sub)
                 return np.array([[A11_1d, A12_1d], [A21_1d, A22_1d]])
 
-    def convergence_from_jacobian(self, grid, return_sub_grid=False):
+    def convergence_from_jacobian(self, grid, return_binned_sub_grid=True):
 
         if type(grid) is grids.RegularGrid:
             jacobian = self.lensing_jacobian_from_grid(grid=grid)
             return 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
 
         elif type(grid) is grids.SubGrid:
-            jacobian = self.lensing_jacobian_from_grid(grid=grid, return_sub_grid=True)
+            jacobian = self.lensing_jacobian_from_grid(grid=grid, return_binned_sub_grid=True)
             convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
-            if return_sub_grid:
+            if return_binned_sub_grid:
                 return convergence
             else:
                 return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=convergence)
 
-    def shear_from_jacobian(self, grid, return_sub_grid=False):
+    def shear_from_jacobian(self, grid, return_binned_sub_grid=True):
 
         if type(grid) is grids.RegularGrid:
             jacobian = self.lensing_jacobian_from_grid(grid=grid)
@@ -354,16 +336,16 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             return (gamma_1**2 + gamma_2**2)**0.5
 
         elif type(grid) is grids.SubGrid:
-            jacobian = self.lensing_jacobian_from_grid(grid=grid, return_sub_grid=True)
+            jacobian = self.lensing_jacobian_from_grid(grid=grid, return_binned_sub_grid=True)
             gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
             gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
             shear = (gamma_1**2 + gamma_2**2)**0.5
-            if return_sub_grid:
+            if return_binned_sub_grid:
                 return shear
             else:
                 return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=shear)
 
-    def tangential_eigenvalue_from_shear_and_convergence(self, grid, return_sub_grid=False):
+    def tangential_eigenvalue_from_shear_and_convergence(self, grid, return_binned_sub_grid=True):
 
         if type(grid) is grids.RegularGrid:
            convergence = self.convergence_from_jacobian(grid=grid)
@@ -371,15 +353,15 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
            return 1 - convergence - shear
 
         elif type(grid) is grids.SubGrid:
-            convergence = self.convergence_from_jacobian(grid=grid, return_sub_grid=True)
-            shear = self.shear_from_jacobian(grid=grid, return_sub_grid=True)
+            convergence = self.convergence_from_jacobian(grid=grid, return_binned_sub_grid=True)
+            shear = self.shear_from_jacobian(grid=grid, return_binned_sub_grid=True)
             lambda_t = 1 - convergence - shear
-            if return_sub_grid:
+            if return_binned_sub_grid:
                 return lambda_t
             else:
                 return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=lambda_t)
 
-    def radial_eigenvalue_from_shear_and_convergence(self, grid, return_sub_grid=False):
+    def radial_eigenvalue_from_shear_and_convergence(self, grid, return_binned_sub_grid=True):
 
         if type(grid) is grids.RegularGrid:
             convergence = self.convergence_from_jacobian(grid=grid)
@@ -387,10 +369,10 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             return 1 - convergence + shear
 
         elif type(grid) is grids.SubGrid:
-            convergence = self.convergence_from_jacobian(grid=grid, return_sub_grid=True)
-            shear = self.shear_from_jacobian(grid=grid, return_sub_grid=True)
+            convergence = self.convergence_from_jacobian(grid=grid, return_binned_sub_grid=True)
+            shear = self.shear_from_jacobian(grid=grid, return_binned_sub_grid=True)
             lambda_r = 1 - convergence + shear
-            if return_sub_grid:
+            if return_binned_sub_grid:
                 return lambda_r
             else:
                 return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=lambda_r)
@@ -401,7 +383,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             lambda_tan_1d = self.tangential_eigenvalue_from_shear_and_convergence(grid=grid)
             lambda_tan_2d = grid.array_2d_from_array_1d(array_1d=lambda_tan_1d)
         elif type(grid) is grids.SubGrid:
-            lambda_tan_1d = self.tangential_eigenvalue_from_shear_and_convergence(grid=grid, return_sub_grid=True)
+            lambda_tan_1d = self.tangential_eigenvalue_from_shear_and_convergence(grid=grid, return_binned_sub_grid=True)
             lambda_tan_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=lambda_tan_1d)
 
         tan_critical_curve_indices = measure.find_contours(lambda_tan_2d, 0)
@@ -434,7 +416,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             lambda_rad_1d = self.radial_eigenvalue_from_shear_and_convergence(grid=grid)
             lambda_rad_2d = grid.array_2d_from_array_1d(array_1d=lambda_rad_1d)
         elif type(grid) is grids.SubGrid:
-            lambda_rad_1d = self.radial_eigenvalue_from_shear_and_convergence(grid=grid, return_sub_grid=True)
+            lambda_rad_1d = self.radial_eigenvalue_from_shear_and_convergence(grid=grid, return_binned_sub_grid=True)
             lambda_rad_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=lambda_rad_1d)
 
         rad_critical_curve_indices = measure.find_contours(lambda_rad_2d, 0)
@@ -467,7 +449,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return np.stack((rad_ycaustic, rad_xcaustic), axis=-1)
 
-    def magnification_from_grid(self, grid, return_sub_grid=False):
+    def magnification_from_grid(self, grid, return_binned_sub_grid=True):
 
         if type(grid) is grids.RegularGrid:
             jacobian = self.lensing_jacobian_from_grid(grid=grid)
@@ -475,10 +457,10 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             return 1 / det_jacobian
 
         elif type(grid) is grids.SubGrid:
-            jacobian = self.lensing_jacobian_from_grid(grid=grid, return_sub_grid=True)
+            jacobian = self.lensing_jacobian_from_grid(grid=grid, return_binned_sub_grid=True)
             det_jacobian = jacobian[0, 0] * jacobian[1, 1] - jacobian[0, 1] * jacobian[1, 0]
             mag = 1 / det_jacobian
-            if return_sub_grid:
+            if return_binned_sub_grid:
                 return mag
             else:
                 return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=mag)
@@ -489,7 +471,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             mag_1d = self.magnification_from_grid(grid=grid)
             mag_2d = grid.array_2d_from_array_1d(array_1d=mag_1d)
         elif type(grid) is grids.SubGrid:
-                mag_1d = self.magnification_from_grid(grid=grid, return_sub_grid=True)
+                mag_1d = self.magnification_from_grid(grid=grid, return_binned_sub_grid=True)
                 mag_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=mag_1d)
 
         inv_mag = 1 / mag_2d

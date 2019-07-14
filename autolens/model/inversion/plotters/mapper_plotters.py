@@ -30,7 +30,7 @@ def plot_image_and_mapper(ccd_data, mapper, mask=None, positions=None, should_pl
                             titlesize=10, xlabelsize=10, ylabelsize=10,
                             output_path=output_path, output_format=output_format)
 
-    image_grid = convert_grid(grid=mapper.grid_stack.regular.unlensed_grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    image_grid = convert_grid(grid=mapper.grid_stack.regular.unlensed_grid_1d, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_image_plane_image_pixels(grid=image_grid, image_pixels=image_pixels, point_colors=point_colors)

@@ -358,7 +358,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
             pixel_scale=self.pixel_scale,
             origin=self.origin)
 
-    def sub_array_1d_from_sub_array_2d_and_sub_grid_size(self, sub_array_2d, sub_grid_size):
+    def sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(self, sub_array_2d, sub_grid_size):
         """ Map a 2D sub-array to its masked 1D sub-array.
 
         Values which are masked in the mapping to the 1D array are returned as zeros.
@@ -370,6 +370,25 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         return mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=self, sub_grid_size=sub_grid_size)
+
+    def sub_grid_1d_with_sub_dimensions_from_sub_grid_2d_and_sub_grid_size(self, sub_grid_2d, sub_grid_size):
+        """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
+        values and dividing by the total number of sub-pixels.
+
+        Parameters
+        -----------
+        sub_grid_2d : ndarray
+            A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
+            a 1d regular array.
+        """
+
+        sub_grid_1d_y = self.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
+            sub_array_2d=sub_grid_2d[:, :, 0], sub_grid_size=sub_grid_size)
+
+        sub_grid_1d_x = self.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
+            sub_array_2d=sub_grid_2d[:, :, 1], sub_grid_size=sub_grid_size)
+
+        return np.stack((sub_grid_1d_y, sub_grid_1d_x), axis=-1)
 
     def grid_1d_binned_from_sub_grid_1d_and_sub_grid_size(self, sub_grid_1d, sub_grid_size):
         """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
