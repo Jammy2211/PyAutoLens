@@ -266,125 +266,122 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         deflections_y_2d = np.gradient(potential_2d, grid.in_2d[:,0,0], axis=0)
         deflections_x_2d = np.gradient(potential_2d, grid.in_2d[0,:,1], axis=1)
-        deflections_2d = np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
-        return deflections_2d
 
-    def lensing_jacobian_from_grid(self, grid, return_binned_sub_grid=True):
+        return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
 
-        alpha_1d = self.deflections_from_grid(grid=grid)
+    @reshape_returned_array
+    def lensing_jacobian_a11_from_grid_and_deflections_2d(
+            self, grid, return_in_2d=True, return_binned_sub_grid=True):
 
-        if type(grid) is grids.RegularGrid:
-            grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid)
-            alpha_x_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 1])
-            alpha_y_2d = grid.array_2d_from_array_1d(array_1d=alpha_1d[:, 0])
-        elif type(grid) is grids.SubGrid:
-            grid_2d = grid.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(sub_grid_1d=grid)
-            alpha_x_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=alpha_1d[:, 1])
-            alpha_y_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=alpha_1d[:, 0])
+        deflections_2d = self.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
 
+        return 1.0 - np.gradient(deflections_2d[:,:,1], grid.in_2d[0, :, 1], axis=1)
 
-        A11_2d = 1 - np.gradient(alpha_x_2d, grid_2d[0, :, 1], axis=1)
-        A12_2d = - np.gradient(alpha_x_2d, grid_2d[:, 0, 0], axis=0)
-        A21_2d = - np.gradient(alpha_y_2d, grid_2d[0, :, 1], axis=1)
-        A22_2d = 1 - np.gradient(alpha_y_2d, grid_2d[:, 0, 0], axis=0)
+    @reshape_returned_array
+    def lensing_jacobian_a12_from_grid_and_deflections_2d(
+            self, grid, return_in_2d=True, return_binned_sub_grid=True):
 
-        if type(grid) is grids.RegularGrid:
-            A11_1d = grid.array_1d_from_array_2d(array_2d=A11_2d)
-            A12_1d = grid.array_1d_from_array_2d(array_2d=A12_2d)
-            A21_1d = grid.array_1d_from_array_2d(array_2d=A21_2d)
-            A22_1d = grid.array_1d_from_array_2d(array_2d=A22_2d)
-            return np.array([[A11_1d, A12_1d], [A21_1d, A22_1d]])
-        elif type(grid) is grids.SubGrid:
-            if return_binned_sub_grid:
-                A11_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A11_2d)
-                A12_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A12_2d)
-                A21_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A21_2d)
-                A22_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A22_2d)
-                return np.array([[A11_1d, A12_1d], [A21_1d, A22_1d]])
-            else:
-                A11_1d_sub = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A11_2d)
-                A12_1d_sub = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A12_2d)
-                A21_1d_sub = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A21_2d)
-                A22_1d_sub = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=A22_2d)
+        deflections_2d = self.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
 
-                A11_1d = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=A11_1d_sub)
-                A12_1d = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=A12_1d_sub)
-                A21_1d = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=A21_1d_sub)
-                A22_1d = grid.array_1d_binned_from_sub_array_1d(sub_array_1d=A22_1d_sub)
-                return np.array([[A11_1d, A12_1d], [A21_1d, A22_1d]])
+        return -1.0*np.gradient(deflections_2d[:,:,1], grid.in_2d[:, 0, 0], axis=0)
 
-    def convergence_from_jacobian(self, grid, return_binned_sub_grid=True):
+    @reshape_returned_array
+    def lensing_jacobian_a21_from_grid_and_deflections_2d(
+            self, grid, return_in_2d=True, return_binned_sub_grid=True):
 
-        if type(grid) is grids.RegularGrid:
-            jacobian = self.lensing_jacobian_from_grid(grid=grid)
-            return 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
+        deflections_2d = self.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
 
-        elif type(grid) is grids.SubGrid:
-            jacobian = self.lensing_jacobian_from_grid(grid=grid, return_binned_sub_grid=True)
-            convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
-            if return_binned_sub_grid:
-                return convergence
-            else:
-                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=convergence)
+        return -1.0*np.gradient(deflections_2d[:,:,0], grid.in_2d[0, :, 1], axis=1)
 
-    def shear_from_jacobian(self, grid, return_binned_sub_grid=True):
+    @reshape_returned_array
+    def lensing_jacobian_a22_from_grid_and_deflections_2d(
+            self, grid, return_in_2d=True, return_binned_sub_grid=True):
 
-        if type(grid) is grids.RegularGrid:
-            jacobian = self.lensing_jacobian_from_grid(grid=grid)
-            gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
-            gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
-            return (gamma_1**2 + gamma_2**2)**0.5
+        deflections_2d = self.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
 
-        elif type(grid) is grids.SubGrid:
-            jacobian = self.lensing_jacobian_from_grid(grid=grid, return_binned_sub_grid=True)
-            gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
-            gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
-            shear = (gamma_1**2 + gamma_2**2)**0.5
-            if return_binned_sub_grid:
-                return shear
-            else:
-                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=shear)
+        return 1 - np.gradient(deflections_2d[:,:,0], grid.in_2d[:, 0, 0], axis=0)
 
-    def tangential_eigenvalue_from_shear_and_convergence(self, grid, return_binned_sub_grid=True):
+    def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
 
-        if type(grid) is grids.RegularGrid:
-           convergence = self.convergence_from_jacobian(grid=grid)
-           shear = self.shear_from_jacobian(grid=grid)
-           return 1 - convergence - shear
+        a11 = self.lensing_jacobian_a11_from_grid_and_deflections_2d(
+            grid=grid,
+            return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
 
-        elif type(grid) is grids.SubGrid:
-            convergence = self.convergence_from_jacobian(grid=grid, return_binned_sub_grid=True)
-            shear = self.shear_from_jacobian(grid=grid, return_binned_sub_grid=True)
-            lambda_t = 1 - convergence - shear
-            if return_binned_sub_grid:
-                return lambda_t
-            else:
-                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=lambda_t)
+        a12 = self.lensing_jacobian_a12_from_grid_and_deflections_2d(
+            grid=grid,
+            return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
 
-    def radial_eigenvalue_from_shear_and_convergence(self, grid, return_binned_sub_grid=True):
+        a21 = self.lensing_jacobian_a21_from_grid_and_deflections_2d(
+            grid=grid,
+            return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
 
-        if type(grid) is grids.RegularGrid:
-            convergence = self.convergence_from_jacobian(grid=grid)
-            shear = self.shear_from_jacobian(grid=grid)
-            return 1 - convergence + shear
+        a22 = self.lensing_jacobian_a22_from_grid_and_deflections_2d(
+            grid=grid,
+            return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
 
-        elif type(grid) is grids.SubGrid:
-            convergence = self.convergence_from_jacobian(grid=grid, return_binned_sub_grid=True)
-            shear = self.shear_from_jacobian(grid=grid, return_binned_sub_grid=True)
-            lambda_r = 1 - convergence + shear
-            if return_binned_sub_grid:
-                return lambda_r
-            else:
-                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=lambda_r)
+        return np.array([[a11, a12], [a21, a22]])
+
+    @reshape_returned_array
+    def convergence_from_jacobian(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+
+        jacobian = self.lensing_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
+
+        return convergence
+
+    @reshape_returned_array
+    def shear_from_jacobian(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+
+        jacobian = self.lensing_jacobian_from_grid(
+            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+
+        gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
+        gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
+
+        return (gamma_1**2 + gamma_2**2)**0.5
+
+    @reshape_returned_array
+    def tangential_eigen_value_from_shear_and_convergence(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+
+       convergence = self.convergence_from_jacobian(
+           grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+
+       shear = self.shear_from_jacobian(
+           grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+
+       return 1 - convergence - shear
+
+    @reshape_returned_array
+    def radial_eigen_value_from_shear_and_convergence(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+
+        convergence = self.convergence_from_jacobian(
+            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        shear = self.shear_from_jacobian(
+            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        return 1 - convergence + shear
+
+    @reshape_returned_array
+    def magnification_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+
+        jacobian = self.lensing_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+
+        det_jacobian = jacobian[0,0] * jacobian[1,1] - jacobian[0,1] * jacobian[1,0]
+
+        return 1 / det_jacobian
 
     def tangential_critical_curve_from_grid(self, grid):
 
-        if type(grid) is grids.RegularGrid:
-            lambda_tan_1d = self.tangential_eigenvalue_from_shear_and_convergence(grid=grid)
-            lambda_tan_2d = grid.array_2d_from_array_1d(array_1d=lambda_tan_1d)
-        elif type(grid) is grids.SubGrid:
-            lambda_tan_1d = self.tangential_eigenvalue_from_shear_and_convergence(grid=grid, return_binned_sub_grid=True)
-            lambda_tan_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=lambda_tan_1d)
+        lambda_tan_2d = self.tangential_eigen_value_from_shear_and_convergence(
+            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
 
         tan_critical_curve_indices = measure.find_contours(lambda_tan_2d, 0)
 
@@ -403,103 +400,80 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def tangential_caustic_from_grid(self, grid):
 
-        tan_critical_curve = self.tangential_critical_curve_from_grid(grid=grid)
-        alpha = self.deflections_from_grid(grid=tan_critical_curve)
-        tan_ycaustic = tan_critical_curve[:, 0] - alpha[:, 0]
-        tan_xcaustic = tan_critical_curve[:, 1] - alpha[:, 1]
+        tangential_critical_curve = self.tangential_critical_curve_from_grid(grid=grid)
 
-        return np.stack((tan_ycaustic, tan_xcaustic), axis=-1)
+        deflections_1d = self.deflections_from_grid(
+            grid=tangential_critical_curve, return_in_2d=False, return_binned_sub_grid=False)
+
+        return tangential_critical_curve - deflections_1d
 
     def radial_critical_curve_from_grid(self, grid):
 
-        if type(grid) is grids.RegularGrid:
-            lambda_rad_1d = self.radial_eigenvalue_from_shear_and_convergence(grid=grid)
-            lambda_rad_2d = grid.array_2d_from_array_1d(array_1d=lambda_rad_1d)
-        elif type(grid) is grids.SubGrid:
-            lambda_rad_1d = self.radial_eigenvalue_from_shear_and_convergence(grid=grid, return_binned_sub_grid=True)
-            lambda_rad_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=lambda_rad_1d)
+        lambda_rad_2d = self.radial_eigen_value_from_shear_and_convergence(
+            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
 
-        rad_critical_curve_indices = measure.find_contours(lambda_rad_2d, 0)
+        radial_critical_curve_indices = measure.find_contours(lambda_rad_2d, 0)
 
-        ##rad_critical_curve = np.fliplr(rad_critical_curve_indices[0])
+        ##rad_critical_curve = np.fliplr(radial_critical_curve_indices[0])
 
         ## fliping x, y coordinates may or may not be necessary, appears to visualise the same either way
         ## reg grid unit test works with this fix, sub grid still doesn't like it
         ## may be an isuue with where the marching squares algorithm starts rathet than x, y flip
 
         if type(grid) is grids.RegularGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve_indices[0], shape=lambda_rad_2d.shape,
-                                                                        pixel_scales=(
-                                                                        grid.pixel_scale, grid.pixel_scale),
-                                                                        origin=(0.0, 0.0))
+            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+                grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_rad_2d.shape,
+                pixel_scales=(grid.pixel_scale, grid.pixel_scale), origin=(0.0, 0.0))
 
         elif type(grid) is grids.SubGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=rad_critical_curve_indices[0], shape=lambda_rad_2d.shape,
-                                                                        pixel_scales=(
-                                                                        grid.pixel_scale / grid.sub_grid_size,
-                                                                        grid.pixel_scale / grid.sub_grid_size),
-                                                                        origin=(0.0, 0.0))
+            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+                grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_rad_2d.shape,
+                pixel_scales=(grid.pixel_scale / grid.sub_grid_size, grid.pixel_scale / grid.sub_grid_size),
+                origin=(0.0, 0.0))
 
     def radial_caustic_from_grid(self, grid):
 
-        rad_critical_curve = self.radial_critical_curve_from_grid(grid=grid)
-        alpha = self.deflections_from_grid(grid=rad_critical_curve)
-        rad_ycaustic = rad_critical_curve[:, 0] - alpha[:, 0]
-        rad_xcaustic = rad_critical_curve[:, 1] - alpha[:, 1]
+        radial_critical_curve = self.radial_critical_curve_from_grid(grid=grid)
 
-        return np.stack((rad_ycaustic, rad_xcaustic), axis=-1)
+        deflections_1d = self.deflections_from_grid(
+            grid=radial_critical_curve, return_in_2d=False, return_binned_sub_grid=False)
 
-    def magnification_from_grid(self, grid, return_binned_sub_grid=True):
-
-        if type(grid) is grids.RegularGrid:
-            jacobian = self.lensing_jacobian_from_grid(grid=grid)
-            det_jacobian = jacobian[0,0] * jacobian[1,1] - jacobian[0,1] * jacobian[1,0]
-            return 1 / det_jacobian
-
-        elif type(grid) is grids.SubGrid:
-            jacobian = self.lensing_jacobian_from_grid(grid=grid, return_binned_sub_grid=True)
-            det_jacobian = jacobian[0, 0] * jacobian[1, 1] - jacobian[0, 1] * jacobian[1, 0]
-            mag = 1 / det_jacobian
-            if return_binned_sub_grid:
-                return mag
-            else:
-                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=mag)
+        return radial_critical_curve - deflections_1d
 
     def critical_curves_from_grid(self, grid):
 
-        if type(grid) is grids.RegularGrid:
-            mag_1d = self.magnification_from_grid(grid=grid)
-            mag_2d = grid.array_2d_from_array_1d(array_1d=mag_1d)
-        elif type(grid) is grids.SubGrid:
-                mag_1d = self.magnification_from_grid(grid=grid, return_binned_sub_grid=True)
-                mag_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=mag_1d)
+        magnification_2d = self.magnification_from_grid(
+            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
 
-        inv_mag = 1 / mag_2d
-        critical_curves_indices = measure.find_contours(inv_mag, 0)
-        Ncrit = len(critical_curves_indices)
+        inverse_magnification_2d = 1 / magnification_2d
+
+        critical_curves_indices = measure.find_contours(inverse_magnification_2d, 0)
+
+        no_critical_curves = len(critical_curves_indices)
         contours = []
         critical_curves = []
 
-        for jj in np.arange(Ncrit):
+        for jj in np.arange(no_critical_curves):
+
             contours.append(critical_curves_indices[jj])
-            xcontour, ycontour = contours[jj].T
-            pixel_coord = np.stack((xcontour, ycontour), axis=-1)
+            contour_x, contour_y = contours[jj].T
+            pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
             if type(grid) is grids.RegularGrid:
-                critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=pixel_coord, shape=mag_2d.shape,
-                                                                        pixel_scales=(
-                                                                        grid.pixel_scale, grid.pixel_scale),
-                                                                        origin=(0.0, 0.0))
+
+                critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+                    grid_pixels_1d=pixel_coord, shape=magnification_2d.shape,
+                    pixel_scales=(grid.pixel_scale, grid.pixel_scale), origin=(0.0, 0.0))
+
                 critical_curves.append(critical_curve)
 
             elif type(grid) is grids.SubGrid:
-                    critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=pixel_coord,
-                                                                             shape=mag_2d.shape,
-                                                                            pixel_scales=(
-                                                                            grid.pixel_scale / grid.sub_grid_size,
-                                                                            grid.pixel_scale / grid.sub_grid_size),
-                                                                            origin=(0.0, 0.0))
+                    critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+                        grid_pixels_1d=pixel_coord, shape=magnification_2d.shape,
+                        pixel_scales=(grid.pixel_scale / grid.sub_grid_size,
+                                    grid.pixel_scale / grid.sub_grid_size), origin=(0.0, 0.0))
                     critical_curves.append(critical_curve)
+
         return critical_curves
 
     def caustics_from_grid(self, grid):
@@ -509,12 +483,13 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         critical_curves = self.critical_curves_from_grid(grid=grid)
 
         for i in range(len(critical_curves)):
-            critical_curve = critical_curves[i]
-            alpha = self.deflections_from_grid(grid=critical_curve)
-            ycaustic = critical_curve[:, 0] - alpha[:, 0]
-            xcaustic = critical_curve[:, 1] - alpha[:, 1]
 
-            caustic = np.stack((ycaustic, xcaustic), axis=-1)
+            critical_curve = critical_curves[i]
+
+            deflections_1d = self.deflections_from_grid(
+                grid=critical_curve, return_in_2d=False, return_binned_sub_grid=False)
+
+            caustic = critical_curve - deflections_1d
 
             caustics.append(caustic)
 
