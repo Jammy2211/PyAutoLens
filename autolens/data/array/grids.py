@@ -800,7 +800,7 @@ class Grid(np.ndarray):
     def sub_mask(self):
         sub_shape = (self.mask.shape[0] * self.sub_grid_size,
                      self.mask.shape[1] * self.sub_grid_size)
-        sub_one_to_two = self.mask.masked_sub_grid_index_to_sub_pixel(
+        sub_one_to_two = self.mask.sub_one_to_two_from_sub_grid_size(
             sub_grid_size=self.sub_grid_size)
         return mask_util.mask_from_shape_and_one_to_two(shape=sub_shape,
                                                         one_to_two=sub_one_to_two)

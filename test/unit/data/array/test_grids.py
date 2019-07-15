@@ -50,7 +50,7 @@ class TestGrid:
         assert type(grid) == grids.Grid
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scale == 2.0
-        assert (grid.mask.masked_grid_index_to_pixel == mask.masked_grid_index_to_pixel).all()
+        assert (grid.mask.one_to_two == mask.one_to_two).all()
         assert grid.interpolator == None
 
         grid_2d = mask.grid_2d_from_grid_1d(grid_1d=grid)
@@ -129,7 +129,7 @@ class TestGrid:
         assert type(grid) == grids.Grid
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scale == 2.0
-        assert (grid.mask.masked_grid_index_to_pixel == mask.masked_grid_index_to_pixel).all()
+        assert (grid.mask.one_to_two == mask.one_to_two).all()
 
         mask = np.array([[False, False, False],
                          [False, False, False],
@@ -189,7 +189,7 @@ class TestGrid:
 
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scale == 2.0
-        assert (blurring_grid.mask.masked_grid_index_to_pixel == blurring_mask.masked_grid_index_to_pixel).all()
+        assert (blurring_grid.mask.one_to_two == blurring_mask.one_to_two).all()
         assert blurring_grid.sub_grid_size == 1
 
     def test__new_grid__with_interpolator__returns_grid_with_interpolator(self):

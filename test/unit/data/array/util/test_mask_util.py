@@ -17,7 +17,7 @@ class TestTotalPixels:
                          [False, False, False],
                          [True, False, True]])
 
-        assert mask_util.total_regular_pixels_from_mask(mask) == 5
+        assert mask_util.total_pixels_from_mask(mask) == 5
 
     def test__total_sub_pixels_from_mask(self):
         mask = np.array([[True, False, True],
@@ -957,36 +957,35 @@ class TestMaskBlurring(object):
             mask_util.blurring_mask_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
 
 
-class TestMask2dToMask1DIndex(object):
+class TestSubTwoToOne(object):
 
     def test__mask_if_full_of_false__indexes_are_ascending_order(self):
 
         mask_2d = np.full(fill_value=False, shape=(3, 3))
 
-        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
-                mask_2d=mask_2d)
+        sub_two_to_one = mask_util.sub_two_to_one_from_sub_mask(
+                sub_mask=mask_2d)
 
-        assert (mask_2d_to_mask_1d_index == np.array([[0, 1, 2],
-                                                      [3, 4, 5],
-                                                      [6, 7, 8]])).all()
+        assert (sub_two_to_one == np.array([[0, 1, 2],
+                                            [3, 4, 5],
+                                            [6, 7, 8]])).all()
 
         mask_2d = np.full(fill_value=False, shape=(2, 3))
 
-        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
-                mask_2d=mask_2d)
+        sub_two_to_one = mask_util.sub_two_to_one_from_sub_mask(
+                sub_mask=mask_2d)
 
-        assert (mask_2d_to_mask_1d_index == np.array([[0, 1, 2],
-                                                      [3, 4, 5]])).all()
+        assert (sub_two_to_one == np.array([[0, 1, 2],
+                                            [3, 4, 5]])).all()
 
         mask_2d = np.full(fill_value=False, shape=(3, 2))
 
-        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
-                mask_2d=mask_2d)
+        sub_two_to_one = mask_util.sub_two_to_one_from_sub_mask(
+                sub_mask=mask_2d)
 
-        assert (mask_2d_to_mask_1d_index == np.array([[0, 1],
-                                                      [2, 3],
-                                                      [4, 5]])).all()
-
+        assert (sub_two_to_one == np.array([[0, 1],
+                                            [2, 3],
+                                            [4, 5]])).all()
 
     def test__mask_has_true_and_falses__minus_ones_in_place_of_trues_and_falses_count_correctly(self):
 
@@ -994,10 +993,10 @@ class TestMask2dToMask1DIndex(object):
                             [True, True, False],
                             [False, False, True]])
 
-        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
-                mask_2d=mask_2d)
+        sub_two_to_one = mask_util.sub_two_to_one_from_sub_mask(
+                sub_mask=mask_2d)
 
-        assert (mask_2d_to_mask_1d_index == np.array([[0, -1, 1],
+        assert (sub_two_to_one == np.array([[0, -1, 1],
                                                       [-1, -1, 2],
                                                       [3, 4, -1]])).all()
 
@@ -1005,10 +1004,10 @@ class TestMask2dToMask1DIndex(object):
                             [True, True, False, False],
                             [False, False, True, False]])
 
-        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
-                mask_2d=mask_2d)
+        sub_two_to_one = mask_util.sub_two_to_one_from_sub_mask(
+                sub_mask=mask_2d)
 
-        assert (mask_2d_to_mask_1d_index == np.array([[0, -1, -1, 1],
+        assert (sub_two_to_one == np.array([[0, -1, -1, 1],
                                                       [-1, -1, 2, 3],
                                                       [4, 5, -1, 6]])).all()
 
@@ -1018,133 +1017,114 @@ class TestMask2dToMask1DIndex(object):
                             [False, False, True],
                             [False, False, True]])
 
-        mask_2d_to_mask_1d_index = mask_util.mask_2d_to_mask_1d_index_from_mask_2d(
-                mask_2d=mask_2d)
+        sub_two_to_one = mask_util.sub_two_to_one_from_sub_mask(
+                sub_mask=mask_2d)
 
-        assert (mask_2d_to_mask_1d_index == np.array([[0, -1, 1],
+        assert (sub_two_to_one == np.array([[0, -1, 1],
                                                       [-1, -1, 2],
                                                       [3, 4, -1],
                                                       [5, 6, -1]])).all()
 
 
-class TestGridToMaskedPixel(object):
+class TestSubOneToTwo(object):
 
-    def test__setup_3x3_image_one_pixel(self):
+    def test__simple_mappings__sub_grid_size_is_1(self):
+        
         mask = np.array([[True, True, True],
                          [True, False, True],
                          [True, True, True]])
 
-        grid_to_pixel = mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(mask)
+        sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=1)
 
-        assert (grid_to_pixel == np.array([[1, 1]])).all()
+        assert (sub_one_to_two == np.array([[1, 1]])).all()
 
-    def test__setup_3x3_image__five_pixels(self):
         mask = np.array([[True, False, True],
                          [False, False, False],
                          [True, False, True]])
 
-        grid_to_pixel = mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(mask)
+        sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=1)
 
-        assert (grid_to_pixel == np.array([[0, 1],
+        assert (sub_one_to_two == np.array([[0, 1],
                                            [1, 0], [1, 1], [1, 2],
                                            [2, 1]])).all()
 
-    def test__setup_3x4_image__six_pixels(self):
         mask = np.array([[True, False, True, True],
                          [False, False, False, True],
                          [True, False, True, False]])
 
-        grid_to_pixel = mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(mask)
+        sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=1)
 
-        assert (grid_to_pixel == np.array([[0, 1],
+        assert (sub_one_to_two == np.array([[0, 1],
                                            [1, 0], [1, 1], [1, 2],
                                            [2, 1], [2, 3]])).all()
 
-    def test__setup_4x3_image__six_pixels(self):
         mask = np.array([[True, False, True],
                          [False, False, False],
                          [True, False, True],
                          [True, True, False]])
 
-        grid_to_pixel = mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(mask)
+        sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=1)
 
-        assert (grid_to_pixel == np.array([[0, 1],
+        assert (sub_one_to_two == np.array([[0, 1],
                                            [1, 0], [1, 1], [1, 2],
                                            [2, 1],
                                            [3, 2]])).all()
 
-
-class TestSubGridToMaskedSubPixel(object):
-
-    def test__setup_3x3_image_one_pixel__sub_grid_size_1_2_and_3(self):
+    def test__simple_grid_mappings__sub_grid_size_2(self):
 
         mask = np.array([[True, True, True],
                          [True, False, True],
                          [True, True, True]])
 
-        sub_grid_to_sub_pixel = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(mask=mask,
-                                                                                     sub_grid_size=1)
+        sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
 
-        assert (sub_grid_to_sub_pixel == np.array([[1, 1]])).all()
-
-        sub_grid_to_sub_pixel = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(mask=mask,
-                                                                                     sub_grid_size=2)
-
-        assert (sub_grid_to_sub_pixel == np.array([[2, 2], [2, 3],
+        assert (sub_one_to_two == np.array([[2, 2], [2, 3],
                                                    [3, 2], [3, 3]])).all()
 
-        sub_grid_to_sub_pixel = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(mask=mask,
-                                                                                     sub_grid_size=3)
+        sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=3)
 
-        assert (sub_grid_to_sub_pixel == np.array([[3, 3], [3, 4], [3, 5],
+        assert (sub_one_to_two == np.array([[3, 3], [3, 4], [3, 5],
                                                    [4, 3], [4, 4], [4, 5],
                                                    [5, 3], [5, 4], [5, 5]])).all()
-
-    def test__setup_3x3_image__five_pixels__sub_grid_size_1_and_2(self):
 
         mask = np.array([[True, False, True],
                          [False, False, False],
                          [True, False, True]])
 
-        sub_grid_to_sub_pixel = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(mask=mask,
-                                                                                     sub_grid_size=1)
+        sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
 
-        assert (sub_grid_to_sub_pixel == np.array([[0, 1],
-                                          [1, 0], [1, 1], [1, 2],
-                                                  [2, 1]])).all()
-
-        sub_grid_to_sub_pixel = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(mask=mask,
-                                                                                     sub_grid_size=2)
-
-        assert (sub_grid_to_sub_pixel == np.array([[0, 2], [0, 3], [1, 2], [1, 3],
+        assert (sub_one_to_two == np.array([[0, 2], [0, 3], [1, 2], [1, 3],
                                                    [2, 0], [2, 1], [3, 0], [3, 1],
                                                    [2, 2], [2, 3], [3, 2], [3, 3],
                                                    [2, 4], [2, 5], [3, 4], [3, 5],
                                                    [4, 2], [4, 3], [5, 2], [5, 3]])).all()
 
-    def test__setup_3x4_image__two_pixels__sub_grid_size_2(self):
-
         mask = np.array([[True, True, True, True],
                          [False, True, True, True],
                          [True, False, True, True]])
 
-        sub_grid_to_sub_pixel = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(mask=mask,
-                                                                                     sub_grid_size=2)
+        sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
 
-        assert (sub_grid_to_sub_pixel == np.array([[2, 0], [2, 1], [3, 0], [3,1],
+        assert (sub_one_to_two == np.array([[2, 0], [2, 1], [3, 0], [3,1],
                                                    [4, 2], [4, 3], [5, 2], [5, 3]])).all()
-
-    def test__setup_4x3_image__two_pixels__sub_grid_size_2(self):
 
         mask = np.array([[True, True, True],
                          [True, False, True],
                          [True, True, True],
                          [True, True, False]])
 
-        sub_grid_to_sub_pixel = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(mask=mask,
-                                                                                     sub_grid_size=2)
+        sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
 
-        assert (sub_grid_to_sub_pixel == np.array([[2, 2], [2,3], [3,2], [3,3],
+        assert (sub_one_to_two == np.array([[2, 2], [2,3], [3,2], [3,3],
                                                    [6, 4], [6,5], [7,4], [7,5]])).all()
 
 

@@ -283,9 +283,10 @@ class TestMaskMappings:
 
         mask = msk.Mask(mask, pixel_scale=7.0)
 
-        grid_to_pixel_util = util.masked_grid_1d_index_to_2d_pixel_index_from_mask(mask)
+        grid_to_pixel_util = util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=1)
 
-        assert mask.masked_grid_index_to_pixel == pytest.approx(grid_to_pixel_util, 1e-4)
+        assert mask.one_to_two == pytest.approx(grid_to_pixel_util, 1e-4)
 
     def test__sub_grid_to_pixel__compare_to_array_util(self):
         mask = np.array([[True, True, True],
@@ -294,11 +295,11 @@ class TestMaskMappings:
 
         mask = msk.Mask(mask, pixel_scale=7.0)
 
-        sub_grid_to_pixel_util = util.sub_one_to_two_from_mask_and_sub_grid_size(mask=mask,
-                                                                                 sub_grid_size=2)
+        sub_grid_to_pixel_util = util.sub_one_to_two_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2)
 
-        assert mask.masked_sub_grid_index_to_sub_pixel(sub_grid_size=2) == pytest.approx(sub_grid_to_pixel_util,
-                                                                                         1e-4)
+        assert mask.sub_one_to_two_from_sub_grid_size(sub_grid_size=2) == pytest.approx(sub_grid_to_pixel_util,
+                                                                                        1e-4)
 
     def test__array_1d_from_array_2d__compare_to_array_util(self):
 
