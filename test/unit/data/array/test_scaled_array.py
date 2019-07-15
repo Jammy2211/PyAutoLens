@@ -23,7 +23,6 @@ def make_array_grid_rectangular():
 
 class TestArrayGeometry:
 
-
     class TestArrayAndTuples:
 
         def test__square_pixel_array__input_data_grid_3x3__centre_is_origin(self):
@@ -109,7 +108,6 @@ class TestArrayGeometry:
             assert data_grid.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
             assert data_grid.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
-
     class TestCentralPixel:
 
         def test__square_pixel_grid(self):
@@ -134,13 +132,12 @@ class TestArrayGeometry:
             grid = scaled_array.ScaledRectangularPixelArray(np.zeros((5, 3)), pixel_scales=(2.0, 1.0), origin=(1.0, 2.0))
             assert grid.central_pixel_coordinates == (2, 1)
 
-
     class TestGrids:
 
         def test__square_pixel_grid__grid_2d__compare_to_array_util(self):
 
-            grid_2d_util = grid_util.regular_grid_2d_from_shape_pixel_scales_and_origin(shape=(4, 7),
-                                                                                        pixel_scales=(0.56, 0.56))
+            grid_2d_util = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_grid_size=1)
 
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56)
 
@@ -155,8 +152,8 @@ class TestArrayGeometry:
 
         def test__square_pixel_grid__grid_1d__compare_to_array_util(self):
 
-            grid_1d_util = grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(shape=(4, 7),
-                                                                                        pixel_scales=(0.56, 0.56))
+            grid_1d_util = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_grid_size=1)
 
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56)
 
@@ -164,32 +161,33 @@ class TestArrayGeometry:
 
         def test__square_pixel_grid__nonzero_centres__compure_to_array_util(self):
 
-            grid_2d_util = grid_util.regular_grid_2d_from_shape_pixel_scales_and_origin(shape=(4, 7),
-                                                                                        pixel_scales=(0.56, 0.56),
-                                                                                        origin=(1.0, 3.0))
+            grid_2d_util = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_grid_size=1, origin=(1.0, 3.0))
 
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56, origin=(1.0, 3.0))
 
             assert sca.grid_2d == pytest.approx(grid_2d_util, 1e-4)
 
-            grid_1d_util = grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(shape=(4, 7),
-                                                                                        pixel_scales=(0.56, 0.56),
-                                                                                        origin=(-1.0, -4.0))
+            grid_1d_util = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_grid_size=1, origin=(-1.0, -4.0))
 
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56, origin=(-1.0, -4.0))
 
             assert sca.grid_1d == pytest.approx(grid_1d_util, 1e-4)
 
         def test__rectangular_pixel_grid__grid_2d__compare_to_array_util(self):
-            grid_2d_util = grid_util.regular_grid_2d_from_shape_pixel_scales_and_origin(shape=(4, 7),
-                                                                                        pixel_scales=(0.8, 0.56))
+
+            grid_2d_util = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_grid_size=1)
 
             sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), pixel_scales=(0.8, 0.56))
 
             assert sca.grid_2d == pytest.approx(grid_2d_util, 1e-4)
 
         def test__rectangular_pixel_grid__array_3x3__sets_up_arcsecond_grid(self):
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((3, 3)), pixel_scales=(1.0, 2.0))
+
+            sca = scaled_array.ScaledRectangularPixelArray(
+                array=np.zeros((3, 3)), pixel_scales=(1.0, 2.0))
 
             assert (sca.grid_2d == np.array([[[1., -2.], [1., 0.], [1., 2.]],
                                              [[0., -2.], [0., 0.], [0., 2.]],
@@ -197,8 +195,8 @@ class TestArrayGeometry:
 
         def test__rectangular_pixel_grid__grid_1d__compare_to_array_util(self):
 
-            grid_1d_util = grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(shape=(4, 7),
-                                                                                        pixel_scales=(0.8, 0.56))
+            grid_1d_util = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_grid_size=1)
 
             sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), pixel_scales=(0.8, 0.56))
 
@@ -206,24 +204,21 @@ class TestArrayGeometry:
 
         def test__rectangular_pixel_grid__nonzero_centres__compure_to_array_util(self):
 
-            grid_2d_util = grid_util.regular_grid_2d_from_shape_pixel_scales_and_origin(shape=(4, 7),
-                                                                                        pixel_scales=(0.8, 0.56),
-                                                                                        origin=(1.0, 2.0))
+            grid_2d_util = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_grid_size=1, origin=(1.0, 2.0))
 
             sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), pixel_scales=(0.8, 0.56),
                                                            origin=(1.0, 2.0))
 
             assert sca.grid_2d == pytest.approx(grid_2d_util, 1e-4)
 
-            grid_1d_util = grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(shape=(4, 7),
-                                                                                        pixel_scales=(0.8, 0.56),
-                                                                                        origin=(-1.0, -4.0))
+            grid_1d_util = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_grid_size=1, origin=(-1.0, -4.0))
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), pixel_scales=(0.8, 0.56),
-                                                           origin=(-1.0, -4.0))
+            sca = scaled_array.ScaledRectangularPixelArray(
+                array=np.zeros((4, 7)), pixel_scales=(0.8, 0.56), origin=(-1.0, -4.0))
 
             assert sca.grid_1d == pytest.approx(grid_1d_util, 1e-4)
-
 
     class TestConversion:
 
@@ -345,7 +340,7 @@ class TestArrayGeometry:
 
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((2, 2)), pixel_scale=2.0)
 
-            grid_pixel_indexes = sca.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=grid_arcsec)
+            grid_pixel_indexes = sca.grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec=grid_arcsec)
 
             assert (grid_pixel_indexes == grid_pixel_indexes_util).all()
 
@@ -377,7 +372,7 @@ class TestArrayGeometry:
             sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((2, 2)),
                                                            pixel_scales=(2.0, 4.0))
 
-            grid_pixels = sca.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=grid_arcsec)
+            grid_pixels = sca.grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec=grid_arcsec)
 
             assert (grid_pixels == grid_pixels_util).all()
 
@@ -440,7 +435,7 @@ class TestArrayGeometry:
 
             grid_pixels_util = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
                 grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 2.0), origin=(1.0, 2.0))
-            grid_pixels = sca.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=grid_arcsec)
+            grid_pixels = sca.grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec=grid_arcsec)
             assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
 
             grid_pixels_util = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
@@ -472,7 +467,7 @@ class TestArrayGeometry:
 
             grid_pixels_util = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
                 grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 1.0), origin=(1.0, 2.0))
-            grid_pixels = sca.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=grid_arcsec)
+            grid_pixels = sca.grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec=grid_arcsec)
             assert (grid_pixels == grid_pixels_util).all()
 
             grid_pixels_util = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(

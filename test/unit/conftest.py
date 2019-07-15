@@ -189,18 +189,18 @@ def make_noise_map_1d_7x7(noise_map_7x7, mask_7x7):
 # GRIDS #
 
 
-@pytest.fixture(name="regular_grid_7x7")
+@pytest.fixture(name="grid_7x7")
 def make_regular_grid_7x7(mask_7x7):
-    return grids.RegularGrid.from_mask(mask=mask_7x7)
+    return grids.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=1)
 
 
 @pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7(mask_7x7):
-    return grids.SubGrid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=2)
+    return grids.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=2)
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
-    return grids.RegularGrid.from_mask(mask=blurring_mask_7x7)
+    return grids.Grid.from_mask_and_sub_grid_size(mask=blurring_mask_7x7, sub_grid_size=1)
 
 
 @pytest.fixture(name="cluster_grid_7x7")
@@ -210,17 +210,17 @@ def make_cluster_grid_7x7(mask_7x7):
 
 
 @pytest.fixture(name="grid_stack_7x7")
-def make_grid_stack_7x7(regular_grid_7x7, sub_grid_7x7, blurring_grid_7x7):
+def make_grid_stack_7x7(grid_7x7, sub_grid_7x7, blurring_grid_7x7):
     return mock_grids.MockGridStack(
-        regular=regular_grid_7x7, sub=sub_grid_7x7, blurring=blurring_grid_7x7)
+        regular=grid_7x7, sub=sub_grid_7x7, blurring=blurring_grid_7x7)
 
 
 @pytest.fixture(name="grid_stack_simple")
-def make_grid_stack_simple(regular_grid_7x7, sub_grid_7x7, blurring_grid_7x7):
+def make_grid_stack_simple(grid_7x7, sub_grid_7x7, blurring_grid_7x7):
     # Manually overwrite some sub-grid and blurring grid coodinates for easier deflection angle calculations
 
     grid_stack = mock_grids.MockGridStack(
-        regular=regular_grid_7x7, sub=sub_grid_7x7, blurring=blurring_grid_7x7)
+        regular=grid_7x7, sub=sub_grid_7x7, blurring=blurring_grid_7x7)
 
     grid_stack.regular[0] = np.array([1.0, 1.0])
     grid_stack.sub[0] = np.array([1.0, 1.0])

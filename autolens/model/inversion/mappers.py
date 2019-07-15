@@ -2,6 +2,8 @@ from autolens.data.array.util import mapping_util
 from autolens.data.array import scaled_array
 from autolens.model.inversion.util import mapper_util
 
+import numpy as np
+
 class Mapper(object):
 
     def __init__(self, pixels, grid_stack, border, hyper_image=None):
@@ -157,20 +159,20 @@ class RectangularMapper(Mapper):
     @property
     def regular_to_pixelization(self):
         """The 1D index mappings between the regular grid's pixels and rectangular pixelization's pixels."""
-        return self.geometry.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.grid_stack.regular)
+        return self.geometry.grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec=self.grid_stack.regular)
 
     @property
     def sub_to_pixelization(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return self.geometry.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.grid_stack.sub)
+        return self.geometry.grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec=self.grid_stack.sub)
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
-        recon = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution_vector,
-                                                                                       shape=self.shape)
-        return scaled_array.ScaledRectangularPixelArray(array=recon, pixel_scales=self.geometry.pixel_scales,
-                                                        origin=self.geometry.origin)
+        recon = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=solution_vector, mask=np.full(fill_value=False, shape=self.shape), sub_grid_size=1)
+        return scaled_array.ScaledRectangularPixelArray(
+            array=recon, pixel_scales=self.geometry.pixel_scales, origin=self.geometry.origin)
 
 
 class VoronoiMapper(Mapper):

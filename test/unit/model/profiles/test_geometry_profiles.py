@@ -23,7 +23,7 @@ class TestMemoize(object):
         class MyProfile(object):
             # noinspection PyMethodMayBeStatic
             @gp.cache
-            def my_method(self, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None):
+            def my_method(self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None):
                 return grid
 
         profile = MyProfile()
@@ -47,7 +47,7 @@ class TestMemoize(object):
                 self.count = 0
 
             @gp.cache
-            def my_method(self, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None):
+            def my_method(self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None):
                 self.count += 1
                 return self.count
 
@@ -62,11 +62,11 @@ class TestMemoize(object):
     def test_multiple_cached_methods(self):
         class MultiMethodProfile(object):
             @gp.cache
-            def method_one(self, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None):
+            def method_one(self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None):
                 return grid
 
             @gp.cache
-            def method_two(self, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None):
+            def method_two(self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None):
                 return grid
 
         profile = MultiMethodProfile()
@@ -406,7 +406,7 @@ class MockGridRadialMinimum(object):
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
     @gp.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return grid
 
 

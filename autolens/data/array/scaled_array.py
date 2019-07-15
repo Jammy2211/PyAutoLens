@@ -94,7 +94,7 @@ class RectangularArrayGeometry(ArrayGeometry):
                                                                       pixel_scales=self.pixel_scales,
                                                                       origin=self.origin).astype('int')
 
-    def grid_arcsec_to_grid_pixel_indexes(self, grid_arcsec):
+    def grid_arcsec_1d_to_grid_pixel_indexes_1d(self, grid_arcsec):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
         returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
         downwards.
@@ -142,9 +142,8 @@ class RectangularArrayGeometry(ArrayGeometry):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in arc seconds.
         """
-        return grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(shape=self.shape,
-                                                                            pixel_scales=self.pixel_scales,
-                                                                            origin=self.origin)
+        return grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+            shape=self.shape, pixel_scales=self.pixel_scales, sub_grid_size=1,origin=self.origin)
 
     @property
     def grid_2d(self):
@@ -153,9 +152,8 @@ class RectangularArrayGeometry(ArrayGeometry):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in arc seconds.
         """
-        return grid_util.regular_grid_2d_from_shape_pixel_scales_and_origin(shape=self.shape,
-                                                                            pixel_scales=self.pixel_scales,
-                                                                            origin=self.origin)
+        return grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+            shape=self.shape, pixel_scales=self.pixel_scales, sub_grid_size=1, origin=self.origin)
 
 
 class Array(np.ndarray):

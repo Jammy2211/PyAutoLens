@@ -22,7 +22,7 @@ def plot_intensities(
     grid : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    intensities = light_profile.intensities_from_grid(grid=grid, return_in_2d=True, return_binned_sub_grid=True)
+    intensities = light_profile.intensities_from_grid(grid=grid, return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=intensities, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -55,7 +55,7 @@ def plot_convergence(
     grid : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    convergence = mass_profile.convergence_from_grid(grid=grid, return_in_2d=True, return_binned_sub_grid=True)
+    convergence = mass_profile.convergence_from_grid(grid=grid, return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=convergence, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -88,7 +88,7 @@ def plot_potential(
     grid : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    potential = mass_profile.potential_from_grid(grid=grid, return_in_2d=True, return_binned_sub_grid=True)
+    potential = mass_profile.potential_from_grid(grid=grid, return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=potential, mask=mask, extract_array_from_mask=extract_array_from_mask,

@@ -9,19 +9,19 @@ class MockGalaxy(object):
         self.shape = shape
 
     @reshape_returned_array
-    def intensities_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def intensities_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.full(shape=self.shape, fill_value=self.value)
 
     @reshape_returned_array
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.full(shape=self.shape, fill_value=self.value)
 
     @reshape_returned_array
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.full(shape=self.shape, fill_value=self.value)
 
     @reshape_returned_grid
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.full(shape=(self.shape, 2), fill_value=self.value)
 
 

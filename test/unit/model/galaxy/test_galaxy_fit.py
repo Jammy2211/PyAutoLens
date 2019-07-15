@@ -269,7 +269,7 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_2d = galaxy.deflections_from_grid(
-                grid=galaxy_fit_data.grid_stack.sub, return_in_2d=True, return_binned_sub_grid=True)[:,:,0]
+                grid=galaxy_fit_data.grid_stack.sub, return_in_2d=True, return_binned=True)[:,:,0]
 
             residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=galaxy_fit_data.image(return_in_2d=True), mask=galaxy_fit_data.mask_2d,
@@ -309,7 +309,7 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_2d = galaxy.deflections_from_grid(
-                grid=galaxy_fit_data.grid_stack.sub, return_in_2d=True, return_binned_sub_grid=True)[:,:,1]
+                grid=galaxy_fit_data.grid_stack.sub, return_in_2d=True, return_binned=True)[:,:,1]
 
             residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=galaxy_fit_data.image(return_in_2d=True), mask=galaxy_fit_data.mask_2d,

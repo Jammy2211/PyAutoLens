@@ -36,7 +36,7 @@ class PointMass(geometry_profiles.SphericalProfile, mp.MassProfile):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return self.grid_to_grid_cartesian(grid=grid,
                                            radius=self.einstein_radius / grid_radii)
@@ -89,7 +89,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
@@ -97,11 +97,11 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -119,17 +119,17 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -147,17 +147,17 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -254,17 +254,17 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -357,7 +357,7 @@ class SphericalPowerLaw(EllipticalPowerLaw):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         eta = self.grid_to_grid_radii(grid)
         deflection_r = 2.0 * self.einstein_radius_rescaled * np.divide(
             np.power(eta, (3.0 - self.slope)),
@@ -465,7 +465,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -474,11 +474,11 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -521,17 +521,17 @@ class SphericalIsothermal(EllipticalIsothermal):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -542,17 +542,17 @@ class SphericalIsothermal(EllipticalIsothermal):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.

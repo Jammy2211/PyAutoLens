@@ -1325,13 +1325,13 @@ class TestPSF(object):
 
             from autolens.model.profiles import light_profiles as lp
 
-            grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((3, 3), False),
-                                                                                      pixel_scales=(1.0, 1.0))
+            grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+                mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1)
 
             gaussian = lp.EllipticalGaussian(centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0)
             profile_gaussian_1d = gaussian.intensities_from_grid(grid)
-            profile_gaussian_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
-                array_1d=profile_gaussian_1d, shape=(3, 3))
+            profile_gaussian_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+                sub_array_1d=profile_gaussian_1d, mask=np.full(fill_value=False, shape=(3, 3)), sub_grid_size=1)
             profile_psf = ccd.PSF(array=profile_gaussian_2d, pixel_scale=1.0, renormalize=True)
 
             imaging_psf = ccd.PSF.from_gaussian(shape=(3, 3), pixel_scale=1.0, centre=(0.1, 0.1),
