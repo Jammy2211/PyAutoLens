@@ -294,14 +294,14 @@ class TestSimulateCCD(object):
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                      image_plane_grid_stack=image_plane_grid_stack)
 
-        deflections = tracer.deflections(return_in_2d=True, return_binned_sub_grid=True)
+        deflections = tracer.deflections(return_in_2d=True, return_binned=True)
 
         ccd_data_simulated_via_deflections = simulated_ccd.SimulatedCCDData.from_deflections_source_galaxies_and_exposure_arrays(
             deflections=deflections, pixel_scale=1.0, source_galaxies=[g1], exposure_time=10000.0,
             background_sky_level=100.0, add_noise=True, noise_seed=1)
 
         tracer_profile_image_plane_image = tracer.profile_image_plane_image(
-            return_in_2d=True, return_binned_sub_grid=True)
+            return_in_2d=True, return_binned=True)
 
         ccd_data_simulated = simulated_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
             image=tracer_profile_image_plane_image, pixel_scale=1.0, exposure_time=10000.0,

@@ -57,7 +57,7 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
@@ -66,7 +66,7 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -137,7 +137,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -147,7 +147,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -385,7 +385,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
@@ -394,7 +394,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -406,7 +406,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -416,7 +416,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.

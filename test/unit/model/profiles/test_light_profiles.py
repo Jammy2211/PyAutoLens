@@ -151,14 +151,14 @@ class TestGaussian:
         gaussian = lp.EllipticalGaussian()
 
         intensities = gaussian.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 
         gaussian = lp.SphericalGaussian()
 
         intensities = gaussian.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 
@@ -283,14 +283,14 @@ class TestSersic:
         sersic = lp.EllipticalSersic()
 
         intensities = sersic.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 
         sersic = lp.SphericalSersic()
 
         intensities = sersic.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 
@@ -403,14 +403,14 @@ class TestExponential:
         exponential = lp.EllipticalExponential()
 
         intensities = exponential.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 
         exponential = lp.SphericalExponential()
 
         intensities = exponential.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 
@@ -525,14 +525,14 @@ class TestDevVaucouleurs:
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs()
 
         intensities = dev_vaucouleurs.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 
         dev_vaucouleurs = lp.SphericalDevVaucouleurs()
 
         intensities = dev_vaucouleurs.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 
@@ -655,14 +655,14 @@ class TestCoreSersic(object):
         core_sersic = lp.EllipticalCoreSersic()
 
         intensities = core_sersic.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 
         core_sersic = lp.SphericalCoreSersic()
 
         intensities = core_sersic.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert intensities.shape == (2, 2)
 

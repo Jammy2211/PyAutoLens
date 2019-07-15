@@ -133,7 +133,7 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
@@ -142,7 +142,7 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -368,7 +368,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False, tabulate_bins=1000):
+    def potential_from_grid(self, grid, return_in_2d=False, return_binned=False, tabulate_bins=1000):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -380,7 +380,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
             The number of bins to tabulate the inner integral of this profile.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -431,7 +431,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=False, return_binned_sub_grid=False, tabulate_bins=1000):
+    def deflections_from_grid(self, grid, return_in_2d=False, return_binned=False, tabulate_bins=1000):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -443,7 +443,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
             The number of bins to tabulate the inner integral of this profile.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -659,7 +659,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         return np.real(self.coord_func_m(grid_radius=grid_radius))
 
     @reshape_returned_array
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.zeros((grid.shape[0],))
 
     @reshape_returned_grid
@@ -812,7 +812,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -822,7 +822,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -840,7 +840,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -850,7 +850,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -944,7 +944,7 @@ class SphericalNFW(EllipticalNFW):
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -954,7 +954,7 @@ class SphericalNFW(EllipticalNFW):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -966,7 +966,7 @@ class SphericalNFW(EllipticalNFW):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -976,7 +976,7 @@ class SphericalNFW(EllipticalNFW):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.

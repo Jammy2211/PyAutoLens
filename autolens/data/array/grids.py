@@ -69,6 +69,73 @@ def check_input_grid_and_options_are_compatible(grid):
             'input grid a RegularGrid.')
 
 
+def reshape_returned_array(func):
+    @wraps(func)
+    def wrapper(object, grid=None, *args, **kwargs):
+        """
+
+        This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
+        (e.g. intensities, convergences, potentials). Depending on the input variables, it determines whether the
+        returned array is reshaped to 2D from 1D and if a sub-grid is input, it can bin the sub-gridded values to
+        regular gridded values.
+
+        Parameters
+        ----------
+        object : autolens.model.geometry_profiles.Profile
+            The profiles that owns the function
+        grid : ndarray or Grid or Grid
+            (y,x) in either cartesian or profiles coordinate system
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
+
+        Returns
+        -------
+            An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
+        """
+
+        return_in_2d = kwargs['return_in_2d'] if 'return_in_2d' in kwargs else False
+        return_binned = kwargs['return_binned'] if 'return_binned' in kwargs else False
+
+        if grid is None:
+            result = func(object)
+            grid = object.grid_stack.sub
+        else:
+            result = func(object, grid)
+
+        if len(result.shape) == 2:
+            result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
+        else:
+            result_1d = result
+
+        if not return_in_2d and not return_binned:
+            return result_1d
+
+        check_input_grid_and_options_are_compatible(
+            grid=grid)
+
+        if not return_in_2d and not return_binned:
+
+            return result_1d
+
+        elif not return_in_2d and return_binned:
+
+            return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=result_1d)
+
+        elif return_in_2d and not return_binned:
+
+            return grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(sub_array_1d=result_1d)
+
+        elif return_in_2d and return_binned:
+
+            return grid.scaled_array_2d_binned_from_sub_array_1d(sub_array_1d=result_1d)
+
+    return wrapper
+
+
 def reshape_returned_regular_array(func):
 
     @wraps(func)
@@ -88,7 +155,7 @@ def reshape_returned_regular_array(func):
             (y,x) in either cartesian or profiles coordinate system
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -112,98 +179,13 @@ def reshape_returned_regular_array(func):
         check_input_grid_and_options_are_compatible(
             grid=grid)
 
-        if type(grid) is Grid:
+        if not return_in_2d:
 
-            if not return_in_2d:
-
-                return result_1d
-
-            elif return_in_2d and type(Grid):
-
-                return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
-
-    return wrapper
-
-
-def reshape_returned_array(func):
-
-    @wraps(func)
-    def wrapper(object, grid=None, *args, **kwargs):
-        """
-        
-        This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
-        (e.g. intensities, convergences, potentials). Depending on the input variables, it determines whether the
-        returned array is reshaped to 2D from 1D and if a sub-grid is input, it can bin the sub-gridded values to
-        regular gridded values.
-
-        Parameters
-        ----------
-        object : autolens.model.geometry_profiles.Profile
-            The profiles that owns the function
-        grid : ndarray or Grid or Grid
-            (y,x) in either cartesian or profiles coordinate system
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
-
-        Returns
-        -------
-            An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
-        """
-
-        return_in_2d = kwargs['return_in_2d'] if 'return_in_2d' in kwargs else False
-        return_binned_sub_grid = kwargs['return_binned_sub_grid'] if 'return_binned_sub_grid' in kwargs else False
-
-        if grid is None:
-            result = func(object)
-            grid = object.grid_stack.sub
-        else:
-            result = func(object, grid)
-
-        if len(result.shape) == 2:
-            if type(grid) == Grid:
-                result_1d = grid.array_1d_from_array_2d(array_2d=result)
-            elif type(grid) == Grid:
-                result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
-        else:
-            result_1d = result
-
-        if not return_in_2d and not return_binned_sub_grid:
             return result_1d
 
-        check_input_grid_and_options_are_compatible(
-            grid=grid)
+        elif return_in_2d:
 
-        if type(grid) is Grid:
-
-            if not return_in_2d:
-
-                return result_1d
-
-            elif return_in_2d and type(Grid):
-
-                return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
-
-        elif type(grid) is Grid:
-
-            if not return_in_2d and not return_binned_sub_grid:
-
-                return result_1d
-
-            elif not return_in_2d and return_binned_sub_grid:
-
-                return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=result_1d)
-
-            elif return_in_2d and not return_binned_sub_grid:
-
-                return grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(sub_array_1d=result_1d)
-
-            elif return_in_2d and return_binned_sub_grid:
-
-                return grid.scaled_array_2d_binned_from_sub_array_1d(sub_array_1d=result_1d)
+            return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
 
     return wrapper
 
@@ -227,7 +209,7 @@ def reshape_returned_array_blurring(func):
             (y,x) in either cartesian or profiles coordinate system
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -246,10 +228,7 @@ def reshape_returned_array_blurring(func):
             result = func(object, grid)
 
         if len(result.shape) == 2:
-            if type(grid) == Grid:
-                result_1d = grid.array_1d_from_array_2d(array_2d=result)
-            elif type(grid) == Grid:
-                result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
+            result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
         else:
             result_1d = result
 
@@ -259,15 +238,13 @@ def reshape_returned_array_blurring(func):
         check_input_grid_and_options_are_compatible(
             grid=grid)
 
-        if type(grid) is Grid:
+        if not return_in_2d:
 
-            if not return_in_2d:
+            return result_1d
 
-                return result_1d
+        elif return_in_2d:
 
-            elif return_in_2d:
-
-                return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
+            return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
 
     return wrapper
 
@@ -296,7 +273,7 @@ def reshape_returned_grid(func):
         """
 
         return_in_2d = kwargs['return_in_2d'] if 'return_in_2d' in kwargs else False
-        return_binned_sub_grid = kwargs['return_binned_sub_grid'] if 'return_binned_sub_grid' in kwargs else False
+        return_binned = kwargs['return_binned'] if 'return_binned' in kwargs else False
 
         if grid is None:
             result = func(object)
@@ -305,46 +282,31 @@ def reshape_returned_grid(func):
             result = func(object, grid)
 
         if len(result.shape) == 3:
-            if type(grid) == Grid:
-                result_1d = grid.grid_1d_from_grid_2d(grid_2d=result)
-            elif type(grid) == Grid:
-                result_1d = grid.sub_grid_1d_with_sub_dimensions_from_sub_grid_2d(sub_grid_2d=result)
+            result_1d = grid.sub_grid_1d_with_sub_dimensions_from_sub_grid_2d(sub_grid_2d=result)
         else:
             result_1d = result
 
-        if not return_in_2d and not return_binned_sub_grid:
+        if not return_in_2d and not return_binned:
             return result_1d
 
         check_input_grid_and_options_are_compatible(
             grid=grid)
 
-        if type(grid) is Grid:
+        if not return_in_2d and not return_binned:
 
-            if not return_in_2d:
+            return result_1d
 
-                return result_1d
+        elif not return_in_2d and return_binned:
 
-            elif return_in_2d:
+            return grid.grid_1d_binned_from_sub_grid_1d(sub_grid_1d=result_1d)
 
-                return grid.grid_2d_from_grid_1d(grid_1d=result_1d)
+        elif return_in_2d and not return_binned:
 
-        elif type(grid) is Grid:
+            return grid.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(sub_grid_1d=result_1d)
 
-            if not return_in_2d and not return_binned_sub_grid:
+        elif return_in_2d and return_binned:
 
-                return result_1d
-
-            elif not return_in_2d and return_binned_sub_grid:
-
-                return grid.grid_1d_binned_from_sub_grid_1d(sub_grid_1d=result_1d)
-
-            elif return_in_2d and not return_binned_sub_grid:
-
-                return grid.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(sub_grid_1d=result_1d)
-
-            elif return_in_2d and return_binned_sub_grid:
-
-                return grid.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=result_1d)
+            return grid.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=result_1d)
 
     return wrapper
 
@@ -1120,6 +1082,7 @@ class Grid(np.ndarray):
             setattr(self, key, value)
         super(Grid, self).__setstate__(state[0:-1])
 
+
 class ClusterGrid(Grid):
 
     def __init__(self, arr, mask, bin_up_factor, cluster_to_regular_all,
@@ -1534,7 +1497,7 @@ def grid_interpolate(func):
     """
 
     @wraps(func)
-    def wrapper(profile, grid, return_in_2d=False, return_binned_sub_grid=False, grid_radial_minimum=None, *args, **kwargs):
+    def wrapper(profile, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None, *args, **kwargs):
         if hasattr(grid, "interpolator"):
             interpolator = grid.interpolator
             if grid.interpolator is not None:

@@ -94,7 +94,7 @@ class RectangularArrayGeometry(ArrayGeometry):
                                                                       pixel_scales=self.pixel_scales,
                                                                       origin=self.origin).astype('int')
 
-    def grid_arcsec_to_grid_pixel_indexes(self, grid_arcsec):
+    def grid_arcsec_1d_to_grid_pixel_indexes_1d(self, grid_arcsec):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
         returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
         downwards.

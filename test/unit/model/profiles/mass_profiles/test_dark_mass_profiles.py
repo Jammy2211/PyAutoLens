@@ -647,34 +647,34 @@ class TestGeneralizedNFW(object):
         # gnfw = mp.EllipticalGeneralizedNFW()
         #
         # convergence = gnfw.convergence_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+        #     grid=regular_grid, return_in_2d=True, return_binned=False)
         #
         # assert convergence.shape == (2, 2)
         #
         # potential = gnfw.potential_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+        #     grid=regular_grid, return_in_2d=True, return_binned=False)
         #
         # assert potential.shape == (2, 2)
         #
         # deflections = gnfw.deflections_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+        #     grid=regular_grid, return_in_2d=True, return_binned=False)
         #
         # assert deflections.shape == (2, 2, 2)
 
         gnfw = mp.SphericalGeneralizedNFW()
 
         convergence = gnfw.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert convergence.shape == (2, 2)
 
         potential = gnfw.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert potential.shape == (2, 2)
 
         deflections = gnfw.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert deflections.shape == (2, 2, 2)
 
@@ -908,17 +908,17 @@ class TestTruncatedNFW(object):
         truncated_nfw = mp.SphericalTruncatedNFW()
 
         convergence = truncated_nfw.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert convergence.shape == (2, 2)
 
         potential = truncated_nfw.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert potential.shape == (2, 2)
 
         deflections = truncated_nfw.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert deflections.shape == (2, 2, 2)
 
@@ -1143,33 +1143,33 @@ class TestNFW(object):
         nfw = mp.EllipticalNFW()
 
         convergence = nfw.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert convergence.shape == (2, 2)
 
         potential = nfw.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert potential.shape == (2, 2)
 
         deflections = nfw.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert deflections.shape == (2, 2, 2)
 
         nfw = mp.SphericalNFW()
 
         convergence = nfw.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert convergence.shape == (2, 2)
 
         potential = nfw.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert potential.shape == (2, 2)
 
         deflections = nfw.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert deflections.shape == (2, 2, 2)
