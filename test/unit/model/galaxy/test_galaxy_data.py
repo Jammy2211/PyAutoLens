@@ -3,7 +3,6 @@ import pytest
 
 from autolens import exc
 from autolens.data.array import grids
-from autolens.data.array.util import grid_util
 from autolens.data.array import scaled_array as sca
 from autolens.model.galaxy import galaxy as g, galaxy_data as gd
 from autolens.model.profiles import light_profiles as lp
@@ -25,7 +24,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0 * np.ones(9)).all()
         assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
 
-        assert (galaxy_fit_data.mask_2d == np.array(
+        assert (galaxy_fit_data.mask(return_in_2d=True) == np.array(
                 [[True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True],
                  [True, True, False, False, False, True, True],
@@ -34,7 +33,7 @@ class TestGalaxyFitData(object):
                  [True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True]])).all()
 
-        assert (galaxy_fit_data.image_2d == np.array(
+        assert (galaxy_fit_data.image(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
@@ -44,7 +43,7 @@ class TestGalaxyFitData(object):
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
 
-        assert (galaxy_fit_data.noise_map_2d == np.array(
+        assert (galaxy_fit_data.noise_map(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],
@@ -97,7 +96,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0* np.ones(9)).all()
         assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
 
-        assert (galaxy_fit_data.mask_2d == np.array(
+        assert (galaxy_fit_data.mask(return_in_2d=True) == np.array(
                 [[True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True],
                  [True, True, False, False, False, True, True],
@@ -106,7 +105,7 @@ class TestGalaxyFitData(object):
                  [True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True]])).all()
 
-        assert (galaxy_fit_data.image_2d == np.array(
+        assert (galaxy_fit_data.image(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
@@ -116,7 +115,7 @@ class TestGalaxyFitData(object):
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
 
-        assert (galaxy_fit_data.noise_map_2d == np.array(
+        assert (galaxy_fit_data.noise_map(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],
@@ -155,7 +154,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0* np.ones(9)).all()
         assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
 
-        assert (galaxy_fit_data.mask_2d == np.array(
+        assert (galaxy_fit_data.mask(return_in_2d=True) == np.array(
                 [[True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True],
                  [True, True, False, False, False, True, True],
@@ -164,7 +163,7 @@ class TestGalaxyFitData(object):
                  [True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True]])).all()
 
-        assert (galaxy_fit_data.image_2d == np.array(
+        assert (galaxy_fit_data.image(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
@@ -174,7 +173,7 @@ class TestGalaxyFitData(object):
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
 
-        assert (galaxy_fit_data.noise_map_2d == np.array(
+        assert (galaxy_fit_data.noise_map(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],
@@ -215,7 +214,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0* np.ones(9)).all()
         assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
 
-        assert (galaxy_fit_data.mask_2d == np.array(
+        assert (galaxy_fit_data.mask(return_in_2d=True) == np.array(
                 [[True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True],
                  [True, True, False, False, False, True, True],
@@ -224,7 +223,7 @@ class TestGalaxyFitData(object):
                  [True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True]])).all()
 
-        assert (galaxy_fit_data.image_2d == np.array(
+        assert (galaxy_fit_data.image(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
@@ -234,7 +233,7 @@ class TestGalaxyFitData(object):
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
 
-        assert (galaxy_fit_data.noise_map_2d == np.array(
+        assert (galaxy_fit_data.noise_map(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],
@@ -272,7 +271,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0* np.ones(9)).all()
         assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
 
-        assert (galaxy_fit_data.mask_2d == np.array(
+        assert (galaxy_fit_data.mask(return_in_2d=True) == np.array(
                 [[True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True],
                  [True, True, False, False, False, True, True],
@@ -281,7 +280,7 @@ class TestGalaxyFitData(object):
                  [True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True]])).all()
 
-        assert (galaxy_fit_data.image_2d == np.array(
+        assert (galaxy_fit_data.image(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
@@ -291,7 +290,7 @@ class TestGalaxyFitData(object):
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
 
-        assert (galaxy_fit_data.noise_map_2d == np.array(
+        assert (galaxy_fit_data.noise_map(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],
@@ -330,7 +329,7 @@ class TestGalaxyFitData(object):
         assert (galaxy_fit_data.noise_map_1d == 2.0 * np.ones(9)).all()
         assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
 
-        assert (galaxy_fit_data.mask_2d == np.array(
+        assert (galaxy_fit_data.mask(return_in_2d=True) == np.array(
                 [[True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True],
                  [True, True, False, False, False, True, True],
@@ -339,7 +338,7 @@ class TestGalaxyFitData(object):
                  [True, True, True, True, True, True, True],
                  [True, True, True, True, True, True, True]])).all()
 
-        assert (galaxy_fit_data.image_2d == np.array(
+        assert (galaxy_fit_data.image(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
@@ -349,7 +348,7 @@ class TestGalaxyFitData(object):
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
 
-        assert (galaxy_fit_data.noise_map_2d == np.array(
+        assert (galaxy_fit_data.noise_map(return_in_2d=True) == np.array(
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],

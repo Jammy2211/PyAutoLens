@@ -7,7 +7,6 @@ Big Picture:
 - RJLens pipelines.
 - CTI Results section.
 
-- Makee sure padded grids have interpolator
 - tracers used in some simulations will double calc deflecitons because they use a padded tracer .
 Add a omit deflections bool or something
 

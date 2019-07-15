@@ -13,6 +13,7 @@ from autolens.model.profiles import mass_profiles as mp
 
 from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
 
+
 class PointMass(geometry_profiles.SphericalProfile, mp.MassProfile):
 
     @af.map_types
