@@ -3,15 +3,13 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens import exc
-from autolens.data.array import grids
 from autolens.lens import ray_tracing, lens_data as ld, lens_fit, sensitivity_fit
 from autolens.lens.plotters import sensitivity_fit_plotters
 from autolens.model.galaxy import galaxy as g
-from autolens.model.inversion import pixelizations as px
 from autolens.pipeline import tagging as tag
 from autolens.pipeline.phase import phase_extensions
-from autolens.pipeline.plotters import phase_plotters
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
+from autolens.pipeline.plotters import phase_plotters
 
 
 class PhaseImaging(Phase):
@@ -218,7 +216,6 @@ class PhaseImaging(Phase):
             modified_image=modified_image)
 
         if self.bin_up_factor is not None:
-
             lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(
                 bin_up_factor=self.bin_up_factor)
 
@@ -252,17 +249,20 @@ class PhaseImaging(Phase):
             phase_info.close()
 
     def extend_with_inversion_phase(self):
-        return phase_extensions.CombinedHyperPhase(phase=self, hyper_phase_classes=(phase_extensions.InversionPhase,))
+        return phase_extensions.CombinedHyperPhase(phase=self,
+                                                   hyper_phase_classes=(phase_extensions.InversionPhase,))
 
     def extend_with_hyper_and_inversion_phases(
             self, hyper_galaxy=False, inversion=False,
             include_background_sky=False, include_background_noise=False):
 
-        if hyper_galaxy:
-            if not include_background_sky and not include_background_noise:
-                phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
-        else:
-            phase_hyper_galaxy = None
+        phase_hyper_galaxy = None
+
+        if (hyper_galaxy
+                and not include_background_sky
+                and not include_background_noise
+        ):
+            phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
 
         if inversion:
             if not include_background_sky and not include_background_noise:
@@ -284,7 +284,8 @@ class PhaseImaging(Phase):
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
-        def __init__(self, lens_data, cosmology, positions_threshold, inversion_pixel_limit=None, image_path=None,
+        def __init__(self, lens_data, cosmology, positions_threshold, inversion_pixel_limit=None,
+                     image_path=None,
                      results=None):
 
             super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology,
@@ -313,15 +314,14 @@ class PhaseImaging(Phase):
                 af.conf.instance.visualize.get('plots', 'plot_data_signal_to_noise_map', bool)
 
             self.plot_data_absolute_signal_to_noise_map = \
-                af.conf.instance.visualize.get('plots', 'plot_data_absolute_signal_to_noise_map',bool)
+                af.conf.instance.visualize.get('plots', 'plot_data_absolute_signal_to_noise_map', bool)
 
             self.plot_data_potential_chi_squared_map = \
                 af.conf.instance.visualize.get('plots', 'plot_data_potential_chi_squared_map', bool)
 
-
             self.plot_lens_fit_all_at_end_png = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_all_at_end_png',
-                                             bool)
+                                               bool)
             self.plot_lens_fit_all_at_end_fits = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_all_at_end_fits', bool)
 
@@ -356,19 +356,21 @@ class PhaseImaging(Phase):
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_chi_squared_map', bool)
 
             self.plot_lens_fit_contribution_maps = \
-                af.conf.instance.visualize.get('plots','plot_lens_fit_contribution_maps', bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_contribution_maps', bool)
 
             self.plot_lens_fit_pixelization_residual_map = \
-                af.conf.instance.visualize.get('plots','plot_lens_fit_pixelization_residual_map', bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_pixelization_residual_map', bool)
 
             self.plot_lens_fit_pixelization_normalized_residuals = \
-                af.conf.instance.visualize.get('plots','plot_lens_fit_pixelization_normalized_residual_map', bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_pixelization_normalized_residual_map',
+                                               bool)
 
             self.plot_lens_fit_pixelization_chi_squared_map = \
-                af.conf.instance.visualize.get('plots','plot_lens_fit_pixelization_chi_squared_map', bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_pixelization_chi_squared_map', bool)
 
             self.plot_lens_fit_pixelization_regularization_weights = \
-                af.conf.instance.visualize.get('plots','plot_lens_fit_pixelization_regularization_weight_map', bool)
+                af.conf.instance.visualize.get('plots', 'plot_lens_fit_pixelization_regularization_weight_map',
+                                               bool)
 
             self.plot_lens_fit_subtracted_images_of_planes = \
                 af.conf.instance.visualize.get('plots', 'plot_lens_fit_subtracted_images_of_planes', bool)
@@ -410,14 +412,15 @@ class PhaseImaging(Phase):
             self.preload_pixelization_grid = None
 
             if self.last_results is not None:
-
                 self.hyper_galaxy_image_1d_path_dict = self.last_results.hyper_galaxy_image_1d_path_dict_from_mask(
                     mask=lens_data.mask_2d)
 
-                self.hyper_model_image_1d = self.last_results.hyper_model_image_1d_from_mask(mask=lens_data.mask_2d)
+                self.hyper_model_image_1d = self.last_results.hyper_model_image_1d_from_mask(
+                    mask=lens_data.mask_2d)
 
                 self.hyper_galaxy_cluster_image_1d_path_dict = \
-                    self.last_results.hyper_galaxy_cluster_image_1d_path_dict_from_cluster(cluster=lens_data.cluster)
+                    self.last_results.hyper_galaxy_cluster_image_1d_path_dict_from_cluster(
+                        cluster=lens_data.cluster)
 
                 phase_plotters.plot_hyper_images_for_phase(
                     hyper_model_image_2d=mask.scaled_array_2d_from_array_1d(
@@ -425,7 +428,8 @@ class PhaseImaging(Phase):
                     hyper_galaxy_image_2d_path_dict=
                     self.last_results.hyper_galaxy_image_2d_path_dict_from_mask(mask=mask),
                     hyper_galaxy_cluster_image_2d_path_dict=
-                    self.last_results.hyper_galaxy_cluster_image_2d_path_dict_from_cluster(cluster=lens_data.cluster),
+                    self.last_results.hyper_galaxy_cluster_image_2d_path_dict_from_cluster(
+                        cluster=lens_data.cluster),
                     mask=lens_data.mask_2d,
                     cluster=lens_data.cluster,
                     extract_array_from_mask=self.extract_array_from_mask,
@@ -505,7 +509,8 @@ class PhaseImaging(Phase):
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
                         galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[galaxy_path]
                         if self.hyper_galaxy_cluster_image_1d_path_dict is not None:
-                            galaxy.hyper_galaxy_cluster_image_1d = self.hyper_galaxy_cluster_image_1d_path_dict[galaxy_path]
+                            galaxy.hyper_galaxy_cluster_image_1d = self.hyper_galaxy_cluster_image_1d_path_dict[
+                                galaxy_path]
             return instance
 
         def add_grids_to_grid_stack(self, galaxies, grid_stack):
@@ -514,7 +519,6 @@ class PhaseImaging(Phase):
 
                 for galaxy in galaxies:
                     if galaxy.pixelization is not None:
-
                         pixelization_grid = galaxy.pixelization.pixelization_grid_from_grid_stack(
                             grid_stack=grid_stack,
                             hyper_image=galaxy.hyper_galaxy_cluster_image_1d,
@@ -967,7 +971,6 @@ class LensPlanePhase(PhaseImaging):
                                                 cosmology=self.cosmology)
 
         def check_inversion_pixels_are_below_limit(self, instance):
-
             pass
 
         @classmethod
@@ -983,7 +986,6 @@ class LensPlanePhase(PhaseImaging):
 
 
 class SensitivityPhase(PhaseImaging):
-
     lens_galaxies = af.PhaseProperty("lens_galaxies")
     source_galaxies = af.PhaseProperty("source_galaxies")
     sensitive_galaxies = af.PhaseProperty("sensitive_galaxies")

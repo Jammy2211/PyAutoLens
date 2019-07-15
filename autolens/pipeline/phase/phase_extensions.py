@@ -176,7 +176,7 @@ class VariableFixingHyperPhase(HyperPhase):
     def transfer_classes(self, instance, mapper):
         """
         Recursively overwrite priors in the mapper with constant values from the
-        instance except where the containing class is the decedent of a listed class.
+        instance except where the containing class is the descendant of a listed class.
 
         Parameters
         ----------

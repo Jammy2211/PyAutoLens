@@ -236,6 +236,12 @@ class TestVariableFixing(object):
         assert mapper.lens_galaxy.redshift == 1.0
         assert mapper.source_galaxy.light.axis_ratio == 1.0
 
+        phase.add_defaults(mapper)
+
+        assert mapper.prior_count == 3
+        assert mapper.lens_galaxy.redshift == 1.0
+        assert mapper.source_galaxy.light.axis_ratio == 1.0
+
 
 class TestImagePassing(object):
 
