@@ -238,9 +238,8 @@ def sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
     return np.stack((sub_grid_1d_y, sub_grid_1d_x), axis=-1)
 
 
-@decorator_util.jit()
-def sub_array_2d_from_sub_array_1d_shape_and_sub_one_to_two(
-        sub_array_1d, shape, sub_one_to_two):
+def sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        sub_array_1d, mask, sub_grid_size):
     """For a 1D array that was computed by mapping unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -275,16 +274,26 @@ def sub_array_2d_from_sub_array_1d_shape_and_sub_one_to_two(
         array_1d=array_1d, shape=(3,3), one_to_two=one_to_two)
     """
 
-    array_2d = np.zeros(shape)
+    sub_shape = (mask.shape[0] * sub_grid_size, mask.shape[1] * sub_grid_size)
+
+    sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+        mask=mask, sub_grid_size=sub_grid_size).astype('int')
+
+    return sub_array_2d_from_sub_array_1d_sub_shape_and_sub_one_to_two(
+        sub_array_1d=sub_array_1d, sub_shape=sub_shape, sub_one_to_two=sub_one_to_two)
+
+@decorator_util.jit()
+def sub_array_2d_from_sub_array_1d_sub_shape_and_sub_one_to_two(sub_array_1d, sub_shape, sub_one_to_two):
+
+    array_2d = np.zeros(sub_shape)
 
     for index in range(len(sub_one_to_two)):
         array_2d[sub_one_to_two[index, 0], sub_one_to_two[index, 1]] = sub_array_1d[index]
 
     return array_2d
 
-
-def sub_grid_2d_from_sub_grid_1d_shape_and_sub_one_to_two(
-        sub_grid_1d, shape, sub_one_to_two):
+def sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+        sub_grid_1d, mask, sub_grid_size):
     """For a 1D array that was computed by mapping unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -319,54 +328,13 @@ def sub_grid_2d_from_sub_grid_1d_shape_and_sub_one_to_two(
                                                                                   one_to_two=one_to_two)
     """
 
-    sub_grid_2d_y = sub_array_2d_from_sub_array_1d_shape_and_sub_one_to_two(
-        sub_array_1d=sub_grid_1d[:,0], shape=shape, sub_one_to_two=sub_one_to_two)
+    sub_grid_2d_y = sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        sub_array_1d=sub_grid_1d[:,0], mask=mask, sub_grid_size=sub_grid_size)
 
-    sub_grid_2d_x = sub_array_2d_from_sub_array_1d_shape_and_sub_one_to_two(
-        sub_array_1d=sub_grid_1d[:,1], shape=shape, sub_one_to_two=sub_one_to_two)
+    sub_grid_2d_x = sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        sub_array_1d=sub_grid_1d[:,1], mask=mask, sub_grid_size=sub_grid_size)
 
     return np.stack((sub_grid_2d_y, sub_grid_2d_x), axis=-1)
-
-
-def array_2d_from_unmasked_array_1d_and_shape(
-        array_1d, shape):
-    """For a 1D array that was flattened from a 2D array of shape (rows, columns), map its values back to the \
-    original 2D array.
-
-    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards, such
-    that for an array of shape (3,3):
-
-    - pixel 0 of the 1D array will correspond to index [0,0] of the 2D array.
-    - pixel 1 of the 1D array will correspond to index [0,1] of the 2D array.
-    - pixel 4 of the 1D array will correspond to index [1,0] of the 2D array.
-
-    Parameters
-     ----------
-    array_1d : ndarray
-        The 1D array of values which are mapped to a 2D array.
-    shape : (int, int)
-        The shape of the 2D array which the pixels are defined on.
-
-    Returns
-    --------
-    ndarray
-        A 2D array of values mapped from the 1D array with dimensions (shape).
-
-    Examples
-    --------
-    one_to_two = np.array([[0,1], [1,0], [1,1], [1,2], [2,1]])
-
-    array_1d = np.array([[2.0, 4.0, 5.0, 6.0, 8.0])
-
-    array_2d = map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d=array_1d, shape=(3,3),
-                                                                                  one_to_two=one_to_two)
-    """
-
-    sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
-        mask=np.full(fill_value=False, shape=shape), sub_grid_size=1).astype('int')
-
-    return sub_array_2d_from_sub_array_1d_shape_and_sub_one_to_two(
-        sub_array_1d=array_1d, shape=shape, sub_one_to_two=sub_one_to_two)
 
 
 @decorator_util.jit()

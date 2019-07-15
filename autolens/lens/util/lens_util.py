@@ -22,8 +22,8 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
                            grid=uniform_grid, return_in_2d=False, return_binned=False),
                        galaxies))
 
-    image_2d = mapping_util.array_2d_from_unmasked_array_1d_and_shape(
-        array_1d=image_1d, shape=shape)
+    image_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        sub_array_1d=image_1d, mask=np.full(fill_value=False, shape=shape), sub_grid_size=1)
 
     return pl.PlaneImage(array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin)
 

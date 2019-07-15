@@ -1030,13 +1030,12 @@ class Grid(np.ndarray):
         psf : ndarray
             An array describing the PSF kernel of the image.
         """
-        padded_array_2d = mapping_util.array_2d_from_unmasked_array_1d_and_shape(
-            array_1d=padded_array_1d, shape=self.mask.shape)
+        padded_array_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=padded_array_1d, mask=np.full(fill_value=False, shape=self.mask.shape), sub_grid_size=1)
         # noinspection PyUnresolvedReferences
         blurred_padded_array_2d = psf.convolve(array=padded_array_2d)
-        return mapping_util.map_array_2d_to_array_1d_from_array_2d_and_mask(
-            array_2d=blurred_padded_array_2d,
-            mask=np.full(self.mask.shape, False))
+        return mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=blurred_padded_array_2d, mask=np.full(self.mask.shape, False), sub_grid_size=1)
 
     @property
     @array_util.Memoizer()
@@ -1494,7 +1493,7 @@ def grid_interpolate(func):
     """
 
     @wraps(func)
-    def wrapper(profile, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None, *args, **kwargs):
+    def wrapper(profile, grid, grid_radial_minimum=None, *args, **kwargs):
         if hasattr(grid, "interpolator"):
             interpolator = grid.interpolator
             if grid.interpolator is not None:

@@ -430,8 +430,10 @@ class PSF(ScaledSquarePixelArray):
         grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full(shape, False), pixel_scales=(pixel_scale, pixel_scale), sub_grid_size=1)
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
-        gaussian_2d = mapping_util.array_2d_from_unmasked_array_1d_and_shape(
-            array_1d=gaussian_1d, shape=shape)
+
+        gaussian_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=gaussian_1d, mask=np.full(fill_value=False, shape=shape), sub_grid_size=1)
+
         return PSF(array=gaussian_2d, pixel_scale=pixel_scale, renormalize=True)
 
     @classmethod
@@ -450,8 +452,9 @@ class PSF(ScaledSquarePixelArray):
             mask=np.full(shape, False), pixel_scales=(pixel_scale, pixel_scale), sub_grid_size=1)
 
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
-        gaussian_2d = mapping_util.array_2d_from_unmasked_array_1d_and_shape(array_1d=gaussian_1d,
-                                                                             shape=shape)
+        gaussian_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=gaussian_1d, mask=np.full(fill_value=False, shape=shape), sub_grid_size=1)
+
         return PSF(array=gaussian_2d, pixel_scale=pixel_scale, renormalize=True)
 
     @classmethod

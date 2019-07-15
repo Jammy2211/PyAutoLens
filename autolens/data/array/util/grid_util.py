@@ -148,11 +148,8 @@ def grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
     grid_1d = grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
         mask=mask, pixel_scales=pixel_scales, sub_grid_size=sub_grid_size, origin=origin)
 
-    sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
-        mask=mask, sub_grid_size=sub_grid_size).astype('int')
-
-    return mapping_util.sub_grid_2d_from_sub_grid_1d_shape_and_sub_one_to_two(
-        sub_grid_1d=grid_1d, shape=(mask.shape[0] * sub_grid_size, mask.shape[1] * sub_grid_size), sub_one_to_two=sub_one_to_two)
+    return mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+        sub_grid_1d=grid_1d, mask=mask, sub_grid_size=sub_grid_size)
 
 def grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
         shape, pixel_scales, sub_grid_size, origin=(0.0, 0.0)):

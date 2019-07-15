@@ -2,6 +2,8 @@ from autolens.data.array.util import mapping_util
 from autolens.data.array import scaled_array
 from autolens.model.inversion.util import mapper_util
 
+import numpy as np
+
 class Mapper(object):
 
     def __init__(self, pixels, grid_stack, border, hyper_image=None):
@@ -167,10 +169,10 @@ class RectangularMapper(Mapper):
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
-        recon = mapping_util.array_2d_from_unmasked_array_1d_and_shape(array_1d=solution_vector,
-                                                                       shape=self.shape)
-        return scaled_array.ScaledRectangularPixelArray(array=recon, pixel_scales=self.geometry.pixel_scales,
-                                                        origin=self.geometry.origin)
+        recon = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=solution_vector, mask=np.full(fill_value=False, shape=self.shape), sub_grid_size=1)
+        return scaled_array.ScaledRectangularPixelArray(
+            array=recon, pixel_scales=self.geometry.pixel_scales, origin=self.geometry.origin)
 
 
 class VoronoiMapper(Mapper):

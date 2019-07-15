@@ -347,111 +347,115 @@ class TestSubGrid1DFromSubGrid2D(object):
             [[3,3], [4,4], [9,9], [10,10], [15,15], [16,16], [3,3], [4,4], [11,11], [12,12], [17,17], [18,18]])).all()
 
 
-class TestMapSubArray1dToSubArray2d(object):
+class TestSubArray2dFromSubArray1d(object):
 
-    def test__2d_array_is_2x2__is_not_masked__maps_correctly(self):
+    def test__simple_2d_array__is_masked_and_mapped__sub_grid_size_1(self):
 
         array_1d = np.array([1.0, 2.0, 3.0, 4.0])
 
-        one_to_two = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-        shape = (2, 2)
+        mask = np.full(fill_value=False, shape=(2,2))
 
-        array_2d = mapping_util.sub_array_2d_from_sub_array_1d_shape_and_sub_one_to_two(
-            sub_array_1d=array_1d, shape=shape, sub_one_to_two=one_to_two)
+        array_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=array_1d, mask=mask, sub_grid_size=1)
 
         assert (array_2d == np.array([[1.0, 2.0],
                                       [3.0, 4.0]])).all()
 
         array_1d = np.array([1.0, 2.0, 3.0])
 
-        one_to_two = np.array([[0, 0], [0, 1], [1, 0]])
-        shape = (2, 2)
+        mask = np.array([[False, False],
+                         [False, True]])
 
-        array_2d = mapping_util.sub_array_2d_from_sub_array_1d_shape_and_sub_one_to_two(
-            sub_array_1d=array_1d, shape=shape, sub_one_to_two=one_to_two)
+        array_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=array_1d, mask=mask, sub_grid_size=1)
 
         assert (array_2d == np.array([[1.0, 2.0],
                                       [3.0, 0.0]])).all()
 
         array_1d = np.array([1.0, 2.0, 3.0, -1.0, -2.0, -3.0])
 
-        one_to_two = np.array([[0, 0], [0, 1], [1, 0], [2, 0], [2, 1], [2, 3]])
-        shape = (3, 4)
+        mask = np.array([[False, False, True, True],
+                         [False, True, True, True],
+                         [False, False, True, False]])
 
-        array_2d = mapping_util.sub_array_2d_from_sub_array_1d_shape_and_sub_one_to_two(
-            sub_array_1d=array_1d, shape=shape, sub_one_to_two=one_to_two)
+        array_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=array_1d, mask=mask, sub_grid_size=1)
 
         assert (array_2d == np.array([[1.0, 2.0, 0.0, 0.0],
                                       [3.0, 0.0, 0.0, 0.0],
                                       [-1.0, -2.0, 0.0, -3.0]])).all()
 
+    def test__simple_2d_array__is_masked_and_mapped__sub_grid_size_2(self):
 
-class TestMapSubGrid1DToSubGrid2d(object):
+        array_1d = np.array([1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0])
 
-    def test__2d_grid_is_2x2__is_not_masked__maps_correctly(self):
-        
+        mask = np.array([[False, False],
+                         [False, True]])
+
+        array_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=array_1d, mask=mask, sub_grid_size=2)
+
+        assert (array_2d == np.array([[1.0, 1.0, 2.0, 2.0],
+                                      [1.0, 1.0, 2.0, 2.0],
+                                      [3.0, 3.0, 0.0, 0.0],
+                                      [3.0, 4.0, 0.0, 0.0]])).all()
+
+
+class TestSubGrid2DFromSubGrid1d(object):
+
+    def test__simple_2d_array__is_masked_and_mapped__sub_grid_size_1(self):
+
         grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-        one_to_two = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-        shape = (2, 2)
+        mask = np.full(fill_value=False, shape=(2,2))
 
-        grid_2d = mapping_util.sub_grid_2d_from_sub_grid_1d_shape_and_sub_one_to_two(
-            sub_grid_1d=grid_1d, shape=shape, sub_one_to_two=one_to_two)
+        grid_2d = mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+            sub_grid_1d=grid_1d, mask=mask, sub_grid_size=1)
 
         assert (grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0]],
                                      [[3.0, 3.0], [4.0, 4.0]]])).all()
 
-        grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 4.0]])
+        grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
 
-        one_to_two = np.array([[0, 0], [0, 1], [1, 0]])
-        shape = (2, 2)
+        mask = np.array([[False, False],
+                         [False, True]])
 
-        grid_2d = mapping_util.sub_grid_2d_from_sub_grid_1d_shape_and_sub_one_to_two(
-            sub_grid_1d=grid_1d, shape=shape, sub_one_to_two=one_to_two)
+        grid_2d = mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+            sub_grid_1d=grid_1d, mask=mask, sub_grid_size=1)
 
         assert (grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0]],
-                                      [[3.0, 4.0], [0.0, 0.0]]])).all()
+                                      [[3.0, 3.0], [0.0, 0.0]]])).all()
 
-        grid_1d = np.array([[1.0, -1.0], [2.0, -2.0], [3.0, -3.0], [-1.0, 1.0], [-2.0, 2.0], [-3.0, 3.0]])
+        grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [-1.0, -1.0], [-2.0, -2.0], [-3.0, -3.0]])
 
-        one_to_two = np.array([[0, 0], [0, 1], [1, 0], [2, 0], [2, 1], [2, 3]])
-        shape = (3, 4)
+        mask = np.array([[False, False, True, True],
+                         [False, True, True, True],
+                         [False, False, True, False]])
 
-        grid_2d = mapping_util.sub_grid_2d_from_sub_grid_1d_shape_and_sub_one_to_two(
-            sub_grid_1d=grid_1d, shape=shape, sub_one_to_two=one_to_two)
+        grid_2d = mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+            sub_grid_1d=grid_1d, mask=mask, sub_grid_size=1)
 
-        assert (grid_2d == np.array([[[1.0, -1.0], [2.0, -2.0], [0.0, 0.0], [0.0, 0.0]],
-                                      [[3.0, -3.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-                                      [[-1.0, 1.0], [-2.0, 2.0], [0.0, 0.0], [-3.0, 3.0]]])).all()
+        assert (grid_2d == np.array([[[1.0, 1.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]],
+                                      [[3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                                      [[-1.0, -1.0], [-2.0, -2.0], [0.0, 0.0], [-3.0, -3.0]]])).all()
+
+    def test__simple_2d_grid__is_masked_and_mapped__sub_grid_size_2(self):
+
+        grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0],
+                            [2.0, 2.0], [2.0, 2.0], [3.0, 3.0], [3.0, 3.0], [3.0, 3.0], [4.0, 4.0]])
+
+        mask = np.array([[False, False],
+                         [False, True]])
+
+        grid_2d = mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+            sub_grid_1d=grid_1d, mask=mask, sub_grid_size=2)
+
+        assert (grid_2d == np.array([[[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0]],
+                                      [[1.0, 1.0], [1.0, 1.0], [2.0, 2.0], [2.0, 2.0]],
+                                      [[3.0, 3.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0]],
+                                      [[3.0, 3.0], [4.0, 4.0], [0.0, 0.0], [0.0, 0.0]]])).all()
 
 
-class TestMapUnmasked1dArrayTo2d(object):
-
-    def test__1d_array_in__maps_it_to_4x4_2d_array(self):
-        array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0])
-        array_2d = mapping_util.array_2d_from_unmasked_array_1d_and_shape(array_1d, shape=(4, 4))
-
-        assert (array_2d == np.array([[1.0, 2.0, 3.0, 4.0],
-                                      [5.0, 6.0, 7.0, 8.0],
-                                      [9.0, 10.0, 11.0, 12.0],
-                                      [13.0, 14.0, 15.0, 16.0]])).all()
-
-    def test__1d_array_in__can_map_it_to_2x3_2d_array(self):
-        array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
-        array_2d = mapping_util.array_2d_from_unmasked_array_1d_and_shape(array_1d, shape=(2, 3))
-
-        assert (array_2d == np.array([[1.0, 2.0, 3.0],
-                                      [4.0, 5.0, 6.0]])).all()
-
-    def test__1d_array_in__can_map_it_to_3x2_2d_array(self):
-        array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
-        array_2d = mapping_util.array_2d_from_unmasked_array_1d_and_shape(array_1d, shape=(3, 2))
-
-        assert (array_2d == np.array([[1.0, 2.0],
-                                      [3.0, 4.0],
-                                      [5.0, 6.0]])).all()
-        
-        
 class TestSparseToUnmaskedSparse:
 
     def test__mask_full_false__image_mask_and_pixel_centres_fully_overlap__each_sparse_maps_to_unmaked_sparse(self):
