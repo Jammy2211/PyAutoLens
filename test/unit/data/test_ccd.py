@@ -1325,8 +1325,8 @@ class TestPSF(object):
 
             from autolens.model.profiles import light_profiles as lp
 
-            grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((3, 3), False),
-                                                                                      pixel_scales=(1.0, 1.0))
+            grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+                mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1)
 
             gaussian = lp.EllipticalGaussian(centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0)
             profile_gaussian_1d = gaussian.intensities_from_grid(grid)

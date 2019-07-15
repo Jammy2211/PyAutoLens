@@ -427,8 +427,8 @@ class PSF(ScaledSquarePixelArray):
         """Simulate the PSF as an elliptical Gaussian profile."""
         from autolens.model.profiles.light_profiles import EllipticalGaussian
         gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
-        grid_1d = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
-            mask=np.full(shape, False), pixel_scales=(pixel_scale, pixel_scale))
+        grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=np.full(shape, False), pixel_scales=(pixel_scale, pixel_scale), sub_grid_size=1)
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
         gaussian_2d = mapping_util.map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(
             array_1d=gaussian_1d, shape=shape)
@@ -446,9 +446,9 @@ class PSF(ScaledSquarePixelArray):
         gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=90.0 - theta, intensity=1.0,
                                       sigma=y_stddev)
 
-        grid_1d = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape, False),
-                                                                                     pixel_scales=(
-                                                                                         pixel_scale, pixel_scale))
+        grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=np.full(shape, False), pixel_scales=(pixel_scale, pixel_scale), sub_grid_size=1)
+
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
         gaussian_2d = mapping_util.map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(array_1d=gaussian_1d,
                                                                                              shape=shape)
