@@ -93,10 +93,10 @@ class TestMetaData(object):
                                       DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"))
         pipeline.run(MockCCDData(), data_name="data_name")
 
-        assert "phase_name///.metadata" in mock_files[1].filename
+        assert "phase_name///metadata" in mock_files[1].filename
         assert mock_files[1].text == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
 
-        assert "phase_name///.optimizer.pickle" in mock_files[2].filename
+        assert "phase_name///optimizer.pickle" in mock_files[2].filename
 
 
 class TestPassMask(object):

@@ -1,4 +1,7 @@
+import os
+
 import numpy as np
+import pytest
 
 from autolens.data import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
@@ -6,7 +9,6 @@ from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion.plotters import mapper_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from test.fixtures import *
 
 
 @pytest.fixture(name='mapper_plotter_path')
@@ -40,7 +42,8 @@ def make_galaxy_mass():
 
 @pytest.fixture(name='grid_stack')
 def make_grid_stack():
-    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                    sub_grid_size=2)
 
 
 @pytest.fixture(name='border')
