@@ -26,6 +26,7 @@ class VariableFixingHyperPhase(HyperPhase):
         self.variable_classes = variable_classes
 
     def make_hyper_phase(self):
+
         phase = super().make_hyper_phase()
 
         phase.const_efficiency_mode = af.conf.instance.non_linear.get(

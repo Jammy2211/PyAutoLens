@@ -527,7 +527,7 @@ def plot_mask(
     if mask is not None:
 
         plt.gca()
-        edge_pixels = mask.masked_grid_index_to_pixel[mask.edge_pixels] + 0.5
+        edge_pixels = mask.one_to_two[mask.edge_pixels] + 0.5
         if zoom_offset_pixels is not None:
             edge_pixels -= zoom_offset_pixels
         edge_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=edge_pixels)
@@ -556,7 +556,7 @@ def plot_border(
     if should_plot_border and mask is not None:
 
         plt.gca()
-        border_pixels = mask.masked_grid_index_to_pixel[mask.border_pixels]
+        border_pixels = mask.one_to_two[mask.border_pixels]
 
         if zoom_offset_pixels is not None:
             border_pixels -= zoom_offset_pixels

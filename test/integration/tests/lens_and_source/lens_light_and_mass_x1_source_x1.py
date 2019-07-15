@@ -28,9 +28,13 @@ def make_pipeline(test_name):
 
     phase1 = phase_imaging.LensSourcePlanePhase(
         phase_name='phase_1', phase_folders=[test_type, test_name],
-        lens_galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.SphericalDevVaucouleurs,
-                                               mass=mp.EllipticalIsothermal)),
-        source_galaxies=dict(source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)),
+        lens_galaxies=dict(lens=gm.GalaxyModel(
+            redshift=0.5,
+            light=lp.SphericalDevVaucouleurs,
+            mass=mp.EllipticalIsothermal)),
+        source_galaxies=dict(source=gm.GalaxyModel(
+            redshift=1.0,
+            light=lp.EllipticalSersic)),
         optimizer_class=af.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True

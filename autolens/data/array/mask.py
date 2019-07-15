@@ -222,11 +222,11 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return int(np.size(self) - np.sum(self))
 
     @property
-    def masked_grid_index_to_pixel(self):
+    def one_to_two(self):
         """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
-        return mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(self).astype('int')
+        return self.sub_one_to_two_from_sub_grid_size(sub_grid_size=1)
 
-    def masked_sub_grid_index_to_sub_pixel(self, sub_grid_size):
+    def sub_one_to_two_from_sub_grid_size(self, sub_grid_size):
         """A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates."""
         return mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
             self, sub_grid_size=sub_grid_size).astype('int')

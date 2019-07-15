@@ -40,7 +40,7 @@ def make_pipeline(test_name):
                 light=lp.EllipticalSersic)),
         optimizer_class=af.MultiNest)
     
- #   phase1 = phase1.extend_with_hyper_and_inversion_phases(hyper_galaxy=False)
+    phase1 = phase1.extend_with_hyper_and_inversion_phases(hyper_galaxy=True)
 
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
 
@@ -51,11 +51,11 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens = results.last. \
                 constant.lens_galaxies.lens
             
-            # self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy.\
-            #     constant.lens_galaxies.lens.hyper_galaxy
-            #
-            # self.source_galaxies.source.hyper_galaxy = results.last.hyper_galaxy.\
-            #     constant.source_galaxies.source.hyper_galaxy
+            self.lens_galaxies.lens.hyper_galaxy = results.last.combined. \
+                constant.lens_galaxies.lens.hyper_galaxy
+
+            self.source_galaxies.source.hyper_galaxy = results.last.combined.\
+                constant.source_galaxies.source.hyper_galaxy
 
     phase2 = InversionPhase(
         phase_name='phase_2', phase_folders=[test_type, test_name],
@@ -87,10 +87,10 @@ def make_pipeline(test_name):
             self.source_galaxies.source = results.last.inversion.\
                 constant.source_galaxies.source
 
-            self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy. \
+            self.lens_galaxies.lens.hyper_galaxy = results.last.combined. \
                 constant.lens_galaxies.lens.hyper_galaxy
 
-            self.source_galaxies.source.hyper_galaxy = results.last.hyper_galaxy. \
+            self.source_galaxies.source.hyper_galaxy = results.last.combined. \
                 constant.source_galaxies.source.hyper_galaxy
 
     phase3 = InversionPhase(
