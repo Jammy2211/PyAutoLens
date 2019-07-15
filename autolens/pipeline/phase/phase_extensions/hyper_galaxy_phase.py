@@ -218,6 +218,9 @@ class HyperGalaxyPhase(HyperPhase):
             results.last.hyper_galaxy_image_1d_path_dict_from_mask(mask=lens_data.mask_2d)
 
         hyper_result = copy.deepcopy(results.last)
+        hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
+            hyper_result.instance
+        )
         hyper_result.analysis.uses_hyper_images = True
         hyper_result.analysis.hyper_model_image_1d = model_image_1d
         hyper_result.analysis.hyper_galaxy_image_1d_path_dict = hyper_galaxy_image_1d_path_dict

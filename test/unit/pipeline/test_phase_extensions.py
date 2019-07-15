@@ -14,7 +14,6 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase import phase_imaging
-from test.simulation import simulation_util
 from test.unit.mock.pipeline import mock_pipeline
 
 
@@ -228,9 +227,9 @@ class TestVariableFixing(object):
             )
         )
 
-        phase.transfer_classes(
+        mapper = mapper.copy_with_fixed_priors(
             instance,
-            mapper
+            phase.variable_classes
         )
 
         assert mapper.prior_count == 3
