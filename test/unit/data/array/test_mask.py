@@ -121,14 +121,15 @@ class TestMaskShapes:
         assert mask.origin == (0.0, 0.0)
 
     def test__mask_circular__compare_to_array_util(self):
-        mask_util = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(5, 4), pixel_scale=2.7,
-                                                                         radius_arcsec=3.5, centre=(0.0, 0.0))
+
+        mask_util = util.mask_circular_from_shape_pixel_scale_and_radius(
+            shape=(5, 4), pixel_scale=2.7, radius_arcsec=3.5, centre=(0.0, 0.0))
 
         mask = msk.Mask.circular(shape=(5, 4), pixel_scale=2.7, radius_arcsec=3.5, centre=(0.0, 0.0))
 
         assert (mask == mask_util).all()
         assert mask.origin == (0.0, 0.0)
-        assert mask.centre == (0.0, 0.0)
+        assert mask.centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_circular__inverted__compare_to_array_util(self):
         mask_util = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(5, 4), pixel_scale=2.7,
@@ -153,7 +154,7 @@ class TestMaskShapes:
 
         assert (mask == mask_util).all()
         assert mask.origin == (0.0, 0.0)
-        assert mask.centre == (0.0, 0.0)
+        assert mask.centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_annulus_inverted__compare_to_array_util(self):
         mask_util = util.mask_circular_annular_from_shape_pixel_scale_and_radii(shape=(5, 4), pixel_scale=2.7,
@@ -213,7 +214,7 @@ class TestMaskShapes:
 
         assert (mask == mask_util).all()
         assert mask.origin == (0.0, 0.0)
-        assert mask.centre == (0.0, 0.0)
+        assert mask.centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_elliptical_inverted__compare_to_array_util(self):
         mask_util = util.mask_elliptical_from_shape_pixel_scale_and_radius(shape=(8, 5), pixel_scale=2.7,
@@ -248,7 +249,7 @@ class TestMaskShapes:
 
         assert (mask == mask_util).all()
         assert mask.origin == (0.0, 0.0)
-        assert mask.centre == (0.0, 0.0)
+        assert mask.centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_elliptical_annular_inverted__compare_to_array_util(self):
         mask_util = util.mask_elliptical_annular_from_shape_pixel_scale_and_radius(shape=(8, 5),
@@ -310,7 +311,7 @@ class TestMaskMappings:
                          [True, False, True],
                          [True, True, True]])
 
-        array_1d_util = mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(mask, array_2d)
+        array_1d_util = mapping_util.map_array_2d_to_array_1d_from_array_2d_and_mask(mask, array_2d)
 
         mask = msk.Mask(mask, pixel_scale=3.0)
 
@@ -327,7 +328,7 @@ class TestMaskMappings:
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
         one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
 
-        array_2d_util = mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
+        array_2d_util = mapping_util.map_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
             array_1d=array_1d, shape=(3, 4), one_to_two=one_to_two)
 
         mask = msk.Mask(array=mask, pixel_scale=3.0)
@@ -353,7 +354,7 @@ class TestMaskMappings:
         grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
         one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
 
-        grid_2d_util = mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
+        grid_2d_util = mapping_util.map_grid_1d_to_grid_2d_from_grid_1d_shape_and_one_to_two(
             grid_1d=grid_1d, shape=(3, 4), one_to_two=one_to_two)
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
@@ -370,7 +371,7 @@ class TestMaskMappings:
                          [False, False, False, True],
                          [True, False, True, False]])
 
-        grid_1d_util = mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(
+        grid_1d_util = mapping_util.map_grid_2d_to_grid_1d_from_grid_2d_and_mask(
             grid_2d=grid_2d, mask=mask)
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
@@ -584,7 +585,7 @@ class TestMaskMappings:
         sub_array_1d = mask.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
             sub_array_2d=sub_array_2d, sub_grid_size=2)
 
-        sub_array_1d_util = mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_1d_util = mapping_util.map_sub_array_2d_to_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
 
         assert (sub_array_1d == sub_array_1d_util).all()
@@ -697,11 +698,11 @@ class TestMaskedGrid1d:
                                                  [2., -1.5]])).all()
 
     def test__compare_to_grid_util(self):
+
         mask = msk.Mask.circular(shape=(4, 7), radius_arcsec=4.0, pixel_scale=2.0, centre=(1.0, 5.0))
 
-        masked_grid_1d_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask,
-                                                                                                 pixel_scales=(
-                                                                                                     2.0, 2.0))
+        masked_grid_1d_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=mask, pixel_scales=(2.0, 2.0), sub_grid_size=1)
 
         assert (mask.masked_grid_1d == masked_grid_1d_util).all()
 

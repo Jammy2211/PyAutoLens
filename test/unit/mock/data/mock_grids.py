@@ -11,8 +11,8 @@ class MockGrid(grids.Grid):
 
     def __new__(cls, mask, pixel_scale=1.0, *args, **kwargs):
 
-        regular_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
-            mask=mask, pixel_scales=(pixel_scale, pixel_scale))
+        regular_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=mask, pixel_scales=(pixel_scale, pixel_scale), sub_grid_size=1)
 
         obj = regular_grid.view(cls)
         obj.mask = mask
@@ -28,7 +28,7 @@ class MockGrid(grids.Grid):
 
     def __new__(cls, mask, pixel_scale=1.0, sub_grid_size=2, *args, **kwargs):
 
-        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        sub_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(pixel_scale, pixel_scale), sub_grid_size=sub_grid_size)
 
         obj = sub_grid.view(cls)
