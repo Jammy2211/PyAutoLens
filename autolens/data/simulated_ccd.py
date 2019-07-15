@@ -30,8 +30,8 @@ class SimulatedCCDData(ccd.CCDData):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid_1d = grids.RegularGrid.from_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        deflections_1d = grids.RegularGrid.from_unmasked_grid_2d(grid_2d=deflections)
+        grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=shape, pixel_scale=pixel_scale)
+        deflections_1d = grids.Grid.from_unmasked_grid_2d(grid_2d=deflections)
 
         deflected_grid_1d = grid_1d - deflections_1d
 

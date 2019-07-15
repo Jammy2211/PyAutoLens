@@ -385,13 +385,13 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         tan_critical_curve_indices = measure.find_contours(lambda_tan_2d, 0)
 
-        if type(grid) is grids.RegularGrid:
+        if type(grid) is grids.Grid:
             return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=tan_critical_curve_indices[0],
                                                               shape=lambda_tan_2d.shape,
                                                               pixel_scales=(
                                                                   grid.pixel_scale, grid.pixel_scale),
                                                               origin=(0.0, 0.0))
-        elif type(grid) is grids.SubGrid:
+        elif type(grid) is grids.Grid:
             return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=tan_critical_curve_indices[0], shape=lambda_tan_2d.shape,
                                                                         pixel_scales=(
                                                                         grid.pixel_scale / grid.sub_grid_size,
@@ -420,12 +420,12 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         ## reg grid unit test works with this fix, sub grid still doesn't like it
         ## may be an isuue with where the marching squares algorithm starts rathet than x, y flip
 
-        if type(grid) is grids.RegularGrid:
+        if type(grid) is grids.Grid:
             return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
                 grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_rad_2d.shape,
                 pixel_scales=(grid.pixel_scale, grid.pixel_scale), origin=(0.0, 0.0))
 
-        elif type(grid) is grids.SubGrid:
+        elif type(grid) is grids.Grid:
             return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
                 grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_rad_2d.shape,
                 pixel_scales=(grid.pixel_scale / grid.sub_grid_size, grid.pixel_scale / grid.sub_grid_size),
@@ -459,7 +459,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             contour_x, contour_y = contours[jj].T
             pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-            if type(grid) is grids.RegularGrid:
+            if type(grid) is grids.Grid:
 
                 critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
                     grid_pixels_1d=pixel_coord, shape=magnification_2d.shape,
@@ -467,7 +467,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
                 critical_curves.append(critical_curve)
 
-            elif type(grid) is grids.SubGrid:
+            elif type(grid) is grids.Grid:
                     critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
                         grid_pixels_1d=pixel_coord, shape=magnification_2d.shape,
                         pixel_scales=(grid.pixel_scale / grid.sub_grid_size,

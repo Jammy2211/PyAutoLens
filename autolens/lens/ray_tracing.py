@@ -203,7 +203,7 @@ class AbstractTracer(AbstractTracerCosmology):
 
         Parameters
         ----------
-        image_plane_grid : ndsrray or grids.RegularGrid
+        image_plane_grid : ndsrray or grids.Grid
             The image-plane grid which is traced to the redshift.
         redshift : float
             The redshift the image-plane grid is traced to.

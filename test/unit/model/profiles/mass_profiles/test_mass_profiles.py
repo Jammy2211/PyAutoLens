@@ -444,7 +444,7 @@ class TestDeflectionsViaPotential(object):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(10, 10), pixel_scale=0.05)
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(10, 10), pixel_scale=0.05)
 
         deflections_via_calculation = sis.deflections_from_grid(
             grid=grid, return_in_2d=False, return_binned_sub_grid=True)
@@ -460,7 +460,7 @@ class TestDeflectionsViaPotential(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(10, 10), pixel_scale=0.05)
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(10, 10), pixel_scale=0.05)
 
         deflections_via_calculation = sie.deflections_from_grid(
             grid=grid, return_in_2d=False, return_binned_sub_grid=True)
@@ -476,7 +476,7 @@ class TestDeflectionsViaPotential(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(10, 10), pixel_scale=0.05)
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(10, 10), pixel_scale=0.05)
 
         deflections_via_calculation = sie.deflections_from_grid(
             grid=grid, return_in_2d=False, return_binned_sub_grid=True)
@@ -492,7 +492,7 @@ class TestDeflectionsViaPotential(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.05, sub_grid_size=2)
 
         deflections_binned_reg_grid = sie.deflections_via_potential_from_grid(
@@ -522,7 +522,7 @@ class TestConvergenceViajacobian(object):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(20, 20), pixel_scale=0.05)
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(20, 20), pixel_scale=0.05)
 
         convergence_via_calculation = sis.convergence_from_grid(
             grid=grid, return_in_2d=True, return_binned_sub_grid=True)
@@ -550,7 +550,7 @@ class TestConvergenceViajacobian(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(20, 20), pixel_scale=0.05)
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(20, 20), pixel_scale=0.05)
 
         convergence_via_calculation = sie.convergence_from_grid(
             grid=grid, return_in_2d=True, return_binned_sub_grid=True)
@@ -566,7 +566,7 @@ class TestConvergenceViajacobian(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.05, sub_grid_size=2)
 
         convergence_binned_reg_grid = sie.convergence_from_jacobian(
@@ -606,7 +606,7 @@ class TestjacobianandMagnification(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(100, 100), pixel_scale=0.05)
 
         jacobian = sie.lensing_jacobian_from_grid(grid=grid, return_in_2d=False)
@@ -622,7 +622,7 @@ class TestjacobianandMagnification(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
         jacobian = sie.lensing_jacobian_from_grid(
@@ -639,7 +639,7 @@ class TestjacobianandMagnification(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(100, 100), pixel_scale=0.05)
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -661,7 +661,7 @@ class TestjacobianandMagnification(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(100, 100), pixel_scale=0.05)
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -685,7 +685,7 @@ class TestjacobianandMagnification(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -709,7 +709,7 @@ class TestjacobianandMagnification(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -731,7 +731,7 @@ class TestjacobianandMagnification(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.05, sub_grid_size=2)
 
         jacobian_binned_reg_grid = sie.lensing_jacobian_from_grid(
@@ -760,7 +760,7 @@ class TestjacobianandMagnification(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.05, sub_grid_size=2)
 
         shear_binned_reg_grid = sie.shear_from_jacobian(
@@ -786,7 +786,7 @@ class TestjacobianandMagnification(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.05, sub_grid_size=2)
 
         lambda_t_binned_reg_grid = sie.tangential_eigen_value_from_shear_and_convergence(
@@ -813,7 +813,7 @@ class TestjacobianandMagnification(object):
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
         lambda_r_binned_reg_grid = sie.radial_eigen_value_from_shear_and_convergence(
@@ -861,7 +861,7 @@ class TestCriticalCurvesandCaustics(object):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(20, 20), pixel_scale=0.25)
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(20, 20), pixel_scale=0.25)
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
 
@@ -875,7 +875,7 @@ class TestCriticalCurvesandCaustics(object):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.5, sub_grid_size=4)
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -894,7 +894,7 @@ class TestCriticalCurvesandCaustics(object):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.5, sub_grid_size=4)
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -909,7 +909,7 @@ class TestCriticalCurvesandCaustics(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.25)
 
         critical_curves_from_magnification = sie.critical_curves_from_grid(grid=grid)
@@ -922,7 +922,7 @@ class TestCriticalCurvesandCaustics(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.5, sub_grid_size=2)
 
         critical_curves_from_magnification = sie.critical_curves_from_grid(grid=grid)
@@ -963,7 +963,7 @@ class TestCriticalCurvesandCaustics(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
 
-        grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.25)
 
         caustics_from_magnification = sie.caustics_from_grid(grid=grid)
@@ -976,7 +976,7 @@ class TestCriticalCurvesandCaustics(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
 
-        grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.5, sub_grid_size=2)
 
         caustics_from_magnification = sie.caustics_from_grid(grid=grid)

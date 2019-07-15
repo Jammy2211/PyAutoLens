@@ -943,8 +943,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_convergence = mp0.convergence_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
-            mp1_sub_convergence = mp1.convergence_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
+            mp0_sub_convergence = mp0.convergence_from_grid(grid=grid_stack_7x7.sub.unlensed_grid_1d)
+            mp1_sub_convergence = mp1.convergence_from_grid(grid=grid_stack_7x7.sub.unlensed_grid_1d)
             
             mp_sub_convergence = mp0_sub_convergence + mp1_sub_convergence
 
@@ -1015,8 +1015,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_potential = mp0.potential_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
-            mp1_sub_potential = mp1.potential_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
+            mp0_sub_potential = mp0.potential_from_grid(grid=grid_stack_7x7.sub.unlensed_grid_1d)
+            mp1_sub_potential = mp1.potential_from_grid(grid=grid_stack_7x7.sub.unlensed_grid_1d)
 
             mp_sub_potential = mp0_sub_potential + mp1_sub_potential
 
@@ -1076,7 +1076,7 @@ class TestAbstractPlaneGridded(object):
         def test__deflections_from_plane__same_as_the_galaxy_mass_profiles(self, grid_stack_7x7):
 
             # Overwrite one value so intensity in each pixel is different
-            grid_stack_7x7.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
+            grid_stack_7x7.sub.unlensed_grid_1d[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
@@ -1084,8 +1084,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.deflections_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
-            mp1_sub_image = mp1.deflections_from_grid(grid=grid_stack_7x7.sub.unlensed_sub_grid)
+            mp0_sub_image = mp0.deflections_from_grid(grid=grid_stack_7x7.sub.unlensed_grid_1d)
+            mp1_sub_image = mp1.deflections_from_grid(grid=grid_stack_7x7.sub.unlensed_grid_1d)
 
             # Perform sub gridding average manually
             mp0_image_pixel_0x = (mp0_sub_image[0, 0] + mp0_sub_image[1, 0] +
@@ -1128,16 +1128,16 @@ class TestAbstractPlaneGridded(object):
         def test__deflections_same_as_its_galaxy___use_multiple_galaxies(self, grid_stack_7x7):
 
             # Overwrite one value so intensity in each pixel is different
-            grid_stack_7x7.sub.unlensed_sub_grid[5] = np.array([2.0, 2.0])
+            grid_stack_7x7.sub.unlensed_grid_1d[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
             g0_deflections = g0.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=False, return_binned_sub_grid=True)
 
             g1_deflections = g1.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=False, return_binned_sub_grid=True)
 
             plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack_7x7, compute_deflections=False,
                                             border=None, redshift=None)
@@ -1254,7 +1254,7 @@ class TestAbstractPlaneGridded(object):
 
             mask = msk.Mask(array=np.full((5, 5), False), pixel_scale=1.0)
 
-            grid_stack_7x7.regular = grids.RegularGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask)
+            grid_stack_7x7.regular = grids.Grid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask)
 
             g0 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
             plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack_7x7, compute_deflections=False,
