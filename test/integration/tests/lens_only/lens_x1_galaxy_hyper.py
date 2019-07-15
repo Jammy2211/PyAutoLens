@@ -3,9 +3,9 @@ import os
 import autofit as af
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline.phase import phase_imaging
-from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
+from autolens.pipeline import pipeline as pl
+from autolens.pipeline.phase import phase_imaging
 from test.integration import integration_util
 from test.simulation import simulation_util
 
@@ -19,14 +19,13 @@ af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_pa
 
 
 def pipeline():
-
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
     ccd_data = simulation_util.load_test_ccd_data(data_type='lens_only_bulge_and_disk', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
-def make_pipeline(test_name):
 
+def make_pipeline(test_name):
     phase1 = phase_imaging.LensPlanePhase(
         phase_name='phase_1', phase_folders=[test_type, test_name],
         lens_galaxies=dict(
@@ -44,11 +43,10 @@ def make_pipeline(test_name):
     class HyperLensPlanePhase(phase_imaging.LensPlanePhase):
 
         def pass_priors(self, results):
-
-            self.lens_galaxies = results.from_phase('phase_1').\
+            self.lens_galaxies = results.from_phase('phase_1'). \
                 variable.lens_galaxies
 
-            self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy.\
+            self.lens_galaxies.lens.hyper_galaxy = results.last.hyper_galaxy. \
                 constant.lens_galaxies.lens.hyper_galaxy
 
     phase2 = HyperLensPlanePhase(
