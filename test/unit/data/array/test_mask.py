@@ -294,13 +294,14 @@ class TestMaskMappings:
 
         mask = msk.Mask(mask, pixel_scale=7.0)
 
-        sub_grid_to_pixel_util = util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask=mask,
-                                                                                               sub_grid_size=2)
+        sub_grid_to_pixel_util = util.sub_one_to_two_from_mask_and_sub_grid_size(mask=mask,
+                                                                                 sub_grid_size=2)
 
         assert mask.masked_sub_grid_index_to_sub_pixel(sub_grid_size=2) == pytest.approx(sub_grid_to_pixel_util,
                                                                                          1e-4)
 
     def test__array_1d_from_array_2d__compare_to_array_util(self):
+
         array_2d = np.array([[1, 2, 3],
                              [4, 5, 6],
                              [7, 8, 9],
@@ -311,7 +312,8 @@ class TestMaskMappings:
                          [True, False, True],
                          [True, True, True]])
 
-        array_1d_util = mapping_util.map_array_2d_to_array_1d_from_array_2d_and_mask(mask, array_2d)
+        array_1d_util = mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+            mask=mask, sub_array_2d=array_2d, sub_grid_size=1)
 
         mask = msk.Mask(mask, pixel_scale=3.0)
 
@@ -328,8 +330,8 @@ class TestMaskMappings:
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
         one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
 
-        array_2d_util = mapping_util.map_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
-            array_1d=array_1d, shape=(3, 4), one_to_two=one_to_two)
+        array_2d_util = mapping_util.sub_array_2d_from_sub_array_1d_shape_and_sub_one_to_two(
+            sub_array_1d=array_1d, shape=(3, 4), sub_one_to_two=one_to_two)
 
         mask = msk.Mask(array=mask, pixel_scale=3.0)
 
@@ -354,8 +356,8 @@ class TestMaskMappings:
         grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
         one_to_two = np.array([[0, 2], [0, 3], [1, 1], [2, 2], [2, 3]])
 
-        grid_2d_util = mapping_util.map_grid_1d_to_grid_2d_from_grid_1d_shape_and_one_to_two(
-            grid_1d=grid_1d, shape=(3, 4), one_to_two=one_to_two)
+        grid_2d_util = mapping_util.sub_grid_2d_from_sub_grid_1d_shape_and_sub_one_to_two(
+            sub_grid_1d=grid_1d, shape=(3, 4), sub_one_to_two=one_to_two)
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
         grid_2d = mask.grid_2d_from_grid_1d(grid_1d=grid_1d)
@@ -363,6 +365,7 @@ class TestMaskMappings:
         assert (grid_2d_util == grid_2d).all()
 
     def test___grid_1d_from_grid_2d__compare_to_util(self):
+
         grid_2d = np.array([[[1, 1], [2, 2], [3, 3], [4, 4]],
                             [[5, 5], [6, 6], [7, 7], [8, 8]],
                             [[9, 9], [10, 10], [11, 11], [12, 12]]])
@@ -371,8 +374,8 @@ class TestMaskMappings:
                          [False, False, False, True],
                          [True, False, True, False]])
 
-        grid_1d_util = mapping_util.map_grid_2d_to_grid_1d_from_grid_2d_and_mask(
-            grid_2d=grid_2d, mask=mask)
+        grid_1d_util = mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
+            sub_grid_2d=grid_2d, mask=mask, sub_grid_size=1)
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
         grid_1d = mask.grid_1d_from_grid_2d(grid_2d=grid_2d)
@@ -585,7 +588,7 @@ class TestMaskMappings:
         sub_array_1d = mask.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
             sub_array_2d=sub_array_2d, sub_grid_size=2)
 
-        sub_array_1d_util = mapping_util.map_sub_array_2d_to_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_1d_util = mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2)
 
         assert (sub_array_1d == sub_array_1d_util).all()

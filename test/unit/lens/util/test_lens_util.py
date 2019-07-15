@@ -24,7 +24,7 @@ class TestPlaneImageFromGrid:
              [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
              [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
 
-        plane_image_galaxy = mapping_util.map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.array_2d_from_unmasked_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,3))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -44,7 +44,7 @@ class TestPlaneImageFromGrid:
              [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
              [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
 
-        plane_image_galaxy = mapping_util.map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.array_2d_from_unmasked_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,3))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -63,7 +63,7 @@ class TestPlaneImageFromGrid:
             [[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
              [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
 
-        plane_image_galaxy = mapping_util.map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.array_2d_from_unmasked_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(2,3))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -83,7 +83,7 @@ class TestPlaneImageFromGrid:
              [0.0, -0.75], [0.0, 0.75],
              [1.0, -0.75], [1.0, 0.75]]))
 
-        plane_image_galaxy = mapping_util.map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.array_2d_from_unmasked_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,2))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -103,7 +103,7 @@ class TestPlaneImageFromGrid:
              [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
              [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
 
-        plane_image_galaxy = mapping_util.map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.array_2d_from_unmasked_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,3))
 
         assert (plane_image == plane_image_galaxy).all()
