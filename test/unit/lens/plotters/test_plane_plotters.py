@@ -1,5 +1,6 @@
 from autolens.lens.plotters import plane_plotters
-from test.fixtures import *
+import pytest
+import os
 
 
 @pytest.fixture(name='plane_plotter_path')

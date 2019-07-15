@@ -1,9 +1,8 @@
-import numpy as np
+import os
 
-from autolens.data import ccd
-from autolens.data.array import mask as msk, scaled_array
+import pytest
+
 from autolens.data.plotters import data_plotters
-from test.fixtures import *
 
 
 @pytest.fixture(name='data_plotter_path')
@@ -11,14 +10,14 @@ def make_data_plotter_setup():
     data_plotter_path = "{}/../../test_files/plotting/data/".format(os.path.dirname(os.path.realpath(__file__)))
     return data_plotter_path
 
+
 def test__all_data_types_are_output(
         image_7x7, noise_map_7x7, psf_3x3, positions_7x7, mask_7x7, data_plotter_path, plot_patch):
-    
     data_plotters.plot_image(
         image=image_7x7, positions=positions_7x7, mask=mask_7x7, extract_array_from_mask=True,
         zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
         output_path=data_plotter_path, output_format='png')
-    
+
     assert data_plotter_path + 'image.png' in plot_patch.paths
 
     data_plotters.plot_noise_map(
@@ -48,7 +47,7 @@ def test__all_data_types_are_output(
         output_path=data_plotter_path, output_format='png')
 
     assert data_plotter_path + 'absolute_signal_to_noise_map.png' in plot_patch.paths
-    
+
     data_plotters.plot_potential_chi_squared_map(
         potential_chi_squared_map=image_7x7 / noise_map_7x7, mask=mask_7x7,
         extract_array_from_mask=True, zoom_around_mask=True,

@@ -1,5 +1,6 @@
 from autolens.lens.plotters import lens_fit_plotters
-from test.fixtures import *
+import pytest
+import os
 
 
 @pytest.fixture(name='lens_fit_plotter_path')
