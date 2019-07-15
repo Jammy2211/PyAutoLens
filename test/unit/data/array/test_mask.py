@@ -492,6 +492,26 @@ class TestMaskMappings:
             [[[2.5, 3.0], [0.0, 0.0]],
             [[10.5, 10.5], [14.5, 14.5]]])).all()
 
+    def test__sub_grid_1d_with_sub_dimensions_from_sub_grid_2d__use_real_mask_and_grid(self):
+
+        mask = np.array([[False, True],
+                         [False, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_grid_2d = np.array([[[1.0, 1.0], [2.0, 2.0], [-1.0, -1.0], [-1.0, -1.0]],
+                                [[3.0, 3.0], [4.0, 4.0], [-1.0, -1.0], [-1.0, -1.0]],
+                                [[5.0, 5.0], [6.0, 6.0], [ 9.0,  9.0], [10.0, 10.0]],
+                                [[7.0, 7.0], [8.0, 8.0], [11.0, 11.0], [12.0, 12.0]]])
+
+        sub_grid_1d = mask.sub_grid_1d_with_sub_dimensions_from_sub_grid_2d_and_sub_grid_size(
+            sub_grid_2d=sub_grid_2d, sub_grid_size=2)
+
+        assert (sub_grid_1d == np.array(
+            [[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+             [5.0, 5.0], [6.0, 6.0], [7.0, 7.0], [8.0, 8.0],
+             [9.0, 9.0], [10.0, 10.0], [11.0, 11.0], [12.0, 12.0]])).all()
+
     def test__sub_grid_2d_with_sub_dimensions_from_sub_grid_1d__use_real_mask_and_grid(self):
 
         mask = np.array([[False, True],
@@ -542,7 +562,7 @@ class TestMaskMappings:
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
 
-        sub_array_1d = mask.sub_array_1d_from_sub_array_2d_and_sub_grid_size(
+        sub_array_1d = mask.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
             sub_array_2d=sub_array_2d, sub_grid_size=2)
 
         assert (sub_array_1d == np.array([1.0, 1.0, 1.0, 1.0,
@@ -561,7 +581,7 @@ class TestMaskMappings:
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
 
-        sub_array_1d = mask.sub_array_1d_from_sub_array_2d_and_sub_grid_size(
+        sub_array_1d = mask.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
             sub_array_2d=sub_array_2d, sub_grid_size=2)
 
         sub_array_1d_util = mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
@@ -583,7 +603,7 @@ class TestMaskMappings:
         sub_array_2d = mask.sub_array_2d_from_sub_array_1d_and_sub_grid_size(
             sub_array_1d=sub_array_1d, sub_grid_size=2)
 
-        sub_array_1d_new = mask.sub_array_1d_from_sub_array_2d_and_sub_grid_size(
+        sub_array_1d_new = mask.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
             sub_array_2d=sub_array_2d, sub_grid_size=2)
 
         assert (sub_array_1d == sub_array_1d_new).all()

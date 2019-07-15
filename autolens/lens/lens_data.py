@@ -3,6 +3,7 @@ from autolens.data.array import mask as msk
 from autolens.data.convolution import ConvolverImage
 from autolens.model.inversion import convolution as inversion_convolution
 
+from autolens.data.array.grids import reshape_returned_regular_array
 
 class LensData(object):
 
@@ -66,6 +67,9 @@ class LensData(object):
         self.image_1d = mask.array_1d_from_array_2d(array_2d=ccd_data.image)
         self.noise_map_1d = mask.array_1d_from_array_2d(
             array_2d=ccd_data.noise_map)
+        self.signal_to_noise_map_1d = self.image_1d / self.noise_map_1d
+
+        self.mask_2d = mask
 
         self.sub_grid_size = sub_grid_size
 
@@ -110,10 +114,6 @@ class LensData(object):
         self.border = grids.RegularGridBorder.from_mask(mask=mask)
 
         self.positions = positions
-
-        self.mask_2d = mask
-        self.image_2d = self.scaled_array_2d_from_array_1d(array_1d=self.image_1d)
-        self.noise_map_2d = self.scaled_array_2d_from_array_1d(array_1d=self.noise_map_1d)
 
         self.uses_cluster_inversion = uses_cluster_inversion
 
@@ -186,19 +186,36 @@ class LensData(object):
     def scaled_array_2d_from_array_1d(self):
         return self.grid_stack.scaled_array_2d_from_array_1d
 
+    def mask(self, return_in_2d=True):
+        if return_in_2d:
+            return self.mask_2d
+        else:
+            return self.mask_1d
+
+    @reshape_returned_regular_array
+    def image(self, return_in_2d=True):
+        return self.image_1d
+
+    @reshape_returned_regular_array
+    def noise_map(self, return_in_2d=True):
+        return self.noise_map_1d
+
+    @reshape_returned_regular_array
+    def signal_to_noise_map(self, return_in_2d=True):
+        return self.signal_to_noise_map_1d
+
     def __array_finalize__(self, obj):
         if isinstance(obj, LensData):
             self.ccd_data = obj.ccd_data
             self.unmasked_image = obj.unmasked_image
             self.unmasked_noise_map = obj.unmasked_noise_map
             self.mask_2d = obj.mask_2d
-            self.image_2d = obj.image_2d
-            self.noise_map_2d = obj.noise_map_2d
+            self.mask_1d = obj.mask_1d
             self.psf = obj.psf
             self.mask_1d = obj.mask_1d
             self.image_1d = obj.image_1d
             self.noise_map_1d = obj.noise_map_1d
-            self.mask_1d = obj.mask_1d
+            self.signal_to_noise_map_1d = obj.signal_to_noise_map_1d
             self.sub_grid_size = obj.sub_grid_size
             self.convolver_image = obj.convolver_image
             self.uses_inversion = obj.uses_inversion

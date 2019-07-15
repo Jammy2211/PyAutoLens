@@ -23,8 +23,10 @@ def plot_image(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
+    image = fit.image(return_in_2d=True)
+
     array_plotters.plot_array(
-        array=fit.image_2d, grid=grid, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=image, grid=grid, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -54,8 +56,11 @@ def plot_noise_map(
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
+
+    noise_map = fit.noise_map(return_in_2d=True)
+
     array_plotters.plot_array(
-        array=fit.noise_map_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=noise_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -85,8 +90,11 @@ def plot_signal_to_noise_map(
     plot_origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
+
+    signal_to_noise_map = fit.signal_to_noise_map(return_in_2d=True)
+
     array_plotters.plot_array(
-        array=fit.signal_to_noise_map_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=signal_to_noise_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -120,8 +128,10 @@ def plot_model_data(
 
     centres = get_mass_profile_centes(plot_mass_profile_centres=plot_mass_profile_centres, fit=fit)
 
+    model_image = fit.model_image(return_in_2d=True)
+
     array_plotters.plot_array(
-        array=fit.model_image_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=model_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions, centres=centres, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -150,8 +160,11 @@ def plot_residual_map(
     image_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
+
+    residual_map = fit.residual_map(return_in_2d=True)
+
     array_plotters.plot_array(
-        array=fit.residual_map_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=residual_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -180,8 +193,11 @@ def plot_normalized_residual_map(
     image_index : int
         The index of the datas in the datas-set of which the normalized_residual_map are plotted.
     """
+
+    normalized_residual_map = fit.normalized_residual_map(return_in_2d=True)
+
     array_plotters.plot_array(
-        array=fit.normalized_residual_map_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=normalized_residual_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -210,8 +226,11 @@ def plot_chi_squared_map(
     image_index : int
         The index of the datas in the datas-set of which the chi-squareds are plotted.
     """
+
+    chi_squared_map = fit.chi_squared_map(return_in_2d=True)
+
     array_plotters.plot_array(
-        array=fit.chi_squared_map_2d, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=chi_squared_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -251,11 +270,11 @@ def plot_subtracted_image_of_plane(
         other_planes_model_images_2d = \
             [model_image_2d for i, model_image_2d in enumerate(fit.model_image_2d_of_planes) if i != plane_index]
 
-        subtracted_image = fit.image_2d - sum(other_planes_model_images_2d)
+        subtracted_image = fit.image(return_in_2d=True) - sum(other_planes_model_images_2d)
 
     else:
 
-        subtracted_image = fit.image_2d
+        subtracted_image = fit.image(return_in_2d=True)
 
     array_plotters.plot_array(
         array=subtracted_image, mask=mask, extract_array_from_mask=extract_array_from_mask, grid=image_plane_pix_grid,
@@ -359,7 +378,7 @@ def get_mask(fit, should_plot_mask):
         If *True*, the masks is plotted on the fit's datas.
     """
     if should_plot_mask:
-        return fit.mask_2d
+        return fit.mask(return_in_2d=True)
     else:
         return None
 

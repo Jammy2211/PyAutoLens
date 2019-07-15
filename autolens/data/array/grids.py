@@ -60,7 +60,7 @@ def sub_to_image_grid(func):
     return wrapper
 
 
-def check_input_grid_and_options_are_compatible(grid, return_in_2d, return_binned_sub_grid):
+def check_input_grid_and_options_are_compatible(grid):
 
     if not isinstance(grid, RegularGrid):
         raise exc.GridException(
@@ -69,10 +69,66 @@ def check_input_grid_and_options_are_compatible(grid, return_in_2d, return_binne
             'input grid a RegularGrid.')
 
 
+def reshape_returned_regular_array(func):
+
+    @wraps(func)
+    def wrapper(object, grid=None, *args, **kwargs):
+        """
+
+        This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
+        (e.g. intensities, convergences, potentials). Depending on the input variables, it determines whether the
+        returned array is reshaped to 2D from 1D and if a sub-grid is input, it can bin the sub-gridded values to
+        regular gridded values.
+
+        Parameters
+        ----------
+        object : autolens.model.geometry_profiles.Profile
+            The profiles that owns the function
+        grid : ndarray or RegularGrid or SubGrid
+            (y,x) in either cartesian or profiles coordinate system
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned_sub_grid : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
+
+        Returns
+        -------
+            An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
+        """
+
+        return_in_2d = kwargs['return_in_2d'] if 'return_in_2d' in kwargs else False
+
+        if grid is None:
+            result_1d = func(object)
+            grid = object.grid_stack.regular
+        else:
+            result_1d = func(object, grid)
+
+        if not return_in_2d:
+            return result_1d
+
+        check_input_grid_and_options_are_compatible(
+            grid=grid)
+
+        if type(grid) is RegularGrid:
+
+            if not return_in_2d:
+
+                return result_1d
+
+            elif return_in_2d and type(RegularGrid):
+
+                return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
+
+    return wrapper
+
+
 def reshape_returned_array(func):
 
     @wraps(func)
-    def wrapper(profile, grid=None, galaxy=None, *args, **kwargs):
+    def wrapper(object, grid=None, *args, **kwargs):
         """
         
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -82,7 +138,7 @@ def reshape_returned_array(func):
 
         Parameters
         ----------
-        profile : autolens.model.geometry_profiles.Profile
+        object : autolens.model.geometry_profiles.Profile
             The profiles that owns the function
         grid : ndarray or RegularGrid or SubGrid
             (y,x) in either cartesian or profiles coordinate system
@@ -102,16 +158,24 @@ def reshape_returned_array(func):
         return_binned_sub_grid = kwargs['return_binned_sub_grid'] if 'return_binned_sub_grid' in kwargs else False
 
         if grid is None:
-            result_1d = func(profile)
-            grid = profile.grid_stack.sub
+            result = func(object)
+            grid = object.grid_stack.sub
         else:
-            result_1d = func(profile, grid)
+            result = func(object, grid)
+
+        if len(result.shape) == 2:
+            if type(grid) == RegularGrid:
+                result_1d = grid.array_1d_from_array_2d(array_2d=result)
+            elif type(grid) == SubGrid:
+                result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
+        else:
+            result_1d = result
 
         if not return_in_2d and not return_binned_sub_grid:
             return result_1d
 
         check_input_grid_and_options_are_compatible(
-            grid=grid, return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
+            grid=grid)
 
         if type(grid) is RegularGrid:
 
@@ -147,7 +211,7 @@ def reshape_returned_array(func):
 def reshape_returned_array_blurring(func):
 
     @wraps(func)
-    def wrapper(profile, grid=None, galaxy=None, *args, **kwargs):
+    def wrapper(object, grid=None, *args, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -157,7 +221,7 @@ def reshape_returned_array_blurring(func):
 
         Parameters
         ----------
-        profile : autolens.model.geometry_profiles.Profile
+        object : autolens.model.geometry_profiles.Profile
             The profiles that owns the function
         grid : ndarray or RegularGrid or SubGrid
             (y,x) in either cartesian or profiles coordinate system
@@ -176,16 +240,24 @@ def reshape_returned_array_blurring(func):
         return_in_2d = kwargs['return_in_2d'] if 'return_in_2d' in kwargs else False
 
         if grid is None:
-            result_1d = func(profile)
-            grid = profile.grid_stack.blurring
+            result = func(object)
+            grid = object.grid_stack.blurring
         else:
-            result_1d = func(profile, grid)
+            result = func(object, grid)
+
+        if len(result.shape) == 2:
+            if type(grid) == RegularGrid:
+                result_1d = grid.array_1d_from_array_2d(array_2d=result)
+            elif type(grid) == SubGrid:
+                result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
+        else:
+            result_1d = result
 
         if not return_in_2d:
             return result_1d
 
         check_input_grid_and_options_are_compatible(
-            grid=grid, return_in_2d=return_in_2d, return_binned_sub_grid=False)
+            grid=grid)
 
         if type(grid) is RegularGrid:
 
@@ -203,7 +275,7 @@ def reshape_returned_array_blurring(func):
 def reshape_returned_grid(func):
 
     @wraps(func)
-    def wrapper(profile, grid=None, galaxy=None, *args, **kwargs):
+    def wrapper(object, grid=None, *args, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 2D grids of physical quantities \
@@ -213,7 +285,7 @@ def reshape_returned_grid(func):
 
         Parameters
         ----------
-        profile : autolens.model.geometry_profiles.Profile
+        object : autolens.model.geometry_profiles.Profile
             The profiles that owns the function
         grid : ndgrid or RegularGrid or SubGrid
             (y,x) in either cartesian or profiles coordinate system
@@ -227,16 +299,24 @@ def reshape_returned_grid(func):
         return_binned_sub_grid = kwargs['return_binned_sub_grid'] if 'return_binned_sub_grid' in kwargs else False
 
         if grid is None:
-            result_1d = func(profile)
-            grid = profile.grid_stack.sub
+            result = func(object)
+            grid = object.grid_stack.sub
         else:
-            result_1d = func(profile, grid)
+            result = func(object, grid)
+
+        if len(result.shape) == 3:
+            if type(grid) == RegularGrid:
+                result_1d = grid.grid_1d_from_grid_2d(grid_2d=result)
+            elif type(grid) == SubGrid:
+                result_1d = grid.sub_grid_1d_with_sub_dimensions_from_sub_grid_2d(sub_grid_2d=result)
+        else:
+            result_1d = result
 
         if not return_in_2d and not return_binned_sub_grid:
             return result_1d
 
         check_input_grid_and_options_are_compatible(
-            grid=grid, return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
+            grid=grid)
 
         if type(grid) is RegularGrid:
 
@@ -546,7 +626,7 @@ class RegularGrid(np.ndarray):
             self[:, 1])
 
     @property
-    def unlensed_grid(self):
+    def unlensed_grid_1d(self):
         return RegularGrid(
             arr=grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
                 mask=self.mask,
@@ -554,12 +634,16 @@ class RegularGrid(np.ndarray):
             mask=self.mask)
 
     @property
-    def unlensed_unmasked_grid(self):
+    def unlensed_unmasked_grid_1d(self):
         return RegularGrid(
             arr=grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(
                 shape=self.mask.shape,
                 pixel_scales=self.mask.pixel_scales),
             mask=self.mask)
+
+    @property
+    def in_2d(self):
+        return self.mask.grid_2d_from_grid_1d(grid_1d=self)
 
     @classmethod
     def from_mask(cls, mask):
@@ -676,7 +760,13 @@ class RegularGrid(np.ndarray):
         padded_mask = msk.Mask.unmasked_for_shape_and_pixel_scale(
             shape=padded_shape, pixel_scale=self.mask.pixel_scale)
 
-        return RegularGrid.from_mask(mask=padded_mask)
+        padded_regular_grid = RegularGrid.from_mask(mask=padded_mask)
+
+        if self.interpolator is None:
+            return padded_regular_grid
+        else:
+            return padded_regular_grid.new_grid_with_interpolator(
+                interp_pixel_scale=self.interpolator.interp_pixel_scale)
 
     def trimmed_array_2d_from_padded_array_1d_and_image_shape(self, padded_array_1d, image_shape):
         """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
@@ -972,6 +1062,11 @@ class SubGrid(RegularGrid):
             grid_2d=grid_2d, mask=mask)
         return SubGrid(grid_1d, mask=mask, sub_grid_size=1)
 
+    @property
+    def in_2d(self):
+        return self.mask.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d_and_sub_grid_size(
+            sub_grid_1d=self, sub_grid_size=self.sub_grid_size)
+
     def padded_grid_from_psf_shape(self, psf_shape):
 
         shape = self.mask.shape
@@ -981,8 +1076,14 @@ class SubGrid(RegularGrid):
         padded_mask = msk.Mask.unmasked_for_shape_and_pixel_scale(
             shape=padded_shape, pixel_scale=self.mask.pixel_scale)
 
-        return SubGrid.from_mask_and_sub_grid_size(
+        padded_sub_grid = SubGrid.from_mask_and_sub_grid_size(
             mask=padded_mask, sub_grid_size=self.sub_grid_size)
+
+        if self.interpolator is None:
+            return padded_sub_grid
+        else:
+            return padded_sub_grid.new_grid_with_interpolator(
+                interp_pixel_scale=self.interpolator.interp_pixel_scale)
 
     def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
@@ -1043,7 +1144,7 @@ class SubGrid(RegularGrid):
         su_array_2d : ndarray
             The 2D sub-array which is mapped to its masked 1D sub-array.
         """
-        return self.mask.sub_array_1d_from_sub_array_2d_and_sub_grid_size(
+        return self.mask.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
             sub_array_2d=sub_array_2d, sub_grid_size=self.sub_grid_size)
 
     def grid_1d_binned_from_sub_grid_1d(self, sub_grid_1d):
@@ -1069,6 +1170,19 @@ class SubGrid(RegularGrid):
         """
         return self.mask.grid_2d_binned_from_sub_grid_1d_and_sub_grid_size(
             sub_grid_1d=sub_grid_1d, sub_grid_size=self.sub_grid_size)
+
+    def sub_grid_1d_with_sub_dimensions_from_sub_grid_2d(self, sub_grid_2d):
+        """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
+        values and dividing by the total number of sub-pixels.
+
+        Parameters
+        -----------
+        sub_grid_2d : ndarray
+            A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
+            a 1d regular array.
+        """
+        return self.mask.sub_grid_1d_with_sub_dimensions_from_sub_grid_2d_and_sub_grid_size(
+            sub_grid_2d=sub_grid_2d, sub_grid_size=self.sub_grid_size)
 
     def sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(self, sub_grid_1d):
         """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
@@ -1458,9 +1572,10 @@ class RegularGridBorder(np.ndarray):
 
 class Interpolator(object):
 
-    def __init__(self, grid, interp_grid):
+    def __init__(self, grid, interp_grid, interp_pixel_scale):
         self.grid = grid
         self.interp_grid = interp_grid
+        self.interp_pixel_scale = interp_pixel_scale
         self.vtx, self.wts = self.interp_weights
 
     @property
@@ -1489,7 +1604,7 @@ class Interpolator(object):
                 interp_pixel_scale,
                 interp_pixel_scale),
             origin=mask.origin)
-        return Interpolator(grid=grid, interp_grid=interp_grid)
+        return Interpolator(grid=grid, interp_grid=interp_grid, interp_pixel_scale=interp_pixel_scale)
 
     def interpolated_values_from_values(self, values):
         return np.einsum('nj,nj->n', np.take(values, self.vtx), self.wts)
