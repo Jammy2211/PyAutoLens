@@ -71,13 +71,13 @@ class CombinedHyperPhase(HyperPhase):
         result = self.phase.run(data, results=results, **kwargs)
         results.add(self.phase.phase_name, result)
 
-        for hyper_phase in self.hyper_phases:
-            hyper_result = hyper_phase.run_hyper(
+        for phase in self.hyper_phases:
+            hyper_result = phase.run_hyper(
                 data=data,
                 results=results,
                 **kwargs
             )
-            setattr(result, hyper_phase.hyper_name, hyper_result)
+            setattr(result, phase.hyper_name, hyper_result)
 
         setattr(
             result,

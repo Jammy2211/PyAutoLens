@@ -52,8 +52,10 @@ class VariableFixingHyperPhase(HyperPhase):
         only fit pixelization hyperparameters.
         """
 
-        variable = copy.deepcopy(results.last.variable)
-        self.transfer_classes(results.last.constant, variable)
+        variable = results.last.variable.copy_with_fixed_priors(
+            results.last.constant,
+            self.variable_classes
+        )
         self.add_defaults(variable)
 
         phase = self.make_hyper_phase()
@@ -77,39 +79,6 @@ class VariableFixingHyperPhase(HyperPhase):
         for key, value in self.default_classes.items():
             if not hasattr(variable, key):
                 setattr(variable, key, value)
-
-    def transfer_classes(self, instance, mapper):
-        """
-        Recursively overwrite priors in the mapper with constant values from the
-        instance except where the containing class is the descendant of a listed class.
-
-        Parameters
-        ----------
-        instance
-            The best fit from the previous phase
-        mapper
-            The prior variable from the previous phase
-        """
-        for key, instance_value in instance.__dict__.items():
-            try:
-                mapper_value = getattr(mapper, key)
-                if isinstance(mapper_value, af.Prior):
-                    setattr(mapper, key, instance_value)
-                if not any(
-                        isinstance(
-                            instance_value,
-                            cls
-                        )
-                        for cls in self.variable_classes
-                ):
-                    try:
-                        self.transfer_classes(
-                            instance_value,
-                            mapper_value)
-                    except AttributeError:
-                        setattr(mapper, key, instance_value)
-            except AttributeError:
-                pass
 
 
 class InversionPhase(VariableFixingHyperPhase):
