@@ -6,7 +6,6 @@ from autolens.data.array import mask as msk
 from autolens.data.array.util import binning_util
 from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
-from autolens.model.inversion import pixelizations as pix
 
 
 def default_mask_function(image):
@@ -169,7 +168,7 @@ class AbstractPhase(af.AbstractPhase):
             hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
                 instance=self.constant)
 
-            hyper_noise_background= self.analysis.hyper_noise_background_for_instance(
+            hyper_noise_background = self.analysis.hyper_noise_background_for_instance(
                 instance=self.constant)
 
             return self.analysis.fit_for_tracer(
@@ -235,7 +234,6 @@ class AbstractPhase(af.AbstractPhase):
             image_1d_dict = {}
 
             for galaxy, galaxy_image_2d in self.image_2d_dict.items():
-
                 image_1d_dict[galaxy] = mask.array_1d_from_array_2d(array_2d=galaxy_image_2d)
 
             return image_1d_dict
@@ -257,7 +255,6 @@ class AbstractPhase(af.AbstractPhase):
                 galaxy_image_1d = image_galaxy_1d_dict[path]
 
                 if not np.all(galaxy_image_1d == 0):
-
                     minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
                     galaxy_image_1d[galaxy_image_1d < minimum_galaxy_value] = minimum_galaxy_value
 
@@ -275,7 +272,6 @@ class AbstractPhase(af.AbstractPhase):
             hyper_galaxy_image_2d_path_dict = {}
 
             for path, galaxy in self.path_galaxy_tuples:
-
                 hyper_galaxy_image_2d_path_dict[path] = \
                     mask.scaled_array_2d_from_array_1d(array_1d=hyper_galaxy_image_1d_path_dict[path])
 
@@ -289,7 +285,6 @@ class AbstractPhase(af.AbstractPhase):
             cluster_image_1d_dict = {}
 
             for galaxy, galaxy_image_2d in self.image_2d_dict.items():
-
                 cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                     array_2d=galaxy_image_2d, bin_up_factor=cluster.bin_up_factor)
 
@@ -313,11 +308,11 @@ class AbstractPhase(af.AbstractPhase):
                 hyper_galaxy_cluster_image_path_dict = {}
 
                 for path, galaxy in self.path_galaxy_tuples:
-
                     galaxy_cluster_image_1d = cluster_image_1d_galaxy_dict[path]
 
                     minimum_cluster_value = hyper_minimum_percent * max(galaxy_cluster_image_1d)
-                    galaxy_cluster_image_1d[galaxy_cluster_image_1d < minimum_cluster_value] = minimum_cluster_value
+                    galaxy_cluster_image_1d[
+                        galaxy_cluster_image_1d < minimum_cluster_value] = minimum_cluster_value
 
                     hyper_galaxy_cluster_image_path_dict[path] = galaxy_cluster_image_1d
 
@@ -337,9 +332,9 @@ class AbstractPhase(af.AbstractPhase):
                 hyper_galaxy_cluster_image_2d_path_dict = {}
 
                 for path, galaxy in self.path_galaxy_tuples:
-
                     hyper_galaxy_cluster_image_2d_path_dict[path] = \
-                        cluster.mask.scaled_array_2d_from_array_1d(array_1d=hyper_galaxy_cluster_image_1d_path_dict[path])
+                        cluster.mask.scaled_array_2d_from_array_1d(
+                            array_1d=hyper_galaxy_cluster_image_1d_path_dict[path])
 
                 return hyper_galaxy_cluster_image_2d_path_dict
 
@@ -379,27 +374,27 @@ class Phase(AbstractPhase):
 
             self.plot_ray_tracing_all_at_end_png = \
                 af.conf.instance.visualize.get('plots', 'plot_ray_tracing_all_at_end_png',
-                                          bool)
+                                               bool)
             self.plot_ray_tracing_all_at_end_fits = \
                 af.conf.instance.visualize.get('plots', 'plot_ray_tracing_all_at_end_fits',
-                                          bool)
+                                               bool)
 
             self.plot_ray_tracing_as_subplot = \
                 af.conf.instance.visualize.get('plots', 'plot_ray_tracing_as_subplot', bool)
             self.plot_ray_tracing_image_plane_image = \
                 af.conf.instance.visualize.get('plots',
-                                          'plot_ray_tracing_image_plane_image', bool)
+                                               'plot_ray_tracing_image_plane_image', bool)
             self.plot_ray_tracing_source_plane = \
                 af.conf.instance.visualize.get('plots',
-                                          'plot_ray_tracing_source_plane_image', bool)
+                                               'plot_ray_tracing_source_plane_image', bool)
             self.plot_ray_tracing_convergence = \
                 af.conf.instance.visualize.get('plots', 'plot_ray_tracing_convergence',
-                                          bool)
+                                               bool)
             self.plot_ray_tracing_potential = \
                 af.conf.instance.visualize.get('plots', 'plot_ray_tracing_potential', bool)
             self.plot_ray_tracing_deflections = \
                 af.conf.instance.visualize.get('plots', 'plot_ray_tracing_deflections',
-                                          bool)
+                                               bool)
 
 
 class GalaxyFitPhase(AbstractPhase):
@@ -502,8 +497,8 @@ class GalaxyFitPhase(AbstractPhase):
                                            use_deflections_x=self.use_deflections)
 
             return self.AnalysisSingle(galaxy_data=galaxy_data,
-                                                 cosmology=self.cosmology,
-                                                 results=results)
+                                       cosmology=self.cosmology,
+                                       results=results)
 
         elif self.use_deflections:
 
@@ -526,9 +521,9 @@ class GalaxyFitPhase(AbstractPhase):
                                              use_deflections_x=self.use_deflections)
 
             return self.AnalysisDeflections(galaxy_data_y=galaxy_data_y,
-                                                      galaxy_data_x=galaxy_data_x,
-                                                      cosmology=self.cosmology,
-                                                      results=results)
+                                            galaxy_data_x=galaxy_data_x,
+                                            cosmology=self.cosmology,
+                                            results=results)
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
@@ -539,10 +534,10 @@ class GalaxyFitPhase(AbstractPhase):
 
             self.plot_galaxy_fit_all_at_end_png = \
                 af.conf.instance.visualize.get('plots', 'plot_galaxy_fit_all_at_end_png',
-                                          bool)
+                                               bool)
             self.plot_galaxy_fit_all_at_end_fits = \
                 af.conf.instance.visualize.get('plots', 'plot_galaxy_fit_all_at_end_fits',
-                                          bool)
+                                               bool)
             self.plot_galaxy_fit_as_subplot = \
                 af.conf.instance.visualize.get('plots', 'plot_galaxy_fit_as_subplot', bool)
             self.plot_galaxy_fit_image = \
@@ -553,10 +548,10 @@ class GalaxyFitPhase(AbstractPhase):
                 af.conf.instance.visualize.get('plots', 'plot_galaxy_fit_model_image', bool)
             self.plot_galaxy_fit_residual_map = \
                 af.conf.instance.visualize.get('plots', 'plot_galaxy_fit_residual_map',
-                                          bool)
+                                               bool)
             self.plot_galaxy_fit_chi_squared_map = \
                 af.conf.instance.visualize.get('plots', 'plot_galaxy_fit_chi_squared_map',
-                                          bool)
+                                               bool)
 
         @classmethod
         def describe(cls, instance):
