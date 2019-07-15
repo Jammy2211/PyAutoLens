@@ -552,7 +552,6 @@ class HyperGalaxyPhase(HyperPhase):
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
             if not np.all(hyper_galaxy_image_1d_path_dict[path] == 0):
-
                 analysis = self.Analysis(
                     lens_data=lens_data,
                     model_image_1d=model_image_1d,
@@ -560,15 +559,32 @@ class HyperGalaxyPhase(HyperPhase):
 
                 result = optimizer.fit(analysis)
 
-                hyper_result.constant.object_for_path(path).hyper_galaxy = result.constant.hyper_galaxy
+                def transfer_field(name):
+                    if hasattr(result.constant, name):
+                        setattr(
+                            hyper_result.constant.object_for_path(
+                                path
+                            ),
+                            name,
+                            getattr(
+                                result.constant,
+                                name
+                            )
+                        )
+                        setattr(
+                            hyper_result.variable.object_for_path(
+                                path
+                            ),
+                            name,
+                            getattr(
+                                result.variable,
+                                name
+                            )
+                        )
 
-                if self.include_sky_background:
-                    hyper_result.constant.object_for_path(
-                        path).hyper_image_sky = result.constant.hyper_image_sky
-
-                if self.include_noise_background:
-                    hyper_result.constant.object_for_path(
-                        path).hyper_noise_background = result.constant.hyper_noise_background
+                transfer_field("hyper_galaxy")
+                transfer_field("hyper_sky_image")
+                transfer_field("hyper_noise_background")
 
         return hyper_result
 
