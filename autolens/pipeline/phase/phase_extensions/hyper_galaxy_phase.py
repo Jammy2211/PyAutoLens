@@ -219,7 +219,7 @@ class HyperGalaxyPhase(HyperPhase):
 
         hyper_result = copy.deepcopy(results.last)
         hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
-            hyper_result.instance
+            hyper_result.constant
         )
         hyper_result.analysis.uses_hyper_images = True
         hyper_result.analysis.hyper_model_image_1d = model_image_1d
