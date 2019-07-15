@@ -45,12 +45,9 @@ class PhaseImaging(Phase):
             The class of a non_linear optimizer
         sub_grid_size: int
             The side length of the subgrid
-        inversion_max_pixels : int or None
-            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-            up run.
         cluster_pixel_scale : float or None
-            If *True*, the hyper image used to generate the cluster'grids weight map will be binned up to this higher \
-            pixel scale to speed up the KMeans clustering algorithm.
+            If *True*, the hyper image used to generate the cluster'grids weight map will be binned up to this \
+            higher pixel scale to speed up the KMeans clustering algorithm.
         """
 
         if tag_phases:
@@ -258,7 +255,8 @@ class PhaseImaging(Phase):
 
         phase_hyper_galaxy = None
 
-        if (hyper_galaxy
+        if (
+                hyper_galaxy
                 and not include_background_sky
                 and not include_background_noise
         ):
@@ -439,10 +437,6 @@ class PhaseImaging(Phase):
                     should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
                     should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
                     visualize_path=image_path)
-
-            #    if hasattr(self.results.last, 'inversion'):
-
-            #        self.preload_pixelization_grid = self.results.last.inversion.most_likely_image_plane_pixelization_grid
 
         def fit(self, instance):
             """
