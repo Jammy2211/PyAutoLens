@@ -14,7 +14,7 @@ def make_aggregator():
 
 
 def filter_phases(aggregator, folder):
-    return list(filter(lambda ag: "/{}/.metadata".format(folder) in ag.file_path,
+    return list(filter(lambda ag: "/{}/metadata".format(folder) in ag.file_path,
                        aggregator.phases))[0]
 
 
@@ -38,9 +38,9 @@ class TestCase(object):
         assert len(aggregator.phases) == 3
 
     def test_file_paths(self, one, two, three):
-        assert three.file_path == "{}/three/.metadata".format(aggregator_directory)
-        assert one.file_path == "{}/one/.metadata".format(aggregator_directory)
-        assert two.file_path == "{}/two/.metadata".format(aggregator_directory)
+        assert three.file_path == "{}/three/metadata".format(aggregator_directory)
+        assert one.file_path == "{}/one/metadata".format(aggregator_directory)
+        assert two.file_path == "{}/two/metadata".format(aggregator_directory)
 
     def test_attributes(self, one, two, three):
         assert one.pipeline == "pipeline_1"

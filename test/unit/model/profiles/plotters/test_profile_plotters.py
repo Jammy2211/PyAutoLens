@@ -1,5 +1,7 @@
 from autolens.model.profiles.plotters import profile_plotters
-from test.fixtures import *
+import pytest
+import os
+
 
 @pytest.fixture(name='profile_plotter_path')
 def make_profile_plotter_setup():

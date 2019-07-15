@@ -10,6 +10,9 @@ this_dir = abspath(dirname(__file__))
 with open(join(this_dir, 'README.md'), encoding='utf-8') as file:
     long_description = file.read()
 
+with open(join(this_dir, 'requirements.txt')) as f:
+    requirements = f.read().split("\n")
+
 
 class RunTests(Command):
     """Run all tests."""
@@ -55,21 +58,7 @@ setup(
     ],
     keywords='cli',
     packages=find_packages(exclude=['docs', 'tests*', 'workspace', 'workspace_jam']),
-    install_requires=['docopt',
-                      'numpy==1.16.2',
-                      'astropy',
-                      'scipy==1.2.0',
-                      'GetDist',
-                      'pymultinest',
-                      'scikit-learn',
-                      'scikit-image==0.14.2',
-                      'numba',
-                      'matplotlib==3.0.3',
-                      'colorama',
-                      'autofit==0.28.0',
-                      'Cython==0.28.0',
-                      'pyquad'
-                      ],
+    install_requires=requirements,
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-cov'],
     },
