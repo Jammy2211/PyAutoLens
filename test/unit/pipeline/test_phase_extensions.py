@@ -603,39 +603,6 @@ def make_combined():
     return combined
 
 
-class TestIntegration(object):
-    def test_hyper_galaxy(self):
-        phase1 = phase_imaging.LensPlanePhase(
-            phase_name='phase_1',
-            phase_folders=[
-                "temp",
-                "temp"
-            ],
-            lens_galaxies=dict(
-                lens=gm.GalaxyModel(
-                    redshift=0.5,
-                    light=lp.EllipticalSersic
-                )
-            ),
-            optimizer_class=af.MultiNest
-        )
-
-        phase1.optimizer.const_efficiency_mode = True
-        phase1.optimizer.n_live_points = 40
-        phase1.optimizer.sampling_efficiency = 0.8
-
-        phase1 = phase1.extend_with_hyper_and_inversion_phases(hyper_galaxy=True)
-
-        ccd_data = simulation_util.load_test_ccd_data(
-            data_type='lens_only_bulge_and_disk',
-            data_resolution='LSST'
-        )
-
-        result = phase1.run(ccd_data)
-
-        assert result.hyper_galaxy.variable.lens_galaxies.lens.hyper_galaxy is not None
-
-
 class TestHyperAPI(object):
 
     def test_combined_result(self, combined):
