@@ -181,17 +181,17 @@ class TestMassSheet(object):
         mass_sheet = mp.MassSheet()
 
         convergence = mass_sheet.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert convergence.shape == (2, 2)
 
         potential = mass_sheet.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert potential.shape == (2, 2)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert deflections.shape == (2, 2, 2)
 
@@ -246,16 +246,16 @@ class TestExternalShear(object):
         shear = mp.ExternalShear()
 
         convergence = shear.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert convergence.shape == (2, 2)
 
         potential = shear.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert potential.shape == (2, 2)
 
         deflections = shear.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert deflections.shape == (2, 2, 2)

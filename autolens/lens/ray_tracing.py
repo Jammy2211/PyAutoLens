@@ -136,21 +136,21 @@ class AbstractTracer(AbstractTracerCosmology):
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
     @reshape_returned_array
-    def profile_image_plane_image(self, return_in_2d=True, return_binned_sub_grid=True):
+    def profile_image_plane_image(self, return_in_2d=True, return_binned=True):
         return sum(self.profile_image_plane_image_of_planes(
-            return_in_2d=False, return_binned_sub_grid=False))
+            return_in_2d=False, return_binned=False))
 
-    def profile_image_plane_image_of_planes(self, return_in_2d=True, return_binned_sub_grid=True):
+    def profile_image_plane_image_of_planes(self, return_in_2d=True, return_binned=True):
         return [plane.profile_image_plane_image(
             return_in_2d=return_in_2d,
-            return_binned_sub_grid=return_binned_sub_grid)
+            return_binned=return_binned)
             for plane in self.planes]
 
     def padded_profile_image_plane_image_2d_from_psf_shape(self, psf_shape):
 
         padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf_shape)
 
-        return padded_tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+        return padded_tracer.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
     @reshape_returned_array_blurring
     def profile_image_plane_blurring_image(self, return_in_2d=True):
@@ -168,24 +168,24 @@ class AbstractTracer(AbstractTracerCosmology):
         return list(filter(None, [plane.regularization for plane in self.planes]))
 
     @reshape_returned_array
-    def convergence(self, return_in_2d=True, return_binned_sub_grid=True):
-        return sum([plane.convergence(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
+    def convergence(self, return_in_2d=True, return_binned=True):
+        return sum([plane.convergence(return_in_2d=False, return_binned=False) for plane in self.planes])
 
     @reshape_returned_array
-    def potential(self, return_in_2d=True, return_binned_sub_grid=True):
-        return sum([plane.potential(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
+    def potential(self, return_in_2d=True, return_binned=True):
+        return sum([plane.potential(return_in_2d=False, return_binned=False) for plane in self.planes])
 
     @reshape_returned_array
-    def deflections_y(self, return_in_2d=True, return_binned_sub_grid=True):
-        return sum([plane.deflections_y(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
+    def deflections_y(self, return_in_2d=True, return_binned=True):
+        return sum([plane.deflections_y(return_in_2d=False, return_binned=False) for plane in self.planes])
 
     @reshape_returned_array
-    def deflections_x(self, return_in_2d=True, return_binned_sub_grid=True):
-        return sum([plane.deflections_x(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
+    def deflections_x(self, return_in_2d=True, return_binned=True):
+        return sum([plane.deflections_x(return_in_2d=False, return_binned=False) for plane in self.planes])
 
     @reshape_returned_grid
-    def deflections(self, return_in_2d=True, return_binned_sub_grid=True):
-        return sum([plane.deflections(return_in_2d=False, return_binned_sub_grid=False) for plane in self.planes])
+    def deflections(self, return_in_2d=True, return_binned=True):
+        return sum([plane.deflections(return_in_2d=False, return_binned=False) for plane in self.planes])
 
     def einstein_radius_of_plane_in_units(self, i, unit_length='arcsec'):
         return self.planes[i].einstein_radius_in_units(unit_length=unit_length)
@@ -296,7 +296,7 @@ class AbstractTracerData(AbstractTracer):
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
-        image_array = self.profile_image_plane_image(return_in_2d=False, return_binned_sub_grid=True)
+        image_array = self.profile_image_plane_image(return_in_2d=False, return_binned=True)
         blurring_array = self.profile_image_plane_blurring_image(return_in_2d=False)
 
         return convolver_image.convolve_image(
@@ -321,7 +321,7 @@ class AbstractTracerData(AbstractTracer):
         padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf.shape)
 
         padded_image_1d = padded_tracer.profile_image_plane_image(
-            return_in_2d=False, return_binned_sub_grid=True)
+            return_in_2d=False, return_binned=True)
 
         return padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
             padded_array_1d=padded_image_1d, psf=psf, image_shape=self.grid_stack.regular.mask.shape)
@@ -335,7 +335,7 @@ class AbstractTracerData(AbstractTracer):
         for padded_plane in padded_tracer.planes:
 
             padded_image_1d = padded_plane.profile_image_plane_image(
-                return_in_2d=False, return_binned_sub_grid=True)
+                return_in_2d=False, return_binned=True)
 
             unmasked_blurred_array_2d = \
                 padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
@@ -354,7 +354,7 @@ class AbstractTracerData(AbstractTracer):
         for padded_plane in padded_tracer.planes:
 
             padded_image_1d_of_galaxies = padded_plane.profile_image_plane_image_of_galaxies(
-                return_in_2d=False, return_binned_sub_grid=True)
+                return_in_2d=False, return_binned=True)
 
             unmasked_blurred_array_2d_of_galaxies = \
                 list(map(lambda padded_image_1d_of_galaxy :
@@ -402,7 +402,7 @@ class AbstractTracerData(AbstractTracer):
 
                 galaxy_image_dict[galaxy] = \
                     plane.profile_image_plane_image_of_galaxy(
-                        galaxy=galaxy, return_in_2d=False, return_binned_sub_grid=True)
+                        galaxy=galaxy, return_in_2d=False, return_binned=True)
 
         return galaxy_image_dict
 
@@ -417,7 +417,7 @@ class AbstractTracerData(AbstractTracer):
             for galaxy in plane.galaxies:
 
                 profile_image_plane_image_1d = plane.profile_image_plane_image_of_galaxy(
-                    galaxy=galaxy, return_in_2d=False, return_binned_sub_grid=True)
+                    galaxy=galaxy, return_in_2d=False, return_binned=True)
 
                 profile_image_plane_blurring_image_1d = plane.profile_image_plane_blurring_image_of_galaxy(
                     galaxy=galaxy, return_in_2d=False)

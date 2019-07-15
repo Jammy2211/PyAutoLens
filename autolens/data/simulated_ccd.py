@@ -37,7 +37,7 @@ class SimulatedCCDData(ccd.CCDData):
 
         image_2d = sum(map(lambda g:
                            g.intensities_from_grid(
-                               grid=deflected_grid_1d, return_in_2d=True, return_binned_sub_grid=False),
+                               grid=deflected_grid_1d, return_in_2d=True, return_binned=False),
                            source_galaxies))
 
         return cls.from_image_and_exposure_arrays(
@@ -76,7 +76,7 @@ class SimulatedCCDData(ccd.CCDData):
         if psf is not None:
             image_plane_image_2d = tracer.padded_profile_image_plane_image_2d_from_psf_shape(psf_shape=psf.shape)
         else:
-            image_plane_image_2d = tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+            image_plane_image_2d = tracer.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
         return cls.from_image_and_exposure_arrays(
             image=image_plane_image_2d, pixel_scale=pixel_scale, exposure_time=exposure_time,

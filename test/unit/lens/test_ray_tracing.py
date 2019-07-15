@@ -176,9 +176,9 @@ class TestAbstractTracer(object):
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack_7x7)
 
-            image_plane_convergence = image_plane.convergence(return_in_2d=True, return_binned_sub_grid=True)
+            image_plane_convergence = image_plane.convergence(return_in_2d=True, return_binned=True)
 
-            tracer_convergence = tracer.convergence(return_in_2d=True, return_binned_sub_grid=True)
+            tracer_convergence = tracer.convergence(return_in_2d=True, return_binned=True)
 
             assert image_plane_convergence.shape == (7, 7)
             assert (image_plane_convergence == tracer_convergence).all()
@@ -190,26 +190,26 @@ class TestAbstractTracer(object):
             g2 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
             g0_convergence = g0.convergence_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned=True)
 
             g1_convergence = g1.convergence_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned=True)
 
             g2_convergence = g2.convergence_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=[g0, g1], source_galaxies=[g2],
                 image_plane_grid_stack=grid_stack_7x7)
 
             image_plane_convergence = tracer.image_plane.convergence(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             source_plane_convergence = tracer.source_plane.convergence(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             tracer_convergence = tracer.convergence(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             assert image_plane_convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-4)
             assert (source_plane_convergence == g2_convergence).all()
@@ -222,13 +222,13 @@ class TestAbstractTracer(object):
                 lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy(redshift=0.5)],
                 image_plane_grid_stack=grid_stack_7x7)
 
-            assert (tracer.convergence(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
+            assert (tracer.convergence(return_in_2d=True, return_binned=True) == np.zeros(shape=(7,7))).all()
 
             tracer = ray_tracing.TracerMultiPlanes(
                 galaxies=[g.Galaxy(redshift=0.1), g.Galaxy(redshift=0.2)],
                 image_plane_grid_stack=grid_stack_7x7)
 
-            assert (tracer.convergence(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
+            assert (tracer.convergence(return_in_2d=True, return_binned=True) == np.zeros(shape=(7,7))).all()
 
     class TestPotential:
 
@@ -242,9 +242,9 @@ class TestAbstractTracer(object):
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack_7x7)
 
-            image_plane_potential = image_plane.potential(return_in_2d=True, return_binned_sub_grid=True)
+            image_plane_potential = image_plane.potential(return_in_2d=True, return_binned=True)
 
-            tracer_potential = tracer.potential(return_in_2d=True, return_binned_sub_grid=True)
+            tracer_potential = tracer.potential(return_in_2d=True, return_binned=True)
 
             assert image_plane_potential.shape == (7, 7)
             assert (image_plane_potential == tracer_potential).all()
@@ -256,26 +256,26 @@ class TestAbstractTracer(object):
             g2 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
             g0_potential = g0.potential_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned=True)
 
             g1_potential = g1.potential_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned=True)
 
             g2_potential = g2.potential_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=[g0, g1], source_galaxies=[g2],
                 image_plane_grid_stack=grid_stack_7x7)
 
             image_plane_potential = tracer.image_plane.potential(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             source_plane_potential = tracer.source_plane.potential(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             tracer_potential = tracer.potential(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             assert image_plane_potential == pytest.approx(g0_potential + g1_potential, 1.0e-4)
             assert (source_plane_potential == g2_potential).all()
@@ -288,13 +288,13 @@ class TestAbstractTracer(object):
                 lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy(redshift=0.5)],
                 image_plane_grid_stack=grid_stack_7x7)
 
-            assert (tracer.potential(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
+            assert (tracer.potential(return_in_2d=True, return_binned=True) == np.zeros(shape=(7,7))).all()
 
             tracer = ray_tracing.TracerMultiPlanes(
                 galaxies=[g.Galaxy(redshift=0.1), g.Galaxy(redshift=0.2)],
                 image_plane_grid_stack=grid_stack_7x7)
 
-            assert (tracer.potential(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
+            assert (tracer.potential(return_in_2d=True, return_binned=True) == np.zeros(shape=(7,7))).all()
 
     class TestDeflections:
 
@@ -308,17 +308,17 @@ class TestAbstractTracer(object):
             tracer = ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=[g0], source_galaxies=[g1], image_plane_grid_stack=grid_stack_7x7)
 
-            image_plane_deflections = image_plane.deflections(return_in_2d=True, return_binned_sub_grid=True)
+            image_plane_deflections = image_plane.deflections(return_in_2d=True, return_binned=True)
 
-            tracer_deflections_y = tracer.deflections_y(return_in_2d=True, return_binned_sub_grid=True)
-            tracer_deflections_x = tracer.deflections_x(return_in_2d=True, return_binned_sub_grid=True)
+            tracer_deflections_y = tracer.deflections_y(return_in_2d=True, return_binned=True)
+            tracer_deflections_x = tracer.deflections_x(return_in_2d=True, return_binned=True)
 
             assert tracer_deflections_y.shape == (7, 7)
             assert (image_plane_deflections[:,:,0] == tracer_deflections_y).all()
             assert tracer_deflections_x.shape == (7, 7)
             assert (image_plane_deflections[:,:,1] == tracer_deflections_x).all()
 
-            tracer_deflections = tracer.deflections(return_in_2d=True, return_binned_sub_grid=True)
+            tracer_deflections = tracer.deflections(return_in_2d=True, return_binned=True)
 
             assert (tracer_deflections[:,:,0] == tracer_deflections_y).all()
             assert (tracer_deflections[:,:,1] == tracer_deflections_x).all()
@@ -330,24 +330,24 @@ class TestAbstractTracer(object):
             g2 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
             g0_deflections = g0.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned=True)
             
             g1_deflections = g1.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned=True)
             
             g2_deflections = g2.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
                                                          image_plane_grid_stack=grid_stack_7x7)
             
             image_plane_deflections_y = tracer.image_plane.deflections_y(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             source_plane_deflections_y = tracer.source_plane.deflections_y(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
             
-            tracer_deflections_y = tracer.deflections_y(return_in_2d=True, return_binned_sub_grid=True)
+            tracer_deflections_y = tracer.deflections_y(return_in_2d=True, return_binned=True)
 
             assert image_plane_deflections_y == pytest.approx(g0_deflections[:,:,0] + g1_deflections[:,:,0], 1.0e-4)
             assert source_plane_deflections_y == pytest.approx(g2_deflections[:,:,0], 1.0e-4)
@@ -356,12 +356,12 @@ class TestAbstractTracer(object):
                                                          g2_deflections[:,:,0], 1.0e-4)
 
             image_plane_deflections_x = tracer.image_plane.deflections_x(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             source_plane_deflections_x = tracer.source_plane.deflections_x(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
-            tracer_deflections_x = tracer.deflections_x(return_in_2d=True, return_binned_sub_grid=True)
+            tracer_deflections_x = tracer.deflections_x(return_in_2d=True, return_binned=True)
 
             assert image_plane_deflections_x == pytest.approx(g0_deflections[:, :, 1] + g1_deflections[:, :, 1], 1.0e-4)
             assert source_plane_deflections_x == pytest.approx(g2_deflections[:, :, 1], 1.0e-4)
@@ -369,7 +369,7 @@ class TestAbstractTracer(object):
                                                          g1_deflections[:, :, 1] +
                                                          g2_deflections[:, :, 1], 1.0e-4)
 
-            tracer_deflections = tracer.deflections(return_in_2d=True, return_binned_sub_grid=True)
+            tracer_deflections = tracer.deflections(return_in_2d=True, return_binned=True)
 
             assert (tracer_deflections[:,:,0] == tracer_deflections_y).all()
             assert (tracer_deflections[:,:,1] == tracer_deflections_x).all()
@@ -380,15 +380,15 @@ class TestAbstractTracer(object):
                 lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy(redshift=0.5)],
                 image_plane_grid_stack=grid_stack_7x7)
 
-            assert (tracer.deflections_y(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
-            assert (tracer.deflections_x(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
+            assert (tracer.deflections_y(return_in_2d=True, return_binned=True) == np.zeros(shape=(7,7))).all()
+            assert (tracer.deflections_x(return_in_2d=True, return_binned=True) == np.zeros(shape=(7,7))).all()
 
             tracer = ray_tracing.TracerMultiPlanes(
                 galaxies=[g.Galaxy(redshift=0.1), g.Galaxy(redshift=0.2)],
                 image_plane_grid_stack=grid_stack_7x7)
 
-            assert (tracer.deflections_y(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
-            assert (tracer.deflections_x(return_in_2d=True, return_binned_sub_grid=True) == np.zeros(shape=(7,7))).all()
+            assert (tracer.deflections_y(return_in_2d=True, return_binned=True) == np.zeros(shape=(7,7))).all()
+            assert (tracer.deflections_x(return_in_2d=True, return_binned=True) == np.zeros(shape=(7,7))).all()
 
     class TestMappers:
 
@@ -875,19 +875,19 @@ class TestAbstractTracerData(object):
             padded_tracer = tracer.padded_tracer_from_psf_shape(psf_shape=(3,3))
 
             manual_blurred_image_0 = \
-                padded_tracer.image_plane.profile_image_plane_image_of_galaxies(return_in_2d=True, return_binned_sub_grid=True)[0]
+                padded_tracer.image_plane.profile_image_plane_image_of_galaxies(return_in_2d=True, return_binned=True)[0]
             manual_blurred_image_0 = psf.convolve(array=manual_blurred_image_0)
 
             manual_blurred_image_1 = \
-                padded_tracer.image_plane.profile_image_plane_image_of_galaxies(return_in_2d=True, return_binned_sub_grid=True)[1]
+                padded_tracer.image_plane.profile_image_plane_image_of_galaxies(return_in_2d=True, return_binned=True)[1]
             manual_blurred_image_1 = psf.convolve(array=manual_blurred_image_1)
 
             manual_blurred_image_2 = \
-                padded_tracer.source_plane.profile_image_plane_image_of_galaxies(return_in_2d=True, return_binned_sub_grid=True)[0]
+                padded_tracer.source_plane.profile_image_plane_image_of_galaxies(return_in_2d=True, return_binned=True)[0]
             manual_blurred_image_2 = psf.convolve(array=manual_blurred_image_2)
 
             manual_blurred_image_3 = \
-                padded_tracer.source_plane.profile_image_plane_image_of_galaxies(return_in_2d=True, return_binned_sub_grid=True)[1]
+                padded_tracer.source_plane.profile_image_plane_image_of_galaxies(return_in_2d=True, return_binned=True)[1]
             manual_blurred_image_3 = psf.convolve(array=manual_blurred_image_3)
 
             unmasked_blurred_image = \
@@ -996,10 +996,10 @@ class TestTracerImagePlane(object):
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack_7x7)
 
             image_plane_profile_image_plane_image = image_plane.profile_image_plane_image(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             tracer_profile_image_plane_image = tracer.profile_image_plane_image(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             assert tracer_profile_image_plane_image.shape == (7, 7)
             assert (tracer_profile_image_plane_image == image_plane_profile_image_plane_image).all()
@@ -1139,11 +1139,11 @@ class TestTracerImageSourcePlanes(object):
                                                          image_plane_grid_stack=grid_stack_7x7)
 
             image_plane_image = \
-                image_plane.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True) +\
-                source_plane.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+                image_plane.profile_image_plane_image(return_in_2d=True, return_binned=True) +\
+                source_plane.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
             tracer_profile_image_plane_image =  tracer.profile_image_plane_image(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             assert tracer_profile_image_plane_image.shape == (7, 7)
             assert image_plane_image == pytest.approx(tracer_profile_image_plane_image, 1.0e-4)
@@ -1164,11 +1164,11 @@ class TestTracerImageSourcePlanes(object):
                                                          image_plane_grid_stack=grid_stack_7x7)
 
             image_plane_image = \
-                image_plane.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True) + \
-                source_plane.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+                image_plane.profile_image_plane_image(return_in_2d=True, return_binned=True) + \
+                source_plane.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
             tracer_profile_image_plane_image =  tracer.profile_image_plane_image(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             assert image_plane_image == pytest.approx(tracer_profile_image_plane_image, 1.0e-4)
 
@@ -1179,20 +1179,20 @@ class TestTracerImageSourcePlanes(object):
             g2 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=3.0))
 
             g0_image = g0.intensities_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_in_2d=True, return_binned=True)
 
             g1_image = g1.intensities_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_in_2d=True, return_binned=True)
 
             g2_image = g2.intensities_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_in_2d=True, return_binned=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=[g0, g1], source_galaxies=[g2],
                 image_plane_grid_stack=grid_stack_7x7)
 
             tracer_profile_image_plane_image =  tracer.profile_image_plane_image(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             assert tracer_profile_image_plane_image == pytest.approx(g0_image + g1_image + g2_image, 1.0e-4)
 
@@ -1209,11 +1209,11 @@ class TestTracerImageSourcePlanes(object):
                                                          image_plane_grid_stack=grid_stack_7x7)
 
             plane_profile_image_plane_image =  \
-                image_plane.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True) + \
-                source_plane.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+                image_plane.profile_image_plane_image(return_in_2d=True, return_binned=True) + \
+                source_plane.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
             tracer_profile_image_plane_image =  tracer.profile_image_plane_image(
-                return_in_2d=True, return_binned_sub_grid=True)
+                return_in_2d=True, return_binned=True)
 
             assert tracer_profile_image_plane_image == pytest.approx(plane_profile_image_plane_image, 1.0e-4)
 
@@ -1226,13 +1226,13 @@ class TestTracerImageSourcePlanes(object):
             g2 = g.Galaxy(redshift=0.5, light_profile=lp.EllipticalSersic(intensity=3.0))
 
             padded_g0_image = g0.intensities_from_grid(
-                grid=padded_grid_stack.sub, return_in_2d=True, return_binned_sub_grid=True)
+                grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True)
 
             padded_g1_image = g1.intensities_from_grid(
-                grid=padded_grid_stack.sub, return_in_2d=True, return_binned_sub_grid=True)
+                grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True)
 
             padded_g2_image = g2.intensities_from_grid(
-                grid=padded_grid_stack.sub, return_in_2d=True, return_binned_sub_grid=True)
+                grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=[g0, g1], source_galaxies=[g2],
@@ -1555,12 +1555,12 @@ class TestMultiTracer(object):
             plane_2 = pl.Plane(galaxies=[g2], grid_stack=grid_stack_7x7, compute_deflections=False)
 
             image_plane_image = \
-                plane_0.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True) + \
-                plane_1.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True) + \
-                plane_2.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+                plane_0.profile_image_plane_image(return_in_2d=True, return_binned=True) + \
+                plane_1.profile_image_plane_image(return_in_2d=True, return_binned=True) + \
+                plane_2.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
             tracer_profile_image_plane_image = \
-                tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+                tracer.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
             assert image_plane_image.shape == (7, 7)
             assert image_plane_image == pytest.approx(tracer_profile_image_plane_image, 1.0e-4)
@@ -1580,12 +1580,12 @@ class TestMultiTracer(object):
             plane_2 = tracer.planes[2]
 
             image_plane_image = \
-                plane_0.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True) + \
-                plane_1.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True) + \
-                plane_2.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+                plane_0.profile_image_plane_image(return_in_2d=True, return_binned=True) + \
+                plane_1.profile_image_plane_image(return_in_2d=True, return_binned=True) + \
+                plane_2.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
             tracer_profile_image_plane_image = \
-                tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+                tracer.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
             assert image_plane_image.shape == (7, 7)
             assert image_plane_image == pytest.approx(tracer_profile_image_plane_image, 1.0e-4)
@@ -1607,12 +1607,12 @@ class TestMultiTracer(object):
             plane_2 = pl.Plane(galaxies=[g2], grid_stack=grid_stack_7x7, compute_deflections=False)
 
             image_plane_image = \
-                plane_0.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True) + \
-                plane_1.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True) + \
-                plane_2.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+                plane_0.profile_image_plane_image(return_in_2d=True, return_binned=True) + \
+                plane_1.profile_image_plane_image(return_in_2d=True, return_binned=True) + \
+                plane_2.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
             tracer_profile_image_plane_image = \
-                tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+                tracer.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
             assert image_plane_image.shape == (7, 7)
             assert image_plane_image == pytest.approx(tracer_profile_image_plane_image, 1.0e-4)
@@ -1626,13 +1626,13 @@ class TestMultiTracer(object):
             g2 = g.Galaxy(redshift=2.0, light_profile=lp.EllipticalSersic(intensity=0.3))
 
             padded_g0_image = g0.intensities_from_grid(
-                grid=padded_grid_stack.sub, return_in_2d=True, return_binned_sub_grid=True)
+                grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True)
 
             padded_g1_image = g1.intensities_from_grid(
-                grid=padded_grid_stack.sub, return_in_2d=True, return_binned_sub_grid=True)
+                grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True)
 
             padded_g2_image = g2.intensities_from_grid(
-                grid=padded_grid_stack.sub, return_in_2d=True, return_binned_sub_grid=True)
+                grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True)
 
             tracer = ray_tracing.TracerMultiPlanes(
                 galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack_7x7,

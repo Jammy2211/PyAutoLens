@@ -52,13 +52,13 @@ class TestGalaxyFitData(object):
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-    def test__grid_stack(self, gal_data_7x7, mask_7x7, regular_grid_7x7, sub_grid_7x7, blurring_grid_7x7):
+    def test__grid_stack(self, gal_data_7x7, mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7):
 
         galaxy_fit_data = gd.GalaxyFitData(galaxy_data=gal_data_7x7, mask=mask_7x7, use_intensities=True)
 
         assert galaxy_fit_data.grid_stack.regular.shape == (9, 2)
 
-        assert (galaxy_fit_data.grid_stack.regular == regular_grid_7x7).all()
+        assert (galaxy_fit_data.grid_stack.regular == grid_7x7).all()
         assert (galaxy_fit_data.grid_stack.sub == sub_grid_7x7).all()
 
     def test__interp_pixel_scale(self, image_7x7, mask_7x7):
@@ -134,7 +134,7 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(redshift=0.5, light=lp.SphericalSersic(intensity=1.0))
 
         intensities_gal = galaxy.intensities_from_grid(
-            grid=galaxy_fit_data.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+            grid=galaxy_fit_data.grid_stack.sub, return_in_2d=False, return_binned=True)
 
         intensities_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(
             galaxies=[galaxy], sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -194,7 +194,7 @@ class TestGalaxyFitData(object):
             mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         convergence_gal = galaxy.convergence_from_grid(
-            grid=galaxy_fit_data.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+            grid=galaxy_fit_data.grid_stack.sub, return_in_2d=False, return_binned=True)
 
         convergence_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(
             galaxies=[galaxy], sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -252,7 +252,7 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         potential_gal = galaxy.potential_from_grid(
-            grid=galaxy_fit_data.grid_stack.sub, return_binned_sub_grid=True)
+            grid=galaxy_fit_data.grid_stack.sub, return_binned=True)
 
         potential_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(
             galaxies=[galaxy], sub_grid=galaxy_fit_data.grid_stack.sub)

@@ -19,7 +19,7 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
 
     image_1d = sum(map(lambda g:
                        g.intensities_from_grid(
-                           grid=uniform_grid, return_in_2d=False, return_binned_sub_grid=False),
+                           grid=uniform_grid, return_in_2d=False, return_binned=False),
                        galaxies))
 
     image_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(

@@ -27,17 +27,17 @@ class TestLightProfiles(object):
             galaxy = g.Galaxy(redshift=0.5)
 
             intensities = galaxy.intensities_from_grid(
-                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned=False)
 
             assert (intensities == np.zeros(shape=(7, 7))).all()
 
             intensities = galaxy.intensities_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=False)
 
             assert (intensities == np.zeros(shape=grid_stack_7x7.sub.shape[0])).all()
 
             intensities = galaxy.intensities_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_binned=True)
 
             assert (intensities == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
 
@@ -66,10 +66,10 @@ class TestLightProfiles(object):
                 self, grid_stack_7x7, gal_x2_lp):
 
             lp_0_intensities = gal_x2_lp.light_profile_0.intensities_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_binned=False)
 
             lp_1_intensities = gal_x2_lp.light_profile_1.intensities_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_binned=False)
 
             lp_intensities = lp_0_intensities + lp_1_intensities
 
@@ -80,7 +80,7 @@ class TestLightProfiles(object):
                                 lp_intensities[6] + lp_intensities[7]) / 4.0
 
             gal_intensities = gal_x2_lp.intensities_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_binned=True)
 
             assert gal_intensities[0] == lp_intensities_0
             assert gal_intensities[1] == lp_intensities_1
@@ -212,17 +212,17 @@ class TestMassProfiles(object):
             galaxy = g.Galaxy(redshift=0.5)
 
             convergence = galaxy.convergence_from_grid(
-                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned=False)
 
             assert (convergence == np.zeros(shape=(7,7))).all()
 
             convergence = galaxy.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=False)
 
             assert (convergence == np.zeros(shape=grid_stack_7x7.sub.shape[0])).all()
 
             convergence = galaxy.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_binned=True)
 
             assert (convergence == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
 
@@ -251,10 +251,10 @@ class TestMassProfiles(object):
                 self, grid_stack_7x7, gal_x2_mp):
 
             mp_0_convergence = gal_x2_mp.mass_profile_0.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_binned=False)
 
             mp_1_convergence = gal_x2_mp.mass_profile_1.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_binned=False)
 
             mp_convergence = mp_0_convergence + mp_1_convergence
             
@@ -265,7 +265,7 @@ class TestMassProfiles(object):
                                 mp_convergence[6] + mp_convergence[7]) / 4.0
 
             gal_convergence = gal_x2_mp.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_binned=True)
 
             assert gal_convergence[0] == mp_convergence_0
             assert gal_convergence[1] == mp_convergence_1
@@ -285,17 +285,17 @@ class TestMassProfiles(object):
             galaxy = g.Galaxy(redshift=0.5)
 
             potential = galaxy.potential_from_grid(
-                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned=False)
 
             assert (potential == np.zeros(shape=(7, 7))).all()
 
             potential = galaxy.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=False)
 
             assert (potential == np.zeros(shape=grid_stack_7x7.sub.shape[0])).all()
 
             potential = galaxy.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_binned=True)
 
             assert (potential == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
 
@@ -322,10 +322,10 @@ class TestMassProfiles(object):
         def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper_by_binning_sum_of_mass_profile_values(
                 self, grid_stack_7x7, gal_x2_mp):
             mp_0_potential = gal_x2_mp.mass_profile_0.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_binned=False)
 
             mp_1_potential = gal_x2_mp.mass_profile_1.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_binned=False)
 
             mp_potential = mp_0_potential + mp_1_potential
 
@@ -336,7 +336,7 @@ class TestMassProfiles(object):
                                 mp_potential[6] + mp_potential[7]) / 4.0
 
             gal_potential = gal_x2_mp.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_binned=True)
 
             assert gal_potential[0] == mp_potential_0
             assert gal_potential[1] == mp_potential_1
@@ -358,17 +358,17 @@ class TestMassProfiles(object):
             galaxy = g.Galaxy(redshift=0.5)
 
             deflections = galaxy.deflections_from_grid(
-                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned=False)
 
             assert (deflections == np.zeros(shape=(7, 7, 2))).all()
 
             deflections = galaxy.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=False)
 
             assert (deflections == np.zeros(shape=(grid_stack_7x7.sub.shape[0], 2))).all()
 
             deflections = galaxy.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_binned=True)
 
             assert (deflections == np.zeros(shape=(grid_stack_7x7.regular.shape[0], 2))).all()
 
@@ -397,10 +397,10 @@ class TestMassProfiles(object):
                 self, grid_stack_7x7, gal_x2_mp):
 
             mp_0_deflections = gal_x2_mp.mass_profile_0.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_binned=False)
 
             mp_1_deflections = gal_x2_mp.mass_profile_1.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=False)
+                grid=grid_stack_7x7.sub, return_binned=False)
 
             mp_deflections = mp_0_deflections + mp_1_deflections
 
@@ -411,7 +411,7 @@ class TestMassProfiles(object):
                                 mp_deflections[6,0] + mp_deflections[7,0]) / 4.0
 
             gal_deflections = gal_x2_mp.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_binned=True)
 
             assert gal_deflections[0,0] == mp_deflections_y_0
             assert gal_deflections[1,0] == mp_deflections_y_1
@@ -423,7 +423,7 @@ class TestMassProfiles(object):
                                 mp_deflections[6,1] + mp_deflections[7,1]) / 4.0
 
             gal_deflections = gal_x2_mp.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub, return_binned=True)
 
             assert gal_deflections[0,1] == mp_deflections_x_0
             assert gal_deflections[1,1] == mp_deflections_x_1
