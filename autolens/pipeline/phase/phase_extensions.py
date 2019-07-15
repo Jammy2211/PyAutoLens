@@ -59,7 +59,6 @@ class HyperPhase(object):
         """
 
         phase = copy.deepcopy(self.phase)
-        phase.phase_path = f"{phase.phase_path}/{phase.phase_name}"
 
         phase_folders = phase.phase_folders
         phase_folders.append(phase.phase_name)
