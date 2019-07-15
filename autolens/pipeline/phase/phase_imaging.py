@@ -255,11 +255,7 @@ class PhaseImaging(Phase):
 
         phase_hyper_galaxy = None
 
-        if (
-                hyper_galaxy
-                and not include_background_sky
-                and not include_background_noise
-        ):
+        if hyper_galaxy:
             phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
 
         if inversion:

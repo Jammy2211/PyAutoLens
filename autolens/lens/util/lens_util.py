@@ -14,8 +14,8 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
     pixel_scales = (float((y_max - y_min) / shape[0]), float((x_max - x_min) / shape[1]))
     origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
-    uniform_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
-        mask=np.full(shape=shape, fill_value=False), pixel_scales=pixel_scales, origin=origin)
+    uniform_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        mask=np.full(shape=shape, fill_value=False), pixel_scales=pixel_scales, sub_grid_size=1, origin=origin)
 
     image_1d = sum(map(lambda g:
                        g.intensities_from_grid(
