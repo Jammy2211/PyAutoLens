@@ -1330,7 +1330,7 @@ class TestPSF(object):
 
             gaussian = lp.EllipticalGaussian(centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0)
             profile_gaussian_1d = gaussian.intensities_from_grid(grid)
-            profile_gaussian_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            profile_gaussian_2d = mapping_util.map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(
                 array_1d=profile_gaussian_1d, shape=(3, 3))
             profile_psf = ccd.PSF(array=profile_gaussian_2d, pixel_scale=1.0, renormalize=True)
 

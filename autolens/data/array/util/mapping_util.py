@@ -128,7 +128,7 @@ def sub_to_regular_from_mask(mask, sub_grid_size):
 
 
 @decorator_util.jit()
-def map_array_2d_to_masked_array_1d_from_array_2d_and_mask(mask, array_2d):
+def map_array_2d_to_array_1d_from_array_2d_and_mask(mask, array_2d):
     """For a 2D array and mask, map the values of all unmasked pixels to a 1D array.
 
     The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards, such
@@ -178,7 +178,7 @@ def map_array_2d_to_masked_array_1d_from_array_2d_and_mask(mask, array_2d):
 
 
 @decorator_util.jit()
-def map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+def map_sub_array_2d_to_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
         sub_array_2d, mask, sub_grid_size):
     """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
@@ -244,7 +244,7 @@ def map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_
 
 
 @decorator_util.jit()
-def map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(mask, grid_2d):
+def map_grid_2d_to_grid_1d_from_grid_2d_and_mask(mask, grid_2d):
     """For a 2D grid and mask, map the values of all unmasked pixels to a 1D grid.
 
     The pixel coordinate origin is at the top left corner of the 2D grid and goes right-wards and downwards, such \
@@ -295,8 +295,8 @@ def map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(mask, grid_2d):
 
 
 @decorator_util.jit()
-def map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(array_1d, shape,
-                                                                       one_to_two):
+def map_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(array_1d, shape,
+                                                                one_to_two):
     """For a 1D array that was computed by mapping unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -340,8 +340,8 @@ def map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(array_1d,
 
 
 @decorator_util.jit()
-def map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(grid_1d, shape,
-                                                                    one_to_two):
+def map_grid_1d_to_grid_2d_from_grid_1d_shape_and_one_to_two(grid_1d, shape,
+                                                             one_to_two):
     """For a 1D array that was computed by mapping unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -386,7 +386,7 @@ def map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(grid_1d, sha
 
 
 @decorator_util.jit()
-def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
+def map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(array_1d, shape):
     """For a 1D array that was flattened from a 2D array of shape (rows, columns), map its values back to the \
     original 2D array.
 
