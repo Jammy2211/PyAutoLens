@@ -632,10 +632,8 @@ class TestIntegration(object):
         )
 
         result = phase1.run(ccd_data)
-        assert hasattr(
-            result.variable.hyper_galaxy.lens_galaxies.lens,
-            "hyper_galaxy"
-        )
+
+        assert result.hyper_galaxy.variable.lens_galaxies.lens.hyper_galaxy is not None
 
 
 class TestHyperAPI(object):
