@@ -762,8 +762,8 @@ class Grid(np.ndarray):
     def from_unmasked_grid_2d(cls, grid_2d):
         mask_shape = (grid_2d.shape[0], grid_2d.shape[1])
         mask = np.full(fill_value=False, shape=mask_shape)
-        grid_1d = mapping_util.map_grid_2d_to_grid_1d_from_grid_2d_and_mask(
-            grid_2d=grid_2d, mask=mask)
+        grid_1d = mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
+            sub_grid_2d=grid_2d, mask=mask, sub_grid_size=1)
         return Grid(grid_1d, mask=mask, sub_grid_size=1)
 
     @property
@@ -1030,7 +1030,7 @@ class Grid(np.ndarray):
         psf : ndarray
             An array describing the PSF kernel of the image.
         """
-        padded_array_2d = mapping_util.map_unmasked_array_1d_to_array_2d_from_array_1d_and_shape(
+        padded_array_2d = mapping_util.array_2d_from_unmasked_array_1d_and_shape(
             array_1d=padded_array_1d, shape=self.mask.shape)
         # noinspection PyUnresolvedReferences
         blurred_padded_array_2d = psf.convolve(array=padded_array_2d)

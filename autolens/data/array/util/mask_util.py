@@ -546,7 +546,7 @@ def masked_grid_1d_index_to_2d_pixel_index_from_mask(mask):
 
 
 @decorator_util.jit()
-def masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(mask, sub_grid_size):
+def sub_one_to_two_from_mask_and_sub_grid_size(mask, sub_grid_size):
     """Compute a 1D array that maps every unmasked sub-pixel to its corresponding 2d pixel using its (y,x) pixel indexes.
 
     For example, for a sub-grid size of 2, f pixel [2,5] corresponds to the first pixel in the masked 1D array:
