@@ -489,18 +489,18 @@ class TestLensProfileFit:
                                                            tracer=tracer)
 
             g0_image_plane_image_1d = g0.intensities_from_grid(
-                grid=lens_data_7x7.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+                grid=lens_data_7x7.grid_stack.sub, return_in_2d=False, return_binned=True)
             g0_image_plane_bluring_image_1d = g0.intensities_from_grid(
-                grid=lens_data_7x7.grid_stack.blurring, return_in_2d=False, return_binned_sub_grid=False)
+                grid=lens_data_7x7.grid_stack.blurring, return_in_2d=False, return_binned=False)
 
             g0_blurred_image_plane_image_1d = lens_data_7x7.convolver_image.convolve_image(
                 image_array=g0_image_plane_image_1d,
                 blurring_array=g0_image_plane_bluring_image_1d)
 
             g1_image_plane_image_1d = g1.intensities_from_grid(
-                grid=tracer.source_plane.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+                grid=tracer.source_plane.grid_stack.sub, return_in_2d=False, return_binned=True)
             g1_image_plane_bluring_image_1d = g1.intensities_from_grid(
-                grid=tracer.source_plane.grid_stack.blurring, return_in_2d=False, return_binned_sub_grid=False)
+                grid=tracer.source_plane.grid_stack.blurring, return_in_2d=False, return_binned=False)
 
             g1_blurred_image_plane_image_1d = lens_data_7x7.convolver_image.convolve_image(
                 image_array=g1_image_plane_image_1d,
@@ -1064,18 +1064,18 @@ class TestLensProfileInversionFit:
                                                            tracer=tracer)
 
             g0_image_plane_image_1d = g0.intensities_from_grid(
-                grid=lens_data_7x7.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+                grid=lens_data_7x7.grid_stack.sub, return_in_2d=False, return_binned=True)
             g0_image_plane_bluring_image_1d = g0.intensities_from_grid(
-                grid=lens_data_7x7.grid_stack.blurring, return_in_2d=False, return_binned_sub_grid=False)
+                grid=lens_data_7x7.grid_stack.blurring, return_in_2d=False, return_binned=False)
 
             g0_blurred_image_plane_image_1d = lens_data_7x7.convolver_image.convolve_image(
                 image_array=g0_image_plane_image_1d,
                 blurring_array=g0_image_plane_bluring_image_1d)
 
             g1_image_plane_image_1d = g1.intensities_from_grid(
-                grid=tracer.source_plane.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True)
+                grid=tracer.source_plane.grid_stack.sub, return_in_2d=False, return_binned=True)
             g1_image_plane_bluring_image_1d = g1.intensities_from_grid(
-                grid=tracer.source_plane.grid_stack.blurring, return_in_2d=False, return_binned_sub_grid=False)
+                grid=tracer.source_plane.grid_stack.blurring, return_in_2d=False, return_binned=False)
 
             g1_blurred_image_plane_image_1d = lens_data_7x7.convolver_image.convolve_image(
                 image_array=g1_image_plane_image_1d,

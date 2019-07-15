@@ -204,8 +204,11 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     def binned_up_mask_from_mask(self, bin_up_factor):
-        return Mask(array=binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(mask_2d=self, bin_up_factor=bin_up_factor),
-                    pixel_scale=self.pixel_scale*bin_up_factor, origin=self.origin)
+
+        binned_up_mask = binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(
+            mask_2d=self, bin_up_factor=bin_up_factor)
+
+        return Mask(array=binned_up_mask, pixel_scale=self.pixel_scale*bin_up_factor, origin=self.origin)
 
     @property
     @array_util.Memoizer()
@@ -225,7 +228,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     def masked_sub_grid_index_to_sub_pixel(self, sub_grid_size):
         """A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates."""
-        return mask_util.masked_sub_grid_1d_index_to_2d_sub_pixel_index_from_mask(
+        return mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
             self, sub_grid_size=sub_grid_size).astype('int')
 
     def array_1d_from_array_2d(self, array_2d):
@@ -238,7 +241,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         if array_2d is None or isinstance(array_2d, float):
             return array_2d
-        return mapping_util.map_array_2d_to_masked_array_1d_from_array_2d_and_mask(self, array_2d)
+        return mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+            mask=self, sub_array_2d=array_2d, sub_grid_size=1)
 
     def array_2d_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original 2D array.
@@ -250,9 +254,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         array_1d : ndarray
             The 1D array which is mapped to its masked 2D array.
         """
-        return mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
-            array_1d=array_1d, shape=self.shape,
-            one_to_two=self.masked_grid_index_to_pixel)
+        return mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=array_1d, mask=self, sub_grid_size=1)
 
     def scaled_array_2d_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a scaled \
@@ -278,9 +281,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         grid_1d : ndarray
             The 1D grid which is mapped to its masked 2D array.
         """
-        return mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
-            grid_1d=grid_1d, shape=self.shape,
-            one_to_two=self.masked_grid_index_to_pixel)
+        return mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+            sub_grid_1d=grid_1d, mask=self, sub_grid_size=1)
 
     def grid_1d_from_grid_2d(self, grid_2d):
         """ Map a 2D grid to its masked 1D grid..
@@ -292,8 +294,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         grid_1d : ndgrid
             The 1D grid which is mapped to its masked 2D grid.
         """
-        return mapping_util.map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(
-            grid_2d=grid_2d, mask=self)
+        return mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
+            sub_grid_2d=grid_2d, mask=self, sub_grid_size=1)
 
     def sub_array_2d_from_sub_array_1d_and_sub_grid_size(self, sub_array_1d, sub_grid_size):
         """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
@@ -304,11 +306,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         sub_array_1d : ndarray
             The 1D sub_array which is mapped to its masked 2D sub-array.
         """
-        sub_shape = (self.shape[0] * sub_grid_size,
-                     self.shape[1] * sub_grid_size)
-        sub_one_to_two = self.masked_sub_grid_index_to_sub_pixel(sub_grid_size=sub_grid_size)
-        return mapping_util.map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(
-            array_1d=sub_array_1d, shape=sub_shape, one_to_two=sub_one_to_two)
+        return mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=sub_array_1d, mask=self, sub_grid_size=sub_grid_size)
 
     def scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(self, sub_array_1d, sub_grid_size):
         """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
@@ -368,7 +367,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         su_array_2d : ndarray
             The 2D sub-array which is mapped to its masked 1D sub-array.
         """
-        return mapping_util.map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        return mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=self, sub_grid_size=sub_grid_size)
 
     def sub_grid_1d_with_sub_dimensions_from_sub_grid_2d_and_sub_grid_size(self, sub_grid_2d, sub_grid_size):
@@ -381,14 +380,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
             A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
             a 1d regular array.
         """
-
-        sub_grid_1d_y = self.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
-            sub_array_2d=sub_grid_2d[:, :, 0], sub_grid_size=sub_grid_size)
-
-        sub_grid_1d_x = self.sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
-            sub_array_2d=sub_grid_2d[:, :, 1], sub_grid_size=sub_grid_size)
-
-        return np.stack((sub_grid_1d_y, sub_grid_1d_x), axis=-1)
+        return mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
+            sub_grid_2d=sub_grid_2d, mask=self, sub_grid_size=sub_grid_size)
 
     def grid_1d_binned_from_sub_grid_1d_and_sub_grid_size(self, sub_grid_1d, sub_grid_size):
         """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
@@ -434,14 +427,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         sub_grid_1d : ndgrid
             The 1D sub_grid which is mapped to its masked 2D sub-grid.
         """
-        sub_shape = (self.shape[0] * sub_grid_size,
-                     self.shape[1] * sub_grid_size)
-
-        sub_one_to_two = self.masked_sub_grid_index_to_sub_pixel(
-            sub_grid_size=sub_grid_size)
-
-        return mapping_util.map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(
-            grid_1d=sub_grid_1d, shape=sub_shape, one_to_two=sub_one_to_two)
+        return mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+            sub_grid_1d=sub_grid_1d, mask=self, sub_grid_size=sub_grid_size)
 
     @array_util.Memoizer()
     def sub_to_regular_from_sub_grid_size(self, sub_grid_size):
@@ -490,9 +477,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @property
     def masked_grid_1d(self):
-        return grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=self,
-                                                                                  pixel_scales=self.pixel_scales,
-                                                                                  origin=self.origin)
+        return grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=self, pixel_scales=self.pixel_scales, sub_grid_size=1, origin=self.origin)
 
     @property
     def zoom_centre(self):

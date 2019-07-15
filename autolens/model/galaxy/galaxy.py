@@ -155,7 +155,7 @@ class Galaxy(af.ModelObject):
                     self.mass_profiles == other.mass_profiles))
 
     @reshape_returned_array
-    def intensities_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def intensities_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
         
@@ -169,7 +169,7 @@ class Galaxy(af.ModelObject):
             The (y, x) coordinates in the original reference frame of the grid.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -235,7 +235,7 @@ class Galaxy(af.ModelObject):
         return None
 
     @reshape_returned_array
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """Compute the summed convergence of the galaxy's mass profiles using a grid \
         of Cartesian (y,x) coordinates.
 
@@ -252,7 +252,7 @@ class Galaxy(af.ModelObject):
             The (y, x) coordinates in the original reference frame of the grid.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -262,7 +262,7 @@ class Galaxy(af.ModelObject):
         return np.zeros((grid.shape[0],))
 
     @reshape_returned_array
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """Compute the summed gravitational potential of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
 
@@ -279,7 +279,7 @@ class Galaxy(af.ModelObject):
             The (y, x) coordinates in the original reference frame of the grid.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned_sub_grid : bool
+        return_binned : bool
             If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
@@ -289,7 +289,7 @@ class Galaxy(af.ModelObject):
         return np.zeros((grid.shape[0],))
 
     @reshape_returned_grid
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """Compute the summed (y,x) deflection angles of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
 

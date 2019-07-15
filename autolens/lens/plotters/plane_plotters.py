@@ -17,7 +17,7 @@ def plot_image_plane_image(
         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
         output_path=None, output_format='show', output_filename='plane_image_plane_image'):
 
-    image_plane_image = plane.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+    image_plane_image = plane.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=image_plane_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -67,7 +67,7 @@ def plot_convergence(
         title='Plane Convergence', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         output_path=None, output_format='show', output_filename='plane_convergence'):
 
-    convergence = plane.convergence(return_in_2d=True, return_binned_sub_grid=True)
+    convergence = plane.convergence(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=convergence, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -87,7 +87,7 @@ def plot_potential(
         title='Plane Potential', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         output_path=None, output_format='show', output_filename='plane_potential'):
 
-    potential = plane.potential(return_in_2d=True, return_binned_sub_grid=True)
+    potential = plane.potential(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=potential, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -107,7 +107,7 @@ def plot_deflections_y(
         title='Plane Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         output_path=None, output_format='show', output_filename='plane_deflections_y'):
 
-    deflections_y = plane.deflections_y(return_in_2d=True, return_binned_sub_grid=True)
+    deflections_y = plane.deflections_y(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=deflections_y, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -127,7 +127,7 @@ def plot_deflections_x(
         title='Plane Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         output_path=None, output_format='show', output_filename='plane_deflections_x'):
 
-    deflections_x = plane.deflections_x(return_in_2d=True, return_binned_sub_grid=True)
+    deflections_x = plane.deflections_x(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=deflections_x, mask=mask, extract_array_from_mask=extract_array_from_mask,

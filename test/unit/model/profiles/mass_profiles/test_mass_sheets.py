@@ -175,23 +175,23 @@ class TestMassSheet(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         mass_sheet = mp.MassSheet()
 
         convergence = mass_sheet.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert convergence.shape == (2, 2)
 
         potential = mass_sheet.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert potential.shape == (2, 2)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert deflections.shape == (2, 2, 2)
 
@@ -240,22 +240,22 @@ class TestExternalShear(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         shear = mp.ExternalShear()
 
         convergence = shear.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert convergence.shape == (2, 2)
 
         potential = shear.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert potential.shape == (2, 2)
 
         deflections = shear.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False)
 
         assert deflections.shape == (2, 2, 2)

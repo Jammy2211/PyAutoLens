@@ -200,7 +200,7 @@ def plot_image_plane_image(
         mask_pointsize=10, position_pointsize=10.0,
         output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 
-    image_plane_image = tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+    image_plane_image = tracer.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=image_plane_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -222,7 +222,7 @@ def plot_convergence(
         title='Tracer Convergence', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         output_path=None, output_format='show', output_filename='tracer_convergence'):
 
-    convergence = tracer.convergence(return_in_2d=True, return_binned_sub_grid=True)
+    convergence = tracer.convergence(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=convergence, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -242,7 +242,7 @@ def plot_potential(
        title='Tracer Potential', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
        output_path=None, output_format='show', output_filename='tracer_potential'):
 
-    potential = tracer.potential(return_in_2d=True, return_binned_sub_grid=True)
+    potential = tracer.potential(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=potential, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -262,7 +262,7 @@ def plot_deflections_y(
         title='Tracer Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         output_path=None, output_format='show', output_filename='tracer_deflections_y'):
 
-    deflections_y = tracer.deflections_y(return_in_2d=True, return_binned_sub_grid=True)
+    deflections_y = tracer.deflections_y(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=deflections_y, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -282,7 +282,7 @@ def plot_deflections_x(
         title='Tracer Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         output_path=None, output_format='show', output_filename='tracer_deflections_x'):
 
-    deflections_x = tracer.deflections_x(return_in_2d=True, return_binned_sub_grid=True)
+    deflections_x = tracer.deflections_x(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=deflections_x, mask=mask, extract_array_from_mask=extract_array_from_mask,

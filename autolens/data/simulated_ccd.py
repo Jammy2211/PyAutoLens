@@ -30,14 +30,14 @@ class SimulatedCCDData(ccd.CCDData):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid_1d = grids.RegularGrid.from_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        deflections_1d = grids.RegularGrid.from_unmasked_grid_2d(grid_2d=deflections)
+        grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=shape, pixel_scale=pixel_scale)
+        deflections_1d = grids.Grid.from_unmasked_grid_2d(grid_2d=deflections)
 
         deflected_grid_1d = grid_1d - deflections_1d
 
         image_2d = sum(map(lambda g:
                            g.intensities_from_grid(
-                               grid=deflected_grid_1d, return_in_2d=True, return_binned_sub_grid=False),
+                               grid=deflected_grid_1d, return_in_2d=True, return_binned=False),
                            source_galaxies))
 
         return cls.from_image_and_exposure_arrays(
@@ -76,7 +76,7 @@ class SimulatedCCDData(ccd.CCDData):
         if psf is not None:
             image_plane_image_2d = tracer.padded_profile_image_plane_image_2d_from_psf_shape(psf_shape=psf.shape)
         else:
-            image_plane_image_2d = tracer.profile_image_plane_image(return_in_2d=True, return_binned_sub_grid=True)
+            image_plane_image_2d = tracer.profile_image_plane_image(return_in_2d=True, return_binned=True)
 
         return cls.from_image_and_exposure_arrays(
             image=image_plane_image_2d, pixel_scale=pixel_scale, exposure_time=exposure_time,

@@ -6,7 +6,7 @@ from autolens.model.profiles import mass_profiles as mp
 
 # In this test, we'll pass a regular grid to a power-law profile and compute deflection angles. We will check if
 # the pyquad integrator crashes for certain values of (y,x) coordinates.
-regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(25, 25), pixel_scale=0.005)
+regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(25, 25), pixel_scale=0.005)
 
 y_centres = [0.01, 0.005, 0.001, 0.0001, 0.00000001, 0.0]
 

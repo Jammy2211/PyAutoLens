@@ -22,15 +22,15 @@ class MassProfile(object):
     def convergence_func(self, eta):
         raise NotImplementedError("surface_density_func should be overridden")
 
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         pass
         # raise NotImplementedError("surface_density_from_grid should be overridden")
 
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         pass
         # raise NotImplementedError("potential_from_grid should be overridden")
 
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
     def mass_within_circle_in_units(self, radius: dim.Length, redshift_profile=None,
@@ -259,10 +259,10 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                                                 redshift_source=redshift_source, cosmology=cosmology, kwargs=kwargs)
 
     @reshape_returned_grid
-    def deflections_via_potential_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def deflections_via_potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         potential_2d = self.potential_from_grid(
-            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=True, return_binned=False)
 
         deflections_y_2d = np.gradient(potential_2d, grid.in_2d[:,0,0], axis=0)
         deflections_x_2d = np.gradient(potential_2d, grid.in_2d[0,:,1], axis=1)
@@ -271,75 +271,75 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @reshape_returned_array
     def lensing_jacobian_a11_from_grid_and_deflections_2d(
-            self, grid, return_in_2d=True, return_binned_sub_grid=True):
+            self, grid, return_in_2d=True, return_binned=True):
 
         deflections_2d = self.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=True, return_binned=False)
 
         return 1.0 - np.gradient(deflections_2d[:,:,1], grid.in_2d[0, :, 1], axis=1)
 
     @reshape_returned_array
     def lensing_jacobian_a12_from_grid_and_deflections_2d(
-            self, grid, return_in_2d=True, return_binned_sub_grid=True):
+            self, grid, return_in_2d=True, return_binned=True):
 
         deflections_2d = self.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=True, return_binned=False)
 
         return -1.0*np.gradient(deflections_2d[:,:,1], grid.in_2d[:, 0, 0], axis=0)
 
     @reshape_returned_array
     def lensing_jacobian_a21_from_grid_and_deflections_2d(
-            self, grid, return_in_2d=True, return_binned_sub_grid=True):
+            self, grid, return_in_2d=True, return_binned=True):
 
         deflections_2d = self.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=True, return_binned=False)
 
         return -1.0*np.gradient(deflections_2d[:,:,0], grid.in_2d[0, :, 1], axis=1)
 
     @reshape_returned_array
     def lensing_jacobian_a22_from_grid_and_deflections_2d(
-            self, grid, return_in_2d=True, return_binned_sub_grid=True):
+            self, grid, return_in_2d=True, return_binned=True):
 
         deflections_2d = self.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=True, return_binned=False)
 
         return 1 - np.gradient(deflections_2d[:,:,0], grid.in_2d[:, 0, 0], axis=0)
 
-    def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         a11 = self.lensing_jacobian_a11_from_grid_and_deflections_2d(
             grid=grid,
-            return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
+            return_in_2d=return_in_2d, return_binned=return_binned)
 
         a12 = self.lensing_jacobian_a12_from_grid_and_deflections_2d(
             grid=grid,
-            return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
+            return_in_2d=return_in_2d, return_binned=return_binned)
 
         a21 = self.lensing_jacobian_a21_from_grid_and_deflections_2d(
             grid=grid,
-            return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
+            return_in_2d=return_in_2d, return_binned=return_binned)
 
         a22 = self.lensing_jacobian_a22_from_grid_and_deflections_2d(
             grid=grid,
-            return_in_2d=return_in_2d, return_binned_sub_grid=return_binned_sub_grid)
+            return_in_2d=return_in_2d, return_binned=return_binned)
 
         return np.array([[a11, a12], [a21, a22]])
 
     @reshape_returned_array
-    def convergence_from_jacobian(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def convergence_from_jacobian(self, grid, return_in_2d=True, return_binned=True):
 
         jacobian = self.lensing_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=False, return_binned=False)
 
         convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
 
         return convergence
 
     @reshape_returned_array
-    def shear_from_jacobian(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def shear_from_jacobian(self, grid, return_in_2d=True, return_binned=True):
 
         jacobian = self.lensing_jacobian_from_grid(
-            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=True, return_binned=False)
 
         gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
         gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
@@ -347,32 +347,32 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return (gamma_1**2 + gamma_2**2)**0.5
 
     @reshape_returned_array
-    def tangential_eigen_value_from_shear_and_convergence(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def tangential_eigen_value_from_shear_and_convergence(self, grid, return_in_2d=True, return_binned=True):
 
        convergence = self.convergence_from_jacobian(
-           grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+           grid=grid, return_in_2d=False, return_binned=False)
 
        shear = self.shear_from_jacobian(
-           grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+           grid=grid, return_in_2d=False, return_binned=False)
 
        return 1 - convergence - shear
 
     @reshape_returned_array
-    def radial_eigen_value_from_shear_and_convergence(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def radial_eigen_value_from_shear_and_convergence(self, grid, return_in_2d=True, return_binned=True):
 
         convergence = self.convergence_from_jacobian(
-            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=False, return_binned=False)
 
         shear = self.shear_from_jacobian(
-            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=False, return_binned=False)
 
         return 1 - convergence + shear
 
     @reshape_returned_array
-    def magnification_from_grid(self, grid, return_in_2d=True, return_binned_sub_grid=True):
+    def magnification_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         jacobian = self.lensing_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=False, return_binned=False)
 
         det_jacobian = jacobian[0,0] * jacobian[1,1] - jacobian[0,1] * jacobian[1,0]
 
@@ -381,36 +381,28 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     def tangential_critical_curve_from_grid(self, grid):
 
         lambda_tan_2d = self.tangential_eigen_value_from_shear_and_convergence(
-            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=True, return_binned=False)
 
         tan_critical_curve_indices = measure.find_contours(lambda_tan_2d, 0)
 
-        if type(grid) is grids.RegularGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=tan_critical_curve_indices[0],
-                                                              shape=lambda_tan_2d.shape,
-                                                              pixel_scales=(
-                                                                  grid.pixel_scale, grid.pixel_scale),
-                                                              origin=(0.0, 0.0))
-        elif type(grid) is grids.SubGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=tan_critical_curve_indices[0], shape=lambda_tan_2d.shape,
-                                                                        pixel_scales=(
-                                                                        grid.pixel_scale / grid.sub_grid_size,
-                                                                        grid.pixel_scale / grid.sub_grid_size),
-                                                                        origin=(0.0, 0.0))
+        return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=tan_critical_curve_indices[0], shape=lambda_tan_2d.shape,
+            pixel_scales=(grid.pixel_scale / grid.sub_grid_size, grid.pixel_scale / grid.sub_grid_size),
+            origin=grid.mask.origin)
 
     def tangential_caustic_from_grid(self, grid):
 
         tangential_critical_curve = self.tangential_critical_curve_from_grid(grid=grid)
 
         deflections_1d = self.deflections_from_grid(
-            grid=tangential_critical_curve, return_in_2d=False, return_binned_sub_grid=False)
+            grid=tangential_critical_curve, return_in_2d=False, return_binned=False)
 
         return tangential_critical_curve - deflections_1d
 
     def radial_critical_curve_from_grid(self, grid):
 
         lambda_rad_2d = self.radial_eigen_value_from_shear_and_convergence(
-            grid=grid, return_in_2d=False, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=False, return_binned=False)
 
         radial_critical_curve_indices = measure.find_contours(lambda_rad_2d, 0)
 
@@ -420,30 +412,24 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         ## reg grid unit test works with this fix, sub grid still doesn't like it
         ## may be an isuue with where the marching squares algorithm starts rathet than x, y flip
 
-        if type(grid) is grids.RegularGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-                grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_rad_2d.shape,
-                pixel_scales=(grid.pixel_scale, grid.pixel_scale), origin=(0.0, 0.0))
-
-        elif type(grid) is grids.SubGrid:
-            return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-                grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_rad_2d.shape,
-                pixel_scales=(grid.pixel_scale / grid.sub_grid_size, grid.pixel_scale / grid.sub_grid_size),
-                origin=(0.0, 0.0))
+        return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_rad_2d.shape,
+            pixel_scales=(grid.pixel_scale / grid.sub_grid_size, grid.pixel_scale / grid.sub_grid_size),
+            origin=grid.mask.origin)
 
     def radial_caustic_from_grid(self, grid):
 
         radial_critical_curve = self.radial_critical_curve_from_grid(grid=grid)
 
         deflections_1d = self.deflections_from_grid(
-            grid=radial_critical_curve, return_in_2d=False, return_binned_sub_grid=False)
+            grid=radial_critical_curve, return_in_2d=False, return_binned=False)
 
         return radial_critical_curve - deflections_1d
 
     def critical_curves_from_grid(self, grid):
 
         magnification_2d = self.magnification_from_grid(
-            grid=grid, return_in_2d=True, return_binned_sub_grid=False)
+            grid=grid, return_in_2d=True, return_binned=False)
 
         inverse_magnification_2d = 1 / magnification_2d
 
@@ -459,20 +445,12 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             contour_x, contour_y = contours[jj].T
             pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-            if type(grid) is grids.RegularGrid:
+            critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+                grid_pixels_1d=pixel_coord, shape=magnification_2d.shape,
+                pixel_scales=(grid.pixel_scale / grid.sub_grid_size, grid.pixel_scale / grid.sub_grid_size),
+                origin=grid.mask.origin)
 
-                critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-                    grid_pixels_1d=pixel_coord, shape=magnification_2d.shape,
-                    pixel_scales=(grid.pixel_scale, grid.pixel_scale), origin=(0.0, 0.0))
-
-                critical_curves.append(critical_curve)
-
-            elif type(grid) is grids.SubGrid:
-                    critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-                        grid_pixels_1d=pixel_coord, shape=magnification_2d.shape,
-                        pixel_scales=(grid.pixel_scale / grid.sub_grid_size,
-                                    grid.pixel_scale / grid.sub_grid_size), origin=(0.0, 0.0))
-                    critical_curves.append(critical_curve)
+            critical_curves.append(critical_curve)
 
         return critical_curves
 
@@ -487,7 +465,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             critical_curve = critical_curves[i]
 
             deflections_1d = self.deflections_from_grid(
-                grid=critical_curve, return_in_2d=False, return_binned_sub_grid=False)
+                grid=critical_curve, return_in_2d=False, return_binned=False)
 
             caustic = critical_curve - deflections_1d
 
