@@ -7,7 +7,7 @@ from autolens.data.array import grids
 from test.unit.mock.data import mock_mask
 
 
-class MockRegularGrid(grids.RegularGrid):
+class MockGrid(grids.Grid):
 
     def __new__(cls, mask, pixel_scale=1.0, *args, **kwargs):
 
@@ -24,7 +24,7 @@ class MockRegularGrid(grids.RegularGrid):
         pass
 
 
-class MockSubGrid(grids.SubGrid):
+class MockGrid(grids.Grid):
 
     def __new__(cls, mask, pixel_scale=1.0, sub_grid_size=2, *args, **kwargs):
 
@@ -74,9 +74,9 @@ class MockPixSubGrid(np.ndarray):
 class MockPixGridStack(object):
 
     def __init__(self, regular, sub, blurring=None, pix=None, regular_to_pixelization=None):
-        self.regular = grids.RegularGrid(regular, mask=None)
+        self.regular = grids.Grid(regular, mask=None)
         self.sub = sub
-        self.blurring = grids.RegularGrid(blurring, mask=None) if blurring is not None else None
+        self.blurring = grids.Grid(blurring, mask=None) if blurring is not None else None
         self.pixelization = grids.PixelizationGrid(pix, regular_to_pixelization=regular_to_pixelization,
                                                    mask=None) if pix is not None else np.array([[0.0, 0.0]])
 

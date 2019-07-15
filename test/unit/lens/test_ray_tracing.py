@@ -190,13 +190,13 @@ class TestAbstractTracer(object):
             g2 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
             g0_convergence = g0.convergence_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
 
             g1_convergence = g1.convergence_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
 
             g2_convergence = g2.convergence_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=[g0, g1], source_galaxies=[g2],
@@ -256,13 +256,13 @@ class TestAbstractTracer(object):
             g2 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
             g0_potential = g0.potential_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
 
             g1_potential = g1.potential_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
 
             g2_potential = g2.potential_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=[g0, g1], source_galaxies=[g2],
@@ -330,13 +330,13 @@ class TestAbstractTracer(object):
             g2 = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
             g0_deflections = g0.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
             
             g1_deflections = g1.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
             
             g2_deflections = g2.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_sub_grid, return_in_2d=True, return_binned_sub_grid=True)
+                grid=grid_stack_7x7.sub.unlensed_grid_1d, return_in_2d=True, return_binned_sub_grid=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
                                                          image_plane_grid_stack=grid_stack_7x7)

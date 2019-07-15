@@ -225,7 +225,7 @@ class TestSparseToRegularGrid:
                              [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
         sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
-        regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
+        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
@@ -284,7 +284,7 @@ class TestSparseToRegularGrid:
                                                 [-1.0, 0.0]])
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
+        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
@@ -337,7 +337,7 @@ class TestSparseToRegularGrid:
 
         sub_to_regular = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
-        regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
+        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=2)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
@@ -389,7 +389,7 @@ class TestSparseToRegularGrid:
                                       [0.0, 1.0]])
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
+        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
@@ -481,7 +481,7 @@ class TestVoronoiMagnification:
                                         [True, True, True, True, True],
                                         [True, True, True, True, True]]), pixel_scale=1.0)
 
-        regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
+        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
 
         sub_grid =np.array([          [2.0, 1.0],
                           [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
@@ -527,7 +527,7 @@ class TestVoronoiMagnification:
 
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
+        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
         sub_grid = MockPixSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))

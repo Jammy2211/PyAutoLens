@@ -445,7 +445,7 @@ class AbstractGriddedPlane(AbstractPlane):
             sub-grid.
         """
         if self.galaxies:
-            return sum(map(lambda g: g.convergence_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid), self.galaxies))
+            return sum(map(lambda g: g.convergence_from_grid(grid=self.grid_stack.sub.unlensed_grid_1d), self.galaxies))
         else:
             return np.full((self.grid_stack.sub.shape[0]), 0.0)
 
@@ -475,7 +475,7 @@ class AbstractGriddedPlane(AbstractPlane):
             sub-grid.
         """
         if self.galaxies:
-            return sum(map(lambda g: g.potential_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid), self.galaxies))
+            return sum(map(lambda g: g.potential_from_grid(grid=self.grid_stack.sub.unlensed_grid_1d), self.galaxies))
         else:
             return np.full((self.grid_stack.sub.shape[0]), 0.0)
 
@@ -491,7 +491,7 @@ class AbstractGriddedPlane(AbstractPlane):
     def deflections(self, return_in_2d=True, return_binned_sub_grid=True):
         if self.galaxies:
             return sum(map(lambda g :
-                           g.deflections_from_grid(grid=self.grid_stack.sub.unlensed_sub_grid),
+                           g.deflections_from_grid(grid=self.grid_stack.sub.unlensed_grid_1d),
                            self.galaxies))
         else:
             return np.full((self.grid_stack.sub.shape[0], 2), 0.0)

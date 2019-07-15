@@ -62,7 +62,7 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
@@ -143,7 +143,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
@@ -390,7 +390,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
@@ -412,7 +412,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.

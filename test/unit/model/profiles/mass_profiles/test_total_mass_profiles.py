@@ -119,7 +119,7 @@ class TestPointMass(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = point_mass.deflections_from_grid(grid=regular_with_interp)
@@ -146,7 +146,7 @@ class TestPointMass(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         point_mass = mp.PointMass()
@@ -368,7 +368,7 @@ class TestCoredPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
         true_deflections = cored_power_law.deflections_from_grid(grid=regular)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
@@ -400,7 +400,7 @@ class TestCoredPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
         true_deflections = cored_power_law.deflections_from_grid(grid=regular)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
@@ -442,7 +442,7 @@ class TestCoredPowerLaw(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         cored_power_law = mp.EllipticalCoredPowerLaw()
@@ -640,7 +640,7 @@ class TestPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
@@ -669,7 +669,7 @@ class TestPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
@@ -689,7 +689,7 @@ class TestPowerLaw(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         power_law = mp.EllipticalPowerLaw()
@@ -893,7 +893,7 @@ class TestCoredIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = cored_isothermal.deflections_from_grid(grid=regular_with_interp)
@@ -921,7 +921,7 @@ class TestCoredIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = cored_isothermal.deflections_from_grid(grid=regular_with_interp)
@@ -940,7 +940,7 @@ class TestCoredIsothermal(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         cored_isothermal = mp.EllipticalCoredIsothermal()
@@ -1124,7 +1124,7 @@ class TestIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
@@ -1152,7 +1152,7 @@ class TestIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
@@ -1171,7 +1171,7 @@ class TestIsothermal(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         isothermal = mp.EllipticalIsothermal()
@@ -1212,7 +1212,7 @@ class TestIsothermal(object):
 
 def test__reshape_decorators():
 
-    regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+    regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=(2, 2), pixel_scale=1.0)
 
     isothermal = mp.SphericalIsothermal()
@@ -1239,7 +1239,7 @@ def test__reshape_decorators():
 
 
 
-    sub_grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
+    sub_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=(3, 3), pixel_scale=1.0, sub_grid_size=2)
 
     isothermal = mp.SphericalIsothermal()

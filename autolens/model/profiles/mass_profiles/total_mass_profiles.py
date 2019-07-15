@@ -97,7 +97,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
@@ -125,7 +125,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
@@ -153,7 +153,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
@@ -260,7 +260,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
@@ -474,7 +474,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
@@ -527,7 +527,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
@@ -548,7 +548,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.

@@ -601,7 +601,7 @@ class TestGeneralizedNFW(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = gNFW.deflections_from_grid(grid=regular_with_interp)
@@ -641,7 +641,7 @@ class TestGeneralizedNFW(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         # gnfw = mp.EllipticalGeneralizedNFW()
@@ -808,7 +808,7 @@ class TestTruncatedNFW(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = truncated_nfw.deflections_from_grid(grid=regular_with_interp)
@@ -902,7 +902,7 @@ class TestTruncatedNFW(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         truncated_nfw = mp.SphericalTruncatedNFW()
@@ -1088,7 +1088,7 @@ class TestNFW(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
@@ -1117,7 +1117,7 @@ class TestNFW(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.RegularGrid.from_mask(mask=mask)
+        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
         interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
@@ -1137,7 +1137,7 @@ class TestNFW(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         nfw = mp.EllipticalNFW()

@@ -145,7 +145,7 @@ class TestGaussian:
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         gaussian = lp.EllipticalGaussian()
@@ -277,7 +277,7 @@ class TestSersic:
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         sersic = lp.EllipticalSersic()
@@ -397,7 +397,7 @@ class TestExponential:
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         exponential = lp.EllipticalExponential()
@@ -519,7 +519,7 @@ class TestDevVaucouleurs:
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs()
@@ -649,7 +649,7 @@ class TestCoreSersic(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         core_sersic = lp.EllipticalCoreSersic()

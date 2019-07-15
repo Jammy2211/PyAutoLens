@@ -127,16 +127,16 @@ class GalaxyFitData(object):
                 grid=self.grid_stack.sub, return_in_2d=False, return_binned_sub_grid=True), galaxies))
         elif self.use_convergence:
             return sum(map(lambda g: g.convergence_from_grid(
-                grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))
+                grid=self.grid_stack.sub.unlensed_grid_1d, return_in_2d=False, return_binned_sub_grid=True), galaxies))
         elif self.use_potential:
             return sum(map(lambda g: g.potential_from_grid(
-                grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))
+                grid=self.grid_stack.sub.unlensed_grid_1d, return_in_2d=False, return_binned_sub_grid=True), galaxies))
         elif self.use_deflections_y:
             return sum(map(lambda g: g.deflections_from_grid(
-                grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))[:, 0]
+                grid=self.grid_stack.sub.unlensed_grid_1d, return_in_2d=False, return_binned_sub_grid=True), galaxies))[:, 0]
         elif self.use_deflections_x:
             return sum(map(lambda g: g.deflections_from_grid(
-                grid=self.grid_stack.sub.unlensed_sub_grid, return_in_2d=False, return_binned_sub_grid=True), galaxies))[:, 1]
+                grid=self.grid_stack.sub.unlensed_grid_1d, return_in_2d=False, return_binned_sub_grid=True), galaxies))[:, 1]
 
     def mask(self, return_in_2d=True):
         if return_in_2d:

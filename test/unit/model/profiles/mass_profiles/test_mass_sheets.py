@@ -175,7 +175,7 @@ class TestMassSheet(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         mass_sheet = mp.MassSheet()
@@ -240,7 +240,7 @@ class TestExternalShear(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.RegularGrid.from_shape_and_pixel_scale(
+        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0)
 
         shear = mp.ExternalShear()

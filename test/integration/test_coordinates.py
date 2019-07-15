@@ -15,7 +15,7 @@ import pytest
 
 def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
-    regular = grids.RegularGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
+    regular = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(5, 5), pixel_scale=1.0)
 
     sersic = lp.SphericalSersic(centre=(2.0, -2.0))
     image_1d = sersic.intensities_from_grid(grid=regular)
@@ -47,7 +47,7 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
 def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index():
 
-    regular = grids.RegularGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
+    regular = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(5, 5), pixel_scale=1.0)
 
     sis = mp.SphericalIsothermal(centre=(2.0, -2.0))
     density_1d = sis.convergence_from_grid(grid=regular)
@@ -79,7 +79,7 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
 
 def test__deflection_angles():
 
-    regular = grids.RegularGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
+    regular = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(5, 5), pixel_scale=1.0)
 
     sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_1d = sis.deflections_from_grid(grid=regular)
