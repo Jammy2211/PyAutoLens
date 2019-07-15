@@ -9,13 +9,15 @@ from autolens.data.array.grids import reshape_returned_regular_array
 
 class LensDataFit(af.DataFit1D):
 
-    def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d):
+    def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d, grid_stack):
 
         super().__init__(
             data_1d=image_1d,
             noise_map_1d=noise_map_1d,
             mask_1d=mask_1d,
             model_data_1d=model_image_1d)
+
+        self.grid_stack = grid_stack
 
     @property
     def image_1d(self):
@@ -113,14 +115,11 @@ class LensTracerFit(LensDataFit):
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
             mask_1d=mask_1d,
-            model_image_1d=model_image_1d)
+            model_image_1d=model_image_1d,
+            grid_stack=tracer.grid_stack)
 
         self.tracer = tracer
         self.psf = psf
-
-    @property
-    def grid_stack(self):
-        return self.tracer.grid_stack
 
     @property
     def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
