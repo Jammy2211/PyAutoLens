@@ -217,6 +217,7 @@ class TestMaskShapes:
         assert mask.centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_elliptical_inverted__compare_to_array_util(self):
+
         mask_util = util.mask_elliptical_from_shape_pixel_scale_and_radius(shape=(8, 5), pixel_scale=2.7,
                                                                            major_axis_radius_arcsec=5.7,
                                                                            axis_ratio=0.4, phi=40.0,

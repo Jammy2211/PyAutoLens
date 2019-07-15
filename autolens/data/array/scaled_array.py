@@ -71,8 +71,11 @@ class RectangularArrayGeometry(ArrayGeometry):
         grid_arcsec: ndarray
             A grid of (y,x) coordinates in arc seconds.
         """
-        return grid_util.grid_arcsec_1d_to_grid_pixels_1d(grid_arcsec_1d=grid_arcsec, shape=self.shape,
-                                                               pixel_scales=self.pixel_scales, origin=self.origin)
+        return grid_util.grid_arcsec_1d_to_grid_pixels_1d(
+            grid_arcsec_1d=grid_arcsec,
+            shape=self.shape,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin)
 
     def grid_arcsec_to_grid_pixel_centres(self, grid_arcsec):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
@@ -89,10 +92,11 @@ class RectangularArrayGeometry(ArrayGeometry):
         grid_arcsec: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        return grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(grid_arcsec_1d=grid_arcsec,
-                                                                      shape=self.shape,
-                                                                      pixel_scales=self.pixel_scales,
-                                                                      origin=self.origin).astype('int')
+        return grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
+            grid_arcsec_1d=grid_arcsec,
+            shape=self.shape,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin).astype('int')
 
     def grid_arcsec_1d_to_grid_pixel_indexes_1d(self, grid_arcsec):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
@@ -113,10 +117,11 @@ class RectangularArrayGeometry(ArrayGeometry):
         grid_arcsec: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        return grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec_1d=grid_arcsec,
-                                                                      shape=self.shape,
-                                                                      pixel_scales=self.pixel_scales,
-                                                                      origin=self.origin).astype('int')
+        return grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+            grid_arcsec_1d=grid_arcsec,
+            shape=self.shape,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin).astype('int')
 
     def grid_pixels_to_grid_arcsec(self, grid_pixels):
         """Convert a grid of (y,x) pixel coordinates to a grid of (y,x) arc second values.
@@ -132,8 +137,11 @@ class RectangularArrayGeometry(ArrayGeometry):
         grid_pixels : ndarray
             The grid of (y,x) coordinates in pixels.
         """
-        return grid_util.grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=grid_pixels, shape=self.shape,
-                                                               pixel_scales=self.pixel_scales, origin=self.origin)
+        return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=grid_pixels,
+            shape=self.shape,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin)
 
     @property
     def grid_1d(self):
@@ -143,7 +151,10 @@ class RectangularArrayGeometry(ArrayGeometry):
         value y value in arc seconds.
         """
         return grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
-            shape=self.shape, pixel_scales=self.pixel_scales, sub_grid_size=1,origin=self.origin)
+            shape=self.shape,
+            pixel_scales=self.pixel_scales,
+            sub_grid_size=1,
+            origin=self.origin)
 
     @property
     def grid_2d(self):
@@ -153,7 +164,10 @@ class RectangularArrayGeometry(ArrayGeometry):
         value y value in arc seconds.
         """
         return grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
-            shape=self.shape, pixel_scales=self.pixel_scales, sub_grid_size=1, origin=self.origin)
+            shape=self.shape,
+            pixel_scales=self.pixel_scales,
+            sub_grid_size=1,
+            origin=self.origin)
 
 
 class Array(np.ndarray):
@@ -354,34 +368,56 @@ class ScaledSquarePixelArray(ScaledArray):
             The new two-dimensional shape of the array.
         """
         if new_centre_pixels is None and new_centre_arcsec is None:
+
             new_centre = (-1, -1)  # In Numba, the input origin must be the same image type as the origin, thus we cannot
             # pass 'None' and instead use the tuple (-1, -1).
+
         elif new_centre_pixels is not None and new_centre_arcsec is None:
+
             new_centre = new_centre_pixels
+
         elif new_centre_pixels is None and new_centre_arcsec is not None:
-            new_centre = self.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=new_centre_arcsec)
+
+            new_centre = self.arc_second_coordinates_to_pixel_coordinates(
+                arc_second_coordinates=new_centre_arcsec)
+
         else:
+
             raise exc.DataException('You have supplied two centres (pixels and arc-seconds) to the resize scaled'
                                        'array function')
 
-        return self.new_with_array(array=array_util.resized_array_2d_from_array_2d_and_resized_shape(
-            array_2d=self, resized_shape=new_shape, origin=new_centre))
+        return self.new_with_array(
+            array=array_util.resized_array_2d_from_array_2d_and_resized_shape(
+            array_2d=self,
+            resized_shape=new_shape,
+                origin=new_centre))
 
     def binned_up_array_from_array(self, bin_up_factor, method):
 
         if method is 'mean':
-            return ScaledSquarePixelArray(array=binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(array_2d=self,
-                                                                                                                         bin_up_factor=bin_up_factor),
-                                          pixel_scale=self.pixel_scale*bin_up_factor)
+
+            return ScaledSquarePixelArray(array=binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+                array_2d=self,
+                bin_up_factor=bin_up_factor),
+                pixel_scale=self.pixel_scale*bin_up_factor)
+
         elif method is 'quadrature':
-            return ScaledSquarePixelArray(array=binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(array_2d=self,
-                                                                                                                            bin_up_factor=bin_up_factor),
-                                          pixel_scale=self.pixel_scale*bin_up_factor)
+
+            return ScaledSquarePixelArray(
+                array=binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
+                    array_2d=self,
+                    bin_up_factor=bin_up_factor),
+                    pixel_scale=self.pixel_scale*bin_up_factor)
+
         elif method is 'sum':
-            return ScaledSquarePixelArray(array=binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(array_2d=self,
-                                                                                                                     bin_up_factor=bin_up_factor),
-                                          pixel_scale=self.pixel_scale*bin_up_factor)
+
+            return ScaledSquarePixelArray(array=binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
+                array_2d=self,
+                bin_up_factor=bin_up_factor),
+                pixel_scale=self.pixel_scale*bin_up_factor)
+
         else:
+
             raise exc.DataException('The method used in binned_up_array_from_array is not a valid method '
                                        '[mean | quadrature | sum]')
 
@@ -404,7 +440,8 @@ class ScaledRectangularPixelArray(ScaledArray):
             The arc-second origin of the scaled array's coordinate system.
         """
 
-        pixel_scale_sanity_checks(pixel_scales=pixel_scales)
+        pixel_scale_sanity_checks(
+            pixel_scales=pixel_scales)
 
         self.pixel_scales = pixel_scales
         self.origin = origin
@@ -437,7 +474,9 @@ class ScaledRectangularPixelArray(ScaledArray):
             An array filled with a single value
         """
         array = np.ones(shape) * value
-        return cls(array, pixel_scales, origin=origin)
+        return cls(array=array,
+                   pixel_scales=pixel_scales,
+                   origin=origin)
 
     @classmethod
     def from_fits_with_pixel_scale(cls, file_path, hdu, pixel_scales, origin=(0.0, 0.0)):
@@ -453,7 +492,9 @@ class ScaledRectangularPixelArray(ScaledArray):
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(array_util.numpy_array_2d_from_fits(file_path, hdu), pixel_scales, origin)
+        return cls(array=array_util.numpy_array_2d_from_fits(file_path, hdu),
+                   pixel_scales=pixel_scales,
+                   origin=origin)
 
     def flatten(self, order='C'):
         """
