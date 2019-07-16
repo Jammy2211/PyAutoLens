@@ -174,8 +174,8 @@ class TestVariableFixing(object):
 
         phase.add_defaults(mapper)
 
-        assert isinstance(mapper.hyper_image_sky, af.Model)
-        assert isinstance(mapper.hyper_noise_background, af.Model)
+        assert isinstance(mapper.hyper_image_sky, af.PriorModel)
+        assert isinstance(mapper.hyper_noise_background, af.PriorModel)
 
         assert mapper.hyper_image_sky.cls == hd.HyperImageSky
         assert mapper.hyper_noise_background.cls == hd.HyperNoiseBackground
@@ -189,7 +189,7 @@ class TestVariableFixing(object):
         mapper = af.ModelMapper()
         phase.add_defaults(mapper)
 
-        assert isinstance(mapper.hyper_image_sky, af.Model)
+        assert isinstance(mapper.hyper_image_sky, af.PriorModel)
         assert mapper.hyper_image_sky.cls == hd.HyperImageSky
 
     def test_defaults_background_noise(self):
@@ -199,7 +199,7 @@ class TestVariableFixing(object):
         mapper = af.ModelMapper()
         phase.add_defaults(mapper)
 
-        assert isinstance(mapper.hyper_noise_background, af.Model)
+        assert isinstance(mapper.hyper_noise_background, af.PriorModel)
         assert mapper.hyper_noise_background.cls == hd.HyperNoiseBackground
 
     def test_make_pixelization_variable(self):
@@ -689,7 +689,7 @@ class TestImagePassing(object):
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
 
-@pytest.fixture(name="combined")
+@pytest.fixture(name="hyper_combined")
 def make_combined():
     normal_phase = MockPhase()
 
@@ -698,7 +698,7 @@ def make_combined():
         return MockResult()
 
     # noinspection PyTypeChecker
-    combined = phase_extensions.CombinedHyperPhase(
+    hyper_combined = phase_extensions.CombinedHyperPhase(
         normal_phase,
         hyper_phase_classes=(
             phase_extensions.HyperGalaxyPhase,
@@ -706,15 +706,15 @@ def make_combined():
         ),
     )
 
-    for phase in combined.hyper_phases:
+    for phase in hyper_combined.hyper_phases:
         phase.run_hyper = run_hyper
 
-    return combined
+    return hyper_combined
 
 
 class TestHyperAPI(object):
-    def test_combined_result(self, combined):
-        result = combined.run(None)
+    def test_combined_result(self, hyper_combined):
+        result = hyper_combined.run(None)
 
         assert hasattr(result, "hyper_galaxy")
         assert isinstance(result.hyper_galaxy, MockResult)
@@ -722,10 +722,10 @@ class TestHyperAPI(object):
         assert hasattr(result, "inversion")
         assert isinstance(result.inversion, MockResult)
 
-        assert hasattr(result, "combined")
-        assert isinstance(result.combined, MockResult)
+        assert hasattr(result, "hyper_combined")
+        assert isinstance(result.hyper_combined, MockResult)
 
-    def test_combine_variables(self, combined):
+    def test_combine_variables(self, hyper_combined):
         result = MockResult()
         hyper_galaxy_result = MockResult()
         inversion_result = MockResult()
@@ -741,19 +741,19 @@ class TestHyperAPI(object):
         result.hyper_galaxy = hyper_galaxy_result
         result.inversion = inversion_result
 
-        variable = combined.combine_variables(result)
+        variable = hyper_combined.combine_variables(result)
 
-        assert isinstance(variable.hyper_galaxy, af.Model)
-        assert isinstance(variable.pixelization, af.Model)
+        assert isinstance(variable.hyper_galaxy, af.PriorModel)
+        assert isinstance(variable.pixelization, af.PriorModel)
 
         assert variable.hyper_galaxy.cls == g.HyperGalaxy
         assert variable.pixelization.cls == px.Pixelization
 
-    def test_instantiation(self, combined):
-        assert len(combined.hyper_phases) == 2
+    def test_instantiation(self, hyper_combined):
+        assert len(hyper_combined.hyper_phases) == 2
 
-        galaxy_phase = combined.hyper_phases[0]
-        pixelization_phase = combined.hyper_phases[1]
+        galaxy_phase = hyper_combined.hyper_phases[0]
+        pixelization_phase = hyper_combined.hyper_phases[1]
 
         assert galaxy_phase.hyper_name == "hyper_galaxy"
         assert isinstance(galaxy_phase, phase_extensions.HyperGalaxyPhase)

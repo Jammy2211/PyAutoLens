@@ -191,7 +191,7 @@ class Galaxy(af.ModelObject):
         """
         if self.has_light_profile:
             return sum(
-                map(lambda p: p.intensities_from_grid(grid), self.light_profiles)
+                map(lambda p: p.intensities_from_grid(grid=grid, return_in_2d=False, return_binned=False), self.light_profiles)
             )
         else:
             return np.zeros((grid.shape[0],))
@@ -300,7 +300,7 @@ class Galaxy(af.ModelObject):
         """
         if self.has_mass_profile:
             return sum(
-                map(lambda p: p.convergence_from_grid(grid=grid), self.mass_profiles)
+                map(lambda p: p.convergence_from_grid(grid=grid, return_in_2d=False, return_binned=False), self.mass_profiles)
             )
         return np.zeros((grid.shape[0],))
 
@@ -329,7 +329,7 @@ class Galaxy(af.ModelObject):
         """
         if self.has_mass_profile:
             return sum(
-                map(lambda p: p.potential_from_grid(grid=grid), self.mass_profiles)
+                map(lambda p: p.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False), self.mass_profiles)
             )
         return np.zeros((grid.shape[0],))
 
@@ -348,7 +348,7 @@ class Galaxy(af.ModelObject):
             The (y, x) coordinates in the original reference frame of the grid.
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.deflections_from_grid(grid), self.mass_profiles))
+            return sum(map(lambda p: p.deflections_from_grid(grid=grid, return_in_2d=False, return_binned=False), self.mass_profiles))
         return np.full((grid.shape[0], 2), 0.0)
 
     def mass_within_circle_in_units(

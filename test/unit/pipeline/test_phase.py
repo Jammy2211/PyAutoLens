@@ -1121,7 +1121,7 @@ class TestPhase(object):
 
         from autolens.pipeline.phase import phase_extensions
 
-        phase_extended = phase_7x7.extend_with_inversion_phase()
+        phase_extended = phase_7x7.extend_with_multiple_hyper_phases(inversion=True)
         assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
 
         phase_extended = phase_7x7.extend_with_multiple_hyper_phases(

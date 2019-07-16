@@ -16,7 +16,7 @@ class CombinedHyperPhase(HyperPhase):
         self, phase: phase_imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()
     ):
         """
-        A combined hyper phase that can run zero or more other hyper phases after the initial phase is run.
+        A hyper_combined hyper phase that can run zero or more other hyper phases after the initial phase is run.
 
         Parameters
         ----------
@@ -25,13 +25,13 @@ class CombinedHyperPhase(HyperPhase):
         hyper_phase_classes
             The classes of hyper phases to be run following the initial phase
         """
-        super().__init__(phase, "combined")
+        super().__init__(phase, "hyper_combined")
         self.hyper_phases = list(map(lambda cls: cls(phase), hyper_phase_classes))
 
     @property
     def phase_names(self) -> [str]:
         """
-        The names of phases included in this combined phase
+        The names of phases included in this hyper_combined phase
         """
         return [phase.hyper_name for phase in self.hyper_phases]
 
@@ -70,7 +70,7 @@ class CombinedHyperPhase(HyperPhase):
 
     def combine_variables(self, result) -> af.ModelMapper:
         """
-        Combine the variable objects from all previous results in this combined hyper phase.
+        Combine the variable objects from all previous results in this hyper_combined hyper phase.
 
         Iterates through the hyper names of the included hyper phases, extracting a result
         for each name and adding the variable of that result to a new variable.
