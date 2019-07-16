@@ -23,7 +23,6 @@ class HyperGalaxyPhase(HyperPhase):
         self.include_noise_background = include_noise_background
 
     class Analysis(af.Analysis):
-
         def __init__(self, lens_data, model_image_1d, galaxy_image_1d):
             """
             An analysis to fit the noise for a single galaxy image.
@@ -39,8 +38,8 @@ class HyperGalaxyPhase(HyperPhase):
 
             self.lens_data = lens_data
 
-            self.hyper_model_image_1d = model_image_1d
-            self.hyper_galaxy_image_1d = galaxy_image_1d
+            self.hyper_model_image_1d = model_image_1d.copy()
+            self.hyper_galaxy_image_1d = galaxy_image_1d.copy()
 
             self.check_for_previously_masked_values(array=self.hyper_model_image_1d)
             self.check_for_previously_masked_values(array=self.hyper_galaxy_image_1d)
@@ -60,6 +59,7 @@ class HyperGalaxyPhase(HyperPhase):
         def visualize(self, instance, image_path, during_analysis):
 
             if self.plot_hyper_galaxy_subplot:
+
                 hyper_model_image_2d = self.lens_data.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_model_image_1d
                 )
@@ -104,40 +104,6 @@ class HyperGalaxyPhase(HyperPhase):
                     output_path=image_path,
                     output_format="png",
                 )
-
-        def associate_images(self, instance: af.ModelInstance) -> af.ModelInstance:
-            """
-            Takes images from the last result, if there is one, and associates them with galaxies in this phase where
-            full-path galaxy names match.
-
-            If the galaxy collection has a different name then an association is not made.
-
-            e.g.
-            lens_galaxies.lens will match with:
-                lens_galaxies.lens
-            but not with:
-                galaxies.lens
-                lens_galaxies.source
-
-            Parameters
-            ----------
-            instance
-                A model instance with 0 or more galaxies in its tree
-
-            Returns
-            -------
-            instance
-               The input instance with images associated with galaxies where possible.
-            """
-            for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                g.Galaxy
-            ):
-                if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
-                    galaxy.hyper_model_image_1d = self.hyper_model_image_1d
-                    galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[
-                        galaxy_path
-                    ]
-            return instance
 
         def fit(self, instance):
             """
@@ -264,7 +230,7 @@ class HyperGalaxyPhase(HyperPhase):
         model_image_1d = results.last.hyper_model_image_1d_from_mask(
             mask=lens_data.mask_2d
         )
-        hyper_galaxy_image_1d_path_dict = results.last.combined_image_1d_path_dict_from_mask(
+        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict_from_mask(
             mask=lens_data.mask_2d
         )
 
@@ -339,6 +305,7 @@ class HyperGalaxyPhase(HyperPhase):
 
         return hyper_result
 
+
 class HyperGalaxyAllPhase(HyperPhase):
     def __init__(
         self, phase, include_sky_background=False, include_noise_background=False
@@ -396,7 +363,7 @@ class HyperGalaxyAllPhase(HyperPhase):
         model_image_1d = results.last.hyper_model_image_1d_from_mask(
             mask=lens_data.mask_2d
         )
-        hyper_galaxy_image_1d_path_dict = results.last.combined_image_1d_path_dict_from_mask(
+        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict_from_mask(
             mask=lens_data.mask_2d
         )
 

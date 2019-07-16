@@ -82,7 +82,9 @@ def adaptive_pixel_signals_from_images(
     return pixel_signals ** signal_scale
 
 
-def adaptive_regularization_weights_from_pixel_signals(inner_coefficient, outer_coefficient, pixel_signals):
+def adaptive_regularization_weights_from_pixel_signals(
+    inner_coefficient, outer_coefficient, pixel_signals
+):
     """Compute the regularization weights, which are the effective regularization coefficient of every \
     pixel. They are computed using the (scaled) pixel-signal of each pixel.
 

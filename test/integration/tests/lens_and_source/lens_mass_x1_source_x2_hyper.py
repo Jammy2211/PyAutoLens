@@ -2,6 +2,7 @@ import os
 
 import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
+from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.pipeline.phase import phase_imaging, phase_extensions
 from autolens.pipeline import pipeline as pl
@@ -48,10 +49,12 @@ def make_pipeline():
     class AddSourceGalaxyPhase(phase_imaging.LensSourcePlanePhase):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens = results.from_phase("phase_1").variable.lens
+            self.lens_galaxies.lens = results.from_phase(
+                "phase_1"
+            ).variable.lens_galaxies.lens
             self.source_galaxies.source_0 = results.from_phase(
                 "phase_1"
-            ).variable.source_0
+            ).variable.source_galaxies.source_0
 
     phase2 = AddSourceGalaxyPhase(
         phase_name="phase_2",
@@ -70,15 +73,51 @@ def make_pipeline():
     phase2.optimizer.n_live_points = 60
     phase2.optimizer.sampling_efficiency = 0.7
 
-    phase2h = phase_extensions.HyperGalaxyPhase(
-        phase_name="phase_2_hyper", phase_folders=[test_type, test_name]
+    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True)
+
+    class HyperLensSourcePlanePhase(phase_imaging.LensSourcePlanePhase):
+        def pass_priors(self, results):
+
+            self.lens_galaxies.lens = results.from_phase(
+                "phase_1"
+            ).variable.lens_galaxies.lens
+
+            self.source_galaxies = results.from_phase(
+                "phase_1"
+            ).variable.source_galaxies
+
+            self.source_galaxies.source_0.hyper_galaxy = (
+                results.last.hyper_combined.constant.source_galaxies.source_0.hyper_galaxy
+            )
+
+            self.source_galaxies.source_1.hyper_galaxy = (
+                results.last.hyper_combined.constant.source_galaxies.source_1.hyper_galaxy
+            )
+
+    phase3 = HyperLensSourcePlanePhase(
+        phase_name="phase_3",
+        phase_folders=[test_type, test_name],
+        lens_galaxies=dict(
+            lens=gm.GalaxyModel(
+                redshift=0.5, mass=mp.EllipticalIsothermal, hyper_galaxy=g.HyperGalaxy
+            )
+        ),
+        source_galaxies=dict(
+            source_0=gm.GalaxyModel(
+                redshift=1.0, light=lp.EllipticalSersic, hyper_galaxy=g.HyperGalaxy
+            ),
+            source_1=gm.GalaxyModel(
+                redshift=1.0, light=lp.EllipticalSersic, hyper_galaxy=g.HyperGalaxy
+            ),
+        ),
+        optimizer_class=af.MultiNest,
     )
 
-    phase2h.optimizer.const_efficiency_mode = True
-    phase2h.optimizer.n_live_points = 60
-    phase2h.optimizer.sampling_efficiency = 0.7
+    phase3.optimizer.const_efficiency_mode = True
+    phase3.optimizer.n_live_points = 40
+    phase3.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(test_name, phase1, phase2, phase2h)
+    return pl.PipelineImaging(test_name, phase1, phase2, phase3)
 
 
 if __name__ == "__main__":

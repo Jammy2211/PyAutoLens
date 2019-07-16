@@ -48,10 +48,11 @@ class HyperPhase(object):
         phase_folders.append(phase.phase_name)
 
         phase.optimizer = phase.optimizer.copy_with_name_extension(
-            extension=self.hyper_name + '_' + phase.phase_tag)
+            extension=self.hyper_name + "_" + phase.phase_tag
+        )
 
-        phase.optimizer.phase_tag = ''
-        phase.phase_tag = ''
+        phase.optimizer.phase_tag = ""
+        phase.phase_tag = ""
         phase.pass_priors = self.pass_priors
         phase.preload_pixelization_grid = None
 

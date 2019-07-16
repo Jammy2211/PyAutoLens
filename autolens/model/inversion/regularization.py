@@ -233,8 +233,9 @@ class AdaptiveBrightness(Regularization):
 
     def regularization_weights_from_pixel_signals(self, pixel_signals):
         return regularization_util.adaptive_regularization_weights_from_pixel_signals(
-            inner_coefficient=self.inner_coefficient, outer_coefficient=self.outer_coefficient,
-            pixel_signals=pixel_signals
+            inner_coefficient=self.inner_coefficient,
+            outer_coefficient=self.outer_coefficient,
+            pixel_signals=pixel_signals,
         )
 
     def regularization_matrix_from_regularization_weights_and_pixel_neighbors(

@@ -35,8 +35,6 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
             self.lens_galaxies.lens.mass.centre.centre_1 = 0.0
             self.lens_galaxies.lens.mass.einstein_radius = 1.6
-            self.source_galaxies.source.pixelization.shape_0 = 20.0
-            self.source_galaxies.source.pixelization.shape_1 = 20.0
 
     phase1 = SourcePix(
         phase_name="phase_1",
@@ -51,7 +49,6 @@ def make_pipeline(test_name):
                 regularization=reg.Constant,
             )
         ),
-        inversion_pixel_limit=300.0,
         optimizer_class=af.MultiNest,
     )
 
@@ -68,13 +65,9 @@ def make_pipeline(test_name):
                 "phase_1"
             ).variable.lens_galaxies.lens
 
-            self.source_galaxies.source.pixelization = results.from_phase(
-                "phase_1"
-            ).hyper.constant.source_galaxies.source.pixelization
-
-            self.source_galaxies.source.regularization = results.from_phase(
-                "phase_1"
-            ).hyper.constant.source_galaxies.source.regularization
+            self.source_galaxies.source = (
+                results.last.inversion.constant.source_galaxies.source
+            )
 
     phase2 = SourcePix(
         phase_name="phase_2",
@@ -89,7 +82,6 @@ def make_pipeline(test_name):
                 regularization=reg.Constant,
             )
         ),
-        inversion_pixel_limit=300.0,
         optimizer_class=af.MultiNest,
     )
 
