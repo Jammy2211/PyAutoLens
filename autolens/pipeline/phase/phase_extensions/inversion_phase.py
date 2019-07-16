@@ -25,7 +25,7 @@ class VariableFixingHyperPhase(HyperPhase):
 
         phase = super().make_hyper_phase()
 
-        phase.const_efficiency_mode = af.conf.instance.non_linear.get(
+        phase.optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
             "MultiNest", "extension_inversion_const_efficiency_mode", bool
         )
         phase.optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
