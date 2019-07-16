@@ -5,7 +5,6 @@ from autolens.data import convolution
 
 
 class ConvolverMappingMatrix(convolution.Convolver):
-
     def __init__(self, mask, psf):
         """
         Class to create number array and frames used to convolve a psf with a 1D vector of non-masked values.
@@ -91,12 +90,18 @@ class ConvolverMappingMatrix(convolution.Convolver):
         mapping_matrix : ndarray
             The 2D mapping matix describing how every inversion pixel maps to an datas_ pixel.
         """
-        return self.convolve_matrix_jit(mapping_matrix, self.image_frame_indexes,
-                                        self.image_frame_psfs, self.image_frame_lengths)
+        return self.convolve_matrix_jit(
+            mapping_matrix,
+            self.image_frame_indexes,
+            self.image_frame_psfs,
+            self.image_frame_lengths,
+        )
 
     @staticmethod
     @decorator_util.jit()
-    def convolve_matrix_jit(mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths):
+    def convolve_matrix_jit(
+        mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths
+    ):
 
         blurred_mapping_matrix = np.zeros(mapping_matrix.shape)
 
@@ -114,6 +119,8 @@ class ConvolverMappingMatrix(convolution.Convolver):
                     for kernel_index in range(frame_length):
                         vector_index = frame_indexes[kernel_index]
                         kernel = frame_kernels[kernel_index]
-                        blurred_mapping_matrix[vector_index, pixel_index] += value * kernel
+                        blurred_mapping_matrix[vector_index, pixel_index] += (
+                            value * kernel
+                        )
 
         return blurred_mapping_matrix

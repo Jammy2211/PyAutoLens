@@ -3,8 +3,7 @@ import logging
 from autolens import exc
 from autolens.data import ccd
 from autolens.data.array import grids
-from autolens.data.array.scaled_array import ScaledSquarePixelArray, Array
-from autolens.model.galaxy.util import galaxy_util
+from autolens.data.array.scaled_array import ScaledSquarePixelArray
 
 import numpy as np
 
@@ -12,44 +11,100 @@ logger = logging.getLogger(__name__)
 
 
 class SimulatedCCDData(ccd.CCDData):
-    
-    def __init__(self, image, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
-                 exposure_time_map=None, background_sky_map=None, noise_realization=None, name=None, **kwargs):
-        
-        super(SimulatedCCDData, self).__init__(image=image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map, 
-                                               background_noise_map=background_noise_map, 
-                                               poisson_noise_map=poisson_noise_map, exposure_time_map=exposure_time_map, 
-                                               background_sky_map=background_sky_map, name=name, kwargs=kwargs)
-        
+    def __init__(
+        self,
+        image,
+        pixel_scale,
+        psf,
+        noise_map=None,
+        background_noise_map=None,
+        poisson_noise_map=None,
+        exposure_time_map=None,
+        background_sky_map=None,
+        noise_realization=None,
+        name=None,
+        **kwargs
+    ):
+
+        super(SimulatedCCDData, self).__init__(
+            image=image,
+            pixel_scale=pixel_scale,
+            psf=psf,
+            noise_map=noise_map,
+            background_noise_map=background_noise_map,
+            poisson_noise_map=poisson_noise_map,
+            exposure_time_map=exposure_time_map,
+            background_sky_map=background_sky_map,
+            name=name,
+            kwargs=kwargs,
+        )
+
         self.noise_realization = noise_realization
 
     @classmethod
     def from_deflections_source_galaxies_and_exposure_arrays(
-            cls, deflections, pixel_scale, source_galaxies, exposure_time, psf=None, exposure_time_map=None,
-            background_sky_level=0.0, background_sky_map=None, add_noise=True, noise_if_add_noise_false=0.1,
-            noise_seed=-1, name=None):
+        cls,
+        deflections,
+        pixel_scale,
+        source_galaxies,
+        exposure_time,
+        psf=None,
+        exposure_time_map=None,
+        background_sky_level=0.0,
+        background_sky_map=None,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
+        name=None,
+    ):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid_1d = grids.RegularGrid.from_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        deflections_1d = grids.RegularGrid.from_unmasked_grid_2d(grid_2d=deflections)
+        grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=shape, pixel_scale=pixel_scale
+        )
+        deflections_1d = grids.Grid.from_unmasked_grid_2d(grid_2d=deflections)
 
         deflected_grid_1d = grid_1d - deflections_1d
 
-        image_1d = galaxy_util.intensities_of_galaxies_from_grid(grid=deflected_grid_1d, galaxies=source_galaxies)
-
-        image_2d = grid_1d.scaled_array_2d_from_array_1d(array_1d=image_1d)
+        image_2d = sum(
+            map(
+                lambda g: g.intensities_from_grid(
+                    grid=deflected_grid_1d, return_in_2d=True, return_binned=False
+                ),
+                source_galaxies,
+            )
+        )
 
         return cls.from_image_and_exposure_arrays(
-            image=image_2d, pixel_scale=pixel_scale, exposure_time=exposure_time,
-            psf=psf, exposure_time_map=exposure_time_map, background_sky_level=background_sky_level,
-            background_sky_map=background_sky_map, add_noise=add_noise, noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed, name=name)
+            image=image_2d,
+            pixel_scale=pixel_scale,
+            exposure_time=exposure_time,
+            psf=psf,
+            exposure_time_map=exposure_time_map,
+            background_sky_level=background_sky_level,
+            background_sky_map=background_sky_map,
+            add_noise=add_noise,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed,
+            name=name,
+        )
 
     @classmethod
-    def from_tracer_and_exposure_arrays(cls, tracer, pixel_scale, exposure_time, psf=None, exposure_time_map=None,
-                                       background_sky_level=0.0, background_sky_map=None, add_noise=True,
-                                       noise_if_add_noise_false=0.1, noise_seed=-1, name=None):
+    def from_tracer_and_exposure_arrays(
+        cls,
+        tracer,
+        pixel_scale,
+        exposure_time,
+        psf=None,
+        exposure_time_map=None,
+        background_sky_level=0.0,
+        background_sky_map=None,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
+        name=None,
+    ):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
@@ -72,16 +127,45 @@ class SimulatedCCDData(ccd.CCDData):
         noise_seed: int
             A seed for random noise_maps generation
         """
+
+        if psf is not None:
+            image_plane_image_2d = tracer.padded_profile_image_plane_image_2d_from_psf_shape(
+                psf_shape=psf.shape
+            )
+        else:
+            image_plane_image_2d = tracer.profile_image_plane_image(
+                return_in_2d=True, return_binned=True
+            )
+
         return cls.from_image_and_exposure_arrays(
-            image=tracer.profile_image_plane_image_2d_for_simulation, pixel_scale=pixel_scale, exposure_time=exposure_time,
-            psf=psf, exposure_time_map=exposure_time_map, background_sky_level=background_sky_level,
-            background_sky_map=background_sky_map, add_noise=add_noise, noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed, name=name)
+            image=image_plane_image_2d,
+            pixel_scale=pixel_scale,
+            exposure_time=exposure_time,
+            psf=psf,
+            exposure_time_map=exposure_time_map,
+            background_sky_level=background_sky_level,
+            background_sky_map=background_sky_map,
+            add_noise=add_noise,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed,
+            name=name,
+        )
 
     @classmethod
-    def from_image_and_exposure_arrays(cls, image, pixel_scale, exposure_time, psf=None, exposure_time_map=None,
-                                       background_sky_level=0.0, background_sky_map=None, add_noise=True,
-                                       noise_if_add_noise_false=0.1, noise_seed=-1, name=None):
+    def from_image_and_exposure_arrays(
+        cls,
+        image,
+        pixel_scale,
+        exposure_time,
+        psf=None,
+        exposure_time_map=None,
+        background_sky_level=0.0,
+        background_sky_map=None,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
+        name=None,
+    ):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
@@ -113,13 +197,15 @@ class SimulatedCCDData(ccd.CCDData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = ScaledSquarePixelArray.single_value(value=exposure_time, shape=image.shape,
-                                                                    pixel_scale=pixel_scale)
+            exposure_time_map = ScaledSquarePixelArray.single_value(
+                value=exposure_time, shape=image.shape, pixel_scale=pixel_scale
+            )
 
         if background_sky_map is None:
 
-            background_sky_map = ScaledSquarePixelArray.single_value(value=background_sky_level, shape=image.shape,
-                                                                     pixel_scale=pixel_scale)
+            background_sky_map = ScaledSquarePixelArray.single_value(
+                value=background_sky_level, shape=image.shape, pixel_scale=pixel_scale
+            )
 
         image += background_sky_map
 
@@ -131,25 +217,34 @@ class SimulatedCCDData(ccd.CCDData):
             background_sky_map = trim_psf_edges(background_sky_map, psf)
 
         if add_noise is True:
-            noise_realization = generate_poisson_noise(image, exposure_time_map, noise_seed)
+            noise_realization = generate_poisson_noise(
+                image, exposure_time_map, noise_seed
+            )
             image += noise_realization
             image_counts = np.multiply(image, exposure_time_map)
             noise_map = np.divide(np.sqrt(image_counts), exposure_time_map)
             noise_map = ccd.NoiseMap(array=noise_map, pixel_scale=pixel_scale)
         else:
-            noise_map = ccd.NoiseMap.single_value(value=noise_if_add_noise_false, shape=image.shape,
-                                                  pixel_scale=pixel_scale)
+            noise_map = ccd.NoiseMap.single_value(
+                value=noise_if_add_noise_false,
+                shape=image.shape,
+                pixel_scale=pixel_scale,
+            )
             noise_realization = None
 
         if np.isnan(noise_map).any():
-            raise exc.DataException('The noise-map has NaN values in it. This suggests your exposure time and / or'
-                                       'background sky levels are too low, creating signal counts at or close to 0.0.')
+            raise exc.DataException(
+                "The noise-map has NaN values in it. This suggests your exposure time and / or"
+                "background sky levels are too low, creating signal counts at or close to 0.0."
+            )
 
         image -= background_sky_map
 
         # ESTIMATE THE BACKGROUND NOISE MAP FROM THE BACKGROUND SKY MAP
 
-        background_noise_map_counts = np.sqrt(np.multiply(background_sky_map, exposure_time_map))
+        background_noise_map_counts = np.sqrt(
+            np.multiply(background_sky_map, exposure_time_map)
+        )
         background_noise_map = np.divide(background_noise_map_counts, exposure_time_map)
 
         # ESTIMATE THE POISSON NOISE MAP FROM THE IMAGE
@@ -158,13 +253,25 @@ class SimulatedCCDData(ccd.CCDData):
         poisson_noise_map = np.divide(np.sqrt(np.abs(image_counts)), exposure_time_map)
 
         image = ScaledSquarePixelArray(array=image, pixel_scale=pixel_scale)
-        background_noise_map = ccd.NoiseMap(array=background_noise_map, pixel_scale=pixel_scale)
-        poisson_noise_map = ccd.PoissonNoiseMap(array=poisson_noise_map, pixel_scale=pixel_scale)
+        background_noise_map = ccd.NoiseMap(
+            array=background_noise_map, pixel_scale=pixel_scale
+        )
+        poisson_noise_map = ccd.PoissonNoiseMap(
+            array=poisson_noise_map, pixel_scale=pixel_scale
+        )
 
-        return SimulatedCCDData(image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
-                                background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                                exposure_time_map=exposure_time_map, background_sky_map=background_sky_map,
-                                noise_realization=noise_realization, name=name)
+        return SimulatedCCDData(
+            image,
+            pixel_scale=pixel_scale,
+            psf=psf,
+            noise_map=noise_map,
+            background_noise_map=background_noise_map,
+            poisson_noise_map=poisson_noise_map,
+            exposure_time_map=exposure_time_map,
+            background_sky_map=background_sky_map,
+            noise_realization=noise_realization,
+            name=name,
+        )
 
     def __array_finalize__(self, obj):
         if isinstance(obj, SimulatedCCDData):
@@ -181,7 +288,9 @@ class SimulatedCCDData(ccd.CCDData):
                 self.poisson_noise_realization = obj.poisson_noise_realization
                 self.origin = obj.origin
             except AttributeError:
-                logger.debug("Original object in CCD.__array_finalize__ missing one or more attributes")
+                logger.debug(
+                    "Original object in CCD.__array_finalize__ missing one or more attributes"
+                )
 
 
 def setup_random_seed(seed):
@@ -194,8 +303,9 @@ def setup_random_seed(seed):
         The seed of the random number generator.
     """
     if seed == -1:
-        seed = np.random.randint(0,
-                                 int(1e9))  # Use one seed, so all regions have identical column non-uniformity.
+        seed = np.random.randint(
+            0, int(1e9)
+        )  # Use one seed, so all regions have identical column non-uniformity.
     np.random.seed(seed)
 
 
@@ -221,7 +331,9 @@ def generate_poisson_noise(image, exposure_time_map, seed=-1):
     """
     setup_random_seed(seed)
     image_counts = np.multiply(image, exposure_time_map)
-    return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time_map)
+    return image - np.divide(
+        np.random.poisson(image_counts, image.shape), exposure_time_map
+    )
 
 
 def trim_psf_edges(array, psf):
@@ -231,6 +343,6 @@ def trim_psf_edges(array, psf):
         psf_cut_y = np.int(np.ceil(psf.shape[1] / 2)) - 1
         array_x = np.int(array.shape[0])
         array_y = np.int(array.shape[1])
-        return array[psf_cut_x:array_x - psf_cut_x, psf_cut_y:array_y - psf_cut_y]
+        return array[psf_cut_x : array_x - psf_cut_x, psf_cut_y : array_y - psf_cut_y]
     else:
         return array

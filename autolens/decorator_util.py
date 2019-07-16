@@ -24,4 +24,3 @@ def jit(nopython=nopython, cache=cache, parallel=parallel):
         return numba.jit(func, nopython=nopython, cache=cache, parallel=parallel)
 
     return wrapper
-

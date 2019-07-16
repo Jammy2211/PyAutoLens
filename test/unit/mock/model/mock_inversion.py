@@ -1,18 +1,23 @@
 import numpy as np
 
-class MockGeometry(object):
 
-    def __init__(self, pixel_centres=None, pixel_neighbors=np.array([1]), pixel_neighbors_size=np.array([1])):
+class MockGeometry(object):
+    def __init__(
+        self,
+        pixel_centres=None,
+        pixel_neighbors=np.array([1]),
+        pixel_neighbors_size=np.array([1]),
+    ):
 
         self.pixel_scales = (1.0, 1.0)
         self.origin = (0.0, 0.0)
         self.pixel_centres = pixel_centres
 
-        self.pixel_neighbors = pixel_neighbors.astype('int')
-        self.pixel_neighbors_size = pixel_neighbors_size.astype('int')
+        self.pixel_neighbors = pixel_neighbors.astype("int")
+        self.pixel_neighbors_size = pixel_neighbors_size.astype("int")
+
 
 class MockPixelization(object):
-
     def __init__(self, value):
         self.value = value
 
@@ -24,23 +29,21 @@ class MockPixelization(object):
     def mapper_from_grid_stack(self, grid_stack, hyper_image=None):
         return self.value
 
-class MockRegularization(object):
 
+class MockRegularization(object):
     def __init__(self, matrix_shape):
         self.shape = matrix_shape
 
-    def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors, pixel_neighbors_size):
-        return np.array([[1.0, 0.0, 0.0],
-                         [0.0, 1.0, 0.0],
-                         [0.0, 0.0, 1.0]])
+    def regularization_matrix_from_pixel_neighbors(
+        self, pixel_neighbors, pixel_neighbors_size
+    ):
+        return np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
     def regularization_matrix_from_mapper(self, mapper):
-        return np.array([[1.0, 0.0, 0.0],
-                         [0.0, 1.0, 0.0],
-                         [0.0, 0.0, 1.0]])
+        return np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
+
 
 class MockMapper(object):
-
     def __init__(self, matrix_shape, grid_stack=None):
 
         self.grid_stack = grid_stack
@@ -49,7 +52,6 @@ class MockMapper(object):
 
 
 class MockConvolver(object):
-
     def __init__(self, matrix_shape):
         self.shape = matrix_shape
 
@@ -58,7 +60,6 @@ class MockConvolver(object):
 
 
 class MockInversion(object):
-
     def __init__(self):
         self.blurred_mapping_matrix = np.zeros((1, 1))
         self.regularization_matrix = np.zeros((1, 1))

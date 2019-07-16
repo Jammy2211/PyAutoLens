@@ -107,8 +107,9 @@ def sub_to_regular_from_mask(mask, sub_grid_size):
     sub_to_regular = sub_to_regular_from_mask(mask=mask, sub_grid_size=2)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_grid_size(mask=mask,
-                                                                              sub_grid_size=sub_grid_size)
+    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_grid_size(
+        mask=mask, sub_grid_size=sub_grid_size
+    )
 
     sub_to_regular = np.zeros(shape=total_sub_pixels)
     regular_index = 0
@@ -128,58 +129,9 @@ def sub_to_regular_from_mask(mask, sub_grid_size):
 
 
 @decorator_util.jit()
-def map_array_2d_to_masked_array_1d_from_array_2d_and_mask(mask, array_2d):
-    """For a 2D array and mask, map the values of all unmasked pixels to a 1D array.
-
-    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards, such
-    that for an array of shape (3,3) where all pixels are unmasked:
-
-    - pixel [0,0] of the 2D array will correspond to index 0 of the 1D array.
-    - pixel [0,1] of the 2D array will correspond to index 1 of the 1D array.
-    - pixel [1,0] of the 2D array will correspond to index 4 of the 1D array.
-
-    Parameters
-     ----------
-    mask : ndarray
-        A 2D array of bools, where *False* values are unmasked and included in the mapping.
-    array_2d : ndarray
-        The 2D array of values which are mapped to a 1D array.
-
-    Returns
-    --------
-    ndarray
-        A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
-
-    Examples
-    --------
-    mask = np.array([[True, False, True],
-                     [False, False, False]
-                     [True, False, True]])
-
-    array_2d = np.array([[1.0, 2.0, 3.0],
-                          [4.0, 5.0, 6.0],
-                          [7.0, 8.0, 9.0]])
-
-    array_1d = map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask=mask, array_2d=array_2d)
-    """
-
-    total_image_pixels = mask_util.total_regular_pixels_from_mask(mask)
-
-    array_1d = np.zeros(shape=total_image_pixels)
-    index = 0
-
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
-            if not mask[y, x]:
-                array_1d[index] = array_2d[y, x]
-                index += 1
-
-    return array_1d
-
-
-@decorator_util.jit()
-def map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-        sub_array_2d, mask, sub_grid_size):
+def sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+    sub_array_2d, mask, sub_grid_size
+):
     """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
     A sub-array is an array whose dimensions correspond to the normal array (e.g. used to make the regular grid) \
@@ -225,8 +177,9 @@ def map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_
         mask=mask, array_2d=array_2d)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_grid_size(mask=mask,
-                                                                              sub_grid_size=sub_grid_size)
+    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_grid_size(
+        mask=mask, sub_grid_size=sub_grid_size
+    )
 
     sub_array_1d = np.zeros(shape=total_sub_pixels)
     index = 0
@@ -237,14 +190,16 @@ def map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_
                 for y1 in range(sub_grid_size):
                     for x1 in range(sub_grid_size):
                         sub_array_1d[index] = sub_array_2d[
-                            y * sub_grid_size + y1, x * sub_grid_size + x1]
+                            y * sub_grid_size + y1, x * sub_grid_size + x1
+                        ]
                         index += 1
 
     return sub_array_1d
 
 
-@decorator_util.jit()
-def map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(mask, grid_2d):
+def sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
+    sub_grid_2d, mask, sub_grid_size
+):
     """For a 2D grid and mask, map the values of all unmasked pixels to a 1D grid.
 
     The pixel coordinate origin is at the top left corner of the 2D grid and goes right-wards and downwards, such \
@@ -258,7 +213,7 @@ def map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(mask, grid_2d):
      ----------
     mask : ndgrid
         A 2D grid of bools, where *False* values are unmasked and included in the mapping.
-    grid_2d : ndgrid
+    sub_grid_2d : ndgrid
         The 2D grid of values which are mapped to a 1D grid.
 
     Returns
@@ -279,24 +234,20 @@ def map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(mask, grid_2d):
     grid_1d = map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(mask=mask, grid_2d=grid_2d)
     """
 
-    total_image_pixels = mask_util.total_regular_pixels_from_mask(mask=mask)
+    sub_grid_1d_y = sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_2d=sub_grid_2d[:, :, 0], mask=mask, sub_grid_size=sub_grid_size
+    )
 
-    grid_1d = np.zeros(shape=(total_image_pixels, 2))
-    index = 0
+    sub_grid_1d_x = sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_2d=sub_grid_2d[:, :, 1], mask=mask, sub_grid_size=sub_grid_size
+    )
 
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
-            if not mask[y, x]:
-                grid_1d[index, 0] = grid_2d[y, x, 0]
-                grid_1d[index, 1] = grid_2d[y, x, 1]
-                index += 1
-
-    return grid_1d
+    return np.stack((sub_grid_1d_y, sub_grid_1d_x), axis=-1)
 
 
-@decorator_util.jit()
-def map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(array_1d, shape,
-                                                                       one_to_two):
+def sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+    sub_array_1d, mask, sub_grid_size
+):
     """For a 1D array that was computed by mapping unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -309,11 +260,11 @@ def map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(array_1d,
 
     Parameters
      ----------
-    array_1d : ndarray
+    sub_array_1d : ndarray
         The 1D array of values which are mapped to a 2D array.
     shape : (int, int)
         The shape of the 2D array which the pixels are defined on.
-    one_to_two : ndarray
+    sub_one_to_two : ndarray
         An array describing the 2D array index that every 1D array index maps too.
 
     Returns
@@ -331,17 +282,35 @@ def map_masked_array_1d_to_array_2d_from_array_1d_shape_and_one_to_two(array_1d,
         array_1d=array_1d, shape=(3,3), one_to_two=one_to_two)
     """
 
-    array_2d = np.zeros(shape)
+    sub_shape = (mask.shape[0] * sub_grid_size, mask.shape[1] * sub_grid_size)
 
-    for index in range(len(one_to_two)):
-        array_2d[one_to_two[index, 0], one_to_two[index, 1]] = array_1d[index]
+    sub_one_to_two = mask_util.sub_one_to_two_from_mask_and_sub_grid_size(
+        mask=mask, sub_grid_size=sub_grid_size
+    ).astype("int")
+
+    return sub_array_2d_from_sub_array_1d_sub_shape_and_sub_one_to_two(
+        sub_array_1d=sub_array_1d, sub_shape=sub_shape, sub_one_to_two=sub_one_to_two
+    )
+
+
+@decorator_util.jit()
+def sub_array_2d_from_sub_array_1d_sub_shape_and_sub_one_to_two(
+    sub_array_1d, sub_shape, sub_one_to_two
+):
+
+    array_2d = np.zeros(sub_shape)
+
+    for index in range(len(sub_one_to_two)):
+        array_2d[sub_one_to_two[index, 0], sub_one_to_two[index, 1]] = sub_array_1d[
+            index
+        ]
 
     return array_2d
 
 
-@decorator_util.jit()
-def map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(grid_1d, shape,
-                                                                    one_to_two):
+def sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+    sub_grid_1d, mask, sub_grid_size
+):
     """For a 1D array that was computed by mapping unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -354,11 +323,11 @@ def map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(grid_1d, sha
 
     Parameters
      ----------
-    grid_1d : ndarray
+    sub_grid_1d : ndarray
         The 1D array of values which are mapped to a 2D array.
     shape : (int, int)
         The shape of the 2D array which the pixels are defined on.
-    one_to_two : ndarray
+    sub_one_to_two : ndarray
         An array describing the 2D array index that every 1D array index maps too.
 
     Returns
@@ -376,63 +345,21 @@ def map_masked_1d_grid_to_2d_grid_from_grid_1d_shape_and_one_to_two(grid_1d, sha
                                                                                   one_to_two=one_to_two)
     """
 
-    grid_2d = np.zeros((shape[0], shape[1], 2))
+    sub_grid_2d_y = sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        sub_array_1d=sub_grid_1d[:, 0], mask=mask, sub_grid_size=sub_grid_size
+    )
 
-    for index in range(len(one_to_two)):
-        grid_2d[one_to_two[index, 0], one_to_two[index, 1], 0] = grid_1d[index, 0]
-        grid_2d[one_to_two[index, 0], one_to_two[index, 1], 1] = grid_1d[index, 1]
+    sub_grid_2d_x = sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        sub_array_1d=sub_grid_1d[:, 1], mask=mask, sub_grid_size=sub_grid_size
+    )
 
-    return grid_2d
-
-
-@decorator_util.jit()
-def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
-    """For a 1D array that was flattened from a 2D array of shape (rows, columns), map its values back to the \
-    original 2D array.
-
-    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards, such
-    that for an array of shape (3,3):
-
-    - pixel 0 of the 1D array will correspond to index [0,0] of the 2D array.
-    - pixel 1 of the 1D array will correspond to index [0,1] of the 2D array.
-    - pixel 4 of the 1D array will correspond to index [1,0] of the 2D array.
-
-    Parameters
-     ----------
-    array_1d : ndarray
-        The 1D array of values which are mapped to a 2D array.
-    shape : (int, int)
-        The shape of the 2D array which the pixels are defined on.
-
-    Returns
-    --------
-    ndarray
-        A 2D array of values mapped from the 1D array with dimensions (shape).
-
-    Examples
-    --------
-    one_to_two = np.array([[0,1], [1,0], [1,1], [1,2], [2,1]])
-
-    array_1d = np.array([[2.0, 4.0, 5.0, 6.0, 8.0])
-
-    array_2d = map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d=array_1d, shape=(3,3),
-                                                                                  one_to_two=one_to_two)
-    """
-
-    array_2d = np.zeros(shape)
-
-    index = 0
-    for y in range(shape[0]):
-        for x in range(shape[1]):
-            array_2d[y, x] = array_1d[index]
-            index += 1
-
-    return array_2d
+    return np.stack((sub_grid_2d_y, sub_grid_2d_x), axis=-1)
 
 
 @decorator_util.jit()
-def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, mask,
-                                                          unmasked_sparse_grid_pixel_centres):
+def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
+    total_sparse_pixels, mask, unmasked_sparse_grid_pixel_centres
+):
     """Determine the mapping between every masked pixelization-grid pixel and pixelization-grid pixel. This is \
     performed by checking whether each pixelization-grid pixel is within the regular-masks, and mapping the indexes.
 
@@ -463,9 +390,9 @@ def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, m
 
 
 @decorator_util.jit()
-def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask,
-                                                          unmasked_sparse_grid_pixel_centres,
-                                                          total_sparse_pixels):
+def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
+    mask, unmasked_sparse_grid_pixel_centres, total_sparse_pixels
+):
     """Determine the mapping between every pixelization-grid pixel and masked pixelization-grid pixel. This is \
     performed by checking whether each pixelization-grid pixel is within the regular-masks, and mapping the indexes.
 
@@ -503,8 +430,9 @@ def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask,
 
 
 @decorator_util.jit()
-def regular_to_sparse_from_sparse_mappings(regular_to_unmasked_sparse,
-                                           unmasked_sparse_to_sparse):
+def regular_to_sparse_from_sparse_mappings(
+    regular_to_unmasked_sparse, unmasked_sparse_to_sparse
+):
     """Using the mapping between the regular-grid and unmasked pixelization grid, compute the mapping between each \
     regular pixel and the masked pixelization grid.
 
@@ -521,14 +449,16 @@ def regular_to_sparse_from_sparse_mappings(regular_to_unmasked_sparse,
 
     for regular_index in range(total_regular_pixels):
         regular_to_sparse[regular_index] = unmasked_sparse_to_sparse[
-            regular_to_unmasked_sparse[regular_index]]
+            regular_to_unmasked_sparse[regular_index]
+        ]
 
     return regular_to_sparse
 
 
 @decorator_util.jit()
-def sparse_grid_from_unmasked_sparse_grid(unmasked_sparse_grid,
-                                          sparse_to_unmasked_sparse):
+def sparse_grid_from_unmasked_sparse_grid(
+    unmasked_sparse_grid, sparse_to_unmasked_sparse
+):
     """Use the central arc-second coordinate of every unmasked pixelization grid's pixels and mapping between each \
     pixelization pixel and unmasked pixelization pixel to compute the central arc-second coordinate of every masked \
     pixelization grid pixel.
@@ -546,17 +476,22 @@ def sparse_grid_from_unmasked_sparse_grid(unmasked_sparse_grid,
 
     for pixel_index in range(total_pix_pixels):
         pix_grid[pixel_index, 0] = unmasked_sparse_grid[
-            sparse_to_unmasked_sparse[pixel_index], 0]
+            sparse_to_unmasked_sparse[pixel_index], 0
+        ]
         pix_grid[pixel_index, 1] = unmasked_sparse_grid[
-            sparse_to_unmasked_sparse[pixel_index], 1]
+            sparse_to_unmasked_sparse[pixel_index], 1
+        ]
 
     return pix_grid
 
 
 @decorator_util.jit()
-def regular_to_sparse_from_cluster_grid(cluster_labels, cluster_to_regular_all,
-                                        cluster_to_regular_sizes,
-                                        total_regular_pixels):
+def regular_to_sparse_from_cluster_grid(
+    cluster_labels,
+    cluster_to_regular_all,
+    cluster_to_regular_sizes,
+    total_regular_pixels,
+):
     regular_to_sparse = np.zeros(total_regular_pixels)
 
     for cluster_index in range(cluster_to_regular_all.shape[0]):

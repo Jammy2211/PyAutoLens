@@ -1,12 +1,10 @@
-import numpy as np
-
 from autolens import exc
 from autolens.data.array import grids, mask as msk, scaled_array
-from autolens.model.galaxy.util import galaxy_util
+
+from autolens.data.array.grids import reshape_returned_regular_array
 
 
 class GalaxyData(object):
-
     def __init__(self, image, noise_map, pixel_scale):
         """ A galaxy-fit data is a collection of fit data components which are used to fit a galaxy to another galaxy. \
         This is where a component of a galaxy's light profiles (e.g. intensities) or mass profiles (e.g. convergence \
@@ -32,9 +30,18 @@ class GalaxyData(object):
 
 
 class GalaxyFitData(object):
-
-    def __init__(self, galaxy_data, mask, sub_grid_size=2, interp_pixel_scale=None, use_intensities=False,
-                 use_convergence=False, use_potential=False, use_deflections_y=False, use_deflections_x=False):
+    def __init__(
+        self,
+        galaxy_data,
+        mask,
+        sub_grid_size=2,
+        interp_pixel_scale=None,
+        use_intensities=False,
+        use_convergence=False,
+        use_potential=False,
+        use_deflections_y=False,
+        use_deflections_x=False,
+    ):
         """ A galaxy-fit data is a collection of fit data components which are used to fit a galaxy to another galaxy. \
         This is where a component of a galaxy's light profiles (e.g. intensities) or mass profiles (e.g. surface \
         density, potential or deflection angles) are fitted to one another.
@@ -62,47 +69,64 @@ class GalaxyFitData(object):
         grid_stacks : ccd.masks.GridStack
             Grids of (y,x) Cartesian coordinates which map over the masked 1D fit data array's pixels (includes an \
             regular-grid, sub-grid, etc.)
-        padded_grid_stack : ccd.masks.GridStack
-            Grids of padded (y,x) Cartesian coordinates which map over the every fit data array's pixel in 1D and a \
-            padded regioon to include edge's for accurate PSF convolution (includes an regular-grid, sub-grid, etc.)
         """
         self.unmasked_image = galaxy_data.image
         self.pixel_scale = galaxy_data.pixel_scale
         self.unmasked_noise_map = galaxy_data.noise_map
 
         self.image_1d = mask.array_1d_from_array_2d(array_2d=self.unmasked_image)
-        self.noise_map_1d = mask.array_1d_from_array_2d(array_2d=self.unmasked_noise_map)
+        self.noise_map_1d = mask.array_1d_from_array_2d(
+            array_2d=self.unmasked_noise_map
+        )
+        self.signal_to_noise_map_1d = self.image_1d / self.noise_map_1d
         self.mask_1d = mask.array_1d_from_array_2d(array_2d=mask)
 
         self.sub_grid_size = sub_grid_size
 
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(3, 3))
-
-        self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(3, 3))
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(3, 3)
+        )
 
         self.interp_pixel_scale = interp_pixel_scale
 
         if interp_pixel_scale is not None:
 
             self.grid_stack = self.grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
-                interp_pixel_scale=interp_pixel_scale)
-
-            self.padded_grid_stack = self.padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
-                interp_pixel_scale=interp_pixel_scale)
+                interp_pixel_scale=interp_pixel_scale
+            )
 
         self.mask_2d = mask
-        self.image_2d = self.map_to_scaled_array(array_1d=self.image_1d)
-        self.noise_map_2d = self.map_to_scaled_array(array_1d=self.noise_map_1d)
 
-        if all(not element for element in [use_intensities, use_convergence, use_potential,
-                                           use_deflections_y, use_deflections_x]):
-            raise exc.GalaxyException('The galaxy fit data has not been supplied with a use_ method.')
+        if all(
+            not element
+            for element in [
+                use_intensities,
+                use_convergence,
+                use_potential,
+                use_deflections_y,
+                use_deflections_x,
+            ]
+        ):
+            raise exc.GalaxyException(
+                "The galaxy fit data has not been supplied with a use_ method."
+            )
 
-        if sum([use_intensities, use_convergence, use_potential, use_deflections_y, use_deflections_x]) > 1:
-            raise exc.GalaxyException('The galaxy fit data has not been supplied with multiple use_ methods, only supply '
-                                      'one.')
+        if (
+            sum(
+                [
+                    use_intensities,
+                    use_convergence,
+                    use_potential,
+                    use_deflections_y,
+                    use_deflections_x,
+                ]
+            )
+            > 1
+        ):
+            raise exc.GalaxyException(
+                "The galaxy fit data has not been supplied with multiple use_ methods, only supply "
+                "one."
+            )
 
         self.use_intensities = use_intensities
         self.use_convergence = use_convergence
@@ -123,7 +147,6 @@ class GalaxyFitData(object):
             self.sub_grid_size = obj.sub_grid_size
             self.interp_pixel_scale = obj.interp_pixel_scale
             self.grid_stack = obj.grid_stack
-            self.padded_grid_stack = obj.padded_grid_stack
             self.use_intensities = obj.use_intensities
             self.use_convergence = obj.use_convergence
             self.use_potential = obj.use_potential
@@ -136,12 +159,73 @@ class GalaxyFitData(object):
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxies, sub_grid):
 
         if self.use_intensities:
-            return galaxy_util.intensities_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
+            return sum(
+                map(
+                    lambda g: g.intensities_from_grid(
+                        grid=self.grid_stack.sub, return_in_2d=False, return_binned=True
+                    ),
+                    galaxies,
+                )
+            )
         elif self.use_convergence:
-            return galaxy_util.convergence_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
+            return sum(
+                map(
+                    lambda g: g.convergence_from_grid(
+                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        return_in_2d=False,
+                        return_binned=True,
+                    ),
+                    galaxies,
+                )
+            )
         elif self.use_potential:
-            return galaxy_util.potential_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
+            return sum(
+                map(
+                    lambda g: g.potential_from_grid(
+                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        return_in_2d=False,
+                        return_binned=True,
+                    ),
+                    galaxies,
+                )
+            )
         elif self.use_deflections_y:
-            return galaxy_util.deflections_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)[:, 0]
+            return sum(
+                map(
+                    lambda g: g.deflections_from_grid(
+                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        return_in_2d=False,
+                        return_binned=True,
+                    ),
+                    galaxies,
+                )
+            )[:, 0]
         elif self.use_deflections_x:
-            return galaxy_util.deflections_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)[:, 1]
+            return sum(
+                map(
+                    lambda g: g.deflections_from_grid(
+                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        return_in_2d=False,
+                        return_binned=True,
+                    ),
+                    galaxies,
+                )
+            )[:, 1]
+
+    def mask(self, return_in_2d=True):
+        if return_in_2d:
+            return self.mask_2d
+        else:
+            return self.mask_1d
+
+    @reshape_returned_regular_array
+    def image(self, return_in_2d=True):
+        return self.image_1d
+
+    @reshape_returned_regular_array
+    def noise_map(self, return_in_2d=True):
+        return self.noise_map_1d
+
+    @reshape_returned_regular_array
+    def signal_to_noise_map(self, return_in_2d=True):
+        return self.signal_to_noise_map_1d

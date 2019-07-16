@@ -13,11 +13,25 @@ class PhasePositions(AbstractPhase):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=tuple(), lens_galaxies=None,
-                 optimizer_class=af.MultiNest,
-                 cosmology=cosmo.Planck15, auto_link_priors=False):
-        super().__init__(phase_name=phase_name, phase_tag=None, phase_folders=phase_folders, tag_phases=tag_phases,
-                         optimizer_class=optimizer_class, cosmology=cosmology, auto_link_priors=auto_link_priors)
+    def __init__(
+        self,
+        phase_name,
+        tag_phases=True,
+        phase_folders=tuple(),
+        lens_galaxies=None,
+        optimizer_class=af.MultiNest,
+        cosmology=cosmo.Planck15,
+        auto_link_priors=False,
+    ):
+        super().__init__(
+            phase_name=phase_name,
+            phase_tag=None,
+            phase_folders=phase_folders,
+            tag_phases=tag_phases,
+            optimizer_class=optimizer_class,
+            cosmology=cosmology,
+            auto_link_priors=auto_link_priors,
+        )
         self.lens_galaxies = lens_galaxies
 
     def run(self, positions, pixel_scale, results=None):
@@ -36,7 +50,9 @@ class PhasePositions(AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper.
         """
-        analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, results=results)
+        analysis = self.make_analysis(
+            positions=positions, pixel_scale=pixel_scale, results=results
+        )
 
         self.pass_priors(results)
         self.assert_and_save_pickle()
@@ -62,17 +78,22 @@ class PhasePositions(AbstractPhase):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
 
-        analysis = self.Analysis(positions=positions, pixel_scale=pixel_scale, cosmology=self.cosmology,
-                                           results=results)
+        analysis = self.Analysis(
+            positions=positions,
+            pixel_scale=pixel_scale,
+            cosmology=self.cosmology,
+            results=results,
+        )
         return analysis
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
-
         def __init__(self, positions, pixel_scale, cosmology, results=None):
             super().__init__(cosmology=cosmology, results=results)
 
-            self.positions = list(map(lambda position_set: np.asarray(position_set), positions))
+            self.positions = list(
+                map(lambda position_set: np.asarray(position_set), positions)
+            )
             self.pixel_scale = pixel_scale
 
         def visualize(self, instance, image_path, during_analysis):
@@ -97,13 +118,19 @@ class PhasePositions(AbstractPhase):
             return fit.figure_of_merit
 
         def tracer_for_instance(self, instance):
-            return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
-                                                                image_plane_positions=self.positions,
-                                                                cosmology=self.cosmology)
+            return ray_tracing.TracerImageSourcePlanesPositions(
+                lens_galaxies=instance.lens_galaxies,
+                image_plane_positions=self.positions,
+                cosmology=self.cosmology,
+            )
 
         def fit_for_tracer(self, tracer):
-            return lens_fit.LensPositionFit(positions=tracer.source_plane.positions, noise_map=self.pixel_scale)
+            return lens_fit.LensPositionFit(
+                positions=tracer.source_plane.positions, noise_map=self.pixel_scale
+            )
 
         @classmethod
         def describe(cls, instance):
-            return "\nRunning lens lens for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies)
+            return "\nRunning lens lens for... \n\nLens Galaxy::\n{}\n\n".format(
+                instance.lens_galaxies
+            )

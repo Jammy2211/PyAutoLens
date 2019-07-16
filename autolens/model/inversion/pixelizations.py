@@ -9,13 +9,14 @@ from autolens.model.inversion.util import pixelization_util
 
 
 class Pixelization(object):
-
     def __init__(self):
         """ Abstract base class for a pixelization, which discretizes grid_stack of (y,x) coordinates into pixels.
         """
 
     def mapper_from_grid_stack_and_border(self, grid_stack, border):
-        raise NotImplementedError("pixelization_mapper_from_grids_and_borders should be overridden")
+        raise NotImplementedError(
+            "pixelization_mapper_from_grids_and_borders should be overridden"
+        )
 
     def __str__(self):
         return "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()])
@@ -25,7 +26,6 @@ class Pixelization(object):
 
 
 class Rectangular(Pixelization):
-
     def __init__(self, shape=(3, 3)):
         """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape \ 
         (rows, columns).
@@ -39,15 +39,18 @@ class Rectangular(Pixelization):
         """
 
         if shape[0] <= 2 or shape[1] <= 2:
-            raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
+            raise exc.PixelizationException(
+                "The rectangular pixelization must be at least dimensions 3x3"
+            )
 
         self.shape = (int(shape[0]), int(shape[1]))
         self.pixels = self.shape[0] * self.shape[1]
         super(Rectangular, self).__init__()
 
     class Geometry(scaled_array.RectangularArrayGeometry):
-
-        def __init__(self, shape, pixel_scales, origin, pixel_neighbors, pixel_neighbors_size):
+        def __init__(
+            self, shape, pixel_scales, origin, pixel_neighbors, pixel_neighbors_size
+        ):
             """The geometry of a rectangular grid.
 
             This is used to map grid_stack of (y,x) arc-second coordinates to the pixels on the rectangular grid.
@@ -70,8 +73,8 @@ class Rectangular(Pixelization):
             self.shape = shape
             self.pixel_scales = pixel_scales
             self.origin = origin
-            self.pixel_neighbors = pixel_neighbors.astype('int')
-            self.pixel_neighbors_size = pixel_neighbors_size.astype('int')
+            self.pixel_neighbors = pixel_neighbors.astype("int")
+            self.pixel_neighbors_size = pixel_neighbors_size.astype("int")
 
         @property
         def pixel_centres(self):
@@ -93,11 +96,19 @@ class Rectangular(Pixelization):
         y_max = np.max(grid[:, 0]) + buffer
         x_min = np.min(grid[:, 1]) - buffer
         x_max = np.max(grid[:, 1]) + buffer
-        pixel_scales = (float((y_max - y_min) / self.shape[0]), float((x_max - x_min) / self.shape[1]))
+        pixel_scales = (
+            float((y_max - y_min) / self.shape[0]),
+            float((x_max - x_min) / self.shape[1]),
+        )
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
         pixel_neighbors, pixel_neighbors_size = self.neighbors_from_pixelization()
-        return self.Geometry(shape=self.shape, pixel_scales=pixel_scales, origin=origin,
-                             pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
+        return self.Geometry(
+            shape=self.shape,
+            pixel_scales=pixel_scales,
+            origin=origin,
+            pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size,
+        )
 
     def neighbors_from_pixelization(self):
         return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
@@ -120,21 +131,30 @@ class Rectangular(Pixelization):
         """
 
         if border is not None:
-            relocated_grid_stack = border.relocated_grid_stack_from_grid_stack(grid_stack)
+            relocated_grid_stack = border.relocated_grid_stack_from_grid_stack(
+                grid_stack
+            )
         else:
             relocated_grid_stack = grid_stack
 
         geometry = self.geometry_from_grid(grid=relocated_grid_stack.sub)
 
-        return mappers.RectangularMapper(pixels=self.pixels, grid_stack=relocated_grid_stack, border=border,
-                                         shape=self.shape, geometry=geometry, hyper_image=hyper_image)
+        return mappers.RectangularMapper(
+            pixels=self.pixels,
+            grid_stack=relocated_grid_stack,
+            border=border,
+            shape=self.shape,
+            geometry=geometry,
+            hyper_image=hyper_image,
+        )
 
-    def pixelization_grid_from_grid_stack(self, grid_stack, cluster=None, hyper_image=None, seed=1):
+    def pixelization_grid_from_grid_stack(
+        self, grid_stack, cluster=None, hyper_image=None, seed=1
+    ):
         return None
 
 
 class Voronoi(Pixelization):
-
     def __init__(self):
         """Abstract base class for a Voronoi pixelization, which represents pixels as an irregular grid of Voronoi \
          cells which can form any shape, size or tesselation.
@@ -145,8 +165,14 @@ class Voronoi(Pixelization):
         super(Voronoi, self).__init__()
 
     class Geometry(scaled_array.ArrayGeometry):
-
-        def __init__(self, shape_arcsec, pixel_centres, origin, pixel_neighbors, pixel_neighbors_size):
+        def __init__(
+            self,
+            shape_arcsec,
+            pixel_centres,
+            origin,
+            pixel_neighbors,
+            pixel_neighbors_size,
+        ):
             """The geometry of a Voronoi pixelization.
 
             Parameters
@@ -167,11 +193,12 @@ class Voronoi(Pixelization):
             self.shape_arc_sec = shape_arcsec
             self.pixel_centres = pixel_centres
             self.origin = origin
-            self.pixel_neighbors = pixel_neighbors.astype('int')
-            self.pixel_neighbors_size = pixel_neighbors_size.astype('int')
+            self.pixel_neighbors = pixel_neighbors.astype("int")
+            self.pixel_neighbors_size = pixel_neighbors_size.astype("int")
 
-
-    def geometry_from_grid(self, grid, pixel_centres, pixel_neighbors, pixel_neighbors_size, buffer=1e-8):
+    def geometry_from_grid(
+        self, grid, pixel_centres, pixel_neighbors, pixel_neighbors_size, buffer=1e-8
+    ):
         """Determine the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
         grid plus a small buffer.
 
@@ -196,8 +223,13 @@ class Voronoi(Pixelization):
         x_max = np.max(grid[:, 1]) + buffer
         shape_arcsec = (y_max - y_min, x_max - x_min)
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
-        return self.Geometry(shape_arcsec=shape_arcsec, pixel_centres=pixel_centres, origin=origin,
-                             pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
+        return self.Geometry(
+            shape_arcsec=shape_arcsec,
+            pixel_centres=pixel_centres,
+            origin=origin,
+            pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size,
+        )
 
     @staticmethod
     def voronoi_from_pixel_centers(pixel_centers):
@@ -208,8 +240,10 @@ class Voronoi(Pixelization):
         pixel_centers : ndarray
             The (y,x) centre of every Voronoi pixel.
         """
-        return scipy.spatial.Voronoi(np.asarray([pixel_centers[:, 1], pixel_centers[:, 0]]).T,
-                                     qhull_options='Qbb Qc Qx Qm')
+        return scipy.spatial.Voronoi(
+            np.asarray([pixel_centers[:, 1], pixel_centers[:, 0]]).T,
+            qhull_options="Qbb Qc Qx Qm",
+        )
 
     def neighbors_from_pixelization(self, pixels, ridge_points):
         """Compute the neighbors of every Voronoi pixel as an ndarray of the pixel index's each pixel shares a \
@@ -222,8 +256,9 @@ class Voronoi(Pixelization):
         ridge_points : scipy.spatial.Voronoi.ridge_points
             Each Voronoi-ridge (two indexes representing a pixel mapping_matrix).
         """
-        return pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(pixels=pixels,
-                                                                                ridge_points=np.asarray(ridge_points))
+        return pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(
+            pixels=pixels, ridge_points=np.asarray(ridge_points)
+        )
 
     def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
@@ -249,7 +284,9 @@ class Voronoi(Pixelization):
         """
 
         if border is not None:
-            relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack=grid_stack)
+            relocated_grids = border.relocated_grid_stack_from_grid_stack(
+                grid_stack=grid_stack
+            )
         else:
             relocated_grids = grid_stack
 
@@ -259,18 +296,27 @@ class Voronoi(Pixelization):
         voronoi = self.voronoi_from_pixel_centers(pixel_centres)
 
         pixel_neighbors, pixel_neighbors_size = self.neighbors_from_pixelization(
-            pixels=pixels, ridge_points=voronoi.ridge_points)
+            pixels=pixels, ridge_points=voronoi.ridge_points
+        )
 
         geometry = self.geometry_from_grid(
-            grid=relocated_grids.sub, pixel_centres=pixel_centres, pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size)
+            grid=relocated_grids.sub,
+            pixel_centres=pixel_centres,
+            pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size,
+        )
 
-        return mappers.VoronoiMapper(pixels=pixels, grid_stack=relocated_grids, border=border,
-                                     voronoi=voronoi, geometry=geometry, hyper_image=hyper_image)
+        return mappers.VoronoiMapper(
+            pixels=pixels,
+            grid_stack=relocated_grids,
+            border=border,
+            voronoi=voronoi,
+            geometry=geometry,
+            hyper_image=hyper_image,
+        )
 
 
 class VoronoiMagnification(Voronoi):
-
     def __init__(self, shape=(3, 3)):
         """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
         pixelization to discretize the grid into pixels.
@@ -285,17 +331,21 @@ class VoronoiMagnification(Voronoi):
         self.shape = (int(shape[0]), int(shape[1]))
         self.pixels = self.shape[0] * self.shape[1]
 
-    def pixelization_grid_from_grid_stack(self, grid_stack, cluster=None, hyper_image=None, seed=1):
+    def pixelization_grid_from_grid_stack(
+        self, grid_stack, cluster=None, hyper_image=None, seed=1
+    ):
 
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=self.shape, regular_grid=grid_stack.regular)
+            unmasked_sparse_shape=self.shape, regular_grid=grid_stack.regular
+        )
 
         return grids.PixelizationGrid(
             arr=sparse_to_regular_grid.sparse,
-            regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
+            regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse,
+        )
+
 
 class VoronoiBrightnessImage(Voronoi):
-
     def __init__(self, pixels=10, weight_floor=0.0, weight_power=0.0):
         """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
         pixelization to discretize the grid into pixels.
@@ -313,22 +363,29 @@ class VoronoiBrightnessImage(Voronoi):
 
     def cluster_weight_map_from_hyper_image(self, hyper_image):
 
-        cluster_weight_map = (hyper_image - np.min(hyper_image)) / \
-                             (np.max(hyper_image) - np.min(hyper_image)) + self.weight_floor*np.max(hyper_image)
+        cluster_weight_map = (hyper_image - np.min(hyper_image)) / (
+            np.max(hyper_image) - np.min(hyper_image)
+        ) + self.weight_floor * np.max(hyper_image)
 
         return np.power(cluster_weight_map, self.weight_power)
 
-    def pixelization_grid_from_grid_stack(self, grid_stack, cluster=None, hyper_image=None, seed=0):
+    def pixelization_grid_from_grid_stack(
+        self, grid_stack, cluster=None, hyper_image=None, seed=0
+    ):
 
         cluster_weight_map = self.cluster_weight_map_from_hyper_image(
-            hyper_image=hyper_image)
+            hyper_image=hyper_image
+        )
 
-        sparse_to_regular_grid = \
-            grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
-                total_pixels=self.pixels, cluster_grid=cluster,
-                regular_grid=grid_stack.regular, cluster_weight_map=cluster_weight_map,
-                seed=seed)
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+            total_pixels=self.pixels,
+            cluster_grid=cluster,
+            regular_grid=grid_stack.regular,
+            cluster_weight_map=cluster_weight_map,
+            seed=seed,
+        )
 
         return grids.PixelizationGrid(
             arr=sparse_to_regular_grid.sparse,
-            regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse)
+            regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse,
+        )

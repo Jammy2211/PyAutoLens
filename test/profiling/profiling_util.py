@@ -1,5 +1,6 @@
 import time
 
+
 def tick_toc_x1(func):
     def wrapper():
         start = time.time()
