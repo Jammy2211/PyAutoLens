@@ -2,8 +2,8 @@ import autofit as af
 
 from autolens.data.array.grids import reshape_returned_regular_array
 
-class GalaxyFit(af.fit.DataFit1D):
 
+class GalaxyFit(af.fit.DataFit1D):
     def __init__(self, galaxy_data, model_galaxies):
         """Class which fits a set of galaxy-datas to a model galaxy, using either the galaxy's intensities, \
         surface-density or potential.
@@ -22,13 +22,15 @@ class GalaxyFit(af.fit.DataFit1D):
         self.map_to_scaled_array = galaxy_data.grid_stack.scaled_array_2d_from_array_1d
 
         model_data_1d = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(
-            galaxies=model_galaxies, sub_grid=galaxy_data.grid_stack.sub)
+            galaxies=model_galaxies, sub_grid=galaxy_data.grid_stack.sub
+        )
 
         super(GalaxyFit, self).__init__(
             data_1d=galaxy_data.image_1d,
             noise_map_1d=galaxy_data.noise_map_1d,
             mask_1d=galaxy_data.mask_1d,
-            model_data_1d=model_data_1d)
+            model_data_1d=model_data_1d,
+        )
 
     @property
     def grid_stack(self):
@@ -41,7 +43,6 @@ class GalaxyFit(af.fit.DataFit1D):
     @property
     def model_image_1d(self):
         return self.model_data_1d
-
 
     def mask(self, return_in_2d=True):
         if return_in_2d:

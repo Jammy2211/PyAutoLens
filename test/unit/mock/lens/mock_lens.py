@@ -1,10 +1,17 @@
 from test.unit.mock.model.mock_inversion import MockMapper
 from test.unit.mock.model.mock_galaxy import MockHyperGalaxy
 
-class MockTracer(object):
 
-    def __init__(self, unblurred_image_1d, blurring_image_1d, has_light_profile, has_pixelization, has_hyper_galaxy,
-                 has_grid_mappers=False):
+class MockTracer(object):
+    def __init__(
+        self,
+        unblurred_image_1d,
+        blurring_image_1d,
+        has_light_profile,
+        has_pixelization,
+        has_hyper_galaxy,
+        has_grid_mappers=False,
+    ):
 
         self.unblurred_image_1d = unblurred_image_1d
         self.blurring_image_1d = blurring_image_1d

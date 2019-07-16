@@ -10,18 +10,14 @@ from .hyper_phase import HyperPhase
 
 # noinspection PyAbstractClass
 class VariableFixingHyperPhase(HyperPhase):
-
     def __init__(
-            self,
-            phase: ph.Phase,
-            hyper_name: str,
-            variable_classes=tuple(),
-            default_classes=None
+        self,
+        phase: ph.Phase,
+        hyper_name: str,
+        variable_classes=tuple(),
+        default_classes=None,
     ):
-        super().__init__(
-            phase=phase,
-            hyper_name=hyper_name
-        )
+        super().__init__(phase=phase, hyper_name=hyper_name)
         self.default_classes = default_classes or dict()
         self.variable_classes = variable_classes
 
@@ -30,19 +26,13 @@ class VariableFixingHyperPhase(HyperPhase):
         phase = super().make_hyper_phase()
 
         phase.const_efficiency_mode = af.conf.instance.non_linear.get(
-            'MultiNest',
-            'extension_inversion_const_efficiency_mode',
-            bool
+            "MultiNest", "extension_inversion_const_efficiency_mode", bool
         )
         phase.optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
-            'MultiNest',
-            'extension_inversion_sampling_efficiency',
-            float
+            "MultiNest", "extension_inversion_sampling_efficiency", float
         )
         phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
-            'MultiNest',
-            'extension_inversion_n_live_points',
-            int
+            "MultiNest", "extension_inversion_n_live_points", int
         )
 
         return phase
@@ -54,8 +44,7 @@ class VariableFixingHyperPhase(HyperPhase):
         """
 
         variable = results.last.variable.copy_with_fixed_priors(
-            results.last.constant,
-            self.variable_classes
+            results.last.constant, self.variable_classes
         )
         self.add_defaults(variable)
 
@@ -90,19 +79,16 @@ class InversionPhase(VariableFixingHyperPhase):
     """
 
     def __init__(
-            self,
-            phase: ph.Phase,
-            variable_classes=(
-                    px.Pixelization,
-                    rg.Regularization
-            ),
-            default_classes=None
+        self,
+        phase: ph.Phase,
+        variable_classes=(px.Pixelization, rg.Regularization),
+        default_classes=None,
     ):
         super().__init__(
             phase=phase,
             variable_classes=variable_classes,
             hyper_name="inversion",
-            default_classes=default_classes
+            default_classes=default_classes,
         )
 
     @property
@@ -124,14 +110,8 @@ class InversionBackgroundSkyPhase(InversionPhase):
     def __init__(self, phase: ph.Phase):
         super().__init__(
             phase=phase,
-            variable_classes=(
-                px.Pixelization,
-                rg.Regularization,
-                hd.HyperImageSky
-            ),
-            default_classes={
-                "hyper_image_sky": hd.HyperImageSky
-            }
+            variable_classes=(px.Pixelization, rg.Regularization, hd.HyperImageSky),
+            default_classes={"hyper_image_sky": hd.HyperImageSky},
         )
 
 
@@ -148,11 +128,9 @@ class InversionBackgroundNoisePhase(InversionPhase):
             variable_classes=(
                 px.Pixelization,
                 rg.Regularization,
-                hd.HyperNoiseBackground
+                hd.HyperNoiseBackground,
             ),
-            default_classes={
-                "hyper_noise_background": hd.HyperNoiseBackground
-            }
+            default_classes={"hyper_noise_background": hd.HyperNoiseBackground},
         )
 
 
@@ -170,10 +148,10 @@ class InversionBackgroundBothPhase(InversionPhase):
                 px.Pixelization,
                 rg.Regularization,
                 hd.HyperImageSky,
-                hd.HyperNoiseBackground
+                hd.HyperNoiseBackground,
             ),
             default_classes={
                 "hyper_image_sky": hd.HyperImageSky,
-                "hyper_noise_background": hd.HyperNoiseBackground
-            }
+                "hyper_noise_background": hd.HyperNoiseBackground,
+            },
         )

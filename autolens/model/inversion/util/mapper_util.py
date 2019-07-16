@@ -1,8 +1,11 @@
 import numpy as np
 from autolens import decorator_util
 
+
 @decorator_util.jit()
-def mapping_matrix_from_sub_to_pix(sub_to_pix, pixels, regular_pixels, sub_to_regular, sub_grid_fraction):
+def mapping_matrix_from_sub_to_pix(
+    sub_to_pix, pixels, regular_pixels, sub_to_regular, sub_grid_fraction
+):
     """Computes the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
     Parameters
@@ -22,13 +25,21 @@ def mapping_matrix_from_sub_to_pix(sub_to_pix, pixels, regular_pixels, sub_to_re
     mapping_matrix = np.zeros((regular_pixels, pixels))
 
     for sub_index in range(sub_to_regular.shape[0]):
-        mapping_matrix[sub_to_regular[sub_index], sub_to_pix[sub_index]] += sub_grid_fraction
+        mapping_matrix[
+            sub_to_regular[sub_index], sub_to_pix[sub_index]
+        ] += sub_grid_fraction
 
     return mapping_matrix
 
+
 @decorator_util.jit()
-def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_nearest_pix, pixel_centres,
-                                                   pixel_neighbors, pixel_neighbors_size):
+def voronoi_regular_to_pix_from_grids_and_geometry(
+    regular_grid,
+    regular_to_nearest_pix,
+    pixel_centres,
+    pixel_neighbors,
+    pixel_neighbors_size,
+):
     """ Compute the mappings between a set of regular-grid pixels and pixelization pixels, using information on \
     how regular pixels map to their closest pixelization pixel on the image-plane pix-grid and the pixelization's \
     pixel centres.
@@ -65,8 +76,9 @@ def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_near
 
             nearest_pix_pixel_center = pixel_centres[nearest_pix_pixel_index]
 
-            sub_to_nearest_pix_distance = (regular_grid[regular_index, 0] - nearest_pix_pixel_center[0]) ** 2 + \
-                                          (regular_grid[regular_index, 1] - nearest_pix_pixel_center[1]) ** 2
+            sub_to_nearest_pix_distance = (
+                regular_grid[regular_index, 0] - nearest_pix_pixel_center[0]
+            ) ** 2 + (regular_grid[regular_index, 1] - nearest_pix_pixel_center[1]) ** 2
 
             closest_separation_from_pix_neighbor = 1.0e8
 
@@ -74,15 +86,19 @@ def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_near
 
                 neighbor = pixel_neighbors[nearest_pix_pixel_index, neighbor_index]
 
-                separation_from_neighbor = (regular_grid[regular_index, 0] - pixel_centres[neighbor, 0]) ** 2 + \
-                                           (regular_grid[regular_index, 1] - pixel_centres[neighbor, 1]) ** 2
+                separation_from_neighbor = (
+                    (regular_grid[regular_index, 0] - pixel_centres[neighbor, 0]) ** 2
+                    + (regular_grid[regular_index, 1] - pixel_centres[neighbor, 1]) ** 2
+                )
 
                 if separation_from_neighbor < closest_separation_from_pix_neighbor:
 
                     closest_separation_from_pix_neighbor = separation_from_neighbor
                     closest_neighbor_index = neighbor_index
 
-            neighboring_pix_pixel_index = pixel_neighbors[nearest_pix_pixel_index, closest_neighbor_index]
+            neighboring_pix_pixel_index = pixel_neighbors[
+                nearest_pix_pixel_index, closest_neighbor_index
+            ]
             sub_to_neighboring_pix_distance = closest_separation_from_pix_neighbor
 
             if sub_to_nearest_pix_distance <= sub_to_neighboring_pix_distance:
@@ -93,9 +109,16 @@ def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_near
 
     return regular_to_pix
 
+
 @decorator_util.jit()
-def voronoi_sub_to_pix_from_grids_and_geometry(sub_grid, regular_to_nearest_pix, sub_to_regular, pixel_centres,
-                                               pixel_neighbors, pixel_neighbors_size):
+def voronoi_sub_to_pix_from_grids_and_geometry(
+    sub_grid,
+    regular_to_nearest_pix,
+    sub_to_regular,
+    pixel_centres,
+    pixel_neighbors,
+    pixel_neighbors_size,
+):
     """ Compute the mappings between a set of sub-grid pixels and pixelization pixels, using information on \
     how the regular pixels hosting each sub-pixel map to their closest pixelization pixel on the image-plane pix-grid \
     and the pixelization's pixel centres.
@@ -132,8 +155,9 @@ def voronoi_sub_to_pix_from_grids_and_geometry(sub_grid, regular_to_nearest_pix,
 
             nearest_pix_pixel_center = pixel_centres[nearest_pix_pixel_index]
 
-            sub_to_nearest_pix_distance = (sub_grid[sub_index, 0] - nearest_pix_pixel_center[0]) ** 2 + \
-                                          (sub_grid[sub_index, 1] - nearest_pix_pixel_center[1]) ** 2
+            sub_to_nearest_pix_distance = (
+                sub_grid[sub_index, 0] - nearest_pix_pixel_center[0]
+            ) ** 2 + (sub_grid[sub_index, 1] - nearest_pix_pixel_center[1]) ** 2
 
             closest_separation_from_pix_to_neighbor = 1.0e8
 
@@ -141,14 +165,17 @@ def voronoi_sub_to_pix_from_grids_and_geometry(sub_grid, regular_to_nearest_pix,
 
                 neighbor = pixel_neighbors[nearest_pix_pixel_index, neighbor_index]
 
-                separation_from_neighbor = (sub_grid[sub_index, 0] - pixel_centres[neighbor, 0]) ** 2 + \
-                                           (sub_grid[sub_index, 1] - pixel_centres[neighbor, 1]) ** 2
+                separation_from_neighbor = (
+                    sub_grid[sub_index, 0] - pixel_centres[neighbor, 0]
+                ) ** 2 + (sub_grid[sub_index, 1] - pixel_centres[neighbor, 1]) ** 2
 
                 if separation_from_neighbor < closest_separation_from_pix_to_neighbor:
                     closest_separation_from_pix_to_neighbor = separation_from_neighbor
                     closest_neighbor_index = neighbor_index
 
-            neighboring_pix_pixel_index = pixel_neighbors[nearest_pix_pixel_index, closest_neighbor_index]
+            neighboring_pix_pixel_index = pixel_neighbors[
+                nearest_pix_pixel_index, closest_neighbor_index
+            ]
             sub_to_neighboring_pix_distance = closest_separation_from_pix_to_neighbor
 
             if sub_to_nearest_pix_distance <= sub_to_neighboring_pix_distance:

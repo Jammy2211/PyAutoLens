@@ -7,7 +7,6 @@ from autolens.pipeline import pipeline as pl
 
 
 class MockAnalysis(object):
-
     def __init__(self, number_galaxies, shape, value):
         self.number_galaxies = number_galaxies
         self.shape = shape
@@ -32,7 +31,7 @@ class DummyPhaseImaging(af.AbstractPhase):
     def make_result(self, result, analysis):
         pass
 
-    def __init__(self, phase_name, phase_tag='', phase_path=None):
+    def __init__(self, phase_name, phase_tag="", phase_path=None):
         super().__init__(phase_name, phase_tag=phase_tag)
         self.data = None
         self.positions = None
@@ -83,18 +82,23 @@ def make_mock_file(monkeypatch):
         files.append(file)
         return file
 
-    monkeypatch.setattr(builtins, 'open', mock_open)
+    monkeypatch.setattr(builtins, "open", mock_open)
     yield files
 
 
 class TestMetaData(object):
     def test_files(self, mock_files):
-        pipeline = pl.PipelineImaging("pipeline_name",
-                                      DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"))
+        pipeline = pl.PipelineImaging(
+            "pipeline_name",
+            DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"),
+        )
         pipeline.run(MockCCDData(), data_name="data_name")
 
         assert "phase_name///metadata" in mock_files[1].filename
-        assert mock_files[1].text == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
+        assert (
+            mock_files[1].text
+            == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
+        )
 
         assert "phase_name///optimizer.pickle" in mock_files[2].filename
 
@@ -155,7 +159,7 @@ class DummyPhasePositions(af.AbstractPhase):
         self.results = None
         self.pixel_scale = None
         self.phase_name = phase_name
-        self.phase_tag = ''
+        self.phase_tag = ""
         self.phase_path = phase_name
         self.optimizer = Optimizer(phase_name)
 

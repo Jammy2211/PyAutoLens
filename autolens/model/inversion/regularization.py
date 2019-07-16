@@ -2,8 +2,8 @@ import numpy as np
 
 from autolens.model.inversion.util import regularization_util
 
-class Regularization(object):
 
+class Regularization(object):
     def __init__(self, coefficients=(1.0,)):
         """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
         smooth-source solution and prevent over-fitting noise_map in the hyper. This is achieved by computing a \
@@ -123,12 +123,15 @@ class Regularization(object):
         """
         self.coefficients = coefficients
 
-    def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors, pixel_neighbors_size):
-        raise NotImplementedError("regularization_matrix_from_pixel_neighbors should be overridden")
+    def regularization_matrix_from_pixel_neighbors(
+        self, pixel_neighbors, pixel_neighbors_size
+    ):
+        raise NotImplementedError(
+            "regularization_matrix_from_pixel_neighbors should be overridden"
+        )
 
 
 class Constant(Regularization):
-
     def __init__(self, coefficients=(1.0,)):
         """A constant-regularization scheme (regularization is described in the *Regularization* class above).
 
@@ -149,20 +152,26 @@ class Constant(Regularization):
         """
         super(Constant, self).__init__(coefficients)
 
-    def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors, pixel_neighbors_size):
-        return regularization_util.constant_regularization_matrix_from_pixel_neighbors(coefficients=self.coefficients,
-               pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
+    def regularization_matrix_from_pixel_neighbors(
+        self, pixel_neighbors, pixel_neighbors_size
+    ):
+        return regularization_util.constant_regularization_matrix_from_pixel_neighbors(
+            coefficients=self.coefficients,
+            pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size,
+        )
 
     def regularization_weights_from_mapper(self, mapper):
         return self.coefficients[0] * np.ones(mapper.pixels)
 
     def regularization_matrix_from_mapper(self, mapper):
         return self.regularization_matrix_from_pixel_neighbors(
-            pixel_neighbors=mapper.geometry.pixel_neighbors, pixel_neighbors_size=mapper.geometry.pixel_neighbors_size)
+            pixel_neighbors=mapper.geometry.pixel_neighbors,
+            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size,
+        )
 
 
 class AdaptiveBrightness(Regularization):
-
     def __init__(self, coefficients=(1.0, 1.0), signal_scale=1.0):
         """ A constant-regularization scheme (regularization is described in the *Regularization* class above).
 
@@ -209,37 +218,54 @@ class AdaptiveBrightness(Regularization):
         super(AdaptiveBrightness, self).__init__(coefficients)
         self.signal_scale = signal_scale
 
-    def pixel_signals_from_images(self, pixels, sub_to_pix, sub_to_regular, hyper_image):
+    def pixel_signals_from_images(
+        self, pixels, sub_to_pix, sub_to_regular, hyper_image
+    ):
         return regularization_util.adaptive_pixel_signals_from_images(
-            pixels=pixels, signal_scale=self.signal_scale, sub_to_pix=sub_to_pix,
-            sub_to_regular=sub_to_regular, hyper_image=hyper_image)
+            pixels=pixels,
+            signal_scale=self.signal_scale,
+            sub_to_pix=sub_to_pix,
+            sub_to_regular=sub_to_regular,
+            hyper_image=hyper_image,
+        )
 
     def regularization_weights_from_pixel_signals(self, pixel_signals):
-        return regularization_util.adaptive_regularization_weights_from_pixel_signals(coefficients=self.coefficients,
-                                                                                      pixel_signals=pixel_signals)
+        return regularization_util.adaptive_regularization_weights_from_pixel_signals(
+            coefficients=self.coefficients, pixel_signals=pixel_signals
+        )
 
     def regularization_matrix_from_regularization_weights_and_pixel_neighbors(
-            self, regularization_weights, pixel_neighbors, pixel_neighbors_size):
+        self, regularization_weights, pixel_neighbors, pixel_neighbors_size
+    ):
         return regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
-            regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
-                                                 pixel_neighbors_size=pixel_neighbors_size)
+            regularization_weights=regularization_weights,
+            pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size,
+        )
 
     def regularization_weights_from_mapper(self, mapper):
 
         pixel_signals = self.pixel_signals_from_images(
-            pixels=mapper.pixels, sub_to_pix=mapper.sub_to_pixelization,
-            sub_to_regular=mapper.grid_stack.sub.sub_to_regular, hyper_image=mapper.hyper_image)
+            pixels=mapper.pixels,
+            sub_to_pix=mapper.sub_to_pixelization,
+            sub_to_regular=mapper.grid_stack.sub.sub_to_regular,
+            hyper_image=mapper.hyper_image,
+        )
 
-        return self.regularization_weights_from_pixel_signals(pixel_signals=pixel_signals)
+        return self.regularization_weights_from_pixel_signals(
+            pixel_signals=pixel_signals
+        )
 
     def regularization_matrix_from_mapper(self, mapper):
 
         regularization_weights = self.regularization_weights_from_mapper(mapper=mapper)
 
         return self.regularization_matrix_from_regularization_weights_and_pixel_neighbors(
-            regularization_weights=regularization_weights, pixel_neighbors=mapper.geometry.pixel_neighbors,
-            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size)
+            regularization_weights=regularization_weights,
+            pixel_neighbors=mapper.geometry.pixel_neighbors,
+            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size,
+        )
 
     @property
     def tag(self):
-        return 'adaptive_brightness'
+        return "adaptive_brightness"

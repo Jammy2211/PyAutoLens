@@ -10,11 +10,14 @@ from autolens.model import cosmology_util
 from autolens.model.inversion import inversions as inv
 from autolens.model.galaxy import galaxy as g
 
-from autolens.data.array.grids import reshape_returned_array, reshape_returned_array_blurring, reshape_returned_grid
+from autolens.data.array.grids import (
+    reshape_returned_array,
+    reshape_returned_array_blurring,
+    reshape_returned_grid,
+)
 
 
 class AbstractTracerCosmology(object):
-
     def __init__(self, plane_redshifts, cosmology):
         """Abstract Ray tracer for lens systems with any number of planes.
 
@@ -36,44 +39,70 @@ class AbstractTracerCosmology(object):
         return len(self.plane_redshifts)
 
     def arcsec_per_kpc_proper_of_plane(self, i):
-        return cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(redshift=self.plane_redshifts[i],
-                                                                         cosmology=self.cosmology)
+        return cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
+            redshift=self.plane_redshifts[i], cosmology=self.cosmology
+        )
 
     def kpc_per_arcsec_proper_of_plane(self, i):
         return 1.0 / self.arcsec_per_kpc_proper_of_plane(i=i)
 
-    def angular_diameter_distance_of_plane_to_earth_in_units(self, i, unit_length='arcsec'):
+    def angular_diameter_distance_of_plane_to_earth_in_units(
+        self, i, unit_length="arcsec"
+    ):
         return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
-            redshift=self.plane_redshifts[i], cosmology=self.cosmology, unit_length=unit_length)
+            redshift=self.plane_redshifts[i],
+            cosmology=self.cosmology,
+            unit_length=unit_length,
+        )
 
-    def angular_diameter_distance_between_planes_in_units(self, i, j, unit_length='arcsec'):
+    def angular_diameter_distance_between_planes_in_units(
+        self, i, j, unit_length="arcsec"
+    ):
         return cosmology_util.angular_diameter_distance_between_redshifts_from_redshifts_and_cosmlology(
-            redshift_0=self.plane_redshifts[i], redshift_1=self.plane_redshifts[j], cosmology=self.cosmology,
-            unit_length=unit_length)
+            redshift_0=self.plane_redshifts[i],
+            redshift_1=self.plane_redshifts[j],
+            cosmology=self.cosmology,
+            unit_length=unit_length,
+        )
 
-    def angular_diameter_distance_to_source_plane_in_units(self, unit_length='arcsec'):
+    def angular_diameter_distance_to_source_plane_in_units(self, unit_length="arcsec"):
         return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
-            redshift=self.plane_redshifts[-1], cosmology=self.cosmology, unit_length=unit_length)
+            redshift=self.plane_redshifts[-1],
+            cosmology=self.cosmology,
+            unit_length=unit_length,
+        )
 
-    def critical_surface_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='solMass'):
+    def critical_surface_density_between_planes_in_units(
+        self, i, j, unit_length="arcsec", unit_mass="solMass"
+    ):
         return cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
-            redshift_0=self.plane_redshifts[i], redshift_1=self.plane_redshifts[j], cosmology=self.cosmology,
-            unit_length=unit_length, unit_mass=unit_mass)
+            redshift_0=self.plane_redshifts[i],
+            redshift_1=self.plane_redshifts[j],
+            cosmology=self.cosmology,
+            unit_length=unit_length,
+            unit_mass=unit_mass,
+        )
 
     def scaling_factor_between_planes(self, i, j):
         return cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
             redshift_0=self.plane_redshifts[i],
-            redshift_1=self.plane_redshifts[j], redshift_final=self.plane_redshifts[-1], cosmology=self.cosmology)
+            redshift_1=self.plane_redshifts[j],
+            redshift_final=self.plane_redshifts[-1],
+            cosmology=self.cosmology,
+        )
 
-    def angular_diameter_distance_from_image_to_source_plane_in_units(self, unit_length='arcsec'):
-        return self.angular_diameter_distance_between_planes_in_units(i=0, j=-1, unit_length=unit_length)
+    def angular_diameter_distance_from_image_to_source_plane_in_units(
+        self, unit_length="arcsec"
+    ):
+        return self.angular_diameter_distance_between_planes_in_units(
+            i=0, j=-1, unit_length=unit_length
+        )
 
     def padded_tracer_from_psf_shape(self, psf_shape):
         raise NotImplementedError()
 
 
 class AbstractTracer(AbstractTracerCosmology):
-
     def __init__(self, planes, cosmology):
         """Abstract Ray tracer for lens systems with any number of planes.
 
@@ -89,8 +118,10 @@ class AbstractTracer(AbstractTracerCosmology):
         """
 
         self.planes = planes
-        super(AbstractTracer, self).__init__(plane_redshifts=[plane.redshift for plane in self.planes],
-                                             cosmology=cosmology)
+        super(AbstractTracer, self).__init__(
+            plane_redshifts=[plane.redshift for plane in self.planes],
+            cosmology=cosmology,
+        )
 
     def plane_with_galaxy(self, galaxy):
         return [plane for plane in self.planes if galaxy in plane.galaxies][0]
@@ -137,27 +168,41 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @reshape_returned_array
     def profile_image_plane_image(self, return_in_2d=True, return_binned=True):
-        return sum(self.profile_image_plane_image_of_planes(
-            return_in_2d=False, return_binned=False))
+        return sum(
+            self.profile_image_plane_image_of_planes(
+                return_in_2d=False, return_binned=False
+            )
+        )
 
-    def profile_image_plane_image_of_planes(self, return_in_2d=True, return_binned=True):
-        return [plane.profile_image_plane_image(
-            return_in_2d=return_in_2d,
-            return_binned=return_binned)
-            for plane in self.planes]
+    def profile_image_plane_image_of_planes(
+        self, return_in_2d=True, return_binned=True
+    ):
+        return [
+            plane.profile_image_plane_image(
+                return_in_2d=return_in_2d, return_binned=return_binned
+            )
+            for plane in self.planes
+        ]
 
     def padded_profile_image_plane_image_2d_from_psf_shape(self, psf_shape):
 
         padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf_shape)
 
-        return padded_tracer.profile_image_plane_image(return_in_2d=True, return_binned=True)
+        return padded_tracer.profile_image_plane_image(
+            return_in_2d=True, return_binned=True
+        )
 
     @reshape_returned_array_blurring
     def profile_image_plane_blurring_image(self, return_in_2d=True):
-        return sum(self.profile_image_plane_blurring_image_of_planes(return_in_2d=False))
+        return sum(
+            self.profile_image_plane_blurring_image_of_planes(return_in_2d=False)
+        )
 
     def profile_image_plane_blurring_image_of_planes(self, return_in_2d=True):
-        return [plane.profile_image_plane_blurring_image(return_in_2d=return_in_2d) for plane in self.planes]
+        return [
+            plane.profile_image_plane_blurring_image(return_in_2d=return_in_2d)
+            for plane in self.planes
+        ]
 
     @property
     def mappers_of_planes(self):
@@ -169,31 +214,60 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @reshape_returned_array
     def convergence(self, return_in_2d=True, return_binned=True):
-        return sum([plane.convergence(return_in_2d=False, return_binned=False) for plane in self.planes])
+        return sum(
+            [
+                plane.convergence(return_in_2d=False, return_binned=False)
+                for plane in self.planes
+            ]
+        )
 
     @reshape_returned_array
     def potential(self, return_in_2d=True, return_binned=True):
-        return sum([plane.potential(return_in_2d=False, return_binned=False) for plane in self.planes])
+        return sum(
+            [
+                plane.potential(return_in_2d=False, return_binned=False)
+                for plane in self.planes
+            ]
+        )
 
     @reshape_returned_array
     def deflections_y(self, return_in_2d=True, return_binned=True):
-        return sum([plane.deflections_y(return_in_2d=False, return_binned=False) for plane in self.planes])
+        return sum(
+            [
+                plane.deflections_y(return_in_2d=False, return_binned=False)
+                for plane in self.planes
+            ]
+        )
 
     @reshape_returned_array
     def deflections_x(self, return_in_2d=True, return_binned=True):
-        return sum([plane.deflections_x(return_in_2d=False, return_binned=False) for plane in self.planes])
+        return sum(
+            [
+                plane.deflections_x(return_in_2d=False, return_binned=False)
+                for plane in self.planes
+            ]
+        )
 
     @reshape_returned_grid
     def deflections(self, return_in_2d=True, return_binned=True):
-        return sum([plane.deflections(return_in_2d=False, return_binned=False) for plane in self.planes])
+        return sum(
+            [
+                plane.deflections(return_in_2d=False, return_binned=False)
+                for plane in self.planes
+            ]
+        )
 
-    def einstein_radius_of_plane_in_units(self, i, unit_length='arcsec'):
+    def einstein_radius_of_plane_in_units(self, i, unit_length="arcsec"):
         return self.planes[i].einstein_radius_in_units(unit_length=unit_length)
 
-    def einstein_mass_between_planes_in_units(self, i, j, unit_mass='solMass'):
-        return self.planes[i].einstein_mass_in_units(unit_mass=unit_mass, redshift_source=self.plane_redshifts[j])
+    def einstein_mass_between_planes_in_units(self, i, j, unit_mass="solMass"):
+        return self.planes[i].einstein_mass_in_units(
+            unit_mass=unit_mass, redshift_source=self.plane_redshifts[j]
+        )
 
-    def grid_at_redshift_from_image_plane_grid_and_redshift(self, image_plane_grid, redshift):
+    def grid_at_redshift_from_image_plane_grid_and_redshift(
+        self, image_plane_grid, redshift
+    ):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
         the strong lens configuration.
 
@@ -211,11 +285,18 @@ class AbstractTracer(AbstractTracerCosmology):
 
         # TODO : We need to come up with a better abstraction for multi-plane lensing 0_0
 
-        image_plane_grid_stack = grids.GridStack(regular=image_plane_grid, sub=np.array([[0.0, 0.0]]),
-                                                 blurring=np.array([[0.0, 0.0]]))
+        image_plane_grid_stack = grids.GridStack(
+            regular=image_plane_grid,
+            sub=np.array([[0.0, 0.0]]),
+            blurring=np.array([[0.0, 0.0]]),
+        )
 
-        tracer = TracerMultiPlanes(galaxies=self.galaxies, image_plane_grid_stack=image_plane_grid_stack,
-                                   border=None, cosmology=self.cosmology)
+        tracer = TracerMultiPlanes(
+            galaxies=self.galaxies,
+            image_plane_grid_stack=image_plane_grid_stack,
+            border=None,
+            cosmology=self.cosmology,
+        )
 
         for plane_index in range(0, len(self.plane_redshifts)):
 
@@ -228,15 +309,21 @@ class AbstractTracer(AbstractTracerCosmology):
                 if plane_index > 0:
                     for previous_plane_index in range(plane_index):
                         scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
-                            redshift_0=tracer.plane_redshifts[previous_plane_index], redshift_1=redshift,
-                            redshift_final=tracer.plane_redshifts[-1], cosmology=tracer.cosmology)
+                            redshift_0=tracer.plane_redshifts[previous_plane_index],
+                            redshift_1=redshift,
+                            redshift_final=tracer.plane_redshifts[-1],
+                            cosmology=tracer.cosmology,
+                        )
 
                         scaled_deflections_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(
-                            plane=tracer.planes[previous_plane_index], scaling_factor=scaling_factor)
+                            plane=tracer.planes[previous_plane_index],
+                            scaling_factor=scaling_factor,
+                        )
 
-                        new_grid_stack = \
-                            lens_util.grid_stack_from_deflections_stack(grid_stack=new_grid_stack,
-                                                                        deflections_stack=scaled_deflections_stack)
+                        new_grid_stack = lens_util.grid_stack_from_deflections_stack(
+                            grid_stack=new_grid_stack,
+                            deflections_stack=scaled_deflections_stack,
+                        )
 
                 # If redshift is before the first plane, no change to image pllane coordinates.
 
@@ -248,7 +335,6 @@ class AbstractTracer(AbstractTracerCosmology):
 
 
 class AbstractTracerData(AbstractTracer):
-
     def __init__(self, planes, cosmology):
         """Abstract Ray tracer for lens systems with any number of planes.
 
@@ -264,7 +350,9 @@ class AbstractTracerData(AbstractTracer):
         """
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
 
-    def blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(self, convolver_image):
+    def blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(
+        self, convolver_image
+    ):
         """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
         PSF using a convolver (see ccd.convolution) and then map them back to the 2D array of the original mask.
 
@@ -276,15 +364,22 @@ class AbstractTracerData(AbstractTracer):
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
-        blurred_profile_image_plane_images_of_planes_1d = \
-            self.blurred_profile_image_plane_image_1d_of_planes_from_convolver_image(convolver_image=convolver_image)
+        blurred_profile_image_plane_images_of_planes_1d = self.blurred_profile_image_plane_image_1d_of_planes_from_convolver_image(
+            convolver_image=convolver_image
+        )
 
-        return list(map(lambda blurred_profile_image_plane_image_1d:
-                        self.image_plane.grid_stack.scaled_array_2d_from_array_1d(
-                            array_1d=blurred_profile_image_plane_image_1d),
-                        blurred_profile_image_plane_images_of_planes_1d))
+        return list(
+            map(
+                lambda blurred_profile_image_plane_image_1d: self.image_plane.grid_stack.scaled_array_2d_from_array_1d(
+                    array_1d=blurred_profile_image_plane_image_1d
+                ),
+                blurred_profile_image_plane_images_of_planes_1d,
+            )
+        )
 
-    def blurred_profile_image_plane_image_1d_from_convolver_image(self, convolver_image):
+    def blurred_profile_image_plane_image_1d_from_convolver_image(
+        self, convolver_image
+    ):
         """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
         PSF using a convolver (see ccd.convolution).
 
@@ -296,13 +391,18 @@ class AbstractTracerData(AbstractTracer):
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
-        image_array = self.profile_image_plane_image(return_in_2d=False, return_binned=True)
+        image_array = self.profile_image_plane_image(
+            return_in_2d=False, return_binned=True
+        )
         blurring_array = self.profile_image_plane_blurring_image(return_in_2d=False)
 
         return convolver_image.convolve_image(
-            image_array=image_array, blurring_array=blurring_array)
+            image_array=image_array, blurring_array=blurring_array
+        )
 
-    def blurred_profile_image_plane_image_1d_of_planes_from_convolver_image(self, convolver_image):
+    def blurred_profile_image_plane_image_1d_of_planes_from_convolver_image(
+        self, convolver_image
+    ):
         """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
         PSF using a convolver (see ccd.convolution).
 
@@ -313,18 +413,26 @@ class AbstractTracerData(AbstractTracer):
         convolver_image : hyper.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
-        return [plane.blurred_profile_image_plane_image_1d_from_convolver_image(convolver_image=convolver_image)
-                for plane in self.planes]
+        return [
+            plane.blurred_profile_image_plane_image_1d_from_convolver_image(
+                convolver_image=convolver_image
+            )
+            for plane in self.planes
+        ]
 
     def unmasked_blurred_profile_image_plane_image_from_psf(self, psf):
 
         padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf.shape)
 
         padded_image_1d = padded_tracer.profile_image_plane_image(
-            return_in_2d=False, return_binned=True)
+            return_in_2d=False, return_binned=True
+        )
 
         return padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
-            padded_array_1d=padded_image_1d, psf=psf, image_shape=self.grid_stack.regular.mask.shape)
+            padded_array_1d=padded_image_1d,
+            psf=psf,
+            image_shape=self.grid_stack.regular.mask.shape,
+        )
 
     def unmasked_blurred_profile_image_plane_image_of_planes_from_psf(self, psf):
 
@@ -335,17 +443,24 @@ class AbstractTracerData(AbstractTracer):
         for padded_plane in padded_tracer.planes:
 
             padded_image_1d = padded_plane.profile_image_plane_image(
-                return_in_2d=False, return_binned=True)
+                return_in_2d=False, return_binned=True
+            )
 
-            unmasked_blurred_array_2d = \
-                padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
-                padded_array_1d=padded_image_1d, psf=psf, image_shape=self.grid_stack.regular.mask.shape)
+            unmasked_blurred_array_2d = padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
+                padded_array_1d=padded_image_1d,
+                psf=psf,
+                image_shape=self.grid_stack.regular.mask.shape,
+            )
 
-            unmasked_blurred_profile_image_plane_image_of_planes.append(unmasked_blurred_array_2d)
+            unmasked_blurred_profile_image_plane_image_of_planes.append(
+                unmasked_blurred_array_2d
+            )
 
         return unmasked_blurred_profile_image_plane_image_of_planes
 
-    def unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(self, psf):
+    def unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(
+        self, psf
+    ):
 
         unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies = []
 
@@ -354,40 +469,60 @@ class AbstractTracerData(AbstractTracer):
         for padded_plane in padded_tracer.planes:
 
             padded_image_1d_of_galaxies = padded_plane.profile_image_plane_image_of_galaxies(
-                return_in_2d=False, return_binned=True)
+                return_in_2d=False, return_binned=True
+            )
 
-            unmasked_blurred_array_2d_of_galaxies = \
-                list(map(lambda padded_image_1d_of_galaxy :
-                         padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
-                             padded_array_1d=padded_image_1d_of_galaxy,
-                             psf=psf,
-                             image_shape=self.grid_stack.regular.mask.shape),
-                         padded_image_1d_of_galaxies))
+            unmasked_blurred_array_2d_of_galaxies = list(
+                map(
+                    lambda padded_image_1d_of_galaxy: padded_tracer.grid_stack.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
+                        padded_array_1d=padded_image_1d_of_galaxy,
+                        psf=psf,
+                        image_shape=self.grid_stack.regular.mask.shape,
+                    ),
+                    padded_image_1d_of_galaxies,
+                )
+            )
 
-            unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies.append(unmasked_blurred_array_2d_of_galaxies)
+            unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies.append(
+                unmasked_blurred_array_2d_of_galaxies
+            )
 
         return unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies
 
-    def inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(self, image_1d, noise_map_1d,
-                                                                          convolver_mapping_matrix):
+    def inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
+        self, image_1d, noise_map_1d, convolver_mapping_matrix
+    ):
 
         if len(self.mappers_of_planes) > 1:
             raise exc.RayTracingException(
-                'PyAutoLens does not currently support more than one mapper, reglarization and'
-                'therefore inversion per tracer.')
+                "PyAutoLens does not currently support more than one mapper, reglarization and"
+                "therefore inversion per tracer."
+            )
 
         return inv.Inversion.from_data_1d_mapper_and_regularization(
-            image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver_mapping_matrix,
-            mapper=self.mappers_of_planes[0], regularization=self.regularizations_of_planes[0])
+            image_1d=image_1d,
+            noise_map_1d=noise_map_1d,
+            convolver=convolver_mapping_matrix,
+            mapper=self.mappers_of_planes[0],
+            regularization=self.regularizations_of_planes[0],
+        )
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
-            hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_planes_from_noise_map_1d(noise_map_1d=noise_map_1d)
-            hyper_noise_maps_1d = [hyper_noise_map for hyper_noise_map in hyper_noise_maps_1d if
-                                   hyper_noise_map is not None]
-            return sum(hyper_noise_maps_1d)
+        hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_planes_from_noise_map_1d(
+            noise_map_1d=noise_map_1d
+        )
+        hyper_noise_maps_1d = [
+            hyper_noise_map
+            for hyper_noise_map in hyper_noise_maps_1d
+            if hyper_noise_map is not None
+        ]
+        return sum(hyper_noise_maps_1d)
 
     def hyper_noise_maps_1d_of_planes_from_noise_map_1d(self, noise_map_1d):
-        return [plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d) for plane in self.planes]
+        return [
+            plane.hyper_noise_map_1d_from_noise_map_1d(noise_map_1d=noise_map_1d)
+            for plane in self.planes
+        ]
 
     @property
     def galaxy_image_dict_blank_images(self) -> {g.Galaxy: np.ndarray}:
@@ -400,13 +535,15 @@ class AbstractTracerData(AbstractTracer):
         for plane in self.planes:
             for galaxy in plane.galaxies:
 
-                galaxy_image_dict[galaxy] = \
-                    plane.profile_image_plane_image_of_galaxy(
-                        galaxy=galaxy, return_in_2d=False, return_binned=True)
+                galaxy_image_dict[galaxy] = plane.profile_image_plane_image_of_galaxy(
+                    galaxy=galaxy, return_in_2d=False, return_binned=True
+                )
 
         return galaxy_image_dict
 
-    def galaxy_image_dict_from_convolver_image(self, convolver_image) -> {g.Galaxy: np.ndarray}:
+    def galaxy_image_dict_from_convolver_image(
+        self, convolver_image
+    ) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -417,13 +554,17 @@ class AbstractTracerData(AbstractTracer):
             for galaxy in plane.galaxies:
 
                 profile_image_plane_image_1d = plane.profile_image_plane_image_of_galaxy(
-                    galaxy=galaxy, return_in_2d=False, return_binned=True)
+                    galaxy=galaxy, return_in_2d=False, return_binned=True
+                )
 
                 profile_image_plane_blurring_image_1d = plane.profile_image_plane_blurring_image_of_galaxy(
-                    galaxy=galaxy, return_in_2d=False)
+                    galaxy=galaxy, return_in_2d=False
+                )
 
                 blurred_profile_image_pane_image_1d = convolver_image.convolve_image(
-                    image_array=profile_image_plane_image_1d, blurring_array=profile_image_plane_blurring_image_1d)
+                    image_array=profile_image_plane_image_1d,
+                    blurring_array=profile_image_plane_blurring_image_1d,
+                )
 
                 galaxy_image_dict[galaxy] = blurred_profile_image_pane_image_1d
 
@@ -431,8 +572,13 @@ class AbstractTracerData(AbstractTracer):
 
 
 class TracerImagePlane(AbstractTracerData):
-
-    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+    def __init__(
+        self,
+        lens_galaxies,
+        image_plane_grid_stack,
+        border=None,
+        cosmology=cosmo.Planck15,
+    ):
         """Ray tracer for a lens system with just an image-plane. 
         
         As there is only 1 plane, there are no ray-tracing calculations. This class is therefore only used for fitting \ 
@@ -454,27 +600,50 @@ class TracerImagePlane(AbstractTracerData):
         """
 
         if not lens_galaxies:
-            raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
+            raise exc.RayTracingException(
+                "No lens galaxies have been input into the Tracer"
+            )
 
-        image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, compute_deflections=False,
-                               border=border, cosmology=cosmology)
+        image_plane = pl.Plane(
+            galaxies=lens_galaxies,
+            grid_stack=image_plane_grid_stack,
+            compute_deflections=False,
+            border=border,
+            cosmology=cosmology,
+        )
 
-        super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
+        super(TracerImagePlane, self).__init__(
+            planes=[image_plane], cosmology=cosmology
+        )
 
-    def critical_surface_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='solMass'):
+    def critical_surface_density_between_planes_in_units(
+        self, i, j, unit_length="arcsec", unit_mass="solMass"
+    ):
         return 0.0
 
     def padded_tracer_from_psf_shape(self, psf_shape):
 
-        padded_grid_stack = self.grid_stack.padded_grid_stack_from_psf_shape(psf_shape=psf_shape)
+        padded_grid_stack = self.grid_stack.padded_grid_stack_from_psf_shape(
+            psf_shape=psf_shape
+        )
 
-        return TracerImagePlane(lens_galaxies=self.image_plane.galaxies, image_plane_grid_stack=padded_grid_stack,
-                                border=self.image_plane.border, cosmology=self.cosmology)
+        return TracerImagePlane(
+            lens_galaxies=self.image_plane.galaxies,
+            image_plane_grid_stack=padded_grid_stack,
+            border=self.image_plane.border,
+            cosmology=self.cosmology,
+        )
 
 
 class TracerImageSourcePlanes(AbstractTracerData):
-
-    def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+    def __init__(
+        self,
+        lens_galaxies,
+        source_galaxies,
+        image_plane_grid_stack,
+        border=None,
+        cosmology=cosmo.Planck15,
+    ):
         """Ray-tracer for a lens system with two planes, an image-plane and source-plane.
 
         This tracer has only one grid-stack (see grid_stack.GridStack) which is used for ray-tracing.
@@ -494,8 +663,13 @@ class TracerImageSourcePlanes(AbstractTracerData):
             The cosmology of the ray-tracing calculation.
         """
 
-        image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border,
-            compute_deflections=True, cosmology=cosmology)
+        image_plane = pl.Plane(
+            galaxies=lens_galaxies,
+            grid_stack=image_plane_grid_stack,
+            border=border,
+            compute_deflections=True,
+            cosmology=cosmology,
+        )
 
         source_plane_grid_stack = image_plane.trace_grid_stack_to_next_plane()
 
@@ -504,34 +678,47 @@ class TracerImageSourcePlanes(AbstractTracerData):
             grid_stack=source_plane_grid_stack,
             border=border,
             compute_deflections=False,
-            cosmology=cosmology
+            cosmology=cosmology,
         )
 
-        super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
+        super(TracerImageSourcePlanes, self).__init__(
+            planes=[image_plane, source_plane], cosmology=cosmology
+        )
 
-    def critical_surface_density_between_image_and_source_plane_in_units(self, unit_length='arcsec',
-                                                                         unit_mass='solMass'):
-        return self.critical_surface_density_between_planes_in_units(i=0, j=1, unit_length=unit_length,
-                                                                     unit_mass=unit_mass)
+    def critical_surface_density_between_image_and_source_plane_in_units(
+        self, unit_length="arcsec", unit_mass="solMass"
+    ):
+        return self.critical_surface_density_between_planes_in_units(
+            i=0, j=1, unit_length=unit_length, unit_mass=unit_mass
+        )
 
-    def einstein_radius_of_image_plane_in_units(self, unit_length='arcsec'):
+    def einstein_radius_of_image_plane_in_units(self, unit_length="arcsec"):
         return self.einstein_radius_of_plane_in_units(i=0, unit_length=unit_length)
 
-    def einstein_mass_between_image_and_source_plane_in_units(self, unit_mass='solMass'):
+    def einstein_mass_between_image_and_source_plane_in_units(
+        self, unit_mass="solMass"
+    ):
         return self.einstein_mass_between_planes_in_units(i=0, j=1, unit_mass=unit_mass)
 
     def padded_tracer_from_psf_shape(self, psf_shape):
 
-        padded_grid_stack = self.grid_stack.padded_grid_stack_from_psf_shape(psf_shape=psf_shape)
+        padded_grid_stack = self.grid_stack.padded_grid_stack_from_psf_shape(
+            psf_shape=psf_shape
+        )
 
         return TracerImageSourcePlanes(
-            source_galaxies=self.source_plane.galaxies, lens_galaxies=self.image_plane.galaxies,
-            image_plane_grid_stack=padded_grid_stack,border=self.image_plane.border, cosmology=self.cosmology)
+            source_galaxies=self.source_plane.galaxies,
+            lens_galaxies=self.image_plane.galaxies,
+            image_plane_grid_stack=padded_grid_stack,
+            border=self.image_plane.border,
+            cosmology=self.cosmology,
+        )
 
 
 class TracerMultiPlanes(AbstractTracerData):
-
-    def __init__(self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+    def __init__(
+        self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15
+    ):
         """Ray-tracer for a lens system with any number of planes.
 
         The redshift of these planes are specified by the redshits of the galaxies; there is a unique plane redshift \
@@ -556,52 +743,80 @@ class TracerMultiPlanes(AbstractTracerData):
             The cosmology of the ray-tracing calculation.
         """
 
-        plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
+        plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(
+            galaxies=galaxies
+        )
 
-        galaxies_in_planes = \
-            lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
-                                                                        plane_redshifts=plane_redshifts)
+        galaxies_in_planes = lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+            galaxies=galaxies, plane_redshifts=plane_redshifts
+        )
 
         planes = []
 
         for plane_index in range(0, len(plane_redshifts)):
 
-            compute_deflections = lens_util.compute_deflections_at_next_plane(plane_index=plane_index,
-                                                                              total_planes=len(plane_redshifts))
+            compute_deflections = lens_util.compute_deflections_at_next_plane(
+                plane_index=plane_index, total_planes=len(plane_redshifts)
+            )
 
             new_grid_stack = image_plane_grid_stack
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
                     scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
-                        redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
-                        redshift_final=plane_redshifts[-1], cosmology=cosmology)
+                        redshift_0=plane_redshifts[previous_plane_index],
+                        redshift_1=plane_redshifts[plane_index],
+                        redshift_final=plane_redshifts[-1],
+                        cosmology=cosmology,
+                    )
 
                     scaled_deflections_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(
-                        plane=planes[previous_plane_index], scaling_factor=scaling_factor)
+                        plane=planes[previous_plane_index],
+                        scaling_factor=scaling_factor,
+                    )
 
-                    new_grid_stack = \
-                        lens_util.grid_stack_from_deflections_stack(grid_stack=new_grid_stack,
-                                                                    deflections_stack=scaled_deflections_stack)
+                    new_grid_stack = lens_util.grid_stack_from_deflections_stack(
+                        grid_stack=new_grid_stack,
+                        deflections_stack=scaled_deflections_stack,
+                    )
 
-            planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack, border=border,
-                                   compute_deflections=compute_deflections, cosmology=cosmology))
+            planes.append(
+                pl.Plane(
+                    galaxies=galaxies_in_planes[plane_index],
+                    grid_stack=new_grid_stack,
+                    border=border,
+                    compute_deflections=compute_deflections,
+                    cosmology=cosmology,
+                )
+            )
 
         super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
 
     def padded_tracer_from_psf_shape(self, psf_shape):
 
-        padded_grid_stack = self.grid_stack.padded_grid_stack_from_psf_shape(psf_shape=psf_shape)
+        padded_grid_stack = self.grid_stack.padded_grid_stack_from_psf_shape(
+            psf_shape=psf_shape
+        )
 
         return TracerMultiPlanes(
-            galaxies=self.galaxies, image_plane_grid_stack=padded_grid_stack,
-            border=self.image_plane.border, cosmology=self.cosmology)
+            galaxies=self.galaxies,
+            image_plane_grid_stack=padded_grid_stack,
+            border=self.image_plane.border,
+            cosmology=self.cosmology,
+        )
 
 
 class TracerMultiPlanesSliced(AbstractTracerData):
-
-    def __init__(self, lens_galaxies, line_of_sight_galaxies, source_galaxies, planes_between_lenses,
-                 image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+    def __init__(
+        self,
+        lens_galaxies,
+        line_of_sight_galaxies,
+        source_galaxies,
+        planes_between_lenses,
+        image_plane_grid_stack,
+        border=None,
+        cosmology=cosmo.Planck15,
+    ):
         """Ray-tracer for a lens system with any number of planes.
 
         The redshift of these planes are specified by the input parameters *lens_redshifts* and \
@@ -629,15 +844,20 @@ class TracerMultiPlanesSliced(AbstractTracerData):
             The cosmology of the ray-tracing calculation.
         """
 
-        lens_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=lens_galaxies)
+        lens_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(
+            galaxies=lens_galaxies
+        )
 
         plane_redshifts = lens_util.ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
-            lens_redshifts=lens_redshifts, planes_between_lenses=planes_between_lenses,
-            source_plane_redshift=source_galaxies[0].redshift)
+            lens_redshifts=lens_redshifts,
+            planes_between_lenses=planes_between_lenses,
+            source_plane_redshift=source_galaxies[0].redshift,
+        )
 
-        galaxies_in_planes = \
-            lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=lens_galaxies + line_of_sight_galaxies,
-                                                                        plane_redshifts=plane_redshifts)
+        galaxies_in_planes = lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+            galaxies=lens_galaxies + line_of_sight_galaxies,
+            plane_redshifts=plane_redshifts,
+        )
 
         plane_redshifts.append(source_galaxies[0].redshift)
         galaxies_in_planes.append(source_galaxies)
@@ -646,33 +866,48 @@ class TracerMultiPlanesSliced(AbstractTracerData):
 
         for plane_index in range(0, len(plane_redshifts)):
 
-            compute_deflections = lens_util.compute_deflections_at_next_plane(plane_index=plane_index,
-                                                                              total_planes=len(plane_redshifts))
+            compute_deflections = lens_util.compute_deflections_at_next_plane(
+                plane_index=plane_index, total_planes=len(plane_redshifts)
+            )
 
             new_grid_stack = image_plane_grid_stack
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
                     scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
-                        redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
-                        redshift_final=plane_redshifts[-1], cosmology=cosmology)
+                        redshift_0=plane_redshifts[previous_plane_index],
+                        redshift_1=plane_redshifts[plane_index],
+                        redshift_final=plane_redshifts[-1],
+                        cosmology=cosmology,
+                    )
 
                     scaled_deflections_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(
-                        plane=planes[previous_plane_index], scaling_factor=scaling_factor)
+                        plane=planes[previous_plane_index],
+                        scaling_factor=scaling_factor,
+                    )
 
-                    new_grid_stack = \
-                        lens_util.grid_stack_from_deflections_stack(grid_stack=new_grid_stack,
-                                                                    deflections_stack=scaled_deflections_stack)
+                    new_grid_stack = lens_util.grid_stack_from_deflections_stack(
+                        grid_stack=new_grid_stack,
+                        deflections_stack=scaled_deflections_stack,
+                    )
 
-            planes.append(pl.Plane(redshift=plane_redshifts[plane_index], galaxies=galaxies_in_planes[plane_index],
-                                   grid_stack=new_grid_stack, border=border, compute_deflections=compute_deflections,
-                                   cosmology=cosmology))
+            planes.append(
+                pl.Plane(
+                    redshift=plane_redshifts[plane_index],
+                    galaxies=galaxies_in_planes[plane_index],
+                    grid_stack=new_grid_stack,
+                    border=border,
+                    compute_deflections=compute_deflections,
+                    cosmology=cosmology,
+                )
+            )
 
-        super(TracerMultiPlanesSliced, self).__init__(planes=planes, cosmology=cosmology)
+        super(TracerMultiPlanesSliced, self).__init__(
+            planes=planes, cosmology=cosmology
+        )
 
 
 class TracerImageSourcePlanesPositions(AbstractTracer):
-
     def __init__(self, lens_galaxies, image_plane_positions, cosmology=cosmo.Planck15):
         """Positional ray-tracer for a lens system with two planes, an image-plane and source-plane (source-plane \
         galaxies are not input for the positional ray-tracer, as it is only the proximity that image_plane_positions \
@@ -693,19 +928,30 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        image_plane = pl.PlanePositions(redshift=lens_galaxies[0].redshift, galaxies=lens_galaxies,
-                                        positions=image_plane_positions, compute_deflections=True, cosmology=cosmology)
+        image_plane = pl.PlanePositions(
+            redshift=lens_galaxies[0].redshift,
+            galaxies=lens_galaxies,
+            positions=image_plane_positions,
+            compute_deflections=True,
+            cosmology=cosmology,
+        )
 
         source_plane_positions = image_plane.trace_to_next_plane()
 
-        source_plane = pl.PlanePositions(redshift=None, galaxies=None, positions=source_plane_positions,
-                                         compute_deflections=False, cosmology=cosmology)
+        source_plane = pl.PlanePositions(
+            redshift=None,
+            galaxies=None,
+            positions=source_plane_positions,
+            compute_deflections=False,
+            cosmology=cosmology,
+        )
 
-        super(TracerImageSourcePlanesPositions, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
+        super(TracerImageSourcePlanesPositions, self).__init__(
+            planes=[image_plane, source_plane], cosmology=cosmology
+        )
 
 
 class TracerMultiPlanesPositions(AbstractTracer):
-
     def __init__(self, galaxies, image_plane_positions, cosmology=cosmo.Planck15):
         """Positional ray-tracer for a lens system with any number of planes.
 
@@ -723,14 +969,18 @@ class TracerMultiPlanesPositions(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
+        plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(
+            galaxies=galaxies
+        )
 
-        galaxies_in_redshift_ordered_lists = \
-            lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
-                                                                        plane_redshifts=plane_redshifts)
+        galaxies_in_redshift_ordered_lists = lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+            galaxies=galaxies, plane_redshifts=plane_redshifts
+        )
 
         if not galaxies:
-            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourcePlanes)')
+            raise exc.RayTracingException(
+                "No galaxies have been input into the Tracer (TracerImageSourcePlanes)"
+            )
 
         planes = []
 
@@ -741,25 +991,49 @@ class TracerMultiPlanesPositions(AbstractTracer):
             elif plane_index == len(plane_redshifts) - 1:
                 compute_deflections = False
             else:
-                raise exc.RayTracingException('A galaxy was not correctly allocated its previous / next redshifts')
+                raise exc.RayTracingException(
+                    "A galaxy was not correctly allocated its previous / next redshifts"
+                )
 
             new_positions = image_plane_positions
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
                     scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
-                        redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
-                        redshift_final=plane_redshifts[-1], cosmology=cosmology)
+                        redshift_0=plane_redshifts[previous_plane_index],
+                        redshift_1=plane_redshifts[plane_index],
+                        redshift_final=plane_redshifts[-1],
+                        cosmology=cosmology,
+                    )
 
-                    scaled_deflections = list(map(lambda deflections:
-                                                  np.multiply(scaling_factor, deflections),
-                                                  planes[previous_plane_index].deflections))
+                    scaled_deflections = list(
+                        map(
+                            lambda deflections: np.multiply(
+                                scaling_factor, deflections
+                            ),
+                            planes[previous_plane_index].deflections,
+                        )
+                    )
 
-                    new_positions = list(map(lambda positions, deflections:
-                                             np.subtract(positions, deflections), new_positions, scaled_deflections))
+                    new_positions = list(
+                        map(
+                            lambda positions, deflections: np.subtract(
+                                positions, deflections
+                            ),
+                            new_positions,
+                            scaled_deflections,
+                        )
+                    )
 
-            planes.append(pl.PlanePositions(redshift=plane_redshifts[plane_index],
-                                            galaxies=galaxies_in_redshift_ordered_lists[plane_index],
-                                            positions=new_positions, compute_deflections=compute_deflections))
+            planes.append(
+                pl.PlanePositions(
+                    redshift=plane_redshifts[plane_index],
+                    galaxies=galaxies_in_redshift_ordered_lists[plane_index],
+                    positions=new_positions,
+                    compute_deflections=compute_deflections,
+                )
+            )
 
-        super(TracerMultiPlanesPositions, self).__init__(planes=planes, cosmology=cosmology)
+        super(TracerMultiPlanesPositions, self).__init__(
+            planes=planes, cosmology=cosmology
+        )

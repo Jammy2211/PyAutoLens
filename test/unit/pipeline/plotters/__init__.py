@@ -1,6 +1,3 @@
-
-
-
 class PipelineTuple(object):
     def __init__(self, module):
         self.make = module.make
@@ -8,7 +5,7 @@ class PipelineTuple(object):
 
     @property
     def short_doc(self):
-        return self.__doc__.split('\n')[1]
+        return self.__doc__.split("\n")[1]
 
     @property
     def doc(self):
@@ -26,8 +23,10 @@ def add(module):
     """
     pipeline_dict[module.pipeline_name] = PipelineTuple(module)
 
+
 #  Add pipeline modules here.
 # add(initializer)
+
 
 class TestPipeline(object):
     # noinspection PyMethodMayBeStatic

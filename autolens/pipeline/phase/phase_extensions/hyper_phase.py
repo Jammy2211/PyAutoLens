@@ -5,11 +5,7 @@ from autolens.pipeline.phase import phase as ph
 
 
 class HyperPhase(object):
-    def __init__(
-            self,
-            phase: ph.Phase,
-            hyper_name: str
-    ):
+    def __init__(self, phase: ph.Phase, hyper_name: str):
         """
         Abstract HyperPhase. Wraps a regular phase, performing that phase before performing the action
         specified by the run_hyper.
@@ -52,10 +48,17 @@ class HyperPhase(object):
         phase_folders.append(phase.phase_name)
 
         phase.optimizer = phase.optimizer.copy_with_name_extension(
-            self.hyper_name
-        )
+            extension=self.hyper_name + '_' + phase.phase_tag)
+
+        phase.optimizer.phase_tag = ''
+        phase.phase_tag = ''
+        phase.pass_priors = self.pass_priors
 
         return phase
+
+    def pass_priors(self, results):
+
+        pass
 
     def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
         """
@@ -75,14 +78,14 @@ class HyperPhase(object):
             The result of the phase, with a hyper result attached as an attribute with the hyper_name of this
             phase.
         """
-        results = copy.deepcopy(results) if results is not None else af.ResultsCollection()
+
+        results = (
+            copy.deepcopy(results) if results is not None else af.ResultsCollection()
+        )
+
         result = self.phase.run(data, results=results, **kwargs)
         results.add(self.phase.phase_name, result)
-        hyper_result = self.run_hyper(
-            data=data,
-            results=results,
-            **kwargs
-        )
+        hyper_result = self.run_hyper(data=data, results=results, **kwargs)
         setattr(result, self.hyper_name, hyper_result)
         return result
 
