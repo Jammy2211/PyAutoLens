@@ -15,7 +15,9 @@ import pytest
 
 def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
-    regular = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(5, 5), pixel_scale=1.0)
+    regular = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        shape=(5, 5), pixel_scale=1.0
+    )
 
     sersic = lp.SphericalSersic(centre=(2.0, -2.0))
     image_1d = sersic.intensities_from_grid(grid=regular)
@@ -45,9 +47,12 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
     assert image_1d.argmax() == 24
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 4)
 
+
 def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index():
 
-    regular = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(5, 5), pixel_scale=1.0)
+    regular = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        shape=(5, 5), pixel_scale=1.0
+    )
 
     sis = mp.SphericalIsothermal(centre=(2.0, -2.0))
     density_1d = sis.convergence_from_grid(grid=regular)
@@ -70,40 +75,44 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
     assert density_1d.argmax() == 20
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (4, 0)
 
-    sis =  mp.SphericalIsothermal(centre=(-2.0, 2.0))
+    sis = mp.SphericalIsothermal(centre=(-2.0, 2.0))
     density_1d = sis.convergence_from_grid(grid=regular)
     density_2d = regular.array_2d_from_array_1d(array_1d=density_1d)
 
     assert density_1d.argmax() == 24
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (4, 4)
 
+
 def test__deflection_angles():
 
-    regular = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(5, 5), pixel_scale=1.0)
+    regular = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        shape=(5, 5), pixel_scale=1.0
+    )
 
     sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_1d = sis.deflections_from_grid(grid=regular)
     deflections_x_2d = regular.array_2d_from_array_1d(array_1d=deflections_1d[:, 1])
 
-    assert deflections_x_2d[0,0] == pytest.approx(-1.0*deflections_x_2d[0,4], 1e-2)
-    assert deflections_x_2d[1,1] == pytest.approx(-1.0*deflections_x_2d[1,3], 1e-2)
-    assert deflections_x_2d[3,1] == pytest.approx(-1.0*deflections_x_2d[3,3], 1e-2)
-    assert deflections_x_2d[4,0] == pytest.approx(-1.0*deflections_x_2d[4,4], 1e-2)
-    assert deflections_x_2d[0,2] == pytest.approx(deflections_x_2d[4,2], 1e-2)
+    assert deflections_x_2d[0, 0] == pytest.approx(-1.0 * deflections_x_2d[0, 4], 1e-2)
+    assert deflections_x_2d[1, 1] == pytest.approx(-1.0 * deflections_x_2d[1, 3], 1e-2)
+    assert deflections_x_2d[3, 1] == pytest.approx(-1.0 * deflections_x_2d[3, 3], 1e-2)
+    assert deflections_x_2d[4, 0] == pytest.approx(-1.0 * deflections_x_2d[4, 4], 1e-2)
+    assert deflections_x_2d[0, 2] == pytest.approx(deflections_x_2d[4, 2], 1e-2)
 
     sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_1d = sis.deflections_from_grid(grid=regular)
     deflections_y_2d = regular.array_2d_from_array_1d(array_1d=deflections_1d[:, 0])
 
-    assert deflections_y_2d[0,0] == pytest.approx(-1.0*deflections_y_2d[4,0], 1e-2)
-    assert deflections_y_2d[1,1] == pytest.approx(-1.0*deflections_y_2d[3,1], 1e-2)
-    assert deflections_y_2d[1,3] == pytest.approx(-1.0*deflections_y_2d[3,3], 1e-2)
-    assert deflections_y_2d[0,4] == pytest.approx(-1.0*deflections_y_2d[4,4], 1e-2)
-    assert deflections_y_2d[2,0] == pytest.approx(deflections_y_2d[2,4], 1e-2)
+    assert deflections_y_2d[0, 0] == pytest.approx(-1.0 * deflections_y_2d[4, 0], 1e-2)
+    assert deflections_y_2d[1, 1] == pytest.approx(-1.0 * deflections_y_2d[3, 1], 1e-2)
+    assert deflections_y_2d[1, 3] == pytest.approx(-1.0 * deflections_y_2d[3, 3], 1e-2)
+    assert deflections_y_2d[0, 4] == pytest.approx(-1.0 * deflections_y_2d[4, 4], 1e-2)
+    assert deflections_y_2d[2, 0] == pytest.approx(deflections_y_2d[2, 4], 1e-2)
+
 
 # def test__move_source_galaxy_around_source_plane__peak_follows_source_direction():
 #
-#     regular = masks.RegularGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
+#     regular = masks.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(5, 5), pixel_scales=1.0)
 #     sis = mp.SphericalIsothermal(origin=(0.0, 0.0), einstein_radius=1.0)
 #     sersic = lp.SphericalSersic(origin=(1.0, 0.0))
 #

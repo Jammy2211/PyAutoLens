@@ -16,7 +16,6 @@ grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
 
 class TestMassSheet(object):
-
     def test__constructor_and_units(self):
 
         mass_sheet = mp.MassSheet(centre=(1.0, 2.0), kappa=2.0)
@@ -24,8 +23,8 @@ class TestMassSheet(object):
         assert mass_sheet.centre == (1.0, 2.0)
         assert isinstance(mass_sheet.centre[0], dim.Length)
         assert isinstance(mass_sheet.centre[1], dim.Length)
-        assert mass_sheet.centre[0].unit == 'arcsec'
-        assert mass_sheet.centre[1].unit == 'arcsec'
+        assert mass_sheet.centre[0].unit == "arcsec"
+        assert mass_sheet.centre[1].unit == "arcsec"
 
         assert mass_sheet.kappa == 2.0
         assert isinstance(mass_sheet.kappa, float)
@@ -37,7 +36,9 @@ class TestMassSheet(object):
 
         assert convergence[0] == pytest.approx(1.0, 1e-3)
 
-        convergence = mass_sheet.convergence_from_grid(grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]))
+        convergence = mass_sheet.convergence_from_grid(
+            grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]])
+        )
 
         assert convergence[0] == pytest.approx(1.0, 1e-3)
         assert convergence[1] == pytest.approx(1.0, 1e-3)
@@ -45,7 +46,9 @@ class TestMassSheet(object):
 
         mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=-3.0)
 
-        convergence = mass_sheet.convergence_from_grid(grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]))
+        convergence = mass_sheet.convergence_from_grid(
+            grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]])
+        )
 
         assert convergence[0] == pytest.approx(-3.0, 1e-3)
         assert convergence[1] == pytest.approx(-3.0, 1e-3)
@@ -150,7 +153,9 @@ class TestMassSheet(object):
     def test__multiple_coordinates_in__multiple_coordinates_out(self):
         mass_sheet = mp.MassSheet(centre=(1.0, 2.0), kappa=1.0)
 
-        deflections = mass_sheet.deflections_from_grid(grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]]))
+        deflections = mass_sheet.deflections_from_grid(
+            grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]])
+        )
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
         assert deflections[1, 0] == pytest.approx(1.0, 1e-3)
@@ -160,7 +165,9 @@ class TestMassSheet(object):
 
         mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
 
-        deflections = mass_sheet.deflections_from_grid(grid=np.array([[1.0, 1.0], [2.0, 2.0], [1.0, 1.0], [2.0, 2.0]]))
+        deflections = mass_sheet.deflections_from_grid(
+            grid=np.array([[1.0, 1.0], [2.0, 2.0], [1.0, 1.0], [2.0, 2.0]])
+        )
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
 
@@ -176,28 +183,31 @@ class TestMassSheet(object):
     def test__reshape_decorators(self):
 
         regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(2, 2), pixel_scale=1.0)
+            shape=(2, 2), pixel_scale=1.0
+        )
 
         mass_sheet = mp.MassSheet()
 
         convergence = mass_sheet.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False
+        )
 
         assert convergence.shape == (2, 2)
 
         potential = mass_sheet.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False
+        )
 
         assert potential.shape == (2, 2)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False
+        )
 
         assert deflections.shape == (2, 2, 2)
 
 
 class TestExternalShear(object):
-
     def test__constructor_and_units(self):
 
         shear = mp.ExternalShear(magnitude=0.05, phi=45.0)
@@ -241,21 +251,25 @@ class TestExternalShear(object):
     def test__reshape_decorators(self):
 
         regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(2, 2), pixel_scale=1.0)
+            shape=(2, 2), pixel_scale=1.0
+        )
 
         shear = mp.ExternalShear()
 
         convergence = shear.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False
+        )
 
         assert convergence.shape == (2, 2)
 
         potential = shear.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False
+        )
 
         assert potential.shape == (2, 2)
 
         deflections = shear.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False)
+            grid=regular_grid, return_in_2d=True, return_binned=False
+        )
 
         assert deflections.shape == (2, 2, 2)

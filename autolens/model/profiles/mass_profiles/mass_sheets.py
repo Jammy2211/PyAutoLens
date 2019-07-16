@@ -9,12 +9,10 @@ from autolens.model.profiles import mass_profiles as mp
 
 from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
 
-class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
 
+class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 kappa: float = 0.0):
+    def __init__(self, centre: dim.Position = (0.0, 0.0), kappa: float = 0.0):
         """
         Represents a mass-sheet
 
@@ -46,11 +44,8 @@ class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
 
 # noinspection PyAbstractClass
 class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
-
     @af.map_types
-    def __init__(self,
-                 magnitude: float = 0.2,
-                 phi: float = 0.0):
+    def __init__(self, magnitude: float = 0.2, phi: float = 0.0):
         """
         An external shear term, to model the line-of-sight contribution of other galaxies / satellites.
 
@@ -68,14 +63,23 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
         super(ExternalShear, self).__init__(centre=(0.0, 0.0), phi=phi, axis_ratio=1.0)
         self.magnitude = magnitude
 
-    def einstein_radius_in_units(self, unit_mass='solMass',
-                                 redshift_profile=None, cosmology=cosmo.Planck15,
-                                 **kwargs):
+    def einstein_radius_in_units(
+        self,
+        unit_mass="solMass",
+        redshift_profile=None,
+        cosmology=cosmo.Planck15,
+        **kwargs
+    ):
         return 0.0
 
-    def einstein_mass_in_units(self, unit_mass='solMass',
-                               redshift_profile=None, redshift_source=None,
-                               cosmology=cosmo.Planck15, **kwargs):
+    def einstein_mass_in_units(
+        self,
+        unit_mass="solMass",
+        redshift_profile=None,
+        redshift_source=None,
+        cosmology=cosmo.Planck15,
+        **kwargs
+    ):
         return 0.0
 
     @reshape_returned_array

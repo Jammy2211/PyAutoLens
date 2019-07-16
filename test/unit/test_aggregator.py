@@ -14,8 +14,11 @@ def make_aggregator():
 
 
 def filter_phases(aggregator, folder):
-    return list(filter(lambda ag: "/{}/metadata".format(folder) in ag.file_path,
-                       aggregator.phases))[0]
+    return list(
+        filter(
+            lambda ag: "/{}/metadata".format(folder) in ag.file_path, aggregator.phases
+        )
+    )[0]
 
 
 @pytest.fixture(name="one")

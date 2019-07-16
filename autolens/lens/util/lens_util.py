@@ -4,6 +4,7 @@ from autolens.lens import plane as pl
 
 import numpy as np
 
+
 def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
 
     y_min = np.min(grid[:, 0]) - buffer
@@ -11,21 +12,38 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
     x_min = np.min(grid[:, 1]) - buffer
     x_max = np.max(grid[:, 1]) + buffer
 
-    pixel_scales = (float((y_max - y_min) / shape[0]), float((x_max - x_min) / shape[1]))
+    pixel_scales = (
+        float((y_max - y_min) / shape[0]),
+        float((x_max - x_min) / shape[1]),
+    )
     origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
     uniform_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-        mask=np.full(shape=shape, fill_value=False), pixel_scales=pixel_scales, sub_grid_size=1, origin=origin)
+        mask=np.full(shape=shape, fill_value=False),
+        pixel_scales=pixel_scales,
+        sub_grid_size=1,
+        origin=origin,
+    )
 
-    image_1d = sum(map(lambda g:
-                       g.intensities_from_grid(
-                           grid=uniform_grid, return_in_2d=False, return_binned=False),
-                       galaxies))
+    image_1d = sum(
+        map(
+            lambda g: g.intensities_from_grid(
+                grid=uniform_grid, return_in_2d=False, return_binned=False
+            ),
+            galaxies,
+        )
+    )
 
     image_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-        sub_array_1d=image_1d, mask=np.full(fill_value=False, shape=shape), sub_grid_size=1)
+        sub_array_1d=image_1d,
+        mask=np.full(fill_value=False, shape=shape),
+        sub_grid_size=1,
+    )
 
-    return pl.PlaneImage(array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin)
+    return pl.PlaneImage(
+        array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin
+    )
+
 
 def ordered_plane_redshifts_from_galaxies(galaxies):
     """Given a list of galaxies (with redshifts), return a list of the redshifts in ascending order.
@@ -37,16 +55,24 @@ def ordered_plane_redshifts_from_galaxies(galaxies):
     galaxies : [Galaxy]
         The list of galaxies in the ray-tracing calculation.
     """
-    ordered_galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
+    ordered_galaxies = sorted(
+        galaxies, key=lambda galaxy: galaxy.redshift, reverse=False
+    )
 
     # Ideally we'd extract the planes_red_Shfit order from the list above. However, I dont know how to extract it
     # Using a list of class attributes so make a list of redshifts for now.
 
     galaxy_redshifts = list(map(lambda galaxy: galaxy.redshift, ordered_galaxies))
-    return [redshift for i, redshift in enumerate(galaxy_redshifts) if redshift not in galaxy_redshifts[:i]]
+    return [
+        redshift
+        for i, redshift in enumerate(galaxy_redshifts)
+        if redshift not in galaxy_redshifts[:i]
+    ]
 
-def ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(lens_redshifts, planes_between_lenses,
-                                                                                 source_plane_redshift):
+
+def ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
+    lens_redshifts, planes_between_lenses, source_plane_redshift
+):
     """Given a set of lens plane redshifts, the source-plane redshift and the number of planes between each, setup the \
     plane redshifts using these values. A lens redshift corresponds to the 'main' lens galaxy(s),
     whereas the slices collect line-of-sight halos over a range of redshifts.
@@ -77,9 +103,11 @@ def ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes
     """
 
     # Check that the number of slices between lens planes is equal to the number of intervals between the lens planes.
-    if len(lens_redshifts) != len(planes_between_lenses)-1:
-        raise exc.RayTracingException('The number of lens_plane_redshifts input is not equal to the number of '
-                                      'slices_between_lens_planes+1.')
+    if len(lens_redshifts) != len(planes_between_lenses) - 1:
+        raise exc.RayTracingException(
+            "The number of lens_plane_redshifts input is not equal to the number of "
+            "slices_between_lens_planes+1."
+        )
 
     plane_redshifts = []
 
@@ -94,9 +122,12 @@ def ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes
         previous_plane_redshift = lens_redshifts[lens_plane_index - 1]
         plane_redshift = lens_redshifts[lens_plane_index]
         slice_total = planes_between_lenses[lens_plane_index - 1]
-        plane_redshifts += list(np.linspace(previous_plane_redshift, plane_redshift, slice_total+2))[1:]
+        plane_redshifts += list(
+            np.linspace(previous_plane_redshift, plane_redshift, slice_total + 2)
+        )[1:]
 
     return plane_redshifts[0:-1]
+
 
 def galaxies_in_redshift_ordered_planes_from_galaxies(galaxies, plane_redshifts):
     """Given a list of galaxies (with redshifts), return a list of the galaxies where each entry contains a list \
@@ -108,7 +139,7 @@ def galaxies_in_redshift_ordered_planes_from_galaxies(galaxies, plane_redshifts)
         The list of galaxies in the ray-tracing calculation.
     """
 
-    galaxies_in_redshift_ordered_planes =  [[] for i in range(len(plane_redshifts))]
+    galaxies_in_redshift_ordered_planes = [[] for i in range(len(plane_redshifts))]
 
     for galaxy in galaxies:
 
@@ -117,6 +148,7 @@ def galaxies_in_redshift_ordered_planes_from_galaxies(galaxies, plane_redshifts)
         galaxies_in_redshift_ordered_planes[index].append(galaxy)
 
     return galaxies_in_redshift_ordered_planes
+
 
 def compute_deflections_at_next_plane(plane_index, total_planes):
     """This function determines whether the tracer should compute the deflections at the next plane.
@@ -135,7 +167,10 @@ def compute_deflections_at_next_plane(plane_index, total_planes):
     elif plane_index == total_planes - 1:
         return False
     else:
-        raise exc.RayTracingException('A galaxy was not correctly allocated its previous / next redshifts')
+        raise exc.RayTracingException(
+            "A galaxy was not correctly allocated its previous / next redshifts"
+        )
+
 
 def scaled_deflections_stack_from_plane_and_scaling_factor(plane, scaling_factor):
     """Given a plane and scaling factor, compute a set of scaled deflections.
@@ -157,17 +192,19 @@ def scaled_deflections_stack_from_plane_and_scaling_factor(plane, scaling_factor
     else:
         return None
 
+
 def grid_stack_from_deflections_stack(grid_stack, deflections_stack):
     """For a deflection stack, comput a new grid stack but subtracting the deflections"""
 
     if deflections_stack is not None:
+
         def minus(grid, deflections):
             return grid - deflections
 
         return grid_stack.map_function(minus, deflections_stack)
 
-def traced_collection_for_deflections(grid_stack, deflections):
 
+def traced_collection_for_deflections(grid_stack, deflections):
     def subtract_scaled_deflections(grid, scaled_deflection):
         return np.subtract(grid, scaled_deflection)
 

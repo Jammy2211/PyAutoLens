@@ -13,16 +13,17 @@ from autolens.data.array.grids import reshape_returned_array, reshape_returned_g
 
 # noinspection PyAbstractClass
 class AbstractEllipticalSersic(mp.EllipticalMassProfile):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 sersic_index: float = 0.6,
-                 mass_to_light_ratio: dim.MassOverLuminosity = 1.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        phi: float = 0.0,
+        intensity: dim.Luminosity = 0.1,
+        effective_radius: dim.Length = 0.6,
+        sersic_index: float = 0.6,
+        mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
+    ):
         """
         The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
         model_galaxy's light.
@@ -45,10 +46,12 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
-        super(AbstractEllipticalSersic, self).__init__(centre=centre,
-                                                       axis_ratio=axis_ratio, phi=phi)
-        super(mp.EllipticalMassProfile, self).__init__(centre=centre,
-                                                    axis_ratio=axis_ratio, phi=phi)
+        super(AbstractEllipticalSersic, self).__init__(
+            centre=centre, axis_ratio=axis_ratio, phi=phi
+        )
+        super(mp.EllipticalMassProfile, self).__init__(
+            centre=centre, axis_ratio=axis_ratio, phi=phi
+        )
         self.mass_to_light_ratio = mass_to_light_ratio
         self.intensity = intensity
         self.effective_radius = effective_radius
@@ -89,19 +92,23 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
             The distance from the centre of the profile.
         """
         return self.intensity * np.exp(
-            -self.sersic_constant * (((radius / self.effective_radius) ** (
-                    1. / self.sersic_index)) - 1))
+            -self.sersic_constant
+            * (((radius / self.effective_radius) ** (1.0 / self.sersic_index)) - 1)
+        )
 
     @property
     def sersic_constant(self):
         """ A parameter derived from Sersic index which ensures that effective radius contains 50% of the profile's
         total integrated light.
         """
-        return (2 * self.sersic_index) - (1. / 3.) + (
-                4. / (405. * self.sersic_index)) + (
-                       46. / (25515. * self.sersic_index ** 2)) + (
-                       131. / (1148175. * self.sersic_index ** 3)) - (
-                       2194697. / (30690717750. * self.sersic_index ** 4))
+        return (
+            (2 * self.sersic_index)
+            - (1.0 / 3.0)
+            + (4.0 / (405.0 * self.sersic_index))
+            + (46.0 / (25515.0 * self.sersic_index ** 2))
+            + (131.0 / (1148175.0 * self.sersic_index ** 3))
+            - (2194697.0 / (30690717750.0 * self.sersic_index ** 4))
+        )
 
     @property
     def elliptical_effective_radius(self):
@@ -119,18 +126,32 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
 
 
 class EllipticalSersic(AbstractEllipticalSersic):
-
     @staticmethod
-    def deflection_func(u, y, x, npow, axis_ratio, intensity, sersic_index,
-                        effective_radius, mass_to_light_ratio,
-                        sersic_constant):
+    def deflection_func(
+        u,
+        y,
+        x,
+        npow,
+        axis_ratio,
+        intensity,
+        sersic_index,
+        effective_radius,
+        mass_to_light_ratio,
+        sersic_constant,
+    ):
         eta_u = np.sqrt(axis_ratio) * np.sqrt(
-            (u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+            (u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u))))
+        )
 
-        return mass_to_light_ratio * intensity * np.exp(
-            -sersic_constant * (
-                    ((eta_u / effective_radius) ** (1. / sersic_index)) - 1)) / (
-                       (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        return (
+            mass_to_light_ratio
+            * intensity
+            * np.exp(
+                -sersic_constant
+                * (((eta_u / effective_radius) ** (1.0 / sersic_index)) - 1)
+            )
+            / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        )
 
     @reshape_returned_grid
     @grids.grid_interpolate
@@ -157,11 +178,21 @@ class EllipticalSersic(AbstractEllipticalSersic):
             sersic_constant = self.sersic_constant
 
             deflection_grid = self.axis_ratio * grid[:, index]
-            deflection_grid *= quad_grid(self.deflection_func, 0.0, 1.0, grid,
-                                         args=(npow, self.axis_ratio, self.intensity,
-                                               self.sersic_index, self.effective_radius,
-                                               self.mass_to_light_ratio,
-                                               sersic_constant))[0]
+            deflection_grid *= quad_grid(
+                self.deflection_func,
+                0.0,
+                1.0,
+                grid,
+                args=(
+                    npow,
+                    self.axis_ratio,
+                    self.intensity,
+                    self.sersic_index,
+                    self.effective_radius,
+                    self.mass_to_light_ratio,
+                    sersic_constant,
+                ),
+            )[0]
 
             return deflection_grid
 
@@ -169,18 +200,20 @@ class EllipticalSersic(AbstractEllipticalSersic):
         deflection_x = calculate_deflection_component(0.0, 1)
 
         return self.rotate_grid_from_profile(
-            np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T))
+            np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T)
+        )
 
 
 class SphericalSersic(EllipticalSersic):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 sersic_index: float = 0.6,
-                 mass_to_light_ratio: dim.MassOverLuminosity = 1.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        intensity: dim.Luminosity = 0.1,
+        effective_radius: dim.Length = 0.6,
+        sersic_index: float = 0.6,
+        mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
+    ):
         """
         The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens
         model_galaxy's light.
@@ -199,23 +232,28 @@ class SphericalSersic(EllipticalSersic):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profile.
         """
-        super(SphericalSersic, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0,
-                                              intensity=intensity,
-                                              effective_radius=effective_radius,
-                                              sersic_index=sersic_index,
-                                              mass_to_light_ratio=mass_to_light_ratio)
+        super(SphericalSersic, self).__init__(
+            centre=centre,
+            axis_ratio=1.0,
+            phi=0.0,
+            intensity=intensity,
+            effective_radius=effective_radius,
+            sersic_index=sersic_index,
+            mass_to_light_ratio=mass_to_light_ratio,
+        )
 
 
 class EllipticalExponential(EllipticalSersic):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 mass_to_light_ratio: dim.MassOverLuminosity = 1.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        phi: float = 0.0,
+        intensity: dim.Luminosity = 0.1,
+        effective_radius: dim.Length = 0.6,
+        mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
+    ):
         """
         The EllipticalExponential mass profile, the mass profiles of the light profiles that are used to fit and
         subtract the lens model_galaxy's light.
@@ -235,22 +273,26 @@ class EllipticalExponential(EllipticalSersic):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
-        super(EllipticalExponential, self).__init__(centre=centre,
-                                                    axis_ratio=axis_ratio, phi=phi,
-                                                    intensity=intensity,
-                                                    effective_radius=effective_radius,
-                                                    sersic_index=1.0,
-                                                    mass_to_light_ratio=mass_to_light_ratio)
+        super(EllipticalExponential, self).__init__(
+            centre=centre,
+            axis_ratio=axis_ratio,
+            phi=phi,
+            intensity=intensity,
+            effective_radius=effective_radius,
+            sersic_index=1.0,
+            mass_to_light_ratio=mass_to_light_ratio,
+        )
 
 
 class SphericalExponential(EllipticalExponential):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 mass_to_light_ratio: dim.MassOverLuminosity = 1.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        intensity: dim.Luminosity = 0.1,
+        effective_radius: dim.Length = 0.6,
+        mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
+    ):
         """
         The Exponential mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens
         model_galaxy's light.
@@ -266,22 +308,27 @@ class SphericalExponential(EllipticalExponential):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles.
         """
-        super(SphericalExponential, self).__init__(centre=centre, axis_ratio=1.0,
-                                                   phi=0.0, intensity=intensity,
-                                                   effective_radius=effective_radius,
-                                                   mass_to_light_ratio=mass_to_light_ratio)
+        super(SphericalExponential, self).__init__(
+            centre=centre,
+            axis_ratio=1.0,
+            phi=0.0,
+            intensity=intensity,
+            effective_radius=effective_radius,
+            mass_to_light_ratio=mass_to_light_ratio,
+        )
 
 
 class EllipticalDevVaucouleurs(EllipticalSersic):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 mass_to_light_ratio: dim.MassOverLuminosity = 1.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        phi: float = 0.0,
+        intensity: dim.Luminosity = 0.1,
+        effective_radius: dim.Length = 0.6,
+        mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
+    ):
         """
         The EllipticalDevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and
         subtract the lens model_galaxy's light.
@@ -301,22 +348,26 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profile.
         """
-        super(EllipticalDevVaucouleurs, self).__init__(centre=centre,
-                                                       axis_ratio=axis_ratio, phi=phi,
-                                                       intensity=intensity,
-                                                       effective_radius=effective_radius,
-                                                       sersic_index=4.0,
-                                                       mass_to_light_ratio=mass_to_light_ratio)
+        super(EllipticalDevVaucouleurs, self).__init__(
+            centre=centre,
+            axis_ratio=axis_ratio,
+            phi=phi,
+            intensity=intensity,
+            effective_radius=effective_radius,
+            sersic_index=4.0,
+            mass_to_light_ratio=mass_to_light_ratio,
+        )
 
 
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 mass_to_light_ratio: dim.MassOverLuminosity = 1.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        intensity: dim.Luminosity = 0.1,
+        effective_radius: dim.Length = 0.6,
+        mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
+    ):
         """
         The DevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and subtract the
         lens model_galaxy's light.
@@ -332,24 +383,29 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles.
         """
-        super(SphericalDevVaucouleurs, self).__init__(centre=centre, axis_ratio=1.0,
-                                                      phi=0.0, intensity=intensity,
-                                                      effective_radius=effective_radius,
-                                                      mass_to_light_ratio=mass_to_light_ratio)
+        super(SphericalDevVaucouleurs, self).__init__(
+            centre=centre,
+            axis_ratio=1.0,
+            phi=0.0,
+            intensity=intensity,
+            effective_radius=effective_radius,
+            mass_to_light_ratio=mass_to_light_ratio,
+        )
 
 
 class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 sersic_index: float = 0.6,
-                 mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
-                 mass_to_light_gradient: float = 0.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        phi: float = 0.0,
+        intensity: dim.Luminosity = 0.1,
+        effective_radius: dim.Length = 0.6,
+        sersic_index: float = 0.6,
+        mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
+        mass_to_light_gradient: float = 0.0,
+    ):
         """
         Setup a Sersic mass and light profiles.
 
@@ -373,13 +429,15 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         mass_to_light_gradient : float
             The mass-to-light radial gradient.
         """
-        super(EllipticalSersicRadialGradient, self).__init__(centre=centre,
-                                                             axis_ratio=axis_ratio,
-                                                             phi=phi,
-                                                             intensity=intensity,
-                                                             effective_radius=effective_radius,
-                                                             sersic_index=sersic_index,
-                                                             mass_to_light_ratio=mass_to_light_ratio)
+        super(EllipticalSersicRadialGradient, self).__init__(
+            centre=centre,
+            axis_ratio=axis_ratio,
+            phi=phi,
+            intensity=intensity,
+            effective_radius=effective_radius,
+            sersic_index=sersic_index,
+            mass_to_light_ratio=mass_to_light_ratio,
+        )
         self.mass_to_light_gradient = mass_to_light_gradient
 
     @reshape_returned_array
@@ -426,52 +484,82 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
             sersic_constant = self.sersic_constant
 
             deflection_grid = self.axis_ratio * grid[:, index]
-            deflection_grid *= quad_grid(self.deflection_func, 0.0, 1.0, grid,
-                                         args=(npow, self.axis_ratio, self.intensity,
-                                               self.sersic_index, self.effective_radius,
-                                               self.mass_to_light_ratio,
-                                               self.mass_to_light_gradient,
-                                               sersic_constant))[0]
+            deflection_grid *= quad_grid(
+                self.deflection_func,
+                0.0,
+                1.0,
+                grid,
+                args=(
+                    npow,
+                    self.axis_ratio,
+                    self.intensity,
+                    self.sersic_index,
+                    self.effective_radius,
+                    self.mass_to_light_ratio,
+                    self.mass_to_light_gradient,
+                    sersic_constant,
+                ),
+            )[0]
             return deflection_grid
 
         deflection_y = calculate_deflection_component(1.0, 0)
         deflection_x = calculate_deflection_component(0.0, 1)
 
         return self.rotate_grid_from_profile(
-            np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T))
+            np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T)
+        )
 
     def convergence_func(self, radius):
-        return (self.mass_to_light_ratio * (
-                ((self.axis_ratio *
-                  radius) /
-                 self.effective_radius) ** -self.mass_to_light_gradient) * self.intensity_at_radius(
-            radius))
+        return (
+            self.mass_to_light_ratio
+            * (
+                ((self.axis_ratio * radius) / self.effective_radius)
+                ** -self.mass_to_light_gradient
+            )
+            * self.intensity_at_radius(radius)
+        )
 
     @staticmethod
-    def deflection_func(u, y, x, npow, axis_ratio, intensity, sersic_index,
-                        effective_radius, mass_to_light_ratio,
-                        mass_to_light_gradient, sersic_constant):
+    def deflection_func(
+        u,
+        y,
+        x,
+        npow,
+        axis_ratio,
+        intensity,
+        sersic_index,
+        effective_radius,
+        mass_to_light_ratio,
+        mass_to_light_gradient,
+        sersic_constant,
+    ):
         eta_u = np.sqrt(axis_ratio) * np.sqrt(
-            (u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+            (u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u))))
+        )
 
-        return mass_to_light_ratio * (
-                ((
-                         axis_ratio * eta_u) / effective_radius) ** -mass_to_light_gradient) * intensity * np.exp(
-            -sersic_constant * (
-                    ((eta_u / effective_radius) ** (1. / sersic_index)) - 1)) / (
-                       (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        return (
+            mass_to_light_ratio
+            * (((axis_ratio * eta_u) / effective_radius) ** -mass_to_light_gradient)
+            * intensity
+            * np.exp(
+                -sersic_constant
+                * (((eta_u / effective_radius) ** (1.0 / sersic_index)) - 1)
+            )
+            / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        )
 
 
 class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 intensity: dim.Luminosity = 0.1,
-                 effective_radius: dim.Length = 0.6,
-                 sersic_index: float = 0.6,
-                 mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
-                 mass_to_light_gradient: float = 0.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        intensity: dim.Luminosity = 0.1,
+        effective_radius: dim.Length = 0.6,
+        sersic_index: float = 0.6,
+        mass_to_light_ratio: dim.MassOverLuminosity = 1.0,
+        mass_to_light_gradient: float = 0.0,
+    ):
         """
         Setup a Sersic mass and light profiles.
 
@@ -493,10 +581,11 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
         """
         super(SphericalSersicRadialGradient, self).__init__(
             centre=centre,
-            axis_ratio=1.0, phi=0.0,
+            axis_ratio=1.0,
+            phi=0.0,
             intensity=intensity,
             effective_radius=effective_radius,
             sersic_index=sersic_index,
             mass_to_light_ratio=mass_to_light_ratio,
-            mass_to_light_gradient=mass_to_light_gradient
+            mass_to_light_gradient=mass_to_light_gradient,
         )

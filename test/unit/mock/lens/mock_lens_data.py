@@ -1,10 +1,17 @@
 from autolens.data.array.grids import reshape_returned_regular_array
 
-class MockLensData(object):
 
-    def __init__(self, ccd_data, mask, grid_stack, border,
-                 convolver_image,
-                 convolver_mapping_matrix, cluster):
+class MockLensData(object):
+    def __init__(
+        self,
+        ccd_data,
+        mask,
+        grid_stack,
+        border,
+        convolver_image,
+        convolver_mapping_matrix,
+        cluster,
+    ):
 
         self.ccd_data = ccd_data
         self.unmasked_image = ccd_data.image
@@ -14,8 +21,7 @@ class MockLensData(object):
         self.psf = ccd_data.psf
 
         self.mask_2d = mask
-        self.mask_1d = self.mask_2d.array_1d_from_array_2d(
-            array_2d=self.mask_2d)
+        self.mask_1d = self.mask_2d.array_1d_from_array_2d(array_2d=self.mask_2d)
 
         self.grid_stack = grid_stack
         self.sub_grid_size = self.grid_stack.sub.sub_grid_size
@@ -24,9 +30,11 @@ class MockLensData(object):
         self.convolver_mapping_matrix = convolver_mapping_matrix
 
         self.image_1d = self.mask_2d.array_1d_from_array_2d(
-            array_2d=self.unmasked_image)
+            array_2d=self.unmasked_image
+        )
         self.noise_map_1d = self.mask_2d.array_1d_from_array_2d(
-            array_2d=self.unmasked_noise_map)
+            array_2d=self.unmasked_noise_map
+        )
         self.signal_to_noise_map_1d = self.image_1d / self.noise_map_1d
 
         self.positions = None

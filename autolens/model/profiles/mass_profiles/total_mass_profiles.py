@@ -15,11 +15,10 @@ from autolens.data.array.grids import reshape_returned_array, reshape_returned_g
 
 
 class PointMass(geometry_profiles.SphericalProfile, mp.MassProfile):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 einstein_radius: dim.Length = 1.0):
+    def __init__(
+        self, centre: dim.Position = (0.0, 0.0), einstein_radius: dim.Length = 1.0
+    ):
         """
         Represents a point-mass.
 
@@ -38,8 +37,9 @@ class PointMass(geometry_profiles.SphericalProfile, mp.MassProfile):
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         grid_radii = self.grid_to_grid_radii(grid=grid)
-        return self.grid_to_grid_cartesian(grid=grid,
-                                           radius=self.einstein_radius / grid_radii)
+        return self.grid_to_grid_cartesian(
+            grid=grid, radius=self.einstein_radius / grid_radii
+        )
 
     # @property
     # def mass(self):
@@ -47,15 +47,16 @@ class PointMass(geometry_profiles.SphericalProfile, mp.MassProfile):
 
 
 class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 einstein_radius: dim.Length = 1.0,
-                 slope: float = 2.0,
-                 core_radius: dim.Length = 0.01):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        phi: float = 0.0,
+        einstein_radius: dim.Length = 1.0,
+        slope: float = 2.0,
+        core_radius: dim.Length = 0.01,
+    ):
         """
         Represents a cored elliptical power-law density distribution
 
@@ -74,8 +75,9 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         core_radius : float
             The arc-second radius of the inner core.
         """
-        super(EllipticalCoredPowerLaw, self).__init__(centre=centre,
-                                                      axis_ratio=axis_ratio, phi=phi)
+        super(EllipticalCoredPowerLaw, self).__init__(
+            centre=centre, axis_ratio=axis_ratio, phi=phi
+        )
         self.einstein_radius = einstein_radius
         self.slope = slope
         self.core_radius = core_radius
@@ -84,7 +86,9 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
     def einstein_radius_rescaled(self):
         """Rescale the einstein radius by slope and axis_ratio, to reduce its degeneracy with other mass-profiles
         parameters"""
-        return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
+        return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (
+            self.slope - 1
+        )
 
     @reshape_returned_array
     @geometry_profiles.transform_grid
@@ -135,10 +139,13 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
             sub-grid.
         """
 
-        potential_grid = quad_grid(self.potential_func, 0.0, 1.0, grid,
-                                   args=(
-                                       self.axis_ratio, self.slope, self.core_radius))[
-            0]
+        potential_grid = quad_grid(
+            self.potential_func,
+            0.0,
+            1.0,
+            grid,
+            args=(self.axis_ratio, self.slope, self.core_radius),
+        )[0]
 
         return self.einstein_radius_rescaled * self.axis_ratio * potential_grid
 
@@ -167,11 +174,19 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
             einstein_radius_rescaled = self.einstein_radius_rescaled
 
             deflection_grid = self.axis_ratio * grid[:, index]
-            deflection_grid *= quad_grid(self.deflection_func, 0.0, 1.0,
-                                         grid, args=(npow, self.axis_ratio,
-                                                     einstein_radius_rescaled,
-                                                     self.slope,
-                                                     self.core_radius))[0]
+            deflection_grid *= quad_grid(
+                self.deflection_func,
+                0.0,
+                1.0,
+                grid,
+                args=(
+                    npow,
+                    self.axis_ratio,
+                    einstein_radius_rescaled,
+                    self.slope,
+                    self.core_radius,
+                ),
+            )[0]
 
             return deflection_grid
 
@@ -179,58 +194,83 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         deflection_x = calculate_deflection_component(0.0, 1)
 
         return self.rotate_grid_from_profile(
-            np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T))
+            np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T)
+        )
 
     def convergence_func(self, radius):
         return self.einstein_radius_rescaled * (
-                self.core_radius ** 2 + radius ** 2) ** (-(self.slope - 1) / 2.0)
+            self.core_radius ** 2 + radius ** 2
+        ) ** (-(self.slope - 1) / 2.0)
 
     @staticmethod
     def potential_func(u, y, x, axis_ratio, slope, core_radius):
         eta = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-        return (eta / u) * ((3.0 - slope) * eta) ** -1.0 * \
-               ((core_radius ** 2.0 + eta ** 2.0) ** ((3.0 - slope) / 2.0) -
-                core_radius ** (3 - slope)) / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
+        return (
+            (eta / u)
+            * ((3.0 - slope) * eta) ** -1.0
+            * (
+                (core_radius ** 2.0 + eta ** 2.0) ** ((3.0 - slope) / 2.0)
+                - core_radius ** (3 - slope)
+            )
+            / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
+        )
 
     @staticmethod
-    def deflection_func(u, y, x, npow, axis_ratio, einstein_radius_rescaled, slope,
-                        core_radius):
+    def deflection_func(
+        u, y, x, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius
+    ):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-        return einstein_radius_rescaled * (core_radius ** 2 + eta_u ** 2) ** (
-                -(slope - 1) / 2.0) / (
-                       (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        return (
+            einstein_radius_rescaled
+            * (core_radius ** 2 + eta_u ** 2) ** (-(slope - 1) / 2.0)
+            / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        )
 
     @property
     def ellipticity_rescale(self):
         return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
 
     @dim.convert_units_to_input_units
-    def summarize_in_units(self, radii, prefix='', whitespace=80,
-                           unit_length='arcsec', unit_mass='solMass',
-                           redshift_profile=None, redshift_source=None,
-                           cosmology=cosmo.Planck15,
-                           **kwargs):
+    def summarize_in_units(
+        self,
+        radii,
+        prefix="",
+        whitespace=80,
+        unit_length="arcsec",
+        unit_mass="solMass",
+        redshift_profile=None,
+        redshift_source=None,
+        cosmology=cosmo.Planck15,
+        **kwargs
+    ):
         summary = super().summarize_in_units(
-            radii=radii, prefix=prefix, unit_length=unit_length, unit_mass=unit_mass,
-            redshift_profile=redshift_profile, redshift_source=redshift_source,
+            radii=radii,
+            prefix=prefix,
+            unit_length=unit_length,
+            unit_mass=unit_mass,
+            redshift_profile=redshift_profile,
+            redshift_source=redshift_source,
             cosmology=cosmology,
-            whitespace=whitespace, kwargs=kwargs)
+            whitespace=whitespace,
+            kwargs=kwargs,
+        )
 
         return summary
 
     @property
     def unit_mass(self):
-        return 'angular'
+        return "angular"
 
 
 class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 einstein_radius: dim.Length = 1.0,
-                 slope: float = 2.0,
-                 core_radius: dim.Length = 0.01):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        einstein_radius: dim.Length = 1.0,
+        slope: float = 2.0,
+        core_radius: dim.Length = 0.01,
+    ):
         """
         Represents a cored spherical power-law density distribution
 
@@ -245,11 +285,14 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
         core_radius : float
             The arc-second radius of the inner core.
         """
-        super(SphericalCoredPowerLaw, self).__init__(centre=centre, axis_ratio=1.0,
-                                                     phi=0.0,
-                                                     einstein_radius=einstein_radius,
-                                                     slope=slope,
-                                                     core_radius=core_radius)
+        super(SphericalCoredPowerLaw, self).__init__(
+            centre=centre,
+            axis_ratio=1.0,
+            phi=0.0,
+            einstein_radius=einstein_radius,
+            slope=slope,
+            core_radius=core_radius,
+        )
 
     @reshape_returned_grid
     @geometry_profiles.transform_grid
@@ -270,23 +313,32 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
             sub-grid.
         """
         eta = self.grid_to_grid_radii(grid=grid)
-        deflection = np.multiply(2. * self.einstein_radius_rescaled, np.divide(
-            np.add(np.power(np.add(self.core_radius ** 2, np.square(eta)),
-                            (3. - self.slope) / 2.),
-                   -self.core_radius ** (3 - self.slope)),
-            np.multiply((3. - self.slope), eta)))
+        deflection = np.multiply(
+            2.0 * self.einstein_radius_rescaled,
+            np.divide(
+                np.add(
+                    np.power(
+                        np.add(self.core_radius ** 2, np.square(eta)),
+                        (3.0 - self.slope) / 2.0,
+                    ),
+                    -self.core_radius ** (3 - self.slope),
+                ),
+                np.multiply((3.0 - self.slope), eta),
+            ),
+        )
         return self.grid_to_grid_cartesian(grid=grid, radius=deflection)
 
 
 class EllipticalPowerLaw(EllipticalCoredPowerLaw):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 einstein_radius: dim.Length = 1.0,
-                 slope: float = 2.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        phi: float = 0.0,
+        einstein_radius: dim.Length = 1.0,
+        slope: float = 2.0,
+    ):
         """
         Represents an elliptical power-law density distribution.
 
@@ -304,11 +356,14 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
             The density slope of the power-law (lower value -> shallower profile, higher value -> steeper profile).
         """
 
-        super(EllipticalPowerLaw, self).__init__(centre=centre, axis_ratio=axis_ratio,
-                                                 phi=phi,
-                                                 einstein_radius=einstein_radius,
-                                                 slope=slope,
-                                                 core_radius=dim.Length(0.0))
+        super(EllipticalPowerLaw, self).__init__(
+            centre=centre,
+            axis_ratio=axis_ratio,
+            phi=phi,
+            einstein_radius=einstein_radius,
+            slope=slope,
+            core_radius=dim.Length(0.0),
+        )
 
     def convergence_func(self, radius):
         if radius > 0.0:
@@ -319,24 +374,33 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
     @staticmethod
     def potential_func(u, y, x, axis_ratio, slope, core_radius):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-        return (eta_u / u) * ((3.0 - slope) * eta_u) ** -1.0 * eta_u ** (3.0 - slope) / \
-               ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
+        return (
+            (eta_u / u)
+            * ((3.0 - slope) * eta_u) ** -1.0
+            * eta_u ** (3.0 - slope)
+            / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
+        )
 
     @staticmethod
-    def deflection_func(u, y, x, npow, axis_ratio, einstein_radius_rescaled, slope,
-                        core_radius):
+    def deflection_func(
+        u, y, x, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius
+    ):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-        return einstein_radius_rescaled * eta_u ** (-(slope - 1)) / (
-                (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        return (
+            einstein_radius_rescaled
+            * eta_u ** (-(slope - 1))
+            / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        )
 
 
 class SphericalPowerLaw(EllipticalPowerLaw):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 einstein_radius: dim.Length = 1.0,
-                 slope: float = 2.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        einstein_radius: dim.Length = 1.0,
+        slope: float = 2.0,
+    ):
         """
         Represents a spherical power-law density distribution.
 
@@ -350,30 +414,39 @@ class SphericalPowerLaw(EllipticalPowerLaw):
             The density slope of the power-law (lower value -> shallower profile, higher value -> steeper profile).
         """
 
-        super(SphericalPowerLaw, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0,
-                                                einstein_radius=einstein_radius,
-                                                slope=slope)
+        super(SphericalPowerLaw, self).__init__(
+            centre=centre,
+            axis_ratio=1.0,
+            phi=0.0,
+            einstein_radius=einstein_radius,
+            slope=slope,
+        )
 
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         eta = self.grid_to_grid_radii(grid)
-        deflection_r = 2.0 * self.einstein_radius_rescaled * np.divide(
-            np.power(eta, (3.0 - self.slope)),
-            np.multiply((3.0 - self.slope), eta))
+        deflection_r = (
+            2.0
+            * self.einstein_radius_rescaled
+            * np.divide(
+                np.power(eta, (3.0 - self.slope)), np.multiply((3.0 - self.slope), eta)
+            )
+        )
         return self.grid_to_grid_cartesian(grid, deflection_r)
 
 
 class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 einstein_radius: dim.Length = 1.0,
-                 core_radius: dim.Length = 0.01):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        phi: float = 0.0,
+        einstein_radius: dim.Length = 1.0,
+        core_radius: dim.Length = 0.01,
+    ):
         """
         Represents a cored elliptical isothermal density distribution, which is equivalent to the elliptical power-law
         density distribution for the value slope: float = 2.0
@@ -391,20 +464,24 @@ class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
         core_radius : float
             The arc-second radius of the inner core.
         """
-        super(EllipticalCoredIsothermal, self).__init__(centre=centre,
-                                                        axis_ratio=axis_ratio, phi=phi,
-                                                        einstein_radius=einstein_radius,
-                                                        slope=2.0,
-                                                        core_radius=core_radius)
+        super(EllipticalCoredIsothermal, self).__init__(
+            centre=centre,
+            axis_ratio=axis_ratio,
+            phi=phi,
+            einstein_radius=einstein_radius,
+            slope=2.0,
+            core_radius=core_radius,
+        )
 
 
 class SphericalCoredIsothermal(SphericalCoredPowerLaw):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 einstein_radius: dim.Length = 1.0,
-                 core_radius: dim.Length = 0.01):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        einstein_radius: dim.Length = 1.0,
+        core_radius: dim.Length = 0.01,
+    ):
         """
         Represents a cored spherical isothermal density distribution, which is equivalent to the elliptical power-law
         density distribution for the value slope: float = 2.0
@@ -418,20 +495,23 @@ class SphericalCoredIsothermal(SphericalCoredPowerLaw):
         core_radius : float
             The arc-second radius of the inner core.
         """
-        super(SphericalCoredIsothermal, self).__init__(centre=centre,
-                                                       einstein_radius=einstein_radius,
-                                                       slope=2.0,
-                                                       core_radius=core_radius)
+        super(SphericalCoredIsothermal, self).__init__(
+            centre=centre,
+            einstein_radius=einstein_radius,
+            slope=2.0,
+            core_radius=core_radius,
+        )
 
 
 class EllipticalIsothermal(EllipticalPowerLaw):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0,
-                 einstein_radius: dim.Length = 1.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        phi: float = 0.0,
+        einstein_radius: dim.Length = 1.0,
+    ):
         """
         Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
         density distribution for the value slope: float = 2.0
@@ -447,10 +527,13 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         einstein_radius : float
             The arc-second Einstein radius.
         """
-        super(EllipticalIsothermal, self).__init__(centre=centre, axis_ratio=axis_ratio,
-                                                   phi=phi,
-                                                   einstein_radius=einstein_radius,
-                                                   slope=2.0)
+        super(EllipticalIsothermal, self).__init__(
+            centre=centre,
+            axis_ratio=axis_ratio,
+            phi=phi,
+            einstein_radius=einstein_radius,
+            slope=2.0,
+        )
 
     # @classmethod
     # def from_mass_in_solar_masses(cls, redshift_lens=0.5, redshift_source=1.0, centre: units.Position = (0.0, 0.0), axis_ratio_=0.9,
@@ -483,26 +566,36 @@ class EllipticalIsothermal(EllipticalPowerLaw):
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
-        factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / np.sqrt(
-            1 - self.axis_ratio ** 2)
+        factor = (
+            2.0
+            * self.einstein_radius_rescaled
+            * self.axis_ratio
+            / np.sqrt(1 - self.axis_ratio ** 2)
+        )
 
-        psi = np.sqrt(np.add(np.multiply(self.axis_ratio ** 2, np.square(grid[:, 1])),
-                             np.square(grid[:, 0])))
+        psi = np.sqrt(
+            np.add(
+                np.multiply(self.axis_ratio ** 2, np.square(grid[:, 1])),
+                np.square(grid[:, 0]),
+            )
+        )
 
         deflection_y = np.arctanh(
-            np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
+            np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi)
+        )
         deflection_x = np.arctan(
-            np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
+            np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi)
+        )
         return self.rotate_grid_from_profile(
-            np.multiply(factor, np.vstack((deflection_y, deflection_x)).T))
+            np.multiply(factor, np.vstack((deflection_y, deflection_x)).T)
+        )
 
 
 class SphericalIsothermal(EllipticalIsothermal):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 einstein_radius: dim.Length = 1.0):
+    def __init__(
+        self, centre: dim.Position = (0.0, 0.0), einstein_radius: dim.Length = 1.0
+    ):
         """
         Represents a spherical isothermal density distribution, which is equivalent to the spherical power-law
         density distribution for the value slope: float = 2.0
@@ -514,9 +607,9 @@ class SphericalIsothermal(EllipticalIsothermal):
         einstein_radius : float
             The arc-second Einstein radius.
         """
-        super(SphericalIsothermal, self).__init__(centre=centre, axis_ratio=1.0,
-                                                  phi=0.0,
-                                                  einstein_radius=einstein_radius)
+        super(SphericalIsothermal, self).__init__(
+            centre=centre, axis_ratio=1.0, phi=0.0, einstein_radius=einstein_radius
+        )
 
     @reshape_returned_array
     @geometry_profiles.transform_grid
@@ -557,6 +650,7 @@ class SphericalIsothermal(EllipticalIsothermal):
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
-        return self.grid_to_grid_cartesian(grid=grid,
-                                           radius=np.full(grid.shape[0],
-                                                          2.0 * self.einstein_radius_rescaled))
+        return self.grid_to_grid_cartesian(
+            grid=grid,
+            radius=np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled),
+        )

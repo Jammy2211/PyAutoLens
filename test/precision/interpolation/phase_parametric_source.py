@@ -12,15 +12,17 @@ from test.simulation import simulation_util
 import os
 
 # Get the relative path to the config files and output folder in our workspace.
-test_path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
+test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
 # Use this path to explicitly set the config path and output papth
-af.conf.instance = af.conf.Config(config_path=test_path + 'config', output_path=test_path + 'output')
+af.conf.instance = af.conf.Config(
+    config_path=test_path + "config", output_path=test_path + "output"
+)
 
 # It is convinient to specify the lens name as a string, so that if the pipeline is applied to multiple images we \
 # don't have to change all of the path entries in the load_ccd_data_from_fits function below.
-data_type = 'no_lens_source_smooth'
-data_resolution = 'Euclid'
+data_type = "no_lens_source_smooth"
+data_resolution = "Euclid"
 
 # Setup the size of the sub-grid and mask used for this precision analysis.
 sub_grid_size = 2
@@ -31,22 +33,31 @@ outer_radius_arcsec = 3.0
 # more precise interpolation of the sub-grid deflection angles.
 interp_pixel_scale = 0.2
 
-ccd_data = simulation_util.load_test_ccd_data(data_type=data_type, data_resolution=data_resolution, psf_shape=(21, 21))
+ccd_data = simulation_util.load_test_ccd_data(
+    data_type=data_type, data_resolution=data_resolution, psf_shape=(21, 21)
+)
 
 # The phase is passed the mask we setup below using the radii specified above.
-mask = msk.Mask.circular_annular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale,
-                                 inner_radius_arcsec=inner_radius_arcsec, outer_radius_arcsec=outer_radius_arcsec)
+mask = msk.Mask.circular_annular(
+    shape=ccd_data.shape,
+    pixel_scale=ccd_data.pixel_scale,
+    inner_radius_arcsec=inner_radius_arcsec,
+    outer_radius_arcsec=outer_radius_arcsec,
+)
 
 # Plot the CCD data and mask.
 ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
-phase = phase_imaging.LensSourcePlanePhase(phase_name='phase_interp',
-                                                                   phase_folders=[data_type, data_resolution + '_' + str(interp_pixel_scale)],
-                                                                   lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
-                                                                   source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                                                                   optimizer_class=af.MultiNest, interp_pixel_scale=interp_pixel_scale)
+phase = phase_imaging.LensSourcePlanePhase(
+    phase_name="phase_interp",
+    phase_folders=[data_type, data_resolution + "_" + str(interp_pixel_scale)],
+    lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
+    source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
+    optimizer_class=af.MultiNest,
+    interp_pixel_scale=interp_pixel_scale,
+)
 
 phase.optimizer.const_efficiency_mode = True
 phase.optimizer.n_live_points = 50
