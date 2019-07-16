@@ -4,7 +4,7 @@ from autolens.model.inversion.util import regularization_util
 
 
 class Regularization(object):
-    def __init__(self, coefficients=(1.0,)):
+    def __init__(self):
         """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
         smooth-source solution and prevent over-fitting noise_map in the hyper. This is achieved by computing a \
         'regularization term' - which is the sum of differences in reconstructed flux between every set of neighboring \
@@ -121,7 +121,6 @@ class Regularization(object):
             The regularization_matrix coefficients used to smooth the pix reconstructed_inversion_image.
             
         """
-        self.coefficients = coefficients
 
     def regularization_matrix_from_pixel_neighbors(
         self, pixel_neighbors, pixel_neighbors_size
@@ -132,7 +131,7 @@ class Regularization(object):
 
 
 class Constant(Regularization):
-    def __init__(self, coefficients=(1.0,)):
+    def __init__(self, coefficient=1.0):
         """A constant-regularization scheme (regularization is described in the *Regularization* class above).
 
         For the constant regularization_matrix scheme, there is only 1 regularization coefficient that is applied to \
@@ -147,22 +146,23 @@ class Constant(Regularization):
 
         Parameters
         -----------
-        coefficients : (float,)
+        coefficient : (float,)
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         """
-        super(Constant, self).__init__(coefficients)
+        self.coefficient = coefficient
+        super(Constant, self).__init__()
 
     def regularization_matrix_from_pixel_neighbors(
         self, pixel_neighbors, pixel_neighbors_size
     ):
         return regularization_util.constant_regularization_matrix_from_pixel_neighbors(
-            coefficients=self.coefficients,
+            coefficient=self.coefficient,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
         )
 
     def regularization_weights_from_mapper(self, mapper):
-        return self.coefficients[0] * np.ones(mapper.pixels)
+        return self.coefficient * np.ones(mapper.pixels)
 
     def regularization_matrix_from_mapper(self, mapper):
         return self.regularization_matrix_from_pixel_neighbors(
@@ -172,7 +172,7 @@ class Constant(Regularization):
 
 
 class AdaptiveBrightness(Regularization):
-    def __init__(self, coefficients=(1.0, 1.0), signal_scale=1.0):
+    def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
         """ A constant-regularization scheme (regularization is described in the *Regularization* class above).
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is \
@@ -215,7 +215,9 @@ class AdaptiveBrightness(Regularization):
             A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
             low signal regions.
         """
-        super(AdaptiveBrightness, self).__init__(coefficients)
+        super(AdaptiveBrightness, self).__init__()
+        self.inner_coefficient = inner_coefficient
+        self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
 
     def pixel_signals_from_images(
@@ -231,7 +233,8 @@ class AdaptiveBrightness(Regularization):
 
     def regularization_weights_from_pixel_signals(self, pixel_signals):
         return regularization_util.adaptive_regularization_weights_from_pixel_signals(
-            coefficients=self.coefficients, pixel_signals=pixel_signals
+            inner_coefficient=self.inner_coefficient, outer_coefficient=self.outer_coefficient,
+            pixel_signals=pixel_signals
         )
 
     def regularization_matrix_from_regularization_weights_and_pixel_neighbors(

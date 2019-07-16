@@ -55,7 +55,7 @@ class TestRectangular:
         assert mapper.shape == (3, 3)
         assert (mapper.hyper_image == np.ones((2, 2))).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             pixel_neighbors=mapper.geometry.pixel_neighbors,
             pixel_neighbors_size=mapper.geometry.pixel_neighbors_size,
@@ -165,7 +165,7 @@ class TestRectangular:
         ).all()
         assert mapper.shape == (3, 3)
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -254,7 +254,7 @@ class TestRectangular:
         ).all()
         assert mapper.shape == (3, 3)
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -316,7 +316,7 @@ class TestRectangular:
         ).all()
         assert mapper.shape == (3, 3)
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -422,7 +422,7 @@ class TestSparseToRegularGrid:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -501,7 +501,7 @@ class TestSparseToRegularGrid:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -602,7 +602,7 @@ class TestSparseToRegularGrid:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -685,7 +685,7 @@ class TestSparseToRegularGrid:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -752,7 +752,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -834,7 +834,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -893,7 +893,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -1003,7 +1003,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -1093,7 +1093,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -1163,7 +1163,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )

@@ -974,7 +974,7 @@ class TestLensInversionFit:
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_7x7):
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(1.0,))
+            reg = regularization.Constant(coefficient=1.0)
 
             g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
@@ -1088,7 +1088,7 @@ class TestLensInversionFit:
             self, lens_data_7x7
         ):
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(1.0,))
+            reg = regularization.Constant(coefficient=1.0)
 
             g0 = g.Galaxy(redshift=0.5)
             g1 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
@@ -1149,7 +1149,7 @@ class TestLensInversionFit:
             )
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(1.0,))
+            reg = regularization.Constant(coefficient=1.0)
 
             g0 = g.Galaxy(
                 redshift=0.5,
@@ -1286,7 +1286,7 @@ class TestLensInversionFit:
         ):
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(1.0,))
+            reg = regularization.Constant(coefficient=1.0)
 
             g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
@@ -1327,7 +1327,7 @@ class TestLensProfileInversionFit:
             )
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(1.0,))
+            reg = regularization.Constant(coefficient=1.0)
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(
@@ -1482,7 +1482,7 @@ class TestLensProfileInversionFit:
             g2 = g.Galaxy(redshift=0.5)
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(1.0,))
+            reg = regularization.Constant(coefficient=1.0)
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(
@@ -1615,7 +1615,7 @@ class TestLensProfileInversionFit:
             )
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(1.0,))
+            reg = regularization.Constant(coefficient=1.0)
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(
@@ -1776,7 +1776,7 @@ class TestLensProfileInversionFit:
             )
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(1.0,))
+            reg = regularization.Constant(coefficient=1.0)
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(

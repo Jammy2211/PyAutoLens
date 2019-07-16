@@ -299,7 +299,7 @@ class TestPixelization(object):
             galaxy_model.redshift.redshift: 2.0,
             galaxy_model.pixelization.shape_0: 24.0,
             galaxy_model.pixelization.shape_1: 23.0,
-            galaxy_model.regularization.coefficients_0: 0.5,
+            galaxy_model.regularization.coefficient: 0.5,
         }
 
         galaxy = galaxy_model.instance_for_arguments(arguments)
@@ -338,12 +338,12 @@ class TestRegularization(object):
             galaxy_model.redshift.redshift: 2.0,
             galaxy_model.pixelization.shape_0: 24.0,
             galaxy_model.pixelization.shape_1: 23.0,
-            galaxy_model.regularization.coefficients_0: 0.5,
+            galaxy_model.regularization.coefficient: 0.5,
         }
 
         galaxy = galaxy_model.instance_for_arguments(arguments)
 
-        assert galaxy.regularization.coefficients == (0.5,)
+        assert galaxy.regularization.coefficient == 0.5
 
     def test_fixed_regularization(self):
         galaxy_model = gp.GalaxyModel(
@@ -356,7 +356,7 @@ class TestRegularization(object):
 
         galaxy = galaxy_model.instance_for_arguments(arguments)
 
-        assert galaxy.regularization.coefficients == (1.0,)
+        assert galaxy.regularization.coefficient == 1.0
 
     def test__if_no_pixelization_raises_error(self):
         with pytest.raises(af.exc.PriorException):

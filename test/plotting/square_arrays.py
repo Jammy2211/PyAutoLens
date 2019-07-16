@@ -41,7 +41,7 @@ lens_galaxy = g.Galaxy(
 )
 source_galaxy = g.Galaxy(
     pixelization=pix.VoronoiMagnification(shape=(20, 20)),
-    regularization=reg.Constant(coefficients=(1.0,)),
+    regularization=reg.Constant(coefficient=1.0),
 )
 
 lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)

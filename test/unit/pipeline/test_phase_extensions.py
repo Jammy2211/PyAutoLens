@@ -156,6 +156,7 @@ class MockPhase(object):
         self.phase_path = "phase_path"
         self.optimizer = MockOptimizer()
         self.phase_folders = [""]
+        self.phase_tag = ''
 
     # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def run(self, *args, **kwargs):
