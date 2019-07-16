@@ -43,7 +43,7 @@ def make_pipeline(test_name):
         optimizer_class=af.MultiNest,
     )
 
-    phase1 = phase1.extend_with_hyper_and_inversion_phases(hyper_galaxy=True)
+    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
         def pass_priors(self, results):
@@ -79,7 +79,7 @@ def make_pipeline(test_name):
         optimizer_class=af.MultiNest,
     )
 
-    phase2 = phase2.extend_with_hyper_and_inversion_phases(
+    phase2 = phase2.extend_with_multiple_hyper_phases(
         hyper_galaxy=True, inversion=True
     )
 
@@ -127,7 +127,7 @@ def make_pipeline(test_name):
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    phase3 = phase3.extend_with_hyper_and_inversion_phases(
+    phase3 = phase3.extend_with_multiple_hyper_phases(
         hyper_galaxy=True, inversion=True
     )
 

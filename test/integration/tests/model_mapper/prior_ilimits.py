@@ -33,11 +33,11 @@ def make_pipeline(test_name):
 
             self.lens_galaxies.lens.sersic.centre_0 = 0.0
             self.lens_galaxies.lens.sersic.centre_1 = 0.0
-            self.lens_galaxies.lens.sersic.axis_ratio = af.prior.UniformPrior(
+            self.lens_galaxies.lens.sersic.axis_ratio = af.UniformPrior(
                 lower_limit=-0.5, upper_limit=0.1
             )
             self.lens_galaxies.lens.sersic.phi = 90.0
-            self.lens_galaxies.lens.sersic.intensity = af.prior.UniformPrior(
+            self.lens_galaxies.lens.sersic.intensity = af.UniformPrior(
                 lower_limit=-0.5, upper_limit=0.1
             )
             self.lens_galaxies.lens.sersic.effective_radius = 1.3

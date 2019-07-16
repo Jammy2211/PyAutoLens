@@ -53,6 +53,7 @@ class HyperPhase(object):
         phase.optimizer.phase_tag = ''
         phase.phase_tag = ''
         phase.pass_priors = self.pass_priors
+        phase.preload_pixelization_grid = None
 
         return phase
 

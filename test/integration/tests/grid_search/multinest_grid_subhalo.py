@@ -32,41 +32,41 @@ def make_pipeline(test_name):
     class QuickPhase(phase_imaging.LensSourcePlanePhase):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.mass.centre_0 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.mass.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.mass.centre_1 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.mass.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.mass.axis_ratio = af.prior.UniformPrior(
+            self.lens_galaxies.lens.mass.axis_ratio = af.UniformPrior(
                 lower_limit=0.65, upper_limit=0.75
             )
-            self.lens_galaxies.lens.mass.phi = af.prior.UniformPrior(
+            self.lens_galaxies.lens.mass.phi = af.UniformPrior(
                 lower_limit=40.0, upper_limit=50.0
             )
-            self.lens_galaxies.lens.mass.einstein_radius = af.prior.UniformPrior(
+            self.lens_galaxies.lens.mass.einstein_radius = af.UniformPrior(
                 lower_limit=1.55, upper_limit=1.65
             )
 
-            self.source_galaxies.source.light.centre_0 = af.prior.UniformPrior(
+            self.source_galaxies.source.light.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.source_galaxies.source.light.centre_1 = af.prior.UniformPrior(
+            self.source_galaxies.source.light.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.source_galaxies.source.light.axis_ratio = af.prior.UniformPrior(
+            self.source_galaxies.source.light.axis_ratio = af.UniformPrior(
                 lower_limit=0.75, upper_limit=0.85
             )
-            self.source_galaxies.source.light.phi = af.prior.UniformPrior(
+            self.source_galaxies.source.light.phi = af.UniformPrior(
                 lower_limit=50.0, upper_limit=70.0
             )
-            self.source_galaxies.source.light.intensity = af.prior.UniformPrior(
+            self.source_galaxies.source.light.intensity = af.UniformPrior(
                 lower_limit=0.35, upper_limit=0.45
             )
-            self.source_galaxies.source.light.effective_radius = af.prior.UniformPrior(
+            self.source_galaxies.source.light.effective_radius = af.UniformPrior(
                 lower_limit=0.45, upper_limit=0.55
             )
-            self.source_galaxies.source.light.sersic_index = af.prior.UniformPrior(
+            self.source_galaxies.source.light.sersic_index = af.UniformPrior(
                 lower_limit=0.9, upper_limit=1.1
             )
 
@@ -103,16 +103,16 @@ def make_pipeline(test_name):
 
             ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
 
-            self.lens_galaxies.subhalo.mass.kappa_s = af.prior.UniformPrior(
+            self.lens_galaxies.subhalo.mass.kappa_s = af.UniformPrior(
                 lower_limit=0.0005, upper_limit=0.2
             )
-            self.lens_galaxies.subhalo.mass.scale_radius = af.prior.UniformPrior(
+            self.lens_galaxies.subhalo.mass.scale_radius = af.UniformPrior(
                 lower_limit=0.001, upper_limit=1.0
             )
-            self.lens_galaxies.subhalo.mass.centre_0 = af.prior.UniformPrior(
+            self.lens_galaxies.subhalo.mass.centre_0 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
             )
-            self.lens_galaxies.subhalo.mass.centre_1 = af.prior.UniformPrior(
+            self.lens_galaxies.subhalo.mass.centre_1 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
             )
 

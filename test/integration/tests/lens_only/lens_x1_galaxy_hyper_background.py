@@ -43,7 +43,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1 = phase1.extend_with_hyper_and_inversion_phases(
+    phase1 = phase1.extend_with_multiple_hyper_phases(
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
     )
 
@@ -53,7 +53,7 @@ def make_pipeline(test_name):
             self.lens_galaxies = results.from_phase("phase_1").variable.lens_galaxies
 
             self.lens_galaxies.lens.hyper_galaxy = (
-                results.last.hyper_galaxy.constant.lens_galaxies.lens.hyper_galaxy
+                results.last.combined.constant.lens_galaxies.lens.hyper_galaxy
             )
 
             # self.hyper_image_sky = (

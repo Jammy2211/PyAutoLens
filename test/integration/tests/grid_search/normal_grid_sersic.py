@@ -31,25 +31,25 @@ def make_pipeline(test_name):
     class QuickPhase(phase_imaging.LensPlanePhase):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.light.centre_0 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.light.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.light.centre_1 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.light.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.light.axis_ratio = af.prior.UniformPrior(
+            self.lens_galaxies.lens.light.axis_ratio = af.UniformPrior(
                 lower_limit=0.79, upper_limit=0.81
             )
-            self.lens_galaxies.lens.light.phi = af.prior.UniformPrior(
+            self.lens_galaxies.lens.light.phi = af.UniformPrior(
                 lower_limit=-1.0, upper_limit=1.0
             )
-            self.lens_galaxies.lens.light.intensity = af.prior.UniformPrior(
+            self.lens_galaxies.lens.light.intensity = af.UniformPrior(
                 lower_limit=0.99, upper_limit=1.01
             )
-            self.lens_galaxies.lens.light.effective_radius = af.prior.UniformPrior(
+            self.lens_galaxies.lens.light.effective_radius = af.UniformPrior(
                 lower_limit=1.25, upper_limit=1.35
             )
-            self.lens_galaxies.lens.light.sersic_index = af.prior.UniformPrior(
+            self.lens_galaxies.lens.light.sersic_index = af.UniformPrior(
                 lower_limit=3.95, upper_limit=4.05
             )
 
@@ -81,10 +81,10 @@ def make_pipeline(test_name):
                 "phase_1"
             ).constant.lens.light.intensity
 
-            self.lens_galaxies.lens.light.effective_radius = af.prior.UniformPrior(
+            self.lens_galaxies.lens.light.effective_radius = af.UniformPrior(
                 lower_limit=0.0, upper_limit=4.0
             )
-            self.lens_galaxies.lens.light.sersic_index = af.prior.UniformPrior(
+            self.lens_galaxies.lens.light.sersic_index = af.UniformPrior(
                 lower_limit=1.0, upper_limit=8.0
             )
 

@@ -25,7 +25,7 @@ def add(module):
 
 
 #  Add pipeline modules here.
-# add(initializer)
+# add(initialize)
 
 
 class TestPipeline(object):

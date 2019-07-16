@@ -3,7 +3,7 @@ import os
 import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.pipeline.phase import phase_imaging, phase_extensions
+from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -43,7 +43,7 @@ def make_pipeline(test_name):
         optimizer_class=af.MultiNest,
     )
 
-    phase1 = phase1.extend_with_hyper_and_inversion_phases(hyper_galaxy=True)
+    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
         def pass_priors(self, results):
@@ -81,7 +81,7 @@ def make_pipeline(test_name):
         optimizer_class=af.MultiNest,
     )
 
-    phase2 = phase2.extend_with_hyper_and_inversion_phases(
+    phase2 = phase2.extend_with_multiple_hyper_phases(
         hyper_galaxy=True,
         inversion=True,
         include_background_sky=True,
@@ -132,7 +132,7 @@ def make_pipeline(test_name):
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    phase3 = phase3.extend_with_hyper_and_inversion_phases(
+    phase3 = phase3.extend_with_multiple_hyper_phases(
         hyper_galaxy=True,
         inversion=True,
         include_background_sky=True,

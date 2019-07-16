@@ -264,7 +264,7 @@ class HyperGalaxyPhase(HyperPhase):
         model_image_1d = results.last.hyper_model_image_1d_from_mask(
             mask=lens_data.mask_2d
         )
-        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict_from_mask(
+        hyper_galaxy_image_1d_path_dict = results.last.combined_image_1d_path_dict_from_mask(
             mask=lens_data.mask_2d
         )
 
@@ -396,7 +396,7 @@ class HyperGalaxyAllPhase(HyperPhase):
         model_image_1d = results.last.hyper_model_image_1d_from_mask(
             mask=lens_data.mask_2d
         )
-        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict_from_mask(
+        hyper_galaxy_image_1d_path_dict = results.last.combined_image_1d_path_dict_from_mask(
             mask=lens_data.mask_2d
         )
 
