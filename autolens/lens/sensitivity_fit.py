@@ -2,6 +2,7 @@ from autolens import exc
 from autolens.lens import lens_fit
 from autolens.lens import ray_tracing
 
+
 def fit_lens_data_with_sensitivity_tracers(lens_data, tracer_normal, tracer_sensitive):
     """Fit lens data with a normal tracer and sensitivity tracer, to determine our sensitivity to a selection of \ 
     galaxy components. This factory automatically determines the type of fit based on the properties of the galaxies \
@@ -20,23 +21,32 @@ def fit_lens_data_with_sensitivity_tracers(lens_data, tracer_normal, tracer_sens
         how sensitive we are too.
     """
 
-    if (tracer_normal.has_light_profile and tracer_sensitive.has_light_profile) and \
-            (not tracer_normal.has_pixelization and not tracer_sensitive.has_pixelization):
-        return SensitivityProfileFit(lens_data=lens_data, tracer_normal=tracer_normal,
-                                     tracer_sensitive=tracer_sensitive)
+    if (tracer_normal.has_light_profile and tracer_sensitive.has_light_profile) and (
+        not tracer_normal.has_pixelization and not tracer_sensitive.has_pixelization
+    ):
+        return SensitivityProfileFit(
+            lens_data=lens_data,
+            tracer_normal=tracer_normal,
+            tracer_sensitive=tracer_sensitive,
+        )
 
-    elif (not tracer_normal.has_light_profile and not tracer_sensitive.has_light_profile) and \
-            (tracer_normal.has_pixelization and tracer_sensitive.has_pixelization):
-        return SensitivityInversionFit(lens_data=lens_data, tracer_normal=tracer_normal,
-                                     tracer_sensitive=tracer_sensitive)
+    elif (
+        not tracer_normal.has_light_profile and not tracer_sensitive.has_light_profile
+    ) and (tracer_normal.has_pixelization and tracer_sensitive.has_pixelization):
+        return SensitivityInversionFit(
+            lens_data=lens_data,
+            tracer_normal=tracer_normal,
+            tracer_sensitive=tracer_sensitive,
+        )
     else:
 
-        raise exc.FittingException('The sensitivity_fit routine did not call a SensitivityFit class - check the '
-                                   'properties of the tracers')
+        raise exc.FittingException(
+            "The sensitivity_fit routine did not call a SensitivityFit class - check the "
+            "properties of the tracers"
+        )
 
 
 class AbstractSensitivityFit(object):
-
     def __init__(self, tracer_normal, tracer_sensitive):
 
         self.tracer_normal = tracer_normal
@@ -44,7 +54,6 @@ class AbstractSensitivityFit(object):
 
 
 class SensitivityProfileFit(AbstractSensitivityFit):
-
     def __init__(self, lens_data, tracer_normal, tracer_sensitive):
         """Evaluate the sensitivity of a profile fit to a specific component of a lens model and tracer. This is \
         performed by evaluating the likelihood of a fit to an image using two tracers:
@@ -71,9 +80,15 @@ class SensitivityProfileFit(AbstractSensitivityFit):
             lens data that we are fitting, but also addition components (e.g. mass clumps) which we measure \
             how sensitive we are too.
         """
-        AbstractSensitivityFit.__init__(self=self, tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
-        self.fit_normal = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer_normal)
-        self.fit_sensitive = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer_sensitive)
+        AbstractSensitivityFit.__init__(
+            self=self, tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive
+        )
+        self.fit_normal = lens_fit.LensProfileFit(
+            lens_data=lens_data, tracer=tracer_normal
+        )
+        self.fit_sensitive = lens_fit.LensProfileFit(
+            lens_data=lens_data, tracer=tracer_sensitive
+        )
 
     @property
     def figure_of_merit(self):
@@ -81,7 +96,6 @@ class SensitivityProfileFit(AbstractSensitivityFit):
 
 
 class SensitivityInversionFit(AbstractSensitivityFit):
-
     def __init__(self, lens_data, tracer_normal, tracer_sensitive):
         """Evaluate the sensitivity of an inversion fit to a specific component of a lens model and tracer. This is \
         performed by evaluating the likelihood of a fit to an image using two tracers:
@@ -108,9 +122,15 @@ class SensitivityInversionFit(AbstractSensitivityFit):
             lens data that we are fitting, but also addition components (e.g. mass clumps) which we measure \
             how sensitive we are too.
         """
-        AbstractSensitivityFit.__init__(self=self, tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
-        self.fit_normal = lens_fit.LensInversionFit(lens_data=lens_data, tracer=tracer_normal)
-        self.fit_sensitive = lens_fit.LensInversionFit(lens_data=lens_data, tracer=tracer_sensitive)
+        AbstractSensitivityFit.__init__(
+            self=self, tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive
+        )
+        self.fit_normal = lens_fit.LensInversionFit(
+            lens_data=lens_data, tracer=tracer_normal
+        )
+        self.fit_sensitive = lens_fit.LensInversionFit(
+            lens_data=lens_data, tracer=tracer_sensitive
+        )
 
     @property
     def figure_of_merit(self):

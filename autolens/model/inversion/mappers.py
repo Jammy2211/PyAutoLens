@@ -2,8 +2,10 @@ from autolens.data.array.util import mapping_util
 from autolens.data.array import scaled_array
 from autolens.model.inversion.util import mapper_util
 
-class Mapper(object):
+import numpy as np
 
+
+class Mapper(object):
     def __init__(self, pixels, grid_stack, border, hyper_image=None):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper.array.grid_stack* module) to discretized pixels in a pixelization.
@@ -79,10 +81,12 @@ class Mapper(object):
         [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
         """
         return mapper_util.mapping_matrix_from_sub_to_pix(
-            sub_to_pix=self.sub_to_pixelization, pixels=self.pixels,
+            sub_to_pix=self.sub_to_pixelization,
+            pixels=self.pixels,
             regular_pixels=self.grid_stack.regular.shape[0],
             sub_to_regular=self.grid_stack.sub.sub_to_regular,
-            sub_grid_fraction=self.grid_stack.sub.sub_grid_fraction)
+            sub_grid_fraction=self.grid_stack.sub.sub_grid_fraction,
+        )
 
     @property
     def regular_to_pixelization(self):
@@ -125,7 +129,6 @@ class Mapper(object):
 
 
 class RectangularMapper(Mapper):
-
     def __init__(self, pixels, grid_stack, border, shape, geometry, hyper_image=None):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper.array.grid_stack* module) to pixels discretized on a rectangular grid.
@@ -147,8 +150,9 @@ class RectangularMapper(Mapper):
         """
         self.shape = shape
         self.geometry = geometry
-        super(RectangularMapper, self).__init__(pixels=pixels, grid_stack=grid_stack, border=border,
-                                                hyper_image=hyper_image)
+        super(RectangularMapper, self).__init__(
+            pixels=pixels, grid_stack=grid_stack, border=border, hyper_image=hyper_image
+        )
 
     @property
     def is_image_plane_pixelization(self):
@@ -157,24 +161,33 @@ class RectangularMapper(Mapper):
     @property
     def regular_to_pixelization(self):
         """The 1D index mappings between the regular grid's pixels and rectangular pixelization's pixels."""
-        return self.geometry.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.grid_stack.regular)
+        return self.geometry.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+            grid_arcsec=self.grid_stack.regular
+        )
 
     @property
     def sub_to_pixelization(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return self.geometry.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.grid_stack.sub)
+        return self.geometry.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+            grid_arcsec=self.grid_stack.sub
+        )
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
-        recon = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution_vector,
-                                                                                       shape=self.shape)
-        return scaled_array.ScaledRectangularPixelArray(array=recon, pixel_scales=self.geometry.pixel_scales,
-                                                        origin=self.geometry.origin)
+        recon = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=solution_vector,
+            mask=np.full(fill_value=False, shape=self.shape),
+            sub_grid_size=1,
+        )
+        return scaled_array.ScaledRectangularPixelArray(
+            array=recon,
+            pixel_scales=self.geometry.pixel_scales,
+            origin=self.geometry.origin,
+        )
 
 
 class VoronoiMapper(Mapper):
-
     def __init__(self, pixels, grid_stack, border, voronoi, geometry, hyper_image=None):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper.array.grid_stack* module) to pixels discretized on a Voronoi grid.
@@ -199,8 +212,9 @@ class VoronoiMapper(Mapper):
         """
         self.voronoi = voronoi
         self.geometry = geometry
-        super(VoronoiMapper, self).__init__(pixels=pixels, grid_stack=grid_stack, border=border,
-                                            hyper_image=hyper_image)
+        super(VoronoiMapper, self).__init__(
+            pixels=pixels, grid_stack=grid_stack, border=border, hyper_image=hyper_image
+        )
 
     @property
     def is_image_plane_pixelization(self):
@@ -209,10 +223,13 @@ class VoronoiMapper(Mapper):
     @property
     def regular_to_pixelization(self):
         """The 1D index mappings between the regular pixels and Voronoi pixelization pixels."""
-        return mapper_util.voronoi_regular_to_pix_from_grids_and_geometry(regular_grid=self.grid_stack.regular,
-               regular_to_nearest_pix=self.grid_stack.pixelization.regular_to_pixelization,
-               pixel_centres=self.geometry.pixel_centres, pixel_neighbors=self.geometry.pixel_neighbors,
-               pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')
+        return mapper_util.voronoi_regular_to_pix_from_grids_and_geometry(
+            regular_grid=self.grid_stack.regular,
+            regular_to_nearest_pix=self.grid_stack.pixelization.regular_to_pixelization,
+            pixel_centres=self.geometry.pixel_centres,
+            pixel_neighbors=self.geometry.pixel_neighbors,
+            pixel_neighbors_size=self.geometry.pixel_neighbors_size,
+        ).astype("int")
 
     @property
     def sub_to_pixelization(self):
@@ -220,6 +237,8 @@ class VoronoiMapper(Mapper):
         return mapper_util.voronoi_sub_to_pix_from_grids_and_geometry(
             sub_grid=self.grid_stack.sub,
             regular_to_nearest_pix=self.grid_stack.pixelization.regular_to_pixelization,
-            sub_to_regular=self.grid_stack.sub.sub_to_regular, pixel_centres=self.geometry.pixel_centres,
+            sub_to_regular=self.grid_stack.sub.sub_to_regular,
+            pixel_centres=self.geometry.pixel_centres,
             pixel_neighbors=self.geometry.pixel_neighbors,
-            pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')
+            pixel_neighbors_size=self.geometry.pixel_neighbors_size,
+        ).astype("int")

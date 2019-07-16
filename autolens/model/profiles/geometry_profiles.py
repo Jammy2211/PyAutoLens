@@ -2,7 +2,6 @@ import numpy as np
 from functools import wraps
 
 import autofit as af
-import autofit as af
 from autolens import dimensions as dim
 
 
@@ -38,7 +37,12 @@ def transform_grid(func):
             A value or coordinate in the same coordinate system as those passed in.
         """
         if not isinstance(grid, TransformedGrid):
-            return func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
+            return func(
+                profile,
+                profile.transform_grid_to_reference_frame(grid),
+                *args,
+                **kwargs,
+            )
         else:
             return func(profile, grid, *args, **kwargs)
 
@@ -107,11 +111,17 @@ def move_grid_to_radial_minimum(func):
         -------
             A value or coordinate in the same coordinate system as those passed in.
         """
-        radial_minimum_config = af.conf.NamedConfig(f"{af.conf.instance.config_path}/radial_minimum.ini")
-        grid_radial_minimum = radial_minimum_config.get("radial_minimum", profile.__class__.__name__, float)
-        with np.errstate(all='ignore'):  # Division by zero fixed via isnan
+        radial_minimum_config = af.conf.NamedConfig(
+            f"{af.conf.instance.config_path}/radial_minimum.ini"
+        )
+        grid_radial_minimum = radial_minimum_config.get(
+            "radial_minimum", profile.__class__.__name__, float
+        )
+        with np.errstate(all="ignore"):  # Division by zero fixed via isnan
             grid_radii = profile.grid_to_grid_radii(grid=grid)
-            grid_radial_scale = np.where(grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0)
+            grid_radial_scale = np.where(
+                grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0
+            )
             grid = np.multiply(grid, grid_radial_scale[:, None])
         grid[np.isnan(grid)] = grid_radial_minimum
         return func(profile, grid, *args, **kwargs)
@@ -124,10 +134,8 @@ class TransformedGrid(np.ndarray):
 
 
 class GeometryProfile(dim.DimensionsProfile):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0)):
+    def __init__(self, centre: dim.Position = (0.0, 0.0)):
         """An abstract geometry profile, which describes profiles with y and x centre Cartesian coordinates
         
         Parameters
@@ -145,18 +153,18 @@ class GeometryProfile(dim.DimensionsProfile):
         raise NotImplemented()
 
     def __repr__(self):
-        return '{}\n{}'.format(self.__class__.__name__,
-                               '\n'.join(["{}: {}".format(k, v) for k, v in self.__dict__.items()]))
+        return "{}\n{}".format(
+            self.__class__.__name__,
+            "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()]),
+        )
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
 
 class SphericalProfile(GeometryProfile):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0)):
+    def __init__(self, centre: dim.Position = (0.0, 0.0)):
         """ A spherical profile, which describes profiles with y and x centre Cartesian coordinates.
 
         Parameters
@@ -231,12 +239,13 @@ class SphericalProfile(GeometryProfile):
 
 
 class EllipticalProfile(SphericalProfile):
-
     @af.map_types
-    def __init__(self,
-                 centre: dim.Position = (0.0, 0.0),
-                 axis_ratio: float = 1.0,
-                 phi: float = 0.0):
+    def __init__(
+        self,
+        centre: dim.Position = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        phi: float = 0.0,
+    ):
         """ An elliptical profile, which describes profiles with y and x centre Cartesian coordinates, an axis-ratio \
         and rotational angle phi.
 
@@ -279,7 +288,7 @@ class EllipticalProfile(SphericalProfile):
         grid_thetas : ndarray
             The angle theta counter-clockwise from the positive x-axis to each coordinate in radians.
         """
-        theta_coordinate_to_profile = np.add(grid_thetas, - self.phi_radians)
+        theta_coordinate_to_profile = np.add(grid_thetas, -self.phi_radians)
         return np.cos(theta_coordinate_to_profile), np.sin(theta_coordinate_to_profile)
 
     def rotate_grid_from_profile(self, grid_elliptical):
@@ -294,8 +303,14 @@ class EllipticalProfile(SphericalProfile):
         grid_elliptical : TransformedGrid(ndarray)
             The (y, x) coordinates in the reference frame of an elliptical profile.
         """
-        y = np.add(np.multiply(grid_elliptical[:, 1], self.sin_phi), np.multiply(grid_elliptical[:, 0], self.cos_phi))
-        x = np.add(np.multiply(grid_elliptical[:, 1], self.cos_phi), - np.multiply(grid_elliptical[:, 0], self.sin_phi))
+        y = np.add(
+            np.multiply(grid_elliptical[:, 1], self.sin_phi),
+            np.multiply(grid_elliptical[:, 0], self.cos_phi),
+        )
+        x = np.add(
+            np.multiply(grid_elliptical[:, 1], self.cos_phi),
+            -np.multiply(grid_elliptical[:, 0], self.sin_phi),
+        )
         return np.vstack((y, x)).T
 
     @transform_grid
@@ -310,7 +325,11 @@ class EllipticalProfile(SphericalProfile):
         grid : TransformedGrid(ndarray)
             The (y, x) coordinates in the reference frame of the elliptical profile.
         """
-        return np.sqrt(np.add(np.square(grid[:, 1]), np.square(np.divide(grid[:, 0], self.axis_ratio))))
+        return np.sqrt(
+            np.add(
+                np.square(grid[:, 1]), np.square(np.divide(grid[:, 0], self.axis_ratio))
+            )
+        )
 
     @transform_grid
     @move_grid_to_radial_minimum
@@ -325,7 +344,9 @@ class EllipticalProfile(SphericalProfile):
         grid : TransformedGrid(ndarray)
             The (y, x) coordinates in the reference frame of the elliptical profile.
         """
-        return np.multiply(np.sqrt(self.axis_ratio), self.grid_to_elliptical_radii(grid)).view(np.ndarray)
+        return np.multiply(
+            np.sqrt(self.axis_ratio), self.grid_to_elliptical_radii(grid)
+        ).view(np.ndarray)
 
     def transform_grid_to_reference_frame(self, grid):
         """Transform a grid of (y,x) coordinates to the reference frame of the profile, including a translation to \
@@ -340,10 +361,16 @@ class EllipticalProfile(SphericalProfile):
             return super().transform_grid_to_reference_frame(grid)
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
-        theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 0],
-                                                 shifted_coordinates[:, 1]) - self.phi_radians
+        theta_coordinate_to_profile = (
+            np.arctan2(shifted_coordinates[:, 0], shifted_coordinates[:, 1])
+            - self.phi_radians
+        )
         transformed = np.vstack(
-            (radius * np.sin(theta_coordinate_to_profile), radius * np.cos(theta_coordinate_to_profile))).T
+            (
+                radius * np.sin(theta_coordinate_to_profile),
+                radius * np.cos(theta_coordinate_to_profile),
+            )
+        ).T
         return transformed.view(TransformedGrid)
 
     def transform_grid_from_reference_frame(self, grid):
@@ -358,10 +385,29 @@ class EllipticalProfile(SphericalProfile):
         if self.__class__.__name__.startswith("Spherical"):
             return super().transform_grid_from_reference_frame(grid)
 
-        y = np.add(np.add(np.multiply(grid[:, 1], self.sin_phi), np.multiply(grid[:, 0], self.cos_phi)), self.centre[0])
-        x = np.add(np.add(np.multiply(grid[:, 1], self.cos_phi), - np.multiply(grid[:, 0], self.sin_phi)),
-                   self.centre[1])
+        y = np.add(
+            np.add(
+                np.multiply(grid[:, 1], self.sin_phi),
+                np.multiply(grid[:, 0], self.cos_phi),
+            ),
+            self.centre[0],
+        )
+        x = np.add(
+            np.add(
+                np.multiply(grid[:, 1], self.cos_phi),
+                -np.multiply(grid[:, 0], self.sin_phi),
+            ),
+            self.centre[1],
+        )
         return np.vstack((y, x)).T
 
     def eta_u(self, u, coordinates):
-        return np.sqrt((u * ((coordinates[1] ** 2) + (coordinates[0] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
+        return np.sqrt(
+            (
+                u
+                * (
+                    (coordinates[1] ** 2)
+                    + (coordinates[0] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u))
+                )
+            )
+        )

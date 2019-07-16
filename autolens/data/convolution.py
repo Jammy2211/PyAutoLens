@@ -3,6 +3,7 @@ import numpy as np
 
 from autolens import exc
 
+
 class Convolver(object):
     """Class to setup the 1D convolution of an regular / mapping matrix.
 
@@ -194,18 +195,22 @@ class Convolver(object):
         self.psf_max_size = self.psf_shape[0] * self.psf_shape[1]
 
         image_index = 0
-        self.image_frame_indexes = np.zeros((self.pixels_in_mask, self.psf_max_size), dtype='int')
+        self.image_frame_indexes = np.zeros(
+            (self.pixels_in_mask, self.psf_max_size), dtype="int"
+        )
         self.image_frame_psfs = np.zeros((self.pixels_in_mask, self.psf_max_size))
-        self.image_frame_lengths = np.zeros((self.pixels_in_mask), dtype='int')
+        self.image_frame_lengths = np.zeros((self.pixels_in_mask), dtype="int")
         for x in range(self.mask_index_array.shape[0]):
             for y in range(self.mask_index_array.shape[1]):
                 if not mask[x][y]:
-                    image_frame_indexes, image_frame_psfs = self.frame_at_coordinates_jit((x, y), mask,
-                                                                                          self.mask_index_array,
-                                                                                     self.psf[:, :])
+                    image_frame_indexes, image_frame_psfs = self.frame_at_coordinates_jit(
+                        (x, y), mask, self.mask_index_array, self.psf[:, :]
+                    )
                     self.image_frame_indexes[image_index, :] = image_frame_indexes
                     self.image_frame_psfs[image_index, :] = image_frame_psfs
-                    self.image_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
+                    self.image_frame_lengths[image_index] = image_frame_indexes[
+                        image_frame_indexes >= 0
+                    ].shape[0]
                     image_index += 1
 
     @staticmethod
@@ -236,7 +241,10 @@ class Convolver(object):
             for j in range(psf_shape[1]):
                 x = coordinates[0] - half_x + i
                 y = coordinates[1] - half_y + j
-                if 0 <= x < mask_index_array.shape[0] and 0 <= y < mask_index_array.shape[1]:
+                if (
+                    0 <= x < mask_index_array.shape[0]
+                    and 0 <= y < mask_index_array.shape[1]
+                ):
                     value = mask_index_array[x, y]
                     if value >= 0 and not mask[x, y]:
                         frame[count] = value
@@ -247,7 +255,6 @@ class Convolver(object):
 
 
 class ConvolverImage(Convolver):
-
     def __init__(self, mask, blurring_mask, psf):
         """ Class to create regular frames and blurring frames used to convolve a psf with a 1D regular of non-masked \
         values.
@@ -263,25 +270,38 @@ class ConvolverImage(Convolver):
         """
 
         if mask.shape != blurring_mask.shape:
-            raise exc.KernelException("Mask and Blurring masks must be same shape to generate Convolver")
+            raise exc.KernelException(
+                "Mask and Blurring masks must be same shape to generate Convolver"
+            )
 
         super(ConvolverImage, self).__init__(mask, psf)
 
         blurring_mask = blurring_mask
-        self.pixels_in_blurring_mask = int(np.size(blurring_mask) - np.sum(blurring_mask))
+        self.pixels_in_blurring_mask = int(
+            np.size(blurring_mask) - np.sum(blurring_mask)
+        )
 
         image_index = 0
-        self.blurring_frame_indexes = np.zeros((self.pixels_in_blurring_mask, self.psf_max_size), dtype='int')
-        self.blurring_frame_psfs = np.zeros((self.pixels_in_blurring_mask, self.psf_max_size))
-        self.blurring_frame_lengths = np.zeros((self.pixels_in_blurring_mask), dtype='int')
+        self.blurring_frame_indexes = np.zeros(
+            (self.pixels_in_blurring_mask, self.psf_max_size), dtype="int"
+        )
+        self.blurring_frame_psfs = np.zeros(
+            (self.pixels_in_blurring_mask, self.psf_max_size)
+        )
+        self.blurring_frame_lengths = np.zeros(
+            (self.pixels_in_blurring_mask), dtype="int"
+        )
         for x in range(mask.shape[0]):
             for y in range(mask.shape[1]):
                 if mask[x][y] and not blurring_mask[x, y]:
-                    image_frame_indexes, image_frame_psfs = self.frame_at_coordinates_jit((x, y), mask,
-                                                                                          self.mask_index_array, self.psf)
+                    image_frame_indexes, image_frame_psfs = self.frame_at_coordinates_jit(
+                        (x, y), mask, self.mask_index_array, self.psf
+                    )
                     self.blurring_frame_indexes[image_index, :] = image_frame_indexes
                     self.blurring_frame_psfs[image_index, :] = image_frame_psfs
-                    self.blurring_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
+                    self.blurring_frame_lengths[image_index] = image_frame_indexes[
+                        image_frame_indexes >= 0
+                    ].shape[0]
                     image_index += 1
 
     def convolve_image(self, image_array, blurring_array):
@@ -294,14 +314,29 @@ class ConvolverImage(Convolver):
         blurring_array : ndarray
             1D array of the blurring regular values which blur into the regular-array after PSF convolution.
         """
-        return self.convolve_jit(image_array, self.image_frame_indexes, self.image_frame_psfs, self.image_frame_lengths,
-                                 blurring_array, self.blurring_frame_indexes, self.blurring_frame_psfs,
-                                 self.blurring_frame_lengths)
+        return self.convolve_jit(
+            image_array,
+            self.image_frame_indexes,
+            self.image_frame_psfs,
+            self.image_frame_lengths,
+            blurring_array,
+            self.blurring_frame_indexes,
+            self.blurring_frame_psfs,
+            self.blurring_frame_lengths,
+        )
 
     @staticmethod
     @decorator_util.jit()
-    def convolve_jit(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
-                     blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
+    def convolve_jit(
+        image_array,
+        image_frame_indexes,
+        image_frame_kernels,
+        image_frame_lengths,
+        blurring_array,
+        blurring_frame_indexes,
+        blurring_frame_kernels,
+        blurring_frame_lengths,
+    ):
 
         new_array = np.zeros(image_array.shape)
 

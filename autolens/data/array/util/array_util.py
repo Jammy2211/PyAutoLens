@@ -8,7 +8,6 @@ from functools import wraps
 
 
 class Memoizer(object):
-
     def __init__(self):
         """
         Class to store the results of a function given a set of inputs.
@@ -45,8 +44,12 @@ class Memoizer(object):
         @wraps(func)
         def wrapper(*args, **kwargs):
             key = ", ".join(
-                ["('{}', {})".format(arg_name, arg) for arg_name, arg in
-                 list(zip(self.arg_names, args)) + [(k, v) for k, v in kwargs.items()]])
+                [
+                    "('{}', {})".format(arg_name, arg)
+                    for arg_name, arg in list(zip(self.arg_names, args))
+                    + [(k, v) for k, v in kwargs.items()]
+                ]
+            )
             if key not in self.results:
                 self.calls += 1
             self.results[key] = func(*args, **kwargs)
@@ -91,19 +94,27 @@ def extracted_array_2d_from_array_2d_and_coordinates(array_2d, y0, y1, x0, x1):
     extracted_array = extract_array_2d(array_2d=array_2d, y0=1, y1=4, x0=1, x1=4)
     """
 
-    new_shape = (y1-y0, x1-x0)
+    new_shape = (y1 - y0, x1 - x0)
 
     resized_array = np.zeros(shape=new_shape)
 
     for y_resized, y in enumerate(range(y0, y1)):
         for x_resized, x in enumerate(range(x0, x1)):
+            if (
+                y >= 0
+                and x >= 0
+                and y <= array_2d.shape[0] - 1
+                and x <= array_2d.shape[1] - 1
+            ):
                 resized_array[y_resized, x_resized] = array_2d[y, x]
 
     return resized_array
 
 
 @decorator_util.jit()
-def resized_array_2d_from_array_2d_and_resized_shape(array_2d, resized_shape, origin=(-1, -1), pad_value=0.0):
+def resized_array_2d_from_array_2d_and_resized_shape(
+    array_2d, resized_shape, origin=(-1, -1), pad_value=0.0
+):
     """Resize an array to a new size around a central pixel.
 
     If the origin (e.g. the central pixel) of the resized array is not specified, the central pixel of the array is \
@@ -172,16 +183,120 @@ def resized_array_2d_from_array_2d_and_resized_shape(array_2d, resized_shape, or
     for y_resized, y in enumerate(range(y_min, y_max)):
         for x_resized, x in enumerate(range(x_min, x_max)):
             if y >= 0 and y < array_2d.shape[0] and x >= 0 and x < array_2d.shape[1]:
-                if y_resized >= 0 and y_resized < resized_shape[0] and x_resized >= 0 and x_resized < resized_shape[1]:
+                if (
+                    y_resized >= 0
+                    and y_resized < resized_shape[0]
+                    and x_resized >= 0
+                    and x_resized < resized_shape[1]
+                ):
                     resized_array[y_resized, x_resized] = array_2d[y, x]
             else:
-                if y_resized >= 0 and y_resized < resized_shape[0] and x_resized >= 0 and x_resized < resized_shape[1]:
+                if (
+                    y_resized >= 0
+                    and y_resized < resized_shape[0]
+                    and x_resized >= 0
+                    and x_resized < resized_shape[1]
+                ):
                     resized_array[y_resized, x_resized] = pad_value
 
     return resized_array
 
+
 @decorator_util.jit()
-def replace_noise_map_2d_values_where_image_2d_values_are_negative(image_2d, noise_map_2d, target_signal_to_noise=2.0):
+def resized_array_2d_from_array_2d_and_resized_shape(
+    array_2d, resized_shape, origin=(-1, -1), pad_value=0.0
+):
+    """Resize an array to a new size around a central pixel.
+
+    If the origin (e.g. the central pixel) of the resized array is not specified, the central pixel of the array is \
+    calculated automatically. For example, a (5,5) array's central pixel is (2,2). For even dimensions the central \
+    pixel is assumed to be the lower indexed value, e.g. a (6,4) array's central pixel is calculated as (2,1).
+
+    The default origin is (-1, -1) because numba requires that the function input is the same type throughout the \
+    function, thus a default 'None' value cannot be used.
+
+    Parameters
+    ----------
+    array_2d : ndarray
+        The 2D array that is resized.
+    resized_shape : (int, int)
+        The (y,x) new pixel dimension of the trimmed array.
+    origin : (int, int)
+        The oigin of the resized array, e.g. the central pixel around which the array is extracted.
+    pad_value : float
+        If the reszied array is bigger in size than the input array, the value the padded edge values are filled in \
+        using.
+
+    Returns
+    -------
+    ndarray
+        The resized 2D array from the input 2D array.
+
+    Examples
+    --------
+    array_2d = np.ones((5,5))
+    resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
+    """
+
+    y_is_even = int(array_2d.shape[0]) % 2 == 0
+    x_is_even = int(array_2d.shape[1]) % 2 == 0
+
+    if origin is (-1, -1):
+
+        if y_is_even:
+            y_centre = int(array_2d.shape[0] / 2)
+        elif not y_is_even:
+            y_centre = int(array_2d.shape[0] / 2)
+
+        if x_is_even:
+            x_centre = int(array_2d.shape[1] / 2)
+        elif not x_is_even:
+            x_centre = int(array_2d.shape[1] / 2)
+
+        origin = (y_centre, x_centre)
+
+    resized_array = np.zeros(shape=resized_shape)
+
+    if y_is_even:
+        y_min = origin[0] - int(resized_shape[0] / 2)
+        y_max = origin[0] + int((resized_shape[0] / 2)) + 1
+    elif not y_is_even:
+        y_min = origin[0] - int(resized_shape[0] / 2)
+        y_max = origin[0] + int((resized_shape[0] / 2)) + 1
+
+    if x_is_even:
+        x_min = origin[1] - int(resized_shape[1] / 2)
+        x_max = origin[1] + int((resized_shape[1] / 2)) + 1
+    elif not x_is_even:
+        x_min = origin[1] - int(resized_shape[1] / 2)
+        x_max = origin[1] + int((resized_shape[1] / 2)) + 1
+
+    for y_resized, y in enumerate(range(y_min, y_max)):
+        for x_resized, x in enumerate(range(x_min, x_max)):
+            if y >= 0 and y < array_2d.shape[0] and x >= 0 and x < array_2d.shape[1]:
+                if (
+                    y_resized >= 0
+                    and y_resized < resized_shape[0]
+                    and x_resized >= 0
+                    and x_resized < resized_shape[1]
+                ):
+                    resized_array[y_resized, x_resized] = array_2d[y, x]
+            else:
+                if (
+                    y_resized >= 0
+                    and y_resized < resized_shape[0]
+                    and x_resized >= 0
+                    and x_resized < resized_shape[1]
+                ):
+                    resized_array[y_resized, x_resized] = pad_value
+
+    return resized_array
+
+
+@decorator_util.jit()
+def replace_noise_map_2d_values_where_image_2d_values_are_negative(
+    image_2d, noise_map_2d, target_signal_to_noise=2.0
+):
     """If the values of a 2D image array are negative, this function replaces the corresponding 2D noise-map array \
     values to meet a specified target to noise value.
 
@@ -217,7 +332,7 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(image_2d, noi
             if image_2d[y, x] < 0.0:
                 absolute_signal_to_noise = np.abs(image_2d[y, x]) / noise_map_2d[y, x]
                 if absolute_signal_to_noise >= target_signal_to_noise:
-                    noise_map_2d[y,x] = np.abs(image_2d[y, x]) / target_signal_to_noise
+                    noise_map_2d[y, x] = np.abs(image_2d[y, x]) / target_signal_to_noise
 
     return noise_map_2d
 
