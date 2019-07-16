@@ -256,13 +256,13 @@ class HyperGalaxyPhase(HyperPhase):
             optimizer.variable.source_galaxies = []
             optimizer.variable.galaxies = []
 
-            phase.const_efficiency_mode = af.conf.instance.non_linear.get(
+            optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_const_efficiency_mode", bool
             )
-            phase.optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
+            optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_sampling_efficiency", float
             )
-            phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
+            optimizer.n_live_points = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_n_live_points", int
             )
 
@@ -389,13 +389,13 @@ class HyperGalaxyAllPhase(HyperPhase):
             optimizer.variable.source_galaxies = []
             optimizer.variable.galaxies = []
 
-            phase.const_efficiency_mode = af.conf.instance.non_linear.get(
+            optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_const_efficiency_mode", bool
             )
-            phase.optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
+            optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_sampling_efficiency", float
             )
-            phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
+            optimizer.n_live_points = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_n_live_points", int
             )
 
