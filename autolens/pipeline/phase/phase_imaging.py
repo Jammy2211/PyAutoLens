@@ -269,11 +269,11 @@ class PhaseImaging(Phase):
             phase_info.close()
 
     def extend_with_inversion_phase(self):
-        return phase_extensions.CombinedHyperPhase(
-            phase=self, hyper_phase_classes=(phase_extensions.InversionPhase,)
+        return phase_extensions.InversionPhase(
+            phase=self
         )
 
-    def extend_with_hyper_and_inversion_phases(
+    def extend_with_multiple_hyper_phases(
         self,
         hyper_galaxy=False,
         inversion=False,
@@ -505,6 +505,14 @@ class PhaseImaging(Phase):
                     should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
                     visualize_path=image_path,
                 )
+
+                if hasattr(self.results.last, 'inversion'):
+
+                    self.preload_pixelization_grid = self.results.last.inversion.most_likely_image_plane_pixelization_grid
+
+                if hasattr(self.results.last, 'combined'):
+
+                    self.preload_pixelization_grid = self.results.last.combined.most_likely_image_plane_pixelization_grid
 
         def fit(self, instance):
             """

@@ -22,7 +22,7 @@ def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
     ccd_data = simulation_util.load_test_ccd_data(
-        data_type="no_lens_light_and_source_smooth", data_resolution="Euclid"
+        data_type="no_lens_light_and_source_smooth", data_resolution="LSST"
     )
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
@@ -51,6 +51,7 @@ def make_pipeline(test_name):
                 regularization=reg.Constant,
             )
         ),
+        inversion_pixel_limit=300.0,
         optimizer_class=af.MultiNest,
     )
 
@@ -58,11 +59,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1
-
-    phase1p = phase_extensions.InversionPhase(
-        phase_name="phase_1_pix", phase_folders=[test_type, test_name]
-    )
+    phase1 = phase1.extend_with_inversion_phase()
 
     class SourcePix(phase_imaging.LensSourcePlanePhase):
         def pass_priors(self, results):
@@ -92,6 +89,7 @@ def make_pipeline(test_name):
                 regularization=reg.Constant,
             )
         ),
+        inversion_pixel_limit=300.0,
         optimizer_class=af.MultiNest,
     )
 
@@ -99,11 +97,9 @@ def make_pipeline(test_name):
     phase2.optimizer.n_live_points = 60
     phase2.optimizer.sampling_efficiency = 0.8
 
-    phase2p = phase_extensions.InversionPhase(
-        phase_name="phase_1_pix", phase_folders=[test_type, test_name]
-    )
+    phase2 = phase2.extend_with_inversion_phase()
 
-    return pl.PipelineImaging(test_name, phase1, phase1p)
+    return pl.PipelineImaging(test_name, phase1, phase2)
 
 
 if __name__ == "__main__":

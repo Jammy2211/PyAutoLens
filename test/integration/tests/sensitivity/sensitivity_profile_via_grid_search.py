@@ -44,10 +44,10 @@ def make_pipeline(test_name):
             self.source_galaxies.source.light.effective_radius = 0.5
             self.source_galaxies.source.light.sersic_index = 1.0
 
-            self.sensitive_galaxies.subhalo.mass.centre_0 = af.prior.UniformPrior(
+            self.sensitive_galaxies.subhalo.mass.centre_0 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
             )
-            self.sensitive_galaxies.subhalo.mass.centre_1 = af.prior.UniformPrior(
+            self.sensitive_galaxies.subhalo.mass.centre_1 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
             )
             self.sensitive_galaxies.subhalo.mass.kappa_s = 0.1

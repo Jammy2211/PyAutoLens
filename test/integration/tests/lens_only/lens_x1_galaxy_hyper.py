@@ -41,7 +41,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1 = phase1.extend_with_hyper_and_inversion_phases(hyper_galaxy=True)
+    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
     class HyperLensPlanePhase(phase_imaging.LensPlanePhase):
         def pass_priors(self, results):

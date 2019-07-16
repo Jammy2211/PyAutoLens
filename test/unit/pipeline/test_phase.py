@@ -1124,22 +1124,22 @@ class TestPhase(object):
         phase_extended = phase_7x7.extend_with_inversion_phase()
         assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
 
-        phase_extended = phase_7x7.extend_with_hyper_and_inversion_phases(
+        phase_extended = phase_7x7.extend_with_multiple_hyper_phases(
             hyper_galaxy=False, inversion=False
         )
         assert phase_extended.hyper_phases == []
 
-        phase_extended = phase_7x7.extend_with_hyper_and_inversion_phases(
+        phase_extended = phase_7x7.extend_with_multiple_hyper_phases(
             hyper_galaxy=True, inversion=False
         )
         assert type(phase_extended.hyper_phases[0]) == phase_extensions.HyperGalaxyPhase
 
-        phase_extended = phase_7x7.extend_with_hyper_and_inversion_phases(
+        phase_extended = phase_7x7.extend_with_multiple_hyper_phases(
             hyper_galaxy=False, inversion=True
         )
         assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
 
-        phase_extended = phase_7x7.extend_with_hyper_and_inversion_phases(
+        phase_extended = phase_7x7.extend_with_multiple_hyper_phases(
             hyper_galaxy=True, inversion=True
         )
         assert type(phase_extended.hyper_phases[0]) == phase_extensions.HyperGalaxyPhase

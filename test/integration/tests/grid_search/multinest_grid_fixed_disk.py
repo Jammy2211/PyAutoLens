@@ -31,44 +31,44 @@ def make_pipeline(test_name):
     class QuickPhase(phase_imaging.LensPlanePhase):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.bulge.centre_0 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.bulge.centre_1 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.bulge.axis_ratio = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.axis_ratio = af.UniformPrior(
                 lower_limit=0.79, upper_limit=0.81
             )
-            self.lens_galaxies.lens.bulge.phi = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.phi = af.UniformPrior(
                 lower_limit=-1.0, upper_limit=1.0
             )
-            self.lens_galaxies.lens.bulge.intensity = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.intensity = af.UniformPrior(
                 lower_limit=0.99, upper_limit=1.01
             )
-            self.lens_galaxies.lens.bulge.effective_radius = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.effective_radius = af.UniformPrior(
                 lower_limit=1.25, upper_limit=1.35
             )
-            self.lens_galaxies.lens.bulge.sersic_index = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.sersic_index = af.UniformPrior(
                 lower_limit=3.95, upper_limit=4.05
             )
 
-            self.lens_galaxies.lens.disk.centre_0 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.disk.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.disk.centre_1 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.disk.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.disk.axis_ratio = af.prior.UniformPrior(
+            self.lens_galaxies.lens.disk.axis_ratio = af.UniformPrior(
                 lower_limit=0.69, upper_limit=0.71
             )
-            self.lens_galaxies.lens.disk.phi = af.prior.UniformPrior(
+            self.lens_galaxies.lens.disk.phi = af.UniformPrior(
                 lower_limit=-1.0, upper_limit=1.0
             )
-            self.lens_galaxies.lens.disk.intensity = af.prior.UniformPrior(
+            self.lens_galaxies.lens.disk.intensity = af.UniformPrior(
                 lower_limit=1.99, upper_limit=2.01
             )
-            self.lens_galaxies.lens.disk.effective_radius = af.prior.UniformPrior(
+            self.lens_galaxies.lens.disk.effective_radius = af.UniformPrior(
                 lower_limit=1.95, upper_limit=2.05
             )
 
@@ -98,22 +98,22 @@ def make_pipeline(test_name):
                 "phase_1"
             ).constant.lens_galaxies.lens.disk
 
-            self.lens_galaxies.lens.bulge.centre_0 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.bulge.centre_1 = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.bulge.axis_ratio = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.axis_ratio = af.UniformPrior(
                 lower_limit=0.79, upper_limit=0.81
             )
-            self.lens_galaxies.lens.bulge.phi = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.phi = af.UniformPrior(
                 lower_limit=-1.0, upper_limit=1.0
             )
-            self.lens_galaxies.lens.bulge.intensity = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.intensity = af.UniformPrior(
                 lower_limit=0.99, upper_limit=1.01
             )
-            self.lens_galaxies.lens.bulge.effective_radius = af.prior.UniformPrior(
+            self.lens_galaxies.lens.bulge.effective_radius = af.UniformPrior(
                 lower_limit=1.25, upper_limit=1.35
             )
 

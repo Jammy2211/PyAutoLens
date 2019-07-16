@@ -174,8 +174,8 @@ class TestVariableFixing(object):
 
         phase.add_defaults(mapper)
 
-        assert isinstance(mapper.hyper_image_sky, af.PriorModel)
-        assert isinstance(mapper.hyper_noise_background, af.PriorModel)
+        assert isinstance(mapper.hyper_image_sky, af.Model)
+        assert isinstance(mapper.hyper_noise_background, af.Model)
 
         assert mapper.hyper_image_sky.cls == hd.HyperImageSky
         assert mapper.hyper_noise_background.cls == hd.HyperNoiseBackground
@@ -189,7 +189,7 @@ class TestVariableFixing(object):
         mapper = af.ModelMapper()
         phase.add_defaults(mapper)
 
-        assert isinstance(mapper.hyper_image_sky, af.PriorModel)
+        assert isinstance(mapper.hyper_image_sky, af.Model)
         assert mapper.hyper_image_sky.cls == hd.HyperImageSky
 
     def test_defaults_background_noise(self):
@@ -199,7 +199,7 @@ class TestVariableFixing(object):
         mapper = af.ModelMapper()
         phase.add_defaults(mapper)
 
-        assert isinstance(mapper.hyper_noise_background, af.PriorModel)
+        assert isinstance(mapper.hyper_noise_background, af.Model)
         assert mapper.hyper_noise_background.cls == hd.HyperNoiseBackground
 
     def test_make_pixelization_variable(self):
@@ -743,8 +743,8 @@ class TestHyperAPI(object):
 
         variable = combined.combine_variables(result)
 
-        assert isinstance(variable.hyper_galaxy, af.PriorModel)
-        assert isinstance(variable.pixelization, af.PriorModel)
+        assert isinstance(variable.hyper_galaxy, af.Model)
+        assert isinstance(variable.pixelization, af.Model)
 
         assert variable.hyper_galaxy.cls == g.HyperGalaxy
         assert variable.pixelization.cls == px.Pixelization

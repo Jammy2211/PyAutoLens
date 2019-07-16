@@ -49,45 +49,45 @@ def make_pipeline(test_name):
             centre_value = results.from_phase(
                 "phase_1"
             ).constant.lens_galaxies.lens.light.centre
-            self.lens_galaxies.lens.light.centre.centre_0 = af.prior.GaussianPrior(
+            self.lens_galaxies.lens.light.centre.centre_0 = af.GaussianPrior(
                 mean=centre_value[0], sigma=0.5
             )
-            self.lens_galaxies.lens.light.centre.centre_1 = af.prior.GaussianPrior(
+            self.lens_galaxies.lens.light.centre.centre_1 = af.GaussianPrior(
                 mean=centre_value[1], sigma=0.5
             )
 
             intensity_value = results.from_phase(
                 "phase_1"
             ).constant.lens_galaxies.lens.light.intensity
-            self.lens_galaxies.lens.light.intensity = af.prior.GaussianPrior(
+            self.lens_galaxies.lens.light.intensity = af.GaussianPrior(
                 mean=intensity_value, sigma=1.0
             )
 
             effective_radius_value = results.from_phase(
                 "phase_1"
             ).constant.lens_galaxies.lens.light.effective_radius
-            self.lens_galaxies.lens.light.effective_radius = af.prior.GaussianPrior(
+            self.lens_galaxies.lens.light.effective_radius = af.GaussianPrior(
                 mean=effective_radius_value, sigma=2.0
             )
 
             sersic_index_value = results.from_phase(
                 "phase_1"
             ).constant.lens_galaxies.lens.light.sersic_index
-            self.lens_galaxies.lens.light.sersic_index = af.prior.GaussianPrior(
+            self.lens_galaxies.lens.light.sersic_index = af.GaussianPrior(
                 mean=sersic_index_value, sigma=2.0
             )
 
             axis_ratio_value = results.from_phase(
                 "phase_1"
             ).constant.lens_galaxies.lens.light.axis_ratio
-            self.lens_galaxies.lens.light.axis_ratio = af.prior.GaussianPrior(
+            self.lens_galaxies.lens.light.axis_ratio = af.GaussianPrior(
                 mean=axis_ratio_value, sigma=0.3
             )
 
             phi_value = results.from_phase(
                 "phase_1"
             ).constant.lens_galaxies.lens.light.phi
-            self.lens_galaxies.lens.light.phi = af.prior.GaussianPrior(
+            self.lens_galaxies.lens.light.phi = af.GaussianPrior(
                 mean=phi_value, sigma=30.0
             )
 

@@ -195,8 +195,8 @@ class TestNamedProfiles:
             mass_profile=mass_profiles.EllipticalSersic,
         )
 
-        assert isinstance(galaxy_model.light_profile, af.PriorModel)
-        assert isinstance(galaxy_model.mass_profile, af.PriorModel)
+        assert isinstance(galaxy_model.light_profile, af.Model)
+        assert isinstance(galaxy_model.mass_profile, af.Model)
 
     def test_set_prior_model(self):
         mapper = af.ModelMapper()
@@ -210,7 +210,7 @@ class TestNamedProfiles:
 
         assert 16 == len(mapper.prior_tuples_ordered_by_id)
 
-        galaxy_model.light_profile = af.PriorModel(light_profiles.LightProfile)
+        galaxy_model.light_profile = af.Model(light_profiles.LightProfile)
 
         assert 9 == len(mapper.prior_tuples_ordered_by_id)
 
