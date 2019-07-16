@@ -35,7 +35,7 @@ class CombinedHyperPhase(HyperPhase):
         """
         return [phase.hyper_name for phase in self.hyper_phases]
 
-    def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
+    def run(self, data, results: af.ResultsCollection = None, mask=None, positions=None, **kwargs) -> af.Result:
         """
         Run the regular phase followed by the hyper phases. Each result of a hyper phase is attached to the
         overall result object by the hyper_name of that phase.
@@ -58,14 +58,14 @@ class CombinedHyperPhase(HyperPhase):
         results = (
             copy.deepcopy(results) if results is not None else af.ResultsCollection()
         )
-        result = self.phase.run(data, results=results, **kwargs)
+        result = self.phase.run(data, results=results, mask=mask, positions=positions, **kwargs)
         results.add(self.phase.phase_name, result)
 
         for phase in self.hyper_phases:
             hyper_result = phase.run_hyper(data=data, results=results, **kwargs)
             setattr(result, phase.hyper_name, hyper_result)
 
-        setattr(result, self.hyper_name, self.run_hyper(data, results))
+        setattr(result, self.hyper_name, self.run_hyper(data=data, results=results, mask=mask, positions=positions))
         return result
 
     def combine_variables(self, result) -> af.ModelMapper:
@@ -90,7 +90,7 @@ class CombinedHyperPhase(HyperPhase):
             variable += getattr(result, name).variable
         return variable
 
-    def run_hyper(self, data, results, **kwargs) -> af.Result:
+    def run_hyper(self, data, results, mask=None, positions=None, **kwargs) -> af.Result:
         variable = self.combine_variables(results.last)
 
         phase = self.make_hyper_phase()
@@ -99,4 +99,4 @@ class CombinedHyperPhase(HyperPhase):
 
         phase.phase_tag = ""
 
-        return phase.run(data, results=results, **kwargs)
+        return phase.run(data, results=results, mask=mask, positions=positions, **kwargs)

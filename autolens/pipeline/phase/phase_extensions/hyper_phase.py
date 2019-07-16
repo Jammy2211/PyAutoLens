@@ -62,7 +62,7 @@ class HyperPhase(object):
 
         pass
 
-    def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
+    def run(self, data, results: af.ResultsCollection = None, mask=None, positions=None, **kwargs) -> af.Result:
         """
         Run the normal phase and then the hyper phase.
 
@@ -85,9 +85,9 @@ class HyperPhase(object):
             copy.deepcopy(results) if results is not None else af.ResultsCollection()
         )
 
-        result = self.phase.run(data, results=results, **kwargs)
+        result = self.phase.run(data, results=results, mask=mask, positions=positions, **kwargs)
         results.add(self.phase.phase_name, result)
-        hyper_result = self.run_hyper(data=data, results=results, **kwargs)
+        hyper_result = self.run_hyper(data=data, results=results, mask=mask, positions=positions, **kwargs)
         setattr(result, self.hyper_name, hyper_result)
         return result
 
