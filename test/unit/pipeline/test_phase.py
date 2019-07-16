@@ -1142,8 +1142,8 @@ class TestPhase(object):
         phase_extended = phase_7x7.extend_with_multiple_hyper_phases(
             hyper_galaxy=True, inversion=True
         )
-        assert type(phase_extended.hyper_phases[0]) == phase_extensions.HyperGalaxyPhase
-        assert type(phase_extended.hyper_phases[1]) == phase_extensions.InversionPhase
+        assert type(phase_extended.hyper_phases[1]) == phase_extensions.HyperGalaxyPhase
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
 
 
 class TestResult(object):
