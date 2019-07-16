@@ -46,28 +46,22 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1h = phase_extensions.HyperGalaxyPhase(
-        phase_name="phase_1_hyper", phase_folders=[test_type, test_name]
-    )
+    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
     class HyperLensSourcePlanePhase(phase_imaging.LensSourcePlanePhase):
         def pass_priors(self, results):
-
-            self.lens_galaxies.lens.hyper_galaxy = results.from_phase(
-                "phase_1_hyper"
-            ).constant.lens_galaxies.lens.hyper_galaxy
 
             self.lens_galaxies.lens.mass = results.from_phase(
                 "phase_1"
             ).variable.lens_galaxies.lens.mass
 
-            self.source_galaxies.source.hyper_galaxy = results.from_phase(
-                "phase_1_hyper"
-            ).constant.source_galaxies.source.hyper_galaxy
-
             self.source_galaxies.source.light = results.from_phase(
                 "phase_1"
             ).variable.source_galaxies.source.light
+
+            self.source_galaxies.source.hyper_galaxy = (
+                results.last.hyper_combined.constant.source_galaxies.source.hyper_galaxy
+            )
 
     phase2 = HyperLensSourcePlanePhase(
         phase_name="phase_2",
@@ -89,7 +83,7 @@ def make_pipeline(test_name):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(test_name, phase1, phase1h, phase2)
+    return pl.PipelineImaging(test_name, phase1, phase2)
 
 
 if __name__ == "__main__":

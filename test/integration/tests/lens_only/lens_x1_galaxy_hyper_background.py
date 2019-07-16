@@ -57,7 +57,7 @@ def make_pipeline(test_name):
             )
 
             # self.hyper_image_sky = (
-            #     results.last.hyper_combined.constant.lens_galaxies.lens.hyper_image_sky
+            #     results.last.hyper_combined.constant.hyper_image_sky
             # )
 
             self.hyper_noise_background = (

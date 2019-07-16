@@ -65,7 +65,9 @@ class TestRegularizationWeighted:
 
     def test__weights__compare_to_regularization_util(self):
 
-        reg = regularization.AdaptiveBrightness(inner_coefficient=10.0, outer_coefficient=15.0)
+        reg = regularization.AdaptiveBrightness(
+            inner_coefficient=10.0, outer_coefficient=15.0
+        )
 
         pixel_signals = np.array([0.21, 0.586, 0.45])
 

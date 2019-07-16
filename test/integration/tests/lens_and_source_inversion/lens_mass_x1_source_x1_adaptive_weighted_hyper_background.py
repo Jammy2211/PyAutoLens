@@ -30,8 +30,12 @@ def pipeline():
 
 
 def make_pipeline(test_name):
+    class Phase1(phase_imaging.LensSourcePlanePhase):
+        def pass_priors(self, results):
 
-    phase1 = phase_imaging.LensSourcePlanePhase(
+            self.source_galaxies.source.light.sersic_index = af.UniformPrior(3.9, 4.1)
+
+    phase1 = Phase1(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
         lens_galaxies=dict(
@@ -42,6 +46,10 @@ def make_pipeline(test_name):
         ),
         optimizer_class=af.MultiNest,
     )
+
+    phase1.optimizer.const_efficiency_mode = True
+    phase1.optimizer.n_live_points = 50
+    phase1.optimizer.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
@@ -81,6 +89,10 @@ def make_pipeline(test_name):
         optimizer_class=af.MultiNest,
     )
 
+    phase2.optimizer.const_efficiency_mode = True
+    phase2.optimizer.n_live_points = 30
+    phase2.optimizer.sampling_efficiency = 0.8
+
     phase2 = phase2.extend_with_multiple_hyper_phases(
         hyper_galaxy=True,
         inversion=True,
@@ -97,9 +109,7 @@ def make_pipeline(test_name):
                 "phase_1"
             ).variable.lens_galaxies.lens
 
-            self.source_galaxies.source = (
-                results.last.inversion.constant.source_galaxies.source
-            )
+            self.source_galaxies = results.last.hyper_combined.constant.source_galaxies
 
             self.lens_galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy

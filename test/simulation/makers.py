@@ -39,10 +39,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
     image_plane_grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-        shape=shape,
-        pixel_scale=pixel_scale,
-        psf_shape=psf.shape,
-        sub_grid_size=sub_grid_size,
+        shape=shape, pixel_scale=pixel_scale, sub_grid_size=sub_grid_size
     )
 
     # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD data.
