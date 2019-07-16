@@ -510,9 +510,9 @@ class PhaseImaging(Phase):
 
                     self.preload_pixelization_grid = self.results.last.inversion.most_likely_image_plane_pixelization_grid
 
-                if hasattr(self.results.last, 'combined'):
+                if hasattr(self.results.last, 'hyper_combined'):
 
-                    self.preload_pixelization_grid = self.results.last.combined.most_likely_image_plane_pixelization_grid
+                    self.preload_pixelization_grid = self.results.last.hyper_combined.most_likely_image_plane_pixelization_grid
 
         def fit(self, instance):
             """

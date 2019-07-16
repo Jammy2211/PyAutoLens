@@ -53,15 +53,15 @@ def make_pipeline(test_name):
             self.lens_galaxies = results.from_phase("phase_1").variable.lens_galaxies
 
             self.lens_galaxies.lens.hyper_galaxy = (
-                results.last.combined.constant.lens_galaxies.lens.hyper_galaxy
+                results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
             )
 
             # self.hyper_image_sky = (
-            #     results.last.combined.constant.lens_galaxies.lens.hyper_image_sky
+            #     results.last.hyper_combined.constant.lens_galaxies.lens.hyper_image_sky
             # )
 
             self.hyper_noise_background = (
-                results.last.combined.constant.hyper_noise_background
+                results.last.hyper_combined.constant.hyper_noise_background
             )
 
     phase2 = HyperLensPlanePhase(

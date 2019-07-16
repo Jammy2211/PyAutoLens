@@ -75,11 +75,11 @@ def make_pipeline(test_name):
             ).variable.source_galaxies.source.light
 
             self.lens_galaxies.lens.hyper_galaxy = (
-                results.last.combined.constant.lens_galaxies.lens.hyper_galaxy
+                results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
             )
 
             self.source_galaxies.source.hyper_galaxy = (
-                results.last.combined.constant.source_galaxies.source.hyper_galaxy
+                results.last.hyper_combined.constant.source_galaxies.source.hyper_galaxy
             )
 
     phase2 = HyperLensSourcePlanePhase(

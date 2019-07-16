@@ -251,7 +251,7 @@ class TestPhaseModelMapper(object):
 
         sersic = phase.variable.lens_galaxies[0].sersic
 
-        assert isinstance(sersic, af.Model)
+        assert isinstance(sersic, af.PriorModel)
 
         assert isinstance(sersic.axis_ratio, float)
         assert isinstance(sersic.phi, float)

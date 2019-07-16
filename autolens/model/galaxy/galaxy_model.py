@@ -119,7 +119,7 @@ class GalaxyModel(af.AbstractPriorModel):
 
         for name, cls in kwargs.items():
             if is_mass_profile_class(cls) or is_light_profile_class(cls):
-                model = af.Model(cls)
+                model = af.PriorModel(cls)
                 profile_models.append(model)
                 setattr(self, name, model)
             else:
@@ -142,7 +142,7 @@ class GalaxyModel(af.AbstractPriorModel):
                     profile_model.phi = phi
 
         self.redshift = (
-            af.Model(redshift) if inspect.isclass(redshift) else redshift
+            af.PriorModel(redshift) if inspect.isclass(redshift) else redshift
         )
 
         if pixelization is not None and regularization is None:
@@ -157,18 +157,18 @@ class GalaxyModel(af.AbstractPriorModel):
             )
 
         self.pixelization = (
-            af.Model(pixelization)
+            af.PriorModel(pixelization)
             if inspect.isclass(pixelization)
             else pixelization
         )
         self.regularization = (
-            af.Model(regularization)
+            af.PriorModel(regularization)
             if inspect.isclass(regularization)
             else regularization
         )
 
         self.hyper_galaxy = (
-            af.Model(hyper_galaxy)
+            af.PriorModel(hyper_galaxy)
             if inspect.isclass(hyper_galaxy)
             else hyper_galaxy
         )
@@ -227,7 +227,7 @@ class GalaxyModel(af.AbstractPriorModel):
         return [
             value
             for _, value in filter(
-                lambda t: isinstance(t[1], af.Model), self.__dict__.items()
+                lambda t: isinstance(t[1], af.PriorModel), self.__dict__.items()
             )
         ]
 
@@ -242,7 +242,7 @@ class GalaxyModel(af.AbstractPriorModel):
         return {
             key: value
             for key, value in filter(
-                lambda t: isinstance(t[1], af.Model)
+                lambda t: isinstance(t[1], af.PriorModel)
                 and is_profile_class(t[1].cls),
                 self.__dict__.items(),
             )
@@ -253,7 +253,7 @@ class GalaxyModel(af.AbstractPriorModel):
         return [
             item
             for item in self.__dict__.values()
-            if isinstance(item, af.Model) and is_light_profile_class(item.cls)
+            if isinstance(item, af.PriorModel) and is_light_profile_class(item.cls)
         ]
 
     @property
@@ -261,7 +261,7 @@ class GalaxyModel(af.AbstractPriorModel):
         return [
             item
             for item in self.__dict__.values()
-            if isinstance(item, af.Model) and is_mass_profile_class(item.cls)
+            if isinstance(item, af.PriorModel) and is_mass_profile_class(item.cls)
         ]
 
     @property
@@ -279,7 +279,7 @@ class GalaxyModel(af.AbstractPriorModel):
         }
 
     @property
-    @af.cast_collection(af.NameValue)
+    @af.cast_collection(af.PriorNameValue)
     def prior_tuples(self):
         """
         Returns
@@ -349,17 +349,17 @@ class GalaxyModel(af.AbstractPriorModel):
             redshift = self.redshift
         pixelization = (
             self.pixelization.instance_for_arguments(arguments)
-            if isinstance(self.pixelization, af.Model)
+            if isinstance(self.pixelization, af.PriorModel)
             else self.pixelization
         )
         regularization = (
             self.regularization.instance_for_arguments(arguments)
-            if isinstance(self.regularization, af.Model)
+            if isinstance(self.regularization, af.PriorModel)
             else self.regularization
         )
         hyper_galaxy = (
             self.hyper_galaxy.instance_for_arguments(arguments)
-            if isinstance(self.hyper_galaxy, af.Model)
+            if isinstance(self.hyper_galaxy, af.PriorModel)
             else self.hyper_galaxy
         )
 
@@ -389,7 +389,7 @@ class GalaxyModel(af.AbstractPriorModel):
         new_model = copy.deepcopy(self)
 
         for key, value in filter(
-            lambda t: isinstance(t[1], af.Model), self.__dict__.items()
+            lambda t: isinstance(t[1], af.PriorModel), self.__dict__.items()
         ):
             setattr(new_model, key, value.gaussian_prior_model_for_arguments(arguments))
 
