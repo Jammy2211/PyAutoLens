@@ -282,7 +282,7 @@ class TestSensitivityInversionFit:
         self, ld_blur
     ):
         pixelization = pix.Rectangular(shape=(3, 3))
-        regularization = reg.Constant(coefficients=(1.0,))
+        regularization = reg.Constant(coefficient=1.0)
 
         g0 = g.Galaxy(
             redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
@@ -376,7 +376,7 @@ class TestSensitivityInversionFit:
 
     def test__tracers_are_different__likelihood_is_non_zero(self, ld_blur):
         pixelization = pix.Rectangular(shape=(3, 3))
-        regularization = reg.Constant(coefficients=(1.0,))
+        regularization = reg.Constant(coefficient=1.0)
 
         g0 = g.Galaxy(
             redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)

@@ -38,7 +38,7 @@ def make_pipeline(test_name):
 
             self.source_galaxies.source.pixelization.shape_0 = 8.0
             self.source_galaxies.source.pixelization.shape_1 = 8.0
-            self.source_galaxies.source.regularization.coefficients_0 = 1.0
+            self.source_galaxies.source.regularization.coefficient = 1.0
 
             self.sensitive_galaxies.subhalo.mass.centre_0 = af.prior.GaussianPrior(
                 mean=0.0, sigma=1.0

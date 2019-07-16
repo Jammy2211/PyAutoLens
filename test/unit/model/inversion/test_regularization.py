@@ -23,13 +23,13 @@ class TestRegularizationConstant:
 
         pixel_neighbors_size = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
 
-        reg = regularization.Constant(coefficients=(1.0,))
+        reg = regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             pixel_neighbors, pixel_neighbors_size
         )
 
         regularization_matrix_util = reg_util.constant_regularization_matrix_from_pixel_neighbors(
-            coefficients=(1.0,),
+            coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
         )
@@ -65,14 +65,14 @@ class TestRegularizationWeighted:
 
     def test__weights__compare_to_regularization_util(self):
 
-        reg = regularization.AdaptiveBrightness(coefficients=(10.0, 15.0))
+        reg = regularization.AdaptiveBrightness(inner_coefficient=10.0, outer_coefficient=15.0)
 
         pixel_signals = np.array([0.21, 0.586, 0.45])
 
         weights = reg.regularization_weights_from_pixel_signals(pixel_signals)
 
         weights_util = reg_util.adaptive_regularization_weights_from_pixel_signals(
-            coefficients=(10.0, 15.0), pixel_signals=pixel_signals
+            inner_coefficient=10.0, outer_coefficient=15.0, pixel_signals=pixel_signals
         )
 
         assert (weights == weights_util).all()

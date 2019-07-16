@@ -1552,7 +1552,7 @@ class TestAbstractTracerData(object):
         ):
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(0.0,))
+            reg = regularization.Constant(coefficient=0.0)
 
             g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
