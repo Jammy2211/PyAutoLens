@@ -51,6 +51,19 @@ class HyperPhase(object):
             extension=self.hyper_name + "_" + phase.phase_tag
         )
 
+        # TODO : This addeds the methods to the combined phase, assuming they'll be overwritten for other phases in their
+        # TODO : make_hyper_phase methods
+
+        phase.optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_combined_const_efficiency_mode", bool
+        )
+        phase.optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_combined_sampling_efficiency", float
+        )
+        phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_combined_n_live_points", int
+        )
+
         phase.optimizer.phase_tag = ""
         phase.phase_tag = ""
         phase.pass_priors = self.pass_priors
