@@ -646,11 +646,12 @@ def make_hyper_noise_map_7x7(noise_map_7x7, contribution_map_7x7, hyper_galaxy):
 
 @pytest.fixture(name="results_7x7")
 def make_results(
-    hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
+    mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
 ):
     return mock_pipeline.MockResults(
         model_image=hyper_model_image_7x7,
         galaxy_images=[hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7],
+        mask=mask_7x7,
     )
 
 

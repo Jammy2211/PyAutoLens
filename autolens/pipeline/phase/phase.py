@@ -252,7 +252,15 @@ class AbstractPhase(af.AbstractPhase):
             return self.constant.path_instance_tuples_for_class(cls=g.Galaxy)
 
         @property
-        def image_2d_dict(self) -> {str: g.Galaxy}:
+        def mask_2d(self):
+            return self.most_likely_fit.mask(return_in_2d=True)
+
+        @property
+        def positions(self):
+            return self.most_likely_fit.positions
+
+        @property
+        def image_galaxy_2d_dict(self) -> {str: g.Galaxy}:
             """
             A dictionary associating galaxy names with model images of those galaxies
             """
@@ -261,21 +269,23 @@ class AbstractPhase(af.AbstractPhase):
                 for galaxy_path, galaxy in self.path_galaxy_tuples
             }
 
-        def image_1d_dict_from_mask(self, mask) -> {str: g.Galaxy}:
+        @property
+        def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
             """
             A dictionary associating galaxy names with model images of those galaxies
             """
 
             image_1d_dict = {}
 
-            for galaxy, galaxy_image_2d in self.image_2d_dict.items():
-                image_1d_dict[galaxy] = mask.array_1d_from_array_2d(
+            for galaxy, galaxy_image_2d in self.image_galaxy_2d_dict.items():
+                image_1d_dict[galaxy] = self.mask_2d.array_1d_from_array_2d(
                     array_2d=galaxy_image_2d
                 )
 
             return image_1d_dict
 
-        def hyper_galaxy_image_1d_path_dict_from_mask(self, mask):
+        @property
+        def hyper_galaxy_image_1d_path_dict(self):
             """
             A dictionary associating 1D hyper galaxy images with their names.
             """
@@ -284,13 +294,11 @@ class AbstractPhase(af.AbstractPhase):
                 "hyper", "hyper_minimum_percent", float
             )
 
-            image_galaxy_1d_dict = self.image_1d_dict_from_mask(mask=mask)
-
             hyper_galaxy_image_1d_path_dict = {}
 
             for path, galaxy in self.path_galaxy_tuples:
 
-                galaxy_image_1d = image_galaxy_1d_dict[path]
+                galaxy_image_1d = self.image_galaxy_1d_dict[path]
 
                 if not np.all(galaxy_image_1d == 0):
                     minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
@@ -302,22 +310,19 @@ class AbstractPhase(af.AbstractPhase):
 
             return hyper_galaxy_image_1d_path_dict
 
-        def hyper_galaxy_image_2d_path_dict_from_mask(self, mask):
+        @property
+        def hyper_galaxy_image_2d_path_dict(self):
             """
             A dictionary associating 2D hyper galaxy images with their names.
             """
-
-            hyper_galaxy_image_1d_path_dict = self.hyper_galaxy_image_1d_path_dict_from_mask(
-                mask=mask
-            )
 
             hyper_galaxy_image_2d_path_dict = {}
 
             for path, galaxy in self.path_galaxy_tuples:
                 hyper_galaxy_image_2d_path_dict[
                     path
-                ] = mask.scaled_array_2d_from_array_1d(
-                    array_1d=hyper_galaxy_image_1d_path_dict[path]
+                ] = self.mask_2d.scaled_array_2d_from_array_1d(
+                    array_1d=self.hyper_galaxy_image_1d_path_dict[path]
                 )
 
             return hyper_galaxy_image_2d_path_dict
@@ -329,7 +334,7 @@ class AbstractPhase(af.AbstractPhase):
 
             cluster_image_1d_dict = {}
 
-            for galaxy, galaxy_image_2d in self.image_2d_dict.items():
+            for galaxy, galaxy_image_2d in self.image_galaxy_2d_dict.items():
                 cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                     array_2d=galaxy_image_2d, bin_up_factor=cluster.bin_up_factor
                 )
@@ -393,16 +398,13 @@ class AbstractPhase(af.AbstractPhase):
 
                 return hyper_galaxy_cluster_image_2d_path_dict
 
-        def hyper_model_image_1d_from_mask(self, mask):
+        @property
+        def hyper_model_image_1d(self):
 
-            hyper_galaxy_image_1d_path_dict = self.hyper_galaxy_image_1d_path_dict_from_mask(
-                mask=mask
-            )
-
-            hyper_model_image_1d = np.zeros(mask.pixels_in_mask)
+            hyper_model_image_1d = np.zeros(self.mask_2d.pixels_in_mask)
 
             for path, galaxy in self.path_galaxy_tuples:
-                hyper_model_image_1d += hyper_galaxy_image_1d_path_dict[path]
+                hyper_model_image_1d += self.hyper_galaxy_image_1d_path_dict[path]
 
             return hyper_model_image_1d
 

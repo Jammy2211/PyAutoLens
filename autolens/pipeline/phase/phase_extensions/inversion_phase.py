@@ -37,7 +37,7 @@ class VariableFixingHyperPhase(HyperPhase):
 
         return phase
 
-    def run_hyper(self, data, results=None, mask=None, positions=None, **kwargs):
+    def run_hyper(self, data, results=None, **kwargs):
         """
         Run the phase, overriding the optimizer's variable instance with one created to
         only fit pixelization hyperparameters.
@@ -51,7 +51,7 @@ class VariableFixingHyperPhase(HyperPhase):
         phase = self.make_hyper_phase()
         phase.optimizer.variable = variable
 
-        return phase.run(data, results=results, mask=mask, positions=positions, **kwargs)
+        return phase.run(data, results=results, mask=results.last.mask_2d, positions=results.last.positions, **kwargs)
 
     def add_defaults(self, variable: af.ModelMapper):
         """
