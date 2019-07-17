@@ -124,6 +124,8 @@ class MockResult(object):
         self.analysis = MockAnalysis()
         self.path_galaxy_tuples = []
         self.variable = af.ModelMapper()
+        self.mask_2d = None
+        self.positions = None
 
 
 class MockAnalysis(object):
@@ -265,16 +267,17 @@ class TestImagePassing(object):
         ]
 
     def test_lens_image_dict_2d_and_1d(self, lens_result, mask_7x7):
-        image_2d_dict = lens_result.image_2d_dict
+
+        image_2d_dict = lens_result.image_galaxy_2d_dict
 
         assert isinstance(image_2d_dict[("lens_galaxies", "lens")], np.ndarray)
         assert image_2d_dict[("lens_galaxies", "lens")].shape == (7, 7)
 
-        image_1d_dict = lens_result.image_1d_dict_from_mask(mask=mask_7x7)
+        image_1d_dict = lens_result.image_galaxy_1d_dict
         assert image_1d_dict[("lens_galaxies", "lens")].shape == (9,)
 
     def test_lens_source_image_dict(self, lens_source_result, mask_7x7):
-        image_2d_dict = lens_source_result.image_2d_dict
+        image_2d_dict = lens_source_result.image_galaxy_2d_dict
 
         assert isinstance(image_2d_dict[("lens_galaxies", "lens")], np.ndarray)
         assert isinstance(image_2d_dict[("source_galaxies", "source")], np.ndarray)
@@ -282,7 +285,7 @@ class TestImagePassing(object):
         assert image_2d_dict[("lens_galaxies", "lens")].shape == (7, 7)
         assert image_2d_dict[("source_galaxies", "source")].shape == (7, 7)
 
-        image_1d_dict = lens_source_result.image_1d_dict_from_mask(mask=mask_7x7)
+        image_1d_dict = lens_source_result.image_galaxy_1d_dict
 
         assert image_1d_dict[("lens_galaxies", "lens")].shape == (9,)
         assert image_1d_dict[("source_galaxies", "source")].shape == (9,)
@@ -291,13 +294,13 @@ class TestImagePassing(object):
         lens_source_result.constant.source_galaxies.source = g.Galaxy(redshift=1.0)
 
     def test_multi_plane_image_dict(self, multi_plane_result):
-        image_dict = multi_plane_result.image_2d_dict
+        image_dict = multi_plane_result.image_galaxy_2d_dict
         assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
         multi_plane_result.constant.galaxies.lens = g.Galaxy(redshift=0.5)
 
-        image_dict = multi_plane_result.image_2d_dict
+        image_dict = multi_plane_result.image_galaxy_2d_dict
         assert (image_dict[("galaxies", "lens")] == np.zeros((7, 7))).all()
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
@@ -550,7 +553,7 @@ class TestImagePassing(object):
         instance = analysis.associate_images(instance=lens_instance)
 
         hyper_model_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=lens_result.image_2d_dict[("lens_galaxies", "lens")]
+            array_2d=lens_result.image_galaxy_2d_dict[("lens_galaxies", "lens")]
         )
 
         assert instance.lens_galaxies.lens.hyper_model_image_1d == pytest.approx(
@@ -575,10 +578,10 @@ class TestImagePassing(object):
         instance = analysis.associate_images(lens_source_instance)
 
         hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=lens_source_result.image_2d_dict[("lens_galaxies", "lens")]
+            array_2d=lens_source_result.image_galaxy_2d_dict[("lens_galaxies", "lens")]
         )
         hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=lens_source_result.image_2d_dict[("source_galaxies", "source")]
+            array_2d=lens_source_result.image_galaxy_2d_dict[("source_galaxies", "source")]
         )
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
@@ -612,10 +615,10 @@ class TestImagePassing(object):
         instance = analysis.associate_images(instance=multi_plane_instance)
 
         hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_2d_dict[("galaxies", "lens")]
+            array_2d=multi_plane_result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
         hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_2d_dict[("galaxies", "source")]
+            array_2d=multi_plane_result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
@@ -655,10 +658,10 @@ class TestImagePassing(object):
         fit_figure_of_merit = analysis.fit(instance=multi_plane_instance)
 
         hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_2d_dict[("galaxies", "lens")]
+            array_2d=multi_plane_result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
         hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_2d_dict[("galaxies", "source")]
+            array_2d=multi_plane_result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d

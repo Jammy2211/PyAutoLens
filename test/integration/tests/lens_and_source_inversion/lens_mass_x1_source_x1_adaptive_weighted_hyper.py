@@ -11,7 +11,7 @@ from test.integration import integration_util
 from test.simulation import simulation_util
 
 test_type = "lens_and_source_inversion"
-test_name = "lens_mass_x1_source_x1_adaptive_weighted_hyper_2"
+test_name = "lens_mass_x1_source_x1_adaptive_weighted_hyper"
 
 test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + "output/"
