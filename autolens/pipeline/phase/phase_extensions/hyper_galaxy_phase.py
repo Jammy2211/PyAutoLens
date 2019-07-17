@@ -38,23 +38,12 @@ class HyperGalaxyPhase(HyperPhase):
 
             self.lens_data = lens_data
 
-            self.hyper_model_image_1d = model_image_1d.copy()
-            self.hyper_galaxy_image_1d = galaxy_image_1d.copy()
-
-            self.check_for_previously_masked_values(array=self.hyper_model_image_1d)
-            self.check_for_previously_masked_values(array=self.hyper_galaxy_image_1d)
+            self.hyper_model_image_1d = model_image_1d
+            self.hyper_galaxy_image_1d = galaxy_image_1d
 
             self.plot_hyper_galaxy_subplot = af.conf.instance.visualize.get(
                 "plots", "plot_hyper_galaxy_subplot", bool
             )
-
-        @staticmethod
-        def check_for_previously_masked_values(array):
-            if not np.all(array) != 0.0:
-                raise exc.PhaseException(
-                    "When mapping a 2D array to a 1D array using lens data, a value "
-                    "encountered was 0.0 and therefore masked in a previous phase."
-                )
 
         def visualize(self, instance, image_path, during_analysis):
 
@@ -181,7 +170,7 @@ class HyperGalaxyPhase(HyperPhase):
                 instance.hyper_galaxy
             )
 
-    def run_hyper(self, data, results=None, mask=None, positions=None):
+    def run_hyper(self, data, results=None):
         """
         Run a fit for each galaxy from the previous phase.
         Parameters
@@ -199,19 +188,12 @@ class HyperGalaxyPhase(HyperPhase):
         """
         phase = self.make_hyper_phase()
 
-        mask = setup_phase_mask(
-            data=data,
-            mask=mask,
-            mask_function=cast(phase_imaging.PhaseImaging, phase).mask_function,
-            inner_mask_radii=cast(phase_imaging.PhaseImaging, phase).inner_mask_radii,
-        )
-
         lens_data = ld.LensData(
             ccd_data=data,
-            mask=mask,
+            mask=results.last.mask_2d,
             sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
             image_psf_shape=cast(phase_imaging.PhaseImaging, phase).image_psf_shape,
-            positions=positions,
+            positions=results.last.positions,
             interp_pixel_scale=cast(
                 phase_imaging.PhaseImaging, phase
             ).interp_pixel_scale,
@@ -227,12 +209,8 @@ class HyperGalaxyPhase(HyperPhase):
             ).uses_cluster_inversion,
         )
 
-        model_image_1d = results.last.hyper_model_image_1d_from_mask(
-            mask=lens_data.mask_2d
-        )
-        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict_from_mask(
-            mask=lens_data.mask_2d
-        )
+        model_image_1d = results.last.hyper_model_image_1d
+        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict
 
         hyper_result = copy.deepcopy(results.last)
         hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
@@ -314,7 +292,7 @@ class HyperGalaxyAllPhase(HyperPhase):
         self.include_sky_background = include_sky_background
         self.include_noise_background = include_noise_background
 
-    def run_hyper(self, data, results=None, mask=None, positions=None):
+    def run_hyper(self, data, results=None):
         """
         Run a fit for each galaxy from the previous phase.
         Parameters
@@ -332,19 +310,12 @@ class HyperGalaxyAllPhase(HyperPhase):
         """
         phase = self.make_hyper_phase()
 
-        mask = setup_phase_mask(
-            data=data,
-            mask=mask,
-            mask_function=cast(phase_imaging.PhaseImaging, phase).mask_function,
-            inner_mask_radii=cast(phase_imaging.PhaseImaging, phase).inner_mask_radii,
-        )
-
         lens_data = ld.LensData(
             ccd_data=data,
-            mask=mask,
+            mask=results.last.mask_2d,
             sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
             image_psf_shape=cast(phase_imaging.PhaseImaging, phase).image_psf_shape,
-            positions=positions,
+            positions=results.last.positions,
             interp_pixel_scale=cast(
                 phase_imaging.PhaseImaging, phase
             ).interp_pixel_scale,
@@ -360,12 +331,8 @@ class HyperGalaxyAllPhase(HyperPhase):
             ).uses_cluster_inversion,
         )
 
-        model_image_1d = results.last.hyper_model_image_1d_from_mask(
-            mask=lens_data.mask_2d
-        )
-        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict_from_mask(
-            mask=lens_data.mask_2d
-        )
+        model_image_1d = results.last.hyper_model_image_1d
+        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict
 
         hyper_result = copy.deepcopy(results.last)
         hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(

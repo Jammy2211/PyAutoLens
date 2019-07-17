@@ -3,6 +3,7 @@ import numpy as np
 import pytest
 
 import autofit as af
+from autolens import exc
 from autolens.pipeline import pipeline as pl
 
 
@@ -147,6 +148,22 @@ class TestPipelineImaging(object):
         pipeline2 = pl.PipelineImaging("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
+
+    def test__hyper_mode_on__must_receive_mask(self):
+
+        phase_1 = DummyPhaseImaging("one")
+        phase_2 = DummyPhaseImaging("two")
+
+        pipeline = pl.PipelineImaging("", phase_1, phase_2, hyper_mode=False)
+
+        pipeline.run(MockCCDData())
+
+        pipeline = pl.PipelineImaging("", phase_1, phase_2, hyper_mode=True)
+
+        with pytest.raises(exc.PhaseException):
+            pipeline.run(MockCCDData())
+
+        pipeline.run(data=MockCCDData, mask=1.0)
 
 
 class DummyPhasePositions(af.AbstractPhase):

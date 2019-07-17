@@ -22,6 +22,7 @@ class MockResults(object):
     def __init__(
         self,
         model_image=None,
+        mask=None,
         galaxy_images=(),
         constant=None,
         analysis=None,
@@ -29,6 +30,7 @@ class MockResults(object):
     ):
         self.model_image = model_image
         self.unmasked_model_image = model_image
+        self.mask_2d = mask
         self.galaxy_images = galaxy_images
         self.constant = constant or af.ModelInstance()
         self.variable = af.ModelMapper()
@@ -62,7 +64,8 @@ class MockResults(object):
             for i, galaxy_path, galaxy in self.path_galaxy_tuples_with_index
         }
 
-    def image_1d_dict_from_mask(self, mask) -> {str: g.Galaxy}:
+    @property
+    def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
         """
         A dictionary associating galaxy names with model images of those galaxies
         """
@@ -71,13 +74,14 @@ class MockResults(object):
 
         for galaxy, galaxy_image_2d in self.image_2d_dict.items():
 
-            image_1d_dict[galaxy] = mask.array_1d_from_array_2d(
+            image_1d_dict[galaxy] = self.mask_2d.array_1d_from_array_2d(
                 array_2d=galaxy_image_2d
             )
 
         return image_1d_dict
 
-    def hyper_galaxy_image_1d_path_dict_from_mask(self, mask):
+    @property
+    def hyper_galaxy_image_1d_path_dict(self):
         """
         A dictionary associating 1D hyper galaxy images with their names.
         """
@@ -86,13 +90,11 @@ class MockResults(object):
             "hyper", "hyper_minimum_percent", float
         )
 
-        image_galaxy_1d_dict = self.image_1d_dict_from_mask(mask=mask)
-
         hyper_galaxy_image_1d_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
 
-            galaxy_image_1d = image_galaxy_1d_dict[path]
+            galaxy_image_1d = self.image_galaxy_1d_dict[path]
 
             minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
             galaxy_image_1d[
@@ -102,21 +104,18 @@ class MockResults(object):
 
         return hyper_galaxy_image_1d_path_dict
 
-    def hyper_galaxy_image_2d_path_dict_from_mask(self, mask):
+    @property
+    def hyper_galaxy_image_2d_path_dict(self):
         """
         A dictionary associating 2D hyper galaxy images with their names.
         """
-
-        hyper_galaxy_image_1d_path_dict = self.hyper_galaxy_image_1d_path_dict_from_mask(
-            mask=mask
-        )
 
         hyper_galaxy_image_2d_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
 
-            hyper_galaxy_image_2d_path_dict[path] = mask.scaled_array_2d_from_array_1d(
-                array_1d=hyper_galaxy_image_1d_path_dict[path]
+            hyper_galaxy_image_2d_path_dict[path] = self.mask_2d.scaled_array_2d_from_array_1d(
+                array_1d=self.hyper_galaxy_image_1d_path_dict[path]
             )
 
         return hyper_galaxy_image_2d_path_dict
@@ -193,16 +192,13 @@ class MockResults(object):
 
             return hyper_galaxy_cluster_image_2d_path_dict
 
-    def hyper_model_image_1d_from_mask(self, mask):
+    @property
+    def hyper_model_image_1d(self):
 
-        hyper_galaxy_image_1d_path_dict = self.hyper_galaxy_image_1d_path_dict_from_mask(
-            mask=mask
-        )
-
-        hyper_model_image_1d = np.zeros(mask.pixels_in_mask)
+        hyper_model_image_1d = np.zeros(self.mask_2d.pixels_in_mask)
 
         for path, galaxy in self.path_galaxy_tuples:
-            hyper_model_image_1d += hyper_galaxy_image_1d_path_dict[path]
+            hyper_model_image_1d += self.hyper_galaxy_image_1d_path_dict[path]
 
         return hyper_model_image_1d
 
@@ -214,6 +210,8 @@ class MockResult:
         self.variable = variable
         self.previous_variable = variable
         self.gaussian_tuples = None
+        self.mask_2d = None
+        self.positions = None
 
 
 class MockNLO(af.NonLinearOptimizer):
