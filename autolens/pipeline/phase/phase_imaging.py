@@ -471,13 +471,9 @@ class PhaseImaging(Phase):
 
             if self.last_results is not None:
 
-                self.hyper_galaxy_image_1d_path_dict = self.last_results.hyper_galaxy_image_1d_path_dict_from_mask(
-                    mask=lens_data.mask_2d
-                )
+                self.hyper_galaxy_image_1d_path_dict = self.last_results.hyper_galaxy_image_1d_path_dict
 
-                self.hyper_model_image_1d = self.last_results.hyper_model_image_1d_from_mask(
-                    mask=lens_data.mask_2d
-                )
+                self.hyper_model_image_1d = self.last_results.hyper_model_image_1d
 
                 self.hyper_galaxy_cluster_image_1d_path_dict = self.last_results.hyper_galaxy_cluster_image_1d_path_dict_from_cluster(
                     cluster=lens_data.cluster
@@ -487,9 +483,7 @@ class PhaseImaging(Phase):
                     hyper_model_image_2d=mask.scaled_array_2d_from_array_1d(
                         array_1d=self.hyper_model_image_1d
                     ),
-                    hyper_galaxy_image_2d_path_dict=self.last_results.hyper_galaxy_image_2d_path_dict_from_mask(
-                        mask=mask
-                    ),
+                    hyper_galaxy_image_2d_path_dict=self.last_results.hyper_galaxy_image_2d_path_dict,
                     hyper_galaxy_cluster_image_2d_path_dict=self.last_results.hyper_galaxy_cluster_image_2d_path_dict_from_cluster(
                         cluster=lens_data.cluster
                     ),
@@ -503,12 +497,6 @@ class PhaseImaging(Phase):
                     should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
                     visualize_path=image_path,
                 )
-
-                if hasattr(self.results.last, "inversion"):
-
-                    self.preload_pixelization_grid = (
-                        self.results.last.inversion.most_likely_image_plane_pixelization_grid
-                    )
 
                 if hasattr(self.results.last, "hyper_combined"):
 
@@ -547,13 +535,6 @@ class PhaseImaging(Phase):
             )
 
             return fit.figure_of_merit
-
-        def check_for_previously_masked_values(self, array):
-            if not np.all(array) != 0.0 and not np.all(array == 0):
-                raise exc.PhaseException(
-                    "When mapping a 2D array to a 1D array using lens data, a value "
-                    "encountered was 0.0 and therefore masked in a previous phase."
-                )
 
         def associate_images(self, instance: af.ModelInstance) -> af.ModelInstance:
             """
