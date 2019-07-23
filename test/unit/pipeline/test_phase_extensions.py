@@ -132,6 +132,7 @@ class MockAnalysis(object):
     pass
 
 
+# noinspection PyAbstractClass
 class MockOptimizer(af.NonLinearOptimizer):
     def __init__(
         self,
@@ -266,7 +267,7 @@ class TestImagePassing(object):
             (("galaxies", "source"), source_galaxy),
         ]
 
-    def test_lens_image_dict_2d_and_1d(self, lens_result, mask_7x7):
+    def test_lens_image_dict_2d_and_1d(self, lens_result):
 
         image_2d_dict = lens_result.image_galaxy_2d_dict
 
@@ -276,7 +277,7 @@ class TestImagePassing(object):
         image_1d_dict = lens_result.image_galaxy_1d_dict
         assert image_1d_dict[("lens_galaxies", "lens")].shape == (9,)
 
-    def test_lens_source_image_dict(self, lens_source_result, mask_7x7):
+    def test_lens_source_image_dict(self, lens_source_result):
         image_2d_dict = lens_source_result.image_galaxy_2d_dict
 
         assert isinstance(image_2d_dict[("lens_galaxies", "lens")], np.ndarray)
