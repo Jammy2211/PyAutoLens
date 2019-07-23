@@ -51,6 +51,7 @@ def run(
         module,
         test_name=None,
         optimizer_class=af.MultiNest,
+        config_folder="config"
 ):
     test_name = test_name or module.test_name
     test_path = "{}/../".format(
@@ -59,7 +60,7 @@ def run(
         )
     )
     output_path = test_path + "output/"
-    config_path = test_path + "config"
+    config_path = test_path + config_folder
     af.conf.instance = af.conf.Config(
         config_path=config_path,
         output_path=output_path
@@ -88,5 +89,6 @@ def run_a_mock(module):
     run(
         module,
         test_name=f"{module.test_name}_mock",
-        optimizer_class=MockNLO
+        optimizer_class=MockNLO,
+        config_folder="config_mock"
     )
