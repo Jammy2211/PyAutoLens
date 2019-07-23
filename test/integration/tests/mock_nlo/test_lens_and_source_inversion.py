@@ -4,5 +4,5 @@ from test.integration.tests.runner import run_a_mock
 
 
 class TestCase:
-    def test_lens_mass_x1_source_x1_adaptive_weighted_hyper_constant_pass(self):
+    def _test_lens_mass_x1_source_x1_adaptive_weighted_hyper_constant_pass(self):
         run_a_mock(lens_mass_x1_source_x1_adaptive_weighted_hyper_constant_pass)
