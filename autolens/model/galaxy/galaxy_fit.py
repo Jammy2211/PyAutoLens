@@ -3,7 +3,7 @@ import autofit as af
 from autolens.data.array.grids import reshape_returned_regular_array
 
 
-class GalaxyFit(af.fit.DataFit1D):
+class GalaxyFit(af.DataFit1D):
     def __init__(self, galaxy_data, model_galaxies):
         """Class which fits a set of galaxy-datas to a model galaxy, using either the galaxy's intensities, \
         surface-density or potential.
