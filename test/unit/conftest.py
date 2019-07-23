@@ -553,7 +553,8 @@ def make_sensitivity_fit_7x7(lens_data_7x7):
 
 @pytest.fixture(name="mask_function_7x7_1_pix")
 def make_mask_function_7x7_1_pix():
-    def mask_function_7x7_1_pix():
+    # noinspection PyUnusedLocal
+    def mask_function_7x7_1_pix(image):
         array = np.array(
             [
                 [True, True, True, True, True, True, True],
@@ -573,7 +574,8 @@ def make_mask_function_7x7_1_pix():
 
 @pytest.fixture(name="mask_function_7x7")
 def make_mask_function_7x7():
-    def mask_function_7x7():
+    # noinspection PyUnusedLocal
+    def mask_function_7x7(image):
         array = np.array(
             [
                 [True, True, True, True, True, True, True],
