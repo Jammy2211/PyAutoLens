@@ -63,7 +63,7 @@ def make_pipeline(
                 regularization=reg.AdaptiveBrightness,
             )
         ),
-        inversion_pixel_limit=500,
+        inversion_pixel_limit=800,
         optimizer_class=optimizer_class
     )
 
@@ -107,7 +107,7 @@ def make_pipeline(
                 regularization=reg.AdaptiveBrightness,
             )
         ),
-        inversion_pixel_limit=500,
+        inversion_pixel_limit=800,
         optimizer_class=optimizer_class
     )
 
