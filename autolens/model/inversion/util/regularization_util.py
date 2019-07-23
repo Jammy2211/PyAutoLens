@@ -77,6 +77,7 @@ def adaptive_pixel_signals_from_images(
 
     pixel_sizes[pixel_sizes == 0] = 1
     pixel_signals /= pixel_sizes
+    print(pixel_signals)
     pixel_signals /= np.max(pixel_signals)
 
     return pixel_signals ** signal_scale
