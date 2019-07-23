@@ -1,5 +1,6 @@
 import autofit as af
 from test.integration.tests.lens_only import lens_x1_galaxy
+from test.integration.tests.lens_only import runner
 
 
 class MockNLO(af.NonLinearOptimizer):
@@ -24,6 +25,8 @@ class MockNLO(af.NonLinearOptimizer):
 
 
 def test_lens_x1_galaxy():
-    lens_x1_galaxy.pipeline(
-        MockNLO
+    runner.run(
+        lens_x1_galaxy,
+        test_name="lens_x1_galaxy_mock",
+        optimizer_class=MockNLO
     )
