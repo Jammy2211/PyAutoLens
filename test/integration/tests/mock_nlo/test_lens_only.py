@@ -1,7 +1,7 @@
 from test.integration.tests.lens_only import lens_x1_galaxy
 from test.integration.tests.lens_only import lens_x1_galaxy_hyper
 from test.integration.tests.lens_only import lens_x1_galaxy_link_param
-from test.integration.tests.lens_only.runner import run_a_mock
+from test.integration.tests.runner import run_a_mock
 
 
 class TestCase:

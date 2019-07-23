@@ -5,7 +5,7 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.pipeline import pipeline as pl
 from autolens.pipeline.phase import phase_imaging
-from test.integration.tests.lens_only import runner
+from test.integration.tests import runner
 
 test_type = "lens_and_source_inversion"
 test_name = "lens_mass_x1_source_x1_adaptive_weighted_hyper_constant_pass"

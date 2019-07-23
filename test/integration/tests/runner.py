@@ -40,7 +40,7 @@ def run(
         optimizer_class=af.MultiNest,
 ):
     test_name = test_name or module.test_name
-    test_path = "{}/../../".format(
+    test_path = "{}/../".format(
         os.path.dirname(
             os.path.realpath(__file__)
         )
@@ -63,7 +63,7 @@ def run(
 
     module.make_pipeline(
         name=test_name,
-        phase_folders=[module.test_type, module.test_name],
+        phase_folders=[module.test_type, test_name],
         optimizer_class=optimizer_class
     ).run(
         data=ccd_data
@@ -71,6 +71,7 @@ def run(
 
 
 def run_a_mock(module):
+    # noinspection PyTypeChecker
     run(
         module,
         test_name=f"{module.test_name}_mock",

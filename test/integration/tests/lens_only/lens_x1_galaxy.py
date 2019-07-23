@@ -3,7 +3,7 @@ from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
 from autolens.pipeline import pipeline as pl
 from autolens.pipeline.phase import phase_imaging
-from test.integration.tests.lens_only import runner
+from test.integration.tests import runner
 
 test_type = "lens_only"
 test_name = "lens_x1_galaxy"
