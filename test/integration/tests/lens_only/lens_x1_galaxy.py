@@ -36,6 +36,8 @@ def make_pipeline(
 
 
 if __name__ == "__main__":
+    import sys
+
     runner.run(
-        make_pipeline
+        sys.modules[__name__]
     )
