@@ -69,10 +69,6 @@ class VariableFixingHyperPhase(HyperPhase):
             The variable object to be used in this phase to which default prior
             models are attached.
         """
-
-        # tODO : hasattr did not work for hyper image sky or background, because they were set to None by
-        # TODO : default. The getattr below fixes this, but will break for other classes
-
         for key, value in self.default_classes.items():
             if not hasattr(variable, key) or getattr(variable, key) is None:
                 setattr(variable, key, value)
