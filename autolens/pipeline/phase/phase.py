@@ -260,16 +260,6 @@ class AbstractPhase(af.AbstractPhase):
             return self.most_likely_fit.positions
 
         @property
-        def image_galaxy_2d_dict(self) -> {str: g.Galaxy}:
-            """
-            A dictionary associating galaxy names with model images of those galaxies
-            """
-            return {
-                galaxy_path: self.image_2d_for_galaxy(galaxy)
-                for galaxy_path, galaxy in self.path_galaxy_tuples
-            }
-
-        @property
         def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
             """
             A dictionary associating galaxy names with model images of those galaxies
@@ -283,6 +273,16 @@ class AbstractPhase(af.AbstractPhase):
                 )
 
             return image_1d_dict
+
+        @property
+        def image_galaxy_2d_dict(self) -> {str: g.Galaxy}:
+            """
+            A dictionary associating galaxy names with model images of those galaxies
+            """
+            return {
+                galaxy_path: self.image_2d_for_galaxy(galaxy)
+                for galaxy_path, galaxy in self.path_galaxy_tuples
+            }
 
         @property
         def hyper_galaxy_image_1d_path_dict(self):
