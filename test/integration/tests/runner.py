@@ -4,11 +4,11 @@ import os
 import autofit as af
 from test.integration import integration_util
 from test.simulation import simulation_util
-import logging
 
 
 class MockNLO(af.NonLinearOptimizer):
     def fit(self, analysis):
+        assert self.variable.prior_count > 0, "There are no priors associated with the variable!"
         index = 0
         unit_vector = self.variable.prior_count * [0.5]
         while True:
