@@ -240,10 +240,13 @@ class Voronoi(Pixelization):
         pixel_centers : ndarray
             The (y,x) centre of every Voronoi pixel.
         """
-        return scipy.spatial.Voronoi(
-            np.asarray([pixel_centers[:, 1], pixel_centers[:, 0]]).T,
-            qhull_options="Qbb Qc Qx Qm",
-        )
+        try:
+            return scipy.spatial.Voronoi(
+                np.asarray([pixel_centers[:, 1], pixel_centers[:, 0]]).T,
+                qhull_options="Qbb Qc Qx Qm",
+            )
+        except OverflowError or scipy.spatial.qhull.QhullError:
+            raise exc.PixelizationException()
 
     def neighbors_from_pixelization(self, pixels, ridge_points):
         """Compute the neighbors of every Voronoi pixel as an ndarray of the pixel index's each pixel shares a \
