@@ -1,8 +1,37 @@
+import math
 import os
 
 import autofit as af
 from test.integration import integration_util
 from test.simulation import simulation_util
+
+
+class MockNLO(af.NonLinearOptimizer):
+    def fit(self, analysis):
+        instance = self.variable.instance_from_prior_medians()
+        fit = analysis.fit(
+            instance
+        )
+        return af.Result(
+            instance,
+            fit,
+            self.variable,
+            gaussian_tuples=[
+                (
+                    prior.mean,
+                    prior.width
+                    if math.isfinite(
+                        prior.width
+                    )
+                    else 1.0
+                )
+                for prior
+                in sorted(
+                    self.variable.priors,
+                    key=lambda prior: prior.id
+                )
+            ]
+        )
 
 
 def run(
@@ -38,4 +67,12 @@ def run(
         optimizer_class=optimizer_class
     ).run(
         data=ccd_data
+    )
+
+
+def run_a_mock(module):
+    run(
+        module,
+        test_name=f"{module.test_name}_mock",
+        optimizer_class=MockNLO
     )
