@@ -4,14 +4,27 @@ import os
 import autofit as af
 from test.integration import integration_util
 from test.simulation import simulation_util
+import logging
 
 
 class MockNLO(af.NonLinearOptimizer):
     def fit(self, analysis):
-        instance = self.variable.instance_from_prior_medians()
-        fit = analysis.fit(
-            instance
-        )
+        index = 0
+        unit_vector = self.variable.prior_count * [0.5]
+        while True:
+            try:
+                instance = self.variable.instance_from_unit_vector(
+                    unit_vector
+                )
+                fit = analysis.fit(
+                    instance
+                )
+                break
+            except af.exc.FitException as e:
+                unit_vector[index] += 0.1
+                if unit_vector[index] >= 1:
+                    raise e
+                index = (index + 1) % self.variable.prior_count
         return af.Result(
             instance,
             fit,
