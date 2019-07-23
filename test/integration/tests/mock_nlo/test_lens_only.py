@@ -1,3 +1,5 @@
+import math
+
 import autofit as af
 from test.integration.tests.lens_only import lens_x1_galaxy
 from test.integration.tests.lens_only import lens_x1_galaxy_hyper
@@ -18,9 +20,16 @@ class MockNLO(af.NonLinearOptimizer):
                 (
                     prior.mean,
                     prior.width
+                    if math.isfinite(
+                        prior.width
+                    )
+                    else 1.0
                 )
                 for prior
-                in self.variable.priors
+                in sorted(
+                    self.variable.priors,
+                    key=lambda prior: prior.id
+                )
             ]
         )
 
