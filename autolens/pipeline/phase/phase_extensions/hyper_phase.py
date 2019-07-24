@@ -1,11 +1,11 @@
 import copy
 
 import autofit as af
-from autolens.pipeline.phase import phase as ph
+from autolens.pipeline.phase import phase_imaging as ph
 
 
 class HyperPhase(object):
-    def __init__(self, phase: ph.Phase, hyper_name: str):
+    def __init__(self, phase: ph.PhaseImaging, hyper_name: str):
         """
         Abstract HyperPhase. Wraps a regular phase, performing that phase before performing the action
         specified by the run_hyper.
@@ -34,7 +34,7 @@ class HyperPhase(object):
         """
         raise NotImplementedError()
 
-    def make_hyper_phase(self) -> ph.Phase:
+    def make_hyper_phase(self) -> ph.PhaseImaging:
         """
         Returns
         -------
@@ -51,8 +51,8 @@ class HyperPhase(object):
             extension=self.hyper_name + "_" + phase.phase_tag
         )
 
-        # TODO : This addeds the methods to the combined phase, assuming they'll be overwritten for other phases in their
-        # TODO : make_hyper_phase methods
+        # TODO : This addeds the methods to the combined phase, assuming they'll be overwritten for other
+        # TODO : phases in their make_hyper_phase methods
 
         phase.optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
             "MultiNest", "extension_combined_const_efficiency_mode", bool

@@ -100,13 +100,6 @@ def make_pipeline(
         lens_galaxies=dict(
             lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
         ),
-        source_galaxies=dict(
-            source=gm.GalaxyModel(
-                redshift=1.0,
-                pixelization=pix.VoronoiBrightnessImage,
-                regularization=reg.AdaptiveBrightness,
-            )
-        ),
         inversion_pixel_limit=800,
         optimizer_class=optimizer_class
     )
