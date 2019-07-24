@@ -77,7 +77,6 @@ def adaptive_pixel_signals_from_images(
 
     pixel_sizes[pixel_sizes == 0] = 1
     pixel_signals /= pixel_sizes
-#    print(pixel_signals)
     pixel_signals /= np.max(pixel_signals)
 
     return pixel_signals ** signal_scale
@@ -103,11 +102,7 @@ def adaptive_regularization_weights_from_pixel_signals(
         The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal \
         and low signal pixelizations.
     """
-    regs = (
-        inner_coefficient * pixel_signals + outer_coefficient * (1.0 - pixel_signals)
-    ) ** 2.0
-
-    return regs
+    return inner_coefficient * pixel_signals + outer_coefficient * (1.0 - pixel_signals) ** 2.0
 
 
 @decorator_util.jit()
