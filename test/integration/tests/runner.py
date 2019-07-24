@@ -8,10 +8,23 @@ from test.simulation import simulation_util
 
 class MockNLO(af.NonLinearOptimizer):
     def fit(self, analysis):
-        instance = self.variable.instance_from_prior_medians()
-        fit = analysis.fit(
-            instance
-        )
+        assert self.variable.prior_count > 0, "There are no priors associated with the variable!"
+        index = 0
+        unit_vector = self.variable.prior_count * [0.5]
+        while True:
+            try:
+                instance = self.variable.instance_from_unit_vector(
+                    unit_vector
+                )
+                fit = analysis.fit(
+                    instance
+                )
+                break
+            except af.exc.FitException as e:
+                unit_vector[index] += 0.1
+                if unit_vector[index] >= 1:
+                    raise e
+                index = (index + 1) % self.variable.prior_count
         return af.Result(
             instance,
             fit,
@@ -38,6 +51,7 @@ def run(
         module,
         test_name=None,
         optimizer_class=af.MultiNest,
+        config_folder="config"
 ):
     test_name = test_name or module.test_name
     test_path = "{}/../".format(
@@ -46,7 +60,7 @@ def run(
         )
     )
     output_path = test_path + "output/"
-    config_path = test_path + "config"
+    config_path = test_path + config_folder
     af.conf.instance = af.conf.Config(
         config_path=config_path,
         output_path=output_path
@@ -75,5 +89,6 @@ def run_a_mock(module):
     run(
         module,
         test_name=f"{module.test_name}_mock",
-        optimizer_class=MockNLO
+        optimizer_class=MockNLO,
+        config_folder="config_mock"
     )
