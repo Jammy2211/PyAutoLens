@@ -9,7 +9,7 @@ from autolens.pipeline.phase import phase_imaging
 from test.integration.tests import runner
 
 test_type = "full_pipeline"
-test_name = "hyper_with_lens_light"
+test_name = "hyper_with_lens_light_bg"
 data_type = "lens_and_source_smooth"
 data_resolution = "LSST"
 
@@ -35,7 +35,9 @@ def make_pipeline(
     phase1.optimizer.n_live_points = 30
     phase1.optimizer.sampling_efficiency = 0.3
 
-    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
+    phase1 = phase1.extend_with_multiple_hyper_phases(
+        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+    )
 
     class LensSubtractedPhase(phase_imaging.LensSourcePlanePhase):
         def pass_priors(self, results):
@@ -58,6 +60,12 @@ def make_pipeline(
 
             self.lens_galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
+            )
+
+            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+
+            self.hyper_noise_background = (
+                results.last.hyper_combined.constant.hyper_noise_background
             )
 
     phase2 = LensSubtractedPhase(
@@ -116,6 +124,12 @@ def make_pipeline(
                 results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
             )
 
+            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+
+            self.hyper_noise_background = (
+                results.last.hyper_combined.constant.hyper_noise_background
+            )
+
     phase3 = LensSourcePhase(
         phase_name="phase_3_lens_sersic_sie_shear_source_sersic",
         phase_folders=phase_folders,
@@ -137,7 +151,9 @@ def make_pipeline(
     phase3.optimizer.n_live_points = 75
     phase3.optimizer.sampling_efficiency = 0.3
 
-    phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=True)
+    phase3 = phase3.extend_with_multiple_hyper_phases(
+        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+    )
 
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
         def pass_priors(self, results):
@@ -152,6 +168,12 @@ def make_pipeline(
 
             self.lens_galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
+            )
+
+            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+
+            self.hyper_noise_background = (
+                results.last.hyper_combined.constant.hyper_noise_background
             )
 
     phase4 = InversionPhase(
@@ -180,7 +202,10 @@ def make_pipeline(
     phase4.optimizer.sampling_efficiency = 0.8
 
     phase4 = phase4.extend_with_multiple_hyper_phases(
-        hyper_galaxy=True, inversion=False
+        hyper_galaxy=True,
+        include_background_sky=True,
+        include_background_noise=True,
+        inversion=False,
     )
 
     class InversionPhase(phase_imaging.LensSourcePlanePhase):
@@ -202,6 +227,12 @@ def make_pipeline(
 
             self.lens_galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
+            )
+
+            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+
+            self.hyper_noise_background = (
+                results.last.hyper_combined.constant.hyper_noise_background
             )
 
     phase5 = InversionPhase(
@@ -249,6 +280,12 @@ def make_pipeline(
 
             self.lens_galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
+            )
+
+            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+
+            self.hyper_noise_background = (
+                results.last.hyper_combined.constant.hyper_noise_background
             )
 
     phase6 = InversionPhase(
@@ -306,6 +343,12 @@ def make_pipeline(
 
             self.source_galaxies.source.hyper_galaxy = (
                 results.last.hyper_combined.constant.source_galaxies.source.hyper_galaxy
+            )
+
+            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+
+            self.hyper_noise_background = (
+                results.last.hyper_combined.constant.hyper_noise_background
             )
 
     phase7 = InversionPhase(

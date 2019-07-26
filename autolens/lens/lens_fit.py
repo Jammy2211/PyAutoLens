@@ -111,7 +111,15 @@ class LensDataFit(af.DataFit1D):
 
 class LensTracerFit(LensDataFit):
     def __init__(
-        self, image_1d, noise_map_1d, mask_1d, model_image_1d, tracer, psf, mask_2d, positions,
+        self,
+        image_1d,
+        noise_map_1d,
+        mask_1d,
+        model_image_1d,
+        tracer,
+        psf,
+        mask_2d,
+        positions,
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper.
@@ -237,7 +245,7 @@ class LensProfileFit(LensTracerFit):
             mask_2d=lens_data.mask_2d,
             tracer=tracer,
             psf=lens_data.psf,
-            positions=lens_data.positions
+            positions=lens_data.positions,
         )
 
         self.convolver_image = lens_data.convolver_image
@@ -275,7 +283,7 @@ class InversionFit(LensTracerFit):
             mask_2d=lens_data.mask_2d,
             psf=lens_data.psf,
             tracer=tracer,
-            positions=lens_data.positions
+            positions=lens_data.positions,
         )
 
         self.inversion = inversion

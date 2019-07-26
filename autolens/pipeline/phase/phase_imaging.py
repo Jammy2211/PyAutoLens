@@ -471,7 +471,9 @@ class PhaseImaging(Phase):
 
             if self.last_results is not None:
 
-                self.hyper_galaxy_image_1d_path_dict = self.last_results.hyper_galaxy_image_1d_path_dict
+                self.hyper_galaxy_image_1d_path_dict = (
+                    self.last_results.hyper_galaxy_image_1d_path_dict
+                )
 
                 self.hyper_model_image_1d = self.last_results.hyper_model_image_1d
 

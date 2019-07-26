@@ -9,11 +9,11 @@ from .hyper_phase import HyperPhase
 # noinspection PyAbstractClass
 class VariableFixingHyperPhase(HyperPhase):
     def __init__(
-            self,
-            phase: ph.PhaseImaging,
-            hyper_name: str,
-            variable_classes=tuple(),
-            default_classes=None,
+        self,
+        phase: ph.PhaseImaging,
+        hyper_name: str,
+        variable_classes=tuple(),
+        default_classes=None,
     ):
         super().__init__(phase=phase, hyper_name=hyper_name)
         self.default_classes = default_classes or dict()
@@ -53,7 +53,7 @@ class VariableFixingHyperPhase(HyperPhase):
             data,
             results=results,
             mask=results.last.mask_2d,
-            positions=results.last.positions
+            positions=results.last.positions,
         )
 
     def add_defaults(self, variable: af.ModelMapper):
@@ -82,10 +82,10 @@ class InversionPhase(VariableFixingHyperPhase):
     """
 
     def __init__(
-            self,
-            phase: ph.PhaseImaging,
-            variable_classes=(px.Pixelization, rg.Regularization),
-            default_classes=None,
+        self,
+        phase: ph.PhaseImaging,
+        variable_classes=(px.Pixelization, rg.Regularization),
+        default_classes=None,
     ):
         super().__init__(
             phase=phase,

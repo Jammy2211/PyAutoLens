@@ -12,11 +12,7 @@ data_type = "no_lens_light_and_source_smooth"
 data_resolution = "LSST"
 
 
-def make_pipeline(        
-        name,
-        phase_folders,
-        optimizer_class=af.MultiNest
-):
+def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1 = phase_imaging.LensSourcePlanePhase(
         phase_name="phase_1",
@@ -111,6 +107,4 @@ def make_pipeline(
 if __name__ == "__main__":
     import sys
 
-    runner.run(
-        sys.modules[__name__]
-    )
+    runner.run(sys.modules[__name__])
