@@ -12,11 +12,7 @@ data_type = "lens_only_bulge_and_disk"
 data_resolution = "LSST"
 
 
-def make_pipeline(
-        name,
-        phase_folders,
-        optimizer_class=af.MultiNest
-):
+def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = phase_imaging.LensPlanePhase(
         phase_name="phase_1",
         phase_folders=phase_folders,
@@ -61,6 +57,4 @@ def make_pipeline(
 if __name__ == "__main__":
     import sys
 
-    runner.run(
-        sys.modules[__name__]
-    )
+    runner.run(sys.modules[__name__])

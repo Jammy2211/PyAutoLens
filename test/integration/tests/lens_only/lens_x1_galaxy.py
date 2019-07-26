@@ -11,11 +11,7 @@ data_type = "lens_only_dev_vaucouleurs"
 data_resolution = "LSST"
 
 
-def make_pipeline(
-        name,
-        phase_folders,
-        optimizer_class=af.MultiNest
-):
+def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = phase_imaging.LensPlanePhase(
         phase_name="phase_1",
         phase_folders=phase_folders,
@@ -29,15 +25,10 @@ def make_pipeline(
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(
-        name,
-        phase1
-    )
+    return pl.PipelineImaging(name, phase1)
 
 
 if __name__ == "__main__":
     import sys
 
-    runner.run(
-        sys.modules[__name__]
-    )
+    runner.run(sys.modules[__name__])

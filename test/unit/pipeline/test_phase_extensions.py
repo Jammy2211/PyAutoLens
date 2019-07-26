@@ -582,7 +582,9 @@ class TestImagePassing(object):
             array_2d=lens_source_result.image_galaxy_2d_dict[("lens_galaxies", "lens")]
         )
         hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=lens_source_result.image_galaxy_2d_dict[("source_galaxies", "source")]
+            array_2d=lens_source_result.image_galaxy_2d_dict[
+                ("source_galaxies", "source")
+            ]
         )
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d

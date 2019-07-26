@@ -82,13 +82,13 @@ def make_positions_7x7():
 
 @pytest.fixture(name="ccd_data_7x7")
 def make_ccd_data_7x7(
-        image_7x7,
-        psf_3x3,
-        noise_map_7x7,
-        background_noise_map_7x7,
-        poisson_noise_map_7x7,
-        exposure_time_map_7x7,
-        background_sky_map_7x7,
+    image_7x7,
+    psf_3x3,
+    noise_map_7x7,
+    background_noise_map_7x7,
+    poisson_noise_map_7x7,
+    exposure_time_map_7x7,
+    background_sky_map_7x7,
 ):
     return mock_ccd.MockCCDData(
         image=image_7x7,
@@ -445,13 +445,13 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 
 @pytest.fixture(name="lens_data_7x7")
 def make_lens_data_7x7(
-        ccd_data_7x7,
-        mask_7x7,
-        grid_stack_7x7,
-        border_7x7,
-        convolver_image_7x7,
-        convolver_mapping_matrix_7x7,
-        cluster_grid_7x7,
+    ccd_data_7x7,
+    mask_7x7,
+    grid_stack_7x7,
+    border_7x7,
+    convolver_image_7x7,
+    convolver_mapping_matrix_7x7,
+    cluster_grid_7x7,
 ):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_7x7,
@@ -494,6 +494,7 @@ def make_tracer_x2_plane_7x7(gal_x1_lp, gal_x1_mp, grid_stack_7x7):
 
 
 # Lens Fit #
+
 
 @pytest.fixture(name="lens_fit_x1_plane_7x7")
 def make_lens_fit_x1_plane_7x7(lens_data_7x7, tracer_x1_plane_7x7):
@@ -623,7 +624,7 @@ def make_hyper_galaxy_image_1_7x7(grid_stack_7x7):
 
 @pytest.fixture(name="contribution_map_7x7")
 def make_contribution_map_7x7(
-        hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
+    hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
 ):
     return hyper_galaxy.contribution_map_from_hyper_images(
         hyper_model_image=hyper_model_image_7x7,
@@ -641,7 +642,7 @@ def make_hyper_noise_map_7x7(noise_map_7x7, contribution_map_7x7, hyper_galaxy):
 
 @pytest.fixture(name="results_7x7")
 def make_results(
-        mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
+    mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
 ):
     return mock_pipeline.MockResults(
         model_image=hyper_model_image_7x7,
