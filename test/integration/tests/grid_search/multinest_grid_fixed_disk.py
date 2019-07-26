@@ -28,54 +28,54 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class QuickPhase(phase_imaging.LensPlanePhase):
+    class QuickPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.bulge.centre_0 = af.UniformPrior(
+            self.galaxies.lens.bulge.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.bulge.centre_1 = af.UniformPrior(
+            self.galaxies.lens.bulge.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.bulge.axis_ratio = af.UniformPrior(
+            self.galaxies.lens.bulge.axis_ratio = af.UniformPrior(
                 lower_limit=0.79, upper_limit=0.81
             )
-            self.lens_galaxies.lens.bulge.phi = af.UniformPrior(
+            self.galaxies.lens.bulge.phi = af.UniformPrior(
                 lower_limit=-1.0, upper_limit=1.0
             )
-            self.lens_galaxies.lens.bulge.intensity = af.UniformPrior(
+            self.galaxies.lens.bulge.intensity = af.UniformPrior(
                 lower_limit=0.99, upper_limit=1.01
             )
-            self.lens_galaxies.lens.bulge.effective_radius = af.UniformPrior(
+            self.galaxies.lens.bulge.effective_radius = af.UniformPrior(
                 lower_limit=1.25, upper_limit=1.35
             )
-            self.lens_galaxies.lens.bulge.sersic_index = af.UniformPrior(
+            self.galaxies.lens.bulge.sersic_index = af.UniformPrior(
                 lower_limit=3.95, upper_limit=4.05
             )
 
-            self.lens_galaxies.lens.disk.centre_0 = af.UniformPrior(
+            self.galaxies.lens.disk.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.disk.centre_1 = af.UniformPrior(
+            self.galaxies.lens.disk.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.disk.axis_ratio = af.UniformPrior(
+            self.galaxies.lens.disk.axis_ratio = af.UniformPrior(
                 lower_limit=0.69, upper_limit=0.71
             )
-            self.lens_galaxies.lens.disk.phi = af.UniformPrior(
+            self.galaxies.lens.disk.phi = af.UniformPrior(
                 lower_limit=-1.0, upper_limit=1.0
             )
-            self.lens_galaxies.lens.disk.intensity = af.UniformPrior(
+            self.galaxies.lens.disk.intensity = af.UniformPrior(
                 lower_limit=1.99, upper_limit=2.01
             )
-            self.lens_galaxies.lens.disk.effective_radius = af.UniformPrior(
+            self.galaxies.lens.disk.effective_radius = af.UniformPrior(
                 lower_limit=1.95, upper_limit=2.05
             )
 
     phase1 = QuickPhase(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, bulge=lp.EllipticalSersic, disk=lp.EllipticalSersic
             )
@@ -87,40 +87,40 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(af.phase.as_grid_search(phase_imaging.LensPlanePhase)):
+    class GridPhase(af.phase.as_grid_search(phase_imaging.PhaseImaging)):
         @property
         def grid_priors(self):
-            return [self.variable.lens_galaxies.lens.bulge.sersic_index]
+            return [self.variable.galaxies.lens.bulge.sersic_index]
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.disk = results.from_phase(
+            self.galaxies.lens.disk = results.from_phase(
                 "phase_1"
-            ).constant.lens_galaxies.lens.disk
+            ).constant.galaxies.lens.disk
 
-            self.lens_galaxies.lens.bulge.centre_0 = af.UniformPrior(
+            self.galaxies.lens.bulge.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.bulge.centre_1 = af.UniformPrior(
+            self.galaxies.lens.bulge.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.bulge.axis_ratio = af.UniformPrior(
+            self.galaxies.lens.bulge.axis_ratio = af.UniformPrior(
                 lower_limit=0.79, upper_limit=0.81
             )
-            self.lens_galaxies.lens.bulge.phi = af.UniformPrior(
+            self.galaxies.lens.bulge.phi = af.UniformPrior(
                 lower_limit=-1.0, upper_limit=1.0
             )
-            self.lens_galaxies.lens.bulge.intensity = af.UniformPrior(
+            self.galaxies.lens.bulge.intensity = af.UniformPrior(
                 lower_limit=0.99, upper_limit=1.01
             )
-            self.lens_galaxies.lens.bulge.effective_radius = af.UniformPrior(
+            self.galaxies.lens.bulge.effective_radius = af.UniformPrior(
                 lower_limit=1.25, upper_limit=1.35
             )
 
     phase2 = GridPhase(
         phase_name="phase_2",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, bulge=lp.EllipticalSersic, disk=lp.EllipticalSersic
             )

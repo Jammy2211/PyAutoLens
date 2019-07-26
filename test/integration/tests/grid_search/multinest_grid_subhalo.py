@@ -29,55 +29,53 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class QuickPhase(phase_imaging.LensSourcePlanePhase):
+    class QuickPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.mass.centre_0 = af.UniformPrior(
+            self.galaxies.lens.mass.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.mass.centre_1 = af.UniformPrior(
+            self.galaxies.lens.mass.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.mass.axis_ratio = af.UniformPrior(
+            self.galaxies.lens.mass.axis_ratio = af.UniformPrior(
                 lower_limit=0.65, upper_limit=0.75
             )
-            self.lens_galaxies.lens.mass.phi = af.UniformPrior(
+            self.galaxies.lens.mass.phi = af.UniformPrior(
                 lower_limit=40.0, upper_limit=50.0
             )
-            self.lens_galaxies.lens.mass.einstein_radius = af.UniformPrior(
+            self.galaxies.lens.mass.einstein_radius = af.UniformPrior(
                 lower_limit=1.55, upper_limit=1.65
             )
 
-            self.source_galaxies.source.light.centre_0 = af.UniformPrior(
+            self.galaxies.source.light.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.source_galaxies.source.light.centre_1 = af.UniformPrior(
+            self.galaxies.source.light.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.source_galaxies.source.light.axis_ratio = af.UniformPrior(
+            self.galaxies.source.light.axis_ratio = af.UniformPrior(
                 lower_limit=0.75, upper_limit=0.85
             )
-            self.source_galaxies.source.light.phi = af.UniformPrior(
+            self.galaxies.source.light.phi = af.UniformPrior(
                 lower_limit=50.0, upper_limit=70.0
             )
-            self.source_galaxies.source.light.intensity = af.UniformPrior(
+            self.galaxies.source.light.intensity = af.UniformPrior(
                 lower_limit=0.35, upper_limit=0.45
             )
-            self.source_galaxies.source.light.effective_radius = af.UniformPrior(
+            self.galaxies.source.light.effective_radius = af.UniformPrior(
                 lower_limit=0.45, upper_limit=0.55
             )
-            self.source_galaxies.source.light.sersic_index = af.UniformPrior(
+            self.galaxies.source.light.sersic_index = af.UniformPrior(
                 lower_limit=0.9, upper_limit=1.1
             )
 
     phase1 = QuickPhase(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
-        ),
-        source_galaxies=dict(
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)
+        galaxies=dict(
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
+            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
         optimizer_class=af.MultiNest,
     )
@@ -86,85 +84,83 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(af.phase.as_grid_search(phase_imaging.LensSourcePlanePhase)):
+    class GridPhase(af.phase.as_grid_search(phase_imaging.PhaseImaging)):
         @property
         def grid_priors(self):
             return [
-                self.variable.lens_galaxies.subhalo.mass.centre_0,
-                self.variable.lens_galaxies.subhalo.mass.centre_1,
+                self.variable.galaxies.subhalo.mass.centre_0,
+                self.variable.galaxies.subhalo.mass.centre_1,
             ]
 
         def pass_priors(self, results):
 
             ### Lens Mass, PL -> PL, Shear -> Shear ###
 
-            # self.lens_galaxies.lens = results.from_phase('phase_1').\
-            #     constant.lens_galaxies.lens
+            # self.galaxies.lens = results.from_phase('phase_1').\
+            #     constant.galaxies.lens
 
             ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
 
-            self.lens_galaxies.subhalo.mass.kappa_s = af.UniformPrior(
+            self.galaxies.subhalo.mass.kappa_s = af.UniformPrior(
                 lower_limit=0.0005, upper_limit=0.2
             )
-            self.lens_galaxies.subhalo.mass.scale_radius = af.UniformPrior(
+            self.galaxies.subhalo.mass.scale_radius = af.UniformPrior(
                 lower_limit=0.001, upper_limit=1.0
             )
-            self.lens_galaxies.subhalo.mass.centre_0 = af.UniformPrior(
+            self.galaxies.subhalo.mass.centre_0 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
             )
-            self.lens_galaxies.subhalo.mass.centre_1 = af.UniformPrior(
+            self.galaxies.subhalo.mass.centre_1 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
             )
 
             ### Source Light, Sersic -> Sersic ###
 
-            self.source_galaxies.source.light.centre = (
+            self.galaxies.source.light.centre = (
                 results.from_phase("phase_1")
                 .variable_absolute(a=0.05)
-                .source_galaxies.source.light.centre
+                .galaxies.source.light.centre
             )
 
-            self.source_galaxies.source.light.intensity = (
+            self.galaxies.source.light.intensity = (
                 results.from_phase("phase_1")
                 .variable_relative(r=0.5)
-                .source_galaxies.source.light.intensity
+                .galaxies.source.light.intensity
             )
 
-            self.source_galaxies.source.light.effective_radius = (
+            self.galaxies.source.light.effective_radius = (
                 results.from_phase("phase_1")
                 .variable_relative(r=0.5)
-                .source_galaxies.source.light.effective_radius
+                .galaxies.source.light.effective_radius
             )
 
-            self.source_galaxies.source.light.sersic_index = (
+            self.galaxies.source.light.sersic_index = (
                 results.from_phase("phase_1")
                 .variable_relative(r=0.5)
-                .source_galaxies.source.light.sersic_index
+                .galaxies.source.light.sersic_index
             )
 
-            self.source_galaxies.source.light.axis_ratio = (
+            self.galaxies.source.light.axis_ratio = (
                 results.from_phase("phase_1")
                 .variable_absolute(a=0.1)
-                .source_galaxies.source.light.axis_ratio
+                .galaxies.source.light.axis_ratio
             )
 
-            self.source_galaxies.source.light.phi = (
+            self.galaxies.source.light.phi = (
                 results.from_phase("phase_1")
                 .variable_absolute(a=20.0)
-                .source_galaxies.source.light.phi
+                .galaxies.source.light.phi
             )
 
     phase2 = GridPhase(
         phase_name="phase_2",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
             subhalo=gm.GalaxyModel(
                 redshift=0.5, mass=mp.SphericalTruncatedNFWChallenge
             ),
-        ),
-        source_galaxies=dict(
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)
+            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
         optimizer_class=af.MultiNest,
         number_of_steps=2,

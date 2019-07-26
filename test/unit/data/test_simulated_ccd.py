@@ -415,7 +415,7 @@ class TestSimulateCCD(object):
                 noise_seed=1,
             )
 
-    def test__from_deflections_and_source_galaxies__same_as_manual_calculation_using_tracer(
+    def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer(
         self
     ):
 
@@ -434,18 +434,16 @@ class TestSimulateCCD(object):
 
         g1 = g.Galaxy(redshift=1.0, light=lp.SphericalSersic(intensity=1.0))
 
-        tracer = ray_tracing.TracerImageSourcePlanes(
-            lens_galaxies=[g0],
-            source_galaxies=[g1],
-            image_plane_grid_stack=image_plane_grid_stack,
+        tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            galaxies=[g0, g1], image_plane_grid_stack=image_plane_grid_stack
         )
 
         deflections = tracer.deflections(return_in_2d=True, return_binned=True)
 
-        ccd_data_simulated_via_deflections = simulated_ccd.SimulatedCCDData.from_deflections_source_galaxies_and_exposure_arrays(
+        ccd_data_simulated_via_deflections = simulated_ccd.SimulatedCCDData.from_deflections_galaxies_and_exposure_arrays(
             deflections=deflections,
             pixel_scale=1.0,
-            source_galaxies=[g1],
+            galaxies=[g1],
             exposure_time=10000.0,
             background_sky_level=100.0,
             add_noise=True,
@@ -500,9 +498,8 @@ class TestSimulateCCD(object):
 
         source_galaxy = g.Galaxy(redshift=1.0, light=lp.EllipticalSersic(intensity=0.3))
 
-        tracer = ray_tracing.TracerImageSourcePlanes(
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[source_galaxy],
+        tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            galaxies=[lens_galaxy, source_galaxy],
             image_plane_grid_stack=image_plane_grid_stack,
         )
 

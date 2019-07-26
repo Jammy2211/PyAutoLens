@@ -12,12 +12,10 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    phase1 = phase_imaging.LensPlanePhase(
+    phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)
-        ),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 

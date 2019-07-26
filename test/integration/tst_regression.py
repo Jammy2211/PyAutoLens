@@ -25,7 +25,7 @@ output_path = "{}/output".format(dirpath)
 test_name = "test"
 
 
-def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_galaxies):
+def simulate_integration_image(test_name, pixel_scale, galaxies, galaxies):
     output_path = (
         "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
         + test_name
@@ -44,17 +44,17 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
 
     image_shape = grid_stack.regular.padded_shape
 
-    if not source_galaxies:
+    if not galaxies:
 
-        tracer = ray_tracing.TracerImagePlane(
-            lens_galaxies=lens_galaxies, image_plane_grid_stack=grid_stack
+        tracer = ray_tracing.Tracer(
+            galaxies=galaxies, image_plane_grid_stack=grid_stack
         )
 
-    elif source_galaxies:
+    elif galaxies:
 
-        tracer = ray_tracing.TracerImageSourcePlanes(
-            lens_galaxies=lens_galaxies,
-            source_galaxies=source_galaxies,
+        tracer = ray_tracing.Tracer(
+            galaxies=galaxies,
+            galaxies=galaxies,
             image_plane_grid_stack=grid_stack,
         )
 
@@ -133,8 +133,8 @@ class TestPhaseModelMapper(object):
         simulate_integration_image(
             test_name=test_name,
             pixel_scale=0.5,
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[],
+            galaxies=[lens_galaxy],
+            galaxies=[],
         )
 
         path = "{}/".format(
@@ -150,12 +150,12 @@ class TestPhaseModelMapper(object):
 
         class MMPhase(phase_imaging.LensPlanePhase):
             def pass_priors(self, results):
-                self.lens_galaxies.lens.sersic.intensity = (
-                    self.lens_galaxies.lens.sersic.axis_ratio
+                self.galaxies.lens.sersic.intensity = (
+                    self.galaxies.lens.sersic.axis_ratio
                 )
 
         phase = MMPhase(
-            lens_galaxies=dict(
+            galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)
             ),
             optimizer_class=af.MultiNest,
@@ -166,8 +166,8 @@ class TestPhaseModelMapper(object):
         phase.make_analysis(data=ccd_data)
 
         assert (
-            phase.lens_galaxies[0].sersic.intensity
-            == phase.lens_galaxies[0].sersic.axis_ratio
+            phase.galaxies[0].sersic.intensity
+            == phase.galaxies[0].sersic.axis_ratio
         )
         assert initial_total_priors - 1 == phase.variable.prior_count
         assert len(phase.variable.flat_prior_model_tuples) == 1
@@ -183,11 +183,11 @@ class TestPhaseModelMapper(object):
 
         assert len(lines) == 2
         assert (
-            "lens_galaxies_lens_sersic_axis_ratio                                                  UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
+            "galaxies_lens_sersic_axis_ratio                                                  UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
             in lines
         )
         assert (
-            "lens_galaxies_lens_sersic_intensity                                                   UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
+            "galaxies_lens_sersic_intensity                                                   UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
             in lines
         )
 
@@ -214,8 +214,8 @@ class TestPhaseModelMapper(object):
         simulate_integration_image(
             test_name=test_name,
             pixel_scale=0.5,
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[],
+            galaxies=[lens_galaxy],
+            galaxies=[],
         )
         path = "{}/".format(
             os.path.dirname(os.path.realpath(__file__))
@@ -230,14 +230,14 @@ class TestPhaseModelMapper(object):
 
         class MMPhase(phase_imaging.LensPlanePhase):
             def pass_priors(self, results):
-                self.lens_galaxies.lens.sersic.axis_ratio = 0.2
-                self.lens_galaxies.lens.sersic.phi = 90.0
-                self.lens_galaxies.lens.sersic.intensity = 1.0
-                self.lens_galaxies.lens.sersic.effective_radius = 1.3
-                self.lens_galaxies.lens.sersic.sersic_index = 3.0
+                self.galaxies.lens.sersic.axis_ratio = 0.2
+                self.galaxies.lens.sersic.phi = 90.0
+                self.galaxies.lens.sersic.intensity = 1.0
+                self.galaxies.lens.sersic.effective_radius = 1.3
+                self.galaxies.lens.sersic.sersic_index = 3.0
 
         phase = MMPhase(
-            lens_galaxies=dict(
+            galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)
             ),
             optimizer_class=af.MultiNest,
@@ -249,7 +249,7 @@ class TestPhaseModelMapper(object):
 
         phase.make_analysis(data=ccd_data)
 
-        sersic = phase.variable.lens_galaxies[0].sersic
+        sersic = phase.variable.galaxies[0].sersic
 
         assert isinstance(sersic, af.PriorModel)
 

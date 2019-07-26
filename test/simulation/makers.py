@@ -18,8 +18,8 @@ def simulate_image_from_galaxies_and_output_to_fits(
     data_resolution,
     data_type,
     sub_grid_size,
-    lens_galaxies,
-    source_galaxies,
+    galaxies,
+    galaxies,
     psf_shape=(51, 51),
     exposure_time=300.0,
     background_sky_level=1.0,
@@ -43,9 +43,9 @@ def simulate_image_from_galaxies_and_output_to_fits(
     )
 
     # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD data.
-    tracer = ray_tracing.TracerImageSourcePlanes(
-        lens_galaxies=lens_galaxies,
-        source_galaxies=source_galaxies,
+    tracer = ray_tracing.Tracer(
+        galaxies=galaxies,
+        galaxies=galaxies,
         image_plane_grid_stack=image_plane_grid_stack,
     )
 
@@ -134,8 +134,8 @@ def make_lens_only_dev_vaucouleurs(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[g.Galaxy(redshift=1.0)],
+            galaxies=[lens_galaxy],
+            galaxies=[g.Galaxy(redshift=1.0)],
         )
 
 
@@ -169,8 +169,8 @@ def make_lens_only_bulge_and_disk(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[g.Galaxy(redshift=1.0)],
+            galaxies=[lens_galaxy],
+            galaxies=[g.Galaxy(redshift=1.0)],
         )
 
 
@@ -210,8 +210,8 @@ def make_lens_only_x2_galaxies(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
-            source_galaxies=[g.Galaxy(redshift=1.0)],
+            galaxies=[lens_galaxy_0, lens_galaxy_1],
+            galaxies=[g.Galaxy(redshift=1.0)],
         )
 
 
@@ -246,8 +246,8 @@ def make_no_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[source_galaxy],
+            galaxies=[lens_galaxy],
+            galaxies=[source_galaxy],
         )
 
 
@@ -282,8 +282,8 @@ def make_no_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[source_galaxy],
+            galaxies=[lens_galaxy],
+            galaxies=[source_galaxy],
         )
 
 
@@ -318,8 +318,8 @@ def make_no_lens_light_and_source_smooth_offset_centre(data_resolutions, sub_gri
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[source_galaxy],
+            galaxies=[lens_galaxy],
+            galaxies=[source_galaxy],
         )
 
 
@@ -362,8 +362,8 @@ def make_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[source_galaxy],
+            galaxies=[lens_galaxy],
+            galaxies=[source_galaxy],
         )
 
 
@@ -406,6 +406,6 @@ def make_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            lens_galaxies=[lens_galaxy],
-            source_galaxies=[source_galaxy],
+            galaxies=[lens_galaxy],
+            galaxies=[source_galaxy],
         )

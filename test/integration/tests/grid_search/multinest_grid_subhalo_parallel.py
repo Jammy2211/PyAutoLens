@@ -29,44 +29,40 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class GridPhase(
-        af.phase.as_grid_search(phase_imaging.LensSourcePlanePhase, parallel=True)
-    ):
+    class GridPhase(af.phase.as_grid_search(phase_imaging.PhaseImaging, parallel=True)):
         @property
         def grid_priors(self):
             return [
-                self.variable.lens_galaxies.subhalo.mass.centre_0,
-                self.variable.lens_galaxies.subhalo.mass.centre_1,
+                self.variable.galaxies.subhalo.mass.centre_0,
+                self.variable.galaxies.subhalo.mass.centre_1,
             ]
 
         def pass_priors(self, results):
 
             ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
 
-            self.lens_galaxies.subhalo.mass.kappa_s = af.UniformPrior(
+            self.galaxies.subhalo.mass.kappa_s = af.UniformPrior(
                 lower_limit=0.0005, upper_limit=0.2
             )
-            self.lens_galaxies.subhalo.mass.scale_radius = af.UniformPrior(
+            self.galaxies.subhalo.mass.scale_radius = af.UniformPrior(
                 lower_limit=0.001, upper_limit=1.0
             )
-            self.lens_galaxies.subhalo.mass.centre_0 = af.UniformPrior(
+            self.galaxies.subhalo.mass.centre_0 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
             )
-            self.lens_galaxies.subhalo.mass.centre_1 = af.UniformPrior(
+            self.galaxies.subhalo.mass.centre_1 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
             )
 
     phase1 = GridPhase(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
             subhalo=gm.GalaxyModel(
                 redshift=0.5, mass=mp.SphericalTruncatedNFWChallenge
             ),
-        ),
-        source_galaxies=dict(
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)
+            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
         optimizer_class=af.MultiNest,
         number_of_steps=2,

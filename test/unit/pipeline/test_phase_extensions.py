@@ -29,67 +29,12 @@ def make_source_galaxy():
     return g.Galaxy(redshift=2.0, light=lp.SphericalSersic())
 
 
-@pytest.fixture(name="lens_galaxies")
-def make_lens_galaxies(lens_galaxy):
-    lens_galaxies = af.ModelInstance()
-    lens_galaxies.lens = lens_galaxy
-    return lens_galaxies
-
-
 @pytest.fixture(name="all_galaxies")
 def make_all_galaxies(lens_galaxy, source_galaxy):
     galaxies = af.ModelInstance()
     galaxies.lens = lens_galaxy
     galaxies.source = source_galaxy
     return galaxies
-
-
-@pytest.fixture(name="lens_instance")
-def make_lens_instance(lens_galaxies):
-    instance = af.ModelInstance()
-    instance.lens_galaxies = lens_galaxies
-    return instance
-
-
-@pytest.fixture(name="lens_result")
-def make_lens_result(lens_data_7x7, lens_instance):
-    return phase_imaging.LensPlanePhase.Result(
-        constant=lens_instance,
-        figure_of_merit=1.0,
-        previous_variable=af.ModelMapper(),
-        gaussian_tuples=None,
-        analysis=phase_imaging.LensPlanePhase.Analysis(
-            lens_data=lens_data_7x7, cosmology=cosmo.Planck15, positions_threshold=1.0
-        ),
-        optimizer=None,
-    )
-
-
-@pytest.fixture(name="lens_source_instance")
-def make_lens_source_instance(lens_galaxy, source_galaxy):
-    source_galaxies = af.ModelInstance()
-    lens_galaxies = af.ModelInstance()
-    source_galaxies.source = source_galaxy
-    lens_galaxies.lens = lens_galaxy
-
-    instance = af.ModelInstance()
-    instance.source_galaxies = source_galaxies
-    instance.lens_galaxies = lens_galaxies
-    return instance
-
-
-@pytest.fixture(name="lens_source_result")
-def make_lens_source_result(lens_data_7x7, lens_source_instance):
-    return phase_imaging.LensSourcePlanePhase.Result(
-        constant=lens_source_instance,
-        figure_of_merit=1.0,
-        previous_variable=af.ModelMapper(),
-        gaussian_tuples=None,
-        analysis=phase_imaging.LensSourcePlanePhase.Analysis(
-            lens_data=lens_data_7x7, cosmology=cosmo.Planck15, positions_threshold=1.0
-        ),
-        optimizer=None,
-    )
 
 
 @pytest.fixture(name="multi_plane_instance")
@@ -101,12 +46,12 @@ def make_multi_plane_instance(all_galaxies):
 
 @pytest.fixture(name="multi_plane_result")
 def make_multi_plane_result(lens_data_7x7, multi_plane_instance):
-    return phase_imaging.MultiPlanePhase.Result(
+    return phase_imaging.PhaseImaging.Result(
         constant=multi_plane_instance,
         figure_of_merit=1.0,
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
-        analysis=phase_imaging.MultiPlanePhase.Analysis(
+        analysis=phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7, cosmology=cosmo.Planck15, positions_threshold=1.0
         ),
         optimizer=None,
@@ -246,54 +191,6 @@ class TestVariableFixing(object):
 
 
 class TestImagePassing(object):
-    def test_path_galaxy_tuples(self, lens_result, lens_galaxy):
-        assert lens_result.path_galaxy_tuples == [
-            (("lens_galaxies", "lens"), lens_galaxy)
-        ]
-
-    def test_lens_source_galaxy_dict(
-        self, lens_source_result, lens_galaxy, source_galaxy
-    ):
-        assert lens_source_result.path_galaxy_tuples == [
-            (("source_galaxies", "source"), source_galaxy),
-            (("lens_galaxies", "lens"), lens_galaxy),
-        ]
-
-    def test_multi_plane_galaxy_dict(
-        self, multi_plane_result, lens_galaxy, source_galaxy
-    ):
-        assert multi_plane_result.path_galaxy_tuples == [
-            (("galaxies", "lens"), lens_galaxy),
-            (("galaxies", "source"), source_galaxy),
-        ]
-
-    def test_lens_image_dict_2d_and_1d(self, lens_result):
-
-        image_2d_dict = lens_result.image_galaxy_2d_dict
-
-        assert isinstance(image_2d_dict[("lens_galaxies", "lens")], np.ndarray)
-        assert image_2d_dict[("lens_galaxies", "lens")].shape == (7, 7)
-
-        image_1d_dict = lens_result.image_galaxy_1d_dict
-        assert image_1d_dict[("lens_galaxies", "lens")].shape == (9,)
-
-    def test_lens_source_image_dict(self, lens_source_result):
-        image_2d_dict = lens_source_result.image_galaxy_2d_dict
-
-        assert isinstance(image_2d_dict[("lens_galaxies", "lens")], np.ndarray)
-        assert isinstance(image_2d_dict[("source_galaxies", "source")], np.ndarray)
-
-        assert image_2d_dict[("lens_galaxies", "lens")].shape == (7, 7)
-        assert image_2d_dict[("source_galaxies", "source")].shape == (7, 7)
-
-        image_1d_dict = lens_source_result.image_galaxy_1d_dict
-
-        assert image_1d_dict[("lens_galaxies", "lens")].shape == (9,)
-        assert image_1d_dict[("source_galaxies", "source")].shape == (9,)
-
-        lens_source_result.constant.lens_galaxies.lens = g.Galaxy(redshift=0.5)
-        lens_source_result.constant.source_galaxies.source = g.Galaxy(redshift=1.0)
-
     def test_multi_plane_image_dict(self, multi_plane_result):
         image_dict = multi_plane_result.image_galaxy_2d_dict
         assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
@@ -308,8 +205,8 @@ class TestImagePassing(object):
     def test_galaxy_image_dict(
         self, lens_galaxy, source_galaxy, grid_stack_7x7, convolver_image_7x7
     ):
-        tracer = rt.TracerImageSourcePlanes(
-            [lens_galaxy], [source_galaxy], grid_stack_7x7
+        tracer = rt.Tracer.from_galaxies_and_image_plane_grid_stack(
+            galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack_7x7
         )
 
         assert (
@@ -337,8 +234,8 @@ class TestImagePassing(object):
         results_collection_7x7[0].galaxy_images[0][3, 2] = -1.0
         results_collection_7x7[0].galaxy_images[1][3, 4] = -1.0
 
-        phase_7x7 = phase_imaging.LensSourcePlanePhase(
-            lens_galaxies=dict(
+        phase_7x7 = phase_imaging.PhaseImaging(
+            galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)
             ),
             optimizer_class=mock_pipeline.MockNLO,
@@ -368,8 +265,8 @@ class TestImagePassing(object):
     def test__results_are_passed_to_new_analysis__hyper_images_values_below_minimum_are_scaled_up_using_config(
         self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
     ):
-        phase_7x7 = phase_imaging.LensSourcePlanePhase(
-            lens_galaxies=dict(
+        phase_7x7 = phase_imaging.PhaseImaging(
+            galaxies=dict(
                 lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)
             ),
             optimizer_class=mock_pipeline.MockNLO,
@@ -393,9 +290,9 @@ class TestImagePassing(object):
     def test__results_are_passed_to_new_analysis__sets_up_hyper_cluster_images__includes_hyper_minimum(
         self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
     ):
-        phase_7x7 = phase_imaging.LensSourcePlanePhase(
+        phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="test_phase",
-            lens_galaxies=dict(
+            galaxies=dict(
                 lens=gm.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=g.HyperGalaxy,
@@ -422,8 +319,8 @@ class TestImagePassing(object):
             == 3.0 * np.ones(9)
         ).all()
 
-        phase_7x7 = phase_imaging.LensSourcePlanePhase(
-            lens_galaxies=dict(
+        phase_7x7 = phase_imaging.PhaseImaging(
+            galaxies=dict(
                 lens=gm.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=g.HyperGalaxy,
@@ -459,8 +356,8 @@ class TestImagePassing(object):
             == analysis.lens_data.cluster.shape[0]
         )
 
-        phase_7x7 = phase_imaging.LensSourcePlanePhase(
-            lens_galaxies=dict(
+        phase_7x7 = phase_imaging.PhaseImaging(
+            galaxies=dict(
                 lens=gm.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=g.HyperGalaxy,
@@ -503,8 +400,8 @@ class TestImagePassing(object):
         results_collection_7x7[0].galaxy_images[0][3, 2] = -1.0
         results_collection_7x7[0].galaxy_images[1][3, 4] = -1.0
 
-        phase_7x7 = phase_imaging.LensSourcePlanePhase(
-            lens_galaxies=dict(
+        phase_7x7 = phase_imaging.PhaseImaging(
+            galaxies=dict(
                 lens=gm.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=g.HyperGalaxy,
@@ -540,75 +437,12 @@ class TestImagePassing(object):
             == analysis.lens_data.cluster.shape[0]
         )
 
-    def test_associate_images_lens(self, lens_instance, lens_result, lens_data_7x7):
-        results_collection = af.ResultsCollection()
-        results_collection.add("phase", lens_result)
-
-        analysis = phase_imaging.LensPlanePhase.Analysis(
-            lens_data=lens_data_7x7,
-            cosmology=None,
-            positions_threshold=None,
-            results=results_collection,
-        )
-
-        instance = analysis.associate_images(instance=lens_instance)
-
-        hyper_model_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=lens_result.image_galaxy_2d_dict[("lens_galaxies", "lens")]
-        )
-
-        assert instance.lens_galaxies.lens.hyper_model_image_1d == pytest.approx(
-            hyper_model_image_1d, 1.0e-4
-        )
-        assert instance.lens_galaxies.lens.hyper_galaxy_image_1d == pytest.approx(
-            hyper_model_image_1d, 1.0e-4
-        )
-
-    def test_associate_images_lens_source(
-        self, lens_source_instance, lens_source_result, lens_data_7x7
-    ):
-        results_collection = af.ResultsCollection()
-        results_collection.add("phase", lens_source_result)
-        analysis = phase_imaging.LensSourcePlanePhase.Analysis(
-            lens_data=lens_data_7x7,
-            cosmology=None,
-            positions_threshold=None,
-            results=results_collection,
-        )
-
-        instance = analysis.associate_images(lens_source_instance)
-
-        hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=lens_source_result.image_galaxy_2d_dict[("lens_galaxies", "lens")]
-        )
-        hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=lens_source_result.image_galaxy_2d_dict[
-                ("source_galaxies", "source")
-            ]
-        )
-
-        hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
-
-        assert instance.lens_galaxies.lens.hyper_model_image_1d == pytest.approx(
-            hyper_model_image_1d, 1.0e-4
-        )
-        assert instance.source_galaxies.source.hyper_model_image_1d == pytest.approx(
-            hyper_model_image_1d, 1.0e-4
-        )
-
-        assert instance.lens_galaxies.lens.hyper_galaxy_image_1d == pytest.approx(
-            hyper_lens_image_1d, 1.0e-4
-        )
-        assert instance.source_galaxies.source.hyper_galaxy_image_1d == pytest.approx(
-            hyper_source_image_1d, 1.04e-4
-        )
-
     def test_associate_images_multi_plane(
         self, multi_plane_instance, multi_plane_result, lens_data_7x7
     ):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
-        analysis = phase_imaging.MultiPlanePhase.Analysis(
+        analysis = phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=None,
             positions_threshold=None,
@@ -645,7 +479,7 @@ class TestImagePassing(object):
     ):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", multi_plane_result)
-        analysis = phase_imaging.MultiPlanePhase.Analysis(
+        analysis = phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=cosmo.Planck15,
             positions_threshold=None,
@@ -682,10 +516,8 @@ class TestImagePassing(object):
             redshift=1.0, light_profile=multi_plane_instance.galaxies.source.light
         )
 
-        tracer = rt.TracerImageSourcePlanes(
-            lens_galaxies=[g0],
-            source_galaxies=[g1],
-            image_plane_grid_stack=lens_data_7x7.grid_stack,
+        tracer = rt.Tracer.from_galaxies_and_image_plane_grid_stack(
+            galaxies=[g0, g1], image_plane_grid_stack=lens_data_7x7.grid_stack
         )
 
         fit = lens_fit.LensDataFit.for_data_and_tracer(

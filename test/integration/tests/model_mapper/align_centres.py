@@ -29,13 +29,13 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class MMPhase(phase_imaging.LensPlanePhase):
+    class MMPhase(phase_imaging.PhaseImaging):
         pass
 
     phase1 = MMPhase(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5,
                 light_0=lp.EllipticalSersic,

@@ -35,19 +35,19 @@ def make_pipeline(test_name):
             shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.0
         )
 
-    class LensPlaneGalaxyX2Phase(phase_imaging.LensPlanePhase):
+    class LensPlaneGalaxyX2Phase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens_0.light.centre_0 = -1.0
-            self.lens_galaxies.lens_0.light.centre_1 = -1.0
+            self.galaxies.lens_0.light.centre_0 = -1.0
+            self.galaxies.lens_0.light.centre_1 = -1.0
 
-            self.lens_galaxies.lens_1.light.centre_0 = 1.0
-            self.lens_galaxies.lens_1.light.centre_1 = 1.0
+            self.galaxies.lens_1.light.centre_0 = 1.0
+            self.galaxies.lens_1.light.centre_1 = 1.0
 
     phase1 = LensPlaneGalaxyX2Phase(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens_0=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic),
             lens_1=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic),
         ),
@@ -61,23 +61,23 @@ def make_pipeline(test_name):
 
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    class LensPlaneGalaxyX2Phase(phase_imaging.LensPlanePhase):
+    class LensPlaneGalaxyX2Phase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies = results.from_phase("phase_1").variable.lens_galaxies
+            self.galaxies = results.from_phase("phase_1").variable.galaxies
 
-            self.lens_galaxies.lens_0.hyper_galaxy = results.from_phase(
+            self.galaxies.lens_0.hyper_galaxy = results.from_phase(
                 "phase_1"
-            ).hyper_galaxy.constant.lens_galaxies.lens_0.hyper_galaxy
+            ).hyper_galaxy.constant.galaxies.lens_0.hyper_galaxy
 
-            self.lens_galaxies.lens_1.hyper_galaxy = results.from_phase(
+            self.galaxies.lens_1.hyper_galaxy = results.from_phase(
                 "phase_1"
-            ).hyper_galaxy.constant.lens_galaxies.lens_1.hyper_galaxy
+            ).hyper_galaxy.constant.galaxies.lens_1.hyper_galaxy
 
     phase2 = LensPlaneGalaxyX2Phase(
         phase_name="phase_2",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens_0=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic),
             lens_1=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic),
         ),

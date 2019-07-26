@@ -29,16 +29,14 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class MMPhase(phase_imaging.LensPlanePhase):
+    class MMPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
-            self.lens_galaxies.lens.light.intensity = (
-                self.lens_galaxies.lens.mass.einstein_radius
-            )
+            self.galaxies.lens.light.intensity = self.galaxies.lens.mass.einstein_radius
 
     phase1 = MMPhase(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, light=lp.EllipticalSersic, mass=mp.SphericalIsothermal
             )
