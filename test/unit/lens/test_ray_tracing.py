@@ -270,7 +270,7 @@ class TestAbstractTracer(object):
     #         assert tracer.profile_image_plane_image_1d is None
     #         assert tracer.profile_image_plane_blurring_image_1d is None
     #
-    #         tracer = ray_tracing.TracerImageSourcePlanes(galaxies=[g.Galaxy(redshift=0.5)], galaxies=[g.Galaxy(redshift=0.5)],
+    #         tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(galaxies=[g.Galaxy(redshift=0.5)], galaxies=[g.Galaxy(redshift=0.5)],
     #                                                      image_plane_grid_stack=grid_stack_7x7)
     #
     #         assert tracer.profile_image_plane_image_2d is None
@@ -853,7 +853,7 @@ class TestAbstractTracer(object):
         #     g2 = g.Galaxy(redshift=1.0)
         #     g3 = g.Galaxy(redshift=1.0)
         #
-        #     tracer = ray_tracing.TracerImageSourcePlanes(galaxies=[g0, g1], galaxies=[g2, g3],
+        #     tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(galaxies=[g0, g1], galaxies=[g2, g3],
         #                                                  image_plane_grid_stack=grid_stack_7x7)
         #
         #     assert tracer.galaxies_in_planes == [[g0, g1], [g2, g3]]

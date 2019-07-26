@@ -484,12 +484,12 @@ def make_tracer_x1_plane_7x7(gal_x1_lp, grid_stack_7x7):
 
 
 @pytest.fixture(name="tracer_x2_plane_7x7")
-def make_tracer_x2_plane_7x7(gal_x1_lp, gal_x1_mp, grid_stack_7x7):
+def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp, grid_stack_7x7):
 
-    gal_x1_lp.redshift = 1.0
+    source_gal_x1_lp = g.Galaxy(redshift=1.0, light_profile_0=lp_0)
 
     return ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
-        galaxies=[gal_x1_mp, gal_x1_lp, gal_x1_lp],
+        galaxies=[gal_x1_mp, gal_x1_lp, source_gal_x1_lp],
         image_plane_grid_stack=grid_stack_7x7,
     )
 
