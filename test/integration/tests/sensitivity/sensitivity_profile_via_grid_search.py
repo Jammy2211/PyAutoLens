@@ -34,15 +34,15 @@ def make_pipeline(test_name):
     class SensitivePhase(phase_imaging.SensitivityPhase):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.mass.centre_0 = 0.0
-            self.lens_galaxies.lens.mass.centre_1 = 0.0
-            self.lens_galaxies.lens.mass.einstein_radius_in_units = 1.6
+            self.galaxies.lens.mass.centre_0 = 0.0
+            self.galaxies.lens.mass.centre_1 = 0.0
+            self.galaxies.lens.mass.einstein_radius_in_units = 1.6
 
-            self.source_galaxies.source.light.centre_0 = 0.0
-            self.source_galaxies.source.light.centre_1 = 0.0
-            self.source_galaxies.source.light.intensity = 1.0
-            self.source_galaxies.source.light.effective_radius = 0.5
-            self.source_galaxies.source.light.sersic_index = 1.0
+            self.galaxies.source.light.centre_0 = 0.0
+            self.galaxies.source.light.centre_1 = 0.0
+            self.galaxies.source.light.intensity = 1.0
+            self.galaxies.source.light.effective_radius = 0.5
+            self.galaxies.source.light.sersic_index = 1.0
 
             self.sensitive_galaxies.subhalo.mass.centre_0 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
@@ -56,11 +56,9 @@ def make_pipeline(test_name):
     phase1 = SensitivePhase(
         phase_name="phase1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal)
-        ),
-        source_galaxies=dict(
-            source=gm.GalaxyModel(redshift=1.0, light=lp.SphericalSersic)
+        galaxies=dict(
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal),
+            source=gm.GalaxyModel(redshift=1.0, light=lp.SphericalSersic),
         ),
         sensitive_galaxies=dict(
             subhalo=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalNFW)

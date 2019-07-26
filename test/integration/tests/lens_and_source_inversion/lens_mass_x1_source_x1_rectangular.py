@@ -29,25 +29,23 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class SourcePix(phase_imaging.LensSourcePlanePhase):
+    class SourcePix(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
-            self.lens_galaxies.lens.mass.centre.centre_1 = 0.0
-            self.lens_galaxies.lens.mass.einstein_radius_in_units = 1.6
-            self.source_galaxies.source.pixelization.shape_0 = 20.0
-            self.source_galaxies.source.pixelization.shape_1 = 20.0
+            self.galaxies.lens.mass.centre.centre_0 = 0.0
+            self.galaxies.lens.mass.centre.centre_1 = 0.0
+            self.galaxies.lens.mass.einstein_radius_in_units = 1.6
+            self.galaxies.source.pixelization.shape_0 = 20.0
+            self.galaxies.source.pixelization.shape_1 = 20.0
 
     phase1 = SourcePix(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
-        ),
-        source_galaxies=dict(
+        galaxies=dict(
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
             source=gm.GalaxyModel(
                 redshift=1.0, pixelization=pix.Rectangular, regularization=reg.Constant
-            )
+            ),
         ),
         optimizer_class=af.MultiNest,
     )

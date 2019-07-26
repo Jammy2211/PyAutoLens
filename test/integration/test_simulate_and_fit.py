@@ -36,10 +36,8 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         redshift=1.0, light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
     )
 
-    tracer = ray_tracing.TracerImageSourcePlanes(
-        lens_galaxies=[lens_galaxy],
-        source_galaxies=[source_galaxy],
-        image_plane_grid_stack=grid_stack,
+    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack
     )
 
     ccd_simulated = sim_ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
@@ -86,9 +84,8 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=2)
 
-    tracer = ray_tracing.TracerImageSourcePlanes(
-        lens_galaxies=[lens_galaxy],
-        source_galaxies=[source_galaxy],
+    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid_stack=lens_data.grid_stack,
     )
 
@@ -120,10 +117,8 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     source_galaxy = g.Galaxy(
         redshift=1.0, light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
     )
-    tracer = ray_tracing.TracerImageSourcePlanes(
-        lens_galaxies=[lens_galaxy],
-        source_galaxies=[source_galaxy],
-        image_plane_grid_stack=grid_stack,
+    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack
     )
 
     ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
@@ -171,9 +166,8 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
-    tracer = ray_tracing.TracerImageSourcePlanes(
-        lens_galaxies=[lens_galaxy],
-        source_galaxies=[source_galaxy],
+    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid_stack=lens_data.grid_stack,
     )
 

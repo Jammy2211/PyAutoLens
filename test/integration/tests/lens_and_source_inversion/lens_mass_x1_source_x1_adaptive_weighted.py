@@ -31,41 +31,35 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = phase_imaging.LensSourcePlanePhase(
+    phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
-        ),
-        source_galaxies=dict(
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)
+        galaxies=dict(
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
+            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
         optimizer_class=af.MultiNest,
     )
 
-    class InversionPhase(phase_imaging.LensSourcePlanePhase):
+    class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.lens_galaxies.lens = results.from_phase(
-                "phase_1"
-            ).constant.lens_galaxies.lens
+            self.galaxies.lens = results.from_phase("phase_1").constant.galaxies.lens
 
     phase2 = InversionPhase(
         phase_name="phase_2",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
-            )
-        ),
-        source_galaxies=dict(
+            ),
             source=gm.GalaxyModel(
                 redshift=1.0,
                 pixelization=pix.VoronoiBrightnessImage,
                 regularization=reg.AdaptiveBrightness,
-            )
+            ),
         ),
         inversion_pixel_limit=50,
         optimizer_class=af.MultiNest,
@@ -73,33 +67,29 @@ def make_pipeline(test_name):
 
     phase2 = phase2.extend_with_multiple_hyper_phases(inversion=True)
 
-    class InversionPhase(phase_imaging.LensSourcePlanePhase):
+    class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.lens_galaxies.lens = results.from_phase(
-                "phase_1"
-            ).variable.lens_galaxies.lens
+            self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
 
-            self.source_galaxies.source = results.from_phase(
+            self.galaxies.source = results.from_phase(
                 "phase_2"
-            ).inversion.constant.source_galaxies.source
+            ).inversion.constant.galaxies.source
 
     phase3 = InversionPhase(
         phase_name="phase_3",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
-            )
-        ),
-        source_galaxies=dict(
+            ),
             source=gm.GalaxyModel(
                 redshift=1.0,
                 pixelization=pix.VoronoiBrightnessImage,
                 regularization=reg.AdaptiveBrightness,
-            )
+            ),
         ),
         inversion_pixel_limit=50,
         optimizer_class=af.MultiNest,

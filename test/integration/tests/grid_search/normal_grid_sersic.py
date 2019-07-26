@@ -28,37 +28,35 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class QuickPhase(phase_imaging.LensPlanePhase):
+    class QuickPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.light.centre_0 = af.UniformPrior(
+            self.galaxies.lens.light.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.light.centre_1 = af.UniformPrior(
+            self.galaxies.lens.light.centre_1 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
             )
-            self.lens_galaxies.lens.light.axis_ratio = af.UniformPrior(
+            self.galaxies.lens.light.axis_ratio = af.UniformPrior(
                 lower_limit=0.79, upper_limit=0.81
             )
-            self.lens_galaxies.lens.light.phi = af.UniformPrior(
+            self.galaxies.lens.light.phi = af.UniformPrior(
                 lower_limit=-1.0, upper_limit=1.0
             )
-            self.lens_galaxies.lens.light.intensity = af.UniformPrior(
+            self.galaxies.lens.light.intensity = af.UniformPrior(
                 lower_limit=0.99, upper_limit=1.01
             )
-            self.lens_galaxies.lens.light.effective_radius = af.UniformPrior(
+            self.galaxies.lens.light.effective_radius = af.UniformPrior(
                 lower_limit=1.25, upper_limit=1.35
             )
-            self.lens_galaxies.lens.light.sersic_index = af.UniformPrior(
+            self.galaxies.lens.light.sersic_index = af.UniformPrior(
                 lower_limit=3.95, upper_limit=4.05
             )
 
     phase1 = QuickPhase(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)
-        ),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
         optimizer_class=af.MultiNest,
     )
 
@@ -66,34 +64,32 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(phase_imaging.LensPlanePhase):
+    class GridPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.light.centre_0 = 0.0
-            self.lens_galaxies.lens.light.centre_1 = 0.0
-            self.lens_galaxies.lens.light.axis_ratio = results.from_phase(
+            self.galaxies.lens.light.centre_0 = 0.0
+            self.galaxies.lens.light.centre_1 = 0.0
+            self.galaxies.lens.light.axis_ratio = results.from_phase(
                 "phase_1"
             ).constant.lens.light.axis_ratio
-            self.lens_galaxies.lens.light.phi = results.from_phase(
+            self.galaxies.lens.light.phi = results.from_phase(
                 "phase_1"
             ).constant.lens.light.phi
-            self.lens_galaxies.lens.light.intensity = results.from_phase(
+            self.galaxies.lens.light.intensity = results.from_phase(
                 "phase_1"
             ).constant.lens.light.intensity
 
-            self.lens_galaxies.lens.light.effective_radius = af.UniformPrior(
+            self.galaxies.lens.light.effective_radius = af.UniformPrior(
                 lower_limit=0.0, upper_limit=4.0
             )
-            self.lens_galaxies.lens.light.sersic_index = af.UniformPrior(
+            self.galaxies.lens.light.sersic_index = af.UniformPrior(
                 lower_limit=1.0, upper_limit=8.0
             )
 
     phase2 = GridPhase(
         phase_name="phase_2",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)
-        ),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
         optimizer_class=af.GridSearch,
     )
 

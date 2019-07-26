@@ -240,8 +240,6 @@ class HyperGalaxyPhase(HyperPhase):
 
             # TODO : This is a HACK :O
 
-            optimizer.variable.lens_galaxies = []
-            optimizer.variable.source_galaxies = []
             optimizer.variable.galaxies = []
 
             optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
@@ -364,8 +362,8 @@ class HyperGalaxyAllPhase(HyperPhase):
 
             # TODO : This is a HACK :O
 
-            optimizer.variable.lens_galaxies = []
-            optimizer.variable.source_galaxies = []
+            optimizer.variable.galaxies = []
+            optimizer.variable.galaxies = []
             optimizer.variable.galaxies = []
 
             optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(

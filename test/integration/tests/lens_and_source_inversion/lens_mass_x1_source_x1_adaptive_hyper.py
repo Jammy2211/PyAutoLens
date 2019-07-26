@@ -31,27 +31,25 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class SourcePix(phase_imaging.LensSourcePlanePhase):
+    class SourcePix(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
-            self.lens_galaxies.lens.mass.centre.centre_1 = 0.0
-            self.lens_galaxies.lens.mass.einstein_radius = 1.6
-            self.source_galaxies.source.pixelization.shape.shape_0 = 20.0
-            self.source_galaxies.source.pixelization.shape.shape_1 = 20.0
+            self.galaxies.lens.mass.centre.centre_0 = 0.0
+            self.galaxies.lens.mass.centre.centre_1 = 0.0
+            self.galaxies.lens.mass.einstein_radius = 1.6
+            self.galaxies.source.pixelization.shape.shape_0 = 20.0
+            self.galaxies.source.pixelization.shape.shape_1 = 20.0
 
     phase1 = SourcePix(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
-        ),
-        source_galaxies=dict(
+        galaxies=dict(
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
             source=gm.GalaxyModel(
                 redshift=1.0,
                 pixelization=pix.VoronoiMagnification,
                 regularization=reg.Constant,
-            )
+            ),
         ),
         optimizer_class=af.MultiNest,
     )
@@ -64,44 +62,42 @@ def make_pipeline(test_name):
         phase_name="phase_1_hyper", phase_folders=[test_type, test_name]
     )
 
-    class HyperLensSourcePlanePhase(phase_imaging.LensSourcePlanePhase):
+    class HyperLensSourcePlanePhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.hyper_galaxy = results.from_phase(
+            self.galaxies.lens.hyper_galaxy = results.from_phase(
                 "phase_1_hyper"
-            ).constant.lens_galaxies.lens.hyper_galaxy
+            ).constant.galaxies.lens.hyper_galaxy
 
-            self.lens_galaxies.lens.mass = results.from_phase(
+            self.galaxies.lens.mass = results.from_phase(
                 "phase_1"
-            ).variable.lens_galaxies.lens.mass
+            ).variable.galaxies.lens.mass
 
-            self.source_galaxies.source.hyper_galaxy = results.from_phase(
+            self.galaxies.source.hyper_galaxy = results.from_phase(
                 "phase_1_hyper"
-            ).constant.source_galaxies.source.hyper_galaxy
+            ).constant.galaxies.source.hyper_galaxy
 
-            self.source_galaxies.source.pixelization = results.from_phase(
+            self.galaxies.source.pixelization = results.from_phase(
                 "phase_1"
-            ).variable.source_galaxies.source.pixelization
+            ).variable.galaxies.source.pixelization
 
-            self.source_galaxies.source.regularization = results.from_phase(
+            self.galaxies.source.regularization = results.from_phase(
                 "phase_1"
-            ).variable.source_galaxies.source.regularization
+            ).variable.galaxies.source.regularization
 
     phase2 = HyperLensSourcePlanePhase(
         phase_name="phase_2",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, mass=mp.EllipticalIsothermal, hyper_galaxy=g.HyperGalaxy
-            )
-        ),
-        source_galaxies=dict(
+            ),
             source=gm.GalaxyModel(
                 redshift=1.0,
                 pixelization=pix.VoronoiMagnification,
                 regularization=reg.Constant,
                 hyper_galaxy=g.HyperGalaxy,
-            )
+            ),
         ),
         optimizer_class=af.MultiNest,
     )

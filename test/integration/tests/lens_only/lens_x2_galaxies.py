@@ -29,13 +29,13 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class LensPlanex2GalPhase(phase_imaging.LensPlanePhase):
+    class LensPlanex2GalPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens_0.light.centre_0 = -1.0
-            self.lens_galaxies.lens_0.light.centre_1 = -1.0
-            self.lens_galaxies.lens_1.light.centre_0 = 1.0
-            self.lens_galaxies.lens_1.light.centre_1 = 1.0
+            self.galaxies.lens_0.light.centre_0 = -1.0
+            self.galaxies.lens_0.light.centre_1 = -1.0
+            self.galaxies.lens_1.light.centre_0 = 1.0
+            self.galaxies.lens_1.light.centre_1 = 1.0
 
     def mask_function(image):
         return msk.Mask.circular(
@@ -45,7 +45,7 @@ def make_pipeline(test_name):
     phase1 = LensPlanex2GalPhase(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens_0=gm.GalaxyModel(light=lp.EllipticalSersic),
             lens_1=gm.GalaxyModel(light=lp.EllipticalSersic),
         ),

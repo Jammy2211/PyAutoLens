@@ -12,18 +12,14 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class LinkedPhase(phase_imaging.LensPlanePhase):
+    class LinkedPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
-            self.lens_galaxies.lens.light.axis_ratio = (
-                self.lens_galaxies.lens.light.intensity
-            )
+            self.galaxies.lens.light.axis_ratio = self.galaxies.lens.light.intensity
 
     phase1 = LinkedPhase(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)
-        ),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 

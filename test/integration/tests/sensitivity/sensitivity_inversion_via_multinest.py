@@ -32,13 +32,13 @@ def make_pipeline(test_name):
     class SensitivePhase(phase_imaging.SensitivityPhase):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.mass.centre_0 = 0.0
-            self.lens_galaxies.lens.mass.centre_1 = 0.0
-            self.lens_galaxies.lens.mass.einstein_radius_in_units = 1.6
+            self.galaxies.lens.mass.centre_0 = 0.0
+            self.galaxies.lens.mass.centre_1 = 0.0
+            self.galaxies.lens.mass.einstein_radius_in_units = 1.6
 
-            self.source_galaxies.source.pixelization.shape_0 = 8.0
-            self.source_galaxies.source.pixelization.shape_1 = 8.0
-            self.source_galaxies.source.regularization.coefficient = 1.0
+            self.galaxies.source.pixelization.shape_0 = 8.0
+            self.galaxies.source.pixelization.shape_1 = 8.0
+            self.galaxies.source.regularization.coefficient = 1.0
 
             self.sensitive_galaxies.subhalo.mass.centre_0 = af.GaussianPrior(
                 mean=0.0, sigma=1.0
@@ -52,13 +52,11 @@ def make_pipeline(test_name):
     phase1 = SensitivePhase(
         phase_name="phase1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal)
-        ),
-        source_galaxies=dict(
+        galaxies=dict(
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal),
             source=gm.GalaxyModel(
                 redshift=1.0, pixelization=pix.Rectangular, regularization=reg.Constant
-            )
+            ),
         ),
         sensitive_galaxies=dict(
             subhalo=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalNFW)

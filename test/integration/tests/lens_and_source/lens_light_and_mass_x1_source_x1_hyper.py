@@ -14,18 +14,16 @@ data_resolution = "LSST"
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
-    phase1 = phase_imaging.LensSourcePlanePhase(
+    phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5,
                 light=lp.SphericalDevVaucouleurs,
                 mass=mp.EllipticalIsothermal,
-            )
-        ),
-        source_galaxies=dict(
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)
+            ),
+            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -36,44 +34,42 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    class HyperLensSourcePlanePhase(phase_imaging.LensSourcePlanePhase):
+    class HyperLensSourcePlanePhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.light = results.from_phase(
+            self.galaxies.lens.light = results.from_phase(
                 "phase_1"
-            ).variable.lens_galaxies.lens.light
+            ).variable.galaxies.lens.light
 
-            self.lens_galaxies.lens.mass = results.from_phase(
+            self.galaxies.lens.mass = results.from_phase(
                 "phase_1"
-            ).variable.lens_galaxies.lens.mass
+            ).variable.galaxies.lens.mass
 
-            self.source_galaxies.source.light = results.from_phase(
+            self.galaxies.source.light = results.from_phase(
                 "phase_1"
-            ).variable.source_galaxies.source.light
+            ).variable.galaxies.source.light
 
-            self.lens_galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
+            self.galaxies.lens.hyper_galaxy = (
+                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
 
-            self.source_galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.constant.source_galaxies.source.hyper_galaxy
+            self.galaxies.source.hyper_galaxy = (
+                results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
             )
 
     phase2 = HyperLensSourcePlanePhase(
         phase_name="phase_2",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5,
                 light=lp.SphericalDevVaucouleurs,
                 mass=mp.EllipticalIsothermal,
                 hyper_galaxy=g.HyperGalaxy,
-            )
-        ),
-        source_galaxies=dict(
+            ),
             source=gm.GalaxyModel(
                 redshift=1.0, light=lp.EllipticalSersic, hyper_galaxy=g.HyperGalaxy
-            )
+            ),
         ),
         optimizer_class=optimizer_class,
     )

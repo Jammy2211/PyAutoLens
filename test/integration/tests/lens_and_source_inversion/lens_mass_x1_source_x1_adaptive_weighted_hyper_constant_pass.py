@@ -14,14 +14,12 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    phase1 = phase_imaging.LensSourcePlanePhase(
+    phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
-        ),
-        source_galaxies=dict(
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)
+        galaxies=dict(
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
+            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -32,32 +30,30 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    class InversionPhase(phase_imaging.LensSourcePlanePhase):
+    class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
             # Lens Mass, SIE -> SIE, Shear -> Shear #
 
-            self.lens_galaxies.lens = results.last.constant.lens_galaxies.lens
+            self.galaxies.lens = results.last.constant.galaxies.lens
 
-            self.lens_galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
+            self.galaxies.lens.hyper_galaxy = (
+                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
 
-            self.source_galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.constant.source_galaxies.source.hyper_galaxy
+            self.galaxies.source.hyper_galaxy = (
+                results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
             )
 
     phase2 = InversionPhase(
         phase_name="phase_2",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
-        ),
-        source_galaxies=dict(
+        galaxies=dict(
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
             source=gm.GalaxyModel(
                 redshift=1.0,
                 pixelization=pix.VoronoiBrightnessImage,
                 regularization=reg.AdaptiveBrightness,
-            )
+            ),
         ),
         inversion_pixel_limit=800,
         optimizer_class=optimizer_class,
@@ -69,30 +65,26 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
 
-    class InversionPhase(phase_imaging.LensSourcePlanePhase):
+    class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
             # Lens Mass, SIE -> SIE, Shear -> Shear #
 
-            self.lens_galaxies.lens = results.from_phase(
-                "phase_1"
-            ).variable.lens_galaxies.lens
+            self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
 
-            self.source_galaxies = results.last.hyper_combined.constant.source_galaxies
+            self.galaxies = results.last.hyper_combined.constant.galaxies
 
-            self.lens_galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
+            self.galaxies.lens.hyper_galaxy = (
+                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
 
-            self.source_galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.constant.source_galaxies.source.hyper_galaxy
+            self.galaxies.source.hyper_galaxy = (
+                results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
             )
 
     phase3 = InversionPhase(
         phase_name="phase_3",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
-        ),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)),
         inversion_pixel_limit=800,
         optimizer_class=optimizer_class,
     )

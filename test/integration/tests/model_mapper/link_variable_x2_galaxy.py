@@ -28,13 +28,13 @@ def pipeline():
 
 
 def make_pipeline(test_name):
-    class MMPhase(phase_imaging.LensPlanePhase):
+    class MMPhase(phase_imaging.PhaseImaging):
         pass
 
     phase1 = MMPhase(
         phase_name="phase_1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens_0=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic),
             lens_1=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic),
         ),
@@ -45,16 +45,16 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class MMPhase2(phase_imaging.LensPlanePhase):
+    class MMPhase2(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens_0 = results.from_phase("phase_1").variable.lens_0
-            self.lens_galaxies.lens_1 = results.from_phase("phase_1").variable.lens_1
+            self.galaxies.lens_0 = results.from_phase("phase_1").variable.lens_0
+            self.galaxies.lens_1 = results.from_phase("phase_1").variable.lens_1
 
     phase2 = MMPhase2(
         phase_name="phase_2",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
+        galaxies=dict(
             lens_0=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic),
             lens_1=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic),
         ),

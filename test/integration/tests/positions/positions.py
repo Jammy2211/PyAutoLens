@@ -33,9 +33,7 @@ def make_pipeline(test_name):
     phase1 = phase_positions.PhasePositions(
         phase_name="phase1",
         phase_folders=[test_type, test_name],
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal)
-        ),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal)),
         optimizer_class=af.MultiNest,
     )
 

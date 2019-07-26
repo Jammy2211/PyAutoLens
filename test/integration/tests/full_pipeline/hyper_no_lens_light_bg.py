@@ -22,16 +22,14 @@ def make_pipeline(
     optimizer_class=af.MultiNest,
 ):
 
-    phase1 = phase_imaging.LensSourcePlanePhase(
+    phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1_lens_sie_shear_source_sersic",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
-            )
-        ),
-        source_galaxies=dict(
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic)
+            ),
+            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -44,14 +42,14 @@ def make_pipeline(
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
     )
 
-    class InversionPhase(phase_imaging.LensSourcePlanePhase):
+    class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.lens_galaxies.lens = results.from_phase(
+            self.galaxies.lens = results.from_phase(
                 "phase_1_lens_sie_shear_source_sersic"
-            ).variable.lens_galaxies.lens
+            ).variable.galaxies.lens
 
             ## Set all hyper-galaxies if feature is turned on ##
 
@@ -64,17 +62,15 @@ def make_pipeline(
     phase2 = InversionPhase(
         phase_name="phase_1_initialize_magnification_inversion",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
-            )
-        ),
-        source_galaxies=dict(
+            ),
             source=gm.GalaxyModel(
                 redshift=1.0,
                 pixelization=pix.VoronoiMagnification,
                 regularization=reg.Constant,
-            )
+            ),
         ),
         optimizer_class=optimizer_class,
     )
@@ -90,20 +86,20 @@ def make_pipeline(
         inversion=False,
     )
 
-    class InversionPhase(phase_imaging.LensSourcePlanePhase):
+    class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
             ### Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.lens_galaxies.lens = results.from_phase(
+            self.galaxies.lens = results.from_phase(
                 "phase_1_lens_sie_shear_source_sersic"
-            ).variable.lens_galaxies.lens
+            ).variable.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
 
-            self.source_galaxies.source = results.from_phase(
+            self.galaxies.source = results.from_phase(
                 "phase_1_initialize_magnification_inversion"
-            ).variable.source_galaxies.source
+            ).variable.galaxies.source
 
             ## Set all hyper-galaxies if feature is turned on ##
 
@@ -116,17 +112,15 @@ def make_pipeline(
     phase3 = InversionPhase(
         phase_name="phase_3_lens_sie_shear_source_magnification_inversion",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
-            )
-        ),
-        source_galaxies=dict(
+            ),
             source=gm.GalaxyModel(
                 redshift=1.0,
                 pixelization=pix.VoronoiMagnification,
                 regularization=reg.Constant,
-            )
+            ),
         ),
         optimizer_class=optimizer_class,
     )
@@ -142,14 +136,14 @@ def make_pipeline(
         inversion=False,
     )
 
-    class InversionPhase(phase_imaging.LensSourcePlanePhase):
+    class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.lens_galaxies.lens = results.from_phase(
+            self.galaxies.lens = results.from_phase(
                 "phase_3_lens_sie_shear_source_magnification_inversion"
-            ).variable.lens_galaxies.lens
+            ).variable.galaxies.lens
 
             ## Set all hyper-galaxies if feature is turned on ##
 
@@ -162,17 +156,15 @@ def make_pipeline(
     phase4 = InversionPhase(
         phase_name="phase_4_initialize_inversion",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
-            )
-        ),
-        source_galaxies=dict(
+            ),
             source=gm.GalaxyModel(
                 redshift=1.0,
                 pixelization=pl_pixelization,
                 regularization=pl_regularization,
-            )
+            ),
         ),
         optimizer_class=optimizer_class,
     )
@@ -188,25 +180,25 @@ def make_pipeline(
         inversion=True,
     )
 
-    class InversionPhase(phase_imaging.LensSourcePlanePhase):
+    class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
             ### Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.lens_galaxies.lens = results.from_phase(
+            self.galaxies.lens = results.from_phase(
                 "phase_3_lens_sie_shear_source_magnification_inversion"
-            ).variable.lens_galaxies.lens
+            ).variable.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
 
-            self.source_galaxies.source = results.from_phase(
+            self.galaxies.source = results.from_phase(
                 "phase_4_initialize_inversion"
-            ).hyper_combined.variable.source_galaxies.source
+            ).hyper_combined.variable.galaxies.source
 
             ## Set all hyper-galaxies if feature is turned on ##
 
-            self.source_galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.constant.source_galaxies.source.hyper_galaxy
+            self.galaxies.source.hyper_galaxy = (
+                results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
             )
 
             self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
@@ -218,17 +210,15 @@ def make_pipeline(
     phase5 = InversionPhase(
         phase_name="phase_5_lens_sie_shear_source_inversion",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
-            )
-        ),
-        source_galaxies=dict(
+            ),
             source=gm.GalaxyModel(
                 redshift=1.0,
                 pixelization=pl_pixelization,
                 regularization=pl_regularization,
-            )
+            ),
         ),
         optimizer_class=optimizer_class,
     )
