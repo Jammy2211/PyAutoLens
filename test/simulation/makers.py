@@ -246,8 +246,7 @@ def make_no_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            galaxies=[lens_galaxy],
-            galaxies=[source_galaxy],
+            galaxies=[lens_galaxy, source_galaxy],
         )
 
 
@@ -282,8 +281,7 @@ def make_no_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            galaxies=[lens_galaxy],
-            galaxies=[source_galaxy],
+            galaxies=[lens_galaxy, source_galaxy],
         )
 
 
@@ -318,8 +316,7 @@ def make_no_lens_light_and_source_smooth_offset_centre(data_resolutions, sub_gri
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            galaxies=[lens_galaxy],
-            galaxies=[source_galaxy],
+            galaxies=[lens_galaxy, source_galaxy],
         )
 
 
@@ -362,8 +359,7 @@ def make_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            galaxies=[lens_galaxy],
-            galaxies=[source_galaxy],
+            galaxies=[lens_galaxy, source_galaxy],
         )
 
 
@@ -406,6 +402,5 @@ def make_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            galaxies=[lens_galaxy],
-            galaxies=[source_galaxy],
+            galaxies=[lens_galaxy, source_galaxy],
         )

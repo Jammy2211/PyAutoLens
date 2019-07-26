@@ -71,8 +71,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     start = time.time()
     for i in range(repeats):
         tracer = ray_tracing.Tracer(
-            galaxies=[lens_galaxy],
-            galaxies=[source_galaxy],
+            galaxies=[lens_galaxy, source_galaxy],
             image_plane_grid_stack=lens_data.grid_stack,
         )
     diff = time.time() - start
