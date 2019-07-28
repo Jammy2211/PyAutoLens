@@ -1432,7 +1432,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         return len(self.sparse)
 
 
-class RegularGridBorder(np.ndarray):
+class GridBorder(np.ndarray):
     def __new__(cls, arr, *args, **kwargs):
         """The borders of a regular grid, containing the pixel-index's of all masked pixels that are on the \
         mask's border (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels and at one of \
@@ -1533,6 +1533,7 @@ class RegularGridBorder(np.ndarray):
                 move_factor = (
                     border_grid_radii[closest_pixel_index] / grid_radii[pixel_index]
                 )
+
                 if move_factor < 1.0:
                     grid[pixel_index, :] = (
                         move_factor * (grid[pixel_index, :] - border_origin[:])
@@ -1547,7 +1548,7 @@ class RegularGridBorder(np.ndarray):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(RegularGridBorder, self).__reduce__()
+        pickled_state = super(GridBorder, self).__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -1561,7 +1562,7 @@ class RegularGridBorder(np.ndarray):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(RegularGridBorder, self).__setstate__(state[0:-1])
+        super(GridBorder, self).__setstate__(state[0:-1])
 
 
 class Interpolator(object):

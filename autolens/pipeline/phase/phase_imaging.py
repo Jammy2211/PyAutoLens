@@ -34,6 +34,7 @@ class PhaseImaging(Phase):
         mask_function=None,
         inner_mask_radii=None,
         interp_pixel_scale=None,
+        use_inversion_border=True,
         inversion_pixel_limit=None,
         cluster_pixel_scale=None,
         cosmology=cosmo.Planck15,
@@ -91,6 +92,7 @@ class PhaseImaging(Phase):
         self.mask_function = mask_function
         self.inner_mask_radii = inner_mask_radii
         self.interp_pixel_scale = interp_pixel_scale
+        self.use_inversion_border = use_inversion_border
         self.inversion_pixel_limit = inversion_pixel_limit
         self.cluster_pixel_scale = cluster_pixel_scale
 
@@ -261,6 +263,7 @@ class PhaseImaging(Phase):
             positions_threshold=self.positions_threshold,
             image_path=self.optimizer.image_path,
             results=results,
+            use_inversion_border=self.use_inversion_border,
             inversion_pixel_limit=self.inversion_pixel_limit,
         )
 
@@ -326,6 +329,7 @@ class PhaseImaging(Phase):
             lens_data,
             cosmology,
             positions_threshold,
+            use_inversion_border=True,
             inversion_pixel_limit=None,
             image_path=None,
             results=None,
@@ -450,6 +454,7 @@ class PhaseImaging(Phase):
                 "plots", "plot_lens_fit_plane_images_of_planes", bool
             )
 
+            self.use_inversion_border = use_inversion_border
             self.inversion_pixel_limit = inversion_pixel_limit
 
             mask = self.lens_data.mask_2d if self.should_plot_mask else None
@@ -623,6 +628,84 @@ class PhaseImaging(Phase):
 
             return grid_stack
 
+        def hyper_image_sky_for_instance(self, instance):
+
+            if hasattr(instance, "hyper_image_sky"):
+                return instance.hyper_image_sky
+            else:
+                return None
+
+        def hyper_noise_background_for_instance(self, instance):
+
+            if hasattr(instance, "hyper_noise_background"):
+                return instance.hyper_noise_background
+            else:
+                return None
+
+        def tracer_for_instance(self, instance):
+
+            instance = self.associate_images(instance=instance)
+
+            image_plane_grid_stack = self.add_grids_to_grid_stack(
+                galaxies=instance.galaxies, grid_stack=self.lens_data.grid_stack
+            )
+
+            if self.use_inversion_border:
+                border = self.lens_data.border
+            else:
+                border = None
+
+            return ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+                galaxies=instance.galaxies,
+                image_plane_grid_stack=image_plane_grid_stack,
+                border=border,
+                cosmology=self.cosmology,
+            )
+
+        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_noise_background):
+
+            return lens_fit.LensDataFit.for_data_and_tracer(
+                lens_data=self.lens_data,
+                tracer=tracer,
+                hyper_image_sky=hyper_image_sky,
+                hyper_noise_background=hyper_noise_background,
+            )
+
+        def check_positions_trace_within_threshold(self, instance):
+
+            if self.lens_data.positions is not None:
+
+                tracer = ray_tracing.TracerPositions(
+                    galaxies=instance.galaxies,
+                    image_plane_positions=self.lens_data.positions,
+                )
+                fit = lens_fit.LensPositionFit(
+                    positions=tracer.source_plane.positions,
+                    noise_map=self.lens_data.pixel_scale,
+                )
+
+                if not fit.maximum_separation_within_threshold(
+                    self.positions_threshold
+                ):
+                    raise exc.RayTracingException
+
+        def check_inversion_pixels_are_below_limit(self, instance):
+
+            if self.inversion_pixel_limit is not None:
+                if instance.galaxies:
+                    for galaxy in instance.galaxies:
+                        if galaxy.has_pixelization:
+                            if galaxy.pixelization.pixels > self.inversion_pixel_limit:
+                                raise exc.PixelizationException
+
+        def map_to_1d(self, data):
+            """Convenience method"""
+            return self.lens_data.mask.array_1d_from_array_2d(data)
+
+        @classmethod
+        def describe(cls, instance):
+            return "\nRunning for... \n\nGalaxies:\n{}\n\n".format(instance.galaxies)
+
         def visualize(self, instance, image_path, during_analysis):
 
             subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
@@ -698,76 +781,3 @@ class PhaseImaging(Phase):
                 visualize_path=image_path,
                 subplot_path=subplot_path,
             )
-
-        def hyper_image_sky_for_instance(self, instance):
-
-            if hasattr(instance, "hyper_image_sky"):
-                return instance.hyper_image_sky
-            else:
-                return None
-
-        def hyper_noise_background_for_instance(self, instance):
-
-            if hasattr(instance, "hyper_noise_background"):
-                return instance.hyper_noise_background
-            else:
-                return None
-
-        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_noise_background):
-
-            return lens_fit.LensDataFit.for_data_and_tracer(
-                lens_data=self.lens_data,
-                tracer=tracer,
-                hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
-            )
-
-        def check_positions_trace_within_threshold(self, instance):
-
-            if self.lens_data.positions is not None:
-
-                tracer = ray_tracing.TracerPositions(
-                    galaxies=instance.galaxies,
-                    image_plane_positions=self.lens_data.positions,
-                )
-                fit = lens_fit.LensPositionFit(
-                    positions=tracer.source_plane.positions,
-                    noise_map=self.lens_data.pixel_scale,
-                )
-
-                if not fit.maximum_separation_within_threshold(
-                    self.positions_threshold
-                ):
-                    raise exc.RayTracingException
-
-        def check_inversion_pixels_are_below_limit(self, instance):
-
-            if self.inversion_pixel_limit is not None:
-                if instance.galaxies:
-                    for galaxy in instance.galaxies:
-                        if galaxy.has_pixelization:
-                            if galaxy.pixelization.pixels > self.inversion_pixel_limit:
-                                raise exc.PixelizationException
-
-        def map_to_1d(self, data):
-            """Convenience method"""
-            return self.lens_data.mask.array_1d_from_array_2d(data)
-
-        def tracer_for_instance(self, instance):
-
-            instance = self.associate_images(instance=instance)
-
-            image_plane_grid_stack = self.add_grids_to_grid_stack(
-                galaxies=instance.galaxies, grid_stack=self.lens_data.grid_stack
-            )
-
-            return ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
-                galaxies=instance.galaxies,
-                image_plane_grid_stack=image_plane_grid_stack,
-                border=self.lens_data.border,
-                cosmology=self.cosmology,
-            )
-
-        @classmethod
-        def describe(cls, instance):
-            return "\nRunning for... \n\nGalaxies:\n{}\n\n".format(instance.galaxies)

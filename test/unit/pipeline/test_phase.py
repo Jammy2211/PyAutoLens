@@ -8,6 +8,7 @@ from astropy import cosmology as cosmo
 import autofit as af
 from autolens import exc
 from autolens.data.array import mask as msk
+from autolens.lens import ray_tracing
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
 from autolens.model.hyper import hyper_data as hd
@@ -736,6 +737,69 @@ class TestPhase(object):
         )
 
         assert phase_7x7.uses_hyper_images is True
+
+    def test__use_border__determines_if_border_pixel_relocation_is_used(
+        self, ccd_data_7x7, mask_function_7x7, lens_data_7x7
+    ):
+
+        lens_data_7x7.grid_stack.regular[4] = np.array([100.0, 100.0])
+
+        # noinspection PyTypeChecker
+
+        lens_galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
+        source_galaxy = g.Galaxy(redshift=1.0, pixelization=pix.Rectangular(shape=(5,5)), regularization=reg.Constant(coefficient=1.0))
+
+        tracer_no_border = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            galaxies=[lens_galaxy, source_galaxy],
+            image_plane_grid_stack=lens_data_7x7.grid_stack,
+            border=None,
+        )
+
+        mapper_no_border = tracer_no_border.mappers_of_planes[0]
+
+        tracer_with_border = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            galaxies=[lens_galaxy, source_galaxy],
+            image_plane_grid_stack=lens_data_7x7.grid_stack,
+            border=lens_data_7x7.border,
+        )
+
+        mapper_with_border = tracer_with_border.mappers_of_planes[0]
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            galaxies=[lens_galaxy, source_galaxy],
+            mask_function=mask_function_7x7,
+            cosmology=cosmo.Planck15,
+            phase_name="test_phase",
+            use_inversion_border=True
+        )
+
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+
+        analysis.lens_data.grid_stack.regular[4] = np.array([100.0, 100.0])
+
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+        mapper = tracer.mappers_of_planes[0]
+
+        assert (mapper_with_border.grid_stack.regular == mapper.grid_stack.regular).all()
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            galaxies=[lens_galaxy, source_galaxy],
+            mask_function=mask_function_7x7,
+            cosmology=cosmo.Planck15,
+            phase_name="test_phase",
+            use_inversion_border=False
+        )
+
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+
+        analysis.lens_data.grid_stack.regular[4] = np.array([100.0, 100.0])
+
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+        mapper = tracer.mappers_of_planes[0]
+
+        assert (mapper_no_border.grid_stack.regular == mapper.grid_stack.regular).all()
 
     def test__inversion_and_cluster_pixel_limit_computed_via_input_of_max_inversion_pixel_limit_and_prior_config(
         self, mask_function_7x7

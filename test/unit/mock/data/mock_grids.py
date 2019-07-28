@@ -92,7 +92,7 @@ class MockPixGridStack(object):
         )
 
 
-class MockBorders(np.ndarray):
+class MockBorders(grids.GridBorder):
     def __new__(cls, arr=np.array([0]), *args, **kwargs):
         """The borders of a regular grid, containing the pixel-index's of all masked pixels that are on the \
         mask's border (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels and at one of \
