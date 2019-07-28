@@ -455,6 +455,9 @@ class PhaseImaging(Phase):
             mask = self.lens_data.mask_2d if self.should_plot_mask else None
             positions = self.lens_data.positions if self.should_plot_positions else None
 
+            subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+                path=image_path, folder_names=['subplots'])
+
             phase_plotters.plot_ccd_for_phase(
                 ccd_data=self.lens_data.ccd_data,
                 mask=mask,
@@ -470,6 +473,7 @@ class PhaseImaging(Phase):
                 should_plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
                 should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
                 visualize_path=image_path,
+                subplot_path=subplot_path,
             )
 
             self.plot_hyper_model_image = af.conf.instance.visualize.get(
@@ -621,6 +625,9 @@ class PhaseImaging(Phase):
 
         def visualize(self, instance, image_path, during_analysis):
 
+            subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+                path=image_path, folder_names=['subplots'])
+
             instance = self.associate_images(instance=instance)
 
             mask = self.lens_data.mask_2d if self.should_plot_mask else None
@@ -645,6 +652,7 @@ class PhaseImaging(Phase):
                 should_plot_potential=self.plot_ray_tracing_potential,
                 should_plot_deflections=self.plot_ray_tracing_deflections,
                 visualize_path=image_path,
+                subplot_path=subplot_path,
             )
 
             hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
@@ -688,6 +696,7 @@ class PhaseImaging(Phase):
                 should_plot_plane_images_of_planes=self.plot_lens_fit_plane_images_of_planes,
                 units=self.plot_units,
                 visualize_path=image_path,
+                subplot_path=subplot_path,
             )
 
         def hyper_image_sky_for_instance(self, instance):

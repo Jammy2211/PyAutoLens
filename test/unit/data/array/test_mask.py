@@ -1400,7 +1400,7 @@ class TestZoomCentreAndOffet:
 
 
 class TestMaskExtractor:
-    def test__mask_extract_region__uses_the_limits_of_the_mask(self):
+    def test__square_mask__mask_extract_region__uses_the_limits_of_the_mask(self):
         mask = msk.Mask(
             array=np.array(
                 [
@@ -1470,6 +1470,38 @@ class TestMaskExtractor:
         )
 
         assert mask.zoom_region == [0, 3, 1, 3]
+
+    def test__rectnaulgar_mask__mask_extract_region__makes_into_a_square_region(self):
+
+        mask = msk.Mask(
+            array=np.array(
+                [
+                    [True,  True,  True,  True,  True, True],
+                    [True, False, False, False, False, True],
+                    [True, False, False, False, False, True],
+                    [True,  True,  True,  True,  True, True],
+                ]
+            ),
+            pixel_scale=1.0,
+        )
+
+        assert mask.zoom_region == [0, 4, 1, 5]
+
+        mask = msk.Mask(
+            array=np.array(
+                [
+                    [True,  True,  True,  True],
+                    [True, False, False, True],
+                    [True, False, False, True],
+                    [True, False, False, True],
+                    [True, False, False, True],
+                    [True,  True,  True,  True],
+                ]
+            ),
+            pixel_scale=1.0,
+        )
+
+        assert mask.zoom_region == [1, 5, 0, 4]
 
 
 class TestParse:
