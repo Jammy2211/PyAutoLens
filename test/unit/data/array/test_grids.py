@@ -2062,7 +2062,7 @@ class TestImageGridBorder(object):
 
             mask = msk.Mask(mask, pixel_scale=3.0)
 
-            border = grids.RegularGridBorder.from_mask(mask)
+            border = grids.GridBorder.from_mask(mask)
 
             assert (
                 border
@@ -2114,7 +2114,7 @@ class TestImageGridBorder(object):
                 regular=regular_grid, sub=sub_grid, blurring=None
             )
 
-            border = grids.RegularGridBorder(arr=np.arange(32))
+            border = grids.GridBorder(arr=np.arange(32))
             relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
 
             assert relocated_grids.regular[0:32] == pytest.approx(
@@ -2166,7 +2166,7 @@ class TestImageGridBorder(object):
 
             border_pixels = np.array([0, 1, 2, 3, 4, 5, 6, 7])
 
-            border = grids.RegularGridBorder(border_pixels)
+            border = grids.GridBorder(border_pixels)
 
             relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
 
@@ -2233,7 +2233,7 @@ class TestImageGridBorder(object):
 
             border_pixels = np.array([0, 1, 2, 3, 4, 5, 6, 7])
 
-            border = grids.RegularGridBorder(border_pixels)
+            border = grids.GridBorder(border_pixels)
 
             relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
 
@@ -2299,7 +2299,7 @@ class TestImageGridBorder(object):
             grid_stack = grids.GridStack(regular=grid, sub=grid, blurring=None)
             border_pixels = np.array([0, 1, 2, 3, 4, 5, 6, 7])
 
-            border = grids.RegularGridBorder(border_pixels)
+            border = grids.GridBorder(border_pixels)
 
             relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
 
@@ -2366,7 +2366,7 @@ class TestImageGridBorder(object):
 
             border_pixels = np.array([0, 1, 2, 3, 4, 5, 6, 7])
 
-            border = grids.RegularGridBorder(border_pixels)
+            border = grids.GridBorder(border_pixels)
 
             relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
 
@@ -2395,7 +2395,7 @@ class TestImageGridBorder(object):
                 pixelization=regular_grid,
             )
 
-            border = grids.RegularGridBorder(arr=np.arange(32))
+            border = grids.GridBorder(arr=np.arange(32))
             relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
 
             assert relocated_grids.regular[0:32] == pytest.approx(

@@ -51,7 +51,7 @@ def make_grid_stack():
 
 @pytest.fixture(name="border")
 def make_border(mask):
-    return grids.RegularGridBorder.from_mask(mask=mask)
+    return grids.GridBorder.from_mask(mask=mask)
 
 
 @pytest.fixture(name="rectangular_pixelization")
