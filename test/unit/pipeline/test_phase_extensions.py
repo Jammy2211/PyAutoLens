@@ -37,22 +37,22 @@ def make_all_galaxies(lens_galaxy, source_galaxy):
     return galaxies
 
 
-@pytest.fixture(name="multi_plane_instance")
-def make_multi_plane_instance(all_galaxies):
+@pytest.fixture(name="instance")
+def make_instance(all_galaxies):
     instance = af.ModelInstance()
     instance.galaxies = all_galaxies
     return instance
 
 
-@pytest.fixture(name="multi_plane_result")
-def make_multi_plane_result(lens_data_7x7, multi_plane_instance):
+@pytest.fixture(name="result")
+def make_result(lens_data_7x7, instance):
     return phase_imaging.PhaseImaging.Result(
-        constant=multi_plane_instance,
+        constant=instance,
         figure_of_merit=1.0,
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=phase_imaging.PhaseImaging.Analysis(
-            lens_data=lens_data_7x7, cosmology=cosmo.Planck15, positions_threshold=1.0
+            lens_data=lens_data_7x7, cosmology=cosmo.Planck15, positions_threshold=1.0, image_path=''
         ),
         optimizer=None,
     )
@@ -191,14 +191,14 @@ class TestVariableFixing(object):
 
 
 class TestImagePassing(object):
-    def test_multi_plane_image_dict(self, multi_plane_result):
-        image_dict = multi_plane_result.image_galaxy_2d_dict
+    def test__image_dict(self, result):
+        image_dict = result.image_galaxy_2d_dict
         assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
-        multi_plane_result.constant.galaxies.lens = g.Galaxy(redshift=0.5)
+        result.constant.galaxies.lens = g.Galaxy(redshift=0.5)
 
-        image_dict = multi_plane_result.image_galaxy_2d_dict
+        image_dict = result.image_galaxy_2d_dict
         assert (image_dict[("galaxies", "lens")] == np.zeros((7, 7))).all()
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
@@ -437,25 +437,26 @@ class TestImagePassing(object):
             == analysis.lens_data.cluster.shape[0]
         )
 
-    def test_associate_images_multi_plane(
-        self, multi_plane_instance, multi_plane_result, lens_data_7x7
+    def test_associate_images_(
+        self, instance, result, lens_data_7x7
     ):
         results_collection = af.ResultsCollection()
-        results_collection.add("phase", multi_plane_result)
+        results_collection.add("phase", result)
         analysis = phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=None,
             positions_threshold=None,
             results=results_collection,
+            image_path='',
         )
 
-        instance = analysis.associate_images(instance=multi_plane_instance)
+        instance = analysis.associate_images(instance=instance)
 
         hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_galaxy_2d_dict[("galaxies", "lens")]
+            array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
         hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_galaxy_2d_dict[("galaxies", "source")]
+            array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
@@ -474,46 +475,47 @@ class TestImagePassing(object):
             hyper_model_image_1d, 1.0e-4
         )
 
-    def test_fit_uses_hyper_fit_correctly_multi_plane(
-        self, multi_plane_instance, multi_plane_result, lens_data_7x7
+    def test_fit_uses_hyper_fit_correctly_(
+        self, instance, result, lens_data_7x7
     ):
         results_collection = af.ResultsCollection()
-        results_collection.add("phase", multi_plane_result)
+        results_collection.add("phase", result)
         analysis = phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=cosmo.Planck15,
             positions_threshold=None,
             results=results_collection,
+            image_path='',
         )
 
         hyper_galaxy = g.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
         )
 
-        multi_plane_instance.galaxies.lens.hyper_galaxy = hyper_galaxy
+        instance.galaxies.lens.hyper_galaxy = hyper_galaxy
 
-        fit_figure_of_merit = analysis.fit(instance=multi_plane_instance)
+        fit_figure_of_merit = analysis.fit(instance=instance)
 
         hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_galaxy_2d_dict[("galaxies", "lens")]
+            array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
         hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
-            array_2d=multi_plane_result.image_galaxy_2d_dict[("galaxies", "source")]
+            array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
 
         g0 = g.Galaxy(
             redshift=0.5,
-            light_profile=multi_plane_instance.galaxies.lens.light,
-            mass_profile=multi_plane_instance.galaxies.lens.mass,
+            light_profile=instance.galaxies.lens.light,
+            mass_profile=instance.galaxies.lens.mass,
             hyper_galaxy=hyper_galaxy,
             hyper_model_image_1d=hyper_model_image_1d,
             hyper_galaxy_image_1d=hyper_lens_image_1d,
             hyper_minimum_value=0.0,
         )
         g1 = g.Galaxy(
-            redshift=1.0, light_profile=multi_plane_instance.galaxies.source.light
+            redshift=1.0, light_profile=instance.galaxies.source.light
         )
 
         tracer = rt.Tracer.from_galaxies_and_image_plane_grid_stack(
