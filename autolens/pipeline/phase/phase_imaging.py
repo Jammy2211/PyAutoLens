@@ -676,7 +676,7 @@ class PhaseImaging(Phase):
 
             if self.lens_data.positions is not None:
 
-                tracer = ray_tracing.TracerPositions(
+                tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_positions(
                     galaxies=instance.galaxies,
                     image_plane_positions=self.lens_data.positions,
                 )

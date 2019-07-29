@@ -34,7 +34,7 @@ class MockNLO(af.NonLinearOptimizer):
         )
 
 
-def run(module, test_name=None, optimizer_class=af.MultiNest, config_folder="config"):
+def run(module, test_name=None, optimizer_class=af.MultiNest, config_folder="config", positions=None):
     test_name = test_name or module.test_name
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = test_path + "output/"
@@ -50,7 +50,7 @@ def run(module, test_name=None, optimizer_class=af.MultiNest, config_folder="con
         name=test_name,
         phase_folders=[module.test_type, test_name],
         optimizer_class=optimizer_class,
-    ).run(data=ccd_data)
+    ).run(data=ccd_data, positions=positions)
 
 
 def run_a_mock(module):

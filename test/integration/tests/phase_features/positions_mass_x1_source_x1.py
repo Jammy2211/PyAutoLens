@@ -7,7 +7,7 @@ from test.integration.tests import runner
 
 test_type = "phase_features"
 test_name = "positions_mass_x1_source_x1"
-data_type = "no_lens_light_and_source_smooth"
+data_type = "no_lens_light_spherical_mass_and_source_smooth"
 data_resolution = "LSST"
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
@@ -15,10 +15,10 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.SphericalIsothermal),
             source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
-        positions_threshold=0.3,
+        positions_threshold=0.1,
         optimizer_class=optimizer_class,
     )
 
@@ -32,4 +32,4 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 if __name__ == "__main__":
     import sys
 
-    runner.run(sys.modules[__name__])
+    runner.run(sys.modules[__name__], positions=[[[1.6, 0.0], [0.0, 1.6], [-1.6, 0.0], [0.0, -1.6]]])
