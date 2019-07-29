@@ -10,6 +10,7 @@ test_name = "multinest_grid_fixed_disk_parallel"
 data_type = "lens_only_dev_vaucouleurs"
 data_resolution = "Euclid"
 
+
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class QuickPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):

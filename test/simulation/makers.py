@@ -43,8 +43,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
 
     # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD data.
     tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
-        galaxies=galaxies,
-        image_plane_grid_stack=image_plane_grid_stack,
+        galaxies=galaxies, image_plane_grid_stack=image_plane_grid_stack
     )
 
     # Simulate the CCD data, remembering that we use a special image-plane image which ensures edge-effects don't
@@ -244,6 +243,7 @@ def make_no_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
             galaxies=[lens_galaxy, source_galaxy],
         )
 
+
 def make_no_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
 
     data_type = "no_lens_light_and_source_cuspy"
@@ -279,7 +279,9 @@ def make_no_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light_spherical_mass_and_source_smooth(data_resolutions, sub_grid_size):
+def make_no_lens_light_spherical_mass_and_source_smooth(
+    data_resolutions, sub_grid_size
+):
 
     data_type = "no_lens_light_spherical_mass_and_source_smooth"
 
@@ -287,9 +289,7 @@ def make_no_lens_light_spherical_mass_and_source_smooth(data_resolutions, sub_gr
 
     lens_galaxy = g.Galaxy(
         redshift=0.5,
-        mass=mp.SphericalIsothermal(
-            centre=(0.0, 0.0), einstein_radius=1.6,
-        ),
+        mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6),
     )
 
     source_galaxy = g.Galaxy(
@@ -314,7 +314,9 @@ def make_no_lens_light_spherical_mass_and_source_smooth(data_resolutions, sub_gr
         )
 
 
-def make_no_lens_light_spherical_mass_and_source_smooth_offset_centre(data_resolutions, sub_grid_size):
+def make_no_lens_light_spherical_mass_and_source_smooth_offset_centre(
+    data_resolutions, sub_grid_size
+):
 
     data_type = "no_lens_light_spherical_mass_and_source_smooth_offset_centre"
 
@@ -322,9 +324,7 @@ def make_no_lens_light_spherical_mass_and_source_smooth_offset_centre(data_resol
 
     lens_galaxy = g.Galaxy(
         redshift=0.5,
-        mass=mp.SphericalIsothermal(
-            centre=(4.0, 4.0), einstein_radius=1.6,
-        ),
+        mass=mp.SphericalIsothermal(centre=(4.0, 4.0), einstein_radius=1.6),
     )
 
     source_galaxy = g.Galaxy(

@@ -299,7 +299,7 @@ def plot_model_data(
     """
 
     centres = get_mass_profile_centes(
-        plot_mass_profile_centres=plot_mass_profile_centres, fit=fit,
+        plot_mass_profile_centres=plot_mass_profile_centres, fit=fit
     )
 
     model_image = fit.model_image(return_in_2d=True)

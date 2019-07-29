@@ -38,7 +38,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
     )
 
     grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-        shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=1,
+        shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=1
     )
 
     tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
@@ -118,9 +118,7 @@ class TestPhaseModelMapper(object):
         lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(
-            test_name=test_name,
-            pixel_scale=0.5,
-            galaxies=[lens_galaxy],
+            test_name=test_name, pixel_scale=0.5, galaxies=[lens_galaxy]
         )
 
         path = "{}/".format(
@@ -151,10 +149,7 @@ class TestPhaseModelMapper(object):
         initial_total_priors = phase.variable.prior_count
         phase.make_analysis(data=ccd_data)
 
-        assert (
-            phase.galaxies[0].sersic.intensity
-            == phase.galaxies[0].sersic.axis_ratio
-        )
+        assert phase.galaxies[0].sersic.intensity == phase.galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
         assert len(phase.variable.flat_prior_model_tuples) == 1
 
@@ -198,9 +193,7 @@ class TestPhaseModelMapper(object):
         lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(
-            test_name=test_name,
-            pixel_scale=0.5,
-            galaxies=[lens_galaxy],
+            test_name=test_name, pixel_scale=0.5, galaxies=[lens_galaxy]
         )
         path = "{}/".format(
             os.path.dirname(os.path.realpath(__file__))
