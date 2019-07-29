@@ -164,6 +164,7 @@ def plot_array(
             array, 0.0, out=np.zeros_like(array), where=np.asarray(mask) == 0
         )
 
+
     if zoom_around_mask and mask is not None:
         array = array.zoomed_scaled_array_around_mask(mask=mask, buffer=2)
         zoom_offset_pixels = np.asarray(mask.zoom_offset_pixels)
@@ -777,7 +778,9 @@ def plot_points(
     pointsize : int
         The size of the points plotted to show the input positions.
     """
+
     if points_arcsec is not None:
+
         points_arcsec = list(
             map(lambda position_set: np.asarray(position_set), points_arcsec)
         )
@@ -785,11 +788,11 @@ def plot_points(
         for point_set_arcsec in points_arcsec:
 
             if zoom_offset_arcsec is not None:
-                point_set_arcsec -= zoom_offset_arcsec
+                point_set_arcsec_plot = point_set_arcsec - zoom_offset_arcsec
 
             point_set_units = convert_grid_units(
                 array=array,
-                grid_arcsec=point_set_arcsec,
+                grid_arcsec=point_set_arcsec_plot,
                 units=units,
                 kpc_per_arcsec=kpc_per_arcsec,
             )
@@ -799,7 +802,6 @@ def plot_points(
                 color=next(point_colors),
                 s=pointsize,
             )
-
 
 def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_arcsec):
     """Plot a grid of points over the array of data on the figure.
