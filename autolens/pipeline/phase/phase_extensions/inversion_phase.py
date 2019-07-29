@@ -33,9 +33,8 @@ class VariableFixingHyperPhase(HyperPhase):
         return phase
 
     def make_variable(self, constant):
-        return af.AbstractPriorModel.from_instance(
-            constant,
-            variable_classes=self.variable_classes
+        return constant.as_variable(
+            self.variable_classes
         )
 
     def run_hyper(self, data, results=None, **kwargs):
