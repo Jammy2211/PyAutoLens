@@ -34,15 +34,12 @@ class Galaxy(af.ModelObject):
         pixelization=None,
         regularization=None,
         hyper_galaxy=None,
-        hyper_model_image_1d=None,
-        hyper_galaxy_image_1d=None,
-        hyper_galaxy_cluster_image_1d=None,
         **kwargs
     ):
         """Class representing a galaxy, which is composed of attributes used for fitting hyper (e.g. light profiles, \ 
         mass profiles, pixelizations, etc.).
         
-        All *has_* methods retun *True* if galaxy has that attribute, *False* if not.
+        All *has_* methods return *True* if galaxy has that attribute, *False* if not.
 
         Parameters
         ----------
@@ -81,10 +78,6 @@ class Galaxy(af.ModelObject):
             )
 
         self.hyper_galaxy = hyper_galaxy
-
-        self.hyper_model_image_1d = hyper_model_image_1d
-        self.hyper_galaxy_image_1d = hyper_galaxy_image_1d
-        self.hyper_galaxy_cluster_image_1d = hyper_galaxy_cluster_image_1d
 
     def __hash__(self):
         return self.id
