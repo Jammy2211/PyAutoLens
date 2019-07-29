@@ -39,7 +39,7 @@ class Galaxy(af.ModelObject):
         """Class representing a galaxy, which is composed of attributes used for fitting hyper (e.g. light profiles, \ 
         mass profiles, pixelizations, etc.).
         
-        All *has_* methods return *True* if galaxy has that attribute, *False* if not.
+        All *has_* methods retun *True* if galaxy has that attribute, *False* if not.
 
         Parameters
         ----------
@@ -61,6 +61,10 @@ class Galaxy(af.ModelObject):
         """
         super().__init__()
         self.redshift = redshift
+
+        self.hyper_model_image_1d = None
+        self.hyper_galaxy_image_1d = None
+        self.hyper_galaxy_cluster_image_1d = None
 
         for name, val in kwargs.items():
             setattr(self, name, val)
