@@ -35,31 +35,31 @@ class LensDataFit(af.DataFit1D):
             return self.mask_1d
 
     @reshape_returned_regular_array
-    def image(self, return_in_2d=True):
+    def image(self):
         return self.image_1d
 
     @reshape_returned_regular_array
-    def noise_map(self, return_in_2d=True):
+    def noise_map(self):
         return self.noise_map_1d
 
     @reshape_returned_regular_array
-    def signal_to_noise_map(self, return_in_2d=True):
+    def signal_to_noise_map(self):
         return self.signal_to_noise_map_1d
 
     @reshape_returned_regular_array
-    def model_image(self, return_in_2d=True):
+    def model_image(self):
         return self.model_image_1d
 
     @reshape_returned_regular_array
-    def residual_map(self, return_in_2d=True):
+    def residual_map(self):
         return self.residual_map_1d
 
     @reshape_returned_regular_array
-    def normalized_residual_map(self, return_in_2d=True):
+    def normalized_residual_map(self):
         return self.normalized_residual_map_1d
 
     @reshape_returned_regular_array
-    def chi_squared_map(self, return_in_2d=True):
+    def chi_squared_map(self):
         return self.chi_squared_map_1d
 
     @property
@@ -111,7 +111,15 @@ class LensDataFit(af.DataFit1D):
 
 class LensTracerFit(LensDataFit):
     def __init__(
-        self, image_1d, noise_map_1d, mask_1d, model_image_1d, tracer, psf, mask_2d, positions,
+        self,
+        image_1d,
+        noise_map_1d,
+        mask_1d,
+        model_image_1d,
+        tracer,
+        psf,
+        mask_2d,
+        positions,
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper.
@@ -237,7 +245,7 @@ class LensProfileFit(LensTracerFit):
             mask_2d=lens_data.mask_2d,
             tracer=tracer,
             psf=lens_data.psf,
-            positions=lens_data.positions
+            positions=lens_data.positions,
         )
 
         self.convolver_image = lens_data.convolver_image
@@ -275,7 +283,7 @@ class InversionFit(LensTracerFit):
             mask_2d=lens_data.mask_2d,
             psf=lens_data.psf,
             tracer=tracer,
-            positions=lens_data.positions
+            positions=lens_data.positions,
         )
 
         self.inversion = inversion

@@ -114,7 +114,9 @@ class MockResults(object):
 
         for path, galaxy in self.path_galaxy_tuples:
 
-            hyper_galaxy_image_2d_path_dict[path] = self.mask_2d.scaled_array_2d_from_array_1d(
+            hyper_galaxy_image_2d_path_dict[
+                path
+            ] = self.mask_2d.scaled_array_2d_from_array_1d(
                 array_1d=self.hyper_galaxy_image_1d_path_dict[path]
             )
 

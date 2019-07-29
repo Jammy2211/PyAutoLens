@@ -1,8 +1,8 @@
 import autofit as af
 from autolens import exc
 
-class PipelineImaging(af.Pipeline):
 
+class PipelineImaging(af.Pipeline):
     def __init__(self, pipeline_name, *phases, hyper_mode=False):
 
         super(PipelineImaging, self).__init__(pipeline_name, *phases)
@@ -13,8 +13,9 @@ class PipelineImaging(af.Pipeline):
 
         if self.hyper_mode and mask is None:
             raise exc.PhaseException(
-                'The pipeline is running in hyper mode, but has not received an input mask. Add'
-                'a mask to the run function of the pipeline (e.g. pipeline.run(data=data, mask=mask)')
+                "The pipeline is running in hyper mode, but has not received an input mask. Add"
+                "a mask to the run function of the pipeline (e.g. pipeline.run(data=data, mask=mask)"
+            )
 
         def runner(phase, results):
             return phase.run(data=data, results=results, mask=mask, positions=positions)

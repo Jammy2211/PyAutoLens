@@ -42,11 +42,11 @@ class SimulatedCCDData(ccd.CCDData):
         self.noise_realization = noise_realization
 
     @classmethod
-    def from_deflections_source_galaxies_and_exposure_arrays(
+    def from_deflections_galaxies_and_exposure_arrays(
         cls,
         deflections,
         pixel_scale,
-        source_galaxies,
+        galaxies,
         exposure_time,
         psf=None,
         exposure_time_map=None,
@@ -72,7 +72,7 @@ class SimulatedCCDData(ccd.CCDData):
                 lambda g: g.intensities_from_grid(
                     grid=deflected_grid_1d, return_in_2d=True, return_binned=False
                 ),
-                source_galaxies,
+                galaxies,
             )
         )
 

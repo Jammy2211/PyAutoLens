@@ -50,11 +50,11 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
-phase = phase_imaging.LensSourcePlanePhase(
+phase = phase_imaging.PhaseImaging(
     phase_name="phase_interp",
     phase_folders=[data_type, data_resolution + "_" + str(interp_pixel_scale)],
-    lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
-    source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
+    galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
+    galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
     optimizer_class=af.MultiNest,
     interp_pixel_scale=interp_pixel_scale,
 )

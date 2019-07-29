@@ -1,10 +1,8 @@
-import copy
-
 import autofit as af
 from autolens.model.hyper import hyper_data as hd
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
-from autolens.pipeline.phase import phase as ph
+from autolens.pipeline.phase import phase_imaging as ph
 from .hyper_phase import HyperPhase
 
 
@@ -12,7 +10,7 @@ from .hyper_phase import HyperPhase
 class VariableFixingHyperPhase(HyperPhase):
     def __init__(
         self,
-        phase: ph.Phase,
+        phase: ph.PhaseImaging,
         hyper_name: str,
         variable_classes=tuple(),
         default_classes=None,
@@ -51,7 +49,12 @@ class VariableFixingHyperPhase(HyperPhase):
         phase = self.make_hyper_phase()
         phase.optimizer.variable = variable
 
-        return phase.run(data, results=results, mask=results.last.mask_2d, positions=results.last.positions, **kwargs)
+        return phase.run(
+            data,
+            results=results,
+            mask=results.last.mask_2d,
+            positions=results.last.positions,
+        )
 
     def add_defaults(self, variable: af.ModelMapper):
         """
@@ -66,10 +69,6 @@ class VariableFixingHyperPhase(HyperPhase):
             The variable object to be used in this phase to which default prior
             models are attached.
         """
-
-        # tODO : hasattr did not work for hyper image sky or background, because they were set to None by default.
-        # TODO : The getattr below fixes this, but will break for other classes
-
         for key, value in self.default_classes.items():
             if not hasattr(variable, key) or getattr(variable, key) is None:
                 setattr(variable, key, value)
@@ -84,7 +83,7 @@ class InversionPhase(VariableFixingHyperPhase):
 
     def __init__(
         self,
-        phase: ph.Phase,
+        phase: ph.PhaseImaging,
         variable_classes=(px.Pixelization, rg.Regularization),
         default_classes=None,
     ):
@@ -111,7 +110,7 @@ class InversionBackgroundSkyPhase(InversionPhase):
     pixelization
     """
 
-    def __init__(self, phase: ph.Phase):
+    def __init__(self, phase: ph.PhaseImaging):
         super().__init__(
             phase=phase,
             variable_classes=(px.Pixelization, rg.Regularization, hd.HyperImageSky),
@@ -126,7 +125,7 @@ class InversionBackgroundNoisePhase(InversionPhase):
     pixelization
     """
 
-    def __init__(self, phase: ph.Phase):
+    def __init__(self, phase: ph.PhaseImaging):
         super().__init__(
             phase=phase,
             variable_classes=(
@@ -145,7 +144,7 @@ class InversionBackgroundBothPhase(InversionPhase):
     pixelization
     """
 
-    def __init__(self, phase: ph.Phase):
+    def __init__(self, phase: ph.PhaseImaging):
         super().__init__(
             phase=phase,
             variable_classes=(
