@@ -11,18 +11,17 @@ test_name = "positions_mass_x1_source_x1_offset_centre"
 data_type = "no_lens_light_spherical_mass_and_source_smooth_offset_centre"
 data_resolution = "LSST"
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
+def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     def mask_function(image):
         return msk.Mask.circular(
             shape=image.shape,
             pixel_scale=image.pixel_scale,
             radius_arcsec=3.0,
-            centre=(4.0, 4.0)
+            centre=(4.0, 4.0),
         )
 
     class LensPhase(phase_imaging.PhaseImaging):
-
         def pass_priors(self, results):
 
             self.galaxies.lens.mass.centre_0 = af.GaussianPrior(mean=4.0, sigma=0.1)
@@ -52,4 +51,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 if __name__ == "__main__":
     import sys
 
-    runner.run(sys.modules[__name__], positions=[[[5.6, 4.0], [4.0, 5.6], [2.4, 4.0], [4.0, 2.4]]])
+    runner.run(
+        sys.modules[__name__],
+        positions=[[[5.6, 4.0], [4.0, 5.6], [2.4, 4.0], [4.0, 2.4]]],
+    )

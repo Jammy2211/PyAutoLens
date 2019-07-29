@@ -11,6 +11,7 @@ test_name = "lens_x2_galaxies_separate"
 data_type = "lens_only_x2_galaxies"
 data_resolution = "LSST"
 
+
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     def modify_mask_function(image):
         return msk.Mask.circular(

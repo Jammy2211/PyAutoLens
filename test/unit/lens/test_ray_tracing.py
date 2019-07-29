@@ -783,6 +783,8 @@ class TestAbstractTracer(object):
                 cosmology=cosmo.Planck15,
             )
 
+            assert tracer.cosmology == cosmo.Planck15
+
             assert tracer.image_plane.arcsec_per_kpc == pytest.approx(0.525060, 1e-5)
             assert tracer.image_plane.kpc_per_arcsec == pytest.approx(1.904544, 1e-5)
             assert tracer.image_plane.angular_diameter_distance_to_earth_in_units(

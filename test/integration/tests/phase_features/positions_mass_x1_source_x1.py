@@ -10,6 +10,7 @@ test_name = "positions_mass_x1_source_x1"
 data_type = "no_lens_light_spherical_mass_and_source_smooth"
 data_resolution = "LSST"
 
+
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1",
@@ -32,4 +33,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 if __name__ == "__main__":
     import sys
 
-    runner.run(sys.modules[__name__], positions=[[[1.6, 0.0], [0.0, 1.6], [-1.6, 0.0], [0.0, -1.6]]])
+    runner.run(
+        sys.modules[__name__],
+        positions=[[[1.6, 0.0], [0.0, 1.6], [-1.6, 0.0], [0.0, -1.6]]],
+    )

@@ -15,6 +15,7 @@ test_name = "potential"
 test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + "output/"
 
+
 def galaxy_fit_phase():
 
     pixel_scale = 0.1
@@ -39,9 +40,7 @@ def galaxy_fit_phase():
         array=np.ones(potential.shape), pixel_scale=pixel_scale
     )
 
-    data = gd.GalaxyData(
-        image=potential, noise_map=noise_map, pixel_scale=pixel_scale
-    )
+    data = gd.GalaxyData(image=potential, noise_map=noise_map, pixel_scale=pixel_scale)
 
     phase1 = phase.GalaxyFitPhase(
         phase_name=test_name + "/",

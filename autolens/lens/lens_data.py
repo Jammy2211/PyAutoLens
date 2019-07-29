@@ -123,7 +123,6 @@ class LensData(object):
 
         self.positions = positions
 
-
         self.uses_cluster_inversion = uses_cluster_inversion
 
         if uses_cluster_inversion:

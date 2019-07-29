@@ -12,6 +12,7 @@ test_name = "lens_mass_x1_source_x1_adaptive_brightness_hyper"
 data_type = "no_lens_light_and_source_smooth"
 data_resolution = "LSST"
 
+
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class Phase1(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
