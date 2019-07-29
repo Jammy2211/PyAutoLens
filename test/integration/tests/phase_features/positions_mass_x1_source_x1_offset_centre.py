@@ -38,7 +38,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
         mask_function=mask_function,
-        positions_threshold=0.1,
+        positions_threshold=0.5,
         optimizer_class=optimizer_class,
     )
 
