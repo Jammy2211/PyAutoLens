@@ -41,7 +41,7 @@ lens_galaxy = g.Galaxy(
     redshift=0.5,
     mass=mp.EllipticalIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
-    )
+    ),
 )
 source_galaxy = g.Galaxy(
     redshift=1.0,
@@ -52,14 +52,13 @@ source_galaxy = g.Galaxy(
         intensity=0.4,
         effective_radius=0.5,
         sersic_index=1.0,
-    )
+    ),
 )
 
 lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
 
 tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
-    galaxies=[lens_galaxy, source_galaxy],
-    image_plane_grid_stack=lens_data.grid_stack,
+    galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid_stack
 )
 fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 

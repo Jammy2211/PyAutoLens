@@ -659,11 +659,11 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
         if ylength > xlength:
             length_difference = ylength - xlength
-            x1 += int(length_difference/ 2.0)
+            x1 += int(length_difference / 2.0)
             x0 -= int(length_difference / 2.0)
         elif xlength > ylength:
             length_difference = xlength - ylength
-            y1 += int(length_difference/ 2.0)
+            y1 += int(length_difference / 2.0)
             y0 -= int(length_difference / 2.0)
 
         return [y0, y1 + 1, x0, x1 + 1]

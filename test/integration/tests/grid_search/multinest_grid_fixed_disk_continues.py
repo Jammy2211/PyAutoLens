@@ -1,33 +1,16 @@
-import os
-
 import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
 from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline as pl
-from test.integration import integration_util
-from test.simulation import simulation_util
+from test.integration.tests import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid_fixed_disk_continues"
+data_type = "lens_only_dev_vaucouleurs"
+data_resolution = "Euclid"
 
-test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + "output/"
-config_path = test_path + "config"
-af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
-
-
-def pipeline():
-
-    integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(
-        data_type="lens_only_dev_vaucouleurs", data_resolution="Euclid"
-    )
-    pipeline = make_pipeline(test_name=test_name)
-    pipeline.run(data=ccd_data)
-
-
-def make_pipeline(test_name):
+def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class QuickPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
 
@@ -74,20 +57,20 @@ def make_pipeline(test_name):
 
     phase1 = QuickPhase(
         phase_name="phase_1",
-        phase_folders=[test_type, test_name],
+        phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, bulge=lp.EllipticalSersic, disk=lp.EllipticalExponential
             )
         ),
-        optimizer_class=af.MultiNest,
+        optimizer_class=optimizer_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(af.phase.as_grid_search(phase_imaging.PhaseImaging)):
+    class GridPhase(af.as_grid_search(phase_imaging.PhaseImaging)):
         @property
         def grid_priors(self):
             return [self.variable.lens.bulge.sersic_index]
@@ -117,14 +100,14 @@ def make_pipeline(test_name):
 
     phase2 = GridPhase(
         phase_name="phase_2",
-        phase_folders=[test_type, test_name],
+        phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
                 bulge=lp.EllipticalSersic, disk=lp.EllipticalExponential
             )
         ),
         number_of_steps=2,
-        optimizer_class=af.MultiNest,
+        optimizer_class=optimizer_class,
     )
 
     phase2.optimizer.const_efficiency_mode = True
@@ -141,21 +124,23 @@ def make_pipeline(test_name):
 
     phase3 = BestResultPhase(
         phase_name="phase_3",
-        phase_folders=[test_type, test_name],
+        phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, bulge=lp.EllipticalSersic, disk=lp.EllipticalExponential
             )
         ),
-        optimizer_class=af.MultiNest,
+        optimizer_class=optimizer_class,
     )
 
     phase3.optimizer.const_efficiency_mode = True
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(test_name, phase1, phase2, phase3)
+    return pl.PipelineImaging(name, phase1, phase2, phase3)
 
 
 if __name__ == "__main__":
-    pipeline()
+    import sys
+
+    runner.run(sys.modules[__name__])

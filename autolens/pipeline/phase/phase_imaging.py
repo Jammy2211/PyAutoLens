@@ -461,7 +461,8 @@ class PhaseImaging(Phase):
             positions = self.lens_data.positions if self.should_plot_positions else None
 
             subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-                path=image_path, folder_names=['subplots'])
+                path=image_path, folder_names=["subplots"]
+            )
 
             phase_plotters.plot_ccd_for_phase(
                 ccd_data=self.lens_data.ccd_data,
@@ -709,7 +710,8 @@ class PhaseImaging(Phase):
         def visualize(self, instance, image_path, during_analysis):
 
             subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-                path=image_path, folder_names=['subplots'])
+                path=image_path, folder_names=["subplots"]
+            )
 
             instance = self.associate_images(instance=instance)
 

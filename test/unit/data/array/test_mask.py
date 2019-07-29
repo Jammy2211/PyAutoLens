@@ -1476,10 +1476,10 @@ class TestMaskExtractor:
         mask = msk.Mask(
             array=np.array(
                 [
-                    [True,  True,  True,  True,  True, True],
+                    [True, True, True, True, True, True],
                     [True, False, False, False, False, True],
                     [True, False, False, False, False, True],
-                    [True,  True,  True,  True,  True, True],
+                    [True, True, True, True, True, True],
                 ]
             ),
             pixel_scale=1.0,
@@ -1490,12 +1490,12 @@ class TestMaskExtractor:
         mask = msk.Mask(
             array=np.array(
                 [
-                    [True,  True,  True,  True],
+                    [True, True, True, True],
                     [True, False, False, True],
                     [True, False, False, True],
                     [True, False, False, True],
                     [True, False, False, True],
-                    [True,  True,  True,  True],
+                    [True, True, True, True],
                 ]
             ),
             pixel_scale=1.0,
