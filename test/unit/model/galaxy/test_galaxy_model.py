@@ -391,12 +391,6 @@ class TestHyperGalaxy(object):
 
 
 class TestFixedProfiles(object):
-    def test_fixed_light_property(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift, light_profile=light_profiles.EllipticalSersic()
-        )
-
-        assert len(galaxy_model.constant_light_profiles) == 1
 
     def test_fixed_light(self):
         galaxy_model = gp.GalaxyModel(
@@ -408,13 +402,6 @@ class TestFixedProfiles(object):
         galaxy = galaxy_model.instance_for_arguments(arguments)
 
         assert len(galaxy.light_profiles) == 1
-
-    def test_fixed_mass_property(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift, mass_profile=mass_profiles.SphericalNFW()
-        )
-
-        assert len(galaxy_model.constant_mass_profiles) == 1
 
     def test_fixed_mass(self):
         galaxy_model = gp.GalaxyModel(
@@ -479,32 +466,3 @@ def make_galaxy():
         exponential=light_profiles.EllipticalExponential(),
         spherical=mass_profiles.SphericalIsothermal(),
     )
-
-
-class TestFromGalaxy(object):
-    def test_redshift(self, galaxy):
-        galaxy_model = gp.GalaxyModel.from_galaxy(galaxy)
-
-        assert galaxy_model.redshift == 3
-
-    def test_profiles(self, galaxy):
-        galaxy_model = gp.GalaxyModel.from_galaxy(galaxy)
-
-        assert galaxy_model.sersic == galaxy.sersic
-        assert galaxy_model.exponential == galaxy.exponential
-        assert galaxy_model.spherical == galaxy.spherical
-
-    def test_recover_galaxy(self, galaxy):
-        recovered = gp.GalaxyModel.from_galaxy(galaxy).instance_for_arguments({})
-
-        assert recovered.sersic == galaxy.sersic
-        assert recovered.exponential == galaxy.exponential
-        assert recovered.spherical == galaxy.spherical
-        assert recovered.redshift == galaxy.redshift
-
-    def test_override_argument(self, galaxy):
-        recovered = gp.GalaxyModel.from_galaxy(galaxy)
-        assert recovered.hyper_galaxy is None
-
-        recovered = gp.GalaxyModel.from_galaxy(galaxy, hyper_galaxy=g.HyperGalaxy)
-        assert recovered.hyper_galaxy is not None
