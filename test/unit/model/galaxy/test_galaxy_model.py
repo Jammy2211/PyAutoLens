@@ -76,12 +76,6 @@ def make_galaxy_model(mapper,):
 
 
 class TestMassAndLightProfiles(object):
-    def test_constant_profile(self, mass_and_light):
-        prior = gp.GalaxyModel(redshift=0.5, profile=mass_and_light)
-
-        assert 1 == len(prior.constant_light_profiles)
-        assert 1 == len(prior.constant_mass_profiles)
-
     def test_make_galaxy_from_constant_profile(self, mass_and_light):
         prior = gp.GalaxyModel(redshift=0.5, profile=mass_and_light)
 
@@ -129,6 +123,7 @@ class TestGalaxyModel:
             light_profile=light_profiles.EllipticalDevVaucouleurs,
             mass_profile=mass_profiles.EllipticalCoredIsothermal,
         )
+        print(mapper.galaxy_1.redshift)
         assert len(mapper.prior_tuples_ordered_by_id) == 13
 
     def test_multiple_galaxies(self, mapper):
