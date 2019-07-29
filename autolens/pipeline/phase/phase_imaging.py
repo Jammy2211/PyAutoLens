@@ -5,7 +5,7 @@ import autofit as af
 from autolens import exc
 from autolens.lens import ray_tracing, lens_data as ld, lens_fit
 from autolens.model.galaxy import galaxy as g
-from autolens.pipeline import tagging as tag
+from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 from autolens.pipeline.plotters import phase_plotters
@@ -59,7 +59,7 @@ class PhaseImaging(Phase):
 
         if tag_phases:
 
-            phase_tag = tag.phase_tag_from_phase_settings(
+            phase_tag = phase_tagging.phase_tag_from_phase_settings(
                 sub_grid_size=sub_grid_size,
                 bin_up_factor=bin_up_factor,
                 image_psf_shape=image_psf_shape,
