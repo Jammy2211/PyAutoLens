@@ -142,7 +142,7 @@ class TestGalaxyModel:
     def test_align_centres(self, galaxy_model):
         prior_models = galaxy_model.prior_models
 
-        assert prior_models[0].centre != prior_models[1].centre
+        assert prior_models[1].centre != prior_models[2].centre
 
         galaxy_model = gp.GalaxyModel(
             redshift=g.Redshift,
@@ -153,12 +153,12 @@ class TestGalaxyModel:
 
         prior_models = galaxy_model.prior_models
 
-        assert prior_models[0].centre == prior_models[1].centre
+        assert prior_models[1].centre == prior_models[2].centre
 
     def test_align_axis_ratios(self, galaxy_model):
         prior_models = galaxy_model.prior_models
 
-        assert prior_models[0].axis_ratio != prior_models[1].axis_ratio
+        assert prior_models[1].axis_ratio != prior_models[2].axis_ratio
 
         prior_models = gp.GalaxyModel(
             redshift=g.Redshift,
@@ -166,12 +166,12 @@ class TestGalaxyModel:
             mass_profile=mass_profiles.EllipticalCoredIsothermal,
             align_axis_ratios=True,
         ).prior_models
-        assert prior_models[0].axis_ratio == prior_models[1].axis_ratio
+        assert prior_models[1].axis_ratio == prior_models[2].axis_ratio
 
     def test_align_phis(self, galaxy_model):
         prior_models = galaxy_model.prior_models
 
-        assert prior_models[0].phi != prior_models[1].phi
+        assert prior_models[1].phi != prior_models[2].phi
 
         prior_models = gp.GalaxyModel(
             redshift=g.Redshift,
@@ -179,7 +179,7 @@ class TestGalaxyModel:
             mass_profile=mass_profiles.EllipticalCoredIsothermal,
             align_orientations=True,
         ).prior_models
-        assert prior_models[0].phi == prior_models[1].phi
+        assert prior_models[1].phi == prior_models[2].phi
 
 
 class TestNamedProfiles:
