@@ -1099,23 +1099,23 @@ class TestPhase(object):
                 0.1,
                 0.2,
                 0.3,
-                0.4,
                 0.9,
+                0.4,
                 0.5,
                 0.7,
                 0.8,
             ]
         )
 
-        assert instance.galaxies[0].sersic.centre[0] == 0.2
-        assert instance.galaxies[0].sis.centre[0] == 0.1
-        assert instance.galaxies[0].sis.centre[1] == 0.2
-        assert instance.galaxies[0].sis.einstein_radius == 0.3
-        assert instance.galaxies[0].redshift == 0.4
-        assert instance.galaxies[1].sis.centre[0] == 0.9
-        assert instance.galaxies[1].sis.centre[1] == 0.5
-        assert instance.galaxies[1].sis.einstein_radius == 0.7
-        assert instance.galaxies[1].redshift == 0.8
+        assert instance.galaxies.sersic.sersic.centre[0] == 0.2
+        assert instance.galaxies.sersic.sis.centre[0] == 0.1
+        assert instance.galaxies.sersic.sis.centre[1] == 0.2
+        assert instance.galaxies.sersic.sis.einstein_radius == 0.3
+        assert instance.galaxies.sersic.redshift == 0.4
+        assert instance.galaxies.sis.sis.centre[0] == 0.9
+        assert instance.galaxies.sis.sis.centre[1] == 0.5
+        assert instance.galaxies.sis.sis.einstein_radius == 0.7
+        assert instance.galaxies.sis.redshift == 0.8
 
         class LensPlanePhase2(phase_imaging.PhaseImaging):
             # noinspection PyUnusedLocal
