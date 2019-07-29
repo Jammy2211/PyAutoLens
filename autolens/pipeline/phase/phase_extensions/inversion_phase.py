@@ -9,18 +9,15 @@ from .hyper_phase import HyperPhase
 # noinspection PyAbstractClass
 class VariableFixingHyperPhase(HyperPhase):
     def __init__(
-        self,
-        phase: ph.PhaseImaging,
-        hyper_name: str,
-        variable_classes=tuple(),
-        default_classes=None,
+            self,
+            phase: ph.PhaseImaging,
+            hyper_name: str,
+            variable_classes=tuple()
     ):
         super().__init__(phase=phase, hyper_name=hyper_name)
-        self.default_classes = default_classes or dict()
         self.variable_classes = variable_classes
 
     def make_hyper_phase(self):
-
         phase = super().make_hyper_phase()
 
         phase.optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
@@ -35,19 +32,21 @@ class VariableFixingHyperPhase(HyperPhase):
 
         return phase
 
+    def make_variable(self, constant):
+        return af.AbstractPriorModel.from_instance(
+            constant,
+            variable_classes=self.variable_classes
+        )
+
     def run_hyper(self, data, results=None, **kwargs):
         """
         Run the phase, overriding the optimizer's variable instance with one created to
         only fit pixelization hyperparameters.
         """
-
-        variable = results.last.variable.copy_with_fixed_priors(
-            results.last.constant, self.variable_classes
-        )
-        self.add_defaults(variable)
-
         phase = self.make_hyper_phase()
-        phase.optimizer.variable = variable
+        phase.optimizer.variable = self.make_variable(
+            results.last.constant
+        )
 
         return phase.run(
             data,
@@ -55,23 +54,6 @@ class VariableFixingHyperPhase(HyperPhase):
             mask=results.last.mask_2d,
             positions=results.last.positions,
         )
-
-    def add_defaults(self, variable: af.ModelMapper):
-        """
-        Add default prior models for each of the items in the defaults dictionary.
-
-        Provides a way of specifying new prior models to be included at the top level
-        in this phase.
-
-        Parameters
-        ----------
-        variable
-            The variable object to be used in this phase to which default prior
-            models are attached.
-        """
-        for key, value in self.default_classes.items():
-            if not hasattr(variable, key) or getattr(variable, key) is None:
-                setattr(variable, key, value)
 
 
 class InversionPhase(VariableFixingHyperPhase):
@@ -82,16 +64,14 @@ class InversionPhase(VariableFixingHyperPhase):
     """
 
     def __init__(
-        self,
-        phase: ph.PhaseImaging,
-        variable_classes=(px.Pixelization, rg.Regularization),
-        default_classes=None,
+            self,
+            phase: ph.PhaseImaging,
+            variable_classes=(px.Pixelization, rg.Regularization),
     ):
         super().__init__(
             phase=phase,
             variable_classes=variable_classes,
-            hyper_name="inversion",
-            default_classes=default_classes,
+            hyper_name="inversion"
         )
 
     @property
@@ -113,8 +93,7 @@ class InversionBackgroundSkyPhase(InversionPhase):
     def __init__(self, phase: ph.PhaseImaging):
         super().__init__(
             phase=phase,
-            variable_classes=(px.Pixelization, rg.Regularization, hd.HyperImageSky),
-            default_classes={"hyper_image_sky": hd.HyperImageSky},
+            variable_classes=(px.Pixelization, rg.Regularization, hd.HyperImageSky)
         )
 
 
@@ -132,8 +111,7 @@ class InversionBackgroundNoisePhase(InversionPhase):
                 px.Pixelization,
                 rg.Regularization,
                 hd.HyperNoiseBackground,
-            ),
-            default_classes={"hyper_noise_background": hd.HyperNoiseBackground},
+            )
         )
 
 
@@ -152,9 +130,5 @@ class InversionBackgroundBothPhase(InversionPhase):
                 rg.Regularization,
                 hd.HyperImageSky,
                 hd.HyperNoiseBackground,
-            ),
-            default_classes={
-                "hyper_image_sky": hd.HyperImageSky,
-                "hyper_noise_background": hd.HyperNoiseBackground,
-            },
+            )
         )
