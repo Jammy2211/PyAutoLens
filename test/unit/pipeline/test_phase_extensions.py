@@ -52,7 +52,10 @@ def make_result(lens_data_7x7, instance):
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=phase_imaging.PhaseImaging.Analysis(
-            lens_data=lens_data_7x7, cosmology=cosmo.Planck15, positions_threshold=1.0, image_path=''
+            lens_data=lens_data_7x7,
+            cosmology=cosmo.Planck15,
+            positions_threshold=1.0,
+            image_path="",
         ),
         optimizer=None,
     )
@@ -437,9 +440,7 @@ class TestImagePassing(object):
             == analysis.lens_data.cluster.shape[0]
         )
 
-    def test_associate_images_(
-        self, instance, result, lens_data_7x7
-    ):
+    def test_associate_images_(self, instance, result, lens_data_7x7):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = phase_imaging.PhaseImaging.Analysis(
@@ -447,7 +448,7 @@ class TestImagePassing(object):
             cosmology=None,
             positions_threshold=None,
             results=results_collection,
-            image_path='',
+            image_path="",
         )
 
         instance = analysis.associate_images(instance=instance)
@@ -475,9 +476,7 @@ class TestImagePassing(object):
             hyper_model_image_1d, 1.0e-4
         )
 
-    def test_fit_uses_hyper_fit_correctly_(
-        self, instance, result, lens_data_7x7
-    ):
+    def test_fit_uses_hyper_fit_correctly_(self, instance, result, lens_data_7x7):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = phase_imaging.PhaseImaging.Analysis(
@@ -485,7 +484,7 @@ class TestImagePassing(object):
             cosmology=cosmo.Planck15,
             positions_threshold=None,
             results=results_collection,
-            image_path='',
+            image_path="",
         )
 
         hyper_galaxy = g.HyperGalaxy(
@@ -514,9 +513,7 @@ class TestImagePassing(object):
             hyper_galaxy_image_1d=hyper_lens_image_1d,
             hyper_minimum_value=0.0,
         )
-        g1 = g.Galaxy(
-            redshift=1.0, light_profile=instance.galaxies.source.light
-        )
+        g1 = g.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
 
         tracer = rt.Tracer.from_galaxies_and_image_plane_grid_stack(
             galaxies=[g0, g1], image_plane_grid_stack=lens_data_7x7.grid_stack

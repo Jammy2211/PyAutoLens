@@ -8,10 +8,9 @@ from autolens.pipeline.phase import phase_imaging
 from test.integration.tests import runner
 
 test_type = "lens_and_source_inversion"
-test_name = "lens_mass_x1_source_x1_adaptive_weighted_hyper_constant_pass"
+test_name = "lens_mass_x1_source_x1_adaptive_brightness_hyper_constant_pass"
 data_type = "no_lens_light_and_source_smooth"
 data_resolution = "LSST"
-
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = phase_imaging.PhaseImaging(

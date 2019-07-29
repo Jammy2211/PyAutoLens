@@ -25,7 +25,8 @@ def plot_ccd_for_phase(
 ):
 
     output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=visualize_path, folder_names=['ccd'])
+        path=visualize_path, folder_names=["ccd"]
+    )
 
     if should_plot_as_subplot:
 
@@ -78,7 +79,8 @@ def plot_ray_tracing_for_phase(
     subplot_path,
 ):
     output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=visualize_path, folder_names=['ray_tracing'])
+        path=visualize_path, folder_names=["ray_tracing"]
+    )
 
     if should_plot_as_subplot:
 
@@ -132,7 +134,8 @@ def plot_ray_tracing_for_phase(
         if should_plot_all_at_end_fits:
 
             fits_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-                path=output_path, folder_names=['fits'])
+                path=output_path, folder_names=["fits"]
+            )
 
             ray_tracing_plotters.plot_ray_tracing_individual(
                 tracer=tracer,
@@ -183,7 +186,8 @@ def plot_lens_fit_for_phase(
 ):
 
     output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=visualize_path, folder_names=['lens_fit'])
+        path=visualize_path, folder_names=["lens_fit"]
+    )
 
     if should_plot_fit_as_subplot:
 
@@ -284,7 +288,8 @@ def plot_lens_fit_for_phase(
         if should_plot_all_at_end_fits:
 
             fits_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-                path=output_path, folder_names=['fits'])
+                path=output_path, folder_names=["fits"]
+            )
 
             lens_fit_plotters.plot_fit_individuals(
                 fit=fit,
@@ -328,7 +333,8 @@ def plot_hyper_images_for_phase(
 ):
 
     output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=visualize_path, folder_names=['hyper'])
+        path=visualize_path, folder_names=["hyper"]
+    )
 
     if should_plot_hyper_model_image:
 

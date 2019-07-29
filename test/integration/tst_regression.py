@@ -1,9 +1,6 @@
+import shutil
 import os
 
-import shutil
-
-import autolens.pipeline.phase.phase_imaging
-import autofit as af
 import autofit as af
 from autolens.data import ccd
 from autolens.data import simulated_ccd as sim_ccd
@@ -12,6 +9,7 @@ from autolens.data.array.util import array_util
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
+from autolens.pipeline.phase import phase_imaging
 from test.integration import integration_util
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
@@ -19,13 +17,14 @@ af.conf.instance = af.conf.Config(
     "{}/config".format(dirpath), "{}/output/".format(dirpath)
 )
 
+
 dirpath = os.path.dirname(dirpath)
 output_path = "{}/output".format(dirpath)
 
 test_name = "test"
 
 
-def simulate_integration_image(test_name, pixel_scale, galaxies, galaxies):
+def simulate_integration_image(test_name, pixel_scale, galaxies):
     output_path = (
         "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
         + test_name
@@ -38,30 +37,18 @@ def simulate_integration_image(test_name, pixel_scale, galaxies, galaxies):
         shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale
     )
 
-    grid_stack = grids.GridStack.grid_stack_for_simulation(
-        shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=1, psf_shape=psf_shape
+    grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+        shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=1,
     )
 
-    image_shape = grid_stack.regular.padded_shape
-
-    if not galaxies:
-
-        tracer = ray_tracing.Tracer(
-            galaxies=galaxies, image_plane_grid_stack=grid_stack
-        )
-
-    elif galaxies:
-
-        tracer = ray_tracing.Tracer(
-            galaxies=galaxies,
-            galaxies=galaxies,
-            image_plane_grid_stack=grid_stack,
-        )
+    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        galaxies=galaxies, image_plane_grid_stack=grid_stack
+    )
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-        image=tracer.padded_profile_image_plane_image_2d_from_psf_shape,
+    ccd_simulated = sim_ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
+        tracer=tracer,
         pixel_scale=pixel_scale,
         exposure_time=100.0,
         background_sky_level=10.0,
@@ -134,7 +121,6 @@ class TestPhaseModelMapper(object):
             test_name=test_name,
             pixel_scale=0.5,
             galaxies=[lens_galaxy],
-            galaxies=[],
         )
 
         path = "{}/".format(
@@ -148,7 +134,7 @@ class TestPhaseModelMapper(object):
             pixel_scale=0.1,
         )
 
-        class MMPhase(phase_imaging.LensPlanePhase):
+        class MMPhase(phase_imaging.PhaseImaging):
             def pass_priors(self, results):
                 self.galaxies.lens.sersic.intensity = (
                     self.galaxies.lens.sersic.axis_ratio
@@ -215,7 +201,6 @@ class TestPhaseModelMapper(object):
             test_name=test_name,
             pixel_scale=0.5,
             galaxies=[lens_galaxy],
-            galaxies=[],
         )
         path = "{}/".format(
             os.path.dirname(os.path.realpath(__file__))
@@ -228,7 +213,7 @@ class TestPhaseModelMapper(object):
             pixel_scale=0.1,
         )
 
-        class MMPhase(phase_imaging.LensPlanePhase):
+        class MMPhase(phase_imaging.PhaseImaging):
             def pass_priors(self, results):
                 self.galaxies.lens.sersic.axis_ratio = 0.2
                 self.galaxies.lens.sersic.phi = 90.0

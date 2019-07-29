@@ -746,8 +746,14 @@ class TestPhase(object):
 
         # noinspection PyTypeChecker
 
-        lens_galaxy = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
-        source_galaxy = g.Galaxy(redshift=1.0, pixelization=pix.Rectangular(shape=(5,5)), regularization=reg.Constant(coefficient=1.0))
+        lens_galaxy = g.Galaxy(
+            redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+        )
+        source_galaxy = g.Galaxy(
+            redshift=1.0,
+            pixelization=pix.Rectangular(shape=(5, 5)),
+            regularization=reg.Constant(coefficient=1.0),
+        )
 
         tracer_no_border = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
             galaxies=[lens_galaxy, source_galaxy],
@@ -770,7 +776,7 @@ class TestPhase(object):
             mask_function=mask_function_7x7,
             cosmology=cosmo.Planck15,
             phase_name="test_phase",
-            use_inversion_border=True
+            use_inversion_border=True,
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
@@ -781,14 +787,16 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
         mapper = tracer.mappers_of_planes[0]
 
-        assert (mapper_with_border.grid_stack.regular == mapper.grid_stack.regular).all()
+        assert (
+            mapper_with_border.grid_stack.regular == mapper.grid_stack.regular
+        ).all()
 
         phase_7x7 = phase_imaging.PhaseImaging(
             galaxies=[lens_galaxy, source_galaxy],
             mask_function=mask_function_7x7,
             cosmology=cosmo.Planck15,
             phase_name="test_phase",
-            use_inversion_border=False
+            use_inversion_border=False,
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)

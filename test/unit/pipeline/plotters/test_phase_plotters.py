@@ -37,12 +37,16 @@ def test__plot_ccd_for_phase(
     assert phase_plotter_path + "ccd/ccd_image.png" in plot_patch.paths
     assert phase_plotter_path + "ccd/ccd_noise_map.png" not in plot_patch.paths
     assert phase_plotter_path + "ccd/ccd_psf.png" in plot_patch.paths
-    assert phase_plotter_path + "ccd/ccd_signal_to_noise_map.png" not in plot_patch.paths
+    assert (
+        phase_plotter_path + "ccd/ccd_signal_to_noise_map.png" not in plot_patch.paths
+    )
     assert (
         phase_plotter_path + "ccd/ccd_absolute_signal_to_noise_map.png"
         not in plot_patch.paths
     )
-    assert phase_plotter_path + "ccd/ccd_potential_chi_squared_map.png" in plot_patch.paths
+    assert (
+        phase_plotter_path + "ccd/ccd_potential_chi_squared_map.png" in plot_patch.paths
+    )
 
 
 def test__plot_ray_tracing_for_phase__dependent_on_input(
@@ -69,12 +73,26 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
     )
 
     assert phase_plotter_path + "tracer.png" in plot_patch.paths
-    assert phase_plotter_path + "ray_tracing/tracer_image_plane_image.png" in plot_patch.paths
-    assert phase_plotter_path + "ray_tracing/tracer_source_plane.png" in plot_patch.paths
-    assert phase_plotter_path + "ray_tracing/tracer_convergence.png" not in plot_patch.paths
+    assert (
+        phase_plotter_path + "ray_tracing/tracer_image_plane_image.png"
+        in plot_patch.paths
+    )
+    assert (
+        phase_plotter_path + "ray_tracing/tracer_source_plane.png" in plot_patch.paths
+    )
+    assert (
+        phase_plotter_path + "ray_tracing/tracer_convergence.png"
+        not in plot_patch.paths
+    )
     assert phase_plotter_path + "ray_tracing/tracer_potential.png" in plot_patch.paths
-    assert phase_plotter_path + "ray_tracing/tracer_deflections_y.png" not in plot_patch.paths
-    assert phase_plotter_path + "ray_tracing/tracer_deflections_x.png" not in plot_patch.paths
+    assert (
+        phase_plotter_path + "ray_tracing/tracer_deflections_y.png"
+        not in plot_patch.paths
+    )
+    assert (
+        phase_plotter_path + "ray_tracing/tracer_deflections_x.png"
+        not in plot_patch.paths
+    )
 
 
 def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
@@ -115,21 +133,41 @@ def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
     assert phase_plotter_path + "lens_fit.png" in plot_patch.paths
     assert phase_plotter_path + "lens_fit/fit_image.png" in plot_patch.paths
     assert phase_plotter_path + "lens_fit/fit_noise_map.png" not in plot_patch.paths
-    assert phase_plotter_path + "lens_fit/fit_signal_to_noise_map.png" not in plot_patch.paths
+    assert (
+        phase_plotter_path + "lens_fit/fit_signal_to_noise_map.png"
+        not in plot_patch.paths
+    )
     assert phase_plotter_path + "lens_fit/fit_model_image.png" in plot_patch.paths
     assert phase_plotter_path + "lens_fit/fit_residual_map.png" not in plot_patch.paths
-    assert phase_plotter_path + "lens_fit/fit_normalized_residual_map.png" in plot_patch.paths
+    assert (
+        phase_plotter_path + "lens_fit/fit_normalized_residual_map.png"
+        in plot_patch.paths
+    )
     assert phase_plotter_path + "lens_fit/fit_chi_squared_map.png" in plot_patch.paths
     assert (
-        phase_plotter_path + "lens_fit/fit_subtracted_image_of_plane_0.png" in plot_patch.paths
+        phase_plotter_path + "lens_fit/fit_subtracted_image_of_plane_0.png"
+        in plot_patch.paths
     )
     assert (
-        phase_plotter_path + "lens_fit/fit_subtracted_image_of_plane_1.png" in plot_patch.paths
+        phase_plotter_path + "lens_fit/fit_subtracted_image_of_plane_1.png"
+        in plot_patch.paths
     )
-    assert phase_plotter_path + "lens_fit/fit_model_image_of_plane_0.png" not in plot_patch.paths
-    assert phase_plotter_path + "lens_fit/fit_model_image_of_plane_1.png" not in plot_patch.paths
-    assert phase_plotter_path + "lens_fit/fit_plane_image_of_plane_0.png" in plot_patch.paths
-    assert phase_plotter_path + "lens_fit/fit_plane_image_of_plane_1.png" in plot_patch.paths
+    assert (
+        phase_plotter_path + "lens_fit/fit_model_image_of_plane_0.png"
+        not in plot_patch.paths
+    )
+    assert (
+        phase_plotter_path + "lens_fit/fit_model_image_of_plane_1.png"
+        not in plot_patch.paths
+    )
+    assert (
+        phase_plotter_path + "lens_fit/fit_plane_image_of_plane_0.png"
+        in plot_patch.paths
+    )
+    assert (
+        phase_plotter_path + "lens_fit/fit_plane_image_of_plane_1.png"
+        in plot_patch.paths
+    )
 
 
 def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
@@ -153,5 +191,6 @@ def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     assert phase_plotter_path + "hyper/hyper_model_image.png" in plot_patch.paths
     assert phase_plotter_path + "hyper/hyper_galaxy_images.png" not in plot_patch.paths
     assert (
-        phase_plotter_path + "hyper/hyper_galaxy_cluster_images.png" not in plot_patch.paths
+        phase_plotter_path + "hyper/hyper_galaxy_cluster_images.png"
+        not in plot_patch.paths
     )

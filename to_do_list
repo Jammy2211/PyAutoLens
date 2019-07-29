@@ -15,7 +15,6 @@ Small Picture:
 - Use model image for norm range on sbplots.
 - tracers used in some simulations will double calc deflecitons because they use a padded tracer .Add a omit
   deflections bool or something
-- Turn Border off in modeling
 - Unit Test HyperNoise Maps
 - Summarize output
 - Fit Summary with likelhood, evidence, RFF, etc.

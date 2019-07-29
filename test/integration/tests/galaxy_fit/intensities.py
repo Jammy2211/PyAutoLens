@@ -4,7 +4,6 @@ import numpy as np
 import autofit as af
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.galaxy import galaxy_data as gd
-from autolens.model.galaxy.util import galaxy_util
 from autolens.data.array import grids, scaled_array
 from autolens.pipeline.phase import phase
 from autolens.model.profiles import light_profiles as lp
@@ -15,9 +14,6 @@ test_name = "intensities"
 
 test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + "output/"
-config_path = test_path + "config"
-af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
-
 
 def galaxy_fit_phase():
 
@@ -32,15 +28,14 @@ def galaxy_fit_phase():
 
     galaxy = g.Galaxy(
         redshift=0.5,
-        mass=lp.SphericalExponential(
+        light=lp.SphericalExponential(
             centre=(0.0, 0.0), intensity=1.0, effective_radius=0.5
         ),
     )
 
-    intensities = galaxy_util.intensities_of_galaxies_from_grid(
-        galaxies=[galaxy], grid=grid_stack.sub
+    intensities = galaxy.intensities_from_grid(
+        galaxies=[galaxy], grid=grid_stack.sub, return_in_2d=True
     )
-    intensities = grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=intensities)
 
     noise_map = scaled_array.ScaledSquarePixelArray(
         array=np.ones(intensities.shape), pixel_scale=pixel_scale
@@ -51,11 +46,11 @@ def galaxy_fit_phase():
     )
 
     phase1 = phase.GalaxyFitPhase(
+        phase_name=test_name + "/",
         galaxies=dict(gal=gm.GalaxyModel(redshift=0.5, light=lp.SphericalExponential)),
         use_intensities=True,
         sub_grid_size=4,
         optimizer_class=af.MultiNest,
-        phase_name=test_name + "/",
     )
 
     phase1.run(galaxy_data=[data])
