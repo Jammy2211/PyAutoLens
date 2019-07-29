@@ -5,40 +5,49 @@ import autofit as af
 from autolens import exc
 from autolens.lens import ray_tracing, lens_data as ld, lens_fit
 from autolens.model.galaxy import galaxy as g
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import regularization as reg
 from autolens.pipeline import tagging as tag
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 from autolens.pipeline.plotters import phase_plotters
 
 
-class PhaseImaging(Phase):
+def isinstance_or_prior(obj, cls):
+    if isinstance(obj, cls):
+        return True
+    if isinstance(obj, af.PriorModel) and obj.cls == cls:
+        return True
+    return False
 
+
+class PhaseImaging(Phase):
     hyper_image_sky = af.PhaseProperty("hyper_image_sky")
     hyper_noise_background = af.PhaseProperty("hyper_noise_background")
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
-        self,
-        phase_name,
-        tag_phases=True,
-        phase_folders=tuple(),
-        galaxies=None,
-        hyper_image_sky=None,
-        hyper_noise_background=None,
-        optimizer_class=af.MultiNest,
-        sub_grid_size=2,
-        bin_up_factor=None,
-        image_psf_shape=None,
-        inversion_psf_shape=None,
-        positions_threshold=None,
-        mask_function=None,
-        inner_mask_radii=None,
-        interp_pixel_scale=None,
-        use_inversion_border=True,
-        inversion_pixel_limit=None,
-        cluster_pixel_scale=None,
-        cosmology=cosmo.Planck15,
-        auto_link_priors=False,
+            self,
+            phase_name,
+            tag_phases=True,
+            phase_folders=tuple(),
+            galaxies=None,
+            hyper_image_sky=None,
+            hyper_noise_background=None,
+            optimizer_class=af.MultiNest,
+            sub_grid_size=2,
+            bin_up_factor=None,
+            image_psf_shape=None,
+            inversion_psf_shape=None,
+            positions_threshold=None,
+            mask_function=None,
+            inner_mask_radii=None,
+            interp_pixel_scale=None,
+            use_inversion_border=True,
+            inversion_pixel_limit=None,
+            cluster_pixel_scale=None,
+            cosmology=cosmo.Planck15,
+            auto_link_priors=False,
     ):
 
         """
@@ -120,24 +129,32 @@ class PhaseImaging(Phase):
     @property
     def uses_hyper_images(self):
         if self.galaxies:
-            return any([galaxy.uses_hyper_images for galaxy in self.galaxies])
-        else:
-            return False
+            for galaxy in self.galaxies:
+                if galaxy.hyper_galaxy is not None or isinstance_or_prior(
+                        galaxy.regularization,
+                        reg.AdaptiveBrightness
+                ):
+                    return True
+        return False
 
     @property
     def uses_inversion(self):
         if self.galaxies:
             for galaxy in self.galaxies:
-                if galaxy.uses_inversion:
+                if galaxy.pixelization is not None:
                     return True
         return False
 
     @property
     def uses_cluster_inversion(self):
         if self.galaxies:
+
             for galaxy in self.galaxies:
-                if galaxy.uses_cluster_inversion:
+                if isinstance_or_prior(
+                        galaxy.pixelization, pix.VoronoiBrightnessImage
+                ):
                     return True
+
         return False
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
@@ -292,11 +309,11 @@ class PhaseImaging(Phase):
         return phase_extensions.InversionPhase(phase=self)
 
     def extend_with_multiple_hyper_phases(
-        self,
-        hyper_galaxy=False,
-        inversion=False,
-        include_background_sky=False,
-        include_background_noise=False,
+            self,
+            hyper_galaxy=False,
+            inversion=False,
+            include_background_sky=False,
+            include_background_noise=False,
     ):
 
         phase_hyper_galaxy = None
@@ -325,14 +342,14 @@ class PhaseImaging(Phase):
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
         def __init__(
-            self,
-            lens_data,
-            cosmology,
-            positions_threshold,
-            use_inversion_border=True,
-            inversion_pixel_limit=None,
-            image_path=None,
-            results=None,
+                self,
+                lens_data,
+                cosmology,
+                positions_threshold,
+                use_inversion_border=True,
+                inversion_pixel_limit=None,
+                image_path=None,
+                results=None,
         ):
 
             super(PhaseImaging.Analysis, self).__init__(
@@ -528,7 +545,6 @@ class PhaseImaging(Phase):
                 )
 
                 if hasattr(self.results.last, "hyper_combined"):
-
                     self.preload_pixelization_grid = (
                         self.results.last.hyper_combined.most_likely_image_plane_pixelization_grid
                     )
@@ -591,7 +607,7 @@ class PhaseImaging(Phase):
             """
             if hasattr(self, "hyper_galaxy_image_1d_path_dict"):
                 for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                    g.Galaxy
+                        g.Galaxy
                 ):
                     if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
@@ -686,7 +702,7 @@ class PhaseImaging(Phase):
                 )
 
                 if not fit.maximum_separation_within_threshold(
-                    self.positions_threshold
+                        self.positions_threshold
                 ):
                     raise exc.RayTracingException
 
@@ -695,7 +711,7 @@ class PhaseImaging(Phase):
             if self.inversion_pixel_limit is not None:
                 if instance.galaxies:
                     for galaxy in instance.galaxies:
-                        if galaxy.has_pixelization:
+                        if galaxy.pixelization is not None:
                             if galaxy.pixelization.pixels > self.inversion_pixel_limit:
                                 raise exc.PixelizationException
 

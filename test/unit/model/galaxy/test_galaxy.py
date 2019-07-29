@@ -1154,72 +1154,6 @@ class TestHyperGalaxy(object):
             assert (hyper_noise_map == np.array([0.0, 2.0, 18.0])).all()
 
 
-class TestUsesBools(object):
-    def test__uses_cluster_inversion__tests_depend_on_any_pixelizations(self):
-
-        galaxy = g.Galaxy(redshift=0.5)
-        assert galaxy.uses_inversion == False
-
-        galaxy = g.Galaxy(
-            redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant()
-        )
-
-        assert galaxy.uses_inversion == True
-
-        galaxy = g.Galaxy(
-            redshift=0.5,
-            pixelization=pix.VoronoiBrightnessImage(),
-            regularization=reg.AdaptiveBrightness(),
-        )
-
-        assert galaxy.uses_inversion == True
-
-    def test__uses_cluster_inversion__tests_depend_specific_pixelizations(self):
-
-        galaxy = g.Galaxy(redshift=0.5)
-        assert galaxy.uses_cluster_inversion == False
-
-        galaxy = g.Galaxy(
-            redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant()
-        )
-
-        assert galaxy.uses_cluster_inversion == False
-
-        galaxy = g.Galaxy(
-            redshift=0.5,
-            pixelization=pix.VoronoiBrightnessImage(),
-            regularization=reg.AdaptiveBrightness(),
-        )
-
-        assert galaxy.uses_cluster_inversion == True
-
-    def test__uses_hyper_images__tests_depend_on_hyper_galaxy_and_specific_pixelizations_and_regularizations(
-        self
-    ):
-
-        galaxy = g.Galaxy(redshift=0.5)
-
-        assert galaxy.uses_hyper_images == False
-
-        galaxy = g.Galaxy(redshift=0.5, hyper_galaxy=g.HyperGalaxy())
-
-        assert galaxy.uses_hyper_images == True
-
-        galaxy = g.Galaxy(
-            redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant()
-        )
-
-        assert galaxy.uses_hyper_images == False
-
-        galaxy = g.Galaxy(
-            redshift=0.5,
-            pixelization=pix.Rectangular(),
-            regularization=reg.AdaptiveBrightness(),
-        )
-
-        assert galaxy.uses_hyper_images == True
-
-
 class TestBooleanProperties(object):
     def test_has_profile(self):
 
@@ -1255,15 +1189,6 @@ class TestBooleanProperties(object):
 
         assert g.Galaxy(redshift=0.1).has_redshift is True
 
-    def test_has_pixelization(self):
-        assert g.Galaxy(redshift=0.5).has_pixelization is False
-        assert (
-            g.Galaxy(
-                redshift=0.5, pixelization=object(), regularization=object()
-            ).has_pixelization
-            is True
-        )
-
     def test_has_regularization(self):
         assert g.Galaxy(redshift=0.5).has_regularization is False
         assert (
@@ -1274,7 +1199,6 @@ class TestBooleanProperties(object):
         )
 
     def test_has_hyper_galaxy(self):
-        assert g.Galaxy(redshift=0.5).has_pixelization is False
         assert g.Galaxy(redshift=0.5, hyper_galaxy=object()).has_hyper_galaxy is True
 
     def test__only_pixelization_raises_error(self):

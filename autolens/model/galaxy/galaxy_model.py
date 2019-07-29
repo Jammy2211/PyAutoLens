@@ -175,23 +175,6 @@ class GalaxyModel(af.AbstractPriorModel):
 
         self.hyper_galaxy_image_1d = None
 
-        if pixelization is not None:
-            self.uses_inversion = True
-        else:
-            self.uses_inversion = False
-
-        if pixelization is pix.VoronoiBrightnessImage:
-            self.uses_cluster_inversion = True
-        else:
-            self.uses_cluster_inversion = False
-
-        if hyper_galaxy is not None:
-            self.uses_hyper_images = True
-        elif regularization is reg.AdaptiveBrightness:
-            self.uses_hyper_images = True
-        else:
-            self.uses_hyper_images = False
-
     @property
     def constant_light_profiles(self):
         """
