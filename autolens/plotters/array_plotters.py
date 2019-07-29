@@ -777,7 +777,9 @@ def plot_points(
     pointsize : int
         The size of the points plotted to show the input positions.
     """
+
     if points_arcsec is not None:
+
         points_arcsec = list(
             map(lambda position_set: np.asarray(position_set), points_arcsec)
         )
@@ -785,11 +787,13 @@ def plot_points(
         for point_set_arcsec in points_arcsec:
 
             if zoom_offset_arcsec is not None:
-                point_set_arcsec -= zoom_offset_arcsec
+                point_set_arcsec_plot = point_set_arcsec - zoom_offset_arcsec
+            else:
+                point_set_arcsec_plot = point_set_arcsec
 
             point_set_units = convert_grid_units(
                 array=array,
-                grid_arcsec=point_set_arcsec,
+                grid_arcsec=point_set_arcsec_plot,
                 units=units,
                 kpc_per_arcsec=kpc_per_arcsec,
             )

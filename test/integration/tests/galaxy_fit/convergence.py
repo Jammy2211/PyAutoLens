@@ -4,19 +4,16 @@ import numpy as np
 import autofit as af
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.galaxy import galaxy_data as gd
-from autolens.model.galaxy.util import galaxy_util
 from autolens.data.array import grids, scaled_array
 from autolens.pipeline.phase import phase
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import integration_util
 
 test_type = "galaxy_fit"
-test_name = "surface_density"
+test_name = "convergence"
 
 test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + "output/"
-config_path = test_path + "config"
-af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
 
 
 def galaxy_fit_phase():
@@ -35,19 +32,16 @@ def galaxy_fit_phase():
         mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
     )
 
-    surface_density = galaxy_util.convergence_of_galaxies_from_grid(
-        galaxies=[galaxy], grid=grid_stack.sub
-    )
-    surface_density = grid_stack.regular.scaled_array_2d_from_array_1d(
-        array_1d=surface_density
+    convergence = galaxy.convergence_from_grid(
+        galaxies=[galaxy], grid=grid_stack.sub, return_in_2d=True
     )
 
     noise_map = scaled_array.ScaledSquarePixelArray(
-        array=np.ones(surface_density.shape), pixel_scale=pixel_scale
+        array=np.ones(convergence.shape), pixel_scale=pixel_scale
     )
 
     data = gd.GalaxyData(
-        image=surface_density, noise_map=noise_map, pixel_scale=pixel_scale
+        image=convergence, noise_map=noise_map, pixel_scale=pixel_scale
     )
 
     phase1 = phase.GalaxyFitPhase(

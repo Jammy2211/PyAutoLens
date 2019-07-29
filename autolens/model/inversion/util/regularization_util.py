@@ -102,11 +102,9 @@ def adaptive_regularization_weights_from_pixel_signals(
         The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal \
         and low signal pixelizations.
     """
-    regs = (
+    return (
         inner_coefficient * pixel_signals + outer_coefficient * (1.0 - pixel_signals)
     ) ** 2.0
-
-    return regs
 
 
 @decorator_util.jit()

@@ -57,9 +57,8 @@ source_galaxy_model = gm.GalaxyModel(redshsift=1.0, light=source_light_profile)
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models & fits their parameters using a non-linear search 
 # (in this case, MultiNest).
-phase = phase_imaging.LensSourcePlanePhase(
-    lens_galaxies=dict(lens=lens_galaxy_model),
-    source_galaxies=dict(source_galaxy_model),
+phase = phase_imaging.PhaseImaging(
+    galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
     phase_name='example/phase_example', optimizer_class=af.MultiNest)
 
 # We pass the ccd data to the phase, thereby fitting it with the lens model above & plot the resulting fit.

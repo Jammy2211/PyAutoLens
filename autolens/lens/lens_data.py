@@ -119,7 +119,7 @@ class LensData(object):
                 interp_pixel_scale=interp_pixel_scale
             )
 
-        self.border = grids.RegularGridBorder.from_mask(mask=mask)
+        self.border = grids.GridBorder.from_mask(mask=mask)
 
         self.positions = positions
 

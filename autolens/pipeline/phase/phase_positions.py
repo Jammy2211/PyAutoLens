@@ -7,18 +7,18 @@ from autolens.pipeline.phase.phase import AbstractPhase, Phase
 
 
 class PhasePositions(AbstractPhase):
-    lens_galaxies = af.PhaseProperty("lens_galaxies")
+    galaxies = af.PhaseProperty("galaxies")
 
     @property
     def phase_property_collections(self):
-        return [self.lens_galaxies]
+        return [self.galaxies]
 
     def __init__(
         self,
         phase_name,
         tag_phases=True,
         phase_folders=tuple(),
-        lens_galaxies=None,
+        galaxies=None,
         optimizer_class=af.MultiNest,
         cosmology=cosmo.Planck15,
         auto_link_priors=False,
@@ -32,7 +32,7 @@ class PhasePositions(AbstractPhase):
             cosmology=cosmology,
             auto_link_priors=auto_link_priors,
         )
-        self.lens_galaxies = lens_galaxies
+        self.galaxies = galaxies
 
     def run(self, positions, pixel_scale, results=None):
         """
@@ -118,8 +118,8 @@ class PhasePositions(AbstractPhase):
             return fit.figure_of_merit
 
         def tracer_for_instance(self, instance):
-            return ray_tracing.TracerImageSourcePlanesPositions(
-                lens_galaxies=instance.lens_galaxies,
+            return ray_tracing.TracerPositions(
+                galaxies=instance.galaxies,
                 image_plane_positions=self.positions,
                 cosmology=self.cosmology,
             )
@@ -132,5 +132,5 @@ class PhasePositions(AbstractPhase):
         @classmethod
         def describe(cls, instance):
             return "\nRunning lens lens for... \n\nLens Galaxy::\n{}\n\n".format(
-                instance.lens_galaxies
+                instance.galaxies
             )

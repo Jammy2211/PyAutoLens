@@ -5,80 +5,32 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 Big Picture:
 
 - RJLens pipelines.
-- CTI Results section.
-
-- tracers used in some simulations will double calc deflecitons because they use a padded tracer .
-Add a omit deflections bool or something
-
-Hyper Galaxies:
-
-- Implement Preload grid stack properly, including config
-
-- Currentl iplementation over scales noise in source. Fixes:
-
--> Optimizing lens + source noise maps simultaneously? (They are currently summed for indepedent fits).
--> hyper_combined phase?
--> Remove from magnification init phase? (Maybe want to refine lens + source model first) Remove just the source?
-- Remember that the lack of an inner radii + no hyper galaxy will slow down slacs_pix runs
-
-- Not getting super adaption of source pixels around lensed source. Do we need background scaling simultaneously?
-
-- Turn Border off
-
-RICH:
-
-- Inversion phase not fixing lens model
-
-Bugs:
-
-- Positions are not being updated when the mask centre is offset, suggesting the origin shift is ignored. CHECK FOR OTHER GRIDS / PARAMS.
-- Rectangular plots of source recons are still skewing.
-- Different colorbar scales for parametric source and pixelization source.
 
 Small Picture:
 
-- Scale noise of all hyper galaxies simultaneously? -> inversion using this noise map
 - Use model image for norm range on sbplots.
-- Inversion phase uses hyper oise map?
-- Divide images into sub folders (fits, subplots, lens_fit, etc.)
-- Rruns with BG Noise scaling only.
-- Chi squared plotts are weird
-- Colour norms from HYper Model images.
-
-- Refactor Phase
+- tracers used in some simulations will double calc deflecitons because they use a padded tracer .Add a omit
+  deflections bool or something
 - Unit Test HyperNoise Maps
-- Implement Amy's branch.
 - Summarize output
-- Fix model.info file
 - Fit Summary with likelhood, evidence, RFF, etc.
-
-- 2d Grid mappings and arrays - build into profiles / galaxy modules
-- Ray tracing refactor.
-
 - point source ray tracing, modeling, etc.
 - classmethods using realistic lens units.
 - Lensing example test data suites.
-- Aggregator use examples.
 - Units for images, grids.
 - Multinest MPI.
 - Memory lite.
 - Make mass calculations faster.
-- model.summary info output.
 - Sort out radial minima tests.
-- Extract square around mask, so no rectnagular pixels.
 - clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
 - Expanded visualization tests.
-- positions still plotting wrong?
 - Expand intepolation tests and write tutorial.
 - Challenge mass errors.
 
-- Optimization
-
 Rich:
 
-- Setup with unit test to get ideal output logging info.
-- New hyper phase stuff.
-- High level units stuff?
+- Inversion phase not fixing lens model
+- Scale noise of all hyper galaxies simultaneously? -> inversion using this noise map
 
 Amy:
 
@@ -91,13 +43,10 @@ Short term:
 Mid term:
 
 - Include output of data for a simulation (galaxies, ccd settings, etc).
-- Write Adaptive Grid howtolens.
 - CCD loading sanity checks
 
 Long Term:
 
-- Automated Prior Linking
-- Write hyper analysis howtolens
 - Multi-plane analysis.
 
 Future:
