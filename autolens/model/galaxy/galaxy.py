@@ -71,11 +71,11 @@ class Galaxy(af.ModelObject):
         self.pixelization = pixelization
         self.regularization = regularization
 
-        if self.has_pixelization and not self.has_regularization:
+        if pixelization is not None and regularization is None:
             raise exc.GalaxyException(
                 "If the galaxy has a pixelization, it must also have a regularization."
             )
-        if not self.has_pixelization and self.has_regularization:
+        if pixelization is None and regularization is not None:
             raise exc.GalaxyException(
                 "If the galaxy has a regularization, it must also have a pixelization."
             )
@@ -102,10 +102,6 @@ class Galaxy(af.ModelObject):
         return self.redshift is not None
 
     @property
-    def has_pixelization(self):
-        return self.pixelization is not None
-
-    @property
     def has_regularization(self):
         return self.regularization is not None
 
@@ -124,10 +120,6 @@ class Galaxy(af.ModelObject):
     @property
     def has_profile(self):
         return len(self.mass_profiles) + len(self.light_profiles) > 0
-
-    @property
-    def uses_inversion(self):
-        return self.has_pixelization
 
     @property
     def uses_cluster_inversion(self):

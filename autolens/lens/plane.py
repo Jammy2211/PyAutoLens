@@ -4,14 +4,13 @@ from astropy import cosmology as cosmo
 import autofit as af
 from autolens import exc, dimensions as dim
 from autolens.data.array import scaled_array
-from autolens.lens.util import lens_util
-from autolens.model import cosmology_util
-
 from autolens.data.array.grids import (
     reshape_returned_array,
     reshape_returned_array_blurring,
     reshape_returned_grid,
 )
+from autolens.lens.util import lens_util
+from autolens.model import cosmology_util
 
 
 class AbstractPlane(object):
@@ -55,7 +54,7 @@ class AbstractPlane(object):
         )
 
     def cosmic_average_density_in_units(
-        self, unit_length="arcsec", unit_mass="solMass"
+            self, unit_length="arcsec", unit_mass="solMass"
     ):
         return cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
             redshift=self.redshift,
@@ -74,11 +73,17 @@ class AbstractPlane(object):
 
     @property
     def has_pixelization(self):
-        return any(list(map(lambda galaxy: galaxy.has_pixelization, self.galaxies)))
+        return any([
+            galaxy.pixelization
+            for galaxy in self.galaxies
+        ])
 
     @property
     def has_regularization(self):
-        return any(list(map(lambda galaxy: galaxy.has_regularization, self.galaxies)))
+        return any([
+            galaxy.regularization
+            for galaxy in self.galaxies
+        ])
 
     @property
     def regularization(self):
@@ -167,7 +172,7 @@ class AbstractPlane(object):
         return mass_profile_phis
 
     def luminosities_of_galaxies_within_circles_in_units(
-        self, radius: dim.Length, unit_luminosity="eps", exposure_time=None
+            self, radius: dim.Length, unit_luminosity="eps", exposure_time=None
     ):
         """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
 
@@ -196,7 +201,7 @@ class AbstractPlane(object):
         )
 
     def luminosities_of_galaxies_within_ellipses_in_units(
-        self, major_axis: dim.Length, unit_luminosity="eps", exposure_time=None
+            self, major_axis: dim.Length, unit_luminosity="eps", exposure_time=None
     ):
         """
         Compute the total luminosity of all galaxies in this plane within a ellipse of specified major-axis.
@@ -229,7 +234,7 @@ class AbstractPlane(object):
         )
 
     def masses_of_galaxies_within_circles_in_units(
-        self, radius: dim.Length, unit_mass="solMass", redshift_source=None
+            self, radius: dim.Length, unit_mass="solMass", redshift_source=None
     ):
         """Compute the total mass of all galaxies in this plane within a circle of specified radius.
 
@@ -258,7 +263,7 @@ class AbstractPlane(object):
         )
 
     def masses_of_galaxies_within_ellipses_in_units(
-        self, major_axis: dim.Length, unit_mass="solMass", redshift_source=None
+            self, major_axis: dim.Length, unit_mass="solMass", redshift_source=None
     ):
         """Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
 
@@ -323,14 +328,14 @@ class AbstractPlane(object):
 
     # noinspection PyUnusedLocal
     def summarize_in_units(
-        self,
-        radii,
-        whitespace=80,
-        unit_length="arcsec",
-        unit_luminosity="eps",
-        unit_mass="solMass",
-        redshift_source=None,
-        **kwargs
+            self,
+            radii,
+            whitespace=80,
+            unit_length="arcsec",
+            unit_luminosity="eps",
+            unit_mass="solMass",
+            redshift_source=None,
+            **kwargs
     ):
 
         summary = ["Plane\n"]
@@ -384,13 +389,13 @@ class AbstractPlane(object):
 
 class AbstractGriddedPlane(AbstractPlane):
     def __init__(
-        self,
-        redshift,
-        grid_stack,
-        border,
-        compute_deflections,
-        galaxies=None,
-        cosmology=cosmo.Planck15,
+            self,
+            redshift,
+            grid_stack,
+            border,
+            compute_deflections,
+            galaxies=None,
+            cosmology=cosmo.Planck15,
     ):
         """An abstract plane which represents a set of galaxies that are close to one another in redshift-space and \
         have an associated grid on which lensing calcuations are performed.
@@ -487,7 +492,7 @@ class AbstractGriddedPlane(AbstractPlane):
             return np.full((self.grid_stack.sub.shape[0]), 0.0)
 
     def profile_image_plane_image_of_galaxies(
-        self, return_in_2d=True, return_binned=True
+            self, return_in_2d=True, return_binned=True
     ):
         return list(
             map(
@@ -501,7 +506,7 @@ class AbstractGriddedPlane(AbstractPlane):
         )
 
     def profile_image_plane_image_of_galaxy(
-        self, galaxy, return_in_2d=True, return_binned=True
+            self, galaxy, return_in_2d=True, return_binned=True
     ):
         return galaxy.intensities_from_grid(
             grid=self.grid_stack.sub,
@@ -669,7 +674,7 @@ class AbstractGriddedPlane(AbstractPlane):
     def mapper(self):
 
         galaxies_with_pixelization = list(
-            filter(lambda galaxy: galaxy.has_pixelization, self.galaxies)
+            filter(lambda galaxy: galaxy.pixelization is not None, self.galaxies)
         )
 
         if len(galaxies_with_pixelization) == 0:
@@ -712,7 +717,7 @@ class AbstractGriddedPlane(AbstractPlane):
 
 class AbstractDataPlane(AbstractGriddedPlane):
     def blurred_profile_image_plane_image_1d_from_convolver_image(
-        self, convolver_image
+            self, convolver_image
     ):
 
         image_array = self.profile_image_plane_image(
@@ -725,12 +730,13 @@ class AbstractDataPlane(AbstractGriddedPlane):
         )
 
     def blurred_profile_image_plane_images_1d_of_galaxies_from_convolver_image(
-        self, convolver_image
+            self, convolver_image
     ):
 
         return list(
             map(
-                lambda profile_image_plane_image_1d, profile_image_plane_blurring_image_1d: convolver_image.convolve_image(
+                lambda profile_image_plane_image_1d,
+                       profile_image_plane_blurring_image_1d: convolver_image.convolve_image(
                     image_array=profile_image_plane_image_1d,
                     blurring_array=profile_image_plane_blurring_image_1d,
                 ),
@@ -783,13 +789,13 @@ class AbstractDataPlane(AbstractGriddedPlane):
 
 class Plane(AbstractDataPlane):
     def __init__(
-        self,
-        galaxies,
-        grid_stack,
-        redshift=None,
-        border=None,
-        compute_deflections=True,
-        cosmology=cosmo.Planck15,
+            self,
+            galaxies,
+            grid_stack,
+            redshift=None,
+            border=None,
+            compute_deflections=True,
+            cosmology=cosmo.Planck15,
     ):
         """A plane of galaxies where all galaxies are at the same redshift.
 
@@ -818,7 +824,7 @@ class Plane(AbstractDataPlane):
                     "determined"
                 )
             elif not all(
-                [galaxies[0].redshift == galaxy.redshift for galaxy in galaxies]
+                    [galaxies[0].redshift == galaxy.redshift for galaxy in galaxies]
             ):
                 raise exc.RayTracingException(
                     "A redshift and two or more galaxies with different redshifts were input to a Plane. A unique "
@@ -839,7 +845,7 @@ class Plane(AbstractDataPlane):
 
 class PlanePositions(object):
     def __init__(
-        self, redshift, galaxies, positions, compute_deflections=True, cosmology=None
+            self, redshift, galaxies, positions, compute_deflections=True, cosmology=None
     ):
         """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and the positions of image-plane \
         coordinates which mappers close to one another in the source-plane.
@@ -860,7 +866,6 @@ class PlanePositions(object):
         self.positions = positions
 
         if compute_deflections:
-
             def calculate_deflections(pos):
                 return sum(
                     map(lambda galaxy: galaxy.deflections_from_grid(pos), galaxies)
