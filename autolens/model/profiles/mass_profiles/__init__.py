@@ -9,6 +9,7 @@ from .total_mass_profiles import (
     SphericalPowerLaw,
     EllipticalIsothermal,
     SphericalIsothermal,
+    EllipticalIsothermalKormann,
 )
 from .dark_mass_profiles import (
     EllipticalGeneralizedNFW,

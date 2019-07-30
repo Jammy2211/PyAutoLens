@@ -40,7 +40,7 @@ def mask_and_fit_with_offset_centre(centre):
 
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
 
-    tracer = ray_tracing.Tracer(
+    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid_stack=lens_data.grid_stack,
     )
