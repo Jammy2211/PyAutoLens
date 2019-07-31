@@ -10,6 +10,8 @@ def pipeline_name_from_name_and_settings(
     align_bulge_disk_centre=False,
     align_bulge_disk_axis_ratio=False,
     align_bulge_disk_phi=False,
+    align_light_dark_centre=False,
+    align_bulge_dark_centre=False,
 ):
 
     pipeline_tag = pipeline_tag_from_pipeline_settings(
@@ -20,6 +22,8 @@ def pipeline_name_from_name_and_settings(
         regularization=regularization,
         align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
         align_bulge_disk_phi=align_bulge_disk_phi,
+        align_light_dark_centre=align_light_dark_centre,
+        align_bulge_dark_centre=align_bulge_dark_centre,
     )
 
     return pipeline_name + pipeline_tag
@@ -33,6 +37,8 @@ def pipeline_tag_from_pipeline_settings(
     align_bulge_disk_centre=False,
     align_bulge_disk_axis_ratio=False,
     align_bulge_disk_phi=False,
+    align_light_dark_centre=False,
+    align_bulge_dark_centre=False,
 ):
 
     include_shear_tag = include_shear_tag_from_include_shear(
@@ -55,12 +61,18 @@ def pipeline_tag_from_pipeline_settings(
         align_bulge_disk_phi=align_bulge_disk_phi,
     )
 
+    align_light_dark_centre_tag = align_light_dark_centre_tag_from_align_light_dark_centre(align_light_dark_centre=align_light_dark_centre)
+
+    align_bulge_dark_centre_tag = align_bulge_dark_centre_tag_from_align_bulge_dark_centre(align_bulge_dark_centre=align_bulge_dark_centre)
+
     return (
         include_shear_tag
         + fix_lens_light_tag
         + pixelization_tag
         + regularization_tag
         + bulge_disk_tag
+        + align_light_dark_centre_tag
+        + align_bulge_dark_centre_tag
     )
 
 
@@ -177,3 +189,28 @@ def bulge_disk_tag_from_align_bulge_disks(
         + align_bulge_disk_axis_ratio_tag
         + align_bulge_disk_phi_tag
     )
+
+
+def align_light_dark_centre_tag_from_align_light_dark_centre(align_light_dark_centre):
+    """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
+    based on the bulge-disk model. This changee the phase name 'phase_name' as follows:
+
+    bd_align_centres = False -> phase_name
+    bd_align_centres = True -> phase_name_bd_align_centres
+    """
+    if not align_light_dark_centre:
+        return ""
+    elif align_light_dark_centre:
+        return "_light_dark_align_centre"
+
+def align_bulge_dark_centre_tag_from_align_bulge_dark_centre(align_bulge_dark_centre):
+    """Generate a tag for if the bulge and dark of a bulge-dark system are aligned or not, to customize phase names \
+    based on the bulge-dark model. This changee the phase name 'phase_name' as follows:
+
+    bd_align_centres = False -> phase_name
+    bd_align_centres = True -> phase_name_bd_align_centres
+    """
+    if not align_bulge_dark_centre:
+        return ""
+    elif align_bulge_dark_centre:
+        return "_bulge_dark_align_centre"
