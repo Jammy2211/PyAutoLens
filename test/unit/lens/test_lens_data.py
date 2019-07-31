@@ -368,10 +368,13 @@ class TestLensData(object):
         assert (lens_data_6x6.image_1d == np.ones((1))).all()
         assert (lens_data_6x6.noise_map_1d == np.ones((1))).all()
 
-    def test__lens_data_7x7_with_signal_to_noise_limit(self, ccd_data_7x7, lens_data_7x7):
+    def test__lens_data_7x7_with_signal_to_noise_limit(
+        self, ccd_data_7x7, lens_data_7x7
+    ):
 
         lens_data_snr_limit = lens_data_7x7.new_lens_data_with_signal_to_noise_limit(
-            signal_to_noise_limit=0.25)
+            signal_to_noise_limit=0.25
+        )
 
         assert lens_data_snr_limit.pixel_scale == ccd_data_7x7.pixel_scale
         assert lens_data_snr_limit.pixel_scale == 1.0
