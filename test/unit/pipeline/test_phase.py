@@ -958,6 +958,44 @@ class TestPhase(object):
 
         assert analysis.lens_data.convolver_mapping_matrix is None
 
+    def test__lens_data_signal_to_noise_limit(
+        self, ccd_data_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
+    ):
+
+        ccd_data_snr_limit = ccd_data_7x7.new_ccd_data_with_signal_to_noise_limit(
+            signal_to_noise_limit=1.0
+        )
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            phase_name="phase_7x7",
+            signal_to_noise_limit=1.0,
+            mask_function=mask_function_7x7_1_pix,
+        )
+
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        assert (analysis.lens_data.unmasked_image == ccd_data_snr_limit.image).all()
+        assert (
+            analysis.lens_data.unmasked_noise_map == ccd_data_snr_limit.noise_map
+        ).all()
+
+        lens_data = ld.LensData(ccd_data=ccd_data_7x7, mask=mask_7x7_1_pix)
+
+        ccd_data_snr_limit = ccd_data_7x7.new_ccd_data_with_signal_to_noise_limit(
+            signal_to_noise_limit=0.1
+        )
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            phase_name="phase_7x7",
+            signal_to_noise_limit=0.1,
+            mask_function=mask_function_7x7_1_pix,
+        )
+
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        assert (analysis.lens_data.unmasked_image == ccd_data_snr_limit.image).all()
+        assert (
+            analysis.lens_data.unmasked_noise_map == ccd_data_snr_limit.noise_map
+        ).all()
+
     def test__lens_data_is_binned_up(
         self, ccd_data_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
     ):

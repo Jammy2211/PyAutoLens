@@ -311,7 +311,8 @@ class CCDData(object):
         noise_map_limit = np.where(
             self.signal_to_noise_map > signal_to_noise_limit,
             np.abs(self.image) / signal_to_noise_limit,
-            self.noise_map)
+            self.noise_map,
+        )
 
         return CCDData(
             image=self.image,

@@ -712,7 +712,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         surface_density_grid = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-            surface_density_grid[i] = self.convergence_func(y=grid[i,0], x=grid[i,1])
+            surface_density_grid[i] = self.convergence_func(y=grid[i, 0], x=grid[i, 1])
 
         return surface_density_grid
 
@@ -735,9 +735,16 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             sub-grid.
         """
         f_prime = np.sqrt(1 - self.axis_ratio ** 2)
-        sin_phi = grid[:,1] / np.sqrt(self.axis_ratio ** 2 * grid[:,0] ** 2 + grid[:,1] ** 2)
-        cos_phi = grid[:,0] / np.sqrt(self.axis_ratio ** 2 * grid[:,0] ** 2 + grid[:,1] ** 2)
-        return (np.sqrt(self.axis_ratio) / f_prime) * (grid[:,1] * np.arcsin(f_prime * sin_phi) + grid[:,0] * np.arcsinh((f_prime / self.axis_ratio) * cos_phi))
+        sin_phi = grid[:, 1] / np.sqrt(
+            self.axis_ratio ** 2 * grid[:, 0] ** 2 + grid[:, 1] ** 2
+        )
+        cos_phi = grid[:, 0] / np.sqrt(
+            self.axis_ratio ** 2 * grid[:, 0] ** 2 + grid[:, 1] ** 2
+        )
+        return (np.sqrt(self.axis_ratio) / f_prime) * (
+            grid[:, 1] * np.arcsin(f_prime * sin_phi)
+            + grid[:, 0] * np.arcsinh((f_prime / self.axis_ratio) * cos_phi)
+        )
 
     @reshape_returned_grid
     @grids.grid_interpolate
@@ -760,15 +767,28 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             sub-grid.
         """
 
-        deflection_y = np.arcsin((np.sqrt(1 - self.axis_ratio ** 2) * grid[:,0]) / (np.sqrt((grid[:,1] ** 2) * (self.axis_ratio ** 2) + grid[:,0] ** 2)))
-        deflection_x = np.arcsinh((np.sqrt(1 - self.axis_ratio ** 2) * grid[:,1]) / (self.axis_ratio * np.sqrt((self.axis_ratio ** 2) * (grid[:,1] ** 2) + grid[:,0] ** 2)))
+        deflection_y = np.arcsin(
+            (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 0])
+            / (np.sqrt((grid[:, 1] ** 2) * (self.axis_ratio ** 2) + grid[:, 0] ** 2))
+        )
+        deflection_x = np.arcsinh(
+            (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 1])
+            / (
+                self.axis_ratio
+                * np.sqrt((self.axis_ratio ** 2) * (grid[:, 1] ** 2) + grid[:, 0] ** 2)
+            )
+        )
 
         return self.rotate_grid_from_profile(
             np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T)
         )
 
     def convergence_func(self, y, x):
-        return self.einstein_radius * np.sqrt(self.axis_ratio)/(2*np.sqrt(x**2*self.axis_ratio**2+y**2))
+        return (
+            self.einstein_radius
+            * np.sqrt(self.axis_ratio)
+            / (2 * np.sqrt(x ** 2 * self.axis_ratio ** 2 + y ** 2))
+        )
 
     @property
     def ellipticity_rescale(self):

@@ -6,6 +6,7 @@ class TestPhaseTag:
 
         phase_tag = phase_tagging.phase_tag_from_phase_settings(
             sub_grid_size=2,
+            signal_to_noise_limit=2,
             bin_up_factor=None,
             image_psf_shape=None,
             inversion_psf_shape=None,
@@ -15,10 +16,11 @@ class TestPhaseTag:
             cluster_pixel_scale=None,
         )
 
-        assert phase_tag == "_sub_2_pos_2.00_inner_mask_0.30"
+        assert phase_tag == "_sub_2_snr_2_pos_2.00_inner_mask_0.30"
 
         phase_tag = phase_tagging.phase_tag_from_phase_settings(
             sub_grid_size=1,
+            signal_to_noise_limit=None,
             bin_up_factor=3,
             image_psf_shape=(2, 2),
             inversion_psf_shape=(3, 3),
@@ -30,7 +32,7 @@ class TestPhaseTag:
 
         assert (
             phase_tag
-            == "_sub_1_bin_up_3_image_psf_2x2_inv_psf_3x3_interp_0.200_cluster_0.300"
+            == "_sub_1_bin_3_image_psf_2x2_inv_psf_3x3_interp_0.200_cluster_0.300"
         )
 
 
@@ -75,6 +77,25 @@ class TestPhaseTaggers:
         tag = phase_tagging.sub_grid_size_tag_from_sub_grid_size(sub_grid_size=4)
         assert tag == "_sub_4"
 
+    def test__signal_to_noise_limit_tagger(self):
+
+        tag = phase_tagging.signal_to_noise_limit_tag_from_signal_to_noise_limit(
+            signal_to_noise_limit=None
+        )
+        assert tag == ""
+        tag = phase_tagging.signal_to_noise_limit_tag_from_signal_to_noise_limit(
+            signal_to_noise_limit=1
+        )
+        assert tag == "_snr_1"
+        tag = phase_tagging.signal_to_noise_limit_tag_from_signal_to_noise_limit(
+            signal_to_noise_limit=2
+        )
+        assert tag == "_snr_2"
+        tag = phase_tagging.signal_to_noise_limit_tag_from_signal_to_noise_limit(
+            signal_to_noise_limit=3
+        )
+        assert tag == "_snr_3"
+
     def test__bin_up_factor_tagger(self):
 
         tag = phase_tagging.bin_up_factor_tag_from_bin_up_factor(bin_up_factor=None)
@@ -82,9 +103,9 @@ class TestPhaseTaggers:
         tag = phase_tagging.bin_up_factor_tag_from_bin_up_factor(bin_up_factor=1)
         assert tag == ""
         tag = phase_tagging.bin_up_factor_tag_from_bin_up_factor(bin_up_factor=2)
-        assert tag == "_bin_up_2"
+        assert tag == "_bin_2"
         tag = phase_tagging.bin_up_factor_tag_from_bin_up_factor(bin_up_factor=3)
-        assert tag == "_bin_up_3"
+        assert tag == "_bin_3"
 
     def test__image_psf_shape_tagger(self):
 
