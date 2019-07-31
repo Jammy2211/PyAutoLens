@@ -29,6 +29,12 @@ class TestPipelineNameTag:
 
         assert pipeline_name == "pl2_fix_lens_light_bd_align_phi"
 
+        pipeline_name = pipeline_tagging.pipeline_name_from_name_and_settings(
+            pipeline_name="pl3", align_light_dark_centre=True, align_bulge_dark_centre=True,
+        )
+
+        assert pipeline_name == "pl3_light_dark_align_centre_bulge_dark_align_centre"
+
     def test__pipeline_tag__mixture_of_values(self):
 
         pipeline_tag = pipeline_tagging.pipeline_tag_from_pipeline_settings(
@@ -46,10 +52,16 @@ class TestPipelineNameTag:
         assert pipeline_tag == "_fix_lens_light_pix_rect_reg_const"
 
         pipeline_tag = pipeline_tagging.pipeline_tag_from_pipeline_settings(
-            fix_lens_light=True, align_bulge_disk_phi=True
+            fix_lens_light=True, align_bulge_disk_phi=True,
         )
 
         assert pipeline_tag == "_fix_lens_light_bd_align_phi"
+
+        pipeline_tag = pipeline_tagging.pipeline_tag_from_pipeline_settings(
+            align_light_dark_centre=True, align_bulge_dark_centre=True
+        )
+
+        assert pipeline_tag == "_light_dark_align_centre_bulge_dark_align_centre"
 
 
 class TestPipelineTaggers:
@@ -147,3 +159,24 @@ class TestPipelineTaggers:
             align_bulge_disk_phi=True,
         )
         assert tag == "_bd_align_centre_bd_align_axis_ratio_bd_align_phi"
+
+    def test__align_light_dark_tagger(self):
+        tag = pipeline_tagging.align_light_dark_centre_tag_from_align_light_dark_centre(
+            align_light_dark_centre=False
+        )
+        assert tag == ""
+        tag = pipeline_tagging.align_light_dark_centre_tag_from_align_light_dark_centre(
+            align_light_dark_centre=True
+        )
+        assert tag == "_light_dark_align_centre"
+
+    def test__align_bulge_dark_tagger(self):
+        
+        tag = pipeline_tagging.align_bulge_dark_centre_tag_from_align_bulge_dark_centre(
+            align_bulge_dark_centre=False
+        )
+        assert tag == ""
+        tag = pipeline_tagging.align_bulge_dark_centre_tag_from_align_bulge_dark_centre(
+            align_bulge_dark_centre=True
+        )
+        assert tag == "_bulge_dark_align_centre"
