@@ -27,6 +27,7 @@ class PhaseImaging(Phase):
         hyper_noise_background=None,
         optimizer_class=af.MultiNest,
         sub_grid_size=2,
+        signal_to_noise_limit=None,
         bin_up_factor=None,
         image_psf_shape=None,
         inversion_psf_shape=None,
@@ -61,6 +62,7 @@ class PhaseImaging(Phase):
 
             phase_tag = phase_tagging.phase_tag_from_phase_settings(
                 sub_grid_size=sub_grid_size,
+                signal_to_noise_limit=signal_to_noise_limit,
                 bin_up_factor=bin_up_factor,
                 image_psf_shape=image_psf_shape,
                 inversion_psf_shape=inversion_psf_shape,
@@ -85,6 +87,7 @@ class PhaseImaging(Phase):
         )
 
         self.sub_grid_size = sub_grid_size
+        self.signal_to_noise_limit = signal_to_noise_limit
         self.bin_up_factor = bin_up_factor
         self.image_psf_shape = image_psf_shape
         self.inversion_psf_shape = inversion_psf_shape
@@ -249,6 +252,11 @@ class PhaseImaging(Phase):
         lens_data = lens_data.new_lens_data_with_modified_image(
             modified_image=modified_image
         )
+
+        if self.signal_to_noise_limit is not None:
+            lens_data = lens_data.new_lens_data_with_signal_to_noise_limit(
+                signal_to_noise_limit=self.signal_to_noise_limit
+            )
 
         if self.bin_up_factor is not None:
             lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(
