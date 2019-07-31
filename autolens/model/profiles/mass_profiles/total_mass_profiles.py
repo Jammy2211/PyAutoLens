@@ -1,4 +1,5 @@
 import inspect
+from scipy import special
 from pyquad import quad_grid
 
 import numpy as np
@@ -365,6 +366,48 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
             core_radius=dim.Length(0.0),
         )
 
+    @reshape_returned_grid
+    @geometry_profiles.transform_grid
+    @geometry_profiles.move_grid_to_radial_minimum
+    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
+        """
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
+    ​
+        For coordinates (0.0, 0.0) the analytic calculation of the deflection angle gives a NaN. Therefore, \
+        coordinates at (0.0, 0.0) are shifted slightly to (1.0e-8, 1.0e-8).
+
+        This code is an adaption of Tessore & Metcalf 2015:
+        https://arxiv.org/abs/1507.01819
+    ​
+        Parameters
+        ----------
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
+        """
+
+        slope = self.slope - 1.0
+        einstein_radius = (2.0 / (self.axis_ratio**-0.5 + self.axis_ratio**0.5)) * self.einstein_radius
+
+        factor = np.divide(1.0 - self.axis_ratio, 1.0 + self.axis_ratio)
+        b = np.multiply(einstein_radius, np.sqrt(self.axis_ratio))
+        phi = np.arctan2(grid[:, 0],
+                         np.multiply(self.axis_ratio, grid[:, 1]))  # Note, this phi is not the position angle
+        R = np.sqrt(np.add(np.multiply(self.axis_ratio ** 2, grid[:, 1] ** 2), grid[:, 0] ** 2))
+        z = np.add(np.multiply(np.cos(phi), 1 + 0j), np.multiply(np.sin(phi), 0 + 1j))
+
+        complex_angle = 2.0 * b / (1.0 + self.axis_ratio) * (b / R) ** (slope - 1.) * z * \
+                        special.hyp2f1(1., 0.5 * slope, 2. - 0.5 * slope, -factor * z ** 2)
+
+        deflection_y = complex_angle.imag
+        deflection_x = complex_angle.real
+
+        rescale_factor = (self.ellipticity_rescale) ** (slope - 1)
+
+        deflection_y *= rescale_factor
+        deflection_x *= rescale_factor
+
+        return self.rotate_grid_from_profile(np.vstack((deflection_y, deflection_x)).T)
+
     def convergence_func(self, radius):
         if radius > 0.0:
             return self.einstein_radius_rescaled * radius ** (-(self.slope - 1))
@@ -380,18 +423,6 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
             * eta_u ** (3.0 - slope)
             / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
         )
-
-    @staticmethod
-    def deflection_func(
-        u, y, x, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius
-    ):
-        eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-        return (
-            einstein_radius_rescaled
-            * eta_u ** (-(slope - 1))
-            / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
-        )
-
 
 class SphericalPowerLaw(EllipticalPowerLaw):
     @af.map_types
@@ -736,6 +767,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
+
         f_prime = np.sqrt(1 - self.axis_ratio ** 2)
         sin_phi = grid[:, 1] / np.sqrt(
             self.axis_ratio ** 2 * grid[:, 0] ** 2 + grid[:, 1] ** 2
