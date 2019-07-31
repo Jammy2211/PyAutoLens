@@ -8,7 +8,7 @@ Big Picture:
 
 Small Picture:
 
-- Use model image for norm range on sbplots.
+- Use model image for norm range on subplots.
 - tracers used in some simulations will double calc deflecitons because they use a padded tracer .Add a omit
   deflections bool or something
 - Unit Test HyperNoise Maps
