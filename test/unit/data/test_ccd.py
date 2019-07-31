@@ -757,6 +757,104 @@ class TestCCDData:
 
             assert ccd_data.origin == (0.0, 0.0)
 
+    class TestNewSNRLimit:
+
+        def test__signal_to_noise_limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(self):
+
+            image_array = scaled_array.ScaledSquarePixelArray(
+                20.0*np.ones((2, 2)), pixel_scale=1.0
+            )
+            image_array[1, 1] = 5.0
+
+            noise_map_array = scaled_array.ScaledSquarePixelArray(
+                5.0*np.ones((2, 2)), pixel_scale=1.0
+            )
+            noise_map_array[1, 1] = 2.0
+
+            ccd_data = ccd.CCDData(
+                image=image_array,
+                pixel_scale=1.0,
+                psf=ccd.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                noise_map=noise_map_array,
+                background_noise_map=1.0*np.ones((2,2)),
+                exposure_time_map=2.0*np.ones((2,2)),
+                background_sky_map=3.0*np.ones((2,2)),
+            )
+
+            ccd_data = ccd_data.new_ccd_data_with_signal_to_noise_limit(signal_to_noise_limit=100.0)
+
+            assert (ccd_data.image == np.array([[20.0, 20.0],
+                                               [20.0, 5.0]])).all()
+
+            assert (ccd_data.noise_map == np.array([[5.0, 5.0],
+                                                    [5.0, 2.0]])).all()
+
+            assert (ccd_data.signal_to_noise_map == np.array([[4.0, 4.0],
+                                                              [4.0, 2.5]])).all()
+
+            assert ccd_data.pixel_scale == 1.0
+            assert (ccd_data.psf == np.zeros((3,3))).all()
+            assert (ccd_data.background_noise_map == np.ones((2,2))).all()
+            assert (ccd_data.exposure_time_map == 2.0*np.ones((2,2))).all()
+            assert (ccd_data.background_sky_map == 3.0*np.ones((2,2))).all()
+
+        def test__signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(self):
+
+            image_array = scaled_array.ScaledSquarePixelArray(
+                20.0*np.ones((2, 2)), pixel_scale=1.0
+            )
+            image_array[1, 1] = 5.0
+
+            noise_map_array = scaled_array.ScaledSquarePixelArray(
+                5.0*np.ones((2, 2)), pixel_scale=1.0
+            )
+            noise_map_array[1, 1] = 2.0
+
+            ccd_data = ccd.CCDData(
+                image=image_array,
+                pixel_scale=1.0,
+                psf=ccd.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                noise_map=noise_map_array,
+                background_noise_map=1.0*np.ones((2,2)),
+                exposure_time_map=2.0*np.ones((2,2)),
+                background_sky_map=3.0*np.ones((2,2)),
+            )
+
+            ccd_data_capped = ccd_data.new_ccd_data_with_signal_to_noise_limit(signal_to_noise_limit=2.0)
+
+            assert (ccd_data_capped.image == np.array([[20.0, 20.0],
+                                               [20.0, 5.0]])).all()
+
+            assert (ccd_data_capped.noise_map == np.array([[10.0, 10.0],
+                                                    [10.0, 2.5]])).all()
+
+            assert (ccd_data_capped.signal_to_noise_map == np.array([[2.0, 2.0],
+                                                              [2.0, 2.0]])).all()
+
+            assert ccd_data_capped.pixel_scale == 1.0
+            assert (ccd_data_capped.psf == np.zeros((3,3))).all()
+            assert (ccd_data_capped.background_noise_map == np.ones((2,2))).all()
+            assert (ccd_data_capped.exposure_time_map == 2.0*np.ones((2,2))).all()
+            assert (ccd_data_capped.background_sky_map == 3.0*np.ones((2,2))).all()
+
+            ccd_data_capped = ccd_data.new_ccd_data_with_signal_to_noise_limit(signal_to_noise_limit=3.0)
+
+            assert (ccd_data_capped.image == np.array([[20.0, 20.0],
+                                                      [20.0, 5.0]])).all()
+
+            assert (ccd_data_capped.noise_map == np.array([[(20.0/3.0), (20.0/3.0)],
+                                                           [(20.0/3.0), 2.0]])).all()
+
+            assert (ccd_data_capped.signal_to_noise_map == np.array([[3.0, 3.0],
+                                                                     [3.0, 2.5]])).all()
+
+            assert ccd_data_capped.pixel_scale == 1.0
+            assert (ccd_data_capped.psf == np.zeros((3,3))).all()
+            assert (ccd_data_capped.background_noise_map == np.ones((2,2))).all()
+            assert (ccd_data_capped.exposure_time_map == 2.0*np.ones((2,2))).all()
+            assert (ccd_data_capped.background_sky_map == 3.0*np.ones((2,2))).all()
+
+
     class TestNewImageResize:
         def test__all_components_resized__psf_is_not(self):
 
