@@ -111,14 +111,14 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
             sub-grid.
         """
 
-        surface_density_grid = np.zeros(grid.shape[0])
+        covnergence_grid = np.zeros(grid.shape[0])
 
         grid_eta = self.grid_to_elliptical_radii(grid)
 
         for i in range(grid.shape[0]):
-            surface_density_grid[i] = self.convergence_func(grid_eta[i])
+            covnergence_grid[i] = self.convergence_func(grid_eta[i])
 
-        return surface_density_grid
+        return covnergence_grid
 
     @reshape_returned_array
     @geometry_profiles.transform_grid
@@ -543,7 +543,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
     #            (self.angular_diameter_distance_between_planes(i, j) *
     #             self.angular_diameter_distance_of_plane_to_earth(i))
 
-    # critical_surface_density =
+    # critical_covnergence =
 
     @reshape_returned_grid
     @geometry_profiles.transform_grid
@@ -709,12 +709,14 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             sub-grid.
         """
 
-        surface_density_grid = np.zeros(grid.shape[0])
+        covnergence_grid = np.zeros(grid.shape[0])
+
+        grid_eta = self.grid_to_elliptical_radii(grid=grid)
 
         for i in range(grid.shape[0]):
-            surface_density_grid[i] = self.convergence_func(y=grid[i, 0], x=grid[i, 1])
+            covnergence_grid[i] = self.convergence_func(r=grid_eta[i])
 
-        return surface_density_grid
+        return covnergence_grid
 
     @reshape_returned_array
     @geometry_profiles.transform_grid
@@ -783,11 +785,11 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T)
         )
 
-    def convergence_func(self, y, x):
+    def convergence_func(self, r):
         return (
             self.einstein_radius
             * np.sqrt(self.axis_ratio)
-            / (2 * np.sqrt(x ** 2 * self.axis_ratio ** 2 + y ** 2))
+            / (2 * r)
         )
 
     @property
