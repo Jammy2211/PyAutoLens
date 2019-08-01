@@ -367,3 +367,43 @@ class TestLensData(object):
 
         assert (lens_data_6x6.image_1d == np.ones((1))).all()
         assert (lens_data_6x6.noise_map_1d == np.ones((1))).all()
+
+    def test__lens_data_7x7_with_signal_to_noise_limit(
+        self, ccd_data_7x7, lens_data_7x7
+    ):
+
+        lens_data_snr_limit = lens_data_7x7.new_lens_data_with_signal_to_noise_limit(
+            signal_to_noise_limit=0.25
+        )
+
+        assert lens_data_snr_limit.pixel_scale == ccd_data_7x7.pixel_scale
+        assert lens_data_snr_limit.pixel_scale == 1.0
+
+        assert (lens_data_snr_limit.unmasked_image == ccd_data_7x7.image).all()
+        assert (lens_data_snr_limit.unmasked_image == np.ones((7, 7))).all()
+
+        assert (lens_data_snr_limit.unmasked_noise_map == 4.0 * np.ones((7, 7))).all()
+
+        assert (lens_data_snr_limit.psf == ccd_data_7x7.psf).all()
+        assert (lens_data_snr_limit.psf == np.ones((3, 3))).all()
+
+        assert lens_data_snr_limit.image_psf_shape == (3, 3)
+        assert lens_data_snr_limit.inversion_psf_shape == (3, 3)
+
+        assert (lens_data_snr_limit.image_1d == np.ones(9)).all()
+        assert (lens_data_snr_limit.noise_map_1d == 4.0 * np.ones(9)).all()
+
+        assert (
+            lens_data_snr_limit.noise_map(return_in_2d=True)
+            == np.array(
+                [
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 4.0, 4.0, 4.0, 0.0, 0.0],
+                    [0.0, 0.0, 4.0, 4.0, 4.0, 0.0, 0.0],
+                    [0.0, 0.0, 4.0, 4.0, 4.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        ).all()

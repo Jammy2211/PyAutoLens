@@ -285,7 +285,7 @@ class TestRectangular:
             [[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]]
         )
 
-        border = grids.RegularGridBorder(arr=np.array([0, 1, 3, 4]))
+        border = grids.GridBorder(arr=np.array([0, 1, 3, 4]))
 
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
@@ -1124,7 +1124,7 @@ class TestVoronoiMagnification:
             [[1.1, -1.1], [1.1, 1.1], [0.0, 0.0], [-1.1, -1.1], [-1.1, 1.1]]
         )
 
-        border = grids.RegularGridBorder(arr=np.array([0, 1, 3, 4]))
+        border = grids.GridBorder(arr=np.array([0, 1, 3, 4]))
 
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 

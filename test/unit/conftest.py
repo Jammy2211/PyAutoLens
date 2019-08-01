@@ -8,7 +8,6 @@ from autolens.data.array import grids
 from autolens.lens import lens_fit
 from autolens.lens import plane as pl
 from autolens.lens import ray_tracing
-from autolens.lens import sensitivity_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_data as gd
 from autolens.model.galaxy import galaxy_fit
@@ -82,13 +81,13 @@ def make_positions_7x7():
 
 @pytest.fixture(name="ccd_data_7x7")
 def make_ccd_data_7x7(
-        image_7x7,
-        psf_3x3,
-        noise_map_7x7,
-        background_noise_map_7x7,
-        poisson_noise_map_7x7,
-        exposure_time_map_7x7,
-        background_sky_map_7x7,
+    image_7x7,
+    psf_3x3,
+    noise_map_7x7,
+    background_noise_map_7x7,
+    poisson_noise_map_7x7,
+    exposure_time_map_7x7,
+    background_sky_map_7x7,
 ):
     return mock_ccd.MockCCDData(
         image=image_7x7,
@@ -445,13 +444,13 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 
 @pytest.fixture(name="lens_data_7x7")
 def make_lens_data_7x7(
-        ccd_data_7x7,
-        mask_7x7,
-        grid_stack_7x7,
-        border_7x7,
-        convolver_image_7x7,
-        convolver_mapping_matrix_7x7,
-        cluster_grid_7x7,
+    ccd_data_7x7,
+    mask_7x7,
+    grid_stack_7x7,
+    border_7x7,
+    convolver_image_7x7,
+    convolver_mapping_matrix_7x7,
+    cluster_grid_7x7,
 ):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_7x7,
@@ -479,21 +478,24 @@ def make_plane_7x7(gal_x1_lp_x1_mp, grid_stack_7x7):
 
 @pytest.fixture(name="tracer_x1_plane_7x7")
 def make_tracer_x1_plane_7x7(gal_x1_lp, grid_stack_7x7):
-    return ray_tracing.TracerImagePlane(
-        lens_galaxies=[gal_x1_lp], image_plane_grid_stack=grid_stack_7x7
+    return ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        galaxies=[gal_x1_lp], image_plane_grid_stack=grid_stack_7x7
     )
 
 
 @pytest.fixture(name="tracer_x2_plane_7x7")
-def make_tracer_x2_plane_7x7(gal_x1_lp, gal_x1_mp, grid_stack_7x7):
-    return ray_tracing.TracerImageSourcePlanes(
-        lens_galaxies=[gal_x1_mp, gal_x1_lp],
-        source_galaxies=[gal_x1_lp],
+def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp, grid_stack_7x7):
+
+    source_gal_x1_lp = g.Galaxy(redshift=1.0, light_profile_0=lp_0)
+
+    return ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        galaxies=[gal_x1_mp, gal_x1_lp, source_gal_x1_lp],
         image_plane_grid_stack=grid_stack_7x7,
     )
 
 
 # Lens Fit #
+
 
 @pytest.fixture(name="lens_fit_x1_plane_7x7")
 def make_lens_fit_x1_plane_7x7(lens_data_7x7, tracer_x1_plane_7x7):
@@ -507,48 +509,6 @@ def make_lens_fit_x2_plane_7x7(lens_data_7x7, tracer_x2_plane_7x7):
     return lens_fit.LensDataFit.for_data_and_tracer(
         lens_data=lens_data_7x7, tracer=tracer_x2_plane_7x7
     )
-
-
-# Sensitive Fit #
-
-
-# noinspection PyTypeChecker
-@pytest.fixture(name="sensitivity_fit_7x7")
-def make_sensitivity_fit_7x7(lens_data_7x7):
-    lens_galaxy = g.Galaxy(
-        redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
-    )
-
-    lens_subhalo = g.Galaxy(
-        redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=0.1)
-    )
-
-    source_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
-
-    tracer_normal = ray_tracing.TracerImageSourcePlanes(
-        lens_galaxies=[lens_galaxy],
-        source_galaxies=[source_galaxy],
-        image_plane_grid_stack=lens_data_7x7.grid_stack,
-    )
-
-    tracer_sensitivity = ray_tracing.TracerImageSourcePlanes(
-        lens_galaxies=[lens_galaxy, lens_subhalo],
-        source_galaxies=[source_galaxy],
-        image_plane_grid_stack=lens_data_7x7.grid_stack,
-    )
-
-    return sensitivity_fit.SensitivityProfileFit(
-        lens_data=lens_data_7x7,
-        tracer_normal=tracer_normal,
-        tracer_sensitive=tracer_sensitivity,
-    )
-
-
-##############
-# PIPELINE #
-#############
-
-# Phase #
 
 
 @pytest.fixture(name="mask_function_7x7_1_pix")
@@ -595,7 +555,7 @@ def make_mask_function_7x7():
 
 @pytest.fixture(name="phase_7x7")
 def make_phase_7x7(mask_function_7x7):
-    return phase_imaging.LensSourcePlanePhase(
+    return phase_imaging.PhaseImaging(
         optimizer_class=mock_pipeline.MockNLO,
         mask_function=mask_function_7x7,
         phase_name="test_phase",
@@ -623,7 +583,7 @@ def make_hyper_galaxy_image_1_7x7(grid_stack_7x7):
 
 @pytest.fixture(name="contribution_map_7x7")
 def make_contribution_map_7x7(
-        hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
+    hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
 ):
     return hyper_galaxy.contribution_map_from_hyper_images(
         hyper_model_image=hyper_model_image_7x7,
@@ -641,7 +601,7 @@ def make_hyper_noise_map_7x7(noise_map_7x7, contribution_map_7x7, hyper_galaxy):
 
 @pytest.fixture(name="results_7x7")
 def make_results(
-        mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
+    mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
 ):
     return mock_pipeline.MockResults(
         model_image=hyper_model_image_7x7,

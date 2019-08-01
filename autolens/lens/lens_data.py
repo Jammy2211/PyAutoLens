@@ -119,7 +119,7 @@ class LensData(object):
                 interp_pixel_scale=interp_pixel_scale
             )
 
-        self.border = grids.RegularGridBorder.from_mask(mask=mask)
+        self.border = grids.GridBorder.from_mask(mask=mask)
 
         self.positions = positions
 
@@ -184,6 +184,26 @@ class LensData(object):
         return LensData(
             ccd_data=binned_up_ccd_data,
             mask=binned_up_mask,
+            sub_grid_size=self.sub_grid_size,
+            positions=self.positions,
+            image_psf_shape=self.image_psf_shape,
+            inversion_psf_shape=self.inversion_psf_shape,
+            interp_pixel_scale=self.interp_pixel_scale,
+            cluster_pixel_scale=self.cluster_pixel_scale,
+            cluster_pixel_limit=self.cluster_pixel_limit,
+            uses_inversion=self.uses_inversion,
+            uses_cluster_inversion=self.uses_cluster_inversion,
+        )
+
+    def new_lens_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
+
+        ccd_data_with_signal_to_noise_limit = self.ccd_data.new_ccd_data_with_signal_to_noise_limit(
+            signal_to_noise_limit=signal_to_noise_limit
+        )
+
+        return LensData(
+            ccd_data=ccd_data_with_signal_to_noise_limit,
+            mask=self.mask_2d,
             sub_grid_size=self.sub_grid_size,
             positions=self.positions,
             image_psf_shape=self.image_psf_shape,

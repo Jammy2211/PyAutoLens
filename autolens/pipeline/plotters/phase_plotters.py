@@ -1,3 +1,4 @@
+import autofit as af
 from autolens.data.plotters import ccd_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.plotters import lens_fit_plotters
@@ -20,9 +21,12 @@ def plot_ccd_for_phase(
     should_plot_absolute_signal_to_noise_map,
     should_plot_potential_chi_squared_map,
     visualize_path,
+    subplot_path,
 ):
 
-    output_path = visualize_path
+    output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+        path=visualize_path, folder_names=["ccd"]
+    )
 
     if should_plot_as_subplot:
 
@@ -33,7 +37,7 @@ def plot_ccd_for_phase(
             zoom_around_mask=zoom_around_mask,
             positions=positions,
             units=units,
-            output_path=output_path,
+            output_path=subplot_path,
             output_format="png",
         )
 
@@ -72,8 +76,11 @@ def plot_ray_tracing_for_phase(
     should_plot_potential,
     should_plot_deflections,
     visualize_path,
+    subplot_path,
 ):
-    output_path = visualize_path
+    output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+        path=visualize_path, folder_names=["ray_tracing"]
+    )
 
     if should_plot_as_subplot:
 
@@ -84,7 +91,7 @@ def plot_ray_tracing_for_phase(
             zoom_around_mask=zoom_around_mask,
             positions=positions,
             units=units,
-            output_path=output_path,
+            output_path=subplot_path,
             output_format="png",
         )
 
@@ -126,6 +133,10 @@ def plot_ray_tracing_for_phase(
 
         if should_plot_all_at_end_fits:
 
+            fits_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+                path=output_path, folder_names=["fits"]
+            )
+
             ray_tracing_plotters.plot_ray_tracing_individual(
                 tracer=tracer,
                 mask=mask,
@@ -137,7 +148,7 @@ def plot_ray_tracing_for_phase(
                 should_plot_convergence=True,
                 should_plot_potential=True,
                 should_plot_deflections=True,
-                output_path=output_path + "fits/",
+                output_path=fits_path,
                 output_format="fits",
             )
 
@@ -171,9 +182,12 @@ def plot_lens_fit_for_phase(
     should_plot_model_images_of_planes,
     should_plot_plane_images_of_planes,
     visualize_path,
+    subplot_path,
 ):
 
-    output_path = visualize_path
+    output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+        path=visualize_path, folder_names=["lens_fit"]
+    )
 
     if should_plot_fit_as_subplot:
 
@@ -185,7 +199,7 @@ def plot_lens_fit_for_phase(
             positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units,
-            output_path=output_path,
+            output_path=subplot_path,
             output_format="png",
         )
 
@@ -199,7 +213,7 @@ def plot_lens_fit_for_phase(
             positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units,
-            output_path=output_path,
+            output_path=subplot_path,
             output_format="png",
         )
 
@@ -211,7 +225,7 @@ def plot_lens_fit_for_phase(
             positions=positions,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
-            output_path=output_path,
+            output_path=subplot_path,
             output_format="png",
         )
 
@@ -273,6 +287,10 @@ def plot_lens_fit_for_phase(
 
         if should_plot_all_at_end_fits:
 
+            fits_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+                path=output_path, folder_names=["fits"]
+            )
+
             lens_fit_plotters.plot_fit_individuals(
                 fit=fit,
                 should_plot_mask=should_plot_mask,
@@ -294,7 +312,7 @@ def plot_lens_fit_for_phase(
                 should_plot_subtracted_images_of_planes=True,
                 should_plot_model_images_of_planes=True,
                 should_plot_plane_images_of_planes=True,
-                output_path=output_path + "fits/",
+                output_path=fits_path,
                 output_format="fits",
             )
 
@@ -314,7 +332,9 @@ def plot_hyper_images_for_phase(
     visualize_path,
 ):
 
-    output_path = visualize_path
+    output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+        path=visualize_path, folder_names=["hyper"]
+    )
 
     if should_plot_hyper_model_image:
 

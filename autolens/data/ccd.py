@@ -306,6 +306,26 @@ class CCDData(object):
             name=self.name,
         )
 
+    def new_ccd_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
+
+        noise_map_limit = np.where(
+            self.signal_to_noise_map > signal_to_noise_limit,
+            np.abs(self.image) / signal_to_noise_limit,
+            self.noise_map,
+        )
+
+        return CCDData(
+            image=self.image,
+            pixel_scale=self.pixel_scale,
+            psf=self.psf,
+            noise_map=noise_map_limit,
+            background_noise_map=self.background_noise_map,
+            poisson_noise_map=self.poisson_noise_map,
+            exposure_time_map=self.exposure_time_map,
+            background_sky_map=self.background_sky_map,
+            name=self.name,
+        )
+
     @property
     def signal_to_noise_map(self):
         """The estimated signal-to-noise_maps mappers of the image."""

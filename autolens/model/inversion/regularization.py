@@ -219,7 +219,6 @@ class AdaptiveBrightness(Regularization):
         self.inner_coefficient = inner_coefficient
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
-        print(inner_coefficient, outer_coefficient, signal_scale)
 
     def pixel_signals_from_images(
         self, pixels, sub_to_pix, sub_to_regular, hyper_image
