@@ -35,7 +35,14 @@ class CombinedHyperPhase(HyperPhase):
         """
         return [phase.hyper_name for phase in self.hyper_phases]
 
-    def run(self, data, results: af.ResultsCollection = None, mask=None, positions=None, **kwargs) -> af.Result:
+    def run(
+        self,
+        data,
+        results: af.ResultsCollection = None,
+        mask=None,
+        positions=None,
+        **kwargs
+    ) -> af.Result:
         """
         Run the regular phase followed by the hyper phases. Each result of a hyper phase is attached to the
         overall result object by the hyper_name of that phase.
@@ -59,7 +66,9 @@ class CombinedHyperPhase(HyperPhase):
         results = (
             copy.deepcopy(results) if results is not None else af.ResultsCollection()
         )
-        result = self.phase.run(data, results=results, mask=mask, positions=positions, **kwargs)
+        result = self.phase.run(
+            data, results=results, mask=mask, positions=positions, **kwargs
+        )
         results.add(self.phase.phase_name, result)
 
         for phase in self.hyper_phases:
@@ -100,4 +109,10 @@ class CombinedHyperPhase(HyperPhase):
 
         phase.phase_tag = ""
 
-        return phase.run(data, results=results, mask=results.last.mask_2d, positions=results.last.positions, **kwargs)
+        return phase.run(
+            data,
+            results=results,
+            mask=results.last.mask_2d,
+            positions=results.last.positions,
+            **kwargs
+        )

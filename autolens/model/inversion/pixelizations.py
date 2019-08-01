@@ -124,7 +124,7 @@ class Rectangular(Pixelization):
         ----------
         grid_stack : grids.GridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grids.RegularGridBorder | None
+        border : grids.GridBorder | None
             The border of the grid-stack's regular-grid.
         hyper_image : ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
@@ -280,7 +280,7 @@ class Voronoi(Pixelization):
         ----------
         grid_stack : grids.GridStack
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
-        border : grids.RegularGridBorder
+        border : grids.GridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
         hyper_image : ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.

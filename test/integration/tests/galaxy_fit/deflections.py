@@ -4,7 +4,6 @@ import numpy as np
 import autofit as af
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.galaxy import galaxy_data as gd
-from autolens.model.galaxy.util import galaxy_util
 from autolens.data.array import grids, scaled_array
 from autolens.pipeline.phase import phase
 from autolens.model.profiles import mass_profiles as mp
@@ -35,25 +34,19 @@ def galaxy_fit_phase():
         mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
     )
 
-    deflections = galaxy_util.deflections_of_galaxies_from_grid(
-        galaxies=[galaxy], grid=grid_stack.sub
-    )
-    deflections_y = grid_stack.regular.scaled_array_2d_from_array_1d(
-        array_1d=deflections[:, 0]
-    )
-    deflections_x = grid_stack.regular.scaled_array_2d_from_array_1d(
-        array_1d=deflections[:, 1]
+    deflections = galaxy.deflections_from_grid(
+        galaxies=[galaxy], grid=grid_stack.sub, return_in_2d=True
     )
 
     noise_map = scaled_array.ScaledSquarePixelArray(
-        array=np.ones(deflections_y.shape), pixel_scale=pixel_scale
+        array=np.ones(deflections[:, 0].shape), pixel_scale=pixel_scale
     )
 
     data_y = gd.GalaxyData(
-        image=deflections_y, noise_map=noise_map, pixel_scale=pixel_scale
+        image=deflections[:, 0], noise_map=noise_map, pixel_scale=pixel_scale
     )
     data_x = gd.GalaxyData(
-        image=deflections_x, noise_map=noise_map, pixel_scale=pixel_scale
+        image=deflections[:, 1], noise_map=noise_map, pixel_scale=pixel_scale
     )
 
     phase1 = phase.GalaxyFitPhase(

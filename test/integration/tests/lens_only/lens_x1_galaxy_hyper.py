@@ -12,17 +12,11 @@ data_type = "lens_only_bulge_and_disk"
 data_resolution = "LSST"
 
 
-def make_pipeline(
-        name,
-        phase_folders,
-        optimizer_class=af.MultiNest
-):
-    phase1 = phase_imaging.LensPlanePhase(
+def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+    phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)
-        ),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -32,18 +26,18 @@ def make_pipeline(
 
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    class HyperLensPlanePhase(phase_imaging.LensPlanePhase):
+    class HyperLensPlanePhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
-            self.lens_galaxies = results.from_phase("phase_1").variable.lens_galaxies
+            self.galaxies = results.from_phase("phase_1").variable.galaxies
 
-            self.lens_galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.lens_galaxies.lens.hyper_galaxy
+            self.galaxies.lens.hyper_galaxy = (
+                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
 
     phase2 = HyperLensPlanePhase(
         phase_name="phase_2",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
+        galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5, light=lp.EllipticalSersic, hyper_galaxy=g.HyperGalaxy
             )
@@ -61,6 +55,4 @@ def make_pipeline(
 if __name__ == "__main__":
     import sys
 
-    runner.run(
-        sys.modules[__name__]
-    )
+    runner.run(sys.modules[__name__])

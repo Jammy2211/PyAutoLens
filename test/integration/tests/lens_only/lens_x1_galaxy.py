@@ -11,17 +11,11 @@ data_type = "lens_only_dev_vaucouleurs"
 data_resolution = "LSST"
 
 
-def make_pipeline(
-        name,
-        phase_folders,
-        optimizer_class=af.MultiNest
-):
-    phase1 = phase_imaging.LensPlanePhase(
+def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+    phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        lens_galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)
-        ),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -29,15 +23,10 @@ def make_pipeline(
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(
-        name,
-        phase1
-    )
+    return pl.PipelineImaging(name, phase1)
 
 
 if __name__ == "__main__":
     import sys
 
-    runner.run(
-        sys.modules[__name__]
-    )
+    runner.run(sys.modules[__name__])
