@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data import ccd, convolution
+from autolens.data import convolution
+from autolens.data.instrument import ccd
 from autolens.data.array import mask
 
 

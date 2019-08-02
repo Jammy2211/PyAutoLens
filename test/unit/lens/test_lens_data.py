@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data import ccd
+from autolens.data.instrument import ccd
 from autolens.data import convolution
 from autolens.data.array import grids
 from autolens.data.array import mask as msk

@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.signal
 
-from autolens.data import ccd
+from autolens.data.instrument import ccd
 from autolens.data.array import scaled_array
 
 

@@ -4,8 +4,7 @@ import shutil
 import numpy as np
 import pytest
 
-from autolens.data import simulated_ccd as sim_ccd
-from autolens.data import ccd
+from autolens.data.instrument import ccd
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, mask as msk
 from autolens.model.galaxy import galaxy as g
@@ -40,7 +39,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack
     )
 
-    ccd_simulated = sim_ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
+    ccd_simulated = ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=0.2,
         exposure_time=300.0,
@@ -121,7 +120,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack
     )
 
-    ccd_simulated = sim_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
+    ccd_simulated = ccd.SimulatedCCDData.from_image_and_exposure_arrays(
         image=tracer.padded_profile_image_plane_image_2d_from_psf_shape(
             psf_shape=psf.shape
         ),

@@ -81,7 +81,7 @@ def sub_grid_size_tag_from_sub_grid_size(sub_grid_size):
 
 def signal_to_noise_limit_tag_from_signal_to_noise_limit(signal_to_noise_limit):
     """Generate a signal to noise limit tag, to customize phase names based on limiting the signal to noise ratio of
-    the data being fitted.
+    the instrument being fitted.
 
     This changes the phase name 'phase_name' as follows:
 

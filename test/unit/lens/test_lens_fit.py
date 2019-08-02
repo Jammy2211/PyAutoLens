@@ -3,7 +3,7 @@ import pytest
 
 import autofit as af
 from autolens.lens.util import lens_fit_util as util
-from autolens.data import ccd
+from autolens.data.instrument import ccd
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.lens import ray_tracing, lens_fit

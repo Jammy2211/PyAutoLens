@@ -161,7 +161,7 @@ class TestPhase(object):
     def test_make_analysis__positions_are_input__are_used_in_analysis(
         self, phase_7x7, ccd_data_7x7
     ):
-        # If position threshold is input (not None) and positions are input, make the positions part of the lens data.
+        # If position threshold is input (not None) and positions are input, make the positions part of the lens instrument.
 
         phase_7x7.positions_threshold = 0.2
 
@@ -278,7 +278,7 @@ class TestPhase(object):
     def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(
         self, phase_7x7, ccd_data_7x7
     ):
-        # If use positions is true and positions are input, make the positions part of the lens data.
+        # If use positions is true and positions are input, make the positions part of the lens instrument.
 
         phase_7x7.interp_pixel_scale = 0.1
 
@@ -1435,4 +1435,4 @@ class TestPhasePickle(object):
         phase_7x7.make_analysis = make_analysis
 
         # with pytest.raises(af.exc.PipelineException):
-        #     phase_7x7.run(data=ccd_data_7x7, results=None, mask=None, positions=None)
+        #     phase_7x7.run(instrument=ccd_data_7x7, results=None, mask=None, positions=None)

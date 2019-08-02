@@ -52,7 +52,7 @@ class CombinedHyperPhase(HyperPhase):
         Parameters
         ----------
         data
-            The data
+            The instrument
         results
             Results from previous phases
         kwargs
