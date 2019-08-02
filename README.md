@@ -215,6 +215,8 @@ The following papers use **PyAutoLens**:
 
 [Amy Etherington](https://github.com/amyetherington) - Magnification, Critical Curves and Caustic Calculations.
 
+[Xiaoyue Cao](https://github.com/caoxiaoyue) - Analytic Ellipitcal Power-Law Deflection Angle Calculations.
+
 [Nan Li](https://github.com/linan7788626) - Docker integration & support.
 
 ### Code Donors

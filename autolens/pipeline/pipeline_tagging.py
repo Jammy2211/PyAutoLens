@@ -61,9 +61,13 @@ def pipeline_tag_from_pipeline_settings(
         align_bulge_disk_phi=align_bulge_disk_phi,
     )
 
-    align_light_dark_centre_tag = align_light_dark_centre_tag_from_align_light_dark_centre(align_light_dark_centre=align_light_dark_centre)
+    align_light_dark_centre_tag = align_light_dark_centre_tag_from_align_light_dark_centre(
+        align_light_dark_centre=align_light_dark_centre
+    )
 
-    align_bulge_dark_centre_tag = align_bulge_dark_centre_tag_from_align_bulge_dark_centre(align_bulge_dark_centre=align_bulge_dark_centre)
+    align_bulge_dark_centre_tag = align_bulge_dark_centre_tag_from_align_bulge_dark_centre(
+        align_bulge_dark_centre=align_bulge_dark_centre
+    )
 
     return (
         include_shear_tag
@@ -202,6 +206,7 @@ def align_light_dark_centre_tag_from_align_light_dark_centre(align_light_dark_ce
         return ""
     elif align_light_dark_centre:
         return "_light_dark_align_centre"
+
 
 def align_bulge_dark_centre_tag_from_align_bulge_dark_centre(align_bulge_dark_centre):
     """Generate a tag for if the bulge and dark of a bulge-dark system are aligned or not, to customize phase names \

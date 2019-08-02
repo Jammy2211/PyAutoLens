@@ -386,17 +386,28 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
         """
 
         slope = self.slope - 1.0
-        einstein_radius = (2.0 / (self.axis_ratio**-0.5 + self.axis_ratio**0.5)) * self.einstein_radius
+        einstein_radius = (
+            2.0 / (self.axis_ratio ** -0.5 + self.axis_ratio ** 0.5)
+        ) * self.einstein_radius
 
         factor = np.divide(1.0 - self.axis_ratio, 1.0 + self.axis_ratio)
         b = np.multiply(einstein_radius, np.sqrt(self.axis_ratio))
-        phi = np.arctan2(grid[:, 0],
-                         np.multiply(self.axis_ratio, grid[:, 1]))  # Note, this phi is not the position angle
-        R = np.sqrt(np.add(np.multiply(self.axis_ratio ** 2, grid[:, 1] ** 2), grid[:, 0] ** 2))
+        phi = np.arctan2(
+            grid[:, 0], np.multiply(self.axis_ratio, grid[:, 1])
+        )  # Note, this phi is not the position angle
+        R = np.sqrt(
+            np.add(np.multiply(self.axis_ratio ** 2, grid[:, 1] ** 2), grid[:, 0] ** 2)
+        )
         z = np.add(np.multiply(np.cos(phi), 1 + 0j), np.multiply(np.sin(phi), 0 + 1j))
 
-        complex_angle = 2.0 * b / (1.0 + self.axis_ratio) * (b / R) ** (slope - 1.) * z * \
-                        special.hyp2f1(1., 0.5 * slope, 2. - 0.5 * slope, -factor * z ** 2)
+        complex_angle = (
+            2.0
+            * b
+            / (1.0 + self.axis_ratio)
+            * (b / R) ** (slope - 1.0)
+            * z
+            * special.hyp2f1(1.0, 0.5 * slope, 2.0 - 0.5 * slope, -factor * z ** 2)
+        )
 
         deflection_y = complex_angle.imag
         deflection_x = complex_angle.real
@@ -423,6 +434,7 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
             * eta_u ** (3.0 - slope)
             / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
         )
+
 
 class SphericalPowerLaw(EllipticalPowerLaw):
     @af.map_types
@@ -818,15 +830,11 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         )
 
     def convergence_func(self, r):
-        return (
-            self.einstein_radius
-            * np.sqrt(self.axis_ratio)
-            / (2 * r)
-        )
+        return self.einstein_radius * np.sqrt(self.axis_ratio) / (2 * r)
 
     @property
     def ellipticity_rescale(self):
-        return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
+        return 1.0 / (self.axis_ratio ** 0.5)
 
     @dim.convert_units_to_input_units
     def summarize_in_units(
