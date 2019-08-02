@@ -1,4 +1,4 @@
-from autolens.data import ccd
+from autolens.data.instrument import ccd
 from autolens.data.array import mask as msk
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.galaxy import galaxy as g

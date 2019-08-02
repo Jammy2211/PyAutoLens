@@ -300,7 +300,7 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(
     """If the values of a 2D image array are negative, this function replaces the corresponding 2D noise-map array \
     values to meet a specified target to noise value.
 
-    This routine is necessary because of anomolous values in images which come from our HST ACS data-reduction \
+    This routine is necessary because of anomolous values in images which come from our HST ACS instrument-reduction \
     pipeline, where image-pixels with negative values (e.g. due to the background sky subtraction) have extremely \
     small noise values, which inflate their signal-to-noise values and chi-squared contributions in the modeling.
 

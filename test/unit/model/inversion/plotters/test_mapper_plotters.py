@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from autolens.data import ccd as im
+from autolens.data.instrument import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix

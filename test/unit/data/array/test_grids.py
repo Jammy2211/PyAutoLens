@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data import ccd
+from autolens.data.instrument import ccd
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.data.array.util import grid_util, mapping_util, mask_util

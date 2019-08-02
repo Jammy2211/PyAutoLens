@@ -1,6 +1,6 @@
 import autofit as af
+from autolens.data.instrument import ccd
 from autolens.data import ccd
-from autolens.data import simulated_ccd
 from autolens.data.array import grids
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
@@ -41,14 +41,14 @@ def simulate_image_from_galaxies_and_output_to_fits(
         shape=shape, pixel_scale=pixel_scale, sub_grid_size=sub_grid_size
     )
 
-    # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD data.
+    # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD instrument.
     tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
         galaxies=galaxies, image_plane_grid_stack=image_plane_grid_stack
     )
 
-    # Simulate the CCD data, remembering that we use a special image-plane image which ensures edge-effects don't
+    # Simulate the CCD instrument, remembering that we use a special image-plane image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.g. the PSF convolution).
-    simulated_ccd_data = simulated_ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
+    ccd_data = ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         psf=psf,
@@ -57,15 +57,15 @@ def simulate_image_from_galaxies_and_output_to_fits(
         add_noise=True,
     )
 
-    # Now, lets output this simulated ccd-data to the test/data folder.
+    # Now, lets output this simulated ccd-instrument to the test/instrument folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=test_path, folder_names=["data", data_type, data_resolution]
+        path=test_path, folder_names=["instrument", data_type, data_resolution]
     )
 
     ccd.output_ccd_data_to_fits(
-        ccd_data=simulated_ccd_data,
+        ccd_data=ccd_data,
         image_path=data_path + "image.fits",
         psf_path=data_path + "psf.fits",
         noise_map_path=data_path + "noise_map.fits",
@@ -73,14 +73,14 @@ def simulate_image_from_galaxies_and_output_to_fits(
     )
 
     ccd_plotters.plot_ccd_subplot(
-        ccd_data=simulated_ccd_data,
+        ccd_data=ccd_data,
         output_filename="ccd_data",
         output_path=data_path,
         output_format="png",
     )
 
     ccd_plotters.plot_ccd_individual(
-        ccd_data=simulated_ccd_data,
+        ccd_data=ccd_data,
         should_plot_image=True,
         should_plot_noise_map=True,
         should_plot_psf=True,
