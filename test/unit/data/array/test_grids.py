@@ -513,6 +513,25 @@ class TestGrid:
         )
         assert grid.masked_shape_arcsec == (8.5, 8.0)
 
+    def test__in_radians(self):
+
+        mask = np.array(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ]
+        )
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+
+        assert (grid.to_radians[0,0] == pytest.approx(0.00000969627362, 1.0e-8))
+        assert (grid.to_radians[0,1] == pytest.approx(0.00000484813681, 1.0e-8))
+
+        assert (grid.to_radians[0,0] == pytest.approx(2.0 * np.pi / (180 * 3600), 1.0e-8))
+        assert (grid.to_radians[0,1] == pytest.approx(1.0 * np.pi / (180 * 3600), 1.0e-8))
+
     def test__yticks(self):
 
         grid = grids.Grid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=None)
