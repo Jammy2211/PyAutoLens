@@ -1112,6 +1112,11 @@ class Grid(np.ndarray):
         )
 
     @property
+    @array_util.Memoizer()
+    def to_radians(self):
+        return (self * np.pi) / 648000.0
+
+    @property
     def masked_shape_arcsec(self):
         return (
             np.amax(self[:, 0]) - np.amin(self[:, 0]),
