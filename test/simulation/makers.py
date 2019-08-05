@@ -56,11 +56,11 @@ def simulate_image_from_galaxies_and_output_to_fits(
         add_noise=True,
     )
 
-    # Now, lets output this simulated ccd-instrument to the test/instrument folder.
+    # Now, lets output this simulated ccd-instrument to the test/data folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=test_path, folder_names=["instrument", data_type, data_resolution]
+        path=test_path, folder_names=["data", data_type, data_resolution]
     )
 
     ccd.output_ccd_data_to_fits(
