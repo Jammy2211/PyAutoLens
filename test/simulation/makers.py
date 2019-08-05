@@ -29,7 +29,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
     shape = simulation_util.shape_from_data_resolution(data_resolution=data_resolution)
 
     # Simulate a simple Gaussian PSF for the image.
-    psf = ccd.PSF.from_gaussian(
+    psf = abstract_data.PSF.from_gaussian(
         shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale
     )
 
