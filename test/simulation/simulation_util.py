@@ -73,7 +73,7 @@ def load_test_ccd_data(data_type, data_resolution, psf_shape=(11, 11), lens_name
     pixel_scale = pixel_scale_from_data_resolution(data_resolution=data_resolution)
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=test_path, folder_names=["instrument", data_type, data_resolution]
+        path=test_path, folder_names=["data", data_type, data_resolution]
     )
 
     return ccd.load_ccd_data_from_fits(
