@@ -3,7 +3,8 @@ import os
 import numpy as np
 import pytest
 
-from autolens.data.instrument import ccd as im
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.data.array import grids, mask as msk, scaled_array
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
@@ -21,10 +22,10 @@ def make_mapper_plotter_setup():
 @pytest.fixture(name="image")
 def make_image():
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
-    noise_map = im.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
-    psf = im.PSF(array=3.0 * np.ones((3, 3)), pixel_scale=1.0)
+    noise_map = ccd.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
+    psf = abstract_data.PSF(array=3.0 * np.ones((3, 3)), pixel_scale=1.0)
 
-    return im.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+    return ccd.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
 
 @pytest.fixture(name="mask")

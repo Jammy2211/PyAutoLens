@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
 from autolens.data import convolution
 from autolens.data.array import grids
