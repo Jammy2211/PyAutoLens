@@ -19,6 +19,7 @@ import autofit as af
 from autolens.pipeline.phase import phase_imaging, phase_hyper
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
+from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
