@@ -3,6 +3,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 from autolens import exc, dimensions as dim
+from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
