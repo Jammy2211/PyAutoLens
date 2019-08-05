@@ -1,7 +1,8 @@
 import numpy as np
 import scipy.signal
 
-from autolens.data import ccd
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.data.array import scaled_array
 
 
@@ -56,7 +57,7 @@ class MockBackgrondSkyMap(object):
 class MockPSF(object):
     def __new__(cls, shape, value, pixel_scale=1.0, *args, **kwargs):
 
-        return ccd.PSF(
+        return abstract_data.PSF(
             array=value * np.ones(shape=shape),
             pixel_scale=pixel_scale,
             origin=(0.0, 0.0),

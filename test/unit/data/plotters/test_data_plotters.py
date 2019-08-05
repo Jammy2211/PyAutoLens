@@ -7,7 +7,7 @@ from autolens.data.plotters import data_plotters
 
 @pytest.fixture(name="data_plotter_path")
 def make_data_plotter_setup():
-    data_plotter_path = "{}/../../test_files/plotting/data/".format(
+    data_plotter_path = "{}/../../test_files/plotting/instrument/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
     return data_plotter_path

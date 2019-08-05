@@ -56,15 +56,15 @@ def plot_array(
     output_format="show",
     output_filename="array",
 ):
-    """Plot an array of data as a figure.
+    """Plot an array of instrument as a figure.
 
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
     origin : (float, float).
         The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
-    mask : data.array.mask.Mask
+    mask : instrument.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
     extract_array_from_mask : bool
         The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
@@ -76,7 +76,7 @@ def plot_array(
         If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     positions : [[]]
         Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-    grid : data.array.grids.RegularGrid
+    grid : instrument.array.grids.RegularGrid
         A grid of (y,x) coordinates which may be plotted over the plotted array.
     as_subplot : bool
         Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
@@ -289,12 +289,12 @@ def plot_figure(
     xticks_manual,
     yticks_manual,
 ):
-    """Open a matplotlib figure and plot the array of data on it.
+    """Open a matplotlib figure and plot the array of instrument on it.
 
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
     as_subplot : bool
         Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
     units : str
@@ -359,8 +359,8 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
 
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float
@@ -411,12 +411,12 @@ def get_normalization_min_max(array, norm_min, norm_max):
     """Get the minimum and maximum of the normalization of the array, which sets the lower and upper limits of the \
     colormap.
 
-    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data are used.
+    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of instrument are used.
 
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
     norm_max : float or None
@@ -436,12 +436,12 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
 
     For a 'symmetric_log' colormap, linthesh and linscale also change the colormap.
 
-    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data are used.
+    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of instrument are used.
 
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
     norm_max : float or None
@@ -553,9 +553,9 @@ def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):
 
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted, the shape of which is used for converting the grid to units of pixels.
-    grid_arcsec : ndarray or data.array.grids.RegularGrid
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted, the shape of which is used for converting the grid to units of pixels.
+    grid_arcsec : ndarray or instrument.array.grids.RegularGrid
         The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -580,8 +580,8 @@ def plot_origin(array, origin, units, kpc_per_arcsec, zoom_offset_arcsec):
     
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
     origin : (float, float).
         The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
     units : str
@@ -610,8 +610,8 @@ def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
 
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
     centres : [[tuple]]
         The list of centres; centres in the same list entry are colored the same.
     units : str
@@ -648,8 +648,8 @@ def plot_ellipses(
 
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
     centres : [[tuple]]
         The list of centres; centres in the same list entry are colored the same.
     units : str
@@ -695,7 +695,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
 
     Parameters
     -----------
-    mask : ndarray of data.array.mask.Mask
+    mask : ndarray of instrument.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -729,7 +729,7 @@ def plot_border(
 
     Parameters
     -----------t.
-    mask : ndarray of data.array.mask.Mask
+    mask : ndarray of instrument.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
     should_plot_border : bool
         If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
@@ -762,14 +762,14 @@ def plot_border(
 def plot_points(
     points_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_arcsec
 ):
-    """Plot a set of points over the array of data on the figure.
+    """Plot a set of points over the array of instrument on the figure.
 
     Parameters
     -----------
     positions : [[]]
         Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-    array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
@@ -806,14 +806,14 @@ def plot_points(
 
 
 def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_arcsec):
-    """Plot a grid of points over the array of data on the figure.
+    """Plot a grid of points over the array of instrument on the figure.
 
      Parameters
      -----------.
-     grid_arcsec : ndarray or data.array.grids.RegularGrid
+     grid_arcsec : ndarray or instrument.array.grids.RegularGrid
          A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
-     array : data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+     array : instrument.array.scaled_array.ScaledArray
+        The 2D array of instrument which is plotted.
      units : str
          The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
      kpc_per_arcsec : float or None

@@ -843,9 +843,7 @@ class TestPowerLaw(object):
         power_law = mp.EllipticalPowerLaw(
             centre=(0, 0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0, slope=2.0
         )
-        deflections = power_law.deflections_from_grid(
-            grid=np.array([[0.1625, 0.1625]])
-        )
+        deflections = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
 
         assert deflections[0, 0] == pytest.approx(0.79421, 1e-3)
         assert deflections[0, 1] == pytest.approx(0.50734, 1e-3)

@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from autolens.data import ccd
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.data import convolution
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
@@ -279,7 +280,7 @@ class TestLensData(object):
         self
     ):
 
-        psf = ccd.PSF(np.ones((7, 7)), 1)
+        psf = abstract_data.PSF(np.ones((7, 7)), 1)
         ccd_data = ccd.CCDData(
             np.ones((19, 19)),
             pixel_scale=3.0,
