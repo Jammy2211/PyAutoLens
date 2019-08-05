@@ -4,6 +4,7 @@ from astropy import cosmology as cosmo
 
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
+from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
 from autolens.lens import plane as pl
 from autolens.lens import ray_tracing
@@ -1382,7 +1383,7 @@ class TestAbstractTracerData(object):
     class TestUnmaskedBlurredProfileImages:
         def test__unmasked_images_of_tracer_planes_and_galaxies(self):
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 3.0, 0.0], [0.0, 1.0, 2.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )

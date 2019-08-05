@@ -505,7 +505,7 @@ class GridStack(object):
 
         Parameters
         ----------
-        psf : ccd.PSF
+        psf : abstract_data.PSF
             The PSF of the image used for convolution.
         unmasked_image_1d : ndarray
             The 1D unmasked image which is blurred.
@@ -1110,6 +1110,11 @@ class Grid(np.ndarray):
         return self.mask.sub_to_regular_from_sub_grid_size(
             sub_grid_size=self.sub_grid_size
         )
+
+    @property
+    @array_util.Memoizer()
+    def to_radians(self):
+        return (self * np.pi) / 648000.0
 
     @property
     def masked_shape_arcsec(self):
