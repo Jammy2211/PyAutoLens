@@ -4,6 +4,7 @@ import shutil
 import numpy as np
 import pytest
 
+from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, mask as msk
@@ -16,7 +17,7 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    psf = ccd.PSF(
+    psf = abstract_data.PSF(
         array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         pixel_scale=0.2,
     )
@@ -102,7 +103,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
 def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    psf = ccd.PSF.from_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
+    psf = abstract_data.PSF.from_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
 
     grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
         shape=(11, 11), pixel_scale=0.2, sub_grid_size=1

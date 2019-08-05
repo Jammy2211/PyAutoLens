@@ -32,7 +32,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
-    psf = ccd.PSF.from_gaussian(
+    psf = abstract_data.PSF.from_gaussian(
         shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale
     )
 
