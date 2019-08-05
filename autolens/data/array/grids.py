@@ -505,7 +505,7 @@ class GridStack(object):
 
         Parameters
         ----------
-        psf : ccd.PSF
+        psf : abstract_data.PSF
             The PSF of the image used for convolution.
         unmasked_image_1d : ndarray
             The 1D unmasked image which is blurred.
