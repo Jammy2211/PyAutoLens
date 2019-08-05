@@ -3,7 +3,8 @@ import pytest
 
 import autofit as af
 from autolens.lens.util import lens_fit_util as util
-from autolens.data import ccd
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.lens import ray_tracing, lens_fit
@@ -24,7 +25,7 @@ class TestLensProfileFit:
 
             # Thus the chi squared is 4.0**2.0 + 3.0**2.0 = 25.0
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
@@ -135,7 +136,7 @@ class TestLensProfileFit:
 
             # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
@@ -250,7 +251,7 @@ class TestLensProfileFit:
 
             # This reduces the chi squared to 2.0 instead of 4.0
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
@@ -362,7 +363,7 @@ class TestLensProfileFit:
 
         def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
@@ -474,7 +475,7 @@ class TestLensProfileFit:
             self
         ):
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )

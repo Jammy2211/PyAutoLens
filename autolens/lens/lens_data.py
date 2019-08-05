@@ -22,16 +22,16 @@ class LensData(object):
         uses_cluster_inversion=True,
     ):
         """
-        The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
+        The lens instrument is the collection of instrument (image, noise-map, PSF), a mask, grid_stack, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens instrument creates reduced 1D arrays of each \
         for lensing calculations.
 
         Parameters
         ----------
         ccd_data: im.CCD
-            The ccd data all in 2D (the image, noise-map, PSF, etc.)
+            The ccd instrument all in 2D (the image, noise-map, PSF, etc.)
         mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_grid_size : int

@@ -43,18 +43,18 @@ def plot_image(
     output_format="show",
     output_filename="image",
 ):
-    """Plot the observed image of the ccd data.
+    """Plot the observed image of the ccd instrument.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     image : ScaledSquarePixelArray
-        The image of the data.
+        The image of the instrument.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or data.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
+        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+    image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the instrument, this plots those pixels \
         over the immage.
     """
     origin = get_origin(array=image, plot_origin=plot_origin)
@@ -130,16 +130,16 @@ def plot_noise_map(
     output_format="show",
     output_filename="noise_map",
 ):
-    """Plot the noise_map of the ccd data.
+    """Plot the noise_map of the ccd instrument.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     noise_map : ScaledSquarePixelArray
-        The noise map of the data.
+        The noise map of the instrument.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=noise_map, plot_origin=plot_origin)
 
@@ -205,16 +205,16 @@ def plot_psf(
     output_format="show",
     output_filename="psf",
 ):
-    """Plot the PSF of the ccd data.
+    """Plot the PSF of the ccd instrument.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     signal_to_noise_map : ScaledSquarePixelArray
-        The psf of the data.
+        The psf of the instrument.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=psf, plot_origin=plot_origin)
 
@@ -280,16 +280,16 @@ def plot_signal_to_noise_map(
     output_format="show",
     output_filename="signal_to_noise_map",
 ):
-    """Plot the signal-to-noise_map of the ccd data.
+    """Plot the signal-to-noise_map of the ccd instrument.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     signal_to_noise_map : ScaledSquarePixelArray
-        The signal-to-noise map of the data.
+        The signal-to-noise map of the instrument.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=signal_to_noise_map, plot_origin=plot_origin)
 
@@ -359,16 +359,16 @@ def plot_absolute_signal_to_noise_map(
     output_format="show",
     output_filename="absolute_signal_to_noise_map",
 ):
-    """Plot the absolute signal-to-noise map of the ccd data.
+    """Plot the absolute signal-to-noise map of the ccd instrument.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     absolute_signal_to_noise_map : ScaledSquarePixelArray
-        The absolute signal-to-noise map of the data.
+        The absolute signal-to-noise map of the instrument.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=absolute_signal_to_noise_map, plot_origin=plot_origin)
 
@@ -438,16 +438,16 @@ def plot_potential_chi_squared_map(
     output_format="show",
     output_filename="potential_chi_squared_map",
 ):
-    """Plot the signal-to-noise_map of the ccd data.
+    """Plot the signal-to-noise_map of the ccd instrument.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     potential_chi_squared_map : ScaledSquarePixelArray
-        The signal-to-noise map of the data.
+        The signal-to-noise map of the instrument.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=potential_chi_squared_map, plot_origin=plot_origin)
 
@@ -486,14 +486,14 @@ def plot_potential_chi_squared_map(
 
 
 def get_origin(array, plot_origin):
-    """Get the (y,x) origin of the ccd data if it going to be plotted.
+    """Get the (y,x) origin of the ccd instrument if it going to be plotted.
 
     Parameters
     -----------
-    array : data.array.scaled_array.ScaledArray
+    array : instrument.array.scaled_array.ScaledArray
         The array from which the origin is extracted.
     plot_origin : True
-        If true, the origin of the data's coordinate system is returned.
+        If true, the origin of the instrument's coordinate system is returned.
     """
     if plot_origin:
         return array.origin
