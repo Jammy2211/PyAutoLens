@@ -493,15 +493,15 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def tangential_critical_curve_from_grid(self, grid):
 
-        lambda_tan_2d = self.tangential_eigen_value_from_shear_and_convergence(
+        lambda_tangential_2d = self.tangential_eigen_value_from_shear_and_convergence(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        tan_critical_curve_indices = measure.find_contours(lambda_tan_2d, 0)
+        tangential_critical_curve_indices = measure.find_contours(lambda_tangential_2d, 0)
 
         return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-            grid_pixels_1d=tan_critical_curve_indices[0],
-            shape=lambda_tan_2d.shape,
+            grid_pixels_1d=tangential_critical_curve_indices[0],
+            shape=lambda_tangential_2d.shape,
             pixel_scales=(
                 grid.pixel_scale / grid.sub_grid_size,
                 grid.pixel_scale / grid.sub_grid_size,
@@ -521,11 +521,11 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def radial_critical_curve_from_grid(self, grid):
 
-        lambda_rad_2d = self.radial_eigen_value_from_shear_and_convergence(
-            grid=grid, return_in_2d=False, return_binned=False
+        lambda_radial_2d = self.radial_eigen_value_from_shear_and_convergence(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        radial_critical_curve_indices = measure.find_contours(lambda_rad_2d, 0)
+        radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
 
         ##rad_critical_curve = np.fliplr(radial_critical_curve_indices[0])
 
@@ -535,7 +535,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=radial_critical_curve_indices[0],
-            shape=lambda_rad_2d.shape,
+            shape=lambda_radial_2d.shape,
             pixel_scales=(
                 grid.pixel_scale / grid.sub_grid_size,
                 grid.pixel_scale / grid.sub_grid_size,
@@ -555,57 +555,10 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def critical_curves_from_grid(self, grid):
 
-        magnification_2d = self.magnification_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
-
-        inverse_magnification_2d = 1 / magnification_2d
-
-        critical_curves_indices = measure.find_contours(inverse_magnification_2d, 0)
-
-        no_critical_curves = len(critical_curves_indices)
-        contours = []
-        critical_curves = []
-
-        for jj in np.arange(no_critical_curves):
-
-            contours.append(critical_curves_indices[jj])
-            contour_x, contour_y = contours[jj].T
-            pixel_coord = np.stack((contour_x, contour_y), axis=-1)
-
-            critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-                grid_pixels_1d=pixel_coord,
-                shape=magnification_2d.shape,
-                pixel_scales=(
-                    grid.pixel_scale / grid.sub_grid_size,
-                    grid.pixel_scale / grid.sub_grid_size,
-                ),
-                origin=grid.mask.origin,
-            )
-
-            critical_curves.append(critical_curve)
-
-        return critical_curves
+        return [self.tangential_critical_curve_from_grid(grid=grid), self.radial_critical_curve_from_grid(grid=grid)]
 
     def caustics_from_grid(self, grid):
-
-        caustics = []
-
-        critical_curves = self.critical_curves_from_grid(grid=grid)
-
-        for i in range(len(critical_curves)):
-
-            critical_curve = critical_curves[i]
-
-            deflections_1d = self.deflections_from_grid(
-                grid=critical_curve, return_in_2d=False, return_binned=False
-            )
-
-            caustic = critical_curve - deflections_1d
-
-            caustics.append(caustic)
-
-        return caustics
+        return [self.tangential_caustic_from_grid(grid=grid), self.radial_caustic_from_grid(grid=grid)]
 
     @dim.convert_units_to_input_units
     def summarize_in_units(
