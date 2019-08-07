@@ -719,6 +719,8 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         )
         self.einstein_radius = einstein_radius
 
+
+
     @reshape_returned_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -821,12 +823,19 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         return (
             self.einstein_radius
             * np.sqrt(self.axis_ratio)
-            / (2 * r)
+            / (2 * self.axis_ratio * r)
         )
 
     @property
     def ellipticity_rescale(self):
-        return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
+        return 1
+
+    @property
+    def einstein_radius_rescaled(self):
+        """Rescale the einstein radius by slope and axis_ratio, to reduce its degeneracy with other mass-profiles
+        parameters"""
+        return self.einstein_radius / (1 + self.axis_ratio)
+
 
     @dim.convert_units_to_input_units
     def summarize_in_units(

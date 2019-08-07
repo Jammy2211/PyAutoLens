@@ -300,7 +300,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         radius = (
             self.ellipticity_rescale
-            * root_scalar(
+             * root_scalar(
                 func, bracket=[1e-4, 1000.0], args=(redshift_profile, cosmology)
             ).root
         )
