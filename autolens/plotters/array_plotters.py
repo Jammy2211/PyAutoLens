@@ -20,6 +20,7 @@ def plot_array(
     extract_array_from_mask=False,
     zoom_around_mask=False,
     should_plot_border=False,
+    lines=None,
     positions=None,
     centres=None,
     axis_ratios=None,
@@ -720,6 +721,43 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
         )
 
         plt.scatter(y=edge_units[:, 0], x=edge_units[:, 1], s=pointsize, c="k")
+
+
+# def plot_lines(
+#     lines, units, kpc_per_arcsec, pointsize, zoom_offset_pixels
+# ):
+#     """Plot the liness of the mask or the array on the figure.
+#
+#     Parameters
+#     -----------t.
+#     mask : ndarray of instrument.array.mask.Mask
+#         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+#     should_plot_lines : bool
+#         If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
+#     units : str
+#         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+#     kpc_per_arcsec : float or None
+#         The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+#     lines_pointsize : int
+#         The size of the points plotted to show the liness.
+#     """
+#     if lines not None:
+#
+#         plt.gca()
+#         lines_pixels = mask.one_to_two[mask.lines_pixels]
+#
+#         if zoom_offset_pixels is not None:
+#             lines_pixels -= zoom_offset_pixels
+#
+#         lines_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=lines_pixels)
+#         lines_units = convert_grid_units(
+#             array=mask,
+#             grid_arcsec=lines_arcsec,
+#             units=units,
+#             kpc_per_arcsec=kpc_per_arcsec,
+#         )
+#
+#         plt.scatter(y=lines_units[:, 0], x=lines_units[:, 1], s=pointsize, c="y")
 
 
 def plot_border(

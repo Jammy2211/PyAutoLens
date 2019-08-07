@@ -830,7 +830,9 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         )
 
     def convergence_func(self, r):
-        return self.einstein_radius * np.sqrt(self.axis_ratio) / (2 * r)
+        return (
+            self.einstein_radius * np.sqrt(self.axis_ratio) / (2 * self.axis_ratio * r)
+        )
 
     @property
     def ellipticity_rescale(self):
