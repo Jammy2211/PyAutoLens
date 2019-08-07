@@ -10,6 +10,7 @@ def pipeline_name_from_name_and_settings(
     align_bulge_disk_centre=False,
     align_bulge_disk_axis_ratio=False,
     align_bulge_disk_phi=False,
+    disk_as_sersic=False,
     align_light_dark_centre=False,
     align_bulge_dark_centre=False,
 ):
@@ -17,11 +18,12 @@ def pipeline_name_from_name_and_settings(
     pipeline_tag = pipeline_tag_from_pipeline_settings(
         include_shear=include_shear,
         fix_lens_light=fix_lens_light,
-        align_bulge_disk_centre=align_bulge_disk_centre,
         pixelization=pixelization,
         regularization=regularization,
+        align_bulge_disk_centre=align_bulge_disk_centre,
         align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
         align_bulge_disk_phi=align_bulge_disk_phi,
+        disk_as_sersic=disk_as_sersic,
         align_light_dark_centre=align_light_dark_centre,
         align_bulge_dark_centre=align_bulge_dark_centre,
     )
@@ -37,6 +39,7 @@ def pipeline_tag_from_pipeline_settings(
     align_bulge_disk_centre=False,
     align_bulge_disk_axis_ratio=False,
     align_bulge_disk_phi=False,
+    disk_as_sersic=False,
     align_light_dark_centre=False,
     align_bulge_dark_centre=False,
 ):
@@ -61,6 +64,8 @@ def pipeline_tag_from_pipeline_settings(
         align_bulge_disk_phi=align_bulge_disk_phi,
     )
 
+    disk_as_sersic_tag = disk_as_sersic_tag_from_disk_as_sersic(disk_as_sersic=disk_as_sersic)
+
     align_light_dark_centre_tag = align_light_dark_centre_tag_from_align_light_dark_centre(
         align_light_dark_centre=align_light_dark_centre
     )
@@ -75,6 +80,7 @@ def pipeline_tag_from_pipeline_settings(
         + pixelization_tag
         + regularization_tag
         + bulge_disk_tag
+        + disk_as_sersic_tag
         + align_light_dark_centre_tag
         + align_bulge_dark_centre_tag
     )
@@ -84,10 +90,10 @@ def include_shear_tag_from_include_shear(include_shear):
     """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
     to a previous estimate, or varied during he analysis, to customize phase names.
 
-    This changes the phase name 'phase_name' as follows:
+    This changes the phase name 'pipeline_name__' as follows:
 
-    fix_lens_light = False -> phase_name
-    fix_lens_light = True -> phase_name_fix_lens_light
+    fix_lens_light = False -> pipeline_name__
+    fix_lens_light = True -> pipeline_name___fix_lens_light
     """
     if not include_shear:
         return ""
@@ -99,10 +105,10 @@ def fix_lens_light_tag_from_fix_lens_light(fix_lens_light):
     """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
      during he analysis, to customize phase names.
 
-    This changes the phase name 'phase_name' as follows:
+    This changes the phase name 'pipeline_name__' as follows:
 
-    fix_lens_light = False -> phase_name
-    fix_lens_light = True -> phase_name_fix_lens_light
+    fix_lens_light = False -> pipeline_name__
+    fix_lens_light = True -> pipeline_name___fix_lens_light
     """
     if not fix_lens_light:
         return ""
@@ -132,10 +138,10 @@ def regularization_tag_from_regularization(regularization):
 
 def align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre):
     """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
-    based on the bulge-disk model. This changee the phase name 'phase_name' as follows:
+    based on the bulge-disk model. This changee the phase name 'pipeline_name__' as follows:
 
-    bd_align_centres = False -> phase_name
-    bd_align_centres = True -> phase_name_bd_align_centres
+    bd_align_centres = False -> pipeline_name__
+    bd_align_centres = True -> pipeline_name___bd_align_centres
     """
     if not align_bulge_disk_centre:
         return ""
@@ -147,10 +153,10 @@ def align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
     align_bulge_disk_axis_ratio
 ):
     """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
-    based on the bulge-disk model. This changes the phase name 'phase_name' as follows:
+    based on the bulge-disk model. This changes the phase name 'pipeline_name__' as follows:
 
-    bd_align_axis_ratio = False -> phase_name
-    bd_align_axis_ratio = True -> phase_name_bd_align_axis_ratio
+    bd_align_axis_ratio = False -> pipeline_name__
+    bd_align_axis_ratio = True -> pipeline_name___bd_align_axis_ratio
     """
     if not align_bulge_disk_axis_ratio:
         return ""
@@ -160,10 +166,10 @@ def align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
 
 def align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi):
     """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
-    based on the bulge-disk model. This changes the phase name 'phase_name' as follows:
+    based on the bulge-disk model. This changes the phase name 'pipeline_name__' as follows:
 
-    bd_align_phi = False -> phase_name
-    bd_align_phi = True -> phase_name_bd_align_phi
+    bd_align_phi = False -> pipeline_name__
+    bd_align_phi = True -> pipeline_name___bd_align_phi
     """
     if not align_bulge_disk_phi:
         return ""
@@ -195,12 +201,27 @@ def bulge_disk_tag_from_align_bulge_disks(
     )
 
 
+def disk_as_sersic_tag_from_disk_as_sersic(disk_as_sersic):
+    """Generate a tag for if the disk component of a bulge-disk light profile fit of the pipeline is modeled as a \ 
+    Sersic or the default profile of an Exponential.
+
+    This changes the phase name 'pipeline_name__' as follows:
+
+    disk_as_sersic = False -> pipeline_name__
+    disk_as_sersic = True -> pipeline_name___disk_as_sersic
+    """
+    if not disk_as_sersic:
+        return ""
+    elif disk_as_sersic:
+        return "_disk_sersic"
+
+
 def align_light_dark_centre_tag_from_align_light_dark_centre(align_light_dark_centre):
     """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
-    based on the bulge-disk model. This changee the phase name 'phase_name' as follows:
+    based on the bulge-disk model. This changee the phase name 'pipeline_name__' as follows:
 
-    bd_align_centres = False -> phase_name
-    bd_align_centres = True -> phase_name_bd_align_centres
+    bd_align_centres = False -> pipeline_name__
+    bd_align_centres = True -> pipeline_name___bd_align_centres
     """
     if not align_light_dark_centre:
         return ""
@@ -210,10 +231,10 @@ def align_light_dark_centre_tag_from_align_light_dark_centre(align_light_dark_ce
 
 def align_bulge_dark_centre_tag_from_align_bulge_dark_centre(align_bulge_dark_centre):
     """Generate a tag for if the bulge and dark of a bulge-dark system are aligned or not, to customize phase names \
-    based on the bulge-dark model. This changee the phase name 'phase_name' as follows:
+    based on the bulge-dark model. This changee the phase name 'pipeline_name__' as follows:
 
-    bd_align_centres = False -> phase_name
-    bd_align_centres = True -> phase_name_bd_align_centres
+    bd_align_centres = False -> pipeline_name__
+    bd_align_centres = True -> pipeline_name___bd_align_centres
     """
     if not align_bulge_dark_centre:
         return ""
