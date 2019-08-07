@@ -14,6 +14,7 @@ class PipelineSettings(object):
         align_bulge_disk_centre=False,
         align_bulge_disk_phi=False,
         align_bulge_disk_axis_ratio=False,
+        disk_as_sersic=False,
         align_light_dark_centre=True,
         align_bulge_dark_centre=True,
     ):
@@ -25,6 +26,7 @@ class PipelineSettings(object):
         self.align_bulge_disk_centre = align_bulge_disk_centre
         self.align_bulge_disk_phi = align_bulge_disk_phi
         self.align_bulge_disk_axis_ratio = align_bulge_disk_axis_ratio
+        self.disk_as_sersic = disk_as_sersic
         self.align_light_dark_centre = align_light_dark_centre
         self.align_bulge_dark_centre = align_bulge_dark_centre
 

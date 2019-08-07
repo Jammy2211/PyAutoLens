@@ -26,7 +26,7 @@ test_name = "test"
 
 def simulate_integration_image(test_name, pixel_scale, galaxies):
     output_path = (
-        "{}/test_files/instrument/".format(os.path.dirname(os.path.realpath(__file__)))
+        "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
         + test_name
         + "/"
     )
@@ -126,9 +126,9 @@ class TestPhaseModelMapper(object):
         )  # Setup path so we can output the simulated image.
 
         ccd_data = ccd.load_ccd_data_from_fits(
-            image_path=path + "/test_files/instrument/" + test_name + "/image.fits",
-            psf_path=path + "/test_files/instrument/" + test_name + "/psf.fits",
-            noise_map_path=path + "/test_files/instrument/" + test_name + "/noise_map.fits",
+            image_path=path + "/test_files/data/" + test_name + "/image.fits",
+            psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
+            noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
             pixel_scale=0.1,
         )
 
@@ -200,9 +200,9 @@ class TestPhaseModelMapper(object):
         )  # Setup path so we can output the simulated image.
 
         ccd_data = ccd.load_ccd_data_from_fits(
-            image_path=path + "/test_files/instrument/" + test_name + "/image.fits",
-            psf_path=path + "/test_files/instrument/" + test_name + "/psf.fits",
-            noise_map_path=path + "/test_files/instrument/" + test_name + "/noise_map.fits",
+            image_path=path + "/test_files/data/" + test_name + "/image.fits",
+            psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
+            noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
             pixel_scale=0.1,
         )
 
