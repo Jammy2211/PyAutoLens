@@ -554,7 +554,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return radial_critical_curve - deflections_1d
 
     def critical_curves_from_grid(self, grid):
-
         return [self.tangential_critical_curve_from_grid(grid=grid), self.radial_critical_curve_from_grid(grid=grid)]
 
     def caustics_from_grid(self, grid):
