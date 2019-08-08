@@ -28,7 +28,9 @@ def pixel_scale_from_data_resolution(data_resolution):
     elif data_resolution == "AO":
         return 0.01
     else:
-        raise ValueError("An invalid instrument resolution was entered - ", data_resolution)
+        raise ValueError(
+            "An invalid instrument resolution was entered - ", data_resolution
+        )
 
 
 def shape_from_data_resolution(data_resolution):

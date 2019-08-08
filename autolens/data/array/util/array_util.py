@@ -396,7 +396,6 @@ def numpy_array_1d_from_fits(file_path, hdu):
     return np.array(hdu_list[hdu].data)
 
 
-
 def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
     """Write a 2D NumPy array to a .fits file.
 
