@@ -502,6 +502,16 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         )
 
 
+        return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=tangential_critical_curve_indices[0],
+            shape=lambda_tangential_2d.shape,
+            pixel_scales=(
+                grid.pixel_scale / grid.sub_grid_size,
+                grid.pixel_scale / grid.sub_grid_size,
+            ),
+            origin=grid.mask.origin,
+        )
+
         tangential_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=tangential_critical_curve_indices[0],
             shape=lambda_tangential_2d.shape,
