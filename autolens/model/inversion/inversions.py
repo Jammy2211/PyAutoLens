@@ -9,6 +9,7 @@ class Inversion(object):
         self,
         noise_map_1d,
         mapper,
+        regularization,
         blurred_mapping_matrix,
         regularization_matrix,
         curvature_reg_matrix,
@@ -52,6 +53,7 @@ class Inversion(object):
 
         self.noise_map_1d = noise_map_1d
         self.mapper = mapper
+        self.regularization = regularization
         self.blurred_mapping_matrix = blurred_mapping_matrix
         self.regularization_matrix = regularization_matrix
         self.curvature_reg_matrix = curvature_reg_matrix
@@ -90,6 +92,7 @@ class Inversion(object):
         return Inversion(
             noise_map_1d=noise_map_1d,
             mapper=mapper,
+            regularization=regularization,
             blurred_mapping_matrix=blurred_mapping_matrix,
             regularization_matrix=regularization_matrix,
             curvature_reg_matrix=curvature_reg_matrix,
