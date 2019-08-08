@@ -38,7 +38,6 @@ class AbstractPhase(af.AbstractPhase):
         phase_name,
         phase_tag=None,
         phase_folders=tuple(),
-        tag_phases=True,
         optimizer_class=af.MultiNest,
         cosmology=cosmo.Planck15,
         auto_link_priors=False,
@@ -61,7 +60,6 @@ class AbstractPhase(af.AbstractPhase):
             phase_name=phase_name,
             phase_tag=phase_tag,
             phase_folders=phase_folders,
-            tag_phases=tag_phases,
             optimizer_class=optimizer_class,
             auto_link_priors=auto_link_priors,
         )
@@ -467,7 +465,6 @@ class GalaxyFitPhase(AbstractPhase):
     def __init__(
         self,
         phase_name,
-        tag_phases=True,
         phase_folders=tuple(),
         galaxies=None,
         use_intensities=False,
@@ -494,7 +491,6 @@ class GalaxyFitPhase(AbstractPhase):
 
         super(GalaxyFitPhase, self).__init__(
             phase_name=phase_name,
-            tag_phases=tag_phases,
             phase_folders=phase_folders,
             optimizer_class=optimizer_class,
             cosmology=cosmology,

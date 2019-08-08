@@ -1,36 +1,6 @@
 import autofit as af
 
 
-def pipeline_name_from_name_and_settings(
-    pipeline_name,
-    include_shear=False,
-    fix_lens_light=False,
-    pixelization=None,
-    regularization=None,
-    align_bulge_disk_centre=False,
-    align_bulge_disk_axis_ratio=False,
-    align_bulge_disk_phi=False,
-    disk_as_sersic=False,
-    align_light_dark_centre=False,
-    align_bulge_dark_centre=False,
-):
-
-    pipeline_tag = pipeline_tag_from_pipeline_settings(
-        include_shear=include_shear,
-        fix_lens_light=fix_lens_light,
-        pixelization=pixelization,
-        regularization=regularization,
-        align_bulge_disk_centre=align_bulge_disk_centre,
-        align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
-        align_bulge_disk_phi=align_bulge_disk_phi,
-        disk_as_sersic=disk_as_sersic,
-        align_light_dark_centre=align_light_dark_centre,
-        align_bulge_dark_centre=align_bulge_dark_centre,
-    )
-
-    return pipeline_name + pipeline_tag
-
-
 def pipeline_tag_from_pipeline_settings(
     include_shear=False,
     fix_lens_light=False,
@@ -77,7 +47,8 @@ def pipeline_tag_from_pipeline_settings(
     )
 
     return (
-        include_shear_tag
+        "pipeline_tag"
+        + include_shear_tag
         + fix_lens_light_tag
         + pixelization_tag
         + regularization_tag
@@ -100,7 +71,7 @@ def include_shear_tag_from_include_shear(include_shear):
     if not include_shear:
         return ""
     elif include_shear:
-        return "_with_shear"
+        return "__with_shear"
 
 
 def fix_lens_light_tag_from_fix_lens_light(fix_lens_light):
@@ -115,7 +86,7 @@ def fix_lens_light_tag_from_fix_lens_light(fix_lens_light):
     if not fix_lens_light:
         return ""
     elif fix_lens_light:
-        return "_fix_lens_light"
+        return "__fix_lens_light"
 
 
 def pixelization_tag_from_pixelization(pixelization):
@@ -123,7 +94,7 @@ def pixelization_tag_from_pixelization(pixelization):
     if pixelization is None:
         return ""
     else:
-        return "_pix_" + af.conf.instance.label.get(
+        return "__pix_" + af.conf.instance.label.get(
             "tag", pixelization().__class__.__name__, str
         )
 
@@ -133,7 +104,7 @@ def regularization_tag_from_regularization(regularization):
     if regularization is None:
         return ""
     else:
-        return "_reg_" + af.conf.instance.label.get(
+        return "__reg_" + af.conf.instance.label.get(
             "tag", regularization().__class__.__name__, str
         )
 
@@ -148,7 +119,7 @@ def align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_ce
     if not align_bulge_disk_centre:
         return ""
     elif align_bulge_disk_centre:
-        return "_bd_align_centre"
+        return "__bd_align_centre"
 
 
 def align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
@@ -163,7 +134,7 @@ def align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
     if not align_bulge_disk_axis_ratio:
         return ""
     elif align_bulge_disk_axis_ratio:
-        return "_bd_align_axis_ratio"
+        return "__bd_align_axis_ratio"
 
 
 def align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi):
@@ -176,7 +147,7 @@ def align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi):
     if not align_bulge_disk_phi:
         return ""
     elif align_bulge_disk_phi:
-        return "_bd_align_phi"
+        return "__bd_align_phi"
 
 
 def bulge_disk_tag_from_align_bulge_disks(
@@ -215,7 +186,7 @@ def disk_as_sersic_tag_from_disk_as_sersic(disk_as_sersic):
     if not disk_as_sersic:
         return ""
     elif disk_as_sersic:
-        return "_disk_sersic"
+        return "__disk_sersic"
 
 
 def align_light_dark_centre_tag_from_align_light_dark_centre(align_light_dark_centre):
@@ -228,7 +199,7 @@ def align_light_dark_centre_tag_from_align_light_dark_centre(align_light_dark_ce
     if not align_light_dark_centre:
         return ""
     elif align_light_dark_centre:
-        return "_light_dark_align_centre"
+        return "__light_dark_align_centre"
 
 
 def align_bulge_dark_centre_tag_from_align_bulge_dark_centre(align_bulge_dark_centre):
@@ -241,4 +212,4 @@ def align_bulge_dark_centre_tag_from_align_bulge_dark_centre(align_bulge_dark_ce
     if not align_bulge_dark_centre:
         return ""
     elif align_bulge_dark_centre:
-        return "_bulge_dark_align_centre"
+        return "__bulge_dark_align_centre"

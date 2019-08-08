@@ -54,7 +54,7 @@ def make_mapper():
 
 
 @pytest.fixture(name="galaxy_model_2")
-def make_galaxy_model_2(mapper, ):
+def make_galaxy_model_2(mapper,):
     galaxy_model_2 = gp.GalaxyModel(
         redshift=g.Redshift,
         light_profile=light_profiles.EllipticalDevVaucouleurs,
@@ -65,7 +65,7 @@ def make_galaxy_model_2(mapper, ):
 
 
 @pytest.fixture(name="galaxy_model")
-def make_galaxy_model(mapper, ):
+def make_galaxy_model(mapper,):
     galaxy_model_1 = gp.GalaxyModel(
         redshift=g.Redshift,
         light_profile=light_profiles.EllipticalDevVaucouleurs,
@@ -273,11 +273,11 @@ class TestResultForArguments:
 
         assert gaussian_galaxy_model_model.redshift.redshift == redshift_prior
         assert (
-                gaussian_galaxy_model_model.mass_profile.einstein_radius.value
-                == einstein_radius_prior
+            gaussian_galaxy_model_model.mass_profile.einstein_radius.value
+            == einstein_radius_prior
         )
         assert (
-                gaussian_galaxy_model_model.light_profile.intensity.value == intensity_prior
+            gaussian_galaxy_model_model.light_profile.intensity.value == intensity_prior
         )
 
 
@@ -358,7 +358,7 @@ class TestRegularization(object):
 
 
 class TestHyperGalaxy(object):
-    def test_hyper_galaxy(self, ):
+    def test_hyper_galaxy(self,):
         galaxy_model = gp.GalaxyModel(redshift=g.Redshift, hyper_galaxy=g.HyperGalaxy)
 
         arguments = {
@@ -376,7 +376,7 @@ class TestHyperGalaxy(object):
 
         assert galaxy.hyper_galaxy_image_1d is None
 
-    def test_fixed_hyper_galaxy(self, ):
+    def test_fixed_hyper_galaxy(self,):
         galaxy_model = gp.GalaxyModel(redshift=g.Redshift, hyper_galaxy=g.HyperGalaxy())
 
         arguments = {galaxy_model.redshift.redshift: 2.0}
@@ -391,7 +391,6 @@ class TestHyperGalaxy(object):
 
 
 class TestFixedProfiles(object):
-
     def test_fixed_light(self):
         galaxy_model = gp.GalaxyModel(
             redshift=g.Redshift, light_profile=light_profiles.EllipticalSersic()

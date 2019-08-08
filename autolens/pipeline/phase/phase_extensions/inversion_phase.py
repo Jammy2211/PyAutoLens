@@ -9,10 +9,7 @@ from .hyper_phase import HyperPhase
 # noinspection PyAbstractClass
 class VariableFixingHyperPhase(HyperPhase):
     def __init__(
-            self,
-            phase: ph.PhaseImaging,
-            hyper_name: str,
-            variable_classes=tuple()
+        self, phase: ph.PhaseImaging, hyper_name: str, variable_classes=tuple()
     ):
         super().__init__(phase=phase, hyper_name=hyper_name)
         self.variable_classes = variable_classes
@@ -33,9 +30,7 @@ class VariableFixingHyperPhase(HyperPhase):
         return phase
 
     def make_variable(self, constant):
-        return constant.as_variable(
-            self.variable_classes
-        )
+        return constant.as_variable(self.variable_classes)
 
     def run_hyper(self, data, results=None, **kwargs):
         """
@@ -43,9 +38,7 @@ class VariableFixingHyperPhase(HyperPhase):
         only fit pixelization hyperparameters.
         """
         phase = self.make_hyper_phase()
-        phase.optimizer.variable = self.make_variable(
-            results.last.constant
-        )
+        phase.optimizer.variable = self.make_variable(results.last.constant)
 
         return phase.run(
             data,
@@ -63,14 +56,12 @@ class InversionPhase(VariableFixingHyperPhase):
     """
 
     def __init__(
-            self,
-            phase: ph.PhaseImaging,
-            variable_classes=(px.Pixelization, rg.Regularization),
+        self,
+        phase: ph.PhaseImaging,
+        variable_classes=(px.Pixelization, rg.Regularization),
     ):
         super().__init__(
-            phase=phase,
-            variable_classes=variable_classes,
-            hyper_name="inversion"
+            phase=phase, variable_classes=variable_classes, hyper_name="inversion"
         )
 
     @property
@@ -92,7 +83,7 @@ class InversionBackgroundSkyPhase(InversionPhase):
     def __init__(self, phase: ph.PhaseImaging):
         super().__init__(
             phase=phase,
-            variable_classes=(px.Pixelization, rg.Regularization, hd.HyperImageSky)
+            variable_classes=(px.Pixelization, rg.Regularization, hd.HyperImageSky),
         )
 
 
@@ -110,7 +101,7 @@ class InversionBackgroundNoisePhase(InversionPhase):
                 px.Pixelization,
                 rg.Regularization,
                 hd.HyperNoiseBackground,
-            )
+            ),
         )
 
 
@@ -129,5 +120,5 @@ class InversionBackgroundBothPhase(InversionPhase):
                 rg.Regularization,
                 hd.HyperImageSky,
                 hd.HyperNoiseBackground,
-            )
+            ),
         )
