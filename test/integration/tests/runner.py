@@ -8,9 +8,8 @@ from test.simulation import simulation_util
 
 class MockNLO(af.NonLinearOptimizer):
     def fit(self, analysis):
-        assert (
-            self.variable.prior_count > 0
-        ), "There are no priors associated with the variable!"
+        if self.variable.prior_count == 0:
+            raise AssertionError("There are no priors associated with the variable!")
         index = 0
         unit_vector = self.variable.prior_count * [0.5]
         while True:
