@@ -70,13 +70,10 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             # Lens Mass, SIE -> SIE, Shear -> Shear #
 
             self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
-
-            self.galaxies = results.last.hyper_combined.constant.galaxies
-
+            self.galaxies.source = results.from_phase("phase_2").variable.galaxies.source
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
-
             self.galaxies.source.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
             )
