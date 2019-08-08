@@ -497,7 +497,9 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        tangential_critical_curve_indices = measure.find_contours(lambda_tangential_2d, 0)
+        tangential_critical_curve_indices = measure.find_contours(
+            lambda_tangential_2d, 0
+        )
 
         return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=tangential_critical_curve_indices[0],
@@ -554,10 +556,16 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return radial_critical_curve - deflections_1d
 
     def critical_curves_from_grid(self, grid):
-        return [self.tangential_critical_curve_from_grid(grid=grid), self.radial_critical_curve_from_grid(grid=grid)]
+        return [
+            self.tangential_critical_curve_from_grid(grid=grid),
+            self.radial_critical_curve_from_grid(grid=grid),
+        ]
 
     def caustics_from_grid(self, grid):
-        return [self.tangential_caustic_from_grid(grid=grid), self.radial_caustic_from_grid(grid=grid)]
+        return [
+            self.tangential_caustic_from_grid(grid=grid),
+            self.radial_caustic_from_grid(grid=grid),
+        ]
 
     @dim.convert_units_to_input_units
     def summarize_in_units(

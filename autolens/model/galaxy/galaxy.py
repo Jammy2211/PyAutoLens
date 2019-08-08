@@ -366,7 +366,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_grid
     def deflections_via_potential_from_grid(
-            self, grid, return_in_2d=True, return_binned=True
+        self, grid, return_in_2d=True, return_binned=True
     ):
         potential_2d = self.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -379,7 +379,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_array
     def lensing_jacobian_a11_from_grid_and_deflections_2d(
-            self, grid, return_in_2d=True, return_binned=True
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -390,7 +390,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_array
     def lensing_jacobian_a12_from_grid_and_deflections_2d(
-            self, grid, return_in_2d=True, return_binned=True
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -401,7 +401,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_array
     def lensing_jacobian_a21_from_grid_and_deflections_2d(
-            self, grid, return_in_2d=True, return_binned=True
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -412,7 +412,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_array
     def lensing_jacobian_a22_from_grid_and_deflections_2d(
-            self, grid, return_in_2d=True, return_binned=True
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -466,7 +466,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_array
     def tangential_eigen_value_from_shear_and_convergence(
-            self, grid, return_in_2d=True, return_binned=True
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         convergence = self.convergence_from_jacobian(
@@ -481,7 +481,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_array
     def radial_eigen_value_from_shear_and_convergence(
-            self, grid, return_in_2d=True, return_binned=True
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         convergence = self.convergence_from_jacobian(
@@ -511,7 +511,9 @@ class Galaxy(af.ModelObject):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        tangential_critical_curve_indices = measure.find_contours(lambda_tanential_2d, 0)
+        tangential_critical_curve_indices = measure.find_contours(
+            lambda_tanential_2d, 0
+        )
 
         return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=tangential_critical_curve_indices[0],

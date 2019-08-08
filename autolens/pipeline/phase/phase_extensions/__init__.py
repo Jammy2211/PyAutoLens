@@ -11,7 +11,7 @@ from .inversion_phase import VariableFixingHyperPhase
 
 class CombinedHyperPhase(HyperPhase):
     def __init__(
-            self, phase: phase_imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()
+        self, phase: phase_imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()
     ):
         """
         A hyper_combined hyper phase that can run zero or more other hyper phases after the initial phase is
@@ -35,12 +35,12 @@ class CombinedHyperPhase(HyperPhase):
         return [phase.hyper_name for phase in self.hyper_phases]
 
     def run(
-            self,
-            data,
-            results: af.ResultsCollection = None,
-            mask=None,
-            positions=None,
-            **kwargs
+        self,
+        data,
+        results: af.ResultsCollection = None,
+        mask=None,
+        positions=None,
+        **kwargs
     ) -> af.Result:
         """
         Run the regular phase followed by the hyper phases. Each result of a hyper phase is attached to the
@@ -64,9 +64,7 @@ class CombinedHyperPhase(HyperPhase):
             The result of the regular phase, with hyper results attached by associated hyper names
         """
 
-        results = (
-            results.copy() if results is not None else af.ResultsCollection()
-        )
+        results = results.copy() if results is not None else af.ResultsCollection()
         result = self.phase.run(
             data, results=results, mask=mask, positions=positions, **kwargs
         )
@@ -114,5 +112,5 @@ class CombinedHyperPhase(HyperPhase):
             data,
             results=results,
             mask=results.last.mask_2d,
-            positions=results.last.positions
+            positions=results.last.positions,
         )

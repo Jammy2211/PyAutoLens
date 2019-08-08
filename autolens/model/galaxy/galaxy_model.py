@@ -43,15 +43,15 @@ class GalaxyModel(af.PriorModel):
     """
 
     def __init__(
-            self,
-            redshift,
-            align_centres=False,
-            align_axis_ratios=False,
-            align_orientations=False,
-            pixelization=None,
-            regularization=None,
-            hyper_galaxy=None,
-            **kwargs
+        self,
+        redshift,
+        align_centres=False,
+        align_axis_ratios=False,
+        align_orientations=False,
+        pixelization=None,
+        regularization=None,
+        hyper_galaxy=None,
+        **kwargs
     ):
         """Class to produce Galaxy instances from sets of profile classes and other model-fitting attributes (e.g. \
          pixelizations, regularization schemes, hyper-galaxyes) using the model mapper.

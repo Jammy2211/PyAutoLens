@@ -60,15 +60,15 @@ class PipelineSettingsHyper(PipelineSettings):
             align_bulge_dark_centre=align_bulge_dark_centre,
         )
 
-        self.hyper_galaxies = (hyper_galaxies,)
-        self.hyper_background_sky = (hyper_background_sky,)
+        self.hyper_galaxies = hyper_galaxies
+        self.hyper_background_sky = hyper_background_sky
         self.hyper_background_noise = hyper_background_noise
 
 
 class PipelineImaging(af.Pipeline):
-    def __init__(self, pipeline_name, *phases, hyper_mode=False):
+    def __init__(self, pipeline_name, pipeline_tag, *phases, hyper_mode=False):
 
-        super(PipelineImaging, self).__init__(pipeline_name, *phases)
+        super(PipelineImaging, self).__init__(pipeline_name, pipeline_tag, *phases)
 
         self.hyper_mode = hyper_mode
 

@@ -27,28 +27,27 @@ class PhaseImaging(Phase):
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
-            self,
-            phase_name,
-            tag_phases=True,
-            phase_folders=tuple(),
-            galaxies=None,
-            hyper_image_sky=None,
-            hyper_noise_background=None,
-            optimizer_class=af.MultiNest,
-            sub_grid_size=2,
-            signal_to_noise_limit=None,
-            bin_up_factor=None,
-            image_psf_shape=None,
-            inversion_psf_shape=None,
-            positions_threshold=None,
-            mask_function=None,
-            inner_mask_radii=None,
-            interp_pixel_scale=None,
-            use_inversion_border=True,
-            inversion_pixel_limit=None,
-            cluster_pixel_scale=None,
-            cosmology=cosmo.Planck15,
-            auto_link_priors=False
+        self,
+        phase_name,
+        phase_folders=tuple(),
+        galaxies=None,
+        hyper_image_sky=None,
+        hyper_noise_background=None,
+        optimizer_class=af.MultiNest,
+        sub_grid_size=2,
+        signal_to_noise_limit=None,
+        bin_up_factor=None,
+        image_psf_shape=None,
+        inversion_psf_shape=None,
+        positions_threshold=None,
+        mask_function=None,
+        inner_mask_radii=None,
+        interp_pixel_scale=None,
+        use_inversion_border=True,
+        inversion_pixel_limit=None,
+        cluster_pixel_scale=None,
+        cosmology=cosmo.Planck15,
+        auto_link_priors=False,
     ):
 
         """
@@ -67,29 +66,22 @@ class PhaseImaging(Phase):
             higher pixel scale to speed up the KMeans clustering algorithm.
         """
 
-        if tag_phases:
-
-            phase_tag = phase_tagging.phase_tag_from_phase_settings(
-                sub_grid_size=sub_grid_size,
-                signal_to_noise_limit=signal_to_noise_limit,
-                bin_up_factor=bin_up_factor,
-                image_psf_shape=image_psf_shape,
-                inversion_psf_shape=inversion_psf_shape,
-                positions_threshold=positions_threshold,
-                inner_mask_radii=inner_mask_radii,
-                interp_pixel_scale=interp_pixel_scale,
-                cluster_pixel_scale=cluster_pixel_scale,
-            )
-
-        else:
-
-            phase_tag = None
+        phase_tag = phase_tagging.phase_tag_from_phase_settings(
+            sub_grid_size=sub_grid_size,
+            signal_to_noise_limit=signal_to_noise_limit,
+            bin_up_factor=bin_up_factor,
+            image_psf_shape=image_psf_shape,
+            inversion_psf_shape=inversion_psf_shape,
+            positions_threshold=positions_threshold,
+            inner_mask_radii=inner_mask_radii,
+            interp_pixel_scale=interp_pixel_scale,
+            cluster_pixel_scale=cluster_pixel_scale,
+        )
 
         super(PhaseImaging, self).__init__(
             phase_name=phase_name,
             phase_tag=phase_tag,
             phase_folders=phase_folders,
-            tag_phases=tag_phases,
             optimizer_class=optimizer_class,
             cosmology=cosmology,
             auto_link_priors=auto_link_priors,
@@ -134,8 +126,7 @@ class PhaseImaging(Phase):
         if self.galaxies:
             for galaxy in self.galaxies:
                 if galaxy.hyper_galaxy is not None or isinstance_or_prior(
-                        galaxy.regularization,
-                        reg.AdaptiveBrightness
+                    galaxy.regularization, reg.AdaptiveBrightness
                 ):
                     return True
         return False
@@ -153,9 +144,7 @@ class PhaseImaging(Phase):
         if self.galaxies:
 
             for galaxy in self.galaxies:
-                if isinstance_or_prior(
-                        galaxy.pixelization, pix.VoronoiBrightnessImage
-                ):
+                if isinstance_or_prior(galaxy.pixelization, pix.VoronoiBrightnessImage):
                     return True
 
         return False
@@ -317,11 +306,11 @@ class PhaseImaging(Phase):
         return phase_extensions.InversionPhase(phase=self)
 
     def extend_with_multiple_hyper_phases(
-            self,
-            hyper_galaxy=False,
-            inversion=False,
-            include_background_sky=False,
-            include_background_noise=False,
+        self,
+        hyper_galaxy=False,
+        inversion=False,
+        include_background_sky=False,
+        include_background_noise=False,
     ):
 
         phase_hyper_galaxy = None
@@ -350,14 +339,14 @@ class PhaseImaging(Phase):
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
         def __init__(
-                self,
-                lens_data,
-                cosmology,
-                positions_threshold,
-                use_inversion_border=True,
-                inversion_pixel_limit=None,
-                image_path=None,
-                results=None,
+            self,
+            lens_data,
+            cosmology,
+            positions_threshold,
+            use_inversion_border=True,
+            inversion_pixel_limit=None,
+            image_path=None,
+            results=None,
         ):
 
             super(PhaseImaging.Analysis, self).__init__(
@@ -616,7 +605,7 @@ class PhaseImaging(Phase):
             """
             if hasattr(self, "hyper_galaxy_image_1d_path_dict"):
                 for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                        g.Galaxy
+                    g.Galaxy
                 ):
                     if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
@@ -711,7 +700,7 @@ class PhaseImaging(Phase):
                 )
 
                 if not fit.maximum_separation_within_threshold(
-                        self.positions_threshold
+                    self.positions_threshold
                 ):
                     raise exc.RayTracingException
 
