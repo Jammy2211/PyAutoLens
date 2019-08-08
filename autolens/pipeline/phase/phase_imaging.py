@@ -7,7 +7,7 @@ from autolens.lens import ray_tracing, lens_data as ld, lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
-from autolens.pipeline import tagging as tag
+from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 from autolens.pipeline.plotters import phase_plotters
@@ -36,6 +36,7 @@ class PhaseImaging(Phase):
             hyper_noise_background=None,
             optimizer_class=af.MultiNest,
             sub_grid_size=2,
+            signal_to_noise_limit=None,
             bin_up_factor=None,
             image_psf_shape=None,
             inversion_psf_shape=None,
@@ -47,7 +48,7 @@ class PhaseImaging(Phase):
             inversion_pixel_limit=None,
             cluster_pixel_scale=None,
             cosmology=cosmo.Planck15,
-            auto_link_priors=False,
+            auto_link_priors=False
     ):
 
         """
@@ -68,8 +69,9 @@ class PhaseImaging(Phase):
 
         if tag_phases:
 
-            phase_tag = tag.phase_tag_from_phase_settings(
+            phase_tag = phase_tagging.phase_tag_from_phase_settings(
                 sub_grid_size=sub_grid_size,
+                signal_to_noise_limit=signal_to_noise_limit,
                 bin_up_factor=bin_up_factor,
                 image_psf_shape=image_psf_shape,
                 inversion_psf_shape=inversion_psf_shape,
@@ -94,6 +96,7 @@ class PhaseImaging(Phase):
         )
 
         self.sub_grid_size = sub_grid_size
+        self.signal_to_noise_limit = signal_to_noise_limit
         self.bin_up_factor = bin_up_factor
         self.image_psf_shape = image_psf_shape
         self.inversion_psf_shape = inversion_psf_shape
@@ -266,6 +269,11 @@ class PhaseImaging(Phase):
         lens_data = lens_data.new_lens_data_with_modified_image(
             modified_image=modified_image
         )
+
+        if self.signal_to_noise_limit is not None:
+            lens_data = lens_data.new_lens_data_with_signal_to_noise_limit(
+                signal_to_noise_limit=self.signal_to_noise_limit
+            )
 
         if self.bin_up_factor is not None:
             lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(
@@ -693,7 +701,7 @@ class PhaseImaging(Phase):
 
             if self.lens_data.positions is not None:
 
-                tracer = ray_tracing.TracerPositions(
+                tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_positions(
                     galaxies=instance.galaxies,
                     image_plane_positions=self.lens_data.positions,
                 )

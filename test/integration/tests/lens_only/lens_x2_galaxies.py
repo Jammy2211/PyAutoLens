@@ -11,6 +11,7 @@ test_name = "lens_x2_galaxies"
 data_type = "lens_only_x2_galaxies"
 data_resolution = "LSST"
 
+
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class LensPlanex2GalPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
