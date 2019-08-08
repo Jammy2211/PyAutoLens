@@ -385,7 +385,6 @@ class TestResize:
 
 
 class TestFits:
-
     def test__numpy_array_1d_from_fits(self):
         arr = array_util.numpy_array_1d_from_fits(
             file_path=test_data_path + "3_ones.fits", hdu=0

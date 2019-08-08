@@ -36,7 +36,10 @@ class TestPipelineNameTag:
             align_bulge_dark_centre=True,
         )
 
-        assert pipeline_name == "pl3_disk_sersic_light_dark_align_centre_bulge_dark_align_centre"
+        assert (
+            pipeline_name
+            == "pl3_disk_sersic_light_dark_align_centre_bulge_dark_align_centre"
+        )
 
     def test__pipeline_tag__mixture_of_values(self):
 
@@ -61,10 +64,15 @@ class TestPipelineNameTag:
         assert pipeline_tag == "_fix_lens_light_bd_align_phi"
 
         pipeline_tag = pipeline_tagging.pipeline_tag_from_pipeline_settings(
-            align_light_dark_centre=True, align_bulge_dark_centre=True, disk_as_sersic=True
+            align_light_dark_centre=True,
+            align_bulge_dark_centre=True,
+            disk_as_sersic=True,
         )
 
-        assert pipeline_tag == "_disk_sersic_light_dark_align_centre_bulge_dark_align_centre"
+        assert (
+            pipeline_tag
+            == "_disk_sersic_light_dark_align_centre_bulge_dark_align_centre"
+        )
 
 
 class TestPipelineTaggers:
