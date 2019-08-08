@@ -1269,6 +1269,10 @@ def critical_curve_via_magnification_from_mass_profile_and_grid(mass_profile, gr
             origin=grid.mask.origin,
         )
 
+
+        critical_curve[:,0] -= grid.pixel_scale/2.0
+        critical_curve[:,1] += grid.pixel_scale/2.0
+
         critical_curves.append(critical_curve)
 
     return critical_curves
@@ -1278,7 +1282,7 @@ def caustics_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
 
     caustics = []
 
-    critical_curves = mass_profile.critical_curves_from_grid(grid=grid)
+    critical_curves = critical_curve_via_magnification_from_mass_profile_and_grid(mass_profile=mass_profile, grid=grid)
 
     for i in range(len(critical_curves)):
 
@@ -1431,24 +1435,6 @@ class TestCriticalCurvesandCaustics(object):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
-        )
-
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05
-        )
-
-        critical_curve_radial_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
-            mass_profile=sie, grid=grid
-        )[
-            1
-        ]
-
-        critical_curve_radial_from_lambda_t = sie.radial_critical_curve_from_grid(
-            grid=grid
-        )
-
-        assert sum(critical_curve_radial_from_magnification) == pytest.approx(
-            sum(critical_curve_radial_from_lambda_t), 2e-1
         )
 
         grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(

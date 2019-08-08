@@ -97,7 +97,8 @@ def plot_convergence(
     zoom_around_mask=False,
     positions=None,
     as_subplot=False,
-    plot_critical_curve=True,
+    plot_critical_curves=True,
+    plot_caustics=False,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=(7, 7),
@@ -141,8 +142,7 @@ def plot_convergence(
         grid=grid, return_in_2d=True, return_binned=True
     )
 
-    if plot_critical_curve:
-        critical_curves = mass_profile.critical_curves_from_grid(grid=grid)
+    lines = plotter_util.get_critical_curve_and_caustic(obj=mass_profile, grid=grid, plot_critical_curve=plot_critical_curves, plot_caustics=plot_caustics)
 
     array_plotters.plot_array(
         array=convergence,
@@ -150,7 +150,7 @@ def plot_convergence(
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions,
-        lines=critical_curves,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,

@@ -2,6 +2,9 @@ import autofit as af
 
 
 def pipeline_tag_from_pipeline_settings(
+    hyper_galaxies=False,
+    hyper_background_sky=False,
+    hyper_background_noise=False,
     include_shear=False,
     fix_lens_light=False,
     pixelization=None,
@@ -13,6 +16,10 @@ def pipeline_tag_from_pipeline_settings(
     align_light_dark_centre=False,
     align_bulge_dark_centre=False,
 ):
+
+    hyper_tag = hyper_tag_from_hyper_settings(
+        hyper_galaxies=hyper_galaxies, hyper_background_sky=hyper_background_sky, hyper_background_noise=hyper_background_noise,
+    )
 
     include_shear_tag = include_shear_tag_from_include_shear(
         include_shear=include_shear
@@ -48,6 +55,7 @@ def pipeline_tag_from_pipeline_settings(
 
     return (
         "pipeline_tag"
+        + hyper_tag
         + include_shear_tag
         + fix_lens_light_tag
         + pixelization_tag
@@ -59,6 +67,70 @@ def pipeline_tag_from_pipeline_settings(
     )
 
 
+def hyper_galaxies_tag_from_hyper_galaxies(hyper_galaxies):
+    """Generate a tag for if hyper-galaxies are used in a hyper pipeline to customize phase names.
+
+    This changes the phase name 'pipeline_name__' as follows:
+
+    fix_lens_light = False -> pipeline_name__
+    fix_lens_light = True -> pipeline_name___hyper_galaxies
+    """
+    if not hyper_galaxies:
+        return ""
+    elif hyper_galaxies:
+        return "_galaxies"
+
+
+def hyper_background_sky_tag_from_hyper_background_sky(hyper_background_sky):
+    """Generate a tag for if the sky-background is scaled as a hyper-parameter in a hyper pipeline to
+    customize phase names.
+
+    This changes the phase name 'pipeline_name__' as follows:
+
+    fix_lens_light = False -> pipeline_name__
+    fix_lens_light = True -> pipeline_name___hyper_bg_sky
+    """
+    if not hyper_background_sky:
+        return ""
+    elif hyper_background_sky:
+        return "_bg_sky"
+
+
+def hyper_background_noise_tag_from_hyper_background_noise(hyper_background_noise):
+    """Generate a tag for if the background noise is scaled as a hyper-parameter in a hyper pipeline to
+    customize phase names.
+
+    This changes the phase name 'pipeline_name__' as follows:
+
+    fix_lens_light = False -> pipeline_name__
+    fix_lens_light = True -> pipeline_name___hyper_bg_noise
+    """
+    if not hyper_background_noise:
+        return ""
+    elif hyper_background_noise:
+        return "_bg_noise"
+
+
+def hyper_tag_from_hyper_settings(hyper_galaxies, hyper_background_sky, hyper_background_noise):
+
+    if not any([hyper_galaxies, hyper_background_sky, hyper_background_noise]):
+        return ''
+
+    hyper_galaxies_tag = hyper_galaxies_tag_from_hyper_galaxies(
+        hyper_galaxies=hyper_galaxies
+    )
+
+    hyper_background_sky_tag = hyper_background_sky_tag_from_hyper_background_sky(
+        hyper_background_sky=hyper_background_sky
+    )
+
+    hyper_background_noise_tag = hyper_background_noise_tag_from_hyper_background_noise(
+        hyper_background_noise=hyper_background_noise
+    )
+
+    return "__hyper" + hyper_galaxies_tag + hyper_background_sky_tag + hyper_background_noise_tag
+
+
 def include_shear_tag_from_include_shear(include_shear):
     """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
     to a previous estimate, or varied during he analysis, to customize phase names.
@@ -66,7 +138,7 @@ def include_shear_tag_from_include_shear(include_shear):
     This changes the phase name 'pipeline_name__' as follows:
 
     fix_lens_light = False -> pipeline_name__
-    fix_lens_light = True -> pipeline_name___fix_lens_light
+    fix_lens_light = True -> pipeline_name___with_shear
     """
     if not include_shear:
         return ""

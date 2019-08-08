@@ -122,6 +122,21 @@ def output_subplot_array(output_path, output_filename, output_format):
         raise exc.PlottingException("You cannot output a subplots with format .fits")
 
 
+def get_critical_curve_and_caustic(obj, grid, plot_critical_curve, plot_caustics):
+
+    if plot_critical_curve:
+        critical_curves = obj.critical_curves_from_grid(grid=grid)
+    else:
+        critical_curves = []
+
+    if plot_caustics:
+        caustics = obj.caustics_from_grid(grid=grid)
+    else:
+        caustics = []
+
+    return [critical_curves, caustics]
+
+
 def close_figure(as_subplot):
     """After plotting and outputting a figure, close the matplotlib figure instance (omit if a subplot).
 
