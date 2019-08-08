@@ -533,24 +533,25 @@ class PhaseImaging(Phase):
                     cluster=lens_data.cluster
                 )
 
-                phase_plotters.plot_hyper_images_for_phase(
-                    hyper_model_image_2d=mask.scaled_array_2d_from_array_1d(
-                        array_1d=self.hyper_model_image_1d
-                    ),
-                    hyper_galaxy_image_2d_path_dict=self.last_results.hyper_galaxy_image_2d_path_dict,
-                    hyper_galaxy_cluster_image_2d_path_dict=self.last_results.hyper_galaxy_cluster_image_2d_path_dict_from_cluster(
-                        cluster=lens_data.cluster
-                    ),
-                    mask=lens_data.mask_2d,
-                    cluster=lens_data.cluster,
-                    extract_array_from_mask=self.extract_array_from_mask,
-                    zoom_around_mask=self.zoom_around_mask,
-                    units=self.plot_units,
-                    should_plot_hyper_model_image=self.plot_hyper_model_image,
-                    should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
-                    should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
-                    visualize_path=image_path,
-                )
+                if mask is not None:
+                    phase_plotters.plot_hyper_images_for_phase(
+                        hyper_model_image_2d=mask.scaled_array_2d_from_array_1d(
+                            array_1d=self.hyper_model_image_1d
+                        ),
+                        hyper_galaxy_image_2d_path_dict=self.last_results.hyper_galaxy_image_2d_path_dict,
+                        hyper_galaxy_cluster_image_2d_path_dict=self.last_results.hyper_galaxy_cluster_image_2d_path_dict_from_cluster(
+                            cluster=lens_data.cluster
+                        ),
+                        mask=lens_data.mask_2d,
+                        cluster=lens_data.cluster,
+                        extract_array_from_mask=self.extract_array_from_mask,
+                        zoom_around_mask=self.zoom_around_mask,
+                        units=self.plot_units,
+                        should_plot_hyper_model_image=self.plot_hyper_model_image,
+                        should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
+                        should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
+                        visualize_path=image_path,
+                    )
 
                 if hasattr(self.results.last, "hyper_combined"):
                     self.preload_pixelization_grid = (

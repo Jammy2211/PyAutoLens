@@ -36,9 +36,6 @@ class Galaxy(af.ModelObject):
         pixelization=None,
         regularization=None,
         hyper_galaxy=None,
-        hyper_model_image_1d=None,
-        hyper_galaxy_image_1d=None,
-        hyper_galaxy_cluster_image_1d=None,
         **kwargs
     ):
         """Class representing a galaxy, which is composed of attributes used for fitting hyper (e.g. light profiles, \ 
@@ -67,6 +64,10 @@ class Galaxy(af.ModelObject):
         super().__init__()
         self.redshift = redshift
 
+        self.hyper_model_image_1d = None
+        self.hyper_galaxy_image_1d = None
+        self.hyper_galaxy_cluster_image_1d = None
+
         for name, val in kwargs.items():
             setattr(self, name, val)
 
@@ -83,10 +84,6 @@ class Galaxy(af.ModelObject):
             )
 
         self.hyper_galaxy = hyper_galaxy
-
-        self.hyper_model_image_1d = hyper_model_image_1d
-        self.hyper_galaxy_image_1d = hyper_galaxy_image_1d
-        self.hyper_galaxy_cluster_image_1d = hyper_galaxy_cluster_image_1d
 
     def __hash__(self):
         return self.id

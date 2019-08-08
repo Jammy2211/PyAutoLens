@@ -4,19 +4,17 @@ import numpy as np
 from typing import cast
 
 import autofit as af
-from autolens import exc
 from autolens.lens import lens_data as ld, lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.model.hyper import hyper_data as hd
 from autolens.pipeline.phase import phase_imaging
-from autolens.pipeline.phase.phase import setup_phase_mask
 from autolens.pipeline.plotters import hyper_plotters
 from .hyper_phase import HyperPhase
 
 
 class HyperGalaxyPhase(HyperPhase):
     def __init__(
-        self, phase, include_sky_background=False, include_noise_background=False
+            self, phase, include_sky_background=False, include_noise_background=False
     ):
         super().__init__(phase=phase, hyper_name="hyper_galaxy")
         self.include_sky_background = include_sky_background
@@ -24,7 +22,7 @@ class HyperGalaxyPhase(HyperPhase):
 
     class Analysis(af.Analysis):
         def __init__(
-            self, lens_data, hyper_model_image_1d, hyper_galaxy_image_1d_path_dict
+                self, lens_data, hyper_model_image_1d, hyper_galaxy_image_1d_path_dict
         ):
             """
             An analysis to fit the noise for a single galaxy image.
@@ -62,7 +60,7 @@ class HyperGalaxyPhase(HyperPhase):
                 )
 
                 for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                    g.Galaxy
+                        g.Galaxy
                 ):
 
                     if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
@@ -141,7 +139,7 @@ class HyperGalaxyPhase(HyperPhase):
                 return instance.hyper_noise_background
 
         def fit_for_hyper_galaxy(
-            self, hyper_galaxy, hyper_image_sky, hyper_noise_background
+                self, hyper_galaxy, hyper_image_sky, hyper_noise_background
         ):
 
             if hyper_image_sky is not None:
@@ -188,9 +186,6 @@ class HyperGalaxyPhase(HyperPhase):
         data: LensData
         results: ResultsCollection
             Results from all previous phases
-        mask: Mask
-            The mask
-        positions
         Returns
         -------
         results: HyperGalaxyResults
@@ -296,7 +291,7 @@ class HyperGalaxyPhase(HyperPhase):
 
 class HyperGalaxyAllPhase(HyperPhase):
     def __init__(
-        self, phase, include_sky_background=False, include_noise_background=False
+            self, phase, include_sky_background=False, include_noise_background=False
     ):
         super().__init__(phase=phase, hyper_name="hyper_galaxy")
         self.include_sky_background = include_sky_background
@@ -310,9 +305,6 @@ class HyperGalaxyAllPhase(HyperPhase):
         data: LensData
         results: ResultsCollection
             Results from all previous phases
-        mask: Mask
-            The mask
-        positions
         Returns
         -------
         results: HyperGalaxyResults

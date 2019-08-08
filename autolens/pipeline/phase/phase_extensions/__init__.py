@@ -1,5 +1,3 @@
-import copy
-
 import autofit as af
 from autolens.pipeline.phase import phase_imaging
 from .hyper_galaxy_phase import HyperGalaxyPhase
@@ -67,7 +65,7 @@ class CombinedHyperPhase(HyperPhase):
         """
 
         results = (
-            copy.deepcopy(results) if results is not None else af.ResultsCollection()
+            results.copy() if results is not None else af.ResultsCollection()
         )
         result = self.phase.run(
             data, results=results, mask=mask, positions=positions, **kwargs
