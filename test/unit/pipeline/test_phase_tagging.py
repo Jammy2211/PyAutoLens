@@ -16,7 +16,7 @@ class TestPhaseTag:
             cluster_pixel_scale=None,
         )
 
-        assert phase_tag == "__sub_2__snr_2__pos_2.00__inner_mask_0.30"
+        assert phase_tag == "phase_tag__sub_2__snr_2__pos_2.00__inner_mask_0.30"
 
         phase_tag = phase_tagging.phase_tag_from_phase_settings(
             sub_grid_size=1,
@@ -32,7 +32,7 @@ class TestPhaseTag:
 
         assert (
             phase_tag
-            == "__sub_1__bin_3__image_psf_2x2__inv_psf_3x3__interp_0.200__cluster_0.300"
+            == "phase_tag__sub_1__bin_3__image_psf_2x2__inv_psf_3x3__interp_0.200__cluster_0.300"
         )
 
 

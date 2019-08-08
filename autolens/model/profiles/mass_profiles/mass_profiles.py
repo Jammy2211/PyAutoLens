@@ -501,7 +501,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             lambda_tangential_2d, 0
         )
 
-        return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+
+        tangential_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=tangential_critical_curve_indices[0],
             shape=lambda_tangential_2d.shape,
             pixel_scales=(
@@ -510,6 +511,13 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             ),
             origin=grid.mask.origin,
         )
+
+        # Bug with offset, this fixes it for now
+
+        tangential_critical_curve[:,0] -= grid.pixel_scale/2.0
+        tangential_critical_curve[:,1] += grid.pixel_scale/2.0
+
+        return
 
     def tangential_caustic_from_grid(self, grid):
 
