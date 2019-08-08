@@ -349,15 +349,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             kwargs=kwargs,
         )
 
-        return self.mass_within_circle_in_units(
-            radius=einstein_radius,
-            unit_mass=unit_mass,
-            redshift_profile=redshift_profile,
-            redshift_source=redshift_source,
-            cosmology=cosmology,
-            kwargs=kwargs,
-        )
-
     @reshape_returned_grid
     def deflections_via_potential_from_grid(
         self, grid, return_in_2d=True, return_binned=True

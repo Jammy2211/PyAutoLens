@@ -11,6 +11,7 @@ test_name = "multinest_grid_subhalo_parallel"
 data_type = "no_lens_light_and_source_smooth"
 data_resolution = "LSST"
 
+
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class GridPhase(af.as_grid_search(phase_imaging.PhaseImaging, parallel=True)):
         @property

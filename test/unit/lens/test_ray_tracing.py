@@ -4,7 +4,8 @@ from astropy import cosmology as cosmo
 
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
-from autolens.data import ccd
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.lens import plane as pl
 from autolens.lens import ray_tracing
 from autolens.lens.util import lens_util
@@ -783,6 +784,8 @@ class TestAbstractTracer(object):
                 cosmology=cosmo.Planck15,
             )
 
+            assert tracer.cosmology == cosmo.Planck15
+
             assert tracer.image_plane.arcsec_per_kpc == pytest.approx(0.525060, 1e-5)
             assert tracer.image_plane.kpc_per_arcsec == pytest.approx(1.904544, 1e-5)
             assert tracer.image_plane.angular_diameter_distance_to_earth_in_units(
@@ -1380,7 +1383,7 @@ class TestAbstractTracerData(object):
     class TestUnmaskedBlurredProfileImages:
         def test__unmasked_images_of_tracer_planes_and_galaxies(self):
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 3.0, 0.0], [0.0, 1.0, 2.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )

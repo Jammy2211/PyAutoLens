@@ -3,13 +3,14 @@ from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.pipeline import pipeline as pl
-from autolens.pipeline.phase import phase_imaging, phase_extensions
+from autolens.pipeline.phase import phase_imaging
 from test.integration.tests import runner
 
 test_type = "lens_and_source"
 test_name = "lens_mass_x1_source_x1_hyper"
 data_type = "no_lens_light_and_source_smooth"
 data_resolution = "LSST"
+
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
