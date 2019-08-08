@@ -39,7 +39,8 @@ def phase_tag_from_phase_settings(
     )
 
     return (
-        sub_grid_size_tag
+        "phase_tag"
+        + sub_grid_size_tag
         + signal_to_noise_limit_tag
         + bin_up_factor_tag
         + image_psf_shape_tag
