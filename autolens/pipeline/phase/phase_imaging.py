@@ -612,7 +612,7 @@ class PhaseImaging(Phase):
                         galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[
                             galaxy_path
                         ]
-                        if self.hyper_galaxy_cluster_image_1d_path_dict is not None:
+                        if hasattr(self, "hyper_galaxy_cluster_image_1d_path_dict") and self.hyper_galaxy_cluster_image_1d_path_dict is not None:
                             galaxy.hyper_galaxy_cluster_image_1d = self.hyper_galaxy_cluster_image_1d_path_dict[
                                 galaxy_path
                             ]

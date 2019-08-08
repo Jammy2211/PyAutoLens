@@ -1,5 +1,6 @@
-import math
 import os
+
+import math
 
 import autofit as af
 from test.integration import integration_util
@@ -34,11 +35,11 @@ class MockNLO(af.NonLinearOptimizer):
 
 
 def run(
-    module,
-    test_name=None,
-    optimizer_class=af.MultiNest,
-    config_folder="config",
-    positions=None,
+        module,
+        test_name=None,
+        optimizer_class=af.MultiNest,
+        config_folder="config",
+        positions=None,
 ):
     test_name = test_name or module.test_name
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
@@ -64,5 +65,15 @@ def run_a_mock(module):
         module,
         test_name=f"{module.test_name}_mock",
         optimizer_class=MockNLO,
+        config_folder="config_mock",
+    )
+
+
+def run_with_multi_nest(module):
+    # noinspection PyTypeChecker
+    run(
+        module,
+        test_name=f"{module.test_name}_nest",
+        optimizer_class=af.MultiNest,
         config_folder="config_mock",
     )
