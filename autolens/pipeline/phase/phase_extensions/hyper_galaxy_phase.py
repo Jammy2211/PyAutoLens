@@ -186,9 +186,6 @@ class HyperGalaxyPhase(HyperPhase):
         data: LensData
         results: ResultsCollection
             Results from all previous phases
-        mask: Mask
-            The mask
-        positions
         Returns
         -------
         results: HyperGalaxyResults
@@ -308,9 +305,6 @@ class HyperGalaxyAllPhase(HyperPhase):
         data: LensData
         results: ResultsCollection
             Results from all previous phases
-        mask: Mask
-            The mask
-        positions
         Returns
         -------
         results: HyperGalaxyResults
