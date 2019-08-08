@@ -31,7 +31,7 @@ class HyperGalaxyPhase(HyperPhase):
             Parameters
             ----------
             lens_data: LensData
-                Lens data, including an image and noise
+                Lens instrument, including an image and noise
             hyper_model_image_1d: ndarray
                 An image produce of the overall system by a model
             hyper_galaxy_image_1d_path_dict: ndarray

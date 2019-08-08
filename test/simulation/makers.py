@@ -1,6 +1,6 @@
 import autofit as af
-from autolens.data import ccd
-from autolens.data import simulated_ccd
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.data.array import grids
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
@@ -19,7 +19,6 @@ def simulate_image_from_galaxies_and_output_to_fits(
     data_type,
     sub_grid_size,
     galaxies,
-    galaxies,
     psf_shape=(51, 51),
     exposure_time=300.0,
     background_sky_level=1.0,
@@ -31,7 +30,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
     shape = simulation_util.shape_from_data_resolution(data_resolution=data_resolution)
 
     # Simulate a simple Gaussian PSF for the image.
-    psf = ccd.PSF.from_gaussian(
+    psf = abstract_data.PSF.from_gaussian(
         shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale
     )
 
@@ -42,17 +41,15 @@ def simulate_image_from_galaxies_and_output_to_fits(
         shape=shape, pixel_scale=pixel_scale, sub_grid_size=sub_grid_size
     )
 
-    # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD data.
-    tracer = ray_tracing.Tracer(
-        galaxies=galaxies,
-        galaxies=galaxies,
-        image_plane_grid_stack=image_plane_grid_stack,
+    # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD instrument.
+    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        galaxies=galaxies, image_plane_grid_stack=image_plane_grid_stack
     )
 
-    # Simulate the CCD data, remembering that we use a special image-plane image which ensures edge-effects don't
+    # Simulate the CCD instrument, remembering that we use a special image-plane image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.g. the PSF convolution).
-    simulated_ccd_data = simulated_ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-        image=tracer.padded_profile_image_plane_image_2d_from_psf_shape,
+    ccd_data = ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
+        tracer=tracer,
         pixel_scale=pixel_scale,
         psf=psf,
         exposure_time=exposure_time,
@@ -60,7 +57,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         add_noise=True,
     )
 
-    # Now, lets output this simulated ccd-data to the test/data folder.
+    # Now, lets output this simulated ccd-instrument to the test/data folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
@@ -68,7 +65,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
     )
 
     ccd.output_ccd_data_to_fits(
-        ccd_data=simulated_ccd_data,
+        ccd_data=ccd_data,
         image_path=data_path + "image.fits",
         psf_path=data_path + "psf.fits",
         noise_map_path=data_path + "noise_map.fits",
@@ -76,14 +73,14 @@ def simulate_image_from_galaxies_and_output_to_fits(
     )
 
     ccd_plotters.plot_ccd_subplot(
-        ccd_data=simulated_ccd_data,
+        ccd_data=ccd_data,
         output_filename="ccd_data",
         output_path=data_path,
         output_format="png",
     )
 
     ccd_plotters.plot_ccd_individual(
-        ccd_data=simulated_ccd_data,
+        ccd_data=ccd_data,
         should_plot_image=True,
         should_plot_noise_map=True,
         should_plot_psf=True,
@@ -134,8 +131,7 @@ def make_lens_only_dev_vaucouleurs(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            galaxies=[lens_galaxy],
-            galaxies=[g.Galaxy(redshift=1.0)],
+            galaxies=[lens_galaxy, g.Galaxy(redshift=1.0)],
         )
 
 
@@ -169,8 +165,7 @@ def make_lens_only_bulge_and_disk(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            galaxies=[lens_galaxy],
-            galaxies=[g.Galaxy(redshift=1.0)],
+            galaxies=[lens_galaxy, g.Galaxy(redshift=1.0)],
         )
 
 
@@ -210,8 +205,7 @@ def make_lens_only_x2_galaxies(data_resolutions, sub_grid_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_grid_size=sub_grid_size,
-            galaxies=[lens_galaxy_0, lens_galaxy_1],
-            galaxies=[g.Galaxy(redshift=1.0)],
+            galaxies=[lens_galaxy_0, lens_galaxy_1, g.Galaxy(redshift=1.0)],
         )
 
 
@@ -285,23 +279,58 @@ def make_no_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light_and_source_smooth_offset_centre(data_resolutions, sub_grid_size):
+def make_no_lens_light_spherical_mass_and_source_smooth(
+    data_resolutions, sub_grid_size
+):
 
-    data_type = "no_lens_light_and_source_smooth_offset_centre"
+    data_type = "no_lens_light_spherical_mass_and_source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
     lens_galaxy = g.Galaxy(
         redshift=0.5,
-        mass=mp.EllipticalIsothermal(
-            centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
-        ),
+        mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6),
     )
 
     source_galaxy = g.Galaxy(
         redshift=1.0,
         light=lp.EllipticalSersic(
-            centre=(1.0, 1.0),
+            centre=(0.0, 0.0),
+            axis_ratio=0.8,
+            phi=60.0,
+            intensity=0.4,
+            effective_radius=0.5,
+            sersic_index=1.0,
+        ),
+    )
+
+    for data_resolution in data_resolutions:
+
+        simulate_image_from_galaxies_and_output_to_fits(
+            data_type=data_type,
+            data_resolution=data_resolution,
+            sub_grid_size=sub_grid_size,
+            galaxies=[lens_galaxy, source_galaxy],
+        )
+
+
+def make_no_lens_light_spherical_mass_and_source_smooth_offset_centre(
+    data_resolutions, sub_grid_size
+):
+
+    data_type = "no_lens_light_spherical_mass_and_source_smooth_offset_centre"
+
+    # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
+
+    lens_galaxy = g.Galaxy(
+        redshift=0.5,
+        mass=mp.SphericalIsothermal(centre=(4.0, 4.0), einstein_radius=1.6),
+    )
+
+    source_galaxy = g.Galaxy(
+        redshift=1.0,
+        light=lp.EllipticalSersic(
+            centre=(4.0, 4.0),
             axis_ratio=0.8,
             phi=60.0,
             intensity=0.4,

@@ -35,18 +35,18 @@ def galaxy_fit_phase():
     )
 
     deflections = galaxy.deflections_from_grid(
-        galaxies=[galaxy], grid=grid_stack.sub, return_in_2d=True,
+        galaxies=[galaxy], grid=grid_stack.sub, return_in_2d=True
     )
 
     noise_map = scaled_array.ScaledSquarePixelArray(
-        array=np.ones(deflections[:,0].shape), pixel_scale=pixel_scale
+        array=np.ones(deflections[:, 0].shape), pixel_scale=pixel_scale
     )
 
     data_y = gd.GalaxyData(
-        image=deflections[:,0], noise_map=noise_map, pixel_scale=pixel_scale
+        image=deflections[:, 0], noise_map=noise_map, pixel_scale=pixel_scale
     )
     data_x = gd.GalaxyData(
-        image=deflections[:,1], noise_map=noise_map, pixel_scale=pixel_scale
+        image=deflections[:, 1], noise_map=noise_map, pixel_scale=pixel_scale
     )
 
     phase1 = phase.GalaxyFitPhase(

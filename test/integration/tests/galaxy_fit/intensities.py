@@ -15,6 +15,7 @@ test_name = "intensities"
 test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + "output/"
 
+
 def galaxy_fit_phase():
 
     pixel_scale = 0.1

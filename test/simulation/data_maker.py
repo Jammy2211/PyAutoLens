@@ -1,6 +1,6 @@
 from test.simulation import makers
 
-# Welcome to the PyAutoLens test suite data maker. Here, we'll make the suite of data that we use to test and profile
+# Welcome to the PyAutoLens test suite instrument maker. Here, we'll make the suite of instrument that we use to test and profile
 # PyAutoLens. This consists of the following sets of images:
 
 # A lens only image, where the lens is an elliptical Dev Vaucouleurs profile.
@@ -18,7 +18,7 @@ from test.simulation import makers
 # Each image is generated at 5 resolutions, 0.2" (LSST), 0.1" (Euclid), 0.05" (HST), 0.03" (HST), 0.01" (Keck AO).
 
 sub_grid_size = 1
-data_resolutions = ["LSST", "Euclid", "HST", "HST_Up"]  # , 'AO']
+data_resolutions = ["LSST", "Euclid"]  # , "HST", "HST_Up"]  # , 'AO']
 
 # To simulate each lens, we pass it a name and call its maker. In the makers.py file, you'll see the
 makers.make_lens_only_dev_vaucouleurs(
@@ -36,7 +36,10 @@ makers.make_no_lens_light_and_source_smooth(
 makers.make_no_lens_light_and_source_cuspy(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
-makers.make_no_lens_light_and_source_smooth_offset_centre(
+makers.make_no_lens_light_spherical_mass_and_source_smooth(
+    data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
+)
+makers.make_no_lens_light_spherical_mass_and_source_smooth_offset_centre(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
 makers.make_lens_light_and_source_smooth(

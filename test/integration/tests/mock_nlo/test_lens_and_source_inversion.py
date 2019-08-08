@@ -1,5 +1,6 @@
-from test.integration.tests.lens_and_source_inversion.adaptive_brightness import \
-    lens_mass_x1_source_x1_hyper_constant_pass
+from test.integration.tests.lens_and_source_inversion.adaptive_brightness import (
+    lens_mass_x1_source_x1_hyper_constant_pass,
+)
 from test.integration.tests.runner import run_a_mock
 
 

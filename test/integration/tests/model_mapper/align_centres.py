@@ -11,8 +11,8 @@ test_name = "align_centres"
 data_type = "lens_only_dev_vaucouleurs"
 data_resolution = "LSST"
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
+def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class MMPhase(phase_imaging.PhaseImaging):
         pass
 

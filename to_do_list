@@ -6,13 +6,10 @@ Big Picture:
 
 - RJLens pipelines.
 
-Bugs:
-
-- Positions are not being updated when the mask centre is offset, suggesting the origin shift is ignored.
-
 Small Picture:
 
-- Use model image for norm range on sbplots.
+- Plot plane image as square, not rectangle
+- Use model image for norm range on subplots.
 - tracers used in some simulations will double calc deflecitons because they use a padded tracer .Add a omit
   deflections bool or something
 - Unit Test HyperNoise Maps
@@ -21,7 +18,6 @@ Small Picture:
 - point source ray tracing, modeling, etc.
 - classmethods using realistic lens units.
 - Lensing example test data suites.
-- Aggregator use examples.
 - Units for images, grids.
 - Multinest MPI.
 - Memory lite.

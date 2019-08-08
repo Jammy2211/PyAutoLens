@@ -500,12 +500,12 @@ class GridStack(object):
     ):
         """For a padded grid-stack and psf, compute an unmasked blurred image from an unmasked unblurred image.
 
-        This relies on using the lens data's padded-grid, which is a grid of (y,x) coordinates which extends over the \
+        This relies on using the lens instrument's padded-grid, which is a grid of (y,x) coordinates which extends over the \
         entire image as opposed to just the masked region.
 
         Parameters
         ----------
-        psf : ccd.PSF
+        psf : abstract_data.PSF
             The PSF of the image used for convolution.
         unmasked_image_1d : ndarray
             The 1D unmasked image which is blurred.
@@ -1112,6 +1112,11 @@ class Grid(np.ndarray):
         )
 
     @property
+    @array_util.Memoizer()
+    def to_radians(self):
+        return (self * np.pi) / 648000.0
+
+    @property
     def masked_shape_arcsec(self):
         return (
             np.amax(self[:, 0]) - np.amin(self[:, 0]),
@@ -1197,7 +1202,7 @@ class ClusterGrid(Grid):
 
                 if cluster_bin_up_factor == 1:
                     raise exc.DataException(
-                        "The cluster hyper image cannot obtain more data points that the maximum number of pixels for a "
+                        "The cluster hyper image cannot obtain more instrument points that the maximum number of pixels for a "
                         "cluster pixelization, even without any binning up. Either increase the mask size or reduce the "
                         "maximum number of pixels."
                     )
@@ -1613,7 +1618,7 @@ class Interpolator(object):
 
 def grid_interpolate(func):
     """
-    Decorate a profile method that accepts a coordinate grid and returns a data grid.
+    Decorate a profile method that accepts a coordinate grid and returns a instrument grid.
 
     If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
     coordinate grid prior to calling the function and up sample the result of the function.
