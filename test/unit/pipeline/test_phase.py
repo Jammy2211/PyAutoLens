@@ -1125,24 +1125,33 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        instance = phase_7x7.optimizer.variable.instance_from_physical_vector(
-            [
-                0.2,
-                0.21,
-                0.22,
-                0.23,
-                0.24,
-                0.25,
-                0.8,
-                0.1,
-                0.2,
-                0.3,
-                0.4,
-                0.9,
-                0.5,
-                0.7,
-                0.8,
-            ]
+        for item in phase_7x7.variable.path_priors_tuples:
+            print(item)
+
+        sersic = phase_7x7.variable.galaxies[0].sersic
+        sis = phase_7x7.variable.galaxies[0].sis
+        lens_1_sis = phase_7x7.variable.galaxies[1].sis
+
+        arguments = {
+            sersic.centre[0]: 0.2,
+            sersic.centre[1]: 0.2,
+            sersic.axis_ratio: 0.0,
+            sersic.phi: 0.1,
+            sersic.effective_radius.priors[0]: 0.2,
+            sersic.sersic_index: 0.6,
+            sersic.intensity.priors[0]: 0.6,
+            sis.centre[0]: 0.1,
+            sis.centre[1]: 0.2,
+            sis.einstein_radius.priors[0]: 0.3,
+            phase_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
+            lens_1_sis.centre[0]: 0.6,
+            lens_1_sis.centre[1]: 0.5,
+            lens_1_sis.einstein_radius.priors[0]: 0.7,
+            phase_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
+        }
+
+        instance = phase_7x7.optimizer.variable.instance_for_arguments(
+            arguments=arguments
         )
 
         assert instance.galaxies[0].sersic.centre[0] == 0.2
@@ -1150,7 +1159,7 @@ class TestPhase(object):
         assert instance.galaxies[0].sis.centre[1] == 0.2
         assert instance.galaxies[0].sis.einstein_radius == 0.3
         assert instance.galaxies[0].redshift == 0.4
-        assert instance.galaxies[1].sis.centre[0] == 0.9
+        assert instance.galaxies[1].sis.centre[0] == 0.6
         assert instance.galaxies[1].sis.centre[1] == 0.5
         assert instance.galaxies[1].sis.einstein_radius == 0.7
         assert instance.galaxies[1].redshift == 0.8
@@ -1176,23 +1185,29 @@ class TestPhase(object):
         # noinspection PyTypeChecker
         phase_7x7.pass_models(None)
 
-        instance = phase_7x7.optimizer.variable.instance_from_physical_vector(
-            [
-                0.01,
-                0.02,
-                0.23,
-                0.04,
-                0.05,
-                0.06,
-                0.87,
-                0.1,
-                0.2,
-                0.4,
-                0.5,
-                0.5,
-                0.7,
-                0.8,
-            ]
+        sersic = phase_7x7.variable.galaxies[0].sersic
+        sis = phase_7x7.variable.galaxies[0].sis
+        lens_1_sis = phase_7x7.variable.galaxies[1].sis
+
+        arguments = {
+            sersic.centre[0]: 0.01,
+            sersic.centre[1]: 0.2,
+            sersic.axis_ratio: 0.0,
+            sersic.phi: 0.1,
+            sersic.effective_radius.priors[0]: 0.2,
+            sersic.sersic_index: 0.6,
+            sersic.intensity.priors[0]: 0.6,
+            sis.centre[0]: 0.1,
+            sis.centre[1]: 0.2,
+            phase_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
+            lens_1_sis.centre[0]: 0.6,
+            lens_1_sis.centre[1]: 0.5,
+            lens_1_sis.einstein_radius.priors[0]: 0.7,
+            phase_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
+        }
+
+        instance = phase_7x7.optimizer.variable.instance_for_arguments(
+            arguments
         )
 
         assert instance.galaxies[0].sersic.centre[0] == 0.01
@@ -1200,7 +1215,7 @@ class TestPhase(object):
         assert instance.galaxies[0].sis.centre[1] == 0.2
         assert instance.galaxies[0].sis.einstein_radius == 10.0
         assert instance.galaxies[0].redshift == 0.4
-        assert instance.galaxies[1].sis.centre[0] == 0.5
+        assert instance.galaxies[1].sis.centre[0] == 0.6
         assert instance.galaxies[1].sis.centre[1] == 0.5
         assert instance.galaxies[1].sis.einstein_radius == 0.7
         assert instance.galaxies[1].redshift == 0.8

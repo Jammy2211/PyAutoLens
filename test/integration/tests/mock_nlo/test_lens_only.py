@@ -5,7 +5,7 @@ from test.integration.tests.runner import run_a_mock
 
 
 class TestCase:
-    def _test_lens_x1_galaxy(self):
+    def test_lens_x1_galaxy(self):
         run_a_mock(lens_x1_galaxy)
 
     def _test_lens_x1_galaxy_hyper(self):
