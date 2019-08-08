@@ -97,6 +97,7 @@ def plot_convergence(
     zoom_around_mask=False,
     positions=None,
     as_subplot=False,
+    plot_critical_curve=True,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=(7, 7),
@@ -135,9 +136,13 @@ def plot_convergence(
     grid : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
+
     convergence = mass_profile.convergence_from_grid(
         grid=grid, return_in_2d=True, return_binned=True
     )
+
+    if plot_critical_curve:
+        critical_curves = mass_profile.critical_curves_from_grid(grid=grid)
 
     array_plotters.plot_array(
         array=convergence,
@@ -145,6 +150,7 @@ def plot_convergence(
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions,
+   #     lines=critical_curves,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,

@@ -64,7 +64,9 @@ def pipeline_tag_from_pipeline_settings(
         align_bulge_disk_phi=align_bulge_disk_phi,
     )
 
-    disk_as_sersic_tag = disk_as_sersic_tag_from_disk_as_sersic(disk_as_sersic=disk_as_sersic)
+    disk_as_sersic_tag = disk_as_sersic_tag_from_disk_as_sersic(
+        disk_as_sersic=disk_as_sersic
+    )
 
     align_light_dark_centre_tag = align_light_dark_centre_tag_from_align_light_dark_centre(
         align_light_dark_centre=align_light_dark_centre
