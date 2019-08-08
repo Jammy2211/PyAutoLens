@@ -25,7 +25,7 @@ fits.writeto(data=array5, filename=path + "3x3_fives.fits")
 fits.writeto(data=array6, filename=path + "3x3_sixes.fits")
 fits.writeto(data=array7, filename=path + "3x3_sevens.fits")
 fits.writeto(data=array8, filename=path + "3x3_eights.fits")
-stop
+
 new_hdul = fits.HDUList()
 new_hdul.append(fits.ImageHDU(array1))
 new_hdul.append(fits.ImageHDU(array2))

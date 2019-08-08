@@ -10,6 +10,7 @@ test_name = "link_variable_to_constant_floats"
 data_type = "lens_only_dev_vaucouleurs"
 data_resolution = "LSST"
 
+
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class MMPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):

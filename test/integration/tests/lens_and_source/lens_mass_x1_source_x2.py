@@ -10,15 +10,15 @@ test_name = "lens_x1_source_x2"
 data_type = "no_lens_light_and_source_smooth"
 data_resolution = "LSST"
 
+
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
-        ,
-        source_0=gm.GalaxyModel(redshift=1.0, sersic=lp.EllipticalSersic)
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
+            source_0=gm.GalaxyModel(redshift=1.0, sersic=lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -31,16 +31,14 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         def pass_priors(self, results):
 
             self.galaxies.lens = results.from_phase("phase_1").variable.lens
-            self.galaxies.source_0 = results.from_phase(
-                "phase_1"
-            ).variable.source_0
+            self.galaxies.source_0 = results.from_phase("phase_1").variable.source_0
 
     phase2 = AddSourceGalaxyPhase(
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)
-,source_0=gm.GalaxyModel(redshift=1.0, sersic=lp.EllipticalSersic),
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
+            source_0=gm.GalaxyModel(redshift=1.0, sersic=lp.EllipticalSersic),
             source_1=gm.GalaxyModel(redshift=1.0, sersic=lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
