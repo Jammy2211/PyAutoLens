@@ -501,17 +501,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             lambda_tangential_2d, 0
         )
 
-
-        return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-            grid_pixels_1d=tangential_critical_curve_indices[0],
-            shape=lambda_tangential_2d.shape,
-            pixel_scales=(
-                grid.pixel_scale / grid.sub_grid_size,
-                grid.pixel_scale / grid.sub_grid_size,
-            ),
-            origin=grid.mask.origin,
-        )
-
         tangential_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=tangential_critical_curve_indices[0],
             shape=lambda_tangential_2d.shape,
@@ -527,7 +516,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         tangential_critical_curve[:,0] -= grid.pixel_scale/2.0
         tangential_critical_curve[:,1] += grid.pixel_scale/2.0
 
-        return
+        return tangential_critical_curve
 
     def tangential_caustic_from_grid(self, grid):
 
@@ -553,7 +542,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         ## reg grid unit test works with this fix, sub grid still doesn't like it
         ## may be an isuue with where the marching squares algorithm starts rathet than x, y flip
 
-        return grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+        radial_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=radial_critical_curve_indices[0],
             shape=lambda_radial_2d.shape,
             pixel_scales=(
@@ -562,6 +551,13 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             ),
             origin=grid.mask.origin,
         )
+
+        # Bug with offset, this fixes it for now
+
+        radial_critical_curve[:,0] -= grid.pixel_scale/2.0
+        radial_critical_curve[:,1] += grid.pixel_scale/2.0
+
+        return radial_critical_curve
 
     def radial_caustic_from_grid(self, grid):
 

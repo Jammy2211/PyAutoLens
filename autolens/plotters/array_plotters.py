@@ -745,8 +745,9 @@ def plot_lines(
         The size of the points plotted to show the liness.
     """
     if lines is not None:
-        for line in lines:
-            plt.plot(line[:,1], line[:,0], c='r', lw=1.5, zorder=200)
+        for line_list in lines:
+            for line in line_list:
+                plt.plot(line[:,1], line[:,0], c='r', lw=1.5, zorder=200)
 
 def plot_border(
     mask, should_plot_border, units, kpc_per_arcsec, pointsize, zoom_offset_pixels

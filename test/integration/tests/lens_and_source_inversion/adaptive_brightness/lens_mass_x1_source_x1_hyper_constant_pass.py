@@ -55,7 +55,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=reg.AdaptiveBrightness,
             ),
         ),
-        inversion_pixel_limit=800,
+        inversion_pixel_limit=716,
         optimizer_class=optimizer_class,
     )
 
@@ -93,7 +93,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=reg.AdaptiveBrightness,
             ),
         ),
-        inversion_pixel_limit=800,
+        inversion_pixel_limit=716,
         optimizer_class=optimizer_class,
     )
 
