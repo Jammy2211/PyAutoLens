@@ -40,10 +40,10 @@ def constant_regularization_matrix_from_pixel_neighbors(
 def adaptive_pixel_signals_from_images(
     pixels, signal_scale, sub_to_pix, sub_to_regular, hyper_image
 ):
-    """Compute the (scaled) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
+    """Compute the (normal) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
     These pixel-signals are used to compute the effective regularization weight of each pixel.
 
-    The pixel signals are scaled in the following ways:
+    The pixel signals are normal in the following ways:
 
     1) Divided by the number of datas_-pixels in the pixel, to ensure all pixels have the same \
     'relative' signal (i.e. a pixel with 10 regular-pixels doesn't have x2 the signal of one with 5).
@@ -51,7 +51,7 @@ def adaptive_pixel_signals_from_images(
     2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the \
     regularizations weights are defined identically for any datas_ units or signal-to-noise_map ratio.
 
-    3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative \
+    3) Raised to the power of the hyper_galaxy-parameter *signal_scale*, so the method can control the relative \
     contribution regularization in different regions of pixelization.
 
     Parameters
@@ -86,7 +86,7 @@ def adaptive_regularization_weights_from_pixel_signals(
     inner_coefficient, outer_coefficient, pixel_signals
 ):
     """Compute the regularization weights, which are the effective regularization coefficient of every \
-    pixel. They are computed using the (scaled) pixel-signal of each pixel.
+    pixel. They are computed using the (normal) pixel-signal of each pixel.
 
     Two regularization coefficients are used, corresponding to the:
 

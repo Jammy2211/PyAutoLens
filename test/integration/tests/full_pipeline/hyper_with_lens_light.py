@@ -52,7 +52,7 @@ def make_pipeline(
                 .galaxies.lens.light.centre
             )
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
@@ -106,7 +106,7 @@ def make_pipeline(
                 "phase_2_lens_sie_source_sersic"
             ).variable.galaxies.source
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
@@ -142,7 +142,7 @@ def make_pipeline(
                 "phase_3_lens_sersic_sie_source_sersic"
             ).constant.galaxies.lens
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
@@ -190,7 +190,7 @@ def make_pipeline(
                 "phase_4_initialize_magnification_inversion"
             ).constant.galaxies.source
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
@@ -235,7 +235,7 @@ def make_pipeline(
                 "phase_5_lens_sersic_sie_source_magnification_inversion"
             ).constant.galaxies.lens
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
@@ -286,7 +286,7 @@ def make_pipeline(
                 "phase_6_initialize_inversion"
             ).hyper_combined.constant.galaxies.source
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy

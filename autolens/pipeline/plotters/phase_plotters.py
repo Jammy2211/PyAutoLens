@@ -333,7 +333,7 @@ def plot_hyper_images_for_phase(
 ):
 
     output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=visualize_path, folder_names=["hyper"]
+        path=visualize_path, folder_names=["hyper_galaxy"]
     )
 
     if should_plot_hyper_model_image:

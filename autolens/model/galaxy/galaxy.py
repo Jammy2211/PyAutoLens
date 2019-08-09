@@ -38,7 +38,7 @@ class Galaxy(af.ModelObject):
         hyper_galaxy=None,
         **kwargs
     ):
-        """Class representing a galaxy, which is composed of attributes used for fitting hyper (e.g. light profiles, \ 
+        """Class representing a galaxy, which is composed of attributes used for fitting hyper_galaxy (e.g. light profiles, \
         mass profiles, pixelizations, etc.).
         
         All *has_* methods retun *True* if galaxy has that attribute, *False* if not.
@@ -52,7 +52,7 @@ class Galaxy(af.ModelObject):
         mass_profiles: [mp.MassProfile]
             A list of the galaxy's mass profiles.
         hyper_galaxy : HyperGalaxy
-            The hyper-parameters of the hyper-galaxy, which is used for performing a hyper-analysis on the noise-map.
+            The hyper_galaxy-parameters of the hyper_galaxy-galaxy, which is used for performing a hyper_galaxy-analysis on the noise-map.
             
         Attributes
         ----------
@@ -917,16 +917,16 @@ class HyperGalaxy(object):
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
         """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in \
-        the regions of the image that the galaxy is located will be scaled, to prevent \
+        the regions of the image that the galaxy is located will be normal, to prevent \
         over-fitting of the galaxy.
         
-        This is performed by first computing the hyper-galaxy's 'contribution-map', \
+        This is performed by first computing the hyper_galaxy-galaxy's 'contribution-map', \
         which determines the fraction of flux in every pixel of the image that can be \
-        associated with this particular hyper-galaxy. This is computed using \
-        hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit \
+        associated with this particular hyper_galaxy-galaxy. This is computed using \
+        hyper_galaxy-hyper_galaxy set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit \
         unblurred_image_1d of the galaxy's light from a previous analysis phase.
          
-        The *HyperGalaxy* class contains the hyper-parameters which are associated \
+        The *HyperGalaxy* class contains the hyper_galaxy-parameters which are associated \
         with this galaxy for scaling the noise-map.
         
         Parameters
@@ -959,8 +959,8 @@ class HyperGalaxy(object):
 
     def contribution_map_from_hyper_images(self, hyper_model_image, hyper_galaxy_image):
         """Compute the contribution map of a galaxy, which represents the fraction of
-        flux in each pixel that the galaxy is attributed to contain, scaled to the
-        *contribution_factor* hyper-parameter.
+        flux in each pixel that the galaxy is attributed to contain, normal to the
+        *contribution_factor* hyper_galaxy-parameter.
 
         This is computed by dividing that galaxy's flux by the total flux in that \
         pixel and then scaling by the maximum flux such that the contribution map \
@@ -983,10 +983,10 @@ class HyperGalaxy(object):
         return contribution_map
 
     def hyper_noise_map_from_contribution_map(self, noise_map, contribution_map):
-        """Compute a scaled galaxy hyper noise-map from a baseline noise-map.
+        """Compute a normal galaxy hyper_galaxy noise-map from a baseline noise-map.
 
         This uses the galaxy contribution map and the *noise_factor* and *noise_power*
-        hyper-parameters.
+        hyper_galaxy-parameters.
 
         Parameters
         -----------

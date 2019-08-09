@@ -122,14 +122,14 @@ class LensTracerFit(LensDataFit):
         positions,
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens instrument's hyper.
+        the lens instrument's hyper_galaxy.
 
         Parameters
         -----------
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         scaled_array_2d_from_array_1d : func
-            A function which maps the 1D lens hyper to its unmasked 2D array.
+            A function which maps the 1D lens hyper_galaxy to its unmasked 2D array.
         """
 
         self.mask_2d = mask_2d
@@ -523,6 +523,6 @@ class LensPositionFit(object):
         return np.max(np.sqrt(rdist_max))
 
 
-# TODO : The [plane_index][galaxy_index] datas structure is going to be key to tracking galaxies / hyper galaxies in
+# TODO : The [plane_index][galaxy_index] datas structure is going to be key to tracking galaxies / hyper_galaxy galaxies in
 # TODO : Multi-plane ray tracing. I never felt it was easy to follow using list comprehensions from ray_tracing.
 # TODO : Can we make this neater?
