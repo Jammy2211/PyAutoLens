@@ -142,7 +142,7 @@ class AbstractPhase(af.AbstractPhase):
         def tracer_for_instance(self, instance):
             raise NotImplementedError()
 
-        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_noise_background):
+        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
             raise NotImplementedError()
 
         def figure_of_merit_for_fit(self, tracer):
@@ -192,14 +192,14 @@ class AbstractPhase(af.AbstractPhase):
                 instance=self.constant
             )
 
-            hyper_noise_background = self.analysis.hyper_noise_background_for_instance(
+            hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
                 instance=self.constant
             )
 
             return self.analysis.fit_for_tracer(
                 tracer=self.most_likely_tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
 
         @property

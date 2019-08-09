@@ -121,15 +121,15 @@ class TestVariableFixing(object):
 
         constant = af.ModelInstance()
         constant.hyper_image_sky = hd.HyperImageSky()
-        constant.hyper_noise_background = hd.HyperNoiseBackground()
+        constant.hyper_background_noise = hd.HyperBackgroundNoise()
 
         mapper = phase.make_variable(constant)
 
         assert isinstance(mapper.hyper_image_sky, af.PriorModel)
-        assert isinstance(mapper.hyper_noise_background, af.PriorModel)
+        assert isinstance(mapper.hyper_background_noise, af.PriorModel)
 
         assert mapper.hyper_image_sky.cls == hd.HyperImageSky
-        assert mapper.hyper_noise_background.cls == hd.HyperNoiseBackground
+        assert mapper.hyper_background_noise.cls == hd.HyperBackgroundNoise
 
     def test_defaults_hyper_image_sky(self):
         # noinspection PyTypeChecker
@@ -148,12 +148,12 @@ class TestVariableFixing(object):
         phase = phase_extensions.InversionBackgroundNoisePhase(MockPhase())
 
         constant = af.ModelInstance()
-        constant.hyper_noise_background = hd.HyperNoiseBackground()
+        constant.hyper_background_noise = hd.HyperBackgroundNoise()
 
         mapper = phase.make_variable(constant)
 
-        assert isinstance(mapper.hyper_noise_background, af.PriorModel)
-        assert mapper.hyper_noise_background.cls == hd.HyperNoiseBackground
+        assert isinstance(mapper.hyper_background_noise, af.PriorModel)
+        assert mapper.hyper_background_noise.cls == hd.HyperBackgroundNoise
 
     def test_make_pixelization_variable(self):
         instance = af.ModelInstance()
