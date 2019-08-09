@@ -11,6 +11,8 @@ class MockNLO(af.NonLinearOptimizer):
     def fit(self, analysis):
         if self.variable.prior_count == 0:
             raise AssertionError("There are no priors associated with the variable!")
+        if self.variable.prior_count != len(self.variable.unique_prior_paths):
+            raise AssertionError("Prior count doesn't match number of unique prior paths")
         index = 0
         unit_vector = self.variable.prior_count * [0.5]
         while True:
