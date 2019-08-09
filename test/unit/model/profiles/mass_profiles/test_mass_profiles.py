@@ -1433,7 +1433,7 @@ class TestCriticalCurvesandCaustics(object):
 
     #   assert critical_curve__rad_from_mag == pytest.approx(critical_curve_rad_from_lambda_t, 1e-4)
 
-    def test__compare_tangentialgential_caustic_from_magnification_and_lambda_t__reg_grid(
+    def test__compare_tangential_caustic_from_magnification_and_lambda_t__reg_grid(
         self
     ):
 
