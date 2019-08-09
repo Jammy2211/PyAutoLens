@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data import ccd
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.data.array.util import grid_util, mapping_util, mask_util
@@ -512,6 +513,29 @@ class TestGrid:
             arr=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0], [7.0, -5.0]]), mask=None
         )
         assert grid.masked_shape_arcsec == (8.5, 8.0)
+
+    def test__in_radians(self):
+
+        mask = np.array(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ]
+        )
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+
+        assert grid.to_radians[0, 0] == pytest.approx(0.00000969627362, 1.0e-8)
+        assert grid.to_radians[0, 1] == pytest.approx(0.00000484813681, 1.0e-8)
+
+        assert grid.to_radians[0, 0] == pytest.approx(
+            2.0 * np.pi / (180 * 3600), 1.0e-8
+        )
+        assert grid.to_radians[0, 1] == pytest.approx(
+            1.0 * np.pi / (180 * 3600), 1.0e-8
+        )
 
     def test__yticks(self):
 

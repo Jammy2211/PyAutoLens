@@ -42,8 +42,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             #     results.last.hyper_combined.constant.hyper_image_sky
             # )
 
-            self.hyper_noise_background = (
-                results.last.hyper_combined.constant.hyper_noise_background
+            self.hyper_background_noise = (
+                results.last.hyper_combined.constant.hyper_background_noise
             )
 
     phase2 = HyperLensPlanePhase(

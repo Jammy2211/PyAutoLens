@@ -3,7 +3,8 @@ import pytest
 
 import autofit as af
 from autolens.lens.util import lens_fit_util as util
-from autolens.data import ccd
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.lens import ray_tracing, lens_fit
@@ -24,7 +25,7 @@ class TestLensProfileFit:
 
             # Thus the chi squared is 4.0**2.0 + 3.0**2.0 = 25.0
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
@@ -135,7 +136,7 @@ class TestLensProfileFit:
 
             # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
@@ -250,7 +251,7 @@ class TestLensProfileFit:
 
             # This reduces the chi squared to 2.0 instead of 4.0
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
@@ -362,7 +363,7 @@ class TestLensProfileFit:
 
         def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
@@ -397,7 +398,7 @@ class TestLensProfileFit:
                 galaxies=[g0], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
-            hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
+            hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
 
             fit = lens_fit.LensProfileFit(
                 lens_data=lens_data_7x7, tracer=tracer, hyper_image_sky=hyper_image_sky
@@ -474,7 +475,7 @@ class TestLensProfileFit:
             self
         ):
 
-            psf = ccd.PSF(
+            psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
@@ -509,12 +510,12 @@ class TestLensProfileFit:
                 galaxies=[g0], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
-            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
+            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
 
             fit = lens_fit.LensProfileFit(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
-                hyper_noise_background=hyper_background_noise,
+                hyper_background_noise=hyper_background_noise,
             )
 
             assert (fit.mask_1d == np.array([False, False])).all()
@@ -766,9 +767,9 @@ class TestLensProfileFit:
             self, lens_data_7x7
         ):
 
-            hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
+            hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
 
-            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
+            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
 
             image_1d = hyper_image_sky.image_scaled_sky_from_image(
                 image=lens_data_7x7.image_1d
@@ -801,7 +802,7 @@ class TestLensProfileFit:
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_background_noise,
+                hyper_background_noise=hyper_background_noise,
             )
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
@@ -1126,9 +1127,9 @@ class TestLensInversionFit:
 
         def test___all_lens_fit_quantities__include_hyper_methods(self, lens_data_7x7):
 
-            hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
+            hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
 
-            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
+            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
 
             image_1d = hyper_image_sky.image_scaled_sky_from_image(
                 image=lens_data_7x7.image_1d
@@ -1163,7 +1164,7 @@ class TestLensInversionFit:
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_background_noise,
+                hyper_background_noise=hyper_background_noise,
             )
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
@@ -1577,9 +1578,9 @@ class TestLensProfileInversionFit:
 
         def test___all_lens_fit_quantities__include_hyper_methods(self, lens_data_7x7):
 
-            hyper_image_sky = hi.HyperImageSky(background_sky_scale=1.0)
+            hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
 
-            hyper_background_noise = hi.HyperNoiseBackground(background_noise_scale=1.0)
+            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
 
             image_1d = hyper_image_sky.image_scaled_sky_from_image(
                 image=lens_data_7x7.image_1d
@@ -1614,7 +1615,7 @@ class TestLensProfileInversionFit:
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_background_noise,
+                hyper_background_noise=hyper_background_noise,
             )
 
             hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(

@@ -118,27 +118,27 @@ class TestVariableFixing(object):
     def test_defaults_both(self):
         # noinspection PyTypeChecker
         phase = phase_extensions.InversionBackgroundBothPhase(MockPhase())
-        mapper = af.ModelMapper()
-        mapper.hyper_image_sky = hd.HyperImageSky
 
-        prior_model = mapper.hyper_image_sky
+        constant = af.ModelInstance()
+        constant.hyper_image_sky = hd.HyperImageSky()
+        constant.hyper_background_noise = hd.HyperBackgroundNoise()
 
-        phase.add_defaults(mapper)
+        mapper = phase.make_variable(constant)
 
         assert isinstance(mapper.hyper_image_sky, af.PriorModel)
-        assert isinstance(mapper.hyper_noise_background, af.PriorModel)
+        assert isinstance(mapper.hyper_background_noise, af.PriorModel)
 
         assert mapper.hyper_image_sky.cls == hd.HyperImageSky
-        assert mapper.hyper_noise_background.cls == hd.HyperNoiseBackground
-
-        assert mapper.hyper_image_sky is prior_model
+        assert mapper.hyper_background_noise.cls == hd.HyperBackgroundNoise
 
     def test_defaults_hyper_image_sky(self):
         # noinspection PyTypeChecker
         phase = phase_extensions.InversionBackgroundSkyPhase(MockPhase())
 
-        mapper = af.ModelMapper()
-        phase.add_defaults(mapper)
+        constant = af.ModelInstance()
+        constant.hyper_image_sky = hd.HyperImageSky()
+
+        mapper = phase.make_variable(constant)
 
         assert isinstance(mapper.hyper_image_sky, af.PriorModel)
         assert mapper.hyper_image_sky.cls == hd.HyperImageSky
@@ -147,11 +147,13 @@ class TestVariableFixing(object):
         # noinspection PyTypeChecker
         phase = phase_extensions.InversionBackgroundNoisePhase(MockPhase())
 
-        mapper = af.ModelMapper()
-        phase.add_defaults(mapper)
+        constant = af.ModelInstance()
+        constant.hyper_background_noise = hd.HyperBackgroundNoise()
 
-        assert isinstance(mapper.hyper_noise_background, af.PriorModel)
-        assert mapper.hyper_noise_background.cls == hd.HyperNoiseBackground
+        mapper = phase.make_variable(constant)
+
+        assert isinstance(mapper.hyper_background_noise, af.PriorModel)
+        assert mapper.hyper_background_noise.cls == hd.HyperBackgroundNoise
 
     def test_make_pixelization_variable(self):
         instance = af.ModelInstance()
@@ -181,12 +183,6 @@ class TestVariableFixing(object):
         )
 
         mapper = mapper.copy_with_fixed_priors(instance, phase.variable_classes)
-
-        assert mapper.prior_count == 3
-        assert mapper.lens_galaxy.redshift == 1.0
-        assert mapper.source_galaxy.light.axis_ratio == 1.0
-
-        phase.add_defaults(mapper)
 
         assert mapper.prior_count == 3
         assert mapper.lens_galaxy.redshift == 1.0

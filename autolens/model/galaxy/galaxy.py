@@ -2,6 +2,7 @@ from itertools import count
 
 import numpy as np
 from astropy import cosmology as cosmo
+from skimage import measure
 
 import autofit as af
 
@@ -11,6 +12,7 @@ from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
+from autolens.data.array.util import grid_util
 
 from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
 
@@ -34,9 +36,6 @@ class Galaxy(af.ModelObject):
         pixelization=None,
         regularization=None,
         hyper_galaxy=None,
-        hyper_model_image_1d=None,
-        hyper_galaxy_image_1d=None,
-        hyper_galaxy_cluster_image_1d=None,
         **kwargs
     ):
         """Class representing a galaxy, which is composed of attributes used for fitting hyper (e.g. light profiles, \ 
@@ -65,26 +64,26 @@ class Galaxy(af.ModelObject):
         super().__init__()
         self.redshift = redshift
 
+        self.hyper_model_image_1d = None
+        self.hyper_galaxy_image_1d = None
+        self.hyper_galaxy_cluster_image_1d = None
+
         for name, val in kwargs.items():
             setattr(self, name, val)
 
         self.pixelization = pixelization
         self.regularization = regularization
 
-        if self.has_pixelization and not self.has_regularization:
+        if pixelization is not None and regularization is None:
             raise exc.GalaxyException(
                 "If the galaxy has a pixelization, it must also have a regularization."
             )
-        if not self.has_pixelization and self.has_regularization:
+        if pixelization is None and regularization is not None:
             raise exc.GalaxyException(
                 "If the galaxy has a regularization, it must also have a pixelization."
             )
 
         self.hyper_galaxy = hyper_galaxy
-
-        self.hyper_model_image_1d = hyper_model_image_1d
-        self.hyper_galaxy_image_1d = hyper_galaxy_image_1d
-        self.hyper_galaxy_cluster_image_1d = hyper_galaxy_cluster_image_1d
 
     def __hash__(self):
         return self.id
@@ -100,10 +99,6 @@ class Galaxy(af.ModelObject):
     @property
     def has_redshift(self):
         return self.redshift is not None
-
-    @property
-    def has_pixelization(self):
-        return self.pixelization is not None
 
     @property
     def has_regularization(self):
@@ -124,10 +119,6 @@ class Galaxy(af.ModelObject):
     @property
     def has_profile(self):
         return len(self.mass_profiles) + len(self.light_profiles) > 0
-
-    @property
-    def uses_inversion(self):
-        return self.has_pixelization
 
     @property
     def uses_cluster_inversion(self):
@@ -372,6 +363,243 @@ class Galaxy(af.ModelObject):
                 )
             )
         return np.full((grid.shape[0], 2), 0.0)
+
+    @reshape_returned_grid
+    def deflections_via_potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
+        potential_2d = self.potential_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        deflections_y_2d = np.gradient(potential_2d, grid.in_2d[:, 0, 0], axis=0)
+        deflections_x_2d = np.gradient(potential_2d, grid.in_2d[0, :, 1], axis=1)
+
+        return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
+
+    @reshape_returned_array
+    def lensing_jacobian_a11_from_grid_and_deflections_2d(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
+
+        deflections_2d = self.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
+
+    @reshape_returned_array
+    def lensing_jacobian_a12_from_grid_and_deflections_2d(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
+
+        deflections_2d = self.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
+
+    @reshape_returned_array
+    def lensing_jacobian_a21_from_grid_and_deflections_2d(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
+
+        deflections_2d = self.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
+
+    @reshape_returned_array
+    def lensing_jacobian_a22_from_grid_and_deflections_2d(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
+
+        deflections_2d = self.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        return 1 - np.gradient(deflections_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
+
+    def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
+
+        a11 = self.lensing_jacobian_a11_from_grid_and_deflections_2d(
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+        )
+
+        a12 = self.lensing_jacobian_a12_from_grid_and_deflections_2d(
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+        )
+
+        a21 = self.lensing_jacobian_a21_from_grid_and_deflections_2d(
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+        )
+
+        a22 = self.lensing_jacobian_a22_from_grid_and_deflections_2d(
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+        )
+
+        return np.array([[a11, a12], [a21, a22]])
+
+    @reshape_returned_array
+    def convergence_from_jacobian(self, grid, return_in_2d=True, return_binned=True):
+
+        jacobian = self.lensing_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
+
+        convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
+
+        return convergence
+
+    @reshape_returned_array
+    def shear_from_jacobian(self, grid, return_in_2d=True, return_binned=True):
+
+        jacobian = self.lensing_jacobian_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
+        gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
+
+        return (gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
+
+    @reshape_returned_array
+    def tangential_eigen_value_from_shear_and_convergence(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
+
+        convergence = self.convergence_from_jacobian(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
+
+        shear = self.shear_from_jacobian(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
+
+        return 1 - convergence - shear
+
+    @reshape_returned_array
+    def radial_eigen_value_from_shear_and_convergence(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
+
+        convergence = self.convergence_from_jacobian(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
+
+        shear = self.shear_from_jacobian(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
+
+        return 1 - convergence + shear
+
+    @reshape_returned_array
+    def magnification_from_grid(self, grid, return_in_2d=True, return_binned=True):
+
+        jacobian = self.lensing_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
+
+        det_jacobian = jacobian[0, 0] * jacobian[1, 1] - jacobian[0, 1] * jacobian[1, 0]
+
+        return 1 / det_jacobian
+
+    def tangential_critical_curve_from_grid(self, grid):
+
+        lambda_tangential_2d = self.tangential_eigen_value_from_shear_and_convergence(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        tangential_critical_curve_indices = measure.find_contours(
+            lambda_tangential_2d, 0
+        )
+
+        if tangential_critical_curve_indices == []:
+            return []
+
+        tangential_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=tangential_critical_curve_indices[0],
+            shape=lambda_tangential_2d.shape,
+            pixel_scales=(
+                grid.pixel_scale / grid.sub_grid_size,
+                grid.pixel_scale / grid.sub_grid_size,
+            ),
+            origin=grid.mask.origin,
+        )
+
+        # Bug with offset, this fixes it for now
+
+        tangential_critical_curve[:, 0] -= grid.pixel_scale / 2.0
+        tangential_critical_curve[:, 1] += grid.pixel_scale / 2.0
+
+        return tangential_critical_curve
+
+    def tangential_caustic_from_grid(self, grid):
+
+        tangential_critical_curve = self.tangential_critical_curve_from_grid(grid=grid)
+
+        if tangential_critical_curve == []:
+            return []
+
+        deflections_1d = self.deflections_from_grid(
+            grid=tangential_critical_curve, return_in_2d=False, return_binned=False
+        )
+
+        return tangential_critical_curve - deflections_1d
+
+    def radial_critical_curve_from_grid(self, grid):
+
+        lambda_radial_2d = self.radial_eigen_value_from_shear_and_convergence(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
+
+        if radial_critical_curve_indices == []:
+            return []
+
+        radial_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=radial_critical_curve_indices[0],
+            shape=lambda_radial_2d.shape,
+            pixel_scales=(
+                grid.pixel_scale / grid.sub_grid_size,
+                grid.pixel_scale / grid.sub_grid_size,
+            ),
+            origin=grid.mask.origin,
+        )
+
+        # Bug with offset, this fixes it for now
+
+        radial_critical_curve[:, 0] -= grid.pixel_scale / 2.0
+        radial_critical_curve[:, 1] += grid.pixel_scale / 2.0
+
+        return radial_critical_curve
+
+    def radial_caustic_from_grid(self, grid):
+
+        radial_critical_curve = self.radial_critical_curve_from_grid(grid=grid)
+
+        if radial_critical_curve == []:
+            return []
+
+        deflections_1d = self.deflections_from_grid(
+            grid=radial_critical_curve, return_in_2d=False, return_binned=False
+        )
+
+        return radial_critical_curve - deflections_1d
+
+    def critical_curves_from_grid(self, grid):
+        return [
+            self.tangential_critical_curve_from_grid(grid=grid),
+            self.radial_critical_curve_from_grid(grid=grid),
+        ]
+
+    def caustics_from_grid(self, grid):
+        return [
+            self.tangential_caustic_from_grid(grid=grid),
+            self.radial_caustic_from_grid(grid=grid),
+        ]
 
     def mass_within_circle_in_units(
         self,

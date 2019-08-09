@@ -5,7 +5,16 @@ from autolens.model.inversion.util import inversion_util
 
 
 class Inversion(object):
-    def __init__(self, image_1d, noise_map_1d, convolver, mapper, regularization):
+    def __init__(
+        self,
+        noise_map_1d,
+        mapper,
+        regularization,
+        blurred_mapping_matrix,
+        regularization_matrix,
+        curvature_reg_matrix,
+        pixelization_values,
+    ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
 
@@ -43,49 +52,51 @@ class Inversion(object):
         """
 
         self.noise_map_1d = noise_map_1d
-
         self.mapper = mapper
         self.regularization = regularization
-        self.blurred_mapping_matrix = convolver.convolve_mapping_matrix(
-            mapping_matrix=mapper.mapping_matrix
-        )
-
-        self.data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
-            blurred_mapping_matrix=self.blurred_mapping_matrix,
-            image_1d=image_1d,
-            noise_map_1d=noise_map_1d,
-        )
-
-        self.curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
-            blurred_mapping_matrix=self.blurred_mapping_matrix,
-            noise_map_1d=noise_map_1d,
-        )
-
-        self.regularization_matrix = regularization.regularization_matrix_from_mapper(
-            mapper=mapper
-        )
-
-        self.curvature_reg_matrix = np.add(
-            self.curvature_matrix, self.regularization_matrix
-        )
-
-        try:
-            self.pixelization_values = np.linalg.solve(
-                self.curvature_reg_matrix, self.data_vector
-            )
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
+        self.blurred_mapping_matrix = blurred_mapping_matrix
+        self.regularization_matrix = regularization_matrix
+        self.curvature_reg_matrix = curvature_reg_matrix
+        self.pixelization_values = pixelization_values
 
     @classmethod
     def from_data_1d_mapper_and_regularization(
         cls, image_1d, noise_map_1d, convolver, mapper, regularization
     ):
-        return Inversion(
+
+        blurred_mapping_matrix = convolver.convolve_mapping_matrix(
+            mapping_matrix=mapper.mapping_matrix
+        )
+
+        data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
+            blurred_mapping_matrix=blurred_mapping_matrix,
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
-            convolver=convolver,
+        )
+
+        curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
+            blurred_mapping_matrix=blurred_mapping_matrix, noise_map_1d=noise_map_1d
+        )
+
+        regularization_matrix = regularization.regularization_matrix_from_mapper(
+            mapper=mapper
+        )
+
+        curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
+
+        try:
+            pixelization_values = np.linalg.solve(curvature_reg_matrix, data_vector)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
+
+        return Inversion(
+            noise_map_1d=noise_map_1d,
             mapper=mapper,
             regularization=regularization,
+            blurred_mapping_matrix=blurred_mapping_matrix,
+            regularization_matrix=regularization_matrix,
+            curvature_reg_matrix=curvature_reg_matrix,
+            pixelization_values=pixelization_values,
         )
 
     @property

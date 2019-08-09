@@ -76,12 +76,6 @@ def make_galaxy_model(mapper,):
 
 
 class TestMassAndLightProfiles(object):
-    def test_constant_profile(self, mass_and_light):
-        prior = gp.GalaxyModel(redshift=0.5, profile=mass_and_light)
-
-        assert 1 == len(prior.constant_light_profiles)
-        assert 1 == len(prior.constant_mass_profiles)
-
     def test_make_galaxy_from_constant_profile(self, mass_and_light):
         prior = gp.GalaxyModel(redshift=0.5, profile=mass_and_light)
 
@@ -129,6 +123,7 @@ class TestGalaxyModel:
             light_profile=light_profiles.EllipticalDevVaucouleurs,
             mass_profile=mass_profiles.EllipticalCoredIsothermal,
         )
+        print(mapper.galaxy_1.redshift)
         assert len(mapper.prior_tuples_ordered_by_id) == 13
 
     def test_multiple_galaxies(self, mapper):
@@ -147,7 +142,7 @@ class TestGalaxyModel:
     def test_align_centres(self, galaxy_model):
         prior_models = galaxy_model.prior_models
 
-        assert prior_models[0].centre != prior_models[1].centre
+        assert prior_models[1].centre != prior_models[2].centre
 
         galaxy_model = gp.GalaxyModel(
             redshift=g.Redshift,
@@ -158,12 +153,12 @@ class TestGalaxyModel:
 
         prior_models = galaxy_model.prior_models
 
-        assert prior_models[0].centre == prior_models[1].centre
+        assert prior_models[1].centre == prior_models[2].centre
 
     def test_align_axis_ratios(self, galaxy_model):
         prior_models = galaxy_model.prior_models
 
-        assert prior_models[0].axis_ratio != prior_models[1].axis_ratio
+        assert prior_models[1].axis_ratio != prior_models[2].axis_ratio
 
         prior_models = gp.GalaxyModel(
             redshift=g.Redshift,
@@ -171,12 +166,12 @@ class TestGalaxyModel:
             mass_profile=mass_profiles.EllipticalCoredIsothermal,
             align_axis_ratios=True,
         ).prior_models
-        assert prior_models[0].axis_ratio == prior_models[1].axis_ratio
+        assert prior_models[1].axis_ratio == prior_models[2].axis_ratio
 
     def test_align_phis(self, galaxy_model):
         prior_models = galaxy_model.prior_models
 
-        assert prior_models[0].phi != prior_models[1].phi
+        assert prior_models[1].phi != prior_models[2].phi
 
         prior_models = gp.GalaxyModel(
             redshift=g.Redshift,
@@ -184,7 +179,7 @@ class TestGalaxyModel:
             mass_profile=mass_profiles.EllipticalCoredIsothermal,
             align_orientations=True,
         ).prior_models
-        assert prior_models[0].phi == prior_models[1].phi
+        assert prior_models[1].phi == prior_models[2].phi
 
 
 class TestNamedProfiles:
@@ -288,7 +283,6 @@ class TestResultForArguments:
 
 class TestPixelization(object):
     def test_pixelization(self):
-
         galaxy_model = gp.GalaxyModel(
             redshift=g.Redshift,
             pixelization=pix.Rectangular,
@@ -380,7 +374,7 @@ class TestHyperGalaxy(object):
         assert galaxy.hyper_galaxy.noise_factor == 2
         assert galaxy.hyper_galaxy.noise_power == 1.5
 
-        assert galaxy.hyper_galaxy_image_1d == None
+        assert galaxy.hyper_galaxy_image_1d is None
 
     def test_fixed_hyper_galaxy(self,):
         galaxy_model = gp.GalaxyModel(redshift=g.Redshift, hyper_galaxy=g.HyperGalaxy())
@@ -393,91 +387,10 @@ class TestHyperGalaxy(object):
         assert galaxy.hyper_galaxy.noise_factor == 0.0
         assert galaxy.hyper_galaxy.noise_power == 1.0
 
-        assert galaxy.hyper_galaxy_image_1d == None
-
-
-class TestUseBools(object):
-    def test__uses_inversion__depends_on_any_pixelization(self):
-
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift)
-
-        assert galaxy_model.uses_inversion == False
-
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.Rectangular,
-            regularization=reg.Constant,
-        )
-
-        assert galaxy_model.uses_inversion == True
-
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.VoronoiBrightnessImage,
-            regularization=reg.AdaptiveBrightness,
-        )
-
-        assert galaxy_model.uses_inversion == True
-
-    def test__uses_cluster_inversion__depends_on_specific_pixelizations(self):
-
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift)
-
-        assert galaxy_model.uses_cluster_inversion == False
-
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.Rectangular,
-            regularization=reg.Constant,
-        )
-
-        assert galaxy_model.uses_cluster_inversion == False
-
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.VoronoiBrightnessImage,
-            regularization=reg.AdaptiveBrightness,
-        )
-
-        assert galaxy_model.uses_cluster_inversion == True
-
-    def test__uses_hyper_images__depends_on_hyper_galaxy_and_specific_pixelizations_and_regularizations(
-        self
-    ):
-
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift)
-
-        assert galaxy_model.uses_hyper_images == False
-
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift, hyper_galaxy=g.HyperGalaxy)
-
-        assert galaxy_model.uses_hyper_images == True
-
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.Rectangular,
-            regularization=reg.Constant,
-        )
-
-        assert galaxy_model.uses_hyper_images == False
-
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.Rectangular,
-            regularization=reg.AdaptiveBrightness,
-        )
-
-        assert galaxy_model.uses_hyper_images == True
+        assert galaxy.hyper_galaxy_image_1d is None
 
 
 class TestFixedProfiles(object):
-    def test_fixed_light_property(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift, light_profile=light_profiles.EllipticalSersic()
-        )
-
-        assert len(galaxy_model.constant_light_profiles) == 1
-
     def test_fixed_light(self):
         galaxy_model = gp.GalaxyModel(
             redshift=g.Redshift, light_profile=light_profiles.EllipticalSersic()
@@ -488,13 +401,6 @@ class TestFixedProfiles(object):
         galaxy = galaxy_model.instance_for_arguments(arguments)
 
         assert len(galaxy.light_profiles) == 1
-
-    def test_fixed_mass_property(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift, mass_profile=mass_profiles.SphericalNFW()
-        )
-
-        assert len(galaxy_model.constant_mass_profiles) == 1
 
     def test_fixed_mass(self):
         galaxy_model = gp.GalaxyModel(
@@ -559,32 +465,3 @@ def make_galaxy():
         exponential=light_profiles.EllipticalExponential(),
         spherical=mass_profiles.SphericalIsothermal(),
     )
-
-
-class TestFromGalaxy(object):
-    def test_redshift(self, galaxy):
-        galaxy_model = gp.GalaxyModel.from_galaxy(galaxy)
-
-        assert galaxy_model.redshift == 3
-
-    def test_profiles(self, galaxy):
-        galaxy_model = gp.GalaxyModel.from_galaxy(galaxy)
-
-        assert galaxy_model.sersic == galaxy.sersic
-        assert galaxy_model.exponential == galaxy.exponential
-        assert galaxy_model.spherical == galaxy.spherical
-
-    def test_recover_galaxy(self, galaxy):
-        recovered = gp.GalaxyModel.from_galaxy(galaxy).instance_for_arguments({})
-
-        assert recovered.sersic == galaxy.sersic
-        assert recovered.exponential == galaxy.exponential
-        assert recovered.spherical == galaxy.spherical
-        assert recovered.redshift == galaxy.redshift
-
-    def test_override_argument(self, galaxy):
-        recovered = gp.GalaxyModel.from_galaxy(galaxy)
-        assert recovered.hyper_galaxy is None
-
-        recovered = gp.GalaxyModel.from_galaxy(galaxy, hyper_galaxy=g.HyperGalaxy)
-        assert recovered.hyper_galaxy is not None

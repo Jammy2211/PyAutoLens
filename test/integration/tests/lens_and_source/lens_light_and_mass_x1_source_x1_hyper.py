@@ -80,7 +80,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    return pl.PipelineImaging(name, phase1)
+    return pl.PipelineImaging(name, phase1, phase2)
 
 
 if __name__ == "__main__":

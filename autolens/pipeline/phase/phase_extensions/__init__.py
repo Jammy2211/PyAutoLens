@@ -1,5 +1,3 @@
-import copy
-
 import autofit as af
 from autolens.pipeline.phase import phase_imaging
 from .hyper_galaxy_phase import HyperGalaxyPhase
@@ -16,7 +14,8 @@ class CombinedHyperPhase(HyperPhase):
         self, phase: phase_imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()
     ):
         """
-        A hyper_combined hyper phase that can run zero or more other hyper phases after the initial phase is run.
+        A hyper_combined hyper phase that can run zero or more other hyper phases after the initial phase is
+        run.
 
         Parameters
         ----------
@@ -51,8 +50,10 @@ class CombinedHyperPhase(HyperPhase):
 
         Parameters
         ----------
+        positions
+        mask
         data
-            The data
+            The instrument
         results
             Results from previous phases
         kwargs
@@ -63,9 +64,7 @@ class CombinedHyperPhase(HyperPhase):
             The result of the regular phase, with hyper results attached by associated hyper names
         """
 
-        results = (
-            copy.deepcopy(results) if results is not None else af.ResultsCollection()
-        )
+        results = results.copy() if results is not None else af.ResultsCollection()
         result = self.phase.run(
             data, results=results, mask=mask, positions=positions, **kwargs
         )
@@ -114,5 +113,4 @@ class CombinedHyperPhase(HyperPhase):
             results=results,
             mask=results.last.mask_2d,
             positions=results.last.positions,
-            **kwargs
         )

@@ -39,7 +39,8 @@ def phase_tag_from_phase_settings(
     )
 
     return (
-        sub_grid_size_tag
+        "phase_tag"
+        + sub_grid_size_tag
         + signal_to_noise_limit_tag
         + bin_up_factor_tag
         + image_psf_shape_tag
@@ -64,7 +65,7 @@ def positions_threshold_tag_from_positions_threshold(positions_threshold):
     if positions_threshold == None:
         return ""
     else:
-        return "_pos_{0:.2f}".format(positions_threshold)
+        return "__pos_{0:.2f}".format(positions_threshold)
 
 
 def sub_grid_size_tag_from_sub_grid_size(sub_grid_size):
@@ -76,12 +77,12 @@ def sub_grid_size_tag_from_sub_grid_size(sub_grid_size):
     sub_grid_size = 1 -> phase_name_sub_grid_size_2
     sub_grid_size = 4 -> phase_name_sub_grid_size_4
     """
-    return "_sub_" + str(sub_grid_size)
+    return "__sub_" + str(sub_grid_size)
 
 
 def signal_to_noise_limit_tag_from_signal_to_noise_limit(signal_to_noise_limit):
     """Generate a signal to noise limit tag, to customize phase names based on limiting the signal to noise ratio of
-    the data being fitted.
+    the instrument being fitted.
 
     This changes the phase name 'phase_name' as follows:
 
@@ -92,7 +93,7 @@ def signal_to_noise_limit_tag_from_signal_to_noise_limit(signal_to_noise_limit):
     if signal_to_noise_limit is None:
         return ""
     else:
-        return "_snr_" + str(signal_to_noise_limit)
+        return "__snr_" + str(signal_to_noise_limit)
 
 
 def bin_up_factor_tag_from_bin_up_factor(bin_up_factor):
@@ -108,7 +109,7 @@ def bin_up_factor_tag_from_bin_up_factor(bin_up_factor):
     if bin_up_factor == 1 or bin_up_factor is None:
         return ""
     else:
-        return "_bin_" + str(bin_up_factor)
+        return "__bin_" + str(bin_up_factor)
 
 
 def inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii):
@@ -124,7 +125,7 @@ def inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii):
     if inner_mask_radii == None:
         return ""
     else:
-        return "_inner_mask_{0:.2f}".format(inner_mask_radii)
+        return "__inner_mask_{0:.2f}".format(inner_mask_radii)
 
 
 def image_psf_shape_tag_from_image_psf_shape(image_psf_shape):
@@ -142,7 +143,7 @@ def image_psf_shape_tag_from_image_psf_shape(image_psf_shape):
     else:
         y = str(image_psf_shape[0])
         x = str(image_psf_shape[1])
-        return "_image_psf_" + y + "x" + x
+        return "__image_psf_" + y + "x" + x
 
 
 def inversion_psf_shape_tag_from_inversion_psf_shape(inversion_psf_shape):
@@ -160,7 +161,7 @@ def inversion_psf_shape_tag_from_inversion_psf_shape(inversion_psf_shape):
     else:
         y = str(inversion_psf_shape[0])
         x = str(inversion_psf_shape[1])
-        return "_inv_psf_" + y + "x" + x
+        return "__inv_psf_" + y + "x" + x
 
 
 def interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale):
@@ -176,7 +177,7 @@ def interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale):
     if interp_pixel_scale is None:
         return ""
     else:
-        return "_interp_{0:.3f}".format(interp_pixel_scale)
+        return "__interp_{0:.3f}".format(interp_pixel_scale)
 
 
 def cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale):
@@ -192,4 +193,4 @@ def cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale):
     if cluster_pixel_scale is None:
         return ""
     else:
-        return "_cluster_{0:.3f}".format(cluster_pixel_scale)
+        return "__cluster_{0:.3f}".format(cluster_pixel_scale)

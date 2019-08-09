@@ -19,7 +19,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)),
         hyper_image_sky=hi.HyperImageSky,
-        hyper_noise_background=hi.HyperNoiseBackground,
+        hyper_background_noise=hi.HyperBackgroundNoise,
         optimizer_class=optimizer_class,
     )
 

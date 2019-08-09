@@ -8,6 +8,8 @@ Big Picture:
 
 Small Picture:
 
+- Plot plane image as square, not rectangle
+- Make sure image plane pix grid also shifts for offset mask.
 - Use model image for norm range on subplots.
 - tracers used in some simulations will double calc deflecitons because they use a padded tracer .Add a omit
   deflections bool or something
@@ -29,7 +31,6 @@ Small Picture:
 
 Rich:
 
-- Inversion phase not fixing lens model
 - Scale noise of all hyper galaxies simultaneously? -> inversion using this noise map
 
 Amy:
