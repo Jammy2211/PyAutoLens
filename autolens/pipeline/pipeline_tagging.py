@@ -3,7 +3,7 @@ import autofit as af
 
 def pipeline_tag_from_pipeline_settings(
     hyper_galaxies=False,
-    hyper_background_sky=False,
+    hyper_image_sky=False,
     hyper_background_noise=False,
     include_shear=False,
     fix_lens_light=False,
@@ -18,7 +18,9 @@ def pipeline_tag_from_pipeline_settings(
 ):
 
     hyper_tag = hyper_tag_from_hyper_settings(
-        hyper_galaxies=hyper_galaxies, hyper_background_sky=hyper_background_sky, hyper_background_noise=hyper_background_noise,
+        hyper_galaxies=hyper_galaxies,
+        hyper_image_sky=hyper_image_sky,
+        hyper_background_noise=hyper_background_noise,
     )
 
     include_shear_tag = include_shear_tag_from_include_shear(
@@ -81,7 +83,7 @@ def hyper_galaxies_tag_from_hyper_galaxies(hyper_galaxies):
         return "_galaxies"
 
 
-def hyper_background_sky_tag_from_hyper_background_sky(hyper_background_sky):
+def hyper_image_sky_tag_from_hyper_image_sky(hyper_image_sky):
     """Generate a tag for if the sky-background is scaled as a hyper-parameter in a hyper pipeline to
     customize phase names.
 
@@ -90,9 +92,9 @@ def hyper_background_sky_tag_from_hyper_background_sky(hyper_background_sky):
     fix_lens_light = False -> pipeline_name__
     fix_lens_light = True -> pipeline_name___hyper_bg_sky
     """
-    if not hyper_background_sky:
+    if not hyper_image_sky:
         return ""
-    elif hyper_background_sky:
+    elif hyper_image_sky:
         return "_bg_sky"
 
 
@@ -111,24 +113,31 @@ def hyper_background_noise_tag_from_hyper_background_noise(hyper_background_nois
         return "_bg_noise"
 
 
-def hyper_tag_from_hyper_settings(hyper_galaxies, hyper_background_sky, hyper_background_noise):
+def hyper_tag_from_hyper_settings(
+    hyper_galaxies, hyper_image_sky, hyper_background_noise
+):
 
-    if not any([hyper_galaxies, hyper_background_sky, hyper_background_noise]):
-        return ''
+    if not any([hyper_galaxies, hyper_image_sky, hyper_background_noise]):
+        return ""
 
     hyper_galaxies_tag = hyper_galaxies_tag_from_hyper_galaxies(
         hyper_galaxies=hyper_galaxies
     )
 
-    hyper_background_sky_tag = hyper_background_sky_tag_from_hyper_background_sky(
-        hyper_background_sky=hyper_background_sky
+    hyper_image_sky_tag = hyper_image_sky_tag_from_hyper_image_sky(
+        hyper_image_sky=hyper_image_sky
     )
 
     hyper_background_noise_tag = hyper_background_noise_tag_from_hyper_background_noise(
         hyper_background_noise=hyper_background_noise
     )
 
-    return "__hyper" + hyper_galaxies_tag + hyper_background_sky_tag + hyper_background_noise_tag
+    return (
+        "__hyper"
+        + hyper_galaxies_tag
+        + hyper_image_sky_tag
+        + hyper_background_noise_tag
+    )
 
 
 def include_shear_tag_from_include_shear(include_shear):

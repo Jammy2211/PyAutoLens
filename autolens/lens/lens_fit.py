@@ -68,7 +68,7 @@ class LensDataFit(af.DataFit1D):
 
     @classmethod
     def for_data_and_tracer(
-        cls, lens_data, tracer, hyper_image_sky=None, hyper_noise_background=None
+        cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """Fit lens instrument with a model tracer, automatically determining the type of fit based on the \
         properties of the galaxies in the tracer.
@@ -86,21 +86,21 @@ class LensDataFit(af.DataFit1D):
                 lens_data=lens_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
         elif not tracer.has_light_profile and tracer.has_pixelization:
             return LensInversionFit(
                 lens_data=lens_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
         elif tracer.has_light_profile and tracer.has_pixelization:
             return LensProfileInversionFit(
                 lens_data=lens_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
         else:
             raise exc.FittingException(
@@ -196,7 +196,7 @@ class LensTracerFit(LensDataFit):
 
 class LensProfileFit(LensTracerFit):
     def __init__(
-        self, lens_data, tracer, hyper_image_sky=None, hyper_noise_background=None
+        self, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens profile fitter, which generates the image-plane image of all galaxies (with light \
         profiles) in the tracer and blurs it with the lens instrument's PSF.
@@ -219,8 +219,8 @@ class LensProfileFit(LensTracerFit):
         else:
             image_1d = lens_data.image_1d
 
-        if hyper_noise_background is not None:
-            noise_map_1d = hyper_noise_background.noise_map_scaled_noise_from_noise_map(
+        if hyper_background_noise is not None:
+            noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
                 noise_map=lens_data.noise_map_1d
             )
         else:
@@ -305,7 +305,7 @@ class InversionFit(LensTracerFit):
 
 class LensInversionFit(InversionFit):
     def __init__(
-        self, lens_data, tracer, hyper_image_sky=None, hyper_noise_background=None
+        self, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens inversion fitter, which fits the lens instrument an inversion using the mapper(s) and \
         regularization(s) in the galaxies of the tracer.
@@ -327,8 +327,8 @@ class LensInversionFit(InversionFit):
         else:
             image_1d = lens_data.image_1d
 
-        if hyper_noise_background is not None:
-            noise_map_1d = hyper_noise_background.noise_map_scaled_noise_from_noise_map(
+        if hyper_background_noise is not None:
+            noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
                 noise_map=lens_data.noise_map_1d
             )
         else:
@@ -381,7 +381,7 @@ class LensInversionFit(InversionFit):
 
 class LensProfileInversionFit(InversionFit):
     def __init__(
-        self, lens_data, tracer, hyper_image_sky=None, hyper_noise_background=None
+        self, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens profile and inversion fitter, which first generates and subtracts the image-plane \
         image of all galaxies (with light profiles) in the tracer, blurs it with the PSF and fits the residual image \
@@ -407,8 +407,8 @@ class LensProfileInversionFit(InversionFit):
         else:
             image_1d = lens_data.image_1d
 
-        if hyper_noise_background is not None:
-            noise_map_1d = hyper_noise_background.noise_map_scaled_noise_from_noise_map(
+        if hyper_background_noise is not None:
+            noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
                 noise_map=lens_data.noise_map_1d
             )
         else:

@@ -35,11 +35,11 @@ class MockNLO(af.NonLinearOptimizer):
 
 
 def run(
-        module,
-        test_name=None,
-        optimizer_class=af.MultiNest,
-        config_folder="config",
-        positions=None,
+    module,
+    test_name=None,
+    optimizer_class=af.MultiNest,
+    config_folder="config",
+    positions=None,
 ):
     test_name = test_name or module.test_name
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))

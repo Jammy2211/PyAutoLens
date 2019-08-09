@@ -501,6 +501,9 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             lambda_tangential_2d, 0
         )
 
+        if tangential_critical_curve_indices == []:
+            return []
+
         tangential_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=tangential_critical_curve_indices[0],
             shape=lambda_tangential_2d.shape,
@@ -513,14 +516,17 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         # Bug with offset, this fixes it for now
 
-        tangential_critical_curve[:,0] -= grid.pixel_scale/2.0
-        tangential_critical_curve[:,1] += grid.pixel_scale/2.0
+        tangential_critical_curve[:, 0] -= grid.pixel_scale / 2.0
+        tangential_critical_curve[:, 1] += grid.pixel_scale / 2.0
 
         return tangential_critical_curve
 
     def tangential_caustic_from_grid(self, grid):
 
         tangential_critical_curve = self.tangential_critical_curve_from_grid(grid=grid)
+
+        if tangential_critical_curve == []:
+            return []
 
         deflections_1d = self.deflections_from_grid(
             grid=tangential_critical_curve, return_in_2d=False, return_binned=False
@@ -536,11 +542,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
 
-        ##rad_critical_curve = np.fliplr(radial_critical_curve_indices[0])
-
-        ## fliping x, y coordinates may or may not be necessary, appears to visualise the same either way
-        ## reg grid unit test works with this fix, sub grid still doesn't like it
-        ## may be an isuue with where the marching squares algorithm starts rathet than x, y flip
+        if radial_critical_curve_indices == []:
+            return []
 
         radial_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=radial_critical_curve_indices[0],
@@ -554,14 +557,17 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         # Bug with offset, this fixes it for now
 
-        radial_critical_curve[:,0] -= grid.pixel_scale/2.0
-        radial_critical_curve[:,1] += grid.pixel_scale/2.0
+        radial_critical_curve[:, 0] -= grid.pixel_scale / 2.0
+        radial_critical_curve[:, 1] += grid.pixel_scale / 2.0
 
         return radial_critical_curve
 
     def radial_caustic_from_grid(self, grid):
 
         radial_critical_curve = self.radial_critical_curve_from_grid(grid=grid)
+
+        if radial_critical_curve == []:
+            return []
 
         deflections_1d = self.deflections_from_grid(
             grid=radial_critical_curve, return_in_2d=False, return_binned=False

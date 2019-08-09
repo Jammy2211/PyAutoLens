@@ -100,7 +100,7 @@ class InversionBackgroundNoisePhase(InversionPhase):
             variable_classes=(
                 px.Pixelization,
                 rg.Regularization,
-                hd.HyperNoiseBackground,
+                hd.HyperBackgroundNoise,
             ),
         )
 
@@ -119,6 +119,6 @@ class InversionBackgroundBothPhase(InversionPhase):
                 px.Pixelization,
                 rg.Regularization,
                 hd.HyperImageSky,
-                hd.HyperNoiseBackground,
+                hd.HyperBackgroundNoise,
             ),
         )

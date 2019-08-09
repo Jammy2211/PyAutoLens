@@ -1222,7 +1222,7 @@ class TestPhase(object):
                 lens1=gm.GalaxyModel(redshift=g.Redshift),
             ),
             hyper_image_sky=hd.HyperImageSky,
-            hyper_noise_background=hd.HyperNoiseBackground,
+            hyper_background_noise=hd.HyperBackgroundNoise,
             optimizer_class=af.MultiNest,
             phase_name="test_phase",
         )
@@ -1233,8 +1233,8 @@ class TestPhase(object):
 
         assert instance.galaxies[0].redshift == 0.1
         assert instance.galaxies[1].redshift == 0.2
-        assert instance.hyper_image_sky.background_sky_scale == 0.3
-        assert instance.hyper_noise_background.background_noise_scale == 0.4
+        assert instance.hyper_image_sky.sky_scale == 0.3
+        assert instance.hyper_background_noise.noise_scale == 0.4
 
     def test__extended_with_hyper_and_pixelizations(self, phase_7x7):
         from autolens.pipeline.phase import phase_extensions
@@ -1260,8 +1260,8 @@ class TestPhase(object):
         phase_extended = phase_7x7.extend_with_multiple_hyper_phases(
             hyper_galaxy=True, inversion=True
         )
-        assert type(phase_extended.hyper_phases[1]) == phase_extensions.HyperGalaxyPhase
-        assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.HyperGalaxyPhase
+        assert type(phase_extended.hyper_phases[1]) == phase_extensions.InversionPhase
 
 
 class TestResult(object):
@@ -1344,8 +1344,8 @@ class TestResult(object):
     def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
         self, ccd_data_7x7, mask_function_7x7
     ):
-        hyper_image_sky = hd.HyperImageSky(background_sky_scale=1.0)
-        hyper_noise_background = hd.HyperNoiseBackground(background_noise_scale=1.0)
+        hyper_image_sky = hd.HyperImageSky(sky_scale=1.0)
+        hyper_background_noise = hd.HyperBackgroundNoise(noise_scale=1.0)
 
         lens_galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=0.1))
 
@@ -1353,7 +1353,7 @@ class TestResult(object):
             mask_function=mask_function_7x7,
             galaxies=[lens_galaxy],
             hyper_image_sky=hyper_image_sky,
-            hyper_noise_background=hyper_noise_background,
+            hyper_background_noise=hyper_background_noise,
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -1369,7 +1369,7 @@ class TestResult(object):
             lens_data=lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
-            hyper_noise_background=hyper_noise_background,
+            hyper_background_noise=hyper_background_noise,
         )
 
         assert fit.likelihood == fit_figure_of_merit

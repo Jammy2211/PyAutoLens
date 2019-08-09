@@ -13,12 +13,11 @@ from .hyper_phase import HyperPhase
 
 
 class HyperGalaxyPhase(HyperPhase):
-    def __init__(
-        self, phase, include_sky_background=False, include_noise_background=False
-    ):
+    def __init__(self, phase):
+
         super().__init__(phase=phase, hyper_name="hyper_galaxy")
-        self.include_sky_background = include_sky_background
-        self.include_noise_background = include_noise_background
+        self.include_sky_background = False
+        self.include_noise_background = False
 
     class Analysis(af.Analysis):
         def __init__(
@@ -51,7 +50,7 @@ class HyperGalaxyPhase(HyperPhase):
 
                 hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 
-                hyper_noise_background = self.hyper_noise_background_for_instance(
+                hyper_background_noise = self.hyper_background_noise_for_instance(
                     instance=instance
                 )
 
@@ -84,7 +83,7 @@ class HyperGalaxyPhase(HyperPhase):
                         fit = self.fit_for_hyper_galaxy(
                             hyper_galaxy=galaxy.hyper_galaxy,
                             hyper_image_sky=hyper_image_sky,
-                            hyper_noise_background=hyper_noise_background,
+                            hyper_background_noise=hyper_background_noise,
                         )
 
                         hyper_plotters.plot_hyper_galaxy_subplot(
@@ -116,14 +115,14 @@ class HyperGalaxyPhase(HyperPhase):
 
             hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 
-            hyper_noise_background = self.hyper_noise_background_for_instance(
+            hyper_background_noise = self.hyper_background_noise_for_instance(
                 instance=instance
             )
 
             fit = self.fit_for_hyper_galaxy(
                 hyper_galaxy=instance.hyper_galaxy,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
 
             return fit.figure_of_merit
@@ -134,12 +133,12 @@ class HyperGalaxyPhase(HyperPhase):
                 return instance.hyper_image_sky
 
         @staticmethod
-        def hyper_noise_background_for_instance(instance):
-            if hasattr(instance, "hyper_noise_background"):
-                return instance.hyper_noise_background
+        def hyper_background_noise_for_instance(instance):
+            if hasattr(instance, "hyper_background_noise"):
+                return instance.hyper_background_noise
 
         def fit_for_hyper_galaxy(
-            self, hyper_galaxy, hyper_image_sky, hyper_noise_background
+            self, hyper_galaxy, hyper_image_sky, hyper_background_noise
         ):
 
             if hyper_image_sky is not None:
@@ -149,8 +148,8 @@ class HyperGalaxyPhase(HyperPhase):
             else:
                 image_1d = self.lens_data.image_1d
 
-            if hyper_noise_background is not None:
-                noise_map_1d = hyper_noise_background.noise_map_scaled_noise_from_noise_map(
+            if hyper_background_noise is not None:
+                noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
                     noise_map=self.lens_data.noise_map_1d
                 )
             else:
@@ -253,7 +252,7 @@ class HyperGalaxyPhase(HyperPhase):
                 optimizer.variable.hyper_image_sky = hd.HyperImageSky
 
             if self.include_noise_background:
-                optimizer.variable.hyper_noise_background = hd.HyperNoiseBackground
+                optimizer.variable.hyper_background_noise = hd.HyperBackgroundNoise
 
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
@@ -283,10 +282,35 @@ class HyperGalaxyPhase(HyperPhase):
                         )
 
                 transfer_field("hyper_galaxy")
-                transfer_field("hyper_image_sky")
-                transfer_field("hyper_noise_background")
+
+                hyper_result.constant.hyper_image_sky = getattr(result.constant, "hyper_image_sky")
+                hyper_result.variable.hyper_image_sky = getattr(result.variable, "hyper_image_sky")
+
+                hyper_result.constant.hyper_background_noise = getattr(result.constant, "hyper_background_noise")
+                hyper_result.variable.hyper_background_noise = getattr(result.variable, "hyper_background_noise")
 
         return hyper_result
+
+
+class HyperGalaxyBackgroundSkyPhase(HyperGalaxyPhase):
+    def __init__(self, phase):
+        super().__init__(phase=phase)
+        self.include_sky_background = True
+        self.include_noise_background = False
+
+
+class HyperGalaxyBackgroundNoisePhase(HyperGalaxyPhase):
+    def __init__(self, phase):
+        super().__init__(phase=phase)
+        self.include_sky_background = False
+        self.include_noise_background = True
+
+
+class HyperGalaxyBackgroundBothPhase(HyperGalaxyPhase):
+    def __init__(self, phase):
+        super().__init__(phase=phase)
+        self.include_sky_background = True
+        self.include_noise_background = True
 
 
 class HyperGalaxyAllPhase(HyperPhase):
@@ -374,7 +398,7 @@ class HyperGalaxyAllPhase(HyperPhase):
                 optimizer.variable.hyper_image_sky = hd.HyperImageSky
 
             if self.include_noise_background:
-                optimizer.variable.hyper_noise_background = hd.HyperNoiseBackground
+                optimizer.variable.hyper_background_noise = hd.HyperBackgroundNoise
 
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
@@ -403,6 +427,6 @@ class HyperGalaxyAllPhase(HyperPhase):
 
                 transfer_field("hyper_galaxy")
                 transfer_field("hyper_image_sky")
-                transfer_field("hyper_noise_background")
+                transfer_field("hyper_background_noise")
 
         return hyper_result

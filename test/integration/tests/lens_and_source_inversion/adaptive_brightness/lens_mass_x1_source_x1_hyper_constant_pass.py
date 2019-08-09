@@ -63,7 +63,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 30
     phase2.optimizer.sampling_efficiency = 0.8
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=False, inversion=True)
 
     class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
@@ -101,7 +101,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=False, inversion=True)
 
     return pl.PipelineImaging(name, phase1, phase2, phase3)
 

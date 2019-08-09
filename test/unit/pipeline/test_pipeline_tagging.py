@@ -8,7 +8,7 @@ class TestPipelineNameTag:
     def test__pipeline_tag__mixture_of_values(self):
 
         pipeline_tag = pipeline_tagging.pipeline_tag_from_pipeline_settings(
-            hyper_galaxies=True, hyper_background_sky=True, hyper_background_noise=True,
+            hyper_galaxies=True, hyper_image_sky=True, hyper_background_noise=True
         )
 
         assert pipeline_tag == "pipeline_tag__hyper_galaxies_bg_sky_bg_noise"
@@ -46,7 +46,6 @@ class TestPipelineNameTag:
 
 
 class TestHyperPipelineTaggers:
-
     def test__hyper_galaxies_tagger(self):
         tag = pipeline_tagging.hyper_galaxies_tag_from_hyper_galaxies(
             hyper_galaxies=False
@@ -57,13 +56,13 @@ class TestHyperPipelineTaggers:
         )
         assert tag == "_galaxies"
 
-    def test__hyper_background_sky_tagger(self):
-        tag = pipeline_tagging.hyper_background_sky_tag_from_hyper_background_sky(
-            hyper_background_sky=False
+    def test__hyper_image_sky_tagger(self):
+        tag = pipeline_tagging.hyper_image_sky_tag_from_hyper_image_sky(
+            hyper_image_sky=False
         )
         assert tag == ""
-        tag = pipeline_tagging.hyper_background_sky_tag_from_hyper_background_sky(
-            hyper_background_sky=True
+        tag = pipeline_tagging.hyper_image_sky_tag_from_hyper_image_sky(
+            hyper_image_sky=True
         )
         assert tag == "_bg_sky"
 
@@ -79,30 +78,34 @@ class TestHyperPipelineTaggers:
 
     def test__tag_from_hyper_settings(self):
 
-        tag = pipeline_tagging.hyper_tag_from_hyper_settings(hyper_galaxies=False, hyper_background_sky=False, hyper_background_noise=False)
+        tag = pipeline_tagging.hyper_tag_from_hyper_settings(
+            hyper_galaxies=False,
+            hyper_image_sky=False,
+            hyper_background_noise=False,
+        )
 
-        assert tag == ''
+        assert tag == ""
 
-        tag = pipeline_tagging.hyper_tag_from_hyper_settings(hyper_galaxies=True, hyper_background_sky=False,
-                                                             hyper_background_noise=False)
+        tag = pipeline_tagging.hyper_tag_from_hyper_settings(
+            hyper_galaxies=True,
+            hyper_image_sky=False,
+            hyper_background_noise=False,
+        )
 
-        assert tag == '__hyper_galaxies'
+        assert tag == "__hyper_galaxies"
 
-        tag = pipeline_tagging.hyper_tag_from_hyper_settings(hyper_galaxies=False, hyper_background_sky=True,
-                                                             hyper_background_noise=True)
+        tag = pipeline_tagging.hyper_tag_from_hyper_settings(
+            hyper_galaxies=False, hyper_image_sky=True, hyper_background_noise=True
+        )
 
-        assert tag == '__hyper_bg_sky_bg_noise'
+        assert tag == "__hyper_bg_sky_bg_noise"
+
 
 class TestPipelineTaggers:
-
     def test__include_shear_tagger(self):
-        tag = pipeline_tagging.include_shear_tag_from_include_shear(
-            include_shear=False
-        )
+        tag = pipeline_tagging.include_shear_tag_from_include_shear(include_shear=False)
         assert tag == ""
-        tag = pipeline_tagging.include_shear_tag_from_include_shear(
-            include_shear=True
-        )
+        tag = pipeline_tagging.include_shear_tag_from_include_shear(include_shear=True)
         assert tag == "__with_shear"
 
     def test__fix_lens_light_tagger(self):

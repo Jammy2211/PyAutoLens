@@ -23,7 +23,7 @@ def isinstance_or_prior(obj, cls):
 
 class PhaseImaging(Phase):
     hyper_image_sky = af.PhaseProperty("hyper_image_sky")
-    hyper_noise_background = af.PhaseProperty("hyper_noise_background")
+    hyper_background_noise = af.PhaseProperty("hyper_background_noise")
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
@@ -32,7 +32,7 @@ class PhaseImaging(Phase):
         phase_folders=tuple(),
         galaxies=None,
         hyper_image_sky=None,
-        hyper_noise_background=None,
+        hyper_background_noise=None,
         optimizer_class=af.MultiNest,
         sub_grid_size=2,
         signal_to_noise_limit=None,
@@ -119,7 +119,7 @@ class PhaseImaging(Phase):
 
         self.galaxies = galaxies or []
         self.hyper_image_sky = hyper_image_sky
-        self.hyper_noise_background = hyper_noise_background
+        self.hyper_background_noise = hyper_background_noise
 
     @property
     def uses_hyper_images(self):
@@ -313,10 +313,17 @@ class PhaseImaging(Phase):
         include_background_noise=False,
     ):
 
-        phase_hyper_galaxy = None
-
         if hyper_galaxy:
-            phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
+            if not include_background_sky and not include_background_noise:
+                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyPhase
+            elif include_background_sky and not include_background_noise:
+                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
+            elif include_background_sky and not include_background_noise:
+                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
+            else:
+                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
+        else:
+            phase_hyper_galaxy = None
 
         if inversion:
             if not include_background_sky and not include_background_noise:
@@ -330,7 +337,7 @@ class PhaseImaging(Phase):
         else:
             phase_inversion = None
 
-        hyper_phase_classes = tuple(filter(None, (phase_inversion, phase_hyper_galaxy)))
+        hyper_phase_classes = tuple(filter(None, (phase_hyper_galaxy, phase_inversion)))
 
         return phase_extensions.CombinedHyperPhase(
             phase=self, hyper_phase_classes=hyper_phase_classes
@@ -567,14 +574,14 @@ class PhaseImaging(Phase):
 
             hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 
-            hyper_noise_background = self.hyper_noise_background_for_instance(
+            hyper_background_noise = self.hyper_background_noise_for_instance(
                 instance=instance
             )
 
             fit = self.fit_for_tracer(
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
 
             return fit.figure_of_merit
@@ -612,7 +619,10 @@ class PhaseImaging(Phase):
                         galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[
                             galaxy_path
                         ]
-                        if hasattr(self, "hyper_galaxy_cluster_image_1d_path_dict") and self.hyper_galaxy_cluster_image_1d_path_dict is not None:
+                        if (
+                            hasattr(self, "hyper_galaxy_cluster_image_1d_path_dict")
+                            and self.hyper_galaxy_cluster_image_1d_path_dict is not None
+                        ):
                             galaxy.hyper_galaxy_cluster_image_1d = self.hyper_galaxy_cluster_image_1d_path_dict[
                                 galaxy_path
                             ]
@@ -650,10 +660,10 @@ class PhaseImaging(Phase):
             else:
                 return None
 
-        def hyper_noise_background_for_instance(self, instance):
+        def hyper_background_noise_for_instance(self, instance):
 
-            if hasattr(instance, "hyper_noise_background"):
-                return instance.hyper_noise_background
+            if hasattr(instance, "hyper_background_noise"):
+                return instance.hyper_background_noise
             else:
                 return None
 
@@ -677,13 +687,13 @@ class PhaseImaging(Phase):
                 cosmology=self.cosmology,
             )
 
-        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_noise_background):
+        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
 
             return lens_fit.LensDataFit.for_data_and_tracer(
                 lens_data=self.lens_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
 
         def check_positions_trace_within_threshold(self, instance):
@@ -756,14 +766,14 @@ class PhaseImaging(Phase):
 
             hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 
-            hyper_noise_background = self.hyper_noise_background_for_instance(
+            hyper_background_noise = self.hyper_background_noise_for_instance(
                 instance=instance
             )
 
             fit = self.fit_for_tracer(
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
 
             phase_plotters.plot_lens_fit_for_phase(

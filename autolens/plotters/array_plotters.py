@@ -223,9 +223,7 @@ def plot_array(
         pointsize=mask_pointsize,
         zoom_offset_pixels=zoom_offset_pixels,
     )
-    plot_lines(
-        lines=lines,
-    )
+    plot_lines(line_lists=lines)
     plot_border(
         mask=mask,
         should_plot_border=should_plot_border,
@@ -726,9 +724,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
         plt.scatter(y=edge_units[:, 0], x=edge_units[:, 1], s=pointsize, c="k")
 
 
-def plot_lines(
-    lines,
-):
+def plot_lines(line_lists):
     """Plot the liness of the mask or the array on the figure.
 
     Parameters
@@ -744,10 +740,12 @@ def plot_lines(
     lines_pointsize : int
         The size of the points plotted to show the liness.
     """
-    if lines is not None:
-        for line_list in lines:
+    if line_lists is not None:
+        for line_list in line_lists:
             for line in line_list:
-                plt.plot(line[:,1], line[:,0], c='r', lw=1.5, zorder=200)
+                if not line == []:
+                    plt.plot(line[:, 1], line[:, 0], c="r", lw=1.5, zorder=200)
+
 
 def plot_border(
     mask, should_plot_border, units, kpc_per_arcsec, pointsize, zoom_offset_pixels

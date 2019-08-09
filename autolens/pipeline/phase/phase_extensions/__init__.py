@@ -74,17 +74,7 @@ class CombinedHyperPhase(HyperPhase):
             hyper_result = phase.run_hyper(data=data, results=results, **kwargs)
             setattr(result, phase.hyper_name, hyper_result)
 
-        if len(self.hyper_phases) == 1:
-            setattr(
-                result,
-                self.hyper_name,
-                getattr(
-                    result,
-                    self.hyper_phases[0].hyper_name
-                )
-            )
-        else:
-            setattr(result, self.hyper_name, self.run_hyper(data=data, results=results))
+        setattr(result, self.hyper_name, self.run_hyper(data=data, results=results))
         return result
 
     def combine_variables(self, result) -> af.ModelMapper:
