@@ -20,6 +20,7 @@ def plot_array(
     extract_array_from_mask=False,
     zoom_around_mask=False,
     should_plot_border=False,
+    lines=None,
     positions=None,
     centres=None,
     axis_ratios=None,
@@ -222,6 +223,7 @@ def plot_array(
         pointsize=mask_pointsize,
         zoom_offset_pixels=zoom_offset_pixels,
     )
+    plot_lines(line_lists=lines)
     plot_border(
         mask=mask,
         should_plot_border=should_plot_border,
@@ -720,6 +722,29 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
         )
 
         plt.scatter(y=edge_units[:, 0], x=edge_units[:, 1], s=pointsize, c="k")
+
+
+def plot_lines(line_lists):
+    """Plot the liness of the mask or the array on the figure.
+
+    Parameters
+    -----------t.
+    mask : ndarray of instrument.array.mask.Mask
+        The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+    should_plot_lines : bool
+        If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    lines_pointsize : int
+        The size of the points plotted to show the liness.
+    """
+    if line_lists is not None:
+        for line_list in line_lists:
+            for line in line_list:
+                if not line == []:
+                    plt.plot(line[:, 1], line[:, 0], c="r", lw=1.5, zorder=200)
 
 
 def plot_border(

@@ -8,7 +8,7 @@ class TestHyperImageSky(object):
 
         image = np.array([1.0, 2.0, 3.0])
 
-        hyper_sky = hi.HyperImageSky(background_sky_scale=10.0)
+        hyper_sky = hi.HyperImageSky(sky_scale=10.0)
 
         scaled_image = hyper_sky.image_scaled_sky_from_image(image=image)
 
@@ -20,7 +20,7 @@ class TestHyperNoiseMapBackground(object):
 
         noise_map = np.array([1.0, 2.0, 3.0])
 
-        hyper_background_noise_map = hi.HyperNoiseBackground(background_noise_scale=2.0)
+        hyper_background_noise_map = hi.HyperBackgroundNoise(noise_scale=2.0)
 
         hyper_noise_map = hyper_background_noise_map.noise_map_scaled_noise_from_noise_map(
             noise_map=noise_map
@@ -28,7 +28,7 @@ class TestHyperNoiseMapBackground(object):
 
         assert (hyper_noise_map == np.array([3.0, 4.0, 5.0])).all()
 
-        hyper_noise_map_background = hi.HyperNoiseBackground(background_noise_scale=3.0)
+        hyper_noise_map_background = hi.HyperBackgroundNoise(noise_scale=3.0)
 
         scaled_noise = hyper_noise_map_background.noise_map_scaled_noise_from_noise_map(
             noise_map=noise_map

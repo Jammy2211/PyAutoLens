@@ -4,14 +4,13 @@ from astropy import cosmology as cosmo
 import autofit as af
 from autolens import exc, dimensions as dim
 from autolens.data.array import scaled_array
-from autolens.lens.util import lens_util
-from autolens.model import cosmology_util
-
 from autolens.data.array.grids import (
     reshape_returned_array,
     reshape_returned_array_blurring,
     reshape_returned_grid,
 )
+from autolens.lens.util import lens_util
+from autolens.model import cosmology_util
 
 
 class AbstractPlane(object):
@@ -74,11 +73,11 @@ class AbstractPlane(object):
 
     @property
     def has_pixelization(self):
-        return any(list(map(lambda galaxy: galaxy.has_pixelization, self.galaxies)))
+        return any([galaxy.pixelization for galaxy in self.galaxies])
 
     @property
     def has_regularization(self):
-        return any(list(map(lambda galaxy: galaxy.has_regularization, self.galaxies)))
+        return any([galaxy.regularization for galaxy in self.galaxies])
 
     @property
     def regularization(self):
@@ -669,7 +668,7 @@ class AbstractGriddedPlane(AbstractPlane):
     def mapper(self):
 
         galaxies_with_pixelization = list(
-            filter(lambda galaxy: galaxy.has_pixelization, self.galaxies)
+            filter(lambda galaxy: galaxy.pixelization is not None, self.galaxies)
         )
 
         if len(galaxies_with_pixelization) == 0:
