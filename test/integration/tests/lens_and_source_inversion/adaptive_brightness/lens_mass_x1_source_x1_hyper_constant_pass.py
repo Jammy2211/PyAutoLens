@@ -55,7 +55,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=reg.AdaptiveBrightness,
             ),
         ),
-        inversion_pixel_limit=800,
+        inversion_pixel_limit=716,
         optimizer_class=optimizer_class,
     )
 
@@ -63,7 +63,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 30
     phase2.optimizer.sampling_efficiency = 0.8
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=False, inversion=True)
 
     class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
@@ -71,12 +71,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
 
-            self.galaxies = results.last.hyper_combined.constant.galaxies
+            self.galaxies.source = results.from_phase(
+                "phase_2"
+            ).variable.galaxies.source
 
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
-
             self.galaxies.source.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
             )
@@ -84,8 +85,15 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase3 = InversionPhase(
         phase_name="phase_3",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal)),
-        inversion_pixel_limit=800,
+        galaxies=dict(
+            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
+            source=gm.GalaxyModel(
+                redshift=1.0,
+                pixelization=pix.VoronoiBrightnessImage,
+                regularization=reg.AdaptiveBrightness,
+            ),
+        ),
+        inversion_pixel_limit=716,
         optimizer_class=optimizer_class,
     )
 
@@ -93,7 +101,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=False, inversion=True)
 
     return pl.PipelineImaging(name, phase1, phase2, phase3)
 

@@ -1,15 +1,15 @@
 class HyperImageSky(object):
-    def __init__(self, background_sky_scale=0.0):
+    def __init__(self, sky_scale=0.0):
         """Class for scaling the background sky map and background noise_map-map of an regular.
 
         Parameters
         -----------
-        background_sky_scale : float
+        sky_scale : float
             The value by which the background scale is increased or decreased (electrons per second).
-        background_noise_scale : float
+        noise_scale : float
             The factor by which the background noise_maps is increased.
         """
-        self.background_sky_scale = background_sky_scale
+        self.sky_scale = sky_scale
 
     def image_scaled_sky_from_image(self, image):
         """Compute a new regular with the background sky level scaled. This can simply multiple by a constant factor \
@@ -20,21 +20,21 @@ class HyperImageSky(object):
         image : ndarray
             The regular before scaling (electrons per second).
         """
-        return image + self.background_sky_scale
+        return image + self.sky_scale
 
 
-class HyperNoiseBackground(object):
-    def __init__(self, background_noise_scale=0.0):
+class HyperBackgroundNoise(object):
+    def __init__(self, noise_scale=0.0):
         """Class for scaling the background sky map and background noise_map-map of an regular.
 
         Parameters
         -----------
-        background_sky_scale : float
+        sky_scale : float
             The value by which the background scale is increased or decreased (electrons per second).
-        background_noise_scale : float
+        noise_scale : float
             The factor by which the background noise_maps is increased.
         """
-        self.background_noise_scale = background_noise_scale
+        self.noise_scale = noise_scale
 
     def noise_map_scaled_noise_from_noise_map(self, noise_map):
         """Compute a scaled noise_maps regular from the background noise_maps regular.
@@ -46,4 +46,4 @@ class HyperNoiseBackground(object):
         background_noise : ndarray
             The background noise_maps values (electrons per second).
         """
-        return noise_map + self.background_noise_scale
+        return noise_map + self.noise_scale

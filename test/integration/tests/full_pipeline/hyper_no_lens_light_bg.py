@@ -55,8 +55,8 @@ def make_pipeline(
 
             self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
 
-            self.hyper_noise_background = (
-                results.last.hyper_combined.constant.hyper_noise_background
+            self.hyper_background_noise = (
+                results.last.hyper_combined.constant.hyper_background_noise
             )
 
     phase2 = InversionPhase(
@@ -105,8 +105,8 @@ def make_pipeline(
 
             self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
 
-            self.hyper_noise_background = (
-                results.last.hyper_combined.constant.hyper_noise_background
+            self.hyper_background_noise = (
+                results.last.hyper_combined.constant.hyper_background_noise
             )
 
     phase3 = InversionPhase(
@@ -149,8 +149,8 @@ def make_pipeline(
 
             self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
 
-            self.hyper_noise_background = (
-                results.last.hyper_combined.constant.hyper_noise_background
+            self.hyper_background_noise = (
+                results.last.hyper_combined.constant.hyper_background_noise
             )
 
     phase4 = InversionPhase(
@@ -203,8 +203,8 @@ def make_pipeline(
 
             self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
 
-            self.hyper_noise_background = (
-                results.last.hyper_combined.constant.hyper_noise_background
+            self.hyper_background_noise = (
+                results.last.hyper_combined.constant.hyper_background_noise
             )
 
     phase5 = InversionPhase(

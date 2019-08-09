@@ -102,6 +102,8 @@ def plot_convergence(
     extract_array_from_mask=False,
     zoom_around_mask=False,
     positions=None,
+    plot_critical_curves=True,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -145,12 +147,20 @@ def plot_convergence(
         grid=grid, return_in_2d=True, return_binned=True
     )
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=galaxy,
+        grid=grid,
+        plot_critical_curve=plot_critical_curves,
+        plot_caustics=plot_caustics,
+    )
+
     array_plotters.plot_array(
         array=convergence,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -188,6 +198,8 @@ def plot_potential(
     extract_array_from_mask=False,
     zoom_around_mask=False,
     positions=None,
+    plot_critical_curves=True,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -231,12 +243,20 @@ def plot_potential(
         grid=grid, return_in_2d=True, return_binned=True
     )
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=galaxy,
+        grid=grid,
+        plot_critical_curve=plot_critical_curves,
+        plot_caustics=plot_caustics,
+    )
+
     array_plotters.plot_array(
         array=potential,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -274,6 +294,8 @@ def plot_deflections_y(
     extract_array_from_mask=False,
     zoom_around_mask=False,
     positions=None,
+    plot_critical_curves=True,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -316,12 +338,20 @@ def plot_deflections_y(
     deflections = galaxy.deflections_from_grid(grid)
     deflections_y = grid.scaled_array_2d_from_array_1d(deflections[:, 0])
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=galaxy,
+        grid=grid,
+        plot_critical_curve=plot_critical_curves,
+        plot_caustics=plot_caustics,
+    )
+
     array_plotters.plot_array(
         array=deflections_y,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -359,6 +389,8 @@ def plot_deflections_x(
     extract_array_from_mask=False,
     zoom_around_mask=False,
     positions=None,
+    plot_critical_curves=True,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -401,12 +433,20 @@ def plot_deflections_x(
     deflections = galaxy.deflections_from_grid(grid)
     deflections_x = grid.scaled_array_2d_from_array_1d(deflections[:, 1])
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=galaxy,
+        grid=grid,
+        plot_critical_curve=plot_critical_curves,
+        plot_caustics=plot_caustics,
+    )
+
     array_plotters.plot_array(
         array=deflections_x,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,

@@ -16,7 +16,6 @@ class PhasePositions(AbstractPhase):
     def __init__(
         self,
         phase_name,
-        tag_phases=True,
         phase_folders=tuple(),
         galaxies=None,
         optimizer_class=af.MultiNest,
@@ -27,7 +26,6 @@ class PhasePositions(AbstractPhase):
             phase_name=phase_name,
             phase_tag=None,
             phase_folders=phase_folders,
-            tag_phases=tag_phases,
             optimizer_class=optimizer_class,
             cosmology=cosmology,
             auto_link_priors=auto_link_priors,

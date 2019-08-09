@@ -19,7 +19,8 @@ import autofit as af
 from autolens.pipeline.phase import phase_imaging, phase_hyper
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.data import ccd
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.lens.plotters import lens_fit_plotters
@@ -28,18 +29,18 @@ import os
 
 # In this example, we'll fit a simple lens galaxy + source galaxy system.
 
-# Get the relative path to the data in our workspace & load the ccd imaging data.
+instrument
 path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 lens_name = 'example_lens'
 
 ccd_data = ccd.load_ccd_data_from_fits(
-    image_path=path + '/data/' + lens_name + '/image.fits',
-    psf_path=path+'/data/'+lens_name+'/psf.fits',
-    noise_map_path=path+'/data/'+lens_name+'/noise_map.fits', 
+    image_path=path + instrument + lens_name + '/image.fits',
+    psf_path=path+instrument+lens_name+'/psf.fits',
+    noise_map_path=path+instrument+lens_name+'/noise_map.fits', 
     pixel_scale=0.1)
 
-# Create a mask for the data, which we setup as a 3.0" circle.
+instrument
 mask = msk.Mask.circular(
 shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0)
 
@@ -61,7 +62,7 @@ phase = phase_imaging.PhaseImaging(
     galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
     phase_name='example/phase_example', optimizer_class=af.MultiNest)
 
-# We pass the ccd data to the phase, thereby fitting it with the lens model above & plot the resulting fit.
+instrument
 result = phase.run(data=ccd_data)
 lens_fit_plotters.plot_fit_subplot(fit=result.most_likely_fit)
 ```
@@ -155,7 +156,7 @@ export PYTHONPATH=/path/to/autolens_workspace/
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 ```
-python3 /path/to/autolens_workspace/runners/simple/runner_lens_mass_&_source.py
+python3 /path/to/autolens_workspace/runners/simple/runner__lens_sie__source_inversion.py
 ```
 
 ## Installation with pip
@@ -214,6 +215,8 @@ The following papers use **PyAutoLens**:
 [Ashley Kelly](https://github.com/AshKelly) - Developer of [pyquad](https://github.com/AshKelly/pyquad) for fast deflections computations.
 
 [Amy Etherington](https://github.com/amyetherington) - Magnification, Critical Curves and Caustic Calculations.
+
+[Xiaoyue Cao](https://github.com/caoxiaoyue) - Analytic Ellipitcal Power-Law Deflection Angle Calculations.
 
 [Nan Li](https://github.com/linan7788626) - Docker integration & support.
 

@@ -1,4 +1,5 @@
-from autolens.data import ccd
+from autolens.data.instrument import abstract_data
+from autolens.data.instrument import ccd
 from autolens.data.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix

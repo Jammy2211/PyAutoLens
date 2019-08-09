@@ -5,10 +5,11 @@ from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
+from autolens.model.hyper import hyper_data as hd
 from test.integration.tests import runner
 
 test_type = "lens_and_source_inversion"
-test_name = "lens_mass_x1_source_x1_adaptive_brightness_hyper_background"
+test_name = "lens_mass_x1_source_x1_adaptive_brightness_hyper_bg"
 data_type = "no_lens_light_and_source_smooth"
 data_resolution = "LSST"
 
@@ -33,7 +34,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 50
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
+    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True, include_background_sky=True, include_background_noise=True)
 
     class InversionPhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
@@ -50,6 +51,14 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
             )
 
+            self.hyper_image_sky = (
+                results.last.hyper_combined.constant.hyper_image_sky
+            )
+
+            self.hyper_background_noise = (
+                results.last.hyper_combined.constant.hyper_background_noise
+            )
+
     phase2 = InversionPhase(
         phase_name="phase_2",
         phase_folders=phase_folders,
@@ -63,7 +72,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=reg.AdaptiveBrightness,
             ),
         ),
-        inversion_pixel_limit=50,
+        hyper_image_sky=hd.HyperImageSky,
+        hyper_background_noise=hd.HyperBackgroundNoise,
+        inversion_pixel_limit=710,
         optimizer_class=optimizer_class,
     )
 
@@ -85,14 +96,20 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
 
-            self.galaxies = results.last.hyper_combined.constant.galaxies
-
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
 
             self.galaxies.source.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
+            )
+
+            self.hyper_image_sky = (
+                results.last.hyper_combined.constant.hyper_image_sky
+            )
+
+            self.hyper_background_noise = (
+                results.last.hyper_combined.constant.hyper_background_noise
             )
 
     phase3 = InversionPhase(
@@ -108,7 +125,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=reg.AdaptiveBrightness,
             ),
         ),
-        inversion_pixel_limit=50,
+        inversion_pixel_limit=710,
         optimizer_class=optimizer_class,
     )
 

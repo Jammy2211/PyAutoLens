@@ -95,7 +95,6 @@ class TestMetaData(object):
         )
         pipeline.run(MockCCDData(), data_name="data_name")
 
-        assert "phase_name///metadata" in mock_files[1].filename
         assert (
             mock_files[1].text
             == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
