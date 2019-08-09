@@ -51,7 +51,7 @@ def make_pipeline(
                 "phase_1_lens_sie_source_sersic"
             ).variable.galaxies.lens
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
 
@@ -101,7 +101,7 @@ def make_pipeline(
                 "phase_1_initialize_magnification_inversion"
             ).variable.galaxies.source
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
 
@@ -145,7 +145,7 @@ def make_pipeline(
                 "phase_3_lens_sie_source_magnification_inversion"
             ).variable.galaxies.lens
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
 
@@ -195,7 +195,7 @@ def make_pipeline(
                 "phase_4_initialize_inversion"
             ).hyper_combined.variable.galaxies.source
 
-            ## Set all hyper-galaxies if feature is turned on ##
+            ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
             self.galaxies.source.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.source.hyper_galaxy

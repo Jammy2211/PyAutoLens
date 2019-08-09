@@ -103,11 +103,11 @@ class HyperGalaxyPhase(HyperPhase):
 
         def fit(self, instance):
             """
-            Fit the model image to the real image by scaling the hyper noise.
+            Fit the model image to the real image by scaling the hyper_galaxy noise.
             Parameters
             ----------
             instance: ModelInstance
-                A model instance with a hyper galaxy property
+                A model instance with a hyper_galaxy galaxy property
             Returns
             -------
             fit: float
@@ -173,7 +173,7 @@ class HyperGalaxyPhase(HyperPhase):
 
         @classmethod
         def describe(cls, instance):
-            return "Running hyper galaxy fit for HyperGalaxy:\n{}".format(
+            return "Running hyper_galaxy galaxy fit for HyperGalaxy:\n{}".format(
                 instance.hyper_galaxy
             )
 
@@ -283,11 +283,19 @@ class HyperGalaxyPhase(HyperPhase):
 
                 transfer_field("hyper_galaxy")
 
-                hyper_result.constant.hyper_image_sky = getattr(result.constant, "hyper_image_sky")
-                hyper_result.variable.hyper_image_sky = getattr(result.variable, "hyper_image_sky")
+                hyper_result.constant.hyper_image_sky = getattr(
+                    result.constant, "hyper_image_sky"
+                )
+                hyper_result.variable.hyper_image_sky = getattr(
+                    result.variable, "hyper_image_sky"
+                )
 
-                hyper_result.constant.hyper_background_noise = getattr(result.constant, "hyper_background_noise")
-                hyper_result.variable.hyper_background_noise = getattr(result.variable, "hyper_background_noise")
+                hyper_result.constant.hyper_background_noise = getattr(
+                    result.constant, "hyper_background_noise"
+                )
+                hyper_result.variable.hyper_background_noise = getattr(
+                    result.variable, "hyper_background_noise"
+                )
 
         return hyper_result
 

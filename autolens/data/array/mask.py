@@ -23,7 +23,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     # noinspection PyUnusedLocal
     def __init__(self, array, pixel_scale, origin=(0.0, 0.0)):
-        """ A mask, which is applied to a 2D array of hyper to extract a set of unmasked image pixels (i.e. mask entry \
+        """ A mask, which is applied to a 2D array of hyper_galaxy to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
         
         The mask retains the pixel scale of the array and has a centre and origin.
@@ -352,13 +352,13 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         )
 
     def scaled_array_2d_from_array_1d(self, array_1d):
-        """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a scaled \
+        """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a normal \
         array.
 
         Parameters
         -----------
         array_1d : ndarray
-            The 1D array of which is mapped to a 2D scaled array.
+            The 1D array of which is mapped to a 2D normal array.
         """
         return scaled_array.ScaledSquarePixelArray(
             array=self.array_2d_from_array_1d(array_1d=array_1d),
@@ -413,12 +413,12 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         self, sub_array_1d, sub_grid_size
     ):
         """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
-        a scaled array.
+        a normal array.
 
         Parameters
         -----------
         sub_array_1d : ndarray
-            The 1D sub-array of which is mapped to a 2D scaled sub-array the dimensions.
+            The 1D sub-array of which is mapped to a 2D normal sub-array the dimensions.
         """
         return scaled_array.ScaledSquarePixelArray(
             array=self.sub_array_2d_from_sub_array_1d_and_sub_grid_size(
@@ -452,12 +452,12 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         self, sub_array_1d, sub_grid_size
     ):
         """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
-        a scaled array.
+        a normal array.
 
         Parameters
         -----------
         sub_array_1d : ndarray
-            The 1D sub-array of which is mapped to a 2D scaled sub-array the dimensions.
+            The 1D sub-array of which is mapped to a 2D normal sub-array the dimensions.
         """
 
         array_1d = self.array_1d_binned_from_sub_array_1d_and_sub_grid_size(

@@ -1476,7 +1476,6 @@ class TestMassProfiles(object):
             )
 
     class TestMagnification(object):
-
         def test__compare_magnification_from_eigen_values_and_from_determinant__two_component_galaxy(
             self
         ):
@@ -1600,7 +1599,6 @@ class TestMassProfiles(object):
             assert mean_error < 1e-4
 
     class TestCriticalCurvesandCaustics(object):
-
         def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
@@ -1614,7 +1612,7 @@ class TestMassProfiles(object):
             galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
             grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.25,
+                shape=(20, 20), pixel_scale=0.25
             )
 
             critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_galaxy_and_grid(
@@ -1630,7 +1628,6 @@ class TestMassProfiles(object):
             assert critical_curve_tangential_from_lambda_t == pytest.approx(
                 critical_curve_tangential_from_magnification, 5e-1
             )
-
 
             grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.5, sub_grid_size=2
@@ -1649,7 +1646,7 @@ class TestMassProfiles(object):
             assert critical_curve_tangential_from_lambda_t == pytest.approx(
                 critical_curve_tangential_from_magnification, 5e-1
             )
-            
+
         def test__compare_radial_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
@@ -1663,7 +1660,7 @@ class TestMassProfiles(object):
             galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
             grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.25,
+                shape=(20, 20), pixel_scale=0.25
             )
 
             critical_curve_radial_from_magnification = critical_curve_via_magnification_from_galaxy_and_grid(
@@ -1679,7 +1676,6 @@ class TestMassProfiles(object):
             assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
                 sum(critical_curve_radial_from_magnification), 5e-1
             )
-
 
             grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.5, sub_grid_size=2
@@ -1718,7 +1714,8 @@ class TestMassProfiles(object):
             caustic_tangential_from_magnification = caustics_via_magnification_from_galaxy_and_grid(
                 galaxy=galaxy, grid=grid
             )[
-                0]
+                0
+            ]
 
             caustic_tangential_from_lambda_t = galaxy.tangential_caustic_from_grid(
                 grid=grid
@@ -1735,7 +1732,8 @@ class TestMassProfiles(object):
             caustic_tangential_from_magnification = caustics_via_magnification_from_galaxy_and_grid(
                 galaxy=galaxy, grid=grid
             )[
-                0]
+                0
+            ]
 
             caustic_tangential_from_lambda_t = galaxy.tangential_caustic_from_grid(
                 grid=grid
