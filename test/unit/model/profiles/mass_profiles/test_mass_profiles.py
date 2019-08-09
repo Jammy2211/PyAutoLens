@@ -1,5 +1,5 @@
 import math
-
+from skimage import measure
 import numpy as np
 import pytest
 
@@ -7,6 +7,7 @@ import autofit as af
 from autolens import dimensions as dim
 from autolens.data.array import grids
 from autolens.model.profiles import mass_profiles as mp
+from autolens.data.array.util import grid_util
 
 from test.unit.mock.model import mock_cosmology
 
@@ -713,7 +714,7 @@ class TestDensityBetweenAnnuli(object):
 
 
 class TestDeflectionsViaPotential(object):
-    def test__compare_sis_deflections_via_potential_and_calculation__reg_grid(self):
+    def test__compare_sis_deflections_via_potential_and_calculation(self):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
@@ -733,9 +734,7 @@ class TestDeflectionsViaPotential(object):
 
         assert mean_error < 1e-4
 
-    def test__compare_sie_at_phi_45__deflections_via_potential_and_calculation__reg_grid(
-        self
-    ):
+    def test__compare_sie_at_phi_45__deflections_via_potential_and_calculation(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0
@@ -757,9 +756,7 @@ class TestDeflectionsViaPotential(object):
 
         assert mean_error < 1e-4
 
-    def test__compare_sie_at_phi_0__deflections_via_potential_and_calculation_reg_grid(
-        self
-    ):
+    def test__compare_sie_at_phi_0__deflections_via_potential_and_calculation(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
@@ -781,7 +778,7 @@ class TestDeflectionsViaPotential(object):
 
         assert mean_error < 1e-4
 
-    def test__sub_grid_binning(self):
+    def test(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
@@ -823,7 +820,7 @@ class TestDeflectionsViaPotential(object):
 
 
 class TestConvergenceViajacobian(object):
-    def test__compare_sis_convergence_via_jacobian_and_calculation__reg_grid(self):
+    def test__compare_sis_convergence_via_jacobian_and_calculation(self):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
@@ -857,9 +854,7 @@ class TestConvergenceViajacobian(object):
         assert convergence_via_jacobian.shape == (400,)
         assert mean_error < 1e-1
 
-    def test__compare_sie_at_phi_45__convergence_via_jacobian_and_calculation__reg_grid(
-        self
-    ):
+    def test__compare_sie_at_phi_45__convergence_via_jacobian_and_calculation(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0
@@ -881,7 +876,7 @@ class TestConvergenceViajacobian(object):
 
         assert mean_error < 1e-1
 
-    def test__convergence_sub_grid_binning(self):
+    def test__convergence(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
@@ -934,8 +929,8 @@ class TestConvergenceViajacobian(object):
         assert mean_error < 1e-1
 
 
-class TestjacobianandMagnification(object):
-    def test__jacobian_components__reg_grid(self):
+class TestJacobianandMagnification(object):
+    def test__jacobian_components(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
@@ -954,12 +949,6 @@ class TestjacobianandMagnification(object):
 
         assert mean_error < 1e-4
 
-    def test__jacobian_components__sub_grid(self):
-
-        sie = mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
-        )
-
         grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
         )
@@ -975,16 +964,14 @@ class TestjacobianandMagnification(object):
 
         assert mean_error < 1e-4
 
-    def test__compare_magnification_from_eigen_values_and_from_determinant__reg_grid(
-        self
-    ):
+    def test__compare_magnification_from_eigen_values_and_from_determinant(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
         grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05
+            shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
         )
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -1009,7 +996,37 @@ class TestjacobianandMagnification(object):
 
         assert mean_error < 1e-4
 
-    def test__compare_magnification_from_determinant_and_from_convergence_and_shear__reg_grid(
+        sie = mp.EllipticalIsothermal(
+            centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
+        )
+
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        )
+
+        magnification_via_determinant = sie.magnification_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        tangential_eigen_value = sie.tangential_eigen_value_from_shear_and_convergence(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        radal_eigen_value = sie.radial_eigen_value_from_shear_and_convergence(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        magnification_via_eigen_values = 1 / (
+            tangential_eigen_value * radal_eigen_value
+        )
+
+        mean_error = np.mean(
+            magnification_via_determinant - magnification_via_eigen_values
+        )
+
+        assert mean_error < 1e-4
+
+    def test__compare_magnification_from_determinant_and_from_convergence_and_shear(
         self
     ):
 
@@ -1018,7 +1035,7 @@ class TestjacobianandMagnification(object):
         )
 
         grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05
+            shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
         )
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -1038,52 +1055,6 @@ class TestjacobianandMagnification(object):
         )
 
         assert mean_error < 1e-4
-
-    def test__compare_magnification_from_eigen_values_and_from_determinant__sub_grid(
-        self
-    ):
-
-        # TODO : Why does this test fail when we return the binned sub grid = True?
-
-        sie = mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
-        )
-
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
-        )
-
-        magnification_via_determinant = sie.magnification_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
-
-        tangential_eigen_value = sie.tangential_eigen_value_from_shear_and_convergence(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
-
-        radal_eigen_value = sie.radial_eigen_value_from_shear_and_convergence(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
-
-        magnification_via_eigen_values = 1 / (
-            tangential_eigen_value * radal_eigen_value
-        )
-
-        mean_error = np.mean(
-            magnification_via_determinant - magnification_via_eigen_values
-        )
-
-        assert mean_error < 1e-4
-
-    def test__compare_magnification_from_determinant_and_from_convergence_and_shear__sub_grid(
-        self
-    ):
-
-        # TODO : Why does this test fail when we return the binned sub grid = True?
-
-        sie = mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
-        )
 
         grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
@@ -1111,7 +1082,7 @@ class TestjacobianandMagnification(object):
 
         assert mean_error < 1e-4
 
-    def test__jacobian_sub_grid_binning(self):
+    def test__jacobian(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
@@ -1151,7 +1122,7 @@ class TestjacobianandMagnification(object):
 
         assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
 
-    def test_shear_sub_grid_binning(self):
+    def test__shear(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
@@ -1190,7 +1161,7 @@ class TestjacobianandMagnification(object):
 
         assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
 
-    def test_lambda_t_sub_grid_binning(self):
+    def test__lambda_t(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
@@ -1229,7 +1200,7 @@ class TestjacobianandMagnification(object):
 
         assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
 
-    def test_lambda_r_sub_grid_binning(self):
+    def test__lambda_r_from_grid(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
@@ -1269,28 +1240,96 @@ class TestjacobianandMagnification(object):
         assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
 
 
+def critical_curve_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
+    magnification_2d = mass_profile.magnification_from_grid(
+        grid=grid, return_in_2d=True, return_binned=False
+    )
+
+    inverse_magnification_2d = 1 / magnification_2d
+
+    critical_curves_indices = measure.find_contours(inverse_magnification_2d, 0)
+
+    no_critical_curves = len(critical_curves_indices)
+    contours = []
+    critical_curves = []
+
+    for jj in np.arange(no_critical_curves):
+
+        contours.append(critical_curves_indices[jj])
+        contour_x, contour_y = contours[jj].T
+        pixel_coord = np.stack((contour_x, contour_y), axis=-1)
+
+        critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=pixel_coord,
+            shape=magnification_2d.shape,
+            pixel_scales=(
+                grid.pixel_scale / grid.sub_grid_size,
+                grid.pixel_scale / grid.sub_grid_size,
+            ),
+            origin=grid.mask.origin,
+        )
+
+        critical_curve[:, 0] -= grid.pixel_scale / 2.0
+        critical_curve[:, 1] += grid.pixel_scale / 2.0
+
+        critical_curves.append(critical_curve)
+
+    return critical_curves
+
+
+def caustics_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
+
+    caustics = []
+
+    critical_curves = critical_curve_via_magnification_from_mass_profile_and_grid(
+        mass_profile=mass_profile, grid=grid
+    )
+
+    for i in range(len(critical_curves)):
+
+        critical_curve = critical_curves[i]
+
+        deflections_1d = mass_profile.deflections_from_grid(
+            grid=critical_curve, return_in_2d=False, return_binned=False
+        )
+
+        caustic = critical_curve - deflections_1d
+
+        caustics.append(caustic)
+
+    return caustics
+
+
 class TestCriticalCurvesandCaustics(object):
+    def test_compare_magnification_from_determinant_and_from_convergence_and_shear(
+        self
+    ):
 
-    # def test_compare_magnification_from_determinant_and_from_convergence_and_shear(self):
-    #
-    #     sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0)
-    #
-    #     grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(
-    #         shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
-    #
-    #     magnification_via_determinant = sie.magnification_from_grid(grid=grid)
-    #
-    #     convergence = sie.convergence_from_jacobian(grid=grid)
-    #
-    #     shear = sie.shear_from_jacobian(grid=grid)
-    #
-    #     magnification_via_convergence_and_shear = 1 / ((1 - convergence)**2 - shear**2)
-    #
-    #     mean_error = np.mean(magnification_via_determinant-magnification_via_convergence_and_shear)
-    #
-    #     assert mean_error < 1e-2
+        sie = mp.EllipticalIsothermal(
+            centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
+        )
 
-    def test__critical_curves_spherical_isothermal__reg_grid(self):
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        )
+
+        magnification_via_determinant = sie.magnification_from_grid(grid=grid)
+
+        convergence = sie.convergence_from_jacobian(grid=grid)
+
+        shear = sie.shear_from_jacobian(grid=grid)
+
+        magnification_via_convergence_and_shear = 1 / (
+            (1 - convergence) ** 2 - shear ** 2
+        )
+
+        mean_error = np.mean(
+            magnification_via_determinant - magnification_via_convergence_and_shear
+        )
+
+        assert mean_error < 1e-2
+
+    def test__critical_curves_spherical_isothermal(self):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
@@ -1311,8 +1350,6 @@ class TestCriticalCurvesandCaustics(object):
             sis.einstein_radius ** 2, 5e-1
         )
 
-    def test__critical_curves_spherical_isothermal__sub_grid(self):
-
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
         grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
@@ -1332,11 +1369,7 @@ class TestCriticalCurvesandCaustics(object):
             sis.einstein_radius ** 2, 5e-1
         )
 
-    def test__caustics_spherical_isothermal__sub_grid(self):
-
-        ## testing caustics on regular grid does not pass as can be seen when visualised
-        ## for an SIS the caustic does not correspond to the circle at the Einstein radius as it should
-        ## this is because the radial ciritical curve should actually be a point
+    def test__caustics_tangential_spherical_isothermal(self):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
@@ -1357,9 +1390,7 @@ class TestCriticalCurvesandCaustics(object):
             sis.einstein_radius ** 2, 5e-1
         )
 
-    def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid(
-        self
-    ):
+    def test__compare_tangential_critical_curves_from_magnification_and_lamda_t(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
@@ -1369,34 +1400,30 @@ class TestCriticalCurvesandCaustics(object):
             shape=(20, 20), pixel_scale=0.25
         )
 
-        critical_curves_from_magnification = sie.critical_curves_from_grid(grid=grid)
-        critical_curve_tangential_from_magnification = critical_curves_from_magnification[
+        critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
+            mass_profile=sie, grid=grid
+        )[
             0
         ]
+
         critical_curve_tangential_from_lambda_t = sie.tangential_critical_curve_from_grid(
             grid=grid
         )
 
         assert critical_curve_tangential_from_lambda_t == pytest.approx(
             critical_curve_tangential_from_magnification, 5e-1
-        )
-
-    def test__compare_tangential_critical_curves_from_magnification_and_lambda_t__sub_grid(
-        self
-    ):
-
-        sie = mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
         )
 
         grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.5, sub_grid_size=2
         )
 
-        critical_curves_from_magnification = sie.critical_curves_from_grid(grid=grid)
-        critical_curve_tangential_from_magnification = critical_curves_from_magnification[
+        critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
+            mass_profile=sie, grid=grid
+        )[
             0
         ]
+
         critical_curve_tangential_from_lambda_t = sie.tangential_critical_curve_from_grid(
             grid=grid
         )
@@ -1405,37 +1432,31 @@ class TestCriticalCurvesandCaustics(object):
             critical_curve_tangential_from_magnification, 5e-1
         )
 
-    # def test_compare_radial_critical_curves_from_magnification_and_lamda_r__reg_grid(self):
+    def test__compare_radial_critical_curves_from_magnification_and_lamda_r(self):
 
-    #    sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
+        sie = mp.EllipticalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
+        )
 
-    #    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05)
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        )
 
-    #    critical_curves_from_mag = sie.critical_curves_from_grid(grid=grid)
-    #    critical_curve_rad_from_mag = set(map(tuple, critical_curves_from_mag[1]))
-    #    critical_curve_rad_from_lambda_t = set(map(tuple, sie.radial_critical_curve_from_grid(grid=grid)))
+        critical_curve_radial_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
+            mass_profile=sie, grid=grid
+        )[
+            1
+        ]
 
-    #    assert critical_curve__rad_from_mag == pytest.approx(critical_curve_rad_from_lambda_t, 1e-4)
+        critical_curve_radial_from_lambda_t = sie.radial_critical_curve_from_grid(
+            grid=grid
+        )
 
-    ## trying to compare sets so that the order of x, y coordinates doesn't matter
-    ## not passing because approx can't compare non numeric values???
-    ## same for sub grid below
+        assert sum(critical_curve_radial_from_magnification) == pytest.approx(
+            sum(critical_curve_radial_from_lambda_t), 1e-1
+        )
 
-    # def test_compare_radial_critical_curves_from_magnification_and_lamda_r__sub_grid(self):
-
-    #    sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
-
-    #   grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
-    #                                                                  sub_grid_size=2)
-    #   critical_curves_from_mag = sie.critical_curves_from_grid(grid=grid)
-    #   critical_curve_rad_from_mag = set(map(tuple, critical_curves_from_mag[1]))
-    #   critical_curve_rad_from_lambda_t = set(map(tuple, sie.radial_critical_curve_from_grid(grid=grid)))
-
-    #   assert critical_curve__rad_from_mag == pytest.approx(critical_curve_rad_from_lambda_t, 1e-4)
-
-    def test__compare_tangentialgential_caustic_from_magnification_and_lambda_t__reg_grid(
-        self
-    ):
+    def test__compare_tangential_caustic_from_magnification_and_lambda_t(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
@@ -1445,58 +1466,68 @@ class TestCriticalCurvesandCaustics(object):
             shape=(20, 20), pixel_scale=0.25
         )
 
-        caustics_from_magnification = sie.caustics_from_grid(grid=grid)
-        caustic_tangential_from_magnification = caustics_from_magnification[0]
+        caustic_tangential_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
+            mass_profile=sie, grid=grid
+        )[
+            0
+        ]
+
         caustic_tangential_from_lambda_t = sie.tangential_caustic_from_grid(grid=grid)
 
-        assert caustic_tangential_from_lambda_t == pytest.approx(
-            caustic_tangential_from_magnification, 5e-1
-        )
-
-    def test__compare_tangential_caustic_from_magnification_and_lambda_t__sub_grid(
-        self
-    ):
-
-        sie = mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
+        assert sum(caustic_tangential_from_lambda_t) == pytest.approx(
+            sum(caustic_tangential_from_magnification), 5e-1
         )
 
         grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.5, sub_grid_size=2
         )
 
-        caustics_from_magnification = sie.caustics_from_grid(grid=grid)
-        caustic_tangential_from_magnification = caustics_from_magnification[0]
+        caustic_tangential_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
+            mass_profile=sie, grid=grid
+        )[
+            0
+        ]
+
         caustic_tangential_from_lambda_t = sie.tangential_caustic_from_grid(grid=grid)
 
-        assert caustic_tangential_from_lambda_t == pytest.approx(
-            caustic_tangential_from_magnification, 5e-1
+        assert sum(caustic_tangential_from_lambda_t) == pytest.approx(
+            sum(caustic_tangential_from_magnification), 5e-1
         )
 
+    def test_compare_radial_caustic_from_magnification_and_lambda_r__regular_grid(self):
 
-#  def test_compare_radial_caustic_from_magnification_and_lambda_r__reg_grid(self):
+        sie = mp.EllipticalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
+        )
 
-#    sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(100, 100), pixel_scale=0.05
+        )
 
-#    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05)
+        caustic_radial_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
+            mass_profile=sie, grid=grid
+        )[
+            1
+        ]
 
-#     caustics_from_magnification = sie.caustics_from_grid(grid=grid)
-#    caustic_rad_from_mag = set(map(tuple, caustics_from_magnification[1]))
-#   caustic_rad_from_lambda_r = set(map( tuple, sie.radial_caustic_from_grid(grid=grid)))
+        caustic_radial_from_lambda_r = sie.caustics_from_grid(grid=grid)[1]
 
-#     assert caustic_rad_from_lambda_r == pytest.approx(caustic_rad_from_mag, 1e-1)
+        assert sum(caustic_radial_from_lambda_r) == pytest.approx(
+            sum(caustic_radial_from_magnification), 7e-1
+        )
 
-#  def test_compare_radial_caustic_from_magnification_and_lambda_r__sub_grid(self):
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        )
 
-#     sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40)
+        caustic_radial_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
+            mass_profile=sie, grid=grid
+        )[
+            1
+        ]
 
-#    grid = grids.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
-#                                                                sub_grid_size=2)
+        caustic_radial_from_lambda_r = sie.caustics_from_grid(grid=grid)[1]
 
-#   caustics_from_magnification = sie.caustics_from_grid(grid=grid)
-
-# caustic_rad_from_mag = set(map(tuple, caustics_from_magnification[1]))
-
-# caustic_rad_from_lambda_r = set(map(tuple, sie.radial_caustic_from_grid(grid=grid)))
-
-#     assert caustic_rad_from_lambda_r == pytest.approx(caustic_rad_from_mag, 1e-1)
+        assert sum(caustic_radial_from_lambda_r) == pytest.approx(
+            sum(caustic_radial_from_magnification), 1e-1
+        )

@@ -34,6 +34,9 @@ class PipelineSettings(object):
 class PipelineSettingsHyper(PipelineSettings):
     def __init__(
         self,
+        hyper_galaxies=True,
+        hyper_image_sky=False,
+        hyper_background_noise=False,
         include_shear=False,
         fix_lens_light=False,
         pixelization=pix.VoronoiBrightnessImage,
@@ -41,11 +44,9 @@ class PipelineSettingsHyper(PipelineSettings):
         align_bulge_disk_centre=False,
         align_bulge_disk_phi=False,
         align_bulge_disk_axis_ratio=False,
+        disk_as_sersic=False,
         align_light_dark_centre=True,
         align_bulge_dark_centre=True,
-        hyper_galaxies=True,
-        hyper_background_sky=False,
-        hyper_background_noise=False,
     ):
 
         super(PipelineSettingsHyper, self).__init__(
@@ -56,19 +57,20 @@ class PipelineSettingsHyper(PipelineSettings):
             align_bulge_disk_centre=align_bulge_disk_centre,
             align_bulge_disk_phi=align_bulge_disk_phi,
             align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
+            disk_as_sersic=disk_as_sersic,
             align_light_dark_centre=align_light_dark_centre,
             align_bulge_dark_centre=align_bulge_dark_centre,
         )
 
-        self.hyper_galaxies = (hyper_galaxies,)
-        self.hyper_background_sky = (hyper_background_sky,)
+        self.hyper_galaxies = hyper_galaxies
+        self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
 
 
 class PipelineImaging(af.Pipeline):
-    def __init__(self, pipeline_name, *phases, hyper_mode=False):
+    def __init__(self, pipeline_name, pipeline_tag, *phases, hyper_mode=False):
 
-        super(PipelineImaging, self).__init__(pipeline_name, *phases)
+        super(PipelineImaging, self).__init__(pipeline_name, pipeline_tag, *phases)
 
         self.hyper_mode = hyper_mode
 

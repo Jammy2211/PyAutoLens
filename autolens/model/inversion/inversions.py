@@ -5,7 +5,16 @@ from autolens.model.inversion.util import inversion_util
 
 
 class Inversion(object):
-    def __init__(self, noise_map_1d, mapper, blurred_mapping_matrix, regularization_matrix, curvature_reg_matrix, pixelization_values):
+    def __init__(
+        self,
+        noise_map_1d,
+        mapper,
+        regularization,
+        blurred_mapping_matrix,
+        regularization_matrix,
+        curvature_reg_matrix,
+        pixelization_values,
+    ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
 
@@ -44,6 +53,7 @@ class Inversion(object):
 
         self.noise_map_1d = noise_map_1d
         self.mapper = mapper
+        self.regularization = regularization
         self.blurred_mapping_matrix = blurred_mapping_matrix
         self.regularization_matrix = regularization_matrix
         self.curvature_reg_matrix = curvature_reg_matrix
@@ -65,28 +75,24 @@ class Inversion(object):
         )
 
         curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
-            blurred_mapping_matrix=blurred_mapping_matrix,
-            noise_map_1d=noise_map_1d,
+            blurred_mapping_matrix=blurred_mapping_matrix, noise_map_1d=noise_map_1d
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
             mapper=mapper
         )
 
-        curvature_reg_matrix = np.add(
-            curvature_matrix, regularization_matrix
-        )
+        curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
 
         try:
-            pixelization_values = np.linalg.solve(
-                curvature_reg_matrix, data_vector
-            )
+            pixelization_values = np.linalg.solve(curvature_reg_matrix, data_vector)
         except np.linalg.LinAlgError:
             raise exc.InversionException()
 
         return Inversion(
             noise_map_1d=noise_map_1d,
             mapper=mapper,
+            regularization=regularization,
             blurred_mapping_matrix=blurred_mapping_matrix,
             regularization_matrix=regularization_matrix,
             curvature_reg_matrix=curvature_reg_matrix,

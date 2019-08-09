@@ -38,7 +38,6 @@ class AbstractPhase(af.AbstractPhase):
         phase_name,
         phase_tag=None,
         phase_folders=tuple(),
-        tag_phases=True,
         optimizer_class=af.MultiNest,
         cosmology=cosmo.Planck15,
         auto_link_priors=False,
@@ -61,7 +60,6 @@ class AbstractPhase(af.AbstractPhase):
             phase_name=phase_name,
             phase_tag=phase_tag,
             phase_folders=phase_folders,
-            tag_phases=tag_phases,
             optimizer_class=optimizer_class,
             auto_link_priors=auto_link_priors,
         )
@@ -144,7 +142,7 @@ class AbstractPhase(af.AbstractPhase):
         def tracer_for_instance(self, instance):
             raise NotImplementedError()
 
-        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_noise_background):
+        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
             raise NotImplementedError()
 
         def figure_of_merit_for_fit(self, tracer):
@@ -194,14 +192,14 @@ class AbstractPhase(af.AbstractPhase):
                 instance=self.constant
             )
 
-            hyper_noise_background = self.analysis.hyper_noise_background_for_instance(
+            hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
                 instance=self.constant
             )
 
             return self.analysis.fit_for_tracer(
                 tracer=self.most_likely_tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
 
         @property
@@ -467,7 +465,6 @@ class GalaxyFitPhase(AbstractPhase):
     def __init__(
         self,
         phase_name,
-        tag_phases=True,
         phase_folders=tuple(),
         galaxies=None,
         use_intensities=False,
@@ -494,7 +491,6 @@ class GalaxyFitPhase(AbstractPhase):
 
         super(GalaxyFitPhase, self).__init__(
             phase_name=phase_name,
-            tag_phases=tag_phases,
             phase_folders=phase_folders,
             optimizer_class=optimizer_class,
             cosmology=cosmology,

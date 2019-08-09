@@ -1413,6 +1413,9 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
+        if total_pixels > cluster_grid.shape[0]:
+            raise exc.PixelizationException
+
         kmeans = KMeans(
             n_clusters=total_pixels, random_state=seed, n_init=n_iter, max_iter=max_iter
         )

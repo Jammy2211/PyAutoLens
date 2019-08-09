@@ -5,26 +5,34 @@ import autofit as af
 from autolens import exc
 from autolens.lens import ray_tracing, lens_data as ld, lens_fit
 from autolens.model.galaxy import galaxy as g
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import regularization as reg
 from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 from autolens.pipeline.plotters import phase_plotters
 
 
-class PhaseImaging(Phase):
+def isinstance_or_prior(obj, cls):
+    if isinstance(obj, cls):
+        return True
+    if isinstance(obj, af.PriorModel) and obj.cls == cls:
+        return True
+    return False
 
+
+class PhaseImaging(Phase):
     hyper_image_sky = af.PhaseProperty("hyper_image_sky")
-    hyper_noise_background = af.PhaseProperty("hyper_noise_background")
+    hyper_background_noise = af.PhaseProperty("hyper_background_noise")
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
         self,
         phase_name,
-        tag_phases=True,
         phase_folders=tuple(),
         galaxies=None,
         hyper_image_sky=None,
-        hyper_noise_background=None,
+        hyper_background_noise=None,
         optimizer_class=af.MultiNest,
         sub_grid_size=2,
         signal_to_noise_limit=None,
@@ -58,29 +66,22 @@ class PhaseImaging(Phase):
             higher pixel scale to speed up the KMeans clustering algorithm.
         """
 
-        if tag_phases:
-
-            phase_tag = phase_tagging.phase_tag_from_phase_settings(
-                sub_grid_size=sub_grid_size,
-                signal_to_noise_limit=signal_to_noise_limit,
-                bin_up_factor=bin_up_factor,
-                image_psf_shape=image_psf_shape,
-                inversion_psf_shape=inversion_psf_shape,
-                positions_threshold=positions_threshold,
-                inner_mask_radii=inner_mask_radii,
-                interp_pixel_scale=interp_pixel_scale,
-                cluster_pixel_scale=cluster_pixel_scale,
-            )
-
-        else:
-
-            phase_tag = None
+        phase_tag = phase_tagging.phase_tag_from_phase_settings(
+            sub_grid_size=sub_grid_size,
+            signal_to_noise_limit=signal_to_noise_limit,
+            bin_up_factor=bin_up_factor,
+            image_psf_shape=image_psf_shape,
+            inversion_psf_shape=inversion_psf_shape,
+            positions_threshold=positions_threshold,
+            inner_mask_radii=inner_mask_radii,
+            interp_pixel_scale=interp_pixel_scale,
+            cluster_pixel_scale=cluster_pixel_scale,
+        )
 
         super(PhaseImaging, self).__init__(
             phase_name=phase_name,
             phase_tag=phase_tag,
             phase_folders=phase_folders,
-            tag_phases=tag_phases,
             optimizer_class=optimizer_class,
             cosmology=cosmology,
             auto_link_priors=auto_link_priors,
@@ -118,29 +119,34 @@ class PhaseImaging(Phase):
 
         self.galaxies = galaxies or []
         self.hyper_image_sky = hyper_image_sky
-        self.hyper_noise_background = hyper_noise_background
+        self.hyper_background_noise = hyper_background_noise
 
     @property
     def uses_hyper_images(self):
         if self.galaxies:
-            return any([galaxy.uses_hyper_images for galaxy in self.galaxies])
-        else:
-            return False
+            for galaxy in self.galaxies:
+                if galaxy.hyper_galaxy is not None or isinstance_or_prior(
+                    galaxy.regularization, reg.AdaptiveBrightness
+                ):
+                    return True
+        return False
 
     @property
     def uses_inversion(self):
         if self.galaxies:
             for galaxy in self.galaxies:
-                if galaxy.uses_inversion:
+                if galaxy.pixelization is not None:
                     return True
         return False
 
     @property
     def uses_cluster_inversion(self):
         if self.galaxies:
+
             for galaxy in self.galaxies:
-                if galaxy.uses_cluster_inversion:
+                if isinstance_or_prior(galaxy.pixelization, pix.VoronoiBrightnessImage):
                     return True
+
         return False
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
@@ -307,10 +313,17 @@ class PhaseImaging(Phase):
         include_background_noise=False,
     ):
 
-        phase_hyper_galaxy = None
-
         if hyper_galaxy:
-            phase_hyper_galaxy = phase_extensions.HyperGalaxyPhase
+            if not include_background_sky and not include_background_noise:
+                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyPhase
+            elif include_background_sky and not include_background_noise:
+                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
+            elif include_background_sky and not include_background_noise:
+                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
+            else:
+                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
+        else:
+            phase_hyper_galaxy = None
 
         if inversion:
             if not include_background_sky and not include_background_noise:
@@ -324,7 +337,7 @@ class PhaseImaging(Phase):
         else:
             phase_inversion = None
 
-        hyper_phase_classes = tuple(filter(None, (phase_inversion, phase_hyper_galaxy)))
+        hyper_phase_classes = tuple(filter(None, (phase_hyper_galaxy, phase_inversion)))
 
         return phase_extensions.CombinedHyperPhase(
             phase=self, hyper_phase_classes=hyper_phase_classes
@@ -516,27 +529,27 @@ class PhaseImaging(Phase):
                     cluster=lens_data.cluster
                 )
 
-                phase_plotters.plot_hyper_images_for_phase(
-                    hyper_model_image_2d=mask.scaled_array_2d_from_array_1d(
-                        array_1d=self.hyper_model_image_1d
-                    ),
-                    hyper_galaxy_image_2d_path_dict=self.last_results.hyper_galaxy_image_2d_path_dict,
-                    hyper_galaxy_cluster_image_2d_path_dict=self.last_results.hyper_galaxy_cluster_image_2d_path_dict_from_cluster(
-                        cluster=lens_data.cluster
-                    ),
-                    mask=lens_data.mask_2d,
-                    cluster=lens_data.cluster,
-                    extract_array_from_mask=self.extract_array_from_mask,
-                    zoom_around_mask=self.zoom_around_mask,
-                    units=self.plot_units,
-                    should_plot_hyper_model_image=self.plot_hyper_model_image,
-                    should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
-                    should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
-                    visualize_path=image_path,
-                )
+                if mask is not None:
+                    phase_plotters.plot_hyper_images_for_phase(
+                        hyper_model_image_2d=mask.scaled_array_2d_from_array_1d(
+                            array_1d=self.hyper_model_image_1d
+                        ),
+                        hyper_galaxy_image_2d_path_dict=self.last_results.hyper_galaxy_image_2d_path_dict,
+                        hyper_galaxy_cluster_image_2d_path_dict=self.last_results.hyper_galaxy_cluster_image_2d_path_dict_from_cluster(
+                            cluster=lens_data.cluster
+                        ),
+                        mask=lens_data.mask_2d,
+                        cluster=lens_data.cluster,
+                        extract_array_from_mask=self.extract_array_from_mask,
+                        zoom_around_mask=self.zoom_around_mask,
+                        units=self.plot_units,
+                        should_plot_hyper_model_image=self.plot_hyper_model_image,
+                        should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
+                        should_plot_hyper_galaxy_cluster_images=self.plot_hyper_galaxy_cluster_images,
+                        visualize_path=image_path,
+                    )
 
                 if hasattr(self.results.last, "hyper_combined"):
-
                     self.preload_pixelization_grid = (
                         self.results.last.hyper_combined.most_likely_image_plane_pixelization_grid
                     )
@@ -561,14 +574,14 @@ class PhaseImaging(Phase):
 
             hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 
-            hyper_noise_background = self.hyper_noise_background_for_instance(
+            hyper_background_noise = self.hyper_background_noise_for_instance(
                 instance=instance
             )
 
             fit = self.fit_for_tracer(
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
 
             return fit.figure_of_merit
@@ -606,7 +619,10 @@ class PhaseImaging(Phase):
                         galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[
                             galaxy_path
                         ]
-                        if self.hyper_galaxy_cluster_image_1d_path_dict is not None:
+                        if (
+                            hasattr(self, "hyper_galaxy_cluster_image_1d_path_dict")
+                            and self.hyper_galaxy_cluster_image_1d_path_dict is not None
+                        ):
                             galaxy.hyper_galaxy_cluster_image_1d = self.hyper_galaxy_cluster_image_1d_path_dict[
                                 galaxy_path
                             ]
@@ -644,10 +660,10 @@ class PhaseImaging(Phase):
             else:
                 return None
 
-        def hyper_noise_background_for_instance(self, instance):
+        def hyper_background_noise_for_instance(self, instance):
 
-            if hasattr(instance, "hyper_noise_background"):
-                return instance.hyper_noise_background
+            if hasattr(instance, "hyper_background_noise"):
+                return instance.hyper_background_noise
             else:
                 return None
 
@@ -671,13 +687,13 @@ class PhaseImaging(Phase):
                 cosmology=self.cosmology,
             )
 
-        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_noise_background):
+        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
 
             return lens_fit.LensDataFit.for_data_and_tracer(
                 lens_data=self.lens_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
 
         def check_positions_trace_within_threshold(self, instance):
@@ -703,7 +719,7 @@ class PhaseImaging(Phase):
             if self.inversion_pixel_limit is not None:
                 if instance.galaxies:
                     for galaxy in instance.galaxies:
-                        if galaxy.has_pixelization:
+                        if galaxy.pixelization is not None:
                             if galaxy.pixelization.pixels > self.inversion_pixel_limit:
                                 raise exc.PixelizationException
 
@@ -750,14 +766,14 @@ class PhaseImaging(Phase):
 
             hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 
-            hyper_noise_background = self.hyper_noise_background_for_instance(
+            hyper_background_noise = self.hyper_background_noise_for_instance(
                 instance=instance
             )
 
             fit = self.fit_for_tracer(
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
-                hyper_noise_background=hyper_noise_background,
+                hyper_background_noise=hyper_background_noise,
             )
 
             phase_plotters.plot_lens_fit_for_phase(
