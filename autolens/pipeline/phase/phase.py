@@ -351,7 +351,7 @@ class AbstractPhase(af.AbstractPhase):
             if cluster is not None:
 
                 hyper_minimum_percent = af.conf.instance.general.get(
-                    "hyper_galaxy", "hyper_minimum_percent", float
+                    "hyper", "hyper_minimum_percent", float
                 )
 
                 cluster_image_1d_galaxy_dict = self.cluster_image_1d_dict_from_cluster(
