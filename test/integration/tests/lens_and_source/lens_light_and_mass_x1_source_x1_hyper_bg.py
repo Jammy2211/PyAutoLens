@@ -8,7 +8,7 @@ from test.integration.tests import runner
 
 test_type = "lens_and_source"
 test_name = "lens_light_and_mass_x1_source_x1_hyper_bg"
-data_type = "lens_light_and_source_smooth"
+data_type = "lens_light__source_smooth"
 data_resolution = "LSST"
 
 
@@ -32,7 +32,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True, include_background_sky=True, include_background_noise=True)
+    phase1 = phase1.extend_with_multiple_hyper_phases(
+        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+    )
 
     class HyperLensSourcePlanePhase(phase_imaging.PhaseImaging):
         def pass_priors(self, results):
@@ -57,9 +59,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
             )
 
-            self.hyper_image_sky = (
-                results.last.hyper_combined.constant.hyper_image_sky
-            )
+            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
 
             self.hyper_background_noise = (
                 results.last.hyper_combined.constant.hyper_background_noise
@@ -86,7 +86,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, include_background_sky=True, include_background_noise=True)
+    phase2 = phase2.extend_with_multiple_hyper_phases(
+        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+    )
 
     return pl.PipelineImaging(name, phase1, phase2)
 

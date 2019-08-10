@@ -1,12 +1,9 @@
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd
 from autolens.data.array import mask as msk
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 from autolens.lens import lens_fit
 from autolens.lens import lens_data as ld
-from autolens.data.plotters import ccd_plotters
 from autolens.lens.plotters import lens_fit_plotters
 from test.simulation import simulation_util
 
@@ -28,6 +25,7 @@ mask = msk.Mask.circular(
 # The lines of code below do everything we're used to, that is, setup an image and its grid stack, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
 lens_galaxy = g.Galaxy(
+    redshift=0.5,
     bulge=lp.EllipticalDevVaucouleurs(
         centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.1, effective_radius=1.0
     )

@@ -853,13 +853,13 @@ class Grid(np.ndarray):
         return self.mask.array_2d_from_array_1d(array_1d=array_1d)
 
     def scaled_array_2d_from_array_1d(self, array_1d):
-        """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a scaled \
+        """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a normal \
         array.
 
         Parameters
         -----------
         array_1d : ndarray
-            The 1D array of which is mapped to a 2D scaled array.
+            The 1D array of which is mapped to a 2D normal array.
         """
         return self.mask.scaled_array_2d_from_array_1d(array_1d=array_1d)
 
@@ -914,12 +914,12 @@ class Grid(np.ndarray):
 
     def scaled_array_2d_with_sub_dimensions_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
-        a scaled array.
+        a normal array.
 
         Parameters
         -----------
         sub_array_1d : ndarray
-            The 1D sub-array of which is mapped to a 2D scaled sub-array the dimensions.
+            The 1D sub-array of which is mapped to a 2D normal sub-array the dimensions.
         """
         return self.mask.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
             sub_array_1d=sub_array_1d, sub_grid_size=self.sub_grid_size
@@ -927,12 +927,12 @@ class Grid(np.ndarray):
 
     def scaled_array_2d_binned_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
-        a scaled array.
+        a normal array.
 
         Parameters
         -----------
         sub_array_1d : ndarray
-            The 1D sub-array of which is mapped to a 2D scaled sub-array the dimensions.
+            The 1D sub-array of which is mapped to a 2D normal sub-array the dimensions.
         """
         return self.mask.scaled_array_2d_binned_from_sub_array_1d_and_sub_grid_size(
             sub_array_1d=sub_array_1d, sub_grid_size=self.sub_grid_size
@@ -1202,7 +1202,7 @@ class ClusterGrid(Grid):
 
                 if cluster_bin_up_factor == 1:
                     raise exc.DataException(
-                        "The cluster hyper image cannot obtain more instrument points that the maximum number of pixels for a "
+                        "The cluster hyper_galaxy image cannot obtain more instrument points that the maximum number of pixels for a "
                         "cluster pixelization, even without any binning up. Either increase the mask size or reduce the "
                         "maximum number of pixels."
                     )

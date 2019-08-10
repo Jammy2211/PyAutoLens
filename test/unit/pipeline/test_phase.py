@@ -1239,13 +1239,13 @@ class TestPhase(object):
     def test__extended_with_hyper_and_pixelizations(self, phase_7x7):
         from autolens.pipeline.phase import phase_extensions
 
-        phase_extended = phase_7x7.extend_with_multiple_hyper_phases(inversion=True)
-        assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
-
         phase_extended = phase_7x7.extend_with_multiple_hyper_phases(
             hyper_galaxy=False, inversion=False
         )
-        assert phase_extended.hyper_phases == []
+        assert phase_extended == phase_7x7
+
+        phase_extended = phase_7x7.extend_with_multiple_hyper_phases(inversion=True)
+        assert type(phase_extended.hyper_phases[0]) == phase_extensions.InversionPhase
 
         phase_extended = phase_7x7.extend_with_multiple_hyper_phases(
             hyper_galaxy=True, inversion=False
@@ -1262,6 +1262,7 @@ class TestPhase(object):
         )
         assert type(phase_extended.hyper_phases[0]) == phase_extensions.HyperGalaxyPhase
         assert type(phase_extended.hyper_phases[1]) == phase_extensions.InversionPhase
+
 
 
 class TestResult(object):

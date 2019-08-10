@@ -24,27 +24,27 @@ data_resolutions = ["LSST", "Euclid"]  # , "HST", "HST_Up"]  # , 'AO']
 makers.make_lens_only_dev_vaucouleurs(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
-makers.make_lens_only_bulge_and_disk(
+makers.make_lens_only_bulge_disk(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
 makers.make_lens_only_x2_galaxies(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
-makers.make_no_lens_light_and_source_smooth(
+makers.make_no_lens_light__source_smooth(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
-makers.make_no_lens_light_and_source_cuspy(
+makers.make_no_lens_light__source_cuspy(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
-makers.make_no_lens_light_spherical_mass_and_source_smooth(
+makers.make_no_lens_light_sis__source_smooth(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
-makers.make_no_lens_light_spherical_mass_and_source_smooth_offset_centre(
+makers.make_no_lens_light_sis__source_smooth_offset_centre(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
-makers.make_lens_light_and_source_smooth(
+makers.make_lens_light__source_smooth(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )
-makers.make_lens_light_and_source_cuspy(
+makers.make_lens_light__source_cuspy(
     data_resolutions=data_resolutions, sub_grid_size=sub_grid_size
 )

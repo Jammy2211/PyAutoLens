@@ -7,7 +7,7 @@ from test.integration.tests import runner
 
 test_type = "phase_features"
 test_name = "interp_pixel_scale_lens_mass_x1_source_x1"
-data_type = "no_lens_light_and_source_smooth"
+data_type = "no_lens_light__source_smooth"
 data_resolution = "LSST"
 
 

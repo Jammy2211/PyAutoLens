@@ -53,7 +53,7 @@ class LensData(object):
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
             up run.
         cluster_pixel_scale : float or None
-            If *True*, the hyper image used to generate the cluster'grids weight map will be binned up to this higher \
+            If *True*, the hyper_galaxy image used to generate the cluster'grids weight map will be binned up to this higher \
             pixel scale to speed up the KMeans clustering algorithm.
         """
 

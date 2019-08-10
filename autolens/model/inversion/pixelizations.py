@@ -127,7 +127,7 @@ class Rectangular(Pixelization):
         border : grids.GridBorder | None
             The border of the grid-stack's regular-grid.
         hyper_image : ndarray
-            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
+            A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
         if border is not None:
@@ -283,7 +283,7 @@ class Voronoi(Pixelization):
         border : grids.GridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
         hyper_image : ndarray
-            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
+            A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
         if border is not None:

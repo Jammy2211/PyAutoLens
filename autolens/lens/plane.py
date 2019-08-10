@@ -752,7 +752,7 @@ class AbstractDataPlane(AbstractGriddedPlane):
         return sum(hyper_noise_maps_1d)
 
     def hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(self, noise_map_1d):
-        """For a contribution map and noise-map, use the model hyper galaxies to compute a scaled noise-map.
+        """For a contribution map and noise-map, use the model hyper_galaxy galaxies to compute a normal noise-map.
 
         Parameters
         -----------

@@ -19,7 +19,7 @@ print("circular mask radius = " + str(radius_arcsec) + "\n")
 for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ccd_data = simulation_util.load_test_ccd_data(
-        data_type="no_lens_light_and_source_smooth",
+        data_type="no_lens_light__source_smooth",
         data_resolution=data_resolution,
         psf_shape=(3, 3),
     )
