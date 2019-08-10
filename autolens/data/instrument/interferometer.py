@@ -8,7 +8,7 @@ from autolens.data.instrument import abstract_data
 from autolens.data.array import scaled_array
 
 
-class InteferometerData(abstract_data.AbstractData):
+class InterferometerData(abstract_data.AbstractData):
     def __init__(
         self,
         image,
@@ -24,7 +24,7 @@ class InteferometerData(abstract_data.AbstractData):
         exposure_time_map=None,
     ):
 
-        super(InteferometerData, self).__init__(
+        super(InterferometerData, self).__init__(
             image=image,
             pixel_scale=pixel_scale,
             psf=psf,
@@ -68,7 +68,7 @@ class InteferometerData(abstract_data.AbstractData):
             new_centre_arcsec=new_centre_arcsec,
         )
 
-        return InteferometerData(
+        return InterferometerData(
             image=image,
             pixel_scale=self.pixel_scale,
             psf=self.psf,
@@ -84,7 +84,7 @@ class InteferometerData(abstract_data.AbstractData):
 
     def new_interferometer_data_with_resized_psf(self, new_shape):
         psf = self.resize_scaled_array(scaled_array=self.psf, new_shape=new_shape)
-        return InteferometerData(
+        return InterferometerData(
             image=self.image,
             pixel_scale=self.pixel_scale,
             psf=psf,
@@ -102,7 +102,7 @@ class InteferometerData(abstract_data.AbstractData):
         primary_beam = self.resize_scaled_array(
             scaled_array=self.primary_beam, new_shape=new_shape
         )
-        return InteferometerData(
+        return InterferometerData(
             image=self.image,
             pixel_scale=self.pixel_scale,
             psf=self.psf,
@@ -121,7 +121,7 @@ class InteferometerData(abstract_data.AbstractData):
         image = self.array_from_counts_to_electrons_per_second(array=self.image)
         noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
 
-        return InteferometerData(
+        return InterferometerData(
             image=image,
             pixel_scale=self.pixel_scale,
             psf=self.psf,
@@ -144,7 +144,7 @@ class InteferometerData(abstract_data.AbstractData):
             array=self.noise_map, gain=gain
         )
 
-        return InteferometerData(
+        return InterferometerData(
             image=image,
             pixel_scale=self.pixel_scale,
             psf=self.psf,
@@ -526,7 +526,7 @@ def load_interferometer_data_from_fits(
         renormalize=renormalize_primary_beam,
     )
 
-    interferometer_data = InteferometerData(
+    interferometer_data = InterferometerData(
         image=image,
         pixel_scale=pixel_scale,
         psf=psf,
