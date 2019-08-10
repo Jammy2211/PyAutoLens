@@ -360,7 +360,7 @@ class AbstractTracerData(AbstractTracer):
 
         Parameters
         ----------
-        convolver_image : hyper.ccd.convolution.ConvolverImage
+        convolver_image : hyper_galaxy.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -387,7 +387,7 @@ class AbstractTracerData(AbstractTracer):
 
         Parameters
         ----------
-        convolver_image : hyper.ccd.convolution.ConvolverImage
+        convolver_image : hyper_galaxy.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -410,7 +410,7 @@ class AbstractTracerData(AbstractTracer):
 
         Parameters
         ----------
-        convolver_image : hyper.ccd.convolution.ConvolverImage
+        convolver_image : hyper_galaxy.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
         return [

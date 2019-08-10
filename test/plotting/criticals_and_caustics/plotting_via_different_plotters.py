@@ -26,5 +26,5 @@ galaxy_plotters.plot_convergence(
     galaxy=galaxy,
     grid=grid_stack.regular,
     plot_critical_curves=True,
-    plot_caustics=True)
-
+    plot_caustics=True,
+)

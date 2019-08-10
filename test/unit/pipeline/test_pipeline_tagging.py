@@ -79,17 +79,13 @@ class TestHyperPipelineTaggers:
     def test__tag_from_hyper_settings(self):
 
         tag = pipeline_tagging.hyper_tag_from_hyper_settings(
-            hyper_galaxies=False,
-            hyper_image_sky=False,
-            hyper_background_noise=False,
+            hyper_galaxies=False, hyper_image_sky=False, hyper_background_noise=False
         )
 
         assert tag == ""
 
         tag = pipeline_tagging.hyper_tag_from_hyper_settings(
-            hyper_galaxies=True,
-            hyper_image_sky=False,
-            hyper_background_noise=False,
+            hyper_galaxies=True, hyper_image_sky=False, hyper_background_noise=False
         )
 
         assert tag == "__hyper_galaxies"

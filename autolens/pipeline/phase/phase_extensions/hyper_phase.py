@@ -20,7 +20,7 @@ class HyperPhase(object):
 
     def run_hyper(self, *args, **kwargs) -> af.Result:
         """
-        Run the hyper phase.
+        Run the hyper_galaxy phase.
 
         Parameters
         ----------
@@ -30,7 +30,7 @@ class HyperPhase(object):
         Returns
         -------
         result
-            The result of the hyper phase.
+            The result of the hyper_galaxy phase.
         """
         raise NotImplementedError()
 
@@ -77,7 +77,7 @@ class HyperPhase(object):
 
     def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
         """
-        Run the normal phase and then the hyper phase.
+        Run the normal phase and then the hyper_galaxy phase.
 
         Parameters
         ----------
@@ -90,7 +90,7 @@ class HyperPhase(object):
         Returns
         -------
         result
-            The result of the phase, with a hyper result attached as an attribute with the hyper_name of this
+            The result of the phase, with a hyper_galaxy result attached as an attribute with the hyper_name of this
             phase.
         """
 

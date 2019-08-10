@@ -52,7 +52,7 @@ class PhaseImaging(Phase):
 
         """
 
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper_galaxy
         passed to it.
 
         Parameters
@@ -62,7 +62,7 @@ class PhaseImaging(Phase):
         sub_grid_size: int
             The side length of the subgrid
         cluster_pixel_scale : float or None
-            If *True*, the hyper image used to generate the cluster'grids weight map will be binned up to this \
+            If *True*, the hyper_galaxy image used to generate the cluster'grids weight map will be binned up to this \
             higher pixel scale to speed up the KMeans clustering algorithm.
         """
 
@@ -185,7 +185,7 @@ class PhaseImaging(Phase):
         Returns
         -------
         result: AbstractPhase.Result
-            A result object comprising the best fit model and other hyper.
+            A result object comprising the best fit model and other hyper_galaxy.
         """
         analysis = self.make_analysis(
             data=data, results=results, mask=mask, positions=positions
@@ -315,13 +315,21 @@ class PhaseImaging(Phase):
 
         if hyper_galaxy:
             if not include_background_sky and not include_background_noise:
-                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyPhase
+                phase_hyper_galaxy = (
+                    phase_extensions.hyper_galaxy_phase.HyperGalaxyPhase
+                )
             elif include_background_sky and not include_background_noise:
-                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
+                phase_hyper_galaxy = (
+                    phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
+                )
             elif include_background_sky and not include_background_noise:
-                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
+                phase_hyper_galaxy = (
+                    phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
+                )
             else:
-                phase_hyper_galaxy = phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
+                phase_hyper_galaxy = (
+                    phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
+                )
         else:
             phase_hyper_galaxy = None
 
@@ -339,9 +347,12 @@ class PhaseImaging(Phase):
 
         hyper_phase_classes = tuple(filter(None, (phase_hyper_galaxy, phase_inversion)))
 
-        return phase_extensions.CombinedHyperPhase(
-            phase=self, hyper_phase_classes=hyper_phase_classes
-        )
+        if len(hyper_phase_classes) == 0:
+            return self
+        else:
+            return phase_extensions.CombinedHyperPhase(
+                phase=self, hyper_phase_classes=hyper_phase_classes
+            )
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):

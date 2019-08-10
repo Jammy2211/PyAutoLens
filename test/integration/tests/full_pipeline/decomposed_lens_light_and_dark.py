@@ -42,7 +42,7 @@ from autolens.model.profiles import light_and_mass_profiles as lmp
 
 test_type = "full_pipeline"
 test_name = "decomposed_lens_light_and_dark"
-data_type = "lens_light_and_source_smooth"
+data_type = "lens_light__source_smooth"
 data_resolution = "LSST"
 
 

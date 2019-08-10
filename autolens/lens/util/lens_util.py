@@ -173,14 +173,14 @@ def compute_deflections_at_next_plane(plane_index, total_planes):
 
 
 def scaled_deflections_stack_from_plane_and_scaling_factor(plane, scaling_factor):
-    """Given a plane and scaling factor, compute a set of scaled deflections.
+    """Given a plane and scaling factor, compute a set of normal deflections.
 
     Parameters
     -----------
     plane : plane.Plane
-        The plane whose deflection stack is scaled.
+        The plane whose deflection stack is normal.
     scaling_factor : float
-        The factor the deflection angles are scaled by, which is typically the scaling factor between redshifts for \
+        The factor the deflection angles are normal by, which is typically the scaling factor between redshifts for \
         multi-plane lensing.
     """
 
