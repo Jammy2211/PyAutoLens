@@ -15,7 +15,7 @@ from autolens.model.profiles import light_and_mass_profiles as lmp
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.pipeline.phase import phase_imaging
-from test.unit.mock.data import mock_ccd
+from test.unit.mock.data import mock_data
 from test.unit.mock.data import mock_convolution
 from test.unit.mock.data import mock_grids
 from test.unit.mock.data import mock_mask
@@ -40,37 +40,37 @@ def set_config_path():
 
 @pytest.fixture(name="image_7x7")
 def make_image_7x7():
-    return mock_ccd.MockImage(shape=(7, 7), value=1.0)
+    return mock_data.MockImage(shape=(7, 7), value=1.0)
 
 
 @pytest.fixture(name="psf_3x3")
 def make_psf_3x3():
-    return mock_ccd.MockPSF(shape=(3, 3), value=1.0)
+    return mock_data.MockPSF(shape=(3, 3), value=1.0)
 
 
 @pytest.fixture(name="noise_map_7x7")
 def make_noise_map_7x7():
-    return mock_ccd.MockNoiseMap(shape=(7, 7), value=2.0)
+    return mock_data.MockNoiseMap(shape=(7, 7), value=2.0)
 
 
 @pytest.fixture(name="background_noise_map_7x7")
 def make_background_noise_map_7x7():
-    return mock_ccd.MockBackgroundNoiseMap(shape=(7, 7), value=3.0)
+    return mock_data.MockBackgroundNoiseMap(shape=(7, 7), value=3.0)
 
 
 @pytest.fixture(name="poisson_noise_map_7x7")
 def make_poisson_noise_map_7x7():
-    return mock_ccd.MockPoissonNoiseMap(shape=(7, 7), value=4.0)
+    return mock_data.MockPoissonNoiseMap(shape=(7, 7), value=4.0)
 
 
 @pytest.fixture(name="exposure_time_map_7x7")
 def make_exposure_time_map_7x7():
-    return mock_ccd.MockExposureTimeMap(shape=(7, 7), value=5.0)
+    return mock_data.MockExposureTimeMap(shape=(7, 7), value=5.0)
 
 
 @pytest.fixture(name="background_sky_map_7x7")
 def make_background_sky_map_7x7():
-    return mock_ccd.MockBackgrondSkyMap(shape=(7, 7), value=6.0)
+    return mock_data.MockBackgrondSkyMap(shape=(7, 7), value=6.0)
 
 
 @pytest.fixture(name="positions_7x7")
@@ -89,7 +89,7 @@ def make_ccd_data_7x7(
     exposure_time_map_7x7,
     background_sky_map_7x7,
 ):
-    return mock_ccd.MockCCDData(
+    return mock_data.MockCCDData(
         image=image_7x7,
         pixel_scale=image_7x7.pixel_scale,
         psf=psf_3x3,
@@ -104,15 +104,15 @@ def make_ccd_data_7x7(
 
 @pytest.fixture(name="ccd_data_6x6")
 def make_ccd_data_6x6():
-    image = mock_ccd.MockImage(shape=(6, 6), value=1.0)
-    psf = mock_ccd.MockPSF(shape=(3, 3), value=1.0)
-    noise_map = mock_ccd.MockNoiseMap(shape=(6, 6), value=2.0)
-    background_noise_map = mock_ccd.MockBackgroundNoiseMap(shape=(6, 6), value=3.0)
-    poisson_noise_map = mock_ccd.MockPoissonNoiseMap(shape=(6, 6), value=4.0)
-    exposure_time_map = mock_ccd.MockExposureTimeMap(shape=(6, 6), value=5.0)
-    background_sky_map = mock_ccd.MockBackgrondSkyMap(shape=(6, 6), value=6.0)
+    image = mock_data.MockImage(shape=(6, 6), value=1.0)
+    psf = mock_data.MockPSF(shape=(3, 3), value=1.0)
+    noise_map = mock_data.MockNoiseMap(shape=(6, 6), value=2.0)
+    background_noise_map = mock_data.MockBackgroundNoiseMap(shape=(6, 6), value=3.0)
+    poisson_noise_map = mock_data.MockPoissonNoiseMap(shape=(6, 6), value=4.0)
+    exposure_time_map = mock_data.MockExposureTimeMap(shape=(6, 6), value=5.0)
+    background_sky_map = mock_data.MockBackgrondSkyMap(shape=(6, 6), value=6.0)
 
-    return mock_ccd.MockCCDData(
+    return mock_data.MockCCDData(
         image=image,
         pixel_scale=1.0,
         psf=psf,
@@ -122,6 +122,53 @@ def make_ccd_data_6x6():
         exposure_time_map=exposure_time_map,
         background_sky_map=background_sky_map,
         name="mock_ccd_data_6x6",
+    )
+
+
+@pytest.fixture(name="real_visibilities_7")
+def make_real_visibilities_7():
+    return mock_data.MockRealVisibilities(shape=7, value=1.0)
+
+
+@pytest.fixture(name="imaginary_visibilities_7")
+def make_imaginary_visibilities_7():
+    return mock_data.MockImaginaryVisibilities(shape=7, value=1.0)
+
+@pytest.fixture(name="visibilities_noise_map_7")
+def make_visibilities_noisse_map_7():
+    return mock_data.MockVisibilitiesNoiseMap(shape=7, value=1.0)
+
+@pytest.fixture(name="primary_beam_3x3")
+def make_primary_beam_3x3():
+    return mock_data.MockPrimaryBeam(shape=(3,3), value=1.0)
+
+@pytest.fixture(name="u_baselines_7")
+def make_u_baselines_7():
+    return mock_data.MockUBaselines(shape=7, value=1.0)
+
+@pytest.fixture(name="v_baselines_7")
+def make_v_baselines_7():
+    return mock_data.MockVBaselines(shape=7, value=1.0)
+
+@pytest.fixture(name="interferometer_data_7")
+def make_interferometer_data_7x7(
+    image_7x7,
+    psf_3x3,
+    noise_map_7x7,
+    real_visibilities_7,
+        imaginary_visibilities_7, visibilities_noise_map_7, primary_beam_3x3, u_baselines_7, v_baselines_7,
+):
+    return mock_data.MockInterferometerData(
+        image=image_7x7,
+        pixel_scale=image_7x7.pixel_scale,
+        psf=psf_3x3,
+        noise_map=noise_map_7x7,
+        real_visibilities=real_visibilities_7,
+        imaginary_visibilities=imaginary_visibilities_7,
+        visibilities_noise_map=visibilities_noise_map_7,
+        primary_beam=primary_beam_3x3,
+        u_baselines=u_baselines_7,
+        v_baselines=v_baselines_7,
     )
 
 
