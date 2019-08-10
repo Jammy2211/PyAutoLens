@@ -8,7 +8,7 @@ from test.integration.tests import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid_subhalo"
-data_type = "no_lens_light_and_source_smooth"
+data_type = "no_lens_light__source_smooth"
 data_resolution = "LSST"
 
 

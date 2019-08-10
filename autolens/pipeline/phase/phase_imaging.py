@@ -347,9 +347,12 @@ class PhaseImaging(Phase):
 
         hyper_phase_classes = tuple(filter(None, (phase_hyper_galaxy, phase_inversion)))
 
-        return phase_extensions.CombinedHyperPhase(
-            phase=self, hyper_phase_classes=hyper_phase_classes
-        )
+        if len(hyper_phase_classes) == 0:
+            return self
+        else:
+            return phase_extensions.CombinedHyperPhase(
+                phase=self, hyper_phase_classes=hyper_phase_classes
+            )
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):

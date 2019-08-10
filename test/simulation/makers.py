@@ -135,9 +135,9 @@ def make_lens_only_dev_vaucouleurs(data_resolutions, sub_grid_size):
         )
 
 
-def make_lens_only_bulge_and_disk(data_resolutions, sub_grid_size):
+def make_lens_only_bulge_disk(data_resolutions, sub_grid_size):
 
-    data_type = "lens_only_bulge_and_disk"
+    data_type = "lens_only_bulge_disk"
 
     # This source-only system has a Dev Vaucouleurs spheroid / bulge and surrounding Exponential envelope
 
@@ -209,9 +209,9 @@ def make_lens_only_x2_galaxies(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
+def make_no_lens_light__source_smooth(data_resolutions, sub_grid_size):
 
-    data_type = "no_lens_light_and_source_smooth"
+    data_type = "no_lens_light__source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -244,9 +244,9 @@ def make_no_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
+def make_no_lens_light__source_cuspy(data_resolutions, sub_grid_size):
 
-    data_type = "no_lens_light_and_source_cuspy"
+    data_type = "no_lens_light__source_cuspy"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -279,11 +279,11 @@ def make_no_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light_spherical_mass_and_source_smooth(
+def make_no_lens_light_sis__source_smooth(
     data_resolutions, sub_grid_size
 ):
 
-    data_type = "no_lens_light_spherical_mass_and_source_smooth"
+    data_type = "no_lens_light_sis__source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -314,11 +314,11 @@ def make_no_lens_light_spherical_mass_and_source_smooth(
         )
 
 
-def make_no_lens_light_spherical_mass_and_source_smooth_offset_centre(
+def make_no_lens_light_sis__source_smooth_offset_centre(
     data_resolutions, sub_grid_size
 ):
 
-    data_type = "no_lens_light_spherical_mass_and_source_smooth_offset_centre"
+    data_type = "no_lens_light_sis__source_smooth_offset_centre"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -349,9 +349,9 @@ def make_no_lens_light_spherical_mass_and_source_smooth_offset_centre(
         )
 
 
-def make_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
+def make_lens_light__source_smooth(data_resolutions, sub_grid_size):
 
-    data_type = "lens_light_and_source_smooth"
+    data_type = "lens_light__source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -392,9 +392,9 @@ def make_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
         )
 
 
-def make_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
+def make_lens_light__source_cuspy(data_resolutions, sub_grid_size):
 
-    data_type = "lens_light_and_source_cuspy"
+    data_type = "lens_light__source_cuspy"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 

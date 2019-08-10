@@ -289,7 +289,7 @@ class AbstractPhase(af.AbstractPhase):
             """
 
             hyper_minimum_percent = af.conf.instance.general.get(
-                "hyper_galaxy", "hyper_minimum_percent", float
+                "hyper", "hyper_minimum_percent", float
             )
 
             hyper_galaxy_image_1d_path_dict = {}

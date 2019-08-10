@@ -30,7 +30,7 @@ array_plotters.plot_array(
 )
 
 ccd_data = simulation_util.load_test_ccd_data(
-    data_type="no_lens_light_and_source_smooth_offset_centre", data_resolution="LSST"
+    data_type="no_lens_light_sis__source_smooth_offset_centre", data_resolution="LSST"
 )
 array = ccd_data.image
 
