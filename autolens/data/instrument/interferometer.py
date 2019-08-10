@@ -19,8 +19,8 @@ class InteferometerData(abstract_data.AbstractData):
         real_visibilities,
         imaginary_visibilities,
         visibilities_noise_map,
-        u_wavelengths,
-        v_wavelengths,
+        u_baselines,
+        v_baselines,
         exposure_time_map=None,
     ):
 
@@ -40,8 +40,8 @@ class InteferometerData(abstract_data.AbstractData):
             np.square(real_visibilities) + np.square(imaginary_visibilities)
         )
         self.visibilities_noise_map = visibilities_noise_map
-        self.u_wavelengths = u_wavelengths
-        self.v_wavelengths = v_wavelengths
+        self.u_baselines = u_baselines
+        self.v_baselines = v_baselines
 
     def new_interferometer_data_with_resized_arrays(
         self, new_shape, new_centre_pixels=None, new_centre_arcsec=None
@@ -78,8 +78,8 @@ class InteferometerData(abstract_data.AbstractData):
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
-            u_wavelengths=self.u_wavelengths,
-            v_wavelengths=self.v_wavelengths,
+            u_baselines=self.u_baselines,
+            v_baselines=self.v_baselines,
         )
 
     def new_interferometer_data_with_resized_psf(self, new_shape):
@@ -94,8 +94,8 @@ class InteferometerData(abstract_data.AbstractData):
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
-            u_wavelengths=self.u_wavelengths,
-            v_wavelengths=self.v_wavelengths,
+            u_baselines=self.u_baselines,
+            v_baselines=self.v_baselines,
         )
 
     def new_interferometer_data_with_resized_primary_beam(self, new_shape):
@@ -112,8 +112,8 @@ class InteferometerData(abstract_data.AbstractData):
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
-            u_wavelengths=self.u_wavelengths,
-            v_wavelengths=self.v_wavelengths,
+            u_baselines=self.u_baselines,
+            v_baselines=self.v_baselines,
         )
 
     def new_interferometer_data_converted_from_electrons(self):
@@ -131,8 +131,8 @@ class InteferometerData(abstract_data.AbstractData):
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
-            u_wavelengths=self.u_wavelengths,
-            v_wavelengths=self.v_wavelengths,
+            u_baselines=self.u_baselines,
+            v_baselines=self.v_baselines,
         )
 
     def new_interferometer_data_converted_from_adus(self, gain):
@@ -154,8 +154,8 @@ class InteferometerData(abstract_data.AbstractData):
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
-            u_wavelengths=self.u_wavelengths,
-            v_wavelengths=self.v_wavelengths,
+            u_baselines=self.u_baselines,
+            v_baselines=self.v_baselines,
         )
 
 
@@ -348,8 +348,8 @@ def load_interferometer_data_from_fits(
     real_visibilities_path=None,
     imaginary_visibilities_path=None,
     visibilities_noise_map_path=None,
-    u_wavelengths_path=None,
-    v_wavelengths_path=None,
+    u_baselines_path=None,
+    v_baselines_path=None,
     image_hdu=0,
     resized_interferometer_shape=None,
     resized_interferometer_origin_pixels=None,
@@ -372,8 +372,8 @@ def load_interferometer_data_from_fits(
     real_visibilities_hdu=0,
     imaginary_visibilities_hdu=0,
     visibilities_noise_map_hdu=0,
-    u_wavelengths_hdu=0,
-    v_wavelengths_hdu=0,
+    u_baselines_hdu=0,
+    v_baselines_hdu=0,
     convert_from_electrons=False,
     gain=None,
     convert_from_adus=False,
@@ -512,11 +512,11 @@ def load_interferometer_data_from_fits(
         visibilities_noise_map_path=visibilities_noise_map_path,
         visibilities_noise_map_hdu=visibilities_noise_map_hdu,
     )
-    u_wavelengths = load_visibilities(
-        visibilities_path=u_wavelengths_path, visibilities_hdu=u_wavelengths_hdu
+    u_baselines = load_visibilities(
+        visibilities_path=u_baselines_path, visibilities_hdu=u_baselines_hdu
     )
-    v_wavelengths = load_visibilities(
-        visibilities_path=v_wavelengths_path, visibilities_hdu=v_wavelengths_hdu
+    v_baselines = load_visibilities(
+        visibilities_path=v_baselines_path, visibilities_hdu=v_baselines_hdu
     )
 
     primary_beam = load_primary_beam(
@@ -535,8 +535,8 @@ def load_interferometer_data_from_fits(
         real_visibilities=real_visibilities,
         imaginary_visibilities=imaginary_visibilities,
         visibilities_noise_map=visibilities_noise_map,
-        u_wavelengths=u_wavelengths,
-        v_wavelengths=v_wavelengths,
+        u_baselines=u_baselines,
+        v_baselines=v_baselines,
         exposure_time_map=exposure_time_map,
     )
 
@@ -674,10 +674,10 @@ def load_visibilities_noise_map(
         )
 
 
-def load_wavelengths(wavelengths_path, wavelengths_hdu):
-    if wavelengths_path is not None:
+def load_baselines(baselines_path, baselines_hdu):
+    if baselines_path is not None:
         return array_util.numpy_array_1d_from_fits(
-            file_path=wavelengths_path, hdu=wavelengths_hdu
+            file_path=baselines_path, hdu=baselines_hdu
         )
 
 
@@ -717,8 +717,8 @@ def output_interferometer_data_to_fits(
     real_visibilities_path=None,
     imaginary_visibilities_path=None,
     visibilities_noise_map_path=None,
-    u_wavelengths_path=None,
-    v_wavelengths_path=None,
+    u_baselines_path=None,
+    v_baselines_path=None,
     overwrite=False,
 ):
     array_util.numpy_array_2d_to_fits(
@@ -782,16 +782,16 @@ def output_interferometer_data_to_fits(
             overwrite=overwrite,
         )
 
-    if interferometer_data.u_wavelengths is not None and u_wavelengths_path is not None:
+    if interferometer_data.u_baselines is not None and u_baselines_path is not None:
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.u_wavelengths,
-            file_path=u_wavelengths_path,
+            array_1d=interferometer_data.u_baselines,
+            file_path=u_baselines_path,
             overwrite=overwrite,
         )
 
-    if interferometer_data.v_wavelengths is not None and v_wavelengths_path is not None:
+    if interferometer_data.v_baselines is not None and v_baselines_path is not None:
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.v_wavelengths,
-            file_path=v_wavelengths_path,
+            array_1d=interferometer_data.v_baselines,
+            file_path=v_baselines_path,
             overwrite=overwrite,
         )
