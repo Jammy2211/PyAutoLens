@@ -8,7 +8,7 @@ from test.integration.tests import runner
 
 test_type = "phase_features"
 test_name = "positions_mass_x1_source_x1_offset_centre"
-data_type = "no_lens_light_spherical_mass_and_source_smooth_offset_centre"
+data_type = "no_lens_light_sis__source_smooth_offset_centre"
 data_resolution = "LSST"
 
 

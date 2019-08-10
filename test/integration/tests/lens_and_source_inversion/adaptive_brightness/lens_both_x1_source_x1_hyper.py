@@ -9,7 +9,7 @@ from test.integration.tests import runner
 
 test_type = "lens_and_source_inversion"
 test_name = "lens_both_x1_source_x1_adaptive_brightness"
-data_type = "lens_light_and_source_smooth"
+data_type = "lens_light__source_smooth"
 data_resolution = "LSST"
 
 
