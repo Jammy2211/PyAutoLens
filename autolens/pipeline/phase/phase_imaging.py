@@ -121,6 +121,10 @@ class PhaseImaging(Phase):
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
 
+        self.hyper_noise_map_max = af.conf.instance.general.get(
+                "hyper", "hyper_noise_map_max", float
+            )
+
     @property
     def uses_hyper_images(self):
         if self.galaxies:
@@ -249,6 +253,7 @@ class PhaseImaging(Phase):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_inversion=self.uses_inversion,
             uses_cluster_inversion=self.uses_cluster_inversion,
+            hyper_noise_map_max=self.hyper_noise_map_max,
         )
 
         modified_image = self.modify_image(

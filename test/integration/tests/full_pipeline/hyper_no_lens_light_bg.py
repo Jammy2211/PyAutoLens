@@ -23,7 +23,7 @@ def make_pipeline(
 ):
 
     phase1 = phase_imaging.PhaseImaging(
-        phase_name="phase_1_lens_sie_source_sersic",
+        phase_name="phase_1__lens_sie__source_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
@@ -48,7 +48,7 @@ def make_pipeline(
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
             self.galaxies.lens = results.from_phase(
-                "phase_1_lens_sie_source_sersic"
+                "phase_1__lens_sie__source_sersic"
             ).variable.galaxies.lens
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
@@ -92,7 +92,7 @@ def make_pipeline(
             ### Lens Mass, SIE -> SIE, Shear -> Shear ###
 
             self.galaxies.lens = results.from_phase(
-                "phase_1_lens_sie_source_sersic"
+                "phase_1__lens_sie__source_sersic"
             ).variable.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
@@ -110,7 +110,7 @@ def make_pipeline(
             )
 
     phase3 = InversionPhase(
-        phase_name="phase_3_lens_sie_source_magnification_inversion",
+        phase_name="phase_3__lens_sie__source_magnification_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
@@ -142,7 +142,7 @@ def make_pipeline(
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
             self.galaxies.lens = results.from_phase(
-                "phase_3_lens_sie_source_magnification_inversion"
+                "phase_3__lens_sie__source_magnification_inversion"
             ).variable.galaxies.lens
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
@@ -154,7 +154,7 @@ def make_pipeline(
             )
 
     phase4 = InversionPhase(
-        phase_name="phase_4_initialize_inversion",
+        phase_name="phase_4__initialize_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
@@ -186,13 +186,13 @@ def make_pipeline(
             ### Lens Mass, SIE -> SIE, Shear -> Shear ###
 
             self.galaxies.lens = results.from_phase(
-                "phase_3_lens_sie_source_magnification_inversion"
+                "phase_3__lens_sie__source_magnification_inversion"
             ).variable.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
 
             self.galaxies.source = results.from_phase(
-                "phase_4_initialize_inversion"
+                "phase_4__initialize_inversion"
             ).hyper_combined.variable.galaxies.source
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
@@ -208,7 +208,7 @@ def make_pipeline(
             )
 
     phase5 = InversionPhase(
-        phase_name="phase_5_lens_sie_source_inversion",
+        phase_name="phase_5__lens_sie__source_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(

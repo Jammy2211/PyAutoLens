@@ -232,6 +232,7 @@ class LensProfileFit(LensTracerFit):
 
         if hyper_noise_map_1d is not None:
             noise_map_1d = noise_map_1d + hyper_noise_map_1d
+            noise_map_1d[noise_map_1d > 1.0e8] = 1.0e8
 
         blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
             convolver_image=lens_data.convolver_image
