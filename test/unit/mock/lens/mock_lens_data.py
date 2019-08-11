@@ -43,6 +43,8 @@ class MockLensData(object):
 
         self.uses_cluster_inversion = False
 
+        self.hyper_noise_map_max = None
+
     @reshape_returned_regular_array
     def image(self, return_in_2d=True):
         return self.image_1d
