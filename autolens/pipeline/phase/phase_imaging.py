@@ -122,8 +122,8 @@ class PhaseImaging(Phase):
         self.hyper_background_noise = hyper_background_noise
 
         self.hyper_noise_map_max = af.conf.instance.general.get(
-                "hyper", "hyper_noise_map_max", float
-            )
+            "hyper", "hyper_noise_map_max", float
+        )
 
     @property
     def uses_hyper_images(self):

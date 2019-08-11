@@ -585,9 +585,7 @@ class TestLensProfileFit:
                 6.25 + 2.0 * np.log(2 * np.pi * 2.0 ** 2.0)
             )
 
-        def test__hyper_noise_map_max_changes_noise_map__reflected_in_likelihood(
-            self
-        ):
+        def test__hyper_noise_map_max_changes_noise_map__reflected_in_likelihood(self):
 
             psf = abstract_data.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
@@ -613,7 +611,9 @@ class TestLensProfileFit:
                 pixel_scale=1.0,
             )
 
-            lens_data_7x7 = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1, hyper_noise_map_max=1.0)
+            lens_data_7x7 = ld.LensData(
+                ccd_data=ccd_data, mask=mask, sub_grid_size=1, hyper_noise_map_max=1.0
+            )
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -928,7 +928,9 @@ class TestLensProfileFit:
 
             hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
 
-            hyper_noise_map_1d[hyper_noise_map_1d > hyper_noise_map_max] = hyper_noise_map_max
+            hyper_noise_map_1d[
+                hyper_noise_map_1d > hyper_noise_map_max
+            ] = hyper_noise_map_max
 
             hyper_noise_map_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d
@@ -1294,7 +1296,9 @@ class TestLensInversionFit:
                 noise_map_1d=lens_data_7x7.noise_map_1d
             )
             hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
-            hyper_noise_map_1d[hyper_noise_map_1d > hyper_noise_map_max] = hyper_noise_map_max
+            hyper_noise_map_1d[
+                hyper_noise_map_1d > hyper_noise_map_max
+            ] = hyper_noise_map_max
 
             hyper_noise_map_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d
@@ -1750,7 +1754,9 @@ class TestLensProfileInversionFit:
                 noise_map_1d=lens_data_7x7.noise_map_1d
             )
             hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
-            hyper_noise_map_1d[hyper_noise_map_1d > hyper_noise_map_max] = hyper_noise_map_max
+            hyper_noise_map_1d[
+                hyper_noise_map_1d > hyper_noise_map_max
+            ] = hyper_noise_map_max
 
             hyper_noise_map_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d

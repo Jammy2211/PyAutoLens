@@ -1264,7 +1264,6 @@ class TestPhase(object):
         assert type(phase_extended.hyper_phases[1]) == phase_extensions.InversionPhase
 
 
-
 class TestResult(object):
     def test__results_of_phase_are_available_as_properties(
         self, ccd_data_7x7, mask_function_7x7

@@ -25,7 +25,10 @@ def test__individual_attributes_are_output(
         output_format="png",
     )
 
-    assert interferometer_plotter_path + "interferometer_visibilities.png" in plot_patch.paths
+    assert (
+        interferometer_plotter_path + "interferometer_visibilities.png"
+        in plot_patch.paths
+    )
 
     interferometer_plotters.plot_u_wavelengths(
         interferometer_data=interferometer_data_7,
@@ -33,7 +36,10 @@ def test__individual_attributes_are_output(
         output_format="png",
     )
 
-    assert interferometer_plotter_path + "interferometer_u_wavelengths.png" in plot_patch.paths
+    assert (
+        interferometer_plotter_path + "interferometer_u_wavelengths.png"
+        in plot_patch.paths
+    )
 
     interferometer_plotters.plot_v_wavelengths(
         interferometer_data=interferometer_data_7,
@@ -41,7 +47,10 @@ def test__individual_attributes_are_output(
         output_format="png",
     )
 
-    assert interferometer_plotter_path + "interferometer_v_wavelengths.png" in plot_patch.paths
+    assert (
+        interferometer_plotter_path + "interferometer_v_wavelengths.png"
+        in plot_patch.paths
+    )
 
     interferometer_plotters.plot_primary_beam(
         interferometer_data=interferometer_data_7,
@@ -51,8 +60,11 @@ def test__individual_attributes_are_output(
         output_format="png",
     )
 
-    assert interferometer_plotter_path + "interferometer_primary_beam.png" in plot_patch.paths
-    
+    assert (
+        interferometer_plotter_path + "interferometer_primary_beam.png"
+        in plot_patch.paths
+    )
+
     interferometer_plotters.plot_interferometer_subplot(
         interferometer_data=interferometer_data_7,
         cb_tick_values=[1.0],
@@ -62,6 +74,7 @@ def test__individual_attributes_are_output(
     )
 
     assert interferometer_plotter_path + "interferometer_data.png" in plot_patch.paths
+
 
 def test__interferometer_individuals__output_dependent_on_input(
     interferometer_data_7, general_config, interferometer_plotter_path, plot_patch
@@ -76,10 +89,22 @@ def test__interferometer_individuals__output_dependent_on_input(
         output_format="png",
     )
 
-    assert interferometer_plotter_path + "interferometer_visibilities.png" in plot_patch.paths
+    assert (
+        interferometer_plotter_path + "interferometer_visibilities.png"
+        in plot_patch.paths
+    )
 
-    assert not interferometer_plotter_path + "interferometer_u_wavelengths.png" in plot_patch.paths
+    assert (
+        not interferometer_plotter_path + "interferometer_u_wavelengths.png"
+        in plot_patch.paths
+    )
 
-    assert interferometer_plotter_path + "interferometer_v_wavelengths.png" in plot_patch.paths
+    assert (
+        interferometer_plotter_path + "interferometer_v_wavelengths.png"
+        in plot_patch.paths
+    )
 
-    assert interferometer_plotter_path + "interferometer_primary_beam.png" in plot_patch.paths
+    assert (
+        interferometer_plotter_path + "interferometer_primary_beam.png"
+        in plot_patch.paths
+    )

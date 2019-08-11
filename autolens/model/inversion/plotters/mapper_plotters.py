@@ -490,7 +490,9 @@ def set_axis_limits(mapper, units, kpc_per_arcsec):
                     mapper.geometry.arc_second_minima[0],
                     mapper.geometry.arc_second_maxima[0],
                 ]
-            ), grid=None, symmetric_around_centre=False,
+            ),
+            grid=None,
+            symmetric_around_centre=False,
         )
 
     elif units in "kpc":
@@ -503,7 +505,9 @@ def set_axis_limits(mapper, units, kpc_per_arcsec):
                     mapper.geometry.arc_second_minima[0] * kpc_per_arcsec,
                     mapper.geometry.arc_second_maxima[0] * kpc_per_arcsec,
                 ]
-            ), grid=None, symmetric_around_centre=False,
+            ),
+            grid=None,
+            symmetric_around_centre=False,
         )
 
 

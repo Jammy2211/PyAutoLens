@@ -10,6 +10,7 @@ from autolens.plotters import plotter_util
 
 import numpy as np
 
+
 def plot_interferometer_subplot(
     interferometer_data,
     plot_origin=True,
@@ -104,7 +105,7 @@ def plot_interferometer_subplot(
         legend_fontsize=legend_fontsize,
         output_path=output_path,
         output_format=output_format,
-        output_filename=output_filename
+        output_filename=output_filename,
     )
 
     plt.subplot(rows, columns, 4)
@@ -123,7 +124,7 @@ def plot_interferometer_subplot(
         legend_fontsize=legend_fontsize,
         output_path=output_path,
         output_format=output_format,
-        output_filename=output_filename
+        output_filename=output_filename,
     )
 
     plt.subplot(rows, columns, 3)
@@ -284,10 +285,11 @@ def plot_visibilities(
         output_filename=output_filename,
     )
 
+
 def plot_u_wavelengths(
     interferometer_data,
     as_subplot=False,
-    label='Wavelengths',
+    label="Wavelengths",
     units="",
     kpc_per_arcsec=None,
     figsize=(14, 7),
@@ -335,13 +337,14 @@ def plot_u_wavelengths(
         legend_fontsize=legend_fontsize,
         output_path=output_path,
         output_format=output_format,
-        output_filename=output_filename
+        output_filename=output_filename,
     )
+
 
 def plot_v_wavelengths(
     interferometer_data,
     as_subplot=False,
-    label='Wavelengths',
+    label="Wavelengths",
     units="",
     kpc_per_arcsec=None,
     figsize=(14, 7),
@@ -389,8 +392,9 @@ def plot_v_wavelengths(
         legend_fontsize=legend_fontsize,
         output_path=output_path,
         output_format=output_format,
-        output_filename=output_filename
+        output_filename=output_filename,
     )
+
 
 def plot_primary_beam(
     interferometer_data,

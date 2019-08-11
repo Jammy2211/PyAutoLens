@@ -98,11 +98,13 @@ def test__all_ccd_data_types_are_output(
 
     assert data_plotter_path + "potential_chi_squared_map.png" in plot_patch.paths
 
+
 def test__all_interferometer_data_types_are_output(
     real_visibilities_7,
     imaginary_visibilities_7,
     visibilities_noise_map_7,
-        u_wavelengths_7, v_wavelengths_7,
+    u_wavelengths_7,
+    v_wavelengths_7,
     primary_beam_3x3,
     data_plotter_path,
     plot_patch,

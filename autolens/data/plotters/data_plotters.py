@@ -1,5 +1,6 @@
 import autofit as af
 import matplotlib
+
 backend = af.conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 import numpy as np
@@ -555,7 +556,7 @@ def plot_visibilities(
 def plot_u_wavelengths(
     u_wavelengths,
     as_subplot=False,
-    label='Wavelengths',
+    label="Wavelengths",
     units="",
     kpc_per_arcsec=None,
     figsize=(14, 7),
@@ -587,17 +588,31 @@ def plot_u_wavelengths(
     """
 
     line_yx_plotters.plot_line(
-        y=u_wavelengths, x=None, as_subplot=as_subplot, label=label, plot_axis_type=plot_axis_type, units=units,
-        kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, title=title, ylabel=ylabel,
-        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize, legend_fontsize=legend_fontsize,
-        output_path=output_path, output_format=output_format, output_filename=output_filename
+        y=u_wavelengths,
+        x=None,
+        as_subplot=as_subplot,
+        label=label,
+        plot_axis_type=plot_axis_type,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        title=title,
+        ylabel=ylabel,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        legend_fontsize=legend_fontsize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
     )
 
 
 def plot_v_wavelengths(
     v_wavelengths,
     as_subplot=False,
-    label='Wavelengths',
+    label="Wavelengths",
     units="",
     kpc_per_arcsec=None,
     figsize=(14, 7),
@@ -629,10 +644,24 @@ def plot_v_wavelengths(
     """
 
     line_yx_plotters.plot_line(
-        y=v_wavelengths, x=None, as_subplot=as_subplot, label=label, plot_axis_type=plot_axis_type, units=units,
-        kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, title=title, ylabel=ylabel,
-        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize, legend_fontsize=legend_fontsize,
-        output_path=output_path, output_format=output_format, output_filename=output_filename
+        y=v_wavelengths,
+        x=None,
+        as_subplot=as_subplot,
+        label=label,
+        plot_axis_type=plot_axis_type,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        title=title,
+        ylabel=ylabel,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        legend_fontsize=legend_fontsize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
     )
 
 

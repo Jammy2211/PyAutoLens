@@ -16,10 +16,9 @@ With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. 
 
 ```python
 import autofit as af
-from autolens.pipeline.phase import phase_imaging, phase_hyper
+from autolens.pipeline.phase import phase_imaging
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -28,21 +27,19 @@ from autolens.lens.plotters import lens_fit_plotters
 import os
 
 # In this example, we'll fit a simple lens galaxy + source galaxy system.
-
-instrument
-path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
+data_path = '{}/../data/'.format(os.path.dirname(os.path.realpath(__file__)))
 
 lens_name = 'example_lens'
 
+# Get the relative path to the data in our workspace & load the ccd imaging data.
 ccd_data = ccd.load_ccd_data_from_fits(
-    image_path=path + instrument + lens_name + '/image.fits',
-    psf_path=path+instrument+lens_name+'/psf.fits',
-    noise_map_path=path+instrument+lens_name+'/noise_map.fits', 
+    image_path=data_path + lens_name + '/image.fits',
+    psf_path=data_path+lens_name+'/psf.fits',
+    noise_map_path=data_path+lens_name+'/noise_map.fits', 
     pixel_scale=0.1)
 
-instrument
-mask = msk.Mask.circular(
-shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0)
+# Create a mask for the data, which we setup as a 3.0" circle.
+mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0)
 
 # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) & our source galaxy 
 # a light profile (an elliptical Sersic). We load these profiles from the 'light_profiles (lp)' & 
@@ -53,7 +50,7 @@ source_light_profile = lp.EllipticalSersic
 # To setup our model galaxies, we use the GalaxyModel class, which represents a galaxy whose parameters 
 # are variable & fitted for by PyAutoLens. The galaxies are also assigned redshifts.
 lens_galaxy_model = gm.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
-source_galaxy_model = gm.GalaxyModel(redshsift=1.0, light=source_light_profile)
+source_galaxy_model = gm.GalaxyModel(redshift=1.0, light=source_light_profile)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models & fits their parameters using a non-linear search 
@@ -62,8 +59,8 @@ phase = phase_imaging.PhaseImaging(
     galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
     phase_name='example/phase_example', optimizer_class=af.MultiNest)
 
-instrument
-result = phase.run(data=ccd_data)
+# We pass the ccd data and maskto the phase, thereby fitting it with the lens model above & plot the resulting fit.
+result = phase.run(data=ccd_data, mask=mask)
 lens_fit_plotters.plot_fit_subplot(fit=result.most_likely_fit)
 ```
 
