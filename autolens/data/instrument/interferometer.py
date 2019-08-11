@@ -8,23 +8,23 @@ from autolens.data.instrument import abstract_data
 from autolens.data.array import scaled_array
 
 
-class InteferometerData(abstract_data.AbstractData):
+class InterferometerData(abstract_data.AbstractData):
     def __init__(
         self,
         image,
         pixel_scale,
         psf,
-        primary_beam,
         noise_map,
         real_visibilities,
         imaginary_visibilities,
         visibilities_noise_map,
         u_wavelengths,
         v_wavelengths,
+        primary_beam,
         exposure_time_map=None,
     ):
 
-        super(InteferometerData, self).__init__(
+        super(InterferometerData, self).__init__(
             image=image,
             pixel_scale=pixel_scale,
             psf=psf,
@@ -33,7 +33,6 @@ class InteferometerData(abstract_data.AbstractData):
             origin=(0.0, 0.0),
         )
 
-        self.primary_beam = primary_beam
         self.real_visibilities = real_visibilities
         self.imaginary_visibilities = imaginary_visibilities
         self.visibilities = np.sqrt(
@@ -42,6 +41,7 @@ class InteferometerData(abstract_data.AbstractData):
         self.visibilities_noise_map = visibilities_noise_map
         self.u_wavelengths = u_wavelengths
         self.v_wavelengths = v_wavelengths
+        self.primary_beam = primary_beam
 
     def new_interferometer_data_with_resized_arrays(
         self, new_shape, new_centre_pixels=None, new_centre_arcsec=None
@@ -68,52 +68,52 @@ class InteferometerData(abstract_data.AbstractData):
             new_centre_arcsec=new_centre_arcsec,
         )
 
-        return InteferometerData(
+        return InterferometerData(
             image=image,
             pixel_scale=self.pixel_scale,
             psf=self.psf,
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
-            primary_beam=self.primary_beam,
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             u_wavelengths=self.u_wavelengths,
             v_wavelengths=self.v_wavelengths,
+            primary_beam=self.primary_beam,
         )
 
     def new_interferometer_data_with_resized_psf(self, new_shape):
         psf = self.resize_scaled_array(scaled_array=self.psf, new_shape=new_shape)
-        return InteferometerData(
+        return InterferometerData(
             image=self.image,
             pixel_scale=self.pixel_scale,
             psf=psf,
             noise_map=self.noise_map,
             exposure_time_map=self.exposure_time_map,
-            primary_beam=self.primary_beam,
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             u_wavelengths=self.u_wavelengths,
             v_wavelengths=self.v_wavelengths,
+            primary_beam=self.primary_beam,
         )
 
     def new_interferometer_data_with_resized_primary_beam(self, new_shape):
         primary_beam = self.resize_scaled_array(
             scaled_array=self.primary_beam, new_shape=new_shape
         )
-        return InteferometerData(
+        return InterferometerData(
             image=self.image,
             pixel_scale=self.pixel_scale,
             psf=self.psf,
             noise_map=self.noise_map,
             exposure_time_map=self.exposure_time_map,
-            primary_beam=primary_beam,
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             u_wavelengths=self.u_wavelengths,
             v_wavelengths=self.v_wavelengths,
+            primary_beam=primary_beam,
         )
 
     def new_interferometer_data_converted_from_electrons(self):
@@ -121,18 +121,18 @@ class InteferometerData(abstract_data.AbstractData):
         image = self.array_from_counts_to_electrons_per_second(array=self.image)
         noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
 
-        return InteferometerData(
+        return InterferometerData(
             image=image,
             pixel_scale=self.pixel_scale,
             psf=self.psf,
             noise_map=noise_map,
             exposure_time_map=self.exposure_time_map,
-            primary_beam=self.primary_beam,
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             u_wavelengths=self.u_wavelengths,
             v_wavelengths=self.v_wavelengths,
+            primary_beam=self.primary_beam,
         )
 
     def new_interferometer_data_converted_from_adus(self, gain):
@@ -144,18 +144,18 @@ class InteferometerData(abstract_data.AbstractData):
             array=self.noise_map, gain=gain
         )
 
-        return InteferometerData(
+        return InterferometerData(
             image=image,
             pixel_scale=self.pixel_scale,
             psf=self.psf,
             noise_map=noise_map,
             exposure_time_map=self.exposure_time_map,
-            primary_beam=self.primary_beam,
             real_visibilities=self.real_visibilities,
             imaginary_visibilities=self.imaginary_visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             u_wavelengths=self.u_wavelengths,
             v_wavelengths=self.v_wavelengths,
+            primary_beam=self.primary_beam,
         )
 
 
@@ -358,8 +358,6 @@ def load_interferometer_data_from_fits(
     psf_hdu=0,
     resized_psf_shape=None,
     renormalize_psf=True,
-    primary_beam_path=None,
-    primary_beam_hdu=0,
     resized_primary_beam_shape=None,
     renormalize_primary_beam=True,
     noise_map_path=None,
@@ -374,6 +372,8 @@ def load_interferometer_data_from_fits(
     visibilities_noise_map_hdu=0,
     u_wavelengths_hdu=0,
     v_wavelengths_hdu=0,
+    primary_beam_path=None,
+    primary_beam_hdu=0,
     convert_from_electrons=False,
     gain=None,
     convert_from_adus=False,
@@ -526,7 +526,7 @@ def load_interferometer_data_from_fits(
         renormalize=renormalize_primary_beam,
     )
 
-    interferometer_data = InteferometerData(
+    interferometer_data = InterferometerData(
         image=image,
         pixel_scale=pixel_scale,
         psf=psf,
@@ -674,10 +674,10 @@ def load_visibilities_noise_map(
         )
 
 
-def load_wavelengths(wavelengths_path, wavelengths_hdu):
-    if wavelengths_path is not None:
+def load_baselines(baselines_path, baselines_hdu):
+    if baselines_path is not None:
         return array_util.numpy_array_1d_from_fits(
-            file_path=wavelengths_path, hdu=wavelengths_hdu
+            file_path=baselines_path, hdu=baselines_hdu
         )
 
 

@@ -33,7 +33,7 @@ class TestInterferometerData(object):
             )
             exposure_time_map_array[3, 3] = 5.0
 
-            interferometer_data = interferometer.InteferometerData(
+            interferometer_data = interferometer.InterferometerData(
                 image=image_array,
                 pixel_scale=1.0,
                 psf=abstract_data.PSF(np.zeros((3, 3)), pixel_scale=1.0),
@@ -98,7 +98,7 @@ class TestInterferometerData(object):
                 np.ones((6, 6)), pixel_scale=1.0
             )
 
-            interferometer_data = interferometer.InteferometerData(
+            interferometer_data = interferometer.InterferometerData(
                 image=image_array,
                 pixel_scale=1.0,
                 psf=abstract_data.PSF(np.zeros((3, 3)), pixel_scale=1.0),
@@ -128,7 +128,7 @@ class TestInterferometerData(object):
                 np.ones((6, 6)), pixel_scale=1.0
             )
 
-            interferometer_data = interferometer.InteferometerData(
+            interferometer_data = interferometer.InterferometerData(
                 image=image_array,
                 pixel_scale=1.0,
                 psf=1,
@@ -171,7 +171,7 @@ class TestInterferometerData(object):
             )
             exposure_time_map_array[3, 3] = 5.0
 
-            interferometer_data = interferometer.InteferometerData(
+            interferometer_data = interferometer.InterferometerData(
                 image=image_array,
                 pixel_scale=1.0,
                 psf=abstract_data.PSF(np.zeros((3, 3)), pixel_scale=1.0),
@@ -228,7 +228,7 @@ class TestInterferometerData(object):
             )
             exposure_time_map_array[3, 3] = 5.0
 
-            interferometer_data = interferometer.InteferometerData(
+            interferometer_data = interferometer.InterferometerData(
                 image=image_array,
                 pixel_scale=1.0,
                 psf=abstract_data.PSF(np.zeros((3, 3)), pixel_scale=1.0),
@@ -270,7 +270,7 @@ class TestInterferometerData(object):
             image_array = scaled_array.ScaledSquarePixelArray(
                 np.ones((6, 6)), pixel_scale=1.0
             )
-            interferometer_data = interferometer.InteferometerData(
+            interferometer_data = interferometer.InterferometerData(
                 image=image_array,
                 pixel_scale=1.0,
                 psf=abstract_data.PSF(np.zeros((3, 3)), pixel_scale=1.0),
@@ -306,7 +306,7 @@ class TestInterferometerData(object):
                 0.5 * np.ones((3, 3)), pixel_scale=1.0
             )
 
-            interferometer_data = interferometer.InteferometerData(
+            interferometer_data = interferometer.InterferometerData(
                 image=image_array,
                 pixel_scale=1.0,
                 psf=abstract_data.PSF(np.zeros((3, 3)), pixel_scale=1.0),
@@ -340,7 +340,7 @@ class TestInterferometerData(object):
                 0.5 * np.ones((3, 3)), pixel_scale=1.0
             )
 
-            interferometer_data = interferometer.InteferometerData(
+            interferometer_data = interferometer.InterferometerData(
                 image=image_array,
                 pixel_scale=1.0,
                 psf=abstract_data.PSF(np.zeros((3, 3)), pixel_scale=1.0),
