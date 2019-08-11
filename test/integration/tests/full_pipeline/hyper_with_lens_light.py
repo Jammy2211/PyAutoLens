@@ -297,7 +297,7 @@ def make_pipeline(
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
 
             self.galaxies.lens = results.from_phase(
-                "phase_7__lens_sersic_sie__source_inversion"
+                "phase_5__lens_sersic_sie__source_magnification_inversion"
             ).variable.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
