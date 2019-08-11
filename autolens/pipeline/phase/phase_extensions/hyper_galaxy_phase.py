@@ -211,6 +211,7 @@ class HyperGalaxyPhase(HyperPhase):
             uses_cluster_inversion=cast(
                 phase_imaging.PhaseImaging, phase
             ).uses_cluster_inversion,
+            hyper_noise_map_max=cast(phase_imaging.PhaseImaging, phase).hyper_noise_map_max
         )
 
         model_image_1d = results.last.hyper_model_image_1d
@@ -363,6 +364,7 @@ class HyperGalaxyAllPhase(HyperPhase):
             uses_cluster_inversion=cast(
                 phase_imaging.PhaseImaging, phase
             ).uses_cluster_inversion,
+            hyper_noise_map_max=cast(phase_imaging.PhaseImaging, phase).hyper_noise_map_max
         )
 
         model_image_1d = results.last.hyper_model_image_1d

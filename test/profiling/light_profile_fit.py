@@ -52,7 +52,7 @@ source_galaxy = g.Galaxy(
 for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ccd_data = simulation_util.load_test_ccd_data(
-        data_type="lens_and_source_smooth",
+        data_type="no_lens_light__source_smooth",
         data_resolution=data_resolution,
         psf_shape=psf_shape,
     )

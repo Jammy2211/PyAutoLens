@@ -252,6 +252,19 @@ class TestLensData(object):
 
         assert lens_data_7x7.cluster_pixel_limit == 5
 
+    def test__hyper_noise_map_max(self, ccd_data_7x7, mask_7x7):
+        lens_data_7x7 = ld.LensData(
+            ccd_data=ccd_data_7x7, mask=mask_7x7, hyper_noise_map_max=10.0
+        )
+
+        assert lens_data_7x7.hyper_noise_map_max == 10.0
+
+        lens_data_7x7 = ld.LensData(
+            ccd_data=ccd_data_7x7, mask=mask_7x7, hyper_noise_map_max=20.0
+        )
+
+        assert lens_data_7x7.hyper_noise_map_max == 20.0
+
     def test__uses_inversion__does_not_create_mapping_matrix_conovolver_if_false(
         self, ccd_data_7x7, mask_7x7
     ):

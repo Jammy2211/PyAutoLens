@@ -54,7 +54,7 @@ def make_pipeline(
 ):
 
     phase1 = phase_imaging.PhaseImaging(
-        phase_name="phase_1_lens_sersic",
+        phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
         galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
         optimizer_class=optimizer_class,
@@ -82,19 +82,19 @@ def make_pipeline(
             ## Lens Light Sersic -> Sersic ##
 
             self.galaxies.lens.light = results.from_phase(
-                "phase_1_lens_sersic"
+                "phase_1__lens_sersic"
             ).constant.galaxies.lens.light
 
             ## Lens Mass, Move centre priors to centre of lens light ###
 
             self.galaxies.lens.mass.centre = (
-                results.from_phase("phase_1_lens_sersic")
+                results.from_phase("phase_1__lens_sersic")
                 .variable_absolute(a=0.1)
                 .galaxies.lens.light.centre
             )
 
     phase2 = LensSubtractedPhase(
-        phase_name="phase_2_lens_sie_source_sersic",
+        phase_name="phase_2__lens_sie__source_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
@@ -125,27 +125,27 @@ def make_pipeline(
             ## Lens Light, Sersic -> Sersic ###
 
             self.galaxies.lens.light = results.from_phase(
-                "phase_1_lens_sersic"
+                "phase_1__lens_sersic"
             ).variable.galaxies.lens.light
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
             self.galaxies.lens.mass = results.from_phase(
-                "phase_2_lens_sie_source_sersic"
+                "phase_2__lens_sie__source_sersic"
             ).variable.galaxies.lens.mass
 
             self.galaxies.lens.shear = results.from_phase(
-                "phase_2_lens_sie_source_sersic"
+                "phase_2__lens_sie__source_sersic"
             ).variable.galaxies.lens.shear
 
             ### Source Light, Sersic -> Sersic ###
 
             self.galaxies.source = results.from_phase(
-                "phase_2_lens_sie_source_sersic"
+                "phase_2__lens_sie__source_sersic"
             ).variable.galaxies.source
 
     phase3 = LensSourcePhase(
-        phase_name="phase_3_lens_sersic_sie_source_sersic",
+        phase_name="phase_3__lens_sersic_sie__source_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
@@ -179,27 +179,27 @@ def make_pipeline(
             ### Lens Light, Sersic -> Sersic ###
 
             self.galaxies.lens.light_mass.centre = results.from_phase(
-                "phase_3_lens_sersic_sie_source_sersic"
+                "phase_3__lens_sersic_sie__source_sersic"
             ).variable.galaxies.lens.light.centre
 
             self.galaxies.lens.light_mass.axis_ratio = results.from_phase(
-                "phase_3_lens_sersic_sie_source_sersic"
+                "phase_3__lens_sersic_sie__source_sersic"
             ).variable.galaxies.lens.light.axis_ratio
 
             self.galaxies.lens.light_mass.phi = results.from_phase(
-                "phase_3_lens_sersic_sie_source_sersic"
+                "phase_3__lens_sersic_sie__source_sersic"
             ).variable.galaxies.lens.light.phi
 
             self.galaxies.lens.light_mass.intensity = results.from_phase(
-                "phase_3_lens_sersic_sie_source_sersic"
+                "phase_3__lens_sersic_sie__source_sersic"
             ).variable.galaxies.lens.light.intensity
 
             self.galaxies.lens.light_mass.effective_radius = results.from_phase(
-                "phase_3_lens_sersic_sie_source_sersic"
+                "phase_3__lens_sersic_sie__source_sersic"
             ).variable.galaxies.lens.light.effective_radius
 
             self.galaxies.lens.light_mass.sersic_index = results.from_phase(
-                "phase_3_lens_sersic_sie_source_sersic"
+                "phase_3__lens_sersic_sie__source_sersic"
             ).variable.galaxies.lens.light.sersic_index
 
             ### Lens Mass, SIE ->  NFW ###
@@ -211,7 +211,7 @@ def make_pipeline(
             elif not pipeline_align_light_dark_centre:
 
                 self.galaxies.lens.dark.centre = (
-                    results.from_phase("phase_3_lens_sersic_sie_source_sersic")
+                    results.from_phase("phase_3__lens_sersic_sie__source_sersic")
                     .variable_absolute(a=0.05)
                     .galaxies.lens.mass.centre
                 )
@@ -219,13 +219,13 @@ def make_pipeline(
             ### Lens Shear, Shear -> Shear ###
 
             self.galaxies.lens.shear = results.from_phase(
-                "phase_3_lens_sersic_sie_source_sersic"
+                "phase_3__lens_sersic_sie__source_sersic"
             ).variable.galaxies.lens.shear
 
             ### Source Light, Sersic -> Sersic ###
 
             self.galaxies.source = results.from_phase(
-                "phase_3_lens_sersic_sie_source_sersic"
+                "phase_3__lens_sersic_sie__source_sersic"
             ).variable.galaxies.source
 
     phase4 = LensSourcePhase(
