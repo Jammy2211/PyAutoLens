@@ -194,9 +194,13 @@ def make_pipeline(
 
             ### Source Inversion, Inv -> Inv ###
 
-            self.galaxies.source = results.from_phase(
+            self.galaxies.source.pixelization = results.from_phase(
                 "phase_4__initialize_magnification_inversion"
-            ).constant.galaxies.source
+            ).constant.galaxies.source.pixelization
+
+            self.galaxies.source.regularization = results.from_phase(
+                "phase_4__initialize_magnification_inversion"
+            ).constant.galaxies.source.regularization
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
@@ -239,9 +243,17 @@ def make_pipeline(
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
 
-            self.galaxies.lens = results.from_phase(
+            self.galaxies.lens.light = results.from_phase(
                 "phase_5__lens_sersic_sie__source_magnification_inversion"
-            ).constant.galaxies.lens
+            ).constant.galaxies.lens.light
+
+            self.galaxies.lens.mass = results.from_phase(
+                "phase_5__lens_sersic_sie__source_magnification_inversion"
+            ).constant.galaxies.lens.mass
+
+            self.galaxies.lens.shear = results.from_phase(
+                "phase_5__lens_sersic_sie__source_magnification_inversion"
+            ).constant.galaxies.lens.shear
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
@@ -290,9 +302,13 @@ def make_pipeline(
 
             ### Source Inversion, Inv -> Inv ###
 
-            self.galaxies.source = results.from_phase(
+            self.galaxies.source.pixelization = results.from_phase(
                 "phase_6_initialize_inversion"
-            ).hyper_combined.constant.galaxies.source
+            ).hyper_combined.constant.galaxies.source.pixelization
+
+            self.galaxies.source.pixelization = results.from_phase(
+                "phase_6_initialize_inversion"
+            ).hyper_combined.constant.galaxies.source.pixelization
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
