@@ -212,10 +212,15 @@ class LensProfileFit(LensTracerFit):
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
 
-        image_1d = image_1d_from_lens_data_and_hyper_image_sky(lens_data=lens_data, hyper_image_sky=hyper_image_sky)
+        image_1d = image_1d_from_lens_data_and_hyper_image_sky(
+            lens_data=lens_data, hyper_image_sky=hyper_image_sky
+        )
 
         noise_map_1d = noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
-            lens_data=lens_data, tracer=tracer, hyper_background_noise=hyper_background_noise)
+            lens_data=lens_data,
+            tracer=tracer,
+            hyper_background_noise=hyper_background_noise,
+        )
 
         blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
             convolver_image=lens_data.convolver_image
@@ -304,10 +309,15 @@ class LensInversionFit(InversionFit):
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
 
-        image_1d = image_1d_from_lens_data_and_hyper_image_sky(lens_data=lens_data, hyper_image_sky=hyper_image_sky)
+        image_1d = image_1d_from_lens_data_and_hyper_image_sky(
+            lens_data=lens_data, hyper_image_sky=hyper_image_sky
+        )
 
         noise_map_1d = noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
-            lens_data=lens_data, tracer=tracer, hyper_background_noise=hyper_background_noise)
+            lens_data=lens_data,
+            tracer=tracer,
+            hyper_background_noise=hyper_background_noise,
+        )
 
         inversion = tracer.inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
             image_1d=image_1d,
@@ -368,10 +378,15 @@ class LensProfileInversionFit(InversionFit):
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
 
-        image_1d = image_1d_from_lens_data_and_hyper_image_sky(lens_data=lens_data, hyper_image_sky=hyper_image_sky)
+        image_1d = image_1d_from_lens_data_and_hyper_image_sky(
+            lens_data=lens_data, hyper_image_sky=hyper_image_sky
+        )
 
         noise_map_1d = noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
-            lens_data=lens_data, tracer=tracer, hyper_background_noise=hyper_background_noise)
+            lens_data=lens_data,
+            tracer=tracer,
+            hyper_background_noise=hyper_background_noise,
+        )
 
         self.blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
             convolver_image=lens_data.convolver_image
@@ -478,14 +493,14 @@ class LensPositionFit(object):
 def image_1d_from_lens_data_and_hyper_image_sky(lens_data, hyper_image_sky):
 
     if hyper_image_sky is not None:
-        return hyper_image_sky.image_scaled_sky_from_image(
-            image=lens_data.image_1d
-        )
+        return hyper_image_sky.image_scaled_sky_from_image(image=lens_data.image_1d)
     else:
         return lens_data.image_1d
 
 
-def noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(lens_data, tracer, hyper_background_noise):
+def noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
+    lens_data, tracer, hyper_background_noise
+):
 
     if hyper_background_noise is not None:
         noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
@@ -501,6 +516,8 @@ def noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(lens_data, tr
     if hyper_noise_map_1d is not None:
         noise_map_1d = noise_map_1d + hyper_noise_map_1d
         if lens_data.hyper_noise_map_max is not None:
-            noise_map_1d[noise_map_1d > lens_data.hyper_noise_map_max] = lens_data.hyper_noise_map_max
+            noise_map_1d[
+                noise_map_1d > lens_data.hyper_noise_map_max
+            ] = lens_data.hyper_noise_map_max
 
     return noise_map_1d

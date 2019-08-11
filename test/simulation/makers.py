@@ -279,9 +279,7 @@ def make_no_lens_light__source_cuspy(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light_sis__source_smooth(
-    data_resolutions, sub_grid_size
-):
+def make_no_lens_light_sis__source_smooth(data_resolutions, sub_grid_size):
 
     data_type = "no_lens_light_sis__source_smooth"
 

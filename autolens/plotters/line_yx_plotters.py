@@ -4,6 +4,7 @@ from autolens.plotters import plotter_util
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def plot_line(
     y,
     x,
@@ -25,7 +26,8 @@ def plot_line(
     legend_fontsize=12,
     output_path=None,
     output_format="show",
-    output_filename="quantity_vs_radius"):
+    output_filename="quantity_vs_radius",
+):
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
     plotter_util.set_title(title=title, titlesize=titlesize)
@@ -33,10 +35,8 @@ def plot_line(
     if x is None:
         x = np.arange(len(y))
 
-    plot_y_vs_x(
-        y=y, x=x, plot_axis_type=plot_axis_type, label=label
-    )
-    
+    plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
+
     set_xy_labels_and_ticksize(
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -63,7 +63,7 @@ def plot_line(
         output_format=output_format,
     )
     plotter_util.close_figure(as_subplot=as_subplot)
-    
+
 
 def plot_y_vs_x(y, x, plot_axis_type, label):
 
@@ -78,7 +78,6 @@ def plot_y_vs_x(y, x, plot_axis_type, label):
             "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
             "| semilogy | loglog)"
         )
-
 
 
 def set_xy_labels_and_ticksize(
@@ -124,7 +123,8 @@ def set_xy_labels_and_ticksize(
         )
 
     plt.tick_params(labelsize=xyticksize)
-    
+
+
 def plot_vertical_lines(vertical_lines, vertical_line_labels, units, kpc_per_arcsec):
 
     if vertical_lines is [] or vertical_lines is None:
@@ -143,7 +143,7 @@ def plot_vertical_lines(vertical_lines, vertical_line_labels, units, kpc_per_arc
             )
 
         plt.axvline(x=x_value_plot, label=vertical_line_label, linestyle="--")
-    
+
 
 def set_legend(plot_legend, legend_fontsize):
     if plot_legend:
