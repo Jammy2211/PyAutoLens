@@ -1,5 +1,6 @@
 from autolens.plotters import line_yx_plotters
 
+
 def plot_quantity_as_function_of_radius(
     quantity,
     radii,
@@ -29,15 +30,30 @@ def plot_quantity_as_function_of_radius(
 
     if effective_radius_line is not None:
         vertical_lines.append(effective_radius_line)
-        vertical_line_labels.append('Effective Radius')
+        vertical_line_labels.append("Effective Radius")
 
     if einstein_radius_line is not None:
         vertical_lines.append(einstein_radius_line)
-        vertical_line_labels.append('Einstein Radius')
+        vertical_line_labels.append("Einstein Radius")
 
     line_yx_plotters.plot_line(
-        y=quantity, x=radii, as_subplot=as_subplot, label=label, plot_axis_type=plot_axis_type, units=units,
-        kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, plot_legend=plot_legend, title=title, ylabel=ylabel,
-        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize, legend_fontsize=legend_fontsize,
-        output_path=output_path, output_format=output_format, output_filename=output_filename
+        y=quantity,
+        x=radii,
+        as_subplot=as_subplot,
+        label=label,
+        plot_axis_type=plot_axis_type,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        plot_legend=plot_legend,
+        title=title,
+        ylabel=ylabel,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        legend_fontsize=legend_fontsize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
     )

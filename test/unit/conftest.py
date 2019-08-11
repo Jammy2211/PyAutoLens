@@ -134,21 +134,26 @@ def make_real_visibilities_7():
 def make_imaginary_visibilities_7():
     return mock_data.MockImaginaryVisibilities(shape=7, value=1.0)
 
+
 @pytest.fixture(name="visibilities_noise_map_7")
 def make_visibilities_noisse_map_7():
     return mock_data.MockVisibilitiesNoiseMap(shape=7, value=1.0)
 
+
 @pytest.fixture(name="primary_beam_3x3")
 def make_primary_beam_3x3():
-    return mock_data.MockPrimaryBeam(shape=(3,3), value=1.0)
+    return mock_data.MockPrimaryBeam(shape=(3, 3), value=1.0)
+
 
 @pytest.fixture(name="u_wavelengths_7")
 def make_u_wavelengths_7():
     return mock_data.MockUBaselines(shape=7, value=1.0)
 
+
 @pytest.fixture(name="v_wavelengths_7")
 def make_v_wavelengths_7():
     return mock_data.MockVBaselines(shape=7, value=1.0)
+
 
 @pytest.fixture(name="interferometer_data_7")
 def make_interferometer_data_7x7(
@@ -156,7 +161,11 @@ def make_interferometer_data_7x7(
     psf_3x3,
     noise_map_7x7,
     real_visibilities_7,
-        imaginary_visibilities_7, visibilities_noise_map_7, primary_beam_3x3, u_wavelengths_7, v_wavelengths_7,
+    imaginary_visibilities_7,
+    visibilities_noise_map_7,
+    primary_beam_3x3,
+    u_wavelengths_7,
+    v_wavelengths_7,
 ):
     return mock_data.MockInterferometerData(
         image=image_7x7,

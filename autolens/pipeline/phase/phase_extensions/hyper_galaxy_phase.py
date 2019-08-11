@@ -90,12 +90,8 @@ class HyperGalaxyPhase(HyperPhase):
                     contribution_map=contribution_map_2d,
                     noise_map=self.lens_data.noise_map(return_in_2d=True),
                     hyper_noise_map=fit.noise_map(return_in_2d=True),
-                    chi_squared_map=fit_normal.chi_squared_map(
-                        return_in_2d=True
-                    ),
-                    hyper_chi_squared_map=fit.chi_squared_map(
-                        return_in_2d=True
-                    ),
+                    chi_squared_map=fit_normal.chi_squared_map(return_in_2d=True),
+                    hyper_chi_squared_map=fit.chi_squared_map(return_in_2d=True),
                     output_path=subplot_path,
                     output_format="png",
                 )
@@ -140,7 +136,9 @@ class HyperGalaxyPhase(HyperPhase):
             self, hyper_galaxy, hyper_image_sky, hyper_background_noise
         ):
 
-            image_1d = lens_fit.image_1d_from_lens_data_and_hyper_image_sky(lens_data=self.lens_data, hyper_image_sky=hyper_image_sky)
+            image_1d = lens_fit.image_1d_from_lens_data_and_hyper_image_sky(
+                lens_data=self.lens_data, hyper_image_sky=hyper_image_sky
+            )
 
             if hyper_background_noise is not None:
                 noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
@@ -157,7 +155,9 @@ class HyperGalaxyPhase(HyperPhase):
 
             noise_map_1d = noise_map_1d + hyper_noise_map_1d
             if self.lens_data.hyper_noise_map_max is not None:
-                noise_map_1d[noise_map_1d > self.lens_data.hyper_noise_map_max] = self.lens_data.hyper_noise_map_max
+                noise_map_1d[
+                    noise_map_1d > self.lens_data.hyper_noise_map_max
+                ] = self.lens_data.hyper_noise_map_max
 
             return lens_fit.LensDataFit(
                 image_1d=image_1d,
@@ -207,7 +207,9 @@ class HyperGalaxyPhase(HyperPhase):
             uses_cluster_inversion=cast(
                 phase_imaging.PhaseImaging, phase
             ).uses_cluster_inversion,
-            hyper_noise_map_max=cast(phase_imaging.PhaseImaging, phase).hyper_noise_map_max
+            hyper_noise_map_max=cast(
+                phase_imaging.PhaseImaging, phase
+            ).hyper_noise_map_max,
         )
 
         model_image_1d = results.last.hyper_model_image_1d
@@ -360,7 +362,9 @@ class HyperGalaxyAllPhase(HyperPhase):
             uses_cluster_inversion=cast(
                 phase_imaging.PhaseImaging, phase
             ).uses_cluster_inversion,
-            hyper_noise_map_max=cast(phase_imaging.PhaseImaging, phase).hyper_noise_map_max
+            hyper_noise_map_max=cast(
+                phase_imaging.PhaseImaging, phase
+            ).hyper_noise_map_max,
         )
 
         model_image_1d = results.last.hyper_model_image_1d

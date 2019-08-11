@@ -32,7 +32,7 @@ def fit_with_offset_centre(centre):
         redshift=0.5,
         mass=mp.EllipticalIsothermal(
             centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
-        )
+        ),
     )
     source_galaxy = g.Galaxy(
         redshift=1.0,

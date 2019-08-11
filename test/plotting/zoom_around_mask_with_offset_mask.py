@@ -28,7 +28,7 @@ lens_galaxy = g.Galaxy(
     redshift=0.5,
     bulge=lp.EllipticalDevVaucouleurs(
         centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.1, effective_radius=1.0
-    )
+    ),
 )
 
 lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
