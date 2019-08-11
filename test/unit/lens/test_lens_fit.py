@@ -585,6 +585,120 @@ class TestLensProfileFit:
                 6.25 + 2.0 * np.log(2 * np.pi * 2.0 ** 2.0)
             )
 
+        def test__hyper_noise_map_max_changes_noise_map__reflected_in_likelihood(
+            self
+        ):
+
+            psf = abstract_data.PSF(
+                array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+                pixel_scale=1.0,
+            )
+
+            ccd_data = ccd.CCDData(
+                5.0 * np.ones((3, 4)),
+                pixel_scale=1.0,
+                psf=psf,
+                noise_map=np.ones((3, 4)),
+            )
+            ccd_data.image[1, 2] = 4.0
+
+            mask = msk.Mask(
+                array=np.array(
+                    [
+                        [True, True, True, True],
+                        [True, False, False, True],
+                        [True, True, True, True],
+                    ]
+                ),
+                pixel_scale=1.0,
+            )
+
+            lens_data_7x7 = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1, hyper_noise_map_max=1.0)
+
+            # Setup as a ray trace instance, using a light profile for the lens
+
+            g0 = g.Galaxy(
+                redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
+            )
+            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+                galaxies=[g0], image_plane_grid_stack=lens_data_7x7.grid_stack
+            )
+
+            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
+
+            fit = lens_fit.LensProfileFit(
+                lens_data=lens_data_7x7,
+                tracer=tracer,
+                hyper_background_noise=hyper_background_noise,
+            )
+
+            assert (fit.mask_1d == np.array([False, False])).all()
+            assert (
+                fit.mask(return_in_2d=True)
+                == np.array(
+                    [
+                        [True, True, True, True],
+                        [True, False, False, True],
+                        [True, True, True, True],
+                    ]
+                )
+            ).all()
+
+            assert (fit.image_1d == np.array([5.0, 4.0])).all()
+            assert (
+                fit.image(return_in_2d=True)
+                == np.array(
+                    [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
+                )
+            ).all()
+
+            assert (fit.noise_map_1d == np.array([1.0, 1.0])).all()
+            assert (
+                fit.noise_map(return_in_2d=True)
+                == np.array(
+                    [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
+                )
+            ).all()
+
+            assert (fit.model_image_1d == np.array([1.0, 1.0])).all()
+            assert (
+                fit.model_image(return_in_2d=True)
+                == np.array(
+                    [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
+                )
+            ).all()
+
+            assert (fit.residual_map_1d == np.array([4.0, 3.0])).all()
+            assert (
+                fit.residual_map(return_in_2d=True)
+                == np.array(
+                    [[0.0, 0.0, 0.0, 0.0], [0.0, 4.0, 3.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
+                )
+            ).all()
+
+            assert (fit.normalized_residual_map_1d == np.array([4.0, 3.0])).all()
+            assert (
+                fit.normalized_residual_map(return_in_2d=True)
+                == np.array(
+                    [[0.0, 0.0, 0.0, 0.0], [0.0, 4.0, 3.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
+                )
+            ).all()
+
+            assert (fit.chi_squared_map_1d == np.array([16.0, 9.0])).all()
+            assert (
+                fit.chi_squared_map(return_in_2d=True)
+                == np.array(
+                    [[0.0, 0.0, 0.0, 0.0], [0.0, 16.0, 9.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
+                )
+            ).all()
+
+            assert fit.chi_squared == 25.0
+            assert fit.reduced_chi_squared == 25.0 / 2.0
+            assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
+            assert fit.likelihood == -0.5 * (
+                25.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0)
+            )
+
     class TestCompareToManual:
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_7x7):
 
@@ -767,6 +881,9 @@ class TestLensProfileFit:
             self, lens_data_7x7
         ):
 
+            hyper_noise_map_max = 0.2
+            lens_data_7x7.hyper_noise_map_max = hyper_noise_map_max
+
             hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
 
             hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
@@ -810,6 +927,9 @@ class TestLensProfileFit:
             )
 
             hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
+
+            hyper_noise_map_1d[hyper_noise_map_1d > hyper_noise_map_max] = hyper_noise_map_max
+
             hyper_noise_map_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d
             )
@@ -1127,6 +1247,9 @@ class TestLensInversionFit:
 
         def test___all_lens_fit_quantities__include_hyper_methods(self, lens_data_7x7):
 
+            hyper_noise_map_max = 0.2
+            lens_data_7x7.hyper_noise_map_max = hyper_noise_map_max
+
             hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
 
             hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
@@ -1171,6 +1294,8 @@ class TestLensInversionFit:
                 noise_map_1d=lens_data_7x7.noise_map_1d
             )
             hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
+            hyper_noise_map_1d[hyper_noise_map_1d > hyper_noise_map_max] = hyper_noise_map_max
+
             hyper_noise_map_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d
             )
@@ -1578,6 +1703,9 @@ class TestLensProfileInversionFit:
 
         def test___all_lens_fit_quantities__include_hyper_methods(self, lens_data_7x7):
 
+            hyper_noise_map_max = 0.2
+            lens_data_7x7.hyper_noise_map_max = hyper_noise_map_max
+
             hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
 
             hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
@@ -1622,6 +1750,8 @@ class TestLensProfileInversionFit:
                 noise_map_1d=lens_data_7x7.noise_map_1d
             )
             hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
+            hyper_noise_map_1d[hyper_noise_map_1d > hyper_noise_map_max] = hyper_noise_map_max
+
             hyper_noise_map_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
                 array_1d=hyper_noise_map_1d
             )

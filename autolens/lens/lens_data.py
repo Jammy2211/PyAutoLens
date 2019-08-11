@@ -1,3 +1,4 @@
+import autofit as af
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.data.convolution import ConvolverImage
@@ -20,6 +21,7 @@ class LensData(object):
         cluster_pixel_limit=None,
         uses_inversion=True,
         uses_cluster_inversion=True,
+        hyper_noise_map_max=None,
     ):
         """
         The lens instrument is the collection of instrument (image, noise-map, PSF), a mask, grid_stack, convolver \
@@ -152,6 +154,8 @@ class LensData(object):
             self.cluster_pixel_limit = None
             self.cluster_pixel_scale = None
 
+        self.hyper_noise_map_max = hyper_noise_map_max
+
     def new_lens_data_with_modified_image(self, modified_image):
 
         ccd_data_with_modified_image = self.ccd_data.new_ccd_data_with_modified_image(
@@ -170,6 +174,7 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_inversion=self.uses_inversion,
             uses_cluster_inversion=self.uses_cluster_inversion,
+            hyper_noise_map_max=self.hyper_noise_map_max,
         )
 
     def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
@@ -193,6 +198,7 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_inversion=self.uses_inversion,
             uses_cluster_inversion=self.uses_cluster_inversion,
+            hyper_noise_map_max=self.hyper_noise_map_max
         )
 
     def new_lens_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
@@ -213,6 +219,7 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_inversion=self.uses_inversion,
             uses_cluster_inversion=self.uses_cluster_inversion,
+            hyper_noise_map_max=self.hyper_noise_map_max
         )
 
     @property
@@ -264,3 +271,4 @@ class LensData(object):
             self.uses_cluster_inversion = obj.uses_cluster_inversion
             self.cluster = obj.cluster
             self.cluster_pixel_limit = obj.cluster_pixel_limit
+            self.hyper_noise_map_max = obj.hyper_noise_map_max

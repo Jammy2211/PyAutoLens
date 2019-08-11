@@ -13,6 +13,7 @@ from autolens.plotters import plotter_util
 
 def plot_grid(
     grid,
+    colors=None,
     axis_limits=None,
     points=None,
     as_subplot=False,
@@ -22,10 +23,17 @@ def plot_grid(
     pointsize=5,
     pointcolor="k",
     xyticksize=16,
+    cmap="jet",
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
     title="Grid",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
+    symmetric_around_centre=True,
     output_path=None,
     output_format="show",
     output_filename="grid",
@@ -75,18 +83,34 @@ def plot_grid(
     grid = convert_grid_units(
         grid_arcsec=grid, units=units, kpc_per_arcsec=kpc_per_arcsec
     )
-    plt.scatter(
-        y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), s=pointsize, marker="."
-    )
-    plotter_util.set_title(title=title, titlesize=titlesize)
-    set_xy_labels(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize)
 
-    set_axis_limits(axis_limits)
-    plot_points(grid, points, pointcolor)
+    if colors is not None:
+
+        plt.cm.get_cmap(cmap)
+
+    plt.scatter(
+        y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), c=colors, s=pointsize, marker=".", cmap=cmap,
+    )
+
+    if colors is not None:
+
+        plotter_util.set_colorbar(
+            cb_ticksize=cb_ticksize,
+            cb_fraction=cb_fraction,
+            cb_pad=cb_pad,
+            cb_tick_values=cb_tick_values,
+            cb_tick_labels=cb_tick_labels,
+        )
+
+    plotter_util.set_title(title=title, titlesize=titlesize)
+    set_xy_labels(units=units, kpc_per_arcsec=kpc_per_arcsec, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
+
+    set_axis_limits(axis_limits=axis_limits, grid=grid, symmetric_around_centre=symmetric_around_centre)
+    plot_points(grid=grid, points=points, pointcolor=pointcolor)
 
     plt.tick_params(labelsize=xyticksize)
     plotter_util.output_figure(
-        None, as_subplot, output_path, output_filename, output_format
+        array=None, as_subplot=as_subplot, output_path=output_path, output_filename=output_filename, output_format=output_format
     )
     plotter_util.close_figure(as_subplot=as_subplot)
 
@@ -149,7 +173,7 @@ def set_xy_labels(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize):
     plt.tick_params(labelsize=xyticksize)
 
 
-def set_axis_limits(axis_limits):
+def set_axis_limits(axis_limits, grid, symmetric_around_centre):
     """Set the axis limits of the figure the grid is plotted on.
 
     Parameters
@@ -158,6 +182,15 @@ def set_axis_limits(axis_limits):
         The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
     """
     if axis_limits is not None:
+        plt.axis(axis_limits)
+    elif symmetric_around_centre:
+        ymin = np.min(grid[:,0])
+        ymax = np.max(grid[:,0])
+        xmin = np.min(grid[:,1])
+        xmax = np.max(grid[:,1])
+        x = np.max([np.abs(xmin), np.abs(xmax)])
+        y = np.max([np.abs(ymin), np.abs(ymax)])
+        axis_limits = [-x, x, -y, y]
         plt.axis(axis_limits)
 
 
