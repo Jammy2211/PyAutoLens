@@ -89,7 +89,12 @@ def plot_grid(
         plt.cm.get_cmap(cmap)
 
     plt.scatter(
-        y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), c=colors, s=pointsize, marker=".", cmap=cmap,
+        y=np.asarray(grid[:, 0]),
+        x=np.asarray(grid[:, 1]),
+        c=colors,
+        s=pointsize,
+        marker=".",
+        cmap=cmap,
     )
 
     if colors is not None:
@@ -103,14 +108,28 @@ def plot_grid(
         )
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    set_xy_labels(units=units, kpc_per_arcsec=kpc_per_arcsec, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
+    set_xy_labels(
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+    )
 
-    set_axis_limits(axis_limits=axis_limits, grid=grid, symmetric_around_centre=symmetric_around_centre)
+    set_axis_limits(
+        axis_limits=axis_limits,
+        grid=grid,
+        symmetric_around_centre=symmetric_around_centre,
+    )
     plot_points(grid=grid, points=points, pointcolor=pointcolor)
 
     plt.tick_params(labelsize=xyticksize)
     plotter_util.output_figure(
-        array=None, as_subplot=as_subplot, output_path=output_path, output_filename=output_filename, output_format=output_format
+        array=None,
+        as_subplot=as_subplot,
+        output_path=output_path,
+        output_filename=output_filename,
+        output_format=output_format,
     )
     plotter_util.close_figure(as_subplot=as_subplot)
 
@@ -184,10 +203,10 @@ def set_axis_limits(axis_limits, grid, symmetric_around_centre):
     if axis_limits is not None:
         plt.axis(axis_limits)
     elif symmetric_around_centre:
-        ymin = np.min(grid[:,0])
-        ymax = np.max(grid[:,0])
-        xmin = np.min(grid[:,1])
-        xmax = np.max(grid[:,1])
+        ymin = np.min(grid[:, 0])
+        ymax = np.max(grid[:, 0])
+        xmin = np.min(grid[:, 1])
+        xmax = np.max(grid[:, 1])
         x = np.max([np.abs(xmin), np.abs(xmax)])
         y = np.max([np.abs(ymin), np.abs(ymax)])
         axis_limits = [-x, x, -y, y]

@@ -198,7 +198,7 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_inversion=self.uses_inversion,
             uses_cluster_inversion=self.uses_cluster_inversion,
-            hyper_noise_map_max=self.hyper_noise_map_max
+            hyper_noise_map_max=self.hyper_noise_map_max,
         )
 
     def new_lens_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
@@ -219,7 +219,7 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_inversion=self.uses_inversion,
             uses_cluster_inversion=self.uses_cluster_inversion,
-            hyper_noise_map_max=self.hyper_noise_map_max
+            hyper_noise_map_max=self.hyper_noise_map_max,
         )
 
     @property

@@ -122,8 +122,8 @@ class PhaseImaging(Phase):
         self.hyper_background_noise = hyper_background_noise
 
         self.hyper_noise_map_max = af.conf.instance.general.get(
-                "hyper", "hyper_noise_map_max", float
-            )
+            "hyper", "hyper_noise_map_max", float
+        )
 
     @property
     def uses_hyper_images(self):
@@ -327,7 +327,7 @@ class PhaseImaging(Phase):
                 phase_hyper_galaxy = (
                     phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
                 )
-            elif include_background_sky and not include_background_noise:
+            elif not include_background_sky and include_background_noise:
                 phase_hyper_galaxy = (
                     phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
                 )
