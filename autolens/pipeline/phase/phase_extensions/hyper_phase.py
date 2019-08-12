@@ -77,7 +77,7 @@ class HyperPhase(object):
 
     def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
         """
-        Run the normal phase and then the hyper_galaxy phase.
+        Run the hyper phase and then the hyper_galaxy phase.
 
         Parameters
         ----------
