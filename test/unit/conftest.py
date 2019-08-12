@@ -145,14 +145,9 @@ def make_primary_beam_3x3():
     return mock_data.MockPrimaryBeam(shape=(3, 3), value=1.0)
 
 
-@pytest.fixture(name="u_wavelengths_7")
-def make_u_wavelengths_7():
-    return mock_data.MockUBaselines(shape=7, value=1.0)
-
-
-@pytest.fixture(name="v_wavelengths_7")
-def make_v_wavelengths_7():
-    return mock_data.MockVBaselines(shape=7, value=1.0)
+@pytest.fixture(name="uv_wavelengths_7")
+def make_uv_wavelengths_7():
+    return mock_data.MockUVWavelengths(shape=7, value=1.0)
 
 
 @pytest.fixture(name="interferometer_data_7")
@@ -164,8 +159,7 @@ def make_interferometer_data_7x7(
     imaginary_visibilities_7,
     visibilities_noise_map_7,
     primary_beam_3x3,
-    u_wavelengths_7,
-    v_wavelengths_7,
+    uv_wavelengths_7,
 ):
     return mock_data.MockInterferometerData(
         image=image_7x7,
@@ -176,8 +170,7 @@ def make_interferometer_data_7x7(
         imaginary_visibilities=imaginary_visibilities_7,
         visibilities_noise_map=visibilities_noise_map_7,
         primary_beam=primary_beam_3x3,
-        u_wavelengths=u_wavelengths_7,
-        v_wavelengths=v_wavelengths_7,
+        uv_wavelengths=uv_wavelengths_7,
     )
 
 

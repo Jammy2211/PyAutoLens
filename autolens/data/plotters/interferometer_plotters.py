@@ -321,7 +321,7 @@ def plot_u_wavelengths(
     """
 
     data_plotters.plot_u_wavelengths(
-        u_wavelengths=interferometer_data.u_wavelengths,
+        uv_wavelengths=interferometer_data.uv_wavelengths,
         as_subplot=as_subplot,
         label=label,
         units=units,
@@ -376,7 +376,7 @@ def plot_v_wavelengths(
     """
 
     data_plotters.plot_v_wavelengths(
-        v_wavelengths=interferometer_data.v_wavelengths,
+        uv_wavelengths=interferometer_data.uv_wavelengths,
         as_subplot=as_subplot,
         label=label,
         units=units,

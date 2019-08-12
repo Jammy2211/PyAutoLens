@@ -527,13 +527,13 @@ class TestGrid:
 
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
-        assert grid.to_radians[0, 0] == pytest.approx(0.00000969627362, 1.0e-8)
-        assert grid.to_radians[0, 1] == pytest.approx(0.00000484813681, 1.0e-8)
+        assert grid.in_radians[0, 0] == pytest.approx(0.00000969627362, 1.0e-8)
+        assert grid.in_radians[0, 1] == pytest.approx(0.00000484813681, 1.0e-8)
 
-        assert grid.to_radians[0, 0] == pytest.approx(
+        assert grid.in_radians[0, 0] == pytest.approx(
             2.0 * np.pi / (180 * 3600), 1.0e-8
         )
-        assert grid.to_radians[0, 1] == pytest.approx(
+        assert grid.in_radians[0, 1] == pytest.approx(
             1.0 * np.pi / (180 * 3600), 1.0e-8
         )
 
