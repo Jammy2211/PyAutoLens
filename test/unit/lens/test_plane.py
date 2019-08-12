@@ -2088,6 +2088,65 @@ class TestAbstractDataPlane(object):
             assert (blurred_images_1d_of_galaxies[0] == blurred_g0_image).all()
             assert (blurred_images_1d_of_galaxies[1] == blurred_g1_image).all()
 
+    class TestVisibilities:
+        def test__real_visibilities_from_uv_wavelengths(
+            self, grid_stack_7x7, uv_wavelengths_7
+        ):
+
+            g0 = g.Galaxy(
+                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0)
+            )
+
+            g0_image_1d = g0.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=True
+            )
+
+            g0_blurring_image_1d = g0.intensities_from_grid(
+                grid=grid_stack_7x7.blurring, return_in_2d=False, return_binned=False
+            )
+
+            g1_image_1d = g1.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=True
+            )
+
+            g1_blurring_image_1d = g1.intensities_from_grid(
+                grid=grid_stack_7x7.blurring, return_in_2d=False, return_binned=False
+            )
+
+            blurred_g0_image = convolver_image_7x7.convolve_image(
+                image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
+            )
+
+            blurred_g1_image = convolver_image_7x7.convolve_image(
+                image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
+            )
+
+            plane = pl.AbstractDataPlane(
+                redshift=0.5,
+                galaxies=[g0, g1],
+                grid_stack=grid_stack_7x7,
+                compute_deflections=False,
+                border=None,
+            )
+
+            blurred_image_1d = plane.blurred_profile_image_plane_image_1d_from_convolver_image(
+                convolver_image=convolver_image_7x7
+            )
+
+            assert blurred_image_1d == pytest.approx(
+                blurred_g0_image + blurred_g1_image, 1.0e-4
+            )
+
+            blurred_images_1d_of_galaxies = plane.blurred_profile_image_plane_images_1d_of_galaxies_from_convolver_image(
+                convolver_image=convolver_image_7x7
+            )
+
+            assert (blurred_images_1d_of_galaxies[0] == blurred_g0_image).all()
+            assert (blurred_images_1d_of_galaxies[1] == blurred_g1_image).all()
+
     class TestContributionMaps:
         def test__x2_hyper_galaxy__use_numerical_values_for_noise_scaling(self):
 
