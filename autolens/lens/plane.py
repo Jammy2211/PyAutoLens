@@ -708,6 +708,19 @@ class AbstractGriddedPlane(AbstractPlane):
             4,
         )
 
+    @reshape_returned_grid
+    def deflections_via_potential(
+            self, return_in_2d=True, return_binned=True
+    ):
+        potential_2d = self.potential(
+            return_in_2d=True, return_binned=False
+        )
+
+        deflections_y_2d = np.gradient(potential_2d, self.grid_stack.sub.in_2d[:, 0, 0], axis=0)
+        deflections_x_2d = np.gradient(potential_2d, self.grid_stack.sub.in_2d[0, :, 1], axis=1)
+
+        return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
+
 
 class AbstractDataPlane(AbstractGriddedPlane):
     def blurred_profile_image_plane_image_1d_from_convolver_image(
