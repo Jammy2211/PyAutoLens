@@ -917,7 +917,7 @@ class HyperGalaxy(object):
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
         """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in \
-        the regions of the image that the galaxy is located will be normal, to prevent \
+        the regions of the image that the galaxy is located will be hyper, to prevent \
         over-fitting of the galaxy.
         
         This is performed by first computing the hyper_galaxy-galaxy's 'contribution-map', \
@@ -959,7 +959,7 @@ class HyperGalaxy(object):
 
     def contribution_map_from_hyper_images(self, hyper_model_image, hyper_galaxy_image):
         """Compute the contribution map of a galaxy, which represents the fraction of
-        flux in each pixel that the galaxy is attributed to contain, normal to the
+        flux in each pixel that the galaxy is attributed to contain, hyper to the
         *contribution_factor* hyper_galaxy-parameter.
 
         This is computed by dividing that galaxy's flux by the total flux in that \
@@ -983,7 +983,7 @@ class HyperGalaxy(object):
         return contribution_map
 
     def hyper_noise_map_from_contribution_map(self, noise_map, contribution_map):
-        """Compute a normal galaxy hyper_galaxy noise-map from a baseline noise-map.
+        """Compute a hyper galaxy hyper_galaxy noise-map from a baseline noise-map.
 
         This uses the galaxy contribution map and the *noise_factor* and *noise_power*
         hyper_galaxy-parameters.
