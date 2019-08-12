@@ -1113,7 +1113,7 @@ class Grid(np.ndarray):
 
     @property
     @array_util.Memoizer()
-    def to_radians(self):
+    def in_radians(self):
         return (self * np.pi) / 648000.0
 
     @property
