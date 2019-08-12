@@ -507,34 +507,6 @@ class AbstractTracerData(AbstractTracer):
             regularization=self.regularizations_of_planes[0],
         )
 
-    def real_visibilities_from_uv_wavelengths(
-        self, uv_wavelengths
-    ):
-        """Extract the 1D image-plane image and 1D blurring image-plane image of every plane and blur each with the \
-        PSF using a convolver (see ccd.convolution).
-
-        These are summed to give the tracer's overall blurred image-plane image in 1D.
-
-        Parameters
-        ----------
-        convolver_image : hyper_galaxy.ccd.convolution.ConvolverImage
-            Class which performs the PSF convolution of a masked image in 1D.
-        """
-
-        real_visibilities = np.zeros(shape=(uv_wavelengths.shape[0]))
-
-        profile_image_plane_image = self.profile_image_plane_image(
-            return_in_2d=False, return_binned=True
-        )
-
-        grid_radians = self.grid_stack.regular.in_radians
-
-        for i in range(len(profile_image_plane_image)):
-
-            real_visibilities += profile_image_plane_image[i]*np.cos(2.0*np.pi*(grid_radians[i,1]*uv_wavelengths[:,0] - grid_radians[i,0]*uv_wavelengths[:,1]))
-
-        return real_visibilities
-
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
         hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_planes_from_noise_map_1d(
             noise_map_1d=noise_map_1d
