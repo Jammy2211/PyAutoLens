@@ -715,7 +715,7 @@ class AbstractGriddedPlane(AbstractPlane):
             self, return_in_2d=True, return_binned=True
     ):
         potential_2d = self.potential(
-            grid=self.grid_stack, return_in_2d=True, return_binned=False
+            grid=self.grid_stack.sub.unlensed, return_in_2d=True, return_binned=False
         )
 
         deflections_y_2d = np.gradient(potential_2d, self.grid_stack.sub.in_2d[:, 0, 0], axis=0)
