@@ -2030,15 +2030,21 @@ class TestAbstractPlaneGridded(object):
     class TestDeflectionAnglesviaPotential(object):
         def test__compare_plane_deflections_via_potential_and_calculation(self, grid_stack_7x7):
 
-            grid_stack_7x7.sub[5] = np.array([5.0, 2.0])
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05
+            )
 
             g0 = g.Galaxy(
                 redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
             )
 
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
             plane = pl.AbstractGriddedPlane(
-                galaxies=[g0],
-                grid_stack=grid_stack_7x7,
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
                 compute_deflections=True,
                 border=None,
                 redshift=None,
@@ -2055,6 +2061,8 @@ class TestAbstractPlaneGridded(object):
             mean_error = np.mean(
                 deflections_via_potential - deflections_via_calculation
             )
+
+            print(deflections_via_potential)
 
             assert mean_error < 1e-4
 

@@ -410,19 +410,19 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         a11 = self.lensing_jacobian_a11_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=grid, return_in_2d=False, return_binned=False
         )
 
         a12 = self.lensing_jacobian_a12_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=grid, return_in_2d=False, return_binned=False
         )
 
         a21 = self.lensing_jacobian_a21_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=grid, return_in_2d=False, return_binned=False
         )
 
         a22 = self.lensing_jacobian_a22_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=grid, return_in_2d=False, return_binned=False
         )
 
         return np.array([[a11, a12], [a21, a22]])
