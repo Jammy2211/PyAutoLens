@@ -813,11 +813,11 @@ class TestInterferometerFromFits(object):
         assert (interferometer_data.image == np.ones((3, 3))).all()
         assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
         assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.visibilities[:,0] == np.ones(3)).all()
-        assert (interferometer_data.visibilities[:,1] == 2.0 * np.ones(3)).all()
+        assert (interferometer_data.visibilities[:, 0] == np.ones(3)).all()
+        assert (interferometer_data.visibilities[:, 1] == 2.0 * np.ones(3)).all()
         assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
-        assert (interferometer_data.uv_wavelengths[:,0] == 4.0 * np.ones(3)).all()
-        assert (interferometer_data.uv_wavelengths[:,1] == 5.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:, 0] == 4.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:, 1] == 5.0 * np.ones(3)).all()
         assert (interferometer_data.primary_beam == 5.0 * np.ones((3, 3))).all()
 
         assert interferometer_data.pixel_scale == 0.1
@@ -878,11 +878,11 @@ class TestInterferometerFromFits(object):
         assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
         assert (interferometer_data.primary_beam == 4.0 * np.ones((3, 3))).all()
         assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.visibilities[:,0] == np.ones(3)).all()
-        assert (interferometer_data.visibilities[:,1] == 2.0 * np.ones(3)).all()
+        assert (interferometer_data.visibilities[:, 0] == np.ones(3)).all()
+        assert (interferometer_data.visibilities[:, 1] == 2.0 * np.ones(3)).all()
         assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
-        assert (interferometer_data.uv_wavelengths[:,0] == 4.0 * np.ones(3)).all()
-        assert (interferometer_data.uv_wavelengths[:,1] == 5.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:, 0] == 4.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:, 1] == 5.0 * np.ones(3)).all()
 
         assert interferometer_data.pixel_scale == 0.1
         assert interferometer_data.psf.pixel_scale == 0.1
@@ -1273,11 +1273,11 @@ class TestInterferometerFromFits(object):
         assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
         assert (interferometer_data.primary_beam == 5.0 * np.ones((3, 3))).all()
         assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.visibilities[:,0] == np.ones(3)).all()
-        assert (interferometer_data.visibilities[:,1] == 2.0 * np.ones(3)).all()
+        assert (interferometer_data.visibilities[:, 0] == np.ones(3)).all()
+        assert (interferometer_data.visibilities[:, 1] == 2.0 * np.ones(3)).all()
         assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
-        assert (interferometer_data.uv_wavelengths[:,0] == 4.0 * np.ones(3)).all()
-        assert (interferometer_data.uv_wavelengths[:,1] == 5.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:, 0] == 4.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:, 1] == 5.0 * np.ones(3)).all()
 
         assert interferometer_data.pixel_scale == 0.1
         assert interferometer_data.psf.pixel_scale == 0.1

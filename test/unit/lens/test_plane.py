@@ -2028,7 +2028,9 @@ class TestAbstractPlaneGridded(object):
             ) == (4, 4)
 
     class TestDeflectionAnglesviaPotential(object):
-        def test__compare_plane_deflections_via_potential_and_calculation(self, grid_stack_7x7):
+        def test__compare_plane_deflections_via_potential_and_calculation(
+            self, grid_stack_7x7
+        ):
 
             grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05
@@ -2126,6 +2128,65 @@ class TestAbstractDataPlane(object):
 
             assert (blurred_images_1d_of_galaxies[0] == blurred_g0_image).all()
             assert (blurred_images_1d_of_galaxies[1] == blurred_g1_image).all()
+
+    class TestVisibilities:
+        def test__visibilities_from_transformer(
+            self, grid_stack_7x7, transformer_7x7_7
+        ):
+
+            g0 = g.Galaxy(
+                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
+            )
+
+            intensities_1d = g0.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=True
+            )
+
+            visibilities = transformer_7x7_7.visibilities_from_intensities(
+                intensities_1d=intensities_1d
+            )
+
+            plane = pl.AbstractDataPlane(
+                redshift=0.5,
+                galaxies=[g0],
+                grid_stack=grid_stack_7x7,
+                compute_deflections=False,
+                border=None,
+            )
+
+            plane_visibilities = plane.visibilities_from_transformer(
+                transformer=transformer_7x7_7
+            )
+
+            assert (visibilities == plane_visibilities).all()
+
+            g1 = g.Galaxy(
+                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0)
+            )
+
+            intensities_1d = g0.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=True
+            ) + g1.intensities_from_grid(
+                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=True
+            )
+
+            visibilities = transformer_7x7_7.visibilities_from_intensities(
+                intensities_1d=intensities_1d
+            )
+
+            plane = pl.AbstractDataPlane(
+                redshift=0.5,
+                galaxies=[g0, g1],
+                grid_stack=grid_stack_7x7,
+                compute_deflections=False,
+                border=None,
+            )
+
+            plane_visibilities = plane.visibilities_from_transformer(
+                transformer=transformer_7x7_7
+            )
+
+            assert visibilities == pytest.approx(plane_visibilities, 1.0e-4)
 
     class TestContributionMaps:
         def test__x2_hyper_galaxy__use_numerical_values_for_noise_scaling(self):

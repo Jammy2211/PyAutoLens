@@ -33,7 +33,7 @@ class InterferometerData(abstract_data.AbstractData):
 
         self.visibilities = visibilities
         self.visibilities_magnitudes = np.sqrt(
-            np.square(visibilities[:,0]) + np.square(visibilities[:,1])
+            np.square(visibilities[:, 0]) + np.square(visibilities[:, 1])
         )
         self.visibilities_noise_map = visibilities_noise_map
         self.uv_wavelengths = uv_wavelengths
@@ -746,7 +746,7 @@ def output_interferometer_data_to_fits(
         and real_visibilities_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.visibilities[:,0],
+            array_1d=interferometer_data.visibilities[:, 0],
             file_path=real_visibilities_path,
             overwrite=overwrite,
         )
@@ -756,7 +756,7 @@ def output_interferometer_data_to_fits(
         and imaginary_visibilities_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.visibilities[:,1],
+            array_1d=interferometer_data.visibilities[:, 1],
             file_path=imaginary_visibilities_path,
             overwrite=overwrite,
         )
@@ -771,16 +771,22 @@ def output_interferometer_data_to_fits(
             overwrite=overwrite,
         )
 
-    if interferometer_data.uv_wavelengths is not None and u_wavelengths_path is not None:
+    if (
+        interferometer_data.uv_wavelengths is not None
+        and u_wavelengths_path is not None
+    ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.uv_wavelengths[:,0],
+            array_1d=interferometer_data.uv_wavelengths[:, 0],
             file_path=u_wavelengths_path,
             overwrite=overwrite,
         )
 
-    if interferometer_data.uv_wavelengths is not None and v_wavelengths_path is not None:
+    if (
+        interferometer_data.uv_wavelengths is not None
+        and v_wavelengths_path is not None
+    ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.uv_wavelengths[:,1],
+            array_1d=interferometer_data.uv_wavelengths[:, 1],
             file_path=v_wavelengths_path,
             overwrite=overwrite,
         )

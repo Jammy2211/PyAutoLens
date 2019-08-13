@@ -4,6 +4,7 @@ import scipy.signal
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
 from autolens.data.instrument import interferometer
+from autolens.data import fourier_transform
 from autolens.data.array import scaled_array
 
 
@@ -129,7 +130,7 @@ class MockPrimaryBeam(object):
 class MockVisibilities(np.ndarray):
     def __new__(cls, shape, value, pixel_scale=1.0):
 
-        array = value * np.ones(shape=(shape,2))
+        array = value * np.ones(shape=(shape, 2))
 
         obj = np.array(array, dtype="float64").view(cls)
         obj.pixel_scale = pixel_scale
@@ -153,13 +154,23 @@ class MockVisibilitiesNoiseMap(np.ndarray):
 class MockUVWavelengths(np.ndarray):
     def __new__(cls, shape, value, pixel_scale=1.0):
 
-        array = value * np.ones(shape=(shape, 2))
+        array = np.array(
+            [
+                [-55636.4609375, 171376.90625],
+                [-6903.21923828, 51155.578125],
+                [-63488.4140625, 4141.28369141],
+                [55502.828125, 47016.7265625],
+                [54160.75390625, -99354.1796875],
+                [-9327.66308594, -95212.90625],
+            ]
+        )
 
         obj = np.array(array, dtype="float64").view(cls)
         obj.pixel_scale = pixel_scale
         obj.origin = (0.0, 0.0)
 
         return obj
+
 
 class MockInterferometerData(interferometer.InterferometerData):
     def __init__(
@@ -183,4 +194,12 @@ class MockInterferometerData(interferometer.InterferometerData):
             visibilities=visibilities,
             visibilities_noise_map=visibilities_noise_map,
             uv_wavelengths=uv_wavelengths,
+        )
+
+
+class MockTransformer(fourier_transform.Transformer):
+    def __init__(self, uv_wavelengths, grid_radians):
+
+        super(MockTransformer, self).__init__(
+            uv_wavelengths=uv_wavelengths, grid_radians=grid_radians
         )

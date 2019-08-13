@@ -822,7 +822,8 @@ class Grid(np.ndarray):
             arr=mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
                 sub_grid_1d=self.unlensed_grid_1d,
                 mask=self.mask,
-                sub_grid_size=self.sub_grid_size),
+                sub_grid_size=self.sub_grid_size,
+            ),
             mask=self.mask,
             sub_grid_size=self.sub_grid_size,
         )
@@ -833,7 +834,8 @@ class Grid(np.ndarray):
             arr=mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
                 mask=np.full(self.mask.shape, False),
                 sub_grid_1d=self.unlensed_unmasked_grid_1d,
-                sub_grid_size=self.sub_grid_size),
+                sub_grid_size=self.sub_grid_size,
+            ),
             mask=self.mask,
             sub_grid_size=self.sub_grid_size,
         )

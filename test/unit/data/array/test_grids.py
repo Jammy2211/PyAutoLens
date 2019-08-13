@@ -163,7 +163,14 @@ class TestGrid:
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
         assert grid.unlensed_grid_2d == pytest.approx(
-            np.array([[[0,0], [1, 0], [0,0]], [[0, -1], [0, 0], [0, 1]], [[0,0], [-1, 0], [0,0]]]), 1e-4
+            np.array(
+                [
+                    [[0, 0], [1, 0], [0, 0]],
+                    [[0, -1], [0, 0], [0, 1]],
+                    [[0, 0], [-1, 0], [0, 0]],
+                ]
+            ),
+            1e-4,
         )
 
         grid_via_util = grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(

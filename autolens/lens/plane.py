@@ -711,65 +711,71 @@ class AbstractGriddedPlane(AbstractPlane):
         )
 
     @reshape_returned_grid
-    def deflections_via_potential(
-            self, return_in_2d=True, return_binned=True
-    ):
-        potential_2d = self.potential(
-            return_in_2d=True, return_binned=False
-        )
+    def deflections_via_potential(self, return_in_2d=True, return_binned=True):
+        potential_2d = self.potential(return_in_2d=True, return_binned=False)
 
-        deflections_y_2d = np.gradient(potential_2d, self.grid_stack.sub.in_2d[:, 0, 0], axis=0)
-        deflections_x_2d = np.gradient(potential_2d, self.grid_stack.sub.in_2d[0, :, 1], axis=1)
+        deflections_y_2d = np.gradient(
+            potential_2d, self.grid_stack.sub.in_2d[:, 0, 0], axis=0
+        )
+        deflections_x_2d = np.gradient(
+            potential_2d, self.grid_stack.sub.in_2d[0, :, 1], axis=1
+        )
 
         return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
 
     @reshape_returned_array
     def lensing_jacobian_a11_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        return 1.0 - np.gradient(deflections_2d[:, :, 1], self.grid_stack.in_2d[0, :, 1], axis=1)
+        return 1.0 - np.gradient(
+            deflections_2d[:, :, 1], self.grid_stack.in_2d[0, :, 1], axis=1
+        )
 
     @reshape_returned_array
     def lensing_jacobian_a12_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        return -1.0 * np.gradient(deflections_2d[:, :, 1], self.grid_stack.in_2d[:, 0, 0], axis=0)
+        return -1.0 * np.gradient(
+            deflections_2d[:, :, 1], self.grid_stack.in_2d[:, 0, 0], axis=0
+        )
 
     @reshape_returned_array
     def lensing_jacobian_a21_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        return -1.0 * np.gradient(deflections_2d[:, :, 0], self.grid_stack.in_2d[0, :, 1], axis=1)
+        return -1.0 * np.gradient(
+            deflections_2d[:, :, 0], self.grid_stack.in_2d[0, :, 1], axis=1
+        )
 
     @reshape_returned_array
     def lensing_jacobian_a22_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        return 1 - np.gradient(deflections_2d[:, :, 0], self.grid_stack.in_2d[:, 0, 0], axis=0)
+        return 1 - np.gradient(
+            deflections_2d[:, :, 0], self.grid_stack.in_2d[:, 0, 0], axis=0
+        )
 
-    def lensing_jacobian(
-            self, return_in_2d=True, return_binned=True
-    ):
+    def lensing_jacobian(self, return_in_2d=True, return_binned=True):
 
         a11 = self.lensing_jacobian_a11_from_deflections_2d(
             grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
@@ -790,26 +796,18 @@ class AbstractGriddedPlane(AbstractPlane):
         return np.array([[a11, a12], [a21, a22]])
 
     @reshape_returned_array
-    def convergence_from_jacobian(
-            self, return_in_2d=True, return_binned=True
-    ):
+    def convergence_from_jacobian(self, return_in_2d=True, return_binned=True):
 
-        jacobian = self.lensing_jacobian(
-            return_in_2d=False, return_binned=False
-        )
+        jacobian = self.lensing_jacobian(return_in_2d=False, return_binned=False)
 
         convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
 
         return convergence
 
     @reshape_returned_array
-    def shear_from_jacobian(
-            self, return_in_2d=True, return_binned=True
-    ):
+    def shear_from_jacobian(self, return_in_2d=True, return_binned=True):
 
-        jacobian = self.lensing_jacobian(
-            return_in_2d=True, return_binned=False
-        )
+        jacobian = self.lensing_jacobian(return_in_2d=True, return_binned=False)
 
         gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
         gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
@@ -818,42 +816,34 @@ class AbstractGriddedPlane(AbstractPlane):
 
     @reshape_returned_array
     def tangential_eigen_value_from_shear_and_convergence(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         convergence = self.convergence_from_jacobian(
             return_in_2d=False, return_binned=False
         )
 
-        shear = self.shear_from_jacobian(
-            return_in_2d=False, return_binned=False
-        )
+        shear = self.shear_from_jacobian(return_in_2d=False, return_binned=False)
 
         return 1 - convergence - shear
 
     @reshape_returned_array
     def radial_eigen_value_from_shear_and_convergence(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         convergence = self.convergence_from_jacobian(
             return_in_2d=False, return_binned=False
         )
 
-        shear = self.shear_from_jacobian(
-            return_in_2d=False, return_binned=False
-        )
+        shear = self.shear_from_jacobian(return_in_2d=False, return_binned=False)
 
         return 1 - convergence + shear
 
     @reshape_returned_array
-    def magnification_from_grid(
-            self, return_in_2d=True, return_binned=True
-    ):
+    def magnification_from_grid(self, return_in_2d=True, return_binned=True):
 
-        jacobian = self.lensing_jacobian(
-            return_in_2d=False, return_binned=False
-        )
+        jacobian = self.lensing_jacobian(return_in_2d=False, return_binned=False)
 
         det_jacobian = jacobian[0, 0] * jacobian[1, 1] - jacobian[0, 1] * jacobian[1, 0]
 
@@ -889,7 +879,7 @@ class AbstractGriddedPlane(AbstractPlane):
 
         return tangential_critical_curve
 
-    def tangential_caustic_from_grid(self ):
+    def tangential_caustic_from_grid(self):
 
         tangential_critical_curve = self.tangential_critical_curve_from_grid()
 
@@ -985,6 +975,16 @@ class AbstractDataPlane(AbstractGriddedPlane):
                 ),
                 self.profile_image_plane_blurring_image_of_galaxies(return_in_2d=False),
             )
+        )
+
+    def visibilities_from_transformer(self, transformer):
+
+        profile_image_plane_image_1d = self.profile_image_plane_image(
+            return_in_2d=False, return_binned=True
+        )
+
+        return transformer.visibilities_from_intensities(
+            intensities_1d=profile_image_plane_image_1d
         )
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
