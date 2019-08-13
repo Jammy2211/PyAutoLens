@@ -571,8 +571,8 @@ class Galaxy(af.ModelObject):
 
         # Bug with offset, this fixes it for now
 
-        radial_critical_curve[:, 0] -= grid.pixel_scale / 2.0
-        radial_critical_curve[:, 1] += grid.pixel_scale / 2.0
+       # radial_critical_curve[:, 0] -= grid.pixel_scale / 2.0
+       # radial_critical_curve[:, 1] += grid.pixel_scale / 2.0
 
         return radial_critical_curve
 
