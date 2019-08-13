@@ -126,22 +126,10 @@ class MockPrimaryBeam(object):
         )
 
 
-class MockRealVisibilities(np.ndarray):
+class MockVisibilities(np.ndarray):
     def __new__(cls, shape, value, pixel_scale=1.0):
 
-        array = value * np.ones(shape=shape)
-
-        obj = np.array(array, dtype="float64").view(cls)
-        obj.pixel_scale = pixel_scale
-        obj.origin = (0.0, 0.0)
-
-        return obj
-
-
-class MockImaginaryVisibilities(np.ndarray):
-    def __new__(cls, shape, value, pixel_scale=1.0):
-
-        array = value * np.ones(shape=shape)
+        array = value * np.ones(shape=(shape,2))
 
         obj = np.array(array, dtype="float64").view(cls)
         obj.pixel_scale = pixel_scale
@@ -181,8 +169,7 @@ class MockInterferometerData(interferometer.InterferometerData):
         psf,
         primary_beam,
         noise_map,
-        real_visibilities,
-        imaginary_visibilities,
+        visibilities,
         visibilities_noise_map,
         uv_wavelengths,
     ):
@@ -193,8 +180,7 @@ class MockInterferometerData(interferometer.InterferometerData):
             psf=psf,
             primary_beam=primary_beam,
             noise_map=noise_map,
-            real_visibilities=real_visibilities,
-            imaginary_visibilities=imaginary_visibilities,
+            visibilities=visibilities,
             visibilities_noise_map=visibilities_noise_map,
             uv_wavelengths=uv_wavelengths,
         )

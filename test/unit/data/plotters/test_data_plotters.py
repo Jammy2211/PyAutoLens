@@ -100,8 +100,7 @@ def test__all_ccd_data_types_are_output(
 
 
 def test__all_interferometer_data_types_are_output(
-    real_visibilities_7,
-    imaginary_visibilities_7,
+    visibilities_7,
     visibilities_noise_map_7,
     uv_wavelengths_7,
     primary_beam_3x3,
@@ -109,8 +108,7 @@ def test__all_interferometer_data_types_are_output(
     plot_patch,
 ):
     data_plotters.plot_visibilities(
-        real_visibilities=real_visibilities_7,
-        imaginary_visibilities=imaginary_visibilities_7,
+        visibilities=visibilities_7,
         visibilities_noise_map=visibilities_noise_map_7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
