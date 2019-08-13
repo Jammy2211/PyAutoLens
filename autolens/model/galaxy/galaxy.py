@@ -518,17 +518,22 @@ class Galaxy(af.ModelObject):
         if tangential_critical_curve_indices == []:
             return []
 
-        tangential_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-            grid_pixels_1d=tangential_critical_curve_indices[0],
-            shape=lambda_tangential_2d.shape,
-            pixel_scales=(
-                grid.pixel_scale / grid.sub_grid_size,
-                grid.pixel_scale / grid.sub_grid_size,
-            ),
-            origin=grid.mask.origin,
+        return grid.marching_squares_grid_pixels_to_grid_arcsec(
+            grid_pixels=tangential_critical_curve_indices[0], shape=lambda_tangential_2d.shape)
+
+    def radial_critical_curve_from_grid(self, grid):
+
+        lambda_radial_2d = self.radial_eigen_value_from_shear_and_convergence(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        return tangential_critical_curve
+        radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
+
+        if radial_critical_curve_indices == []:
+            return []
+
+        return grid.marching_squares_grid_pixels_to_grid_arcsec(
+            grid_pixels=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape)
 
     def tangential_caustic_from_grid(self, grid):
 
@@ -542,29 +547,6 @@ class Galaxy(af.ModelObject):
         )
 
         return tangential_critical_curve - deflections_1d
-
-    def radial_critical_curve_from_grid(self, grid):
-
-        lambda_radial_2d = self.radial_eigen_value_from_shear_and_convergence(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
-
-        radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
-
-        if radial_critical_curve_indices == []:
-            return []
-
-        radial_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-            grid_pixels_1d=radial_critical_curve_indices[0],
-            shape=lambda_radial_2d.shape,
-            pixel_scales=(
-                grid.pixel_scale / grid.sub_grid_size,
-                grid.pixel_scale / grid.sub_grid_size,
-            ),
-            origin=grid.mask.origin,
-        )
-
-        return radial_critical_curve
 
     def radial_caustic_from_grid(self, grid):
 

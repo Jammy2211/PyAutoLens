@@ -955,6 +955,7 @@ class AbstractGriddedPlane(AbstractPlane):
             self.radial_caustic_from_grid(grid=grid),
         ]
 
+
 class AbstractDataPlane(AbstractGriddedPlane):
     def blurred_profile_image_plane_image_1d_from_convolver_image(
         self, convolver_image
