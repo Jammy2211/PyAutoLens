@@ -203,17 +203,6 @@ class AbstractPhase(af.AbstractPhase):
             )
 
         @property
-        def most_likely_image_plane_pixelization_grid(self):
-
-            if (
-                self.most_likely_tracer.image_plane.grid_stack.pixelization
-                == np.array([[0.0, 0.0]])
-            ).all():
-                return None
-            else:
-                return self.most_likely_tracer.image_plane.grid_stack.pixelization
-
-        @property
         def unmasked_model_image(self):
             return self.most_likely_fit.unmasked_blurred_profile_image_plane_image
 
@@ -256,6 +245,24 @@ class AbstractPhase(af.AbstractPhase):
         @property
         def positions(self):
             return self.most_likely_fit.positions
+
+        @property
+        def most_likely_pixelization(self):
+            for galaxy in self.most_likely_fit.tracer.galaxies:
+                if galaxy.pixelization is not None:
+                    return galaxy.pixelization
+
+        @property
+        def most_likely_image_plane_pixelization_grid(self):
+
+            if (
+                self.most_likely_tracer.image_plane.grid_stack.pixelization
+                == np.array([[0.0, 0.0]])
+            ).all():
+                return None
+            else:
+                return self.most_likely_tracer.image_plane.grid_stack.pixelization
+
 
         @property
         def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
