@@ -2028,7 +2028,7 @@ class TestAbstractPlaneGridded(object):
             ) == (4, 4)
 
     class TestDeflectionAnglesviaPotential(object):
-        def test__compare_plane_deflections_via_potential_and_calculation(self, grid_stack_7x7):
+        def test__compare_plane_deflections_via_potential_and_calculation(self, grid_stack):
 
             grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05

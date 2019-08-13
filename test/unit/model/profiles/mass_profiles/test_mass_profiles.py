@@ -1343,9 +1343,9 @@ class TestCriticalCurvesandCaustics(object):
             critical_curve_tangential[:, 0],
         )
 
-        assert x_critical_tangential ** 2 + y_critical_tangential ** 2 == pytest.approx(
-            sis.einstein_radius ** 2, 5e-1
-        )
+        mean = np.mean(x_critical_tangential ** 2 + y_critical_tangential ** 2)
+
+        assert mean == pytest.approx(sis.einstein_radius ** 2, 5e-1)
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
@@ -1362,9 +1362,9 @@ class TestCriticalCurvesandCaustics(object):
             critical_curve_tangential[:, 0],
         )
 
-        assert x_critical_tangential ** 2 + y_critical_tangential ** 2 == pytest.approx(
-            sis.einstein_radius ** 2, 5e-1
-        )
+        mean = np.mean(x_critical_tangential ** 2 + y_critical_tangential ** 2)
+
+        assert mean == pytest.approx(sis.einstein_radius ** 2, 5e-1)
 
     def test__caustics_tangential_spherical_isothermal(self):
 
@@ -1383,7 +1383,9 @@ class TestCriticalCurvesandCaustics(object):
             caustic_tangential[:, 0],
         )
 
-        assert x_caustic_tangential ** 2 + y_caustic_tangential ** 2 == pytest.approx(
+        mean = np.mean(x_caustic_tangential ** 2 + y_caustic_tangential ** 2)
+
+        assert mean == pytest.approx(
             sis.einstein_radius ** 2, 5e-1
         )
 
