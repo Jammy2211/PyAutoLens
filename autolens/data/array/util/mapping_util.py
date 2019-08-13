@@ -134,7 +134,7 @@ def sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
 ):
     """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
-    A sub-array is an array whose dimensions correspond to the normal array (e.g. used to make the regular grid) \
+    A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the regular grid) \
     multiplid by the sub_grid_size. E.g., it is an array that would be generated using the sub-grid and not binning \
     up values in sub-pixels back to the regular-grid.
 
