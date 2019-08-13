@@ -42,8 +42,7 @@ class TestInterferometerData(object):
                 ),
                 noise_map=noise_map_array,
                 exposure_time_map=exposure_time_map_array,
-                real_visibilities=1,
-                imaginary_visibilities=1,
+                visibilities=np.array([[1, 1]]),
                 visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
@@ -106,8 +105,7 @@ class TestInterferometerData(object):
                 ),
                 noise_map=1,
                 exposure_time_map=1,
-                real_visibilities=1,
-                imaginary_visibilities=1,
+                visibilities=np.array([[1, 1]]),
                 visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
@@ -135,8 +133,7 @@ class TestInterferometerData(object):
                 ),
                 noise_map=1,
                 exposure_time_map=1,
-                real_visibilities=1,
-                imaginary_visibilities=1,
+                visibilities=np.array([[1, 1]]),
                 visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
@@ -177,8 +174,7 @@ class TestInterferometerData(object):
                 ),
                 noise_map=noise_map_array,
                 exposure_time_map=exposure_time_map_array,
-                real_visibilities=1,
-                imaginary_visibilities=1,
+                visibilities=np.array([[1, 1]]),
                 visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
@@ -233,8 +229,7 @@ class TestInterferometerData(object):
                 ),
                 noise_map=noise_map_array,
                 exposure_time_map=exposure_time_map_array,
-                real_visibilities=1,
-                imaginary_visibilities=1,
+                visibilities=np.array([[1, 1]]),
                 visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
@@ -274,8 +269,7 @@ class TestInterferometerData(object):
                 ),
                 noise_map=1,
                 exposure_time_map=1,
-                real_visibilities=1,
-                imaginary_visibilities=1,
+                visibilities=np.array([[1, 1]]),
                 visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
@@ -307,8 +301,7 @@ class TestInterferometerData(object):
                 noise_map=noise_map_array,
                 exposure_time_map=exposure_time_map_array,
                 primary_beam=1,
-                real_visibilities=1,
-                imaginary_visibilities=1,
+                visibilities=np.array([[1, 1]]),
                 visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
@@ -340,8 +333,7 @@ class TestInterferometerData(object):
                 noise_map=noise_map_array,
                 exposure_time_map=exposure_time_map_array,
                 primary_beam=1,
-                real_visibilities=1,
-                imaginary_visibilities=1,
+                visibilities=np.array([[1, 1]]),
                 visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
@@ -821,8 +813,8 @@ class TestInterferometerFromFits(object):
         assert (interferometer_data.image == np.ones((3, 3))).all()
         assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
         assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.real_visibilities == np.ones(3)).all()
-        assert (interferometer_data.imaginary_visibilities == 2.0 * np.ones(3)).all()
+        assert (interferometer_data.visibilities[:,0] == np.ones(3)).all()
+        assert (interferometer_data.visibilities[:,1] == 2.0 * np.ones(3)).all()
         assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:,0] == 4.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:,1] == 5.0 * np.ones(3)).all()
@@ -886,8 +878,8 @@ class TestInterferometerFromFits(object):
         assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
         assert (interferometer_data.primary_beam == 4.0 * np.ones((3, 3))).all()
         assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.real_visibilities == np.ones(3)).all()
-        assert (interferometer_data.imaginary_visibilities == 2.0 * np.ones(3)).all()
+        assert (interferometer_data.visibilities[:,0] == np.ones(3)).all()
+        assert (interferometer_data.visibilities[:,1] == 2.0 * np.ones(3)).all()
         assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:,0] == 4.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:,1] == 5.0 * np.ones(3)).all()
@@ -1281,8 +1273,8 @@ class TestInterferometerFromFits(object):
         assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
         assert (interferometer_data.primary_beam == 5.0 * np.ones((3, 3))).all()
         assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.real_visibilities == np.ones(3)).all()
-        assert (interferometer_data.imaginary_visibilities == 2.0 * np.ones(3)).all()
+        assert (interferometer_data.visibilities[:,0] == np.ones(3)).all()
+        assert (interferometer_data.visibilities[:,1] == 2.0 * np.ones(3)).all()
         assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:,0] == 4.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:,1] == 5.0 * np.ones(3)).all()

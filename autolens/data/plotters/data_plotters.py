@@ -490,8 +490,7 @@ def plot_potential_chi_squared_map(
 
 
 def plot_visibilities(
-    real_visibilities,
-    imaginary_visibilities,
+    visibilities,
     visibilities_noise_map=None,
     as_subplot=False,
     units="arcsec",
@@ -527,10 +526,8 @@ def plot_visibilities(
         over the immage.
     """
 
-    grid_visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
-
     grid_plotters.plot_grid(
-        grid=grid_visibilities,
+        grid=visibilities,
         colors=visibilities_noise_map,
         as_subplot=as_subplot,
         units=units,

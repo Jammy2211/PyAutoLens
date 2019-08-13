@@ -15,8 +15,7 @@ class InterferometerData(abstract_data.AbstractData):
         pixel_scale,
         psf,
         noise_map,
-        real_visibilities,
-        imaginary_visibilities,
+        visibilities,
         visibilities_noise_map,
         uv_wavelengths,
         primary_beam,
@@ -32,10 +31,9 @@ class InterferometerData(abstract_data.AbstractData):
             origin=(0.0, 0.0),
         )
 
-        self.real_visibilities = real_visibilities
-        self.imaginary_visibilities = imaginary_visibilities
-        self.visibilities = np.sqrt(
-            np.square(real_visibilities) + np.square(imaginary_visibilities)
+        self.visibilities = visibilities
+        self.visibilities_magnitudes = np.sqrt(
+            np.square(visibilities[:,0]) + np.square(visibilities[:,1])
         )
         self.visibilities_noise_map = visibilities_noise_map
         self.uv_wavelengths = uv_wavelengths
@@ -72,8 +70,7 @@ class InterferometerData(abstract_data.AbstractData):
             psf=self.psf,
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
-            real_visibilities=self.real_visibilities,
-            imaginary_visibilities=self.imaginary_visibilities,
+            visibilities=self.visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=self.primary_beam,
@@ -87,8 +84,7 @@ class InterferometerData(abstract_data.AbstractData):
             psf=psf,
             noise_map=self.noise_map,
             exposure_time_map=self.exposure_time_map,
-            real_visibilities=self.real_visibilities,
-            imaginary_visibilities=self.imaginary_visibilities,
+            visibilities=self.visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=self.primary_beam,
@@ -104,8 +100,7 @@ class InterferometerData(abstract_data.AbstractData):
             psf=self.psf,
             noise_map=self.noise_map,
             exposure_time_map=self.exposure_time_map,
-            real_visibilities=self.real_visibilities,
-            imaginary_visibilities=self.imaginary_visibilities,
+            visibilities=self.visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=primary_beam,
@@ -122,8 +117,7 @@ class InterferometerData(abstract_data.AbstractData):
             psf=self.psf,
             noise_map=noise_map,
             exposure_time_map=self.exposure_time_map,
-            real_visibilities=self.real_visibilities,
-            imaginary_visibilities=self.imaginary_visibilities,
+            visibilities=self.visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=self.primary_beam,
@@ -144,8 +138,7 @@ class InterferometerData(abstract_data.AbstractData):
             psf=self.psf,
             noise_map=noise_map,
             exposure_time_map=self.exposure_time_map,
-            real_visibilities=self.real_visibilities,
-            imaginary_visibilities=self.imaginary_visibilities,
+            visibilities=self.visibilities,
             visibilities_noise_map=self.visibilities_noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=self.primary_beam,
@@ -501,6 +494,9 @@ def load_interferometer_data_from_fits(
         visibilities_path=imaginary_visibilities_path,
         visibilities_hdu=imaginary_visibilities_hdu,
     )
+
+    visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
+
     visibilities_noise_map = load_visibilities_noise_map(
         visibilities_noise_map_path=visibilities_noise_map_path,
         visibilities_noise_map_hdu=visibilities_noise_map_hdu,
@@ -527,8 +523,7 @@ def load_interferometer_data_from_fits(
         psf=psf,
         primary_beam=primary_beam,
         noise_map=noise_map,
-        real_visibilities=real_visibilities,
-        imaginary_visibilities=imaginary_visibilities,
+        visibilities=visibilities,
         visibilities_noise_map=visibilities_noise_map,
         uv_wavelengths=uv_wavelengths,
         exposure_time_map=exposure_time_map,
@@ -747,21 +742,21 @@ def output_interferometer_data_to_fits(
         )
 
     if (
-        interferometer_data.real_visibilities is not None
+        interferometer_data.visibilities is not None
         and real_visibilities_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.real_visibilities,
+            array_1d=interferometer_data.visibilities[:,0],
             file_path=real_visibilities_path,
             overwrite=overwrite,
         )
 
     if (
-        interferometer_data.imaginary_visibilities is not None
+        interferometer_data.visibilities is not None
         and imaginary_visibilities_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.imaginary_visibilities,
+            array_1d=interferometer_data.visibilities[:,1],
             file_path=imaginary_visibilities_path,
             overwrite=overwrite,
         )
