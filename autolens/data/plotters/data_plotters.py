@@ -585,7 +585,7 @@ def plot_u_wavelengths(
     """
 
     line_yx_plotters.plot_line(
-        y=uv_wavelengths[:,0],
+        y=uv_wavelengths[:, 0],
         x=None,
         as_subplot=as_subplot,
         label=label,
@@ -641,7 +641,7 @@ def plot_v_wavelengths(
     """
 
     line_yx_plotters.plot_line(
-        y=uv_wavelengths[:,1],
+        y=uv_wavelengths[:, 1],
         x=None,
         as_subplot=as_subplot,
         label=label,

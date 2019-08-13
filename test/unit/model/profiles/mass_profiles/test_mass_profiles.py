@@ -1260,7 +1260,8 @@ def critical_curve_via_magnification_from_mass_profile_and_grid(mass_profile, gr
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
         critical_curve = grid.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=pixel_coord, shape=magnification_2d.shape)
+            grid_pixels=pixel_coord, shape=magnification_2d.shape
+        )
 
         critical_curves.append(critical_curve)
 
@@ -1291,7 +1292,6 @@ def caustics_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
 
 
 class TestCriticalCurvesandCaustics(object):
-
     def test_compare_magnification_from_determinant_and_from_convergence_and_shear(
         self
     ):
@@ -1337,9 +1337,9 @@ class TestCriticalCurvesandCaustics(object):
             tangential_critical_curve[:, 0],
         )
 
-        assert np.mean(x_critical_tangential ** 2 + y_critical_tangential ** 2) == pytest.approx(
-            sis.einstein_radius ** 2, 5e-1
-        )
+        assert np.mean(
+            x_critical_tangential ** 2 + y_critical_tangential ** 2
+        ) == pytest.approx(sis.einstein_radius ** 2, 5e-1)
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
@@ -1356,9 +1356,9 @@ class TestCriticalCurvesandCaustics(object):
             tangential_critical_curve[:, 0],
         )
 
-        assert np.mean(x_critical_tangential ** 2 + y_critical_tangential ** 2) == pytest.approx(
-            sis.einstein_radius ** 2, 5e-1
-        )
+        assert np.mean(
+            x_critical_tangential ** 2 + y_critical_tangential ** 2
+        ) == pytest.approx(sis.einstein_radius ** 2, 5e-1)
 
     def test__tangential_critical_curve_centres__spherical_isothermal(self):
 
@@ -1372,8 +1372,8 @@ class TestCriticalCurvesandCaustics(object):
 
         tangential_critical_curve = critical_curves[0]
 
-        y_centre = np.mean(tangential_critical_curve[:,0])
-        x_centre = np.mean(tangential_critical_curve[:,1])
+        y_centre = np.mean(tangential_critical_curve[:, 0])
+        x_centre = np.mean(tangential_critical_curve[:, 1])
 
         assert -0.03 < y_centre < 0.03
         assert -0.03 < x_centre < 0.03
@@ -1386,8 +1386,8 @@ class TestCriticalCurvesandCaustics(object):
 
         tangential_critical_curve = critical_curves[0]
 
-        y_centre = np.mean(tangential_critical_curve[:,0])
-        x_centre = np.mean(tangential_critical_curve[:,1])
+        y_centre = np.mean(tangential_critical_curve[:, 0])
+        x_centre = np.mean(tangential_critical_curve[:, 1])
 
         assert -0.01 < y_centre < 0.01
         assert -0.01 < x_centre < 0.01
@@ -1402,8 +1402,8 @@ class TestCriticalCurvesandCaustics(object):
 
         tangential_critical_curve = critical_curves[0]
 
-        y_centre = np.mean(tangential_critical_curve[:,0])
-        x_centre = np.mean(tangential_critical_curve[:,1])
+        y_centre = np.mean(tangential_critical_curve[:, 0])
+        x_centre = np.mean(tangential_critical_curve[:, 1])
 
         assert 0.47 < y_centre < 0.53
         assert 0.97 < x_centre < 1.03
@@ -1420,8 +1420,8 @@ class TestCriticalCurvesandCaustics(object):
 
         radial_critical_curve = critical_curves[1]
 
-        y_centre = np.mean(radial_critical_curve[:,0])
-        x_centre = np.mean(radial_critical_curve[:,1])
+        y_centre = np.mean(radial_critical_curve[:, 0])
+        x_centre = np.mean(radial_critical_curve[:, 1])
 
         assert -0.05 < y_centre < 0.05
         assert -0.05 < x_centre < 0.05
@@ -1434,8 +1434,8 @@ class TestCriticalCurvesandCaustics(object):
 
         radial_critical_curve = critical_curves[1]
 
-        y_centre = np.mean(radial_critical_curve[:,0])
-        x_centre = np.mean(radial_critical_curve[:,1])
+        y_centre = np.mean(radial_critical_curve[:, 0])
+        x_centre = np.mean(radial_critical_curve[:, 1])
 
         assert -0.01 < y_centre < 0.01
         assert -0.01 < x_centre < 0.01
@@ -1450,8 +1450,8 @@ class TestCriticalCurvesandCaustics(object):
 
         radial_critical_curve = critical_curves[1]
 
-        y_centre = np.mean(radial_critical_curve[:,0])
-        x_centre = np.mean(radial_critical_curve[:,1])
+        y_centre = np.mean(radial_critical_curve[:, 0])
+        x_centre = np.mean(radial_critical_curve[:, 1])
 
         assert 0.45 < y_centre < 0.55
         assert 0.95 < x_centre < 1.05
@@ -1468,8 +1468,8 @@ class TestCriticalCurvesandCaustics(object):
 
         tangential_caustic = caustics[0]
 
-        y_centre = np.mean(tangential_caustic[:,0])
-        x_centre = np.mean(tangential_caustic[:,1])
+        y_centre = np.mean(tangential_caustic[:, 0])
+        x_centre = np.mean(tangential_caustic[:, 1])
 
         assert -0.03 < y_centre < 0.03
         assert -0.03 < x_centre < 0.03
@@ -1482,8 +1482,8 @@ class TestCriticalCurvesandCaustics(object):
 
         tangential_caustic = caustics[0]
 
-        y_centre = np.mean(tangential_caustic[:,0])
-        x_centre = np.mean(tangential_caustic[:,1])
+        y_centre = np.mean(tangential_caustic[:, 0])
+        x_centre = np.mean(tangential_caustic[:, 1])
 
         assert -0.01 < y_centre < 0.01
         assert -0.01 < x_centre < 0.01
@@ -1498,8 +1498,8 @@ class TestCriticalCurvesandCaustics(object):
 
         tangential_caustic = caustics[0]
 
-        y_centre = np.mean(tangential_caustic[:,0])
-        x_centre = np.mean(tangential_caustic[:,1])
+        y_centre = np.mean(tangential_caustic[:, 0])
+        x_centre = np.mean(tangential_caustic[:, 1])
 
         assert 0.47 < y_centre < 0.53
         assert 0.97 < x_centre < 1.03
@@ -1537,8 +1537,8 @@ class TestCriticalCurvesandCaustics(object):
 
         radial_caustic = caustics[1]
 
-        y_centre = np.mean(radial_caustic[:,0])
-        x_centre = np.mean(radial_caustic[:,1])
+        y_centre = np.mean(radial_caustic[:, 0])
+        x_centre = np.mean(radial_caustic[:, 1])
 
         assert -0.2 < y_centre < 0.2
         assert -0.2 < x_centre < 0.2
@@ -1551,8 +1551,8 @@ class TestCriticalCurvesandCaustics(object):
 
         radial_caustic = caustics[1]
 
-        y_centre = np.mean(radial_caustic[:,0])
-        x_centre = np.mean(radial_caustic[:,1])
+        y_centre = np.mean(radial_caustic[:, 0])
+        x_centre = np.mean(radial_caustic[:, 1])
 
         assert -0.09 < y_centre < 0.09
         assert -0.09 < x_centre < 0.09
@@ -1567,8 +1567,8 @@ class TestCriticalCurvesandCaustics(object):
 
         radial_caustic = caustics[1]
 
-        y_centre = np.mean(radial_caustic[:,0])
-        x_centre = np.mean(radial_caustic[:,1])
+        y_centre = np.mean(radial_caustic[:, 0])
+        x_centre = np.mean(radial_caustic[:, 1])
 
         assert 0.3 < y_centre < 0.7
         assert 0.8 < x_centre < 1.2
@@ -1677,7 +1677,9 @@ class TestCriticalCurvesandCaustics(object):
             sum(tangential_caustic_from_magnification), 5e-1
         )
 
-    def test__compare_radial_caustic_from_magnification_and_lambda_r__regular_grid(self):
+    def test__compare_radial_caustic_from_magnification_and_lambda_r__regular_grid(
+        self
+    ):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40

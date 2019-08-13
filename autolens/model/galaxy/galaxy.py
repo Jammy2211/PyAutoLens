@@ -519,7 +519,9 @@ class Galaxy(af.ModelObject):
             return []
 
         return grid.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=tangential_critical_curve_indices[0], shape=lambda_tangential_2d.shape)
+            grid_pixels=tangential_critical_curve_indices[0],
+            shape=lambda_tangential_2d.shape,
+        )
 
     def radial_critical_curve_from_grid(self, grid):
 
@@ -533,7 +535,8 @@ class Galaxy(af.ModelObject):
             return []
 
         return grid.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape)
+            grid_pixels=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape
+        )
 
     def tangential_caustic_from_grid(self, grid):
 
