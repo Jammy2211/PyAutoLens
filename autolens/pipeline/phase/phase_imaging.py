@@ -531,6 +531,12 @@ class PhaseImaging(Phase):
                 "plots", "plot_hyper_galaxy_cluster_images", bool
             )
 
+            if results is not None:
+                if results.last is not None:
+                    self.pixelization_last = results.last.most_likely_pixelization
+            else:
+                self.pixelization_last = None
+
             self.preload_pixelization_grid = None
 
             if self.last_results is not None:
@@ -646,7 +652,21 @@ class PhaseImaging(Phase):
 
         def add_grids_to_grid_stack(self, galaxies, grid_stack):
 
-            if self.preload_pixelization_grid is None:
+            pixelization = self.pixelization_for_galaxies(galaxies=galaxies)
+
+            same_pixelizations = False
+
+            if pixelization is not None and self.pixelization_last is not None:
+                if type(pixelization) is type(self.pixelization_last):
+                    same_pixelizations = True
+
+            if self.preload_pixelization_grid is not None and same_pixelizations:
+
+                return grid_stack.new_grid_stack_with_grids_added(
+                    pixelization=self.preload_pixelization_grid
+                )
+
+            else:
 
                 for galaxy in galaxies:
                     if galaxy.pixelization is not None:
@@ -660,12 +680,6 @@ class PhaseImaging(Phase):
                         return grid_stack.new_grid_stack_with_grids_added(
                             pixelization=pixelization_grid
                         )
-
-            else:
-
-                return grid_stack.new_grid_stack_with_grids_added(
-                    pixelization=self.preload_pixelization_grid
-                )
 
             return grid_stack
 
@@ -823,3 +837,8 @@ class PhaseImaging(Phase):
                 visualize_path=image_path,
                 subplot_path=subplot_path,
             )
+
+        def pixelization_for_galaxies(self, galaxies):
+            for galaxy in galaxies:
+                if galaxy.pixelization is not None:
+                    return galaxy.pixelization
