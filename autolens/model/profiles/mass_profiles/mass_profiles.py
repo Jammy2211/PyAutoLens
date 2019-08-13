@@ -410,19 +410,19 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         a11 = self.lensing_jacobian_a11_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
         a12 = self.lensing_jacobian_a12_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
         a21 = self.lensing_jacobian_a21_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
         a22 = self.lensing_jacobian_a22_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
         return np.array([[a11, a12], [a21, a22]])
@@ -514,11 +514,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             origin=grid.mask.origin,
         )
 
-        # Bug with offset, this fixes it for now
-
-        tangential_critical_curve[:, 0] -= grid.pixel_scale / 2.0
-        tangential_critical_curve[:, 1] += grid.pixel_scale / 2.0
-
         return tangential_critical_curve
 
     def tangential_caustic_from_grid(self, grid):
@@ -554,11 +549,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             ),
             origin=grid.mask.origin,
         )
-
-        # Bug with offset, this fixes it for now
-
-        radial_critical_curve[:, 0] -= grid.pixel_scale / 2.0
-        radial_critical_curve[:, 1] += grid.pixel_scale / 2.0
 
         return radial_critical_curve
 
