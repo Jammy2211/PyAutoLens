@@ -817,6 +817,28 @@ class Grid(np.ndarray):
         )
 
     @property
+    def unlensed_grid_2d(self):
+        return Grid(
+            arr=mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+                sub_grid_1d=self.unlensed_grid_1d,
+                mask=self.mask,
+                sub_grid_size=self.sub_grid_size),
+            mask=self.mask,
+            sub_grid_size=self.sub_grid_size,
+        )
+
+    @property
+    def unlensed_unmasked_grid_2d(self):
+        return Grid(
+            arr=mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+                mask=np.full(self.mask.shape, False),
+                sub_grid_1d=self.unlensed_unmasked_grid_1d,
+                sub_grid_size=self.sub_grid_size),
+            mask=self.mask,
+            sub_grid_size=self.sub_grid_size,
+        )
+
+    @property
     def total_pixels(self):
         return self.shape[0]
 
@@ -840,6 +862,23 @@ class Grid(np.ndarray):
             shape=sub_shape, one_to_two=sub_one_to_two
         )
 
+    def marching_squares_grid_pixels_to_grid_arcsec(self, grid_pixels, shape):
+
+        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=grid_pixels,
+            shape=shape,
+            pixel_scales=(
+                self.pixel_scale / self.sub_grid_size,
+                self.pixel_scale / self.sub_grid_size,
+            ),
+            origin=self.mask.origin,
+        )
+
+        grid_arcsec[:, 0] -= self.pixel_scale / (2.0 * self.sub_grid_size)
+        grid_arcsec[:, 1] += self.pixel_scale / (2.0 * self.sub_grid_size)
+
+        return grid_arcsec
+
     def array_2d_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original 2D array. 
         
@@ -853,13 +892,13 @@ class Grid(np.ndarray):
         return self.mask.array_2d_from_array_1d(array_1d=array_1d)
 
     def scaled_array_2d_from_array_1d(self, array_1d):
-        """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a normal \
+        """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a hyper \
         array.
 
         Parameters
         -----------
         array_1d : ndarray
-            The 1D array of which is mapped to a 2D normal array.
+            The 1D array of which is mapped to a 2D hyper array.
         """
         return self.mask.scaled_array_2d_from_array_1d(array_1d=array_1d)
 
@@ -914,12 +953,12 @@ class Grid(np.ndarray):
 
     def scaled_array_2d_with_sub_dimensions_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
-        a normal array.
+        a hyper array.
 
         Parameters
         -----------
         sub_array_1d : ndarray
-            The 1D sub-array of which is mapped to a 2D normal sub-array the dimensions.
+            The 1D sub-array of which is mapped to a 2D hyper sub-array the dimensions.
         """
         return self.mask.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
             sub_array_1d=sub_array_1d, sub_grid_size=self.sub_grid_size
@@ -927,12 +966,12 @@ class Grid(np.ndarray):
 
     def scaled_array_2d_binned_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
-        a normal array.
+        a hyper array.
 
         Parameters
         -----------
         sub_array_1d : ndarray
-            The 1D sub-array of which is mapped to a 2D normal sub-array the dimensions.
+            The 1D sub-array of which is mapped to a 2D hyper sub-array the dimensions.
         """
         return self.mask.scaled_array_2d_binned_from_sub_array_1d_and_sub_grid_size(
             sub_array_1d=sub_array_1d, sub_grid_size=self.sub_grid_size
@@ -1113,7 +1152,7 @@ class Grid(np.ndarray):
 
     @property
     @array_util.Memoizer()
-    def to_radians(self):
+    def in_radians(self):
         return (self * np.pi) / 648000.0
 
     @property
@@ -1626,7 +1665,7 @@ def grid_interpolate(func):
     If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
     coordinate grid prior to calling the function and up sample the result of the function.
 
-    If no interpolator attribute is associated with the input grid then the function is called as normal.
+    If no interpolator attribute is associated with the input grid then the function is called as hyper.
 
     Parameters
     ----------

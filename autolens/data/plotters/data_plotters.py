@@ -554,7 +554,7 @@ def plot_visibilities(
 
 
 def plot_u_wavelengths(
-    u_wavelengths,
+    uv_wavelengths,
     as_subplot=False,
     label="Wavelengths",
     units="",
@@ -588,7 +588,7 @@ def plot_u_wavelengths(
     """
 
     line_yx_plotters.plot_line(
-        y=u_wavelengths,
+        y=uv_wavelengths[:,0],
         x=None,
         as_subplot=as_subplot,
         label=label,
@@ -610,7 +610,7 @@ def plot_u_wavelengths(
 
 
 def plot_v_wavelengths(
-    v_wavelengths,
+    uv_wavelengths,
     as_subplot=False,
     label="Wavelengths",
     units="",
@@ -644,7 +644,7 @@ def plot_v_wavelengths(
     """
 
     line_yx_plotters.plot_line(
-        y=v_wavelengths,
+        y=uv_wavelengths[:,1],
         x=None,
         as_subplot=as_subplot,
         label=label,

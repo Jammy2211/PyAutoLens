@@ -74,7 +74,7 @@ class TestGrid:
 
         assert grid == pytest.approx(grid_via_util, 1e-4)
 
-    def test__grid_unlensed_property__compare_to_grid_util(self):
+    def test__grid_unlensed_1d_property__compare_to_grid_util(self):
 
         mask = np.array(
             [
@@ -126,6 +126,59 @@ class TestGrid:
         )
 
         assert grid.unlensed_unmasked_grid_1d == pytest.approx(grid_via_util, 1e-4)
+
+    def test__grid_unlensed_2d_property__compare_to_grid_util(self):
+
+        mask = np.array(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ]
+        )
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        grid = grids.Grid(
+            arr=np.array([[1.0, 1.0], [1.0, 1.0]]), mask=mask, sub_grid_size=1
+        )
+
+        grid_via_util = grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=mask, sub_grid_size=1, pixel_scales=(2.0, 2.0)
+        )
+
+        assert grid.unlensed_grid_2d == pytest.approx(grid_via_util, 1e-4)
+
+        grid_via_util = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+            shape=(3, 4), sub_grid_size=1, pixel_scales=(2.0, 2.0)
+        )
+
+        assert grid.unlensed_unmasked_grid_2d == pytest.approx(grid_via_util, 1e-4)
+
+        mask = msk.Mask(
+            np.array([[True, False, True], [False, False, False], [True, False, True]]),
+            pixel_scale=1.0,
+        )
+
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+
+        assert grid.unlensed_grid_2d == pytest.approx(
+            np.array([[[0,0], [1, 0], [0,0]], [[0, -1], [0, 0], [0, 1]], [[0,0], [-1, 0], [0,0]]]), 1e-4
+        )
+
+        grid_via_util = grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1
+        )
+
+        assert grid.unlensed_unmasked_grid_2d == pytest.approx(grid_via_util, 1e-4)
+
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+
+        grid_via_util = grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=2
+        )
+
+        assert grid.unlensed_unmasked_grid_2d == pytest.approx(grid_via_util, 1e-4)
 
     def test__from_shape_and_pixel_scale__compare_to_grid_util(self):
 
@@ -527,13 +580,13 @@ class TestGrid:
 
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
-        assert grid.to_radians[0, 0] == pytest.approx(0.00000969627362, 1.0e-8)
-        assert grid.to_radians[0, 1] == pytest.approx(0.00000484813681, 1.0e-8)
+        assert grid.in_radians[0, 0] == pytest.approx(0.00000969627362, 1.0e-8)
+        assert grid.in_radians[0, 1] == pytest.approx(0.00000484813681, 1.0e-8)
 
-        assert grid.to_radians[0, 0] == pytest.approx(
+        assert grid.in_radians[0, 0] == pytest.approx(
             2.0 * np.pi / (180 * 3600), 1.0e-8
         )
-        assert grid.to_radians[0, 1] == pytest.approx(
+        assert grid.in_radians[0, 1] == pytest.approx(
             1.0 * np.pi / (180 * 3600), 1.0e-8
         )
 

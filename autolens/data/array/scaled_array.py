@@ -255,7 +255,7 @@ class ScaledArray(Array, RectangularArrayGeometry):
 
     # noinspection PyUnusedLocal
     def __init__(self, array):
-        """ A normal-array is a 2D array with a pixel-scale, such that all pixels on the array has associated with \
+        """ A hyper-array is a 2D array with a pixel-scale, such that all pixels on the array has associated with \
         them arc-second coordinates.
         
         Parameters
@@ -263,7 +263,7 @@ class ScaledArray(Array, RectangularArrayGeometry):
         array: ndarray
             An array representing image (e.g. an image, noise-map, etc.)
         origin : (float, float)
-            The arc-second origin of the normal array's coordinate system.
+            The arc-second origin of the hyper array's coordinate system.
         """
         # noinspection PyArgumentList
         super(ScaledArray, self).__init__()
@@ -281,7 +281,7 @@ class ScaledSquarePixelArray(ScaledArray):
 
     # noinspection PyUnusedLocal
     def __init__(self, array, pixel_scale, origin=(0.0, 0.0)):
-        """ A normal array with square-pixels.
+        """ A hyper array with square-pixels.
         
         Parameters
         ----------
@@ -290,7 +290,7 @@ class ScaledSquarePixelArray(ScaledArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)
-            The arc-second origin of the normal array's coordinate system.
+            The arc-second origin of the hyper array's coordinate system.
         """
 
         pixel_scale_sanity_checks(pixel_scales=(pixel_scale, pixel_scale))
@@ -374,7 +374,7 @@ class ScaledSquarePixelArray(ScaledArray):
         Parameters
         ----------
         mask : mask.Mask
-            The mask around which the normal array is extracted.
+            The mask around which the hyper array is extracted.
         buffer : int
             The buffer of pixels around the extraction.
         """
@@ -419,7 +419,7 @@ class ScaledSquarePixelArray(ScaledArray):
         else:
 
             raise exc.DataException(
-                "You have supplied two centres (pixels and arc-seconds) to the resize normal"
+                "You have supplied two centres (pixels and arc-seconds) to the resize hyper"
                 "array function"
             )
 
@@ -481,7 +481,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)
-            The arc-second origin of the normal array's coordinate system.
+            The arc-second origin of the hyper array's coordinate system.
         """
 
         pixel_scale_sanity_checks(pixel_scales=pixel_scales)
