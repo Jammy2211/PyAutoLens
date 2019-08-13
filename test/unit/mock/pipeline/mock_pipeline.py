@@ -36,6 +36,7 @@ class MockResults(object):
         self.variable = af.ModelMapper()
         self.analysis = analysis
         self.optimizer = optimizer
+        self.most_likely_pixelization = None
 
     @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:

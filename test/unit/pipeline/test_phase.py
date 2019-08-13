@@ -333,6 +333,38 @@ class TestPhase(object):
         )
         assert auto_link_priors == "Auto Link Priors = False \n"
 
+    def test_analysis__pixelization_property_extracts_pixelization(
+        self, mask_function_7x7, ccd_data_7x7
+    ):
+
+        lens_galaxy = g.Galaxy(redshift=0.5)
+        source_galaxy = g.Galaxy(redshift=0.5)
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            mask_function=mask_function_7x7,
+            galaxies=[lens_galaxy, source_galaxy],
+            cosmology=cosmo.FLRW,
+            phase_name="test_phase",
+        )
+
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        assert analysis.pixelization_for_galaxies(galaxies=instance.galaxies) == None
+
+        lens_galaxy = g.Galaxy(redshift=0.5)
+        source_galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant())
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            mask_function=mask_function_7x7,
+            galaxies=[lens_galaxy, source_galaxy],
+            cosmology=cosmo.FLRW,
+            phase_name="test_phase",
+        )
+
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        assert isinstance(analysis.pixelization_for_galaxies(galaxies=instance.galaxies), pix.Rectangular)
+
     def test_fit(self, ccd_data_7x7, mask_function_7x7):
         clean_images()
 
