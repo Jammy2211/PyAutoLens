@@ -1281,6 +1281,104 @@ class TestResult(object):
 
         assert isinstance(result, phase.AbstractPhase.Result)
 
+    def test__results_of_phase_include_mask__available_as_property(
+            self, ccd_data_7x7, mask_function_7x7
+    ):
+        clean_images()
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            optimizer_class=mock_pipeline.MockNLO,
+            mask_function=mask_function_7x7,
+            galaxies=[g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))],
+            phase_name="test_phase_2",
+        )
+
+        result = phase_7x7.run(data=ccd_data_7x7)
+
+        mask = mask_function_7x7(image=ccd_data_7x7.image)
+
+        assert (result.mask_2d == mask).all()
+
+    def test__results_of_phase_include_positions__available_as_property(
+        self, ccd_data_7x7, mask_function_7x7
+    ):
+        clean_images()
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            optimizer_class=mock_pipeline.MockNLO,
+            mask_function=mask_function_7x7,
+            galaxies=[g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))],
+            phase_name="test_phase_2",
+        )
+
+        result = phase_7x7.run(data=ccd_data_7x7)
+
+        assert result.positions == None
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            optimizer_class=mock_pipeline.MockNLO,
+            mask_function=mask_function_7x7,
+            galaxies=dict(
+                lens=g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0)),
+                source=g.Galaxy(
+                    redshift=1.0,
+                ),
+            ),
+            positions_threshold=1.0,
+            phase_name="test_phase_2",
+        )
+
+        result = phase_7x7.run(data=ccd_data_7x7, positions=[[1.0, 1.0]])
+        
+        assert (result.positions[0] == np.array([1.0, 1.0])).all()
+
+    def test__results_of_phase_include_pixelization__available_as_property(
+        self, ccd_data_7x7, mask_function_7x7
+    ):
+        clean_images()
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            optimizer_class=mock_pipeline.MockNLO,
+            mask_function=mask_function_7x7,
+            galaxies=dict(
+                lens=g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0)),
+                source=g.Galaxy(
+                    redshift=1.0,
+                    pixelization=pix.VoronoiMagnification(shape=(2,3)),
+                    regularization=reg.Constant(),
+                ),
+            ),
+            inversion_pixel_limit=6,
+            phase_name="test_phase_2",
+        )
+
+        result = phase_7x7.run(data=ccd_data_7x7)
+
+        assert isinstance(result.most_likely_pixelization, pix.VoronoiMagnification)
+        assert result.most_likely_pixelization.shape == (2,3)
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            optimizer_class=mock_pipeline.MockNLO,
+            mask_function=mask_function_7x7,
+            galaxies=dict(
+                lens=g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0)),
+                source=g.Galaxy(
+                    redshift=1.0,
+                    pixelization=pix.VoronoiBrightnessImage(pixels=6),
+                    regularization=reg.Constant(),
+                ),
+            ),
+            inversion_pixel_limit=6,
+            phase_name="test_phase_2",
+        )
+
+        phase_7x7.galaxies.source.hyper_galaxy_cluster_image_1d = np.ones(9)
+
+        result = phase_7x7.run(data=ccd_data_7x7)
+
+        assert isinstance(result.most_likely_pixelization, pix.VoronoiBrightnessImage)
+        assert result.most_likely_pixelization.pixels == 6
+
     def test__results_of_phase_include_pixelization_grid__available_as_property(
         self, ccd_data_7x7, mask_function_7x7
     ):
@@ -1373,7 +1471,6 @@ class TestResult(object):
         )
 
         assert fit.likelihood == fit_figure_of_merit
-
 
 class TestPhasePickle(object):
 
