@@ -318,18 +318,8 @@ def critical_curve_via_magnification_from_galaxy_and_grid(galaxy, grid):
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-            grid_pixels_1d=pixel_coord,
-            shape=magnification_2d.shape,
-            pixel_scales=(
-                grid.pixel_scale / grid.sub_grid_size,
-                grid.pixel_scale / grid.sub_grid_size,
-            ),
-            origin=grid.mask.origin,
-        )
-
-        critical_curve[:, 0] -= grid.pixel_scale / 2.0
-        critical_curve[:, 1] += grid.pixel_scale / 2.0
+        critical_curve = grid.marching_squares_grid_pixels_to_grid_arcsec(
+            grid_pixels=pixel_coord, shape=magnification_2d.shape)
 
         critical_curves.append(critical_curve)
 
@@ -1599,6 +1589,7 @@ class TestMassProfiles(object):
             assert mean_error < 1e-4
 
     class TestCriticalCurvesandCaustics(object):
+
         def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
@@ -1743,49 +1734,33 @@ class TestMassProfiles(object):
                 caustic_tangential_from_magnification, 5e-1
             )
 
-        # def test__compare_radial_caustic_from_magnification_and_lambda_t__two_component_galaxy(
-        #     self
-        # ):
-        #     mass_profile_1 = mp.SphericalIsothermal(
-        #         centre=(0.0, 0.0), einstein_radius=1.0
-        #     )
-        #     mass_profile_2 = mp.SphericalIsothermal(
-        #         centre=(1.0, 1.0), einstein_radius=1.0
-        #     )
-        #
-        #     galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
-        #
-        #     grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-        #         shape=(20, 20), pixel_scale=0.25
-        #     )
-        #
-        #     caustic_radial_from_magnification = caustics_via_magnification_from_galaxy_and_grid(
-        #         galaxy=galaxy, grid=grid
-        #     )[
-        #         1]
-        #     caustic_radial_from_lambda_t = galaxy.radial_caustic_from_grid(
-        #         grid=grid
-        #     )
-        #
-        #     assert sum(caustic_radial_from_lambda_t) == pytest.approx(
-        #         sum(caustic_radial_from_magnification), 5e-1
-        #     )
-        #
-        #     grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-        #         shape=(10, 10), pixel_scale=0.5, sub_grid_size=2
-        #     )
-        #
-        #     caustic_radial_from_magnification = caustics_via_magnification_from_galaxy_and_grid(
-        #         galaxy=galaxy, grid=grid
-        #     )[
-        #         1]
-        #     caustic_radial_from_lambda_t = galaxy.radial_caustic_from_grid(
-        #         grid=grid
-        #     )
-        #
-        #     assert sum(caustic_radial_from_lambda_t) == pytest.approx(
-        #         sum(caustic_radial_from_magnification), 5e-1
-        #     )
+        def test__compare_radial_caustic_from_magnification_and_lambda_t__two_component_galaxy(
+            self
+        ):
+            mass_profile_1 = mp.SphericalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=1.0
+            )
+            mass_profile_2 = mp.SphericalIsothermal(
+                centre=(1.0, 1.0), einstein_radius=1.0
+            )
+
+            galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
+
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(120, 120), pixel_scale=0.25, sub_grid_size=2
+            )
+
+            caustic_radial_from_magnification = caustics_via_magnification_from_galaxy_and_grid(
+                galaxy=galaxy, grid=grid
+            )[
+                1]
+            caustic_radial_from_lambda_t = galaxy.radial_caustic_from_grid(
+                grid=grid
+            )
+
+            assert sum(caustic_radial_from_lambda_t) == pytest.approx(
+                sum(caustic_radial_from_magnification), 5e-1
+            )
 
 
 class TestMassAndLightProfiles(object):

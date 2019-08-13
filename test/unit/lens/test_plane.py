@@ -1927,7 +1927,7 @@ class TestAbstractPlaneGridded(object):
             )
 
             with pytest.raises(exc.PixelizationException):
-                print(plane.mapper)
+                plane.mapper
 
     class TestPlaneImage:
         def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(
@@ -2026,6 +2026,45 @@ class TestAbstractPlaneGridded(object):
             assert np.unravel_index(
                 plane.plane_image.argmax(), plane.plane_image.shape
             ) == (4, 4)
+
+    class TestDeflectionAnglesviaPotential(object):
+        def test__compare_plane_deflections_via_potential_and_calculation(self, grid_stack_7x7):
+
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=True,
+                border=None,
+                redshift=None,
+            )
+
+            deflections_via_calculation = plane.deflections(
+                return_in_2d=False, return_binned=True
+            )
+
+            deflections_via_potential = plane.deflections_via_potential(
+                return_in_2d=False, return_binned=True
+            )
+
+            mean_error = np.mean(
+                deflections_via_potential - deflections_via_calculation
+            )
+
+            print(deflections_via_potential)
+
+            assert mean_error < 1e-4
 
 
 class TestAbstractDataPlane(object):

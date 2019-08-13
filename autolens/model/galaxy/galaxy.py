@@ -518,22 +518,22 @@ class Galaxy(af.ModelObject):
         if tangential_critical_curve_indices == []:
             return []
 
-        tangential_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-            grid_pixels_1d=tangential_critical_curve_indices[0],
-            shape=lambda_tangential_2d.shape,
-            pixel_scales=(
-                grid.pixel_scale / grid.sub_grid_size,
-                grid.pixel_scale / grid.sub_grid_size,
-            ),
-            origin=grid.mask.origin,
+        return grid.marching_squares_grid_pixels_to_grid_arcsec(
+            grid_pixels=tangential_critical_curve_indices[0], shape=lambda_tangential_2d.shape)
+
+    def radial_critical_curve_from_grid(self, grid):
+
+        lambda_radial_2d = self.radial_eigen_value_from_shear_and_convergence(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        # Bug with offset, this fixes it for now
+        radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
 
-        tangential_critical_curve[:, 0] -= grid.pixel_scale / 2.0
-        tangential_critical_curve[:, 1] += grid.pixel_scale / 2.0
+        if radial_critical_curve_indices == []:
+            return []
 
-        return tangential_critical_curve
+        return grid.marching_squares_grid_pixels_to_grid_arcsec(
+            grid_pixels=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape)
 
     def tangential_caustic_from_grid(self, grid):
 
@@ -547,34 +547,6 @@ class Galaxy(af.ModelObject):
         )
 
         return tangential_critical_curve - deflections_1d
-
-    def radial_critical_curve_from_grid(self, grid):
-
-        lambda_radial_2d = self.radial_eigen_value_from_shear_and_convergence(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
-
-        radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
-
-        if radial_critical_curve_indices == []:
-            return []
-
-        radial_critical_curve = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
-            grid_pixels_1d=radial_critical_curve_indices[0],
-            shape=lambda_radial_2d.shape,
-            pixel_scales=(
-                grid.pixel_scale / grid.sub_grid_size,
-                grid.pixel_scale / grid.sub_grid_size,
-            ),
-            origin=grid.mask.origin,
-        )
-
-        # Bug with offset, this fixes it for now
-
-        radial_critical_curve[:, 0] -= grid.pixel_scale / 2.0
-        radial_critical_curve[:, 1] += grid.pixel_scale / 2.0
-
-        return radial_critical_curve
 
     def radial_caustic_from_grid(self, grid):
 
@@ -917,7 +889,7 @@ class HyperGalaxy(object):
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
         """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in \
-        the regions of the image that the galaxy is located will be normal, to prevent \
+        the regions of the image that the galaxy is located will be hyper, to prevent \
         over-fitting of the galaxy.
         
         This is performed by first computing the hyper_galaxy-galaxy's 'contribution-map', \
@@ -959,7 +931,7 @@ class HyperGalaxy(object):
 
     def contribution_map_from_hyper_images(self, hyper_model_image, hyper_galaxy_image):
         """Compute the contribution map of a galaxy, which represents the fraction of
-        flux in each pixel that the galaxy is attributed to contain, normal to the
+        flux in each pixel that the galaxy is attributed to contain, hyper to the
         *contribution_factor* hyper_galaxy-parameter.
 
         This is computed by dividing that galaxy's flux by the total flux in that \
@@ -983,7 +955,7 @@ class HyperGalaxy(object):
         return contribution_map
 
     def hyper_noise_map_from_contribution_map(self, noise_map, contribution_map):
-        """Compute a normal galaxy hyper_galaxy noise-map from a baseline noise-map.
+        """Compute a hyper galaxy hyper_galaxy noise-map from a baseline noise-map.
 
         This uses the galaxy contribution map and the *noise_factor* and *noise_power*
         hyper_galaxy-parameters.
