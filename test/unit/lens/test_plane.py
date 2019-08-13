@@ -242,7 +242,7 @@ class TestAbstractPlane(object):
             )
 
             with pytest.raises(exc.PixelizationException):
-                print(plane.regularization)
+                plane.regularization
 
     class TestLuminosities:
         def test__within_circle_different_luminosity_units__same_as_galaxy_luminosities(
@@ -1927,7 +1927,7 @@ class TestAbstractPlaneGridded(object):
             )
 
             with pytest.raises(exc.PixelizationException):
-                print(plane.mapper)
+                plane.mapper
 
     class TestPlaneImage:
         def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(

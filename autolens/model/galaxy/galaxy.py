@@ -424,19 +424,19 @@ class Galaxy(af.ModelObject):
     def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         a11 = self.lensing_jacobian_a11_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
         a12 = self.lensing_jacobian_a12_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
         a21 = self.lensing_jacobian_a21_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
         a22 = self.lensing_jacobian_a22_from_grid_and_deflections_2d(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
         return np.array([[a11, a12], [a21, a22]])
@@ -528,11 +528,6 @@ class Galaxy(af.ModelObject):
             origin=grid.mask.origin,
         )
 
-        # Bug with offset, this fixes it for now
-
-        tangential_critical_curve[:, 0] -= grid.pixel_scale / 2.0
-        tangential_critical_curve[:, 1] += grid.pixel_scale / 2.0
-
         return tangential_critical_curve
 
     def tangential_caustic_from_grid(self, grid):
@@ -568,11 +563,6 @@ class Galaxy(af.ModelObject):
             ),
             origin=grid.mask.origin,
         )
-
-        # Bug with offset, this fixes it for now
-
-       # radial_critical_curve[:, 0] -= grid.pixel_scale / 2.0
-       # radial_critical_curve[:, 1] += grid.pixel_scale / 2.0
 
         return radial_critical_curve
 
@@ -917,7 +907,7 @@ class HyperGalaxy(object):
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
         """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in \
-        the regions of the image that the galaxy is located will be normal, to prevent \
+        the regions of the image that the galaxy is located will be hyper, to prevent \
         over-fitting of the galaxy.
         
         This is performed by first computing the hyper_galaxy-galaxy's 'contribution-map', \
@@ -959,7 +949,7 @@ class HyperGalaxy(object):
 
     def contribution_map_from_hyper_images(self, hyper_model_image, hyper_galaxy_image):
         """Compute the contribution map of a galaxy, which represents the fraction of
-        flux in each pixel that the galaxy is attributed to contain, normal to the
+        flux in each pixel that the galaxy is attributed to contain, hyper to the
         *contribution_factor* hyper_galaxy-parameter.
 
         This is computed by dividing that galaxy's flux by the total flux in that \
@@ -983,7 +973,7 @@ class HyperGalaxy(object):
         return contribution_map
 
     def hyper_noise_map_from_contribution_map(self, noise_map, contribution_map):
-        """Compute a normal galaxy hyper_galaxy noise-map from a baseline noise-map.
+        """Compute a hyper galaxy hyper_galaxy noise-map from a baseline noise-map.
 
         This uses the galaxy contribution map and the *noise_factor* and *noise_power*
         hyper_galaxy-parameters.

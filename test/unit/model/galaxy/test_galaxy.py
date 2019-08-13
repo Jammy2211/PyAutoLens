@@ -328,9 +328,6 @@ def critical_curve_via_magnification_from_galaxy_and_grid(galaxy, grid):
             origin=grid.mask.origin,
         )
 
-        critical_curve[:, 0] -= grid.pixel_scale / 2.0
-        critical_curve[:, 1] += grid.pixel_scale / 2.0
-
         critical_curves.append(critical_curve)
 
     return critical_curves

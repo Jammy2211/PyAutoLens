@@ -6,7 +6,7 @@ from autolens.model.profiles.plotters import profile_plotters
 from autolens.model.galaxy.plotters import galaxy_plotters
 
 grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-    shape=(100, 100), pixel_scale=0.05, sub_grid_size=8
+    shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
 )
 
 sis_mass_profile = mass_profiles.EllipticalIsothermal(
@@ -15,16 +15,16 @@ sis_mass_profile = mass_profiles.EllipticalIsothermal(
 
 profile_plotters.plot_convergence(
     mass_profile=sis_mass_profile,
-    grid=grid_stack.regular,
+    grid=grid_stack.sub,
     plot_critical_curves=True,
     plot_caustics=True,
 )
 
-galaxy = g.Galaxy(mass=sis_mass_profile, redshift=1)
-
-galaxy_plotters.plot_convergence(
-    galaxy=galaxy,
-    grid=grid_stack.regular,
-    plot_critical_curves=True,
-    plot_caustics=True,
-)
+# galaxy = g.Galaxy(mass=sis_mass_profile, redshift=1)
+#
+# galaxy_plotters.plot_convergence(
+#     galaxy=galaxy,
+#     grid=grid_stack.sub,
+#     plot_critical_curves=True,
+#     plot_caustics=True,
+# )

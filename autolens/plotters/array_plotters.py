@@ -433,7 +433,7 @@ def get_normalization_min_max(array, norm_min, norm_max):
 
 
 def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
-    """Get the normalization scale of the colormap. This will be normal based on the input min / max normalization \
+    """Get the normalization scale of the colormap. This will be hyper based on the input min / max normalization \
     values.
 
     For a 'symmetric_log' colormap, linthesh and linscale also change the colormap.
