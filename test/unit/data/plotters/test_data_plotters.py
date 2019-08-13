@@ -103,8 +103,7 @@ def test__all_interferometer_data_types_are_output(
     real_visibilities_7,
     imaginary_visibilities_7,
     visibilities_noise_map_7,
-    u_wavelengths_7,
-    v_wavelengths_7,
+    uv_wavelengths_7,
     primary_beam_3x3,
     data_plotter_path,
     plot_patch,
@@ -122,7 +121,7 @@ def test__all_interferometer_data_types_are_output(
     assert data_plotter_path + "visibilities.png" in plot_patch.paths
 
     data_plotters.plot_u_wavelengths(
-        u_wavelengths=u_wavelengths_7,
+        uv_wavelengths=uv_wavelengths_7,
         output_path=data_plotter_path,
         output_format="png",
     )
@@ -130,7 +129,7 @@ def test__all_interferometer_data_types_are_output(
     assert data_plotter_path + "u_wavelengths.png" in plot_patch.paths
 
     data_plotters.plot_v_wavelengths(
-        v_wavelengths=v_wavelengths_7,
+        uv_wavelengths=uv_wavelengths_7,
         output_path=data_plotter_path,
         output_format="png",
     )

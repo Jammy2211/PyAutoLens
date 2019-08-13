@@ -45,8 +45,7 @@ class TestInterferometerData(object):
                 real_visibilities=1,
                 imaginary_visibilities=1,
                 visibilities_noise_map=1,
-                u_wavelengths=1,
-                v_wavelengths=1,
+                uv_wavelengths=1,
             )
 
             interferometer_data = interferometer_data.new_interferometer_data_with_resized_arrays(
@@ -110,8 +109,7 @@ class TestInterferometerData(object):
                 real_visibilities=1,
                 imaginary_visibilities=1,
                 visibilities_noise_map=1,
-                u_wavelengths=1,
-                v_wavelengths=1,
+                uv_wavelengths=1,
             )
 
             interferometer_data = interferometer_data.new_interferometer_data_with_resized_psf(
@@ -140,8 +138,7 @@ class TestInterferometerData(object):
                 real_visibilities=1,
                 imaginary_visibilities=1,
                 visibilities_noise_map=1,
-                u_wavelengths=1,
-                v_wavelengths=1,
+                uv_wavelengths=1,
             )
 
             interferometer_data = interferometer_data.new_interferometer_data_with_resized_primary_beam(
@@ -183,8 +180,7 @@ class TestInterferometerData(object):
                 real_visibilities=1,
                 imaginary_visibilities=1,
                 visibilities_noise_map=1,
-                u_wavelengths=1,
-                v_wavelengths=1,
+                uv_wavelengths=1,
             )
 
             interferometer_data = interferometer_data.new_interferometer_data_with_resized_arrays(
@@ -240,8 +236,7 @@ class TestInterferometerData(object):
                 real_visibilities=1,
                 imaginary_visibilities=1,
                 visibilities_noise_map=1,
-                u_wavelengths=1,
-                v_wavelengths=1,
+                uv_wavelengths=1,
             )
 
             interferometer_data = interferometer_data.new_interferometer_data_with_resized_arrays(
@@ -282,8 +277,7 @@ class TestInterferometerData(object):
                 real_visibilities=1,
                 imaginary_visibilities=1,
                 visibilities_noise_map=1,
-                u_wavelengths=1,
-                v_wavelengths=1,
+                uv_wavelengths=1,
             )
 
             with pytest.raises(exc.DataException):
@@ -316,8 +310,7 @@ class TestInterferometerData(object):
                 real_visibilities=1,
                 imaginary_visibilities=1,
                 visibilities_noise_map=1,
-                u_wavelengths=1,
-                v_wavelengths=1,
+                uv_wavelengths=1,
             )
 
             interferometer_data = (
@@ -350,8 +343,7 @@ class TestInterferometerData(object):
                 real_visibilities=1,
                 imaginary_visibilities=1,
                 visibilities_noise_map=1,
-                u_wavelengths=1,
-                v_wavelengths=1,
+                uv_wavelengths=1,
             )
 
             interferometer_data = interferometer_data.new_interferometer_data_converted_from_adus(
@@ -832,8 +824,8 @@ class TestInterferometerFromFits(object):
         assert (interferometer_data.real_visibilities == np.ones(3)).all()
         assert (interferometer_data.imaginary_visibilities == 2.0 * np.ones(3)).all()
         assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
-        assert (interferometer_data.u_wavelengths == 4.0 * np.ones(3)).all()
-        assert (interferometer_data.v_wavelengths == 5.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:,0] == 4.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:,1] == 5.0 * np.ones(3)).all()
         assert (interferometer_data.primary_beam == 5.0 * np.ones((3, 3))).all()
 
         assert interferometer_data.pixel_scale == 0.1
@@ -897,8 +889,8 @@ class TestInterferometerFromFits(object):
         assert (interferometer_data.real_visibilities == np.ones(3)).all()
         assert (interferometer_data.imaginary_visibilities == 2.0 * np.ones(3)).all()
         assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
-        assert (interferometer_data.u_wavelengths == 4.0 * np.ones(3)).all()
-        assert (interferometer_data.v_wavelengths == 5.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:,0] == 4.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:,1] == 5.0 * np.ones(3)).all()
 
         assert interferometer_data.pixel_scale == 0.1
         assert interferometer_data.psf.pixel_scale == 0.1
@@ -1292,8 +1284,8 @@ class TestInterferometerFromFits(object):
         assert (interferometer_data.real_visibilities == np.ones(3)).all()
         assert (interferometer_data.imaginary_visibilities == 2.0 * np.ones(3)).all()
         assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
-        assert (interferometer_data.u_wavelengths == 4.0 * np.ones(3)).all()
-        assert (interferometer_data.v_wavelengths == 5.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:,0] == 4.0 * np.ones(3)).all()
+        assert (interferometer_data.uv_wavelengths[:,1] == 5.0 * np.ones(3)).all()
 
         assert interferometer_data.pixel_scale == 0.1
         assert interferometer_data.psf.pixel_scale == 0.1
