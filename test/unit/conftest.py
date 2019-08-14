@@ -125,14 +125,9 @@ def make_ccd_data_6x6():
     )
 
 
-@pytest.fixture(name="real_visibilities_7")
-def make_real_visibilities_7():
-    return mock_data.MockRealVisibilities(shape=7, value=1.0)
-
-
-@pytest.fixture(name="imaginary_visibilities_7")
-def make_imaginary_visibilities_7():
-    return mock_data.MockImaginaryVisibilities(shape=7, value=1.0)
+@pytest.fixture(name="visibilities_7")
+def make_visibilities_7():
+    return mock_data.MockVisibilities(shape=7, value=1.0)
 
 
 @pytest.fixture(name="visibilities_noise_map_7")
@@ -155,8 +150,7 @@ def make_interferometer_data_7x7(
     image_7x7,
     psf_3x3,
     noise_map_7x7,
-    real_visibilities_7,
-    imaginary_visibilities_7,
+    visibilities_7,
     visibilities_noise_map_7,
     primary_beam_3x3,
     uv_wavelengths_7,
@@ -166,11 +160,17 @@ def make_interferometer_data_7x7(
         pixel_scale=image_7x7.pixel_scale,
         psf=psf_3x3,
         noise_map=noise_map_7x7,
-        real_visibilities=real_visibilities_7,
-        imaginary_visibilities=imaginary_visibilities_7,
+        visibilities=visibilities_7,
         visibilities_noise_map=visibilities_noise_map_7,
         primary_beam=primary_beam_3x3,
         uv_wavelengths=uv_wavelengths_7,
+    )
+
+
+@pytest.fixture(name="transformer_7x7_7")
+def make_transformer_7x7_7(uv_wavelengths_7, grid_stack_7x7):
+    return mock_data.MockTransformer(
+        uv_wavelengths=uv_wavelengths_7, grid_radians=grid_stack_7x7.regular.in_radians
     )
 
 

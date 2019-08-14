@@ -262,8 +262,7 @@ def plot_visibilities(
     """
 
     data_plotters.plot_visibilities(
-        real_visibilities=interferometer_data.real_visibilities,
-        imaginary_visibilities=interferometer_data.imaginary_visibilities,
+        visibilities=interferometer_data.visibilities,
         visibilities_noise_map=interferometer_data.visibilities_noise_map,
         as_subplot=as_subplot,
         units=units,

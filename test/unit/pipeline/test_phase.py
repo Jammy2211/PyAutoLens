@@ -352,7 +352,9 @@ class TestPhase(object):
         assert analysis.pixelization_for_galaxies(galaxies=instance.galaxies) == None
 
         lens_galaxy = g.Galaxy(redshift=0.5)
-        source_galaxy = g.Galaxy(redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant())
+        source_galaxy = g.Galaxy(
+            redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant()
+        )
 
         phase_7x7 = phase_imaging.PhaseImaging(
             mask_function=mask_function_7x7,
@@ -363,7 +365,10 @@ class TestPhase(object):
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
         instance = phase_7x7.variable.instance_from_unit_vector([])
-        assert isinstance(analysis.pixelization_for_galaxies(galaxies=instance.galaxies), pix.Rectangular)
+        assert isinstance(
+            analysis.pixelization_for_galaxies(galaxies=instance.galaxies),
+            pix.Rectangular,
+        )
 
     def test_fit(self, ccd_data_7x7, mask_function_7x7):
         clean_images()
@@ -1314,7 +1319,7 @@ class TestResult(object):
         assert isinstance(result, phase.AbstractPhase.Result)
 
     def test__results_of_phase_include_mask__available_as_property(
-            self, ccd_data_7x7, mask_function_7x7
+        self, ccd_data_7x7, mask_function_7x7
     ):
         clean_images()
 
@@ -1352,16 +1357,14 @@ class TestResult(object):
             mask_function=mask_function_7x7,
             galaxies=dict(
                 lens=g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0)),
-                source=g.Galaxy(
-                    redshift=1.0,
-                ),
+                source=g.Galaxy(redshift=1.0),
             ),
             positions_threshold=1.0,
             phase_name="test_phase_2",
         )
 
         result = phase_7x7.run(data=ccd_data_7x7, positions=[[1.0, 1.0]])
-        
+
         assert (result.positions[0] == np.array([1.0, 1.0])).all()
 
     def test__results_of_phase_include_pixelization__available_as_property(
@@ -1376,7 +1379,7 @@ class TestResult(object):
                 lens=g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0)),
                 source=g.Galaxy(
                     redshift=1.0,
-                    pixelization=pix.VoronoiMagnification(shape=(2,3)),
+                    pixelization=pix.VoronoiMagnification(shape=(2, 3)),
                     regularization=reg.Constant(),
                 ),
             ),
@@ -1387,7 +1390,7 @@ class TestResult(object):
         result = phase_7x7.run(data=ccd_data_7x7)
 
         assert isinstance(result.most_likely_pixelization, pix.VoronoiMagnification)
-        assert result.most_likely_pixelization.shape == (2,3)
+        assert result.most_likely_pixelization.shape == (2, 3)
 
         phase_7x7 = phase_imaging.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
@@ -1503,6 +1506,7 @@ class TestResult(object):
         )
 
         assert fit.likelihood == fit_figure_of_merit
+
 
 class TestPhasePickle(object):
 

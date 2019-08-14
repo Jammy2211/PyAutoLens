@@ -263,7 +263,6 @@ class AbstractPhase(af.AbstractPhase):
             else:
                 return self.most_likely_tracer.image_plane.grid_stack.pixelization
 
-
         @property
         def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
             """
