@@ -643,7 +643,7 @@ class AbstractGriddedPlane(AbstractPlane):
         return self.deflections(return_in_2d=False, return_binned=False)[:, 1]
 
     @reshape_returned_grid
-    def deflections(self, return_in_2d=True, return_binned=True):
+    def deflections(self, return_in_2d=True, return_binned=True, grid=None):
         if self.galaxies:
             return sum(
                 map(
