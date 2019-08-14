@@ -26,7 +26,7 @@ for data_resolution in ["HST_Up"]:
     print()
 
     ccd_data = simulation_util.load_test_ccd_data(
-        data_type="no_lens_light__source_smooth",
+        data_type="lens_mass__source_smooth",
         data_resolution=data_resolution,
         psf_shape=(3, 3),
     )

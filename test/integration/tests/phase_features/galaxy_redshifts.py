@@ -7,7 +7,7 @@ from test.integration.tests import runner
 
 test_type = "phase_features"
 test_name = "galaxy_redshifts"
-data_type = "no_lens_light__source_smooth"
+data_type = "lens_mass__source_smooth"
 data_resolution = "LSST"
 
 

@@ -11,7 +11,7 @@ from autolens.lens.plotters import lens_fit_plotters
 from test.simulation import simulation_util
 
 ccd_data = simulation_util.load_test_ccd_data(
-    data_type="no_lens_light_sis__source_smooth_offset_centre", data_resolution="LSST"
+    data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
 )
 
 

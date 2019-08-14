@@ -8,7 +8,7 @@ from autolens.plotters import array_plotters
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
 ccd_data = simulation_util.load_test_ccd_data(
-    data_type="lens_only_dev_vaucouleurs", data_resolution="LSST"
+    data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 array = ccd_data.image
 
@@ -30,7 +30,7 @@ array_plotters.plot_array(
 )
 
 ccd_data = simulation_util.load_test_ccd_data(
-    data_type="no_lens_light_sis__source_smooth_offset_centre", data_resolution="LSST"
+    data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
 )
 array = ccd_data.image
 
