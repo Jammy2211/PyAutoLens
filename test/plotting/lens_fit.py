@@ -16,7 +16,7 @@ from test.simulation import simulation_util
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
 ccd_data = simulation_util.load_test_ccd_data(
-    data_type="lens_only_dev_vaucouleurs", data_resolution="LSST"
+    data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 mask = msk.Mask.circular(
     shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0

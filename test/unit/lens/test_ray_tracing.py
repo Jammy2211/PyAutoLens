@@ -2511,7 +2511,7 @@ class TestTracer(object):
                 plane_profile_image_plane_image, 1.0e-4
             )
 
-        def test__x3_planes__x1_galaxy_light_no_mass_in_each_plane__image_of_each_plane_is_galaxy_image(
+        def test__x3_planes___light_no_mass_in_each_plane__image_of_each_plane_is_galaxy_image(
             self, grid_stack_7x7
         ):
 

@@ -8,7 +8,7 @@ from test.integration.tests import runner
 
 test_type = "model_mapper"
 test_name = "pair_floats"
-data_type = "lens_only_dev_vaucouleurs"
+data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "LSST"
 
 
