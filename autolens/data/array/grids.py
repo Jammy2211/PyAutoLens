@@ -817,6 +817,28 @@ class Grid(np.ndarray):
         )
 
     @property
+    def unlensed_grid_2d(self):
+        return Grid(
+            arr=mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+                sub_grid_1d=self.unlensed_grid_1d,
+                mask=self.mask,
+                sub_grid_size=self.sub_grid_size),
+            mask=self.mask,
+            sub_grid_size=self.sub_grid_size,
+        )
+
+    @property
+    def unlensed_unmasked_grid_2d(self):
+        return Grid(
+            arr=mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+                mask=np.full(self.mask.shape, False),
+                sub_grid_1d=self.unlensed_unmasked_grid_1d,
+                sub_grid_size=self.sub_grid_size),
+            mask=self.mask,
+            sub_grid_size=self.sub_grid_size,
+        )
+
+    @property
     def total_pixels(self):
         return self.shape[0]
 
@@ -839,6 +861,23 @@ class Grid(np.ndarray):
         return mask_util.mask_from_shape_and_one_to_two(
             shape=sub_shape, one_to_two=sub_one_to_two
         )
+
+    def marching_squares_grid_pixels_to_grid_arcsec(self, grid_pixels, shape):
+
+        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=grid_pixels,
+            shape=shape,
+            pixel_scales=(
+                self.pixel_scale / self.sub_grid_size,
+                self.pixel_scale / self.sub_grid_size,
+            ),
+            origin=self.mask.origin,
+        )
+
+        grid_arcsec[:, 0] -= self.pixel_scale / (2.0 * self.sub_grid_size)
+        grid_arcsec[:, 1] += self.pixel_scale / (2.0 * self.sub_grid_size)
+
+        return grid_arcsec
 
     def array_2d_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original 2D array. 

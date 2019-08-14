@@ -724,6 +724,7 @@ class AbstractGriddedPlane(AbstractPlane):
         return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
 
 
+
 class AbstractDataPlane(AbstractGriddedPlane):
     def blurred_profile_image_plane_image_1d_from_convolver_image(
         self, convolver_image
