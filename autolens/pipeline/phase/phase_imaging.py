@@ -531,11 +531,11 @@ class PhaseImaging(Phase):
                 "plots", "plot_hyper_galaxy_cluster_images", bool
             )
 
+            self.pixelization_last = None
+
             if results is not None:
                 if results.last is not None:
                     self.pixelization_last = results.last.most_likely_pixelization
-            else:
-                self.pixelization_last = None
 
             self.preload_pixelization_grid = None
 
