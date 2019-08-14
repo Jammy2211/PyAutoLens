@@ -621,7 +621,7 @@ class Tracer(AbstractTracerData):
         )
 
         if len(plane_redshifts) == 2:
-            return cls.x2_plane_tracer_from_lens_and_source_galaxies_and_image_plane_grid_stack(
+            return cls.x2_plane_tracer_from_lens__source_galaxies_and_image_plane_grid_stack(
                 lens_galaxies=galaxies_in_planes[0],
                 source_galaxies=galaxies_in_planes[1],
                 image_plane_grid_stack=image_plane_grid_stack,
@@ -689,7 +689,7 @@ class Tracer(AbstractTracerData):
         return Tracer(planes=[image_plane], cosmology=cosmology)
 
     @classmethod
-    def x2_plane_tracer_from_lens_and_source_galaxies_and_image_plane_grid_stack(
+    def x2_plane_tracer_from_lens__source_galaxies_and_image_plane_grid_stack(
         cls,
         lens_galaxies,
         source_galaxies,
@@ -759,7 +759,7 @@ class Tracer(AbstractTracerData):
             galaxies=lens_galaxies
         )
 
-        plane_redshifts = lens_util.ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
+        plane_redshifts = lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
             lens_redshifts=lens_redshifts,
             planes_between_lenses=planes_between_lenses,
             source_plane_redshift=source_galaxies[0].redshift,

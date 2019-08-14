@@ -4,7 +4,7 @@ from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.model.profiles import light_mass_profiles as lmp
+from autolens.model.profiles import light_and_mass_profiles as lmp
 
 
 # In this pipeline, we'll perform a basic analysis which initialize a lens model (the lens's light, mass and source's \
