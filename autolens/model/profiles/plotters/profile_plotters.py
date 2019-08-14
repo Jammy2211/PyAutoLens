@@ -49,7 +49,7 @@ def plot_intensities(
     grid : ndarray or hyper_galaxy.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    intensities = light_profile.intensities_from_grid(
+    intensities = light_profile.image_from_grid(
         grid=grid, return_in_2d=True, return_binned=True
     )
 

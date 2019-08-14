@@ -43,7 +43,7 @@ def plot_image_plane_image(
     output_filename="plane_image_plane_image",
 ):
 
-    image_plane_image = plane.profile_image_plane_image(
+    image_plane_image = plane.profile_image_from_grid(
         return_in_2d=True, return_binned=True
     )
 

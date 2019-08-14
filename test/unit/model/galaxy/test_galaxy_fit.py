@@ -188,7 +188,7 @@ class TestGalaxyFit:
 
             assert fit.model_galaxies == [galaxy]
 
-            model_data_1d = galaxy.intensities_from_grid(
+            model_data_1d = galaxy.profile_image_from_grid(
                 grid=galaxy_fit_data.grid_stack.sub
             )
             model_data_1d = galaxy_fit_data.grid_stack.sub.array_1d_binned_from_sub_array_1d(

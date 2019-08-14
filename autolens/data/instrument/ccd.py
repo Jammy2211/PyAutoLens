@@ -493,7 +493,7 @@ class SimulatedCCDData(CCDData):
 
         image_2d = sum(
             map(
-                lambda g: g.intensities_from_grid(
+                lambda g: g.image_from_grid(
                     grid=deflected_grid_1d, return_in_2d=True, return_binned=False
                 ),
                 galaxies,
@@ -557,7 +557,7 @@ class SimulatedCCDData(CCDData):
                 psf_shape=psf.shape
             )
         else:
-            image_plane_image_2d = tracer.profile_image_plane_image(
+            image_plane_image_2d = tracer.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 

@@ -34,7 +34,7 @@ def galaxy_fit_phase():
         ),
     )
 
-    intensities = galaxy.intensities_from_grid(
+    intensities = galaxy.profile_image_from_grid(
         galaxies=[galaxy], grid=grid_stack.sub, return_in_2d=True
     )
 

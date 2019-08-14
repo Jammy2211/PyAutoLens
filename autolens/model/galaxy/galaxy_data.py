@@ -161,7 +161,7 @@ class GalaxyFitData(object):
         if self.use_intensities:
             return sum(
                 map(
-                    lambda g: g.intensities_from_grid(
+                    lambda g: g.image_from_grid(
                         grid=self.grid_stack.sub, return_in_2d=False, return_binned=True
                     ),
                     galaxies,

@@ -40,7 +40,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("EllipticalGaussian time = {}".format(diff))
 
@@ -49,7 +49,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     mass_profile = lp.SphericalGaussian(centre=(0.0, 0.0), sigma=1.0)
 
     start = time.time()
-    mass_profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("SphericalGaussian time = {}".format(diff))
 
@@ -60,7 +60,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("EllipticalExponential time = {}".format(diff))
 
@@ -71,7 +71,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("SphericalExponential time = {}".format(diff))
 
@@ -82,7 +82,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("EllipticalDevVaucouleurs time = {}".format(diff))
 
@@ -93,7 +93,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("SphericalDevVaucouleurs time = {}".format(diff))
 
@@ -109,7 +109,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("EllipticalSersic time = {}".format(diff))
 
@@ -120,7 +120,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("SphericalSersic time = {}".format(diff))
 
@@ -140,7 +140,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("EllipticalCoreSersic time = {}".format(diff))
 
@@ -158,7 +158,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.intensities_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.image_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("SphericalCoreSersic time = {}".format(diff))
 

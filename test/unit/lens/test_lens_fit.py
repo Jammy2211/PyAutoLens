@@ -815,12 +815,12 @@ class TestLensProfileFit:
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
-            g0_image_plane_image_1d = g0.intensities_from_grid(
+            g0_image_plane_image_1d = g0.profile_image_from_grid(
                 grid=lens_data_7x7.grid_stack.sub,
                 return_in_2d=False,
                 return_binned=True,
             )
-            g0_image_plane_bluring_image_1d = g0.intensities_from_grid(
+            g0_image_plane_bluring_image_1d = g0.profile_image_from_grid(
                 grid=lens_data_7x7.grid_stack.blurring,
                 return_in_2d=False,
                 return_binned=False,
@@ -831,12 +831,12 @@ class TestLensProfileFit:
                 blurring_array=g0_image_plane_bluring_image_1d,
             )
 
-            g1_image_plane_image_1d = g1.intensities_from_grid(
+            g1_image_plane_image_1d = g1.profile_image_from_grid(
                 grid=tracer.source_plane.grid_stack.sub,
                 return_in_2d=False,
                 return_binned=True,
             )
-            g1_image_plane_bluring_image_1d = g1.intensities_from_grid(
+            g1_image_plane_bluring_image_1d = g1.profile_image_from_grid(
                 grid=tracer.source_plane.grid_stack.blurring,
                 return_in_2d=False,
                 return_binned=False,
@@ -1612,12 +1612,12 @@ class TestLensProfileInversionFit:
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
-            g0_image_plane_image_1d = g0.intensities_from_grid(
+            g0_image_plane_image_1d = g0.profile_image_from_grid(
                 grid=lens_data_7x7.grid_stack.sub,
                 return_in_2d=False,
                 return_binned=True,
             )
-            g0_image_plane_bluring_image_1d = g0.intensities_from_grid(
+            g0_image_plane_bluring_image_1d = g0.profile_image_from_grid(
                 grid=lens_data_7x7.grid_stack.blurring,
                 return_in_2d=False,
                 return_binned=False,
@@ -1628,12 +1628,12 @@ class TestLensProfileInversionFit:
                 blurring_array=g0_image_plane_bluring_image_1d,
             )
 
-            g1_image_plane_image_1d = g1.intensities_from_grid(
+            g1_image_plane_image_1d = g1.profile_image_from_grid(
                 grid=tracer.source_plane.grid_stack.sub,
                 return_in_2d=False,
                 return_binned=True,
             )
-            g1_image_plane_bluring_image_1d = g1.intensities_from_grid(
+            g1_image_plane_bluring_image_1d = g1.profile_image_from_grid(
                 grid=tracer.source_plane.grid_stack.blurring,
                 return_in_2d=False,
                 return_binned=False,

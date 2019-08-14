@@ -515,7 +515,7 @@ class TestAbstractTracer(object):
                 galaxies=[g0, g1], image_plane_grid_stack=grid_stack_7x7
             )
 
-            image_plane_deflections = image_plane.deflections(
+            image_plane_deflections = image_plane.deflections_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -531,7 +531,7 @@ class TestAbstractTracer(object):
             assert tracer_deflections_x.shape == (7, 7)
             assert (image_plane_deflections[:, :, 1] == tracer_deflections_x).all()
 
-            tracer_deflections = tracer.deflections(
+            tracer_deflections = tracer.deflections_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -624,7 +624,7 @@ class TestAbstractTracer(object):
                 1.0e-4,
             )
 
-            tracer_deflections = tracer.deflections(
+            tracer_deflections = tracer.deflections_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -1418,28 +1418,28 @@ class TestAbstractTracerData(object):
 
             padded_tracer = tracer.padded_tracer_from_psf_shape(psf_shape=(3, 3))
 
-            manual_blurred_image_0 = padded_tracer.image_plane.profile_image_plane_image_of_galaxies(
+            manual_blurred_image_0 = padded_tracer.image_plane.profile_images_of_galaxies_from_grid(
                 return_in_2d=True, return_binned=True
             )[
                 0
             ]
             manual_blurred_image_0 = psf.convolve(array_2d=manual_blurred_image_0)
 
-            manual_blurred_image_1 = padded_tracer.image_plane.profile_image_plane_image_of_galaxies(
+            manual_blurred_image_1 = padded_tracer.image_plane.profile_images_of_galaxies_from_grid(
                 return_in_2d=True, return_binned=True
             )[
                 1
             ]
             manual_blurred_image_1 = psf.convolve(array_2d=manual_blurred_image_1)
 
-            manual_blurred_image_2 = padded_tracer.source_plane.profile_image_plane_image_of_galaxies(
+            manual_blurred_image_2 = padded_tracer.source_plane.profile_images_of_galaxies_from_grid(
                 return_in_2d=True, return_binned=True
             )[
                 0
             ]
             manual_blurred_image_2 = psf.convolve(array_2d=manual_blurred_image_2)
 
-            manual_blurred_image_3 = padded_tracer.source_plane.profile_image_plane_image_of_galaxies(
+            manual_blurred_image_3 = padded_tracer.source_plane.profile_images_of_galaxies_from_grid(
                 return_in_2d=True, return_binned=True
             )[
                 1
@@ -2297,11 +2297,11 @@ class TestTracer(object):
                 galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack_7x7
             )
 
-            image_plane_profile_image_plane_image = image_plane.profile_image_plane_image(
+            image_plane_profile_image_plane_image = image_plane.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
-            tracer_profile_image_plane_image = tracer.profile_image_plane_image(
+            tracer_profile_image_plane_image = tracer.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -2347,13 +2347,13 @@ class TestTracer(object):
                 galaxies=[g0, g1], image_plane_grid_stack=grid_stack_7x7
             )
 
-            image_plane_image = image_plane.profile_image_plane_image(
+            image_plane_image = image_plane.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
-            ) + source_plane.profile_image_plane_image(
+            ) + source_plane.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
-            tracer_profile_image_plane_image = tracer.profile_image_plane_image(
+            tracer_profile_image_plane_image = tracer.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -2403,13 +2403,13 @@ class TestTracer(object):
                 galaxies=[g0, g1], image_plane_grid_stack=grid_stack_7x7
             )
 
-            image_plane_image = image_plane.profile_image_plane_image(
+            image_plane_image = image_plane.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
-            ) + source_plane.profile_image_plane_image(
+            ) + source_plane.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
-            tracer_profile_image_plane_image = tracer.profile_image_plane_image(
+            tracer_profile_image_plane_image = tracer.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -2443,15 +2443,15 @@ class TestTracer(object):
                 redshift=0.5, light_profile=lp.EllipticalSersic(intensity=3.0)
             )
 
-            g0_image = g0.intensities_from_grid(
+            g0_image = g0.profile_image_from_grid(
                 grid=grid_stack_7x7.sub, return_in_2d=True, return_binned=True
             )
 
-            g1_image = g1.intensities_from_grid(
+            g1_image = g1.profile_image_from_grid(
                 grid=grid_stack_7x7.sub, return_in_2d=True, return_binned=True
             )
 
-            g2_image = g2.intensities_from_grid(
+            g2_image = g2.profile_image_from_grid(
                 grid=grid_stack_7x7.sub, return_in_2d=True, return_binned=True
             )
 
@@ -2459,7 +2459,7 @@ class TestTracer(object):
                 galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack_7x7
             )
 
-            tracer_profile_image_plane_image = tracer.profile_image_plane_image(
+            tracer_profile_image_plane_image = tracer.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -2497,13 +2497,13 @@ class TestTracer(object):
                 galaxies=[g0, g1], image_plane_grid_stack=grid_stack_7x7
             )
 
-            plane_profile_image_plane_image = image_plane.profile_image_plane_image(
+            plane_profile_image_plane_image = image_plane.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
-            ) + source_plane.profile_image_plane_image(
+            ) + source_plane.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
-            tracer_profile_image_plane_image = tracer.profile_image_plane_image(
+            tracer_profile_image_plane_image = tracer.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -2542,16 +2542,16 @@ class TestTracer(object):
             )
 
             image_plane_image = (
-                plane_0.profile_image_plane_image(return_in_2d=True, return_binned=True)
-                + plane_1.profile_image_plane_image(
+                plane_0.profile_image_from_grid(return_in_2d=True, return_binned=True)
+                + plane_1.profile_image_from_grid(
                     return_in_2d=True, return_binned=True
                 )
-                + plane_2.profile_image_plane_image(
+                + plane_2.profile_image_from_grid(
                     return_in_2d=True, return_binned=True
                 )
             )
 
-            tracer_profile_image_plane_image = tracer.profile_image_plane_image(
+            tracer_profile_image_plane_image = tracer.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -2600,16 +2600,16 @@ class TestTracer(object):
             plane_2 = tracer.planes[2]
 
             image_plane_image = (
-                plane_0.profile_image_plane_image(return_in_2d=True, return_binned=True)
-                + plane_1.profile_image_plane_image(
+                plane_0.profile_image_from_grid(return_in_2d=True, return_binned=True)
+                + plane_1.profile_image_from_grid(
                     return_in_2d=True, return_binned=True
                 )
-                + plane_2.profile_image_plane_image(
+                + plane_2.profile_image_from_grid(
                     return_in_2d=True, return_binned=True
                 )
             )
 
-            tracer_profile_image_plane_image = tracer.profile_image_plane_image(
+            tracer_profile_image_plane_image = tracer.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -2667,16 +2667,16 @@ class TestTracer(object):
             )
 
             image_plane_image = (
-                plane_0.profile_image_plane_image(return_in_2d=True, return_binned=True)
-                + plane_1.profile_image_plane_image(
+                plane_0.profile_image_from_grid(return_in_2d=True, return_binned=True)
+                + plane_1.profile_image_from_grid(
                     return_in_2d=True, return_binned=True
                 )
-                + plane_2.profile_image_plane_image(
+                + plane_2.profile_image_from_grid(
                     return_in_2d=True, return_binned=True
                 )
             )
 
-            tracer_profile_image_plane_image = tracer.profile_image_plane_image(
+            tracer_profile_image_plane_image = tracer.profile_image_from_grid(
                 return_in_2d=True, return_binned=True
             )
 
@@ -2717,15 +2717,15 @@ class TestTracer(object):
                 redshift=0.5, light_profile=lp.EllipticalSersic(intensity=3.0)
             )
 
-            padded_g0_image = g0.intensities_from_grid(
+            padded_g0_image = g0.profile_image_from_grid(
                 grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True
             )
 
-            padded_g1_image = g1.intensities_from_grid(
+            padded_g1_image = g1.profile_image_from_grid(
                 grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True
             )
 
-            padded_g2_image = g2.intensities_from_grid(
+            padded_g2_image = g2.profile_image_from_grid(
                 grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True
             )
 
@@ -2760,15 +2760,15 @@ class TestTracer(object):
                 redshift=2.0, light_profile=lp.EllipticalSersic(intensity=0.3)
             )
 
-            padded_g0_image = g0.intensities_from_grid(
+            padded_g0_image = g0.profile_image_from_grid(
                 grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True
             )
 
-            padded_g1_image = g1.intensities_from_grid(
+            padded_g1_image = g1.profile_image_from_grid(
                 grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True
             )
 
-            padded_g2_image = g2.intensities_from_grid(
+            padded_g2_image = g2.profile_image_from_grid(
                 grid=padded_grid_stack.sub, return_in_2d=True, return_binned=True
             )
 
@@ -3222,7 +3222,7 @@ class TestTracerPositions(object):
         assert tracer.image_plane.positions[0] == pytest.approx(
             np.array([[1.0, 1.0], [-1.0, -1.0]]), 1e-3
         )
-        assert tracer.image_plane.deflections[0] == pytest.approx(
+        assert tracer.image_plane.deflections_from_grid[0] == pytest.approx(
             np.array([[0.0, 0.0], [0.0, 0.0]]), 1e-3
         )
         assert tracer.source_plane.positions[0] == pytest.approx(
@@ -3240,7 +3240,7 @@ class TestTracerPositions(object):
         assert tracer.image_plane.positions[0] == pytest.approx(
             np.array([[1.0, 1.0], [-1.0, -1.0]]), 1e-3
         )
-        assert tracer.image_plane.deflections[0] == pytest.approx(
+        assert tracer.image_plane.deflections_from_grid[0] == pytest.approx(
             np.array([[0.707, 0.707], [-0.707, -0.707]]), 1e-3
         )
         assert tracer.source_plane.positions[0] == pytest.approx(
@@ -3256,7 +3256,7 @@ class TestTracerPositions(object):
         assert tracer.image_plane.positions[0] == pytest.approx(
             np.array([[1.0, 1.0], [-1.0, -1.0]]), 1e-3
         )
-        assert tracer.image_plane.deflections[0] == pytest.approx(
+        assert tracer.image_plane.deflections_from_grid[0] == pytest.approx(
             np.array([[1.414, 1.414], [-1.414, -1.414]]), 1e-3
         )
         assert tracer.source_plane.positions[0] == pytest.approx(
@@ -3275,7 +3275,7 @@ class TestTracerPositions(object):
         assert tracer.image_plane.positions[0] == pytest.approx(
             np.array([[1.0, 1.0], [-1.0, -1.0]]), 1e-3
         )
-        assert tracer.image_plane.deflections[0] == pytest.approx(
+        assert tracer.image_plane.deflections_from_grid[0] == pytest.approx(
             np.array([[0.707, 0.707], [-0.707, -0.707]]), 1e-3
         )
         assert tracer.source_plane.positions[0] == pytest.approx(
@@ -3285,7 +3285,7 @@ class TestTracerPositions(object):
         assert tracer.image_plane.positions[1] == pytest.approx(
             np.array([[0.5, 0.5]]), 1e-3
         )
-        assert tracer.image_plane.deflections[1] == pytest.approx(
+        assert tracer.image_plane.deflections_from_grid[1] == pytest.approx(
             np.array([[0.707, 0.707]]), 1e-3
         )
         assert tracer.source_plane.positions[1] == pytest.approx(
@@ -3335,7 +3335,7 @@ class TestTracerPositions(object):
         assert tracer.planes[0].positions[0] == pytest.approx(
             np.array([[1.0, 1.0]]), 1e-4
         )
-        assert tracer.planes[0].deflections[0] == pytest.approx(
+        assert tracer.planes[0].deflections_from_grid[0] == pytest.approx(
             np.array([[val, val]]), 1e-4
         )
 
@@ -3347,7 +3347,7 @@ class TestTracerPositions(object):
             grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
         )
 
-        assert tracer.planes[1].deflections[0] == pytest.approx(defl11[[0]], 1e-4)
+        assert tracer.planes[1].deflections_from_grid[0] == pytest.approx(defl11[[0]], 1e-4)
 
         assert tracer.planes[2].positions[0] == pytest.approx(
             np.array(
@@ -3374,20 +3374,20 @@ class TestTracerPositions(object):
             )
         )
 
-        assert tracer.planes[2].deflections[0] == pytest.approx(defl21[[0]], 1e-4)
+        assert tracer.planes[2].deflections_from_grid[0] == pytest.approx(defl21[[0]], 1e-4)
 
         coord1 = (
             1.0
-            - tracer.planes[0].deflections[0][0, 0]
-            - tracer.planes[1].deflections[0][0, 0]
-            - tracer.planes[2].deflections[0][0, 0]
+            - tracer.planes[0].deflections_from_grid[0][0, 0]
+            - tracer.planes[1].deflections_from_grid[0][0, 0]
+            - tracer.planes[2].deflections_from_grid[0][0, 0]
         )
 
         coord2 = (
             1.0
-            - tracer.planes[0].deflections[0][0, 1]
-            - tracer.planes[1].deflections[0][0, 1]
-            - tracer.planes[2].deflections[0][0, 1]
+            - tracer.planes[0].deflections_from_grid[0][0, 1]
+            - tracer.planes[1].deflections_from_grid[0][0, 1]
+            - tracer.planes[2].deflections_from_grid[0][0, 1]
         )
 
         assert tracer.planes[3].positions[0] == pytest.approx(
@@ -3435,7 +3435,7 @@ class TestTracerPositions(object):
         assert tracer.planes[0].positions[0] == pytest.approx(
             np.array([[1.0, 1.0]]), 1e-4
         )
-        assert tracer.planes[0].deflections[0] == pytest.approx(
+        assert tracer.planes[0].deflections_from_grid[0] == pytest.approx(
             np.array([[val, val]]), 1e-4
         )
 
@@ -3447,7 +3447,7 @@ class TestTracerPositions(object):
             grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
         )
 
-        assert tracer.planes[1].deflections[0] == pytest.approx(defl11[[0]], 1e-4)
+        assert tracer.planes[1].deflections_from_grid[0] == pytest.approx(defl11[[0]], 1e-4)
 
         assert tracer.planes[2].positions[0] == pytest.approx(
             np.array(
@@ -3474,20 +3474,20 @@ class TestTracerPositions(object):
             )
         )
 
-        assert tracer.planes[2].deflections[0] == pytest.approx(defl21[[0]], 1e-4)
+        assert tracer.planes[2].deflections_from_grid[0] == pytest.approx(defl21[[0]], 1e-4)
 
         coord1 = (
             1.0
-            - tracer.planes[0].deflections[0][0, 0]
-            - tracer.planes[1].deflections[0][0, 0]
-            - tracer.planes[2].deflections[0][0, 0]
+            - tracer.planes[0].deflections_from_grid[0][0, 0]
+            - tracer.planes[1].deflections_from_grid[0][0, 0]
+            - tracer.planes[2].deflections_from_grid[0][0, 0]
         )
 
         coord2 = (
             1.0
-            - tracer.planes[0].deflections[0][0, 1]
-            - tracer.planes[1].deflections[0][0, 1]
-            - tracer.planes[2].deflections[0][0, 1]
+            - tracer.planes[0].deflections_from_grid[0][0, 1]
+            - tracer.planes[1].deflections_from_grid[0][0, 1]
+            - tracer.planes[2].deflections_from_grid[0][0, 1]
         )
 
         assert tracer.planes[3].positions[0] == pytest.approx(
@@ -3497,7 +3497,7 @@ class TestTracerPositions(object):
         assert tracer.planes[0].positions[1] == pytest.approx(
             np.array([[1.0, 1.0]]), 1e-4
         )
-        assert tracer.planes[0].deflections[1] == pytest.approx(
+        assert tracer.planes[0].deflections_from_grid[1] == pytest.approx(
             np.array([[val, val]]), 1e-4
         )
 
@@ -3509,7 +3509,7 @@ class TestTracerPositions(object):
             grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
         )
 
-        assert tracer.planes[1].deflections[1] == pytest.approx(defl11[[0]], 1e-4)
+        assert tracer.planes[1].deflections_from_grid[1] == pytest.approx(defl11[[0]], 1e-4)
         assert tracer.planes[2].positions[1] == pytest.approx(
             np.array(
                 [
@@ -3535,20 +3535,20 @@ class TestTracerPositions(object):
             )
         )
 
-        assert tracer.planes[2].deflections[1] == pytest.approx(defl21[[0]], 1e-4)
+        assert tracer.planes[2].deflections_from_grid[1] == pytest.approx(defl21[[0]], 1e-4)
 
         coord1 = (
             1.0
-            - tracer.planes[0].deflections[1][0, 0]
-            - tracer.planes[1].deflections[1][0, 0]
-            - tracer.planes[2].deflections[1][0, 0]
+            - tracer.planes[0].deflections_from_grid[1][0, 0]
+            - tracer.planes[1].deflections_from_grid[1][0, 0]
+            - tracer.planes[2].deflections_from_grid[1][0, 0]
         )
 
         coord2 = (
             1.0
-            - tracer.planes[0].deflections[1][0, 1]
-            - tracer.planes[1].deflections[1][0, 1]
-            - tracer.planes[2].deflections[1][0, 1]
+            - tracer.planes[0].deflections_from_grid[1][0, 1]
+            - tracer.planes[1].deflections_from_grid[1][0, 1]
+            - tracer.planes[2].deflections_from_grid[1][0, 1]
         )
 
         assert tracer.planes[3].positions[1] == pytest.approx(

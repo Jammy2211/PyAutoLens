@@ -178,7 +178,7 @@ class AbstractTracer(AbstractTracerCosmology):
         self, return_in_2d=True, return_binned=True
     ):
         return [
-            plane.profile_image_plane_image(
+            plane.profile_image_from_grid(
                 return_in_2d=return_in_2d, return_binned=return_binned
             )
             for plane in self.planes
@@ -188,7 +188,7 @@ class AbstractTracer(AbstractTracerCosmology):
 
         padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf_shape)
 
-        return padded_tracer.profile_image_plane_image(
+        return padded_tracer.profile_image_from_grid(
             return_in_2d=True, return_binned=True
         )
 
@@ -252,7 +252,7 @@ class AbstractTracer(AbstractTracerCosmology):
     def deflections(self, return_in_2d=True, return_binned=True):
         return sum(
             [
-                plane.deflections(return_in_2d=False, return_binned=False)
+                plane.deflections_from_grid(return_in_2d=False, return_binned=False)
                 for plane in self.planes
             ]
         )
@@ -424,7 +424,7 @@ class AbstractTracerData(AbstractTracer):
 
         padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf.shape)
 
-        padded_image_1d = padded_tracer.profile_image_plane_image(
+        padded_image_1d = padded_tracer.profile_image_from_grid(
             return_in_2d=False, return_binned=True
         )
 
@@ -442,7 +442,7 @@ class AbstractTracerData(AbstractTracer):
 
         for padded_plane in padded_tracer.planes:
 
-            padded_image_1d = padded_plane.profile_image_plane_image(
+            padded_image_1d = padded_plane.profile_image_from_grid(
                 return_in_2d=False, return_binned=True
             )
 
@@ -468,7 +468,7 @@ class AbstractTracerData(AbstractTracer):
 
         for padded_plane in padded_tracer.planes:
 
-            padded_image_1d_of_galaxies = padded_plane.profile_image_plane_image_of_galaxies(
+            padded_image_1d_of_galaxies = padded_plane.profile_images_of_galaxies_from_grid(
                 return_in_2d=False, return_binned=True
             )
 
@@ -535,7 +535,7 @@ class AbstractTracerData(AbstractTracer):
         for plane in self.planes:
             for galaxy in plane.galaxies:
 
-                galaxy_image_dict[galaxy] = plane.profile_image_plane_image_of_galaxy(
+                galaxy_image_dict[galaxy] = plane.profile_image_of_galaxy_from_grid_and_galaxy(
                     galaxy=galaxy, return_in_2d=False, return_binned=True
                 )
 
@@ -553,7 +553,7 @@ class AbstractTracerData(AbstractTracer):
         for plane in self.planes:
             for galaxy in plane.galaxies:
 
-                profile_image_plane_image_1d = plane.profile_image_plane_image_of_galaxy(
+                profile_image_plane_image_1d = plane.profile_image_of_galaxy_from_grid_and_galaxy(
                     galaxy=galaxy, return_in_2d=False, return_binned=True
                 )
 
