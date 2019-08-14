@@ -401,7 +401,7 @@ def plot_image_plane_image(
     output_filename="tracer_image_plane_image",
 ):
 
-    image_plane_image = tracer.profile_image_plane_image(
+    image_plane_image = tracer.profile_image_from_grid(
         return_in_2d=True, return_binned=True
     )
 

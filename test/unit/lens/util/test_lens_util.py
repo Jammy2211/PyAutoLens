@@ -22,7 +22,7 @@ class TestPlaneImageFromGrid:
             shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        plane_image_galaxy = galaxy.intensities_from_grid(
+        plane_image_galaxy = galaxy.profile_image_from_grid(
             grid=np.array(
                 [
                     [-1.0, -1.0],
@@ -67,7 +67,7 @@ class TestPlaneImageFromGrid:
             shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        plane_image_galaxy = galaxy.intensities_from_grid(
+        plane_image_galaxy = galaxy.profile_image_from_grid(
             grid=np.array(
                 [
                     [-1.0, -1.0],
@@ -101,7 +101,7 @@ class TestPlaneImageFromGrid:
             shape=(2, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        plane_image_galaxy = galaxy.intensities_from_grid(
+        plane_image_galaxy = galaxy.profile_image_from_grid(
             grid=np.array(
                 [
                     [-0.75, -1.0],
@@ -132,7 +132,7 @@ class TestPlaneImageFromGrid:
             shape=(3, 2), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        plane_image_galaxy = galaxy.intensities_from_grid(
+        plane_image_galaxy = galaxy.profile_image_from_grid(
             grid=np.array(
                 [
                     [-1.0, -0.75],
@@ -163,7 +163,7 @@ class TestPlaneImageFromGrid:
             shape=(3, 3), grid=grid_without_buffer, galaxies=[galaxy], buffer=0.02
         )
 
-        plane_image_galaxy = galaxy.intensities_from_grid(
+        plane_image_galaxy = galaxy.profile_image_from_grid(
             grid=np.array(
                 [
                     [-1.0, -1.0],

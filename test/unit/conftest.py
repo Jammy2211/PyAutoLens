@@ -269,6 +269,13 @@ def make_regular_grid_7x7(mask_7x7):
 def make_sub_grid_7x7(mask_7x7):
     return grids.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=2)
 
+@pytest.fixture(name="sub_grid_7x7_simple")
+def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
+    sub_grid_7x7[0] = np.array([1.0, 1.0])
+    sub_grid_7x7[1] = np.array([1.0, 0.0])
+    sub_grid_7x7[2] = np.array([1.0, 1.0])
+    sub_grid_7x7[3] = np.array([1.0, 0.0])
+    return sub_grid_7x7
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):

@@ -80,7 +80,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     start = time.time()
     for i in range(repeats):
         blurred_profile_image_1d = lens_fit_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.profile_image_plane_image,
+            unblurred_image_1d=tracer.profile_image_from_grid,
             blurring_image_1d=tracer.profile_image_plane_blurring_image,
             convolver=lens_data.convolver_image,
         )

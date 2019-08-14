@@ -5,10 +5,7 @@ from skimage import measure
 from autolens import exc, dimensions as dim
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
 from autolens.data.array import grids
-from autolens.data.array.util import grid_util
 
 from test.unit.mock.model import mock_cosmology
 
@@ -21,7 +18,7 @@ class TestLightProfiles(object):
 
             galaxy = g.Galaxy(redshift=0.5)
 
-            intensities = galaxy.intensities_from_grid(grid=grid_stack_7x7.regular)
+            intensities = galaxy.profile_image_from_grid(grid=grid_stack_7x7.regular)
 
             assert (
                 intensities == np.zeros(shape=grid_stack_7x7.regular.shape[0])
@@ -32,19 +29,19 @@ class TestLightProfiles(object):
         ):
             galaxy = g.Galaxy(redshift=0.5)
 
-            intensities = galaxy.intensities_from_grid(
+            intensities = galaxy.profile_image_from_grid(
                 grid=grid_stack_7x7.regular, return_in_2d=True, return_binned=False
             )
 
             assert (intensities == np.zeros(shape=(7, 7))).all()
 
-            intensities = galaxy.intensities_from_grid(
+            intensities = galaxy.profile_image_from_grid(
                 grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=False
             )
 
             assert (intensities == np.zeros(shape=grid_stack_7x7.sub.shape[0])).all()
 
-            intensities = galaxy.intensities_from_grid(
+            intensities = galaxy.profile_image_from_grid(
                 grid=grid_stack_7x7.sub, return_binned=True
             )
 
@@ -56,18 +53,18 @@ class TestLightProfiles(object):
             self, lp_0, gal_x1_lp, lp_1, gal_x2_lp
         ):
 
-            lp_intensities = lp_0.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_intensities = lp_0.image_from_grid(grid=np.array([[1.05, -0.55]]))
 
-            gal_lp_intensities = gal_x1_lp.intensities_from_grid(
+            gal_lp_intensities = gal_x1_lp.profile_image_from_grid(
                 grid=np.array([[1.05, -0.55]])
             )
 
             assert lp_intensities == gal_lp_intensities
 
-            lp_intensities = lp_0.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
-            lp_intensities += lp_1.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_intensities = lp_0.image_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_intensities += lp_1.image_from_grid(grid=np.array([[1.05, -0.55]]))
 
-            gal_intensities = gal_x2_lp.intensities_from_grid(
+            gal_intensities = gal_x2_lp.profile_image_from_grid(
                 grid=np.array([[1.05, -0.55]])
             )
 
@@ -77,11 +74,11 @@ class TestLightProfiles(object):
             self, grid_stack_7x7, gal_x2_lp
         ):
 
-            lp_0_intensities = gal_x2_lp.light_profile_0.intensities_from_grid(
+            lp_0_intensities = gal_x2_lp.light_profile_0.image_from_grid(
                 grid=grid_stack_7x7.sub, return_binned=False
             )
 
-            lp_1_intensities = gal_x2_lp.light_profile_1.intensities_from_grid(
+            lp_1_intensities = gal_x2_lp.light_profile_1.image_from_grid(
                 grid=grid_stack_7x7.sub, return_binned=False
             )
 
@@ -101,7 +98,7 @@ class TestLightProfiles(object):
                 + lp_intensities[7]
             ) / 4.0
 
-            gal_intensities = gal_x2_lp.intensities_from_grid(
+            gal_intensities = gal_x2_lp.profile_image_from_grid(
                 grid=grid_stack_7x7.sub, return_binned=True
             )
 
@@ -221,12 +218,12 @@ class TestLightProfiles(object):
                 redshift=0.5, light_profile_0=lp_0, light_profile_1=lp_1
             )
 
-            assert gal_x2_lp.intensities_from_grid(
+            assert gal_x2_lp.profile_image_from_grid(
                 np.array([[0.0, 0.0]])
-            ) == gal_x2_lp.intensities_from_grid(grid=np.array([[100.0, 0.0]]))
-            assert gal_x2_lp.intensities_from_grid(
+            ) == gal_x2_lp.profile_image_from_grid(grid=np.array([[100.0, 0.0]]))
+            assert gal_x2_lp.profile_image_from_grid(
                 np.array([[49.0, 0.0]])
-            ) == gal_x2_lp.intensities_from_grid(grid=np.array([[51.0, 0.0]]))
+            ) == gal_x2_lp.profile_image_from_grid(grid=np.array([[51.0, 0.0]]))
 
         def test_2d_symmetry(self):
 
@@ -273,28 +270,28 @@ class TestLightProfiles(object):
                 light_profile_4=lp_3,
             )
 
-            assert gal_x4_lp.intensities_from_grid(
+            assert gal_x4_lp.profile_image_from_grid(
                 grid=np.array([[49.0, 0.0]])
             ) == pytest.approx(
-                gal_x4_lp.intensities_from_grid(grid=np.array([[51.0, 0.0]])), 1e-5
+                gal_x4_lp.profile_image_from_grid(grid=np.array([[51.0, 0.0]])), 1e-5
             )
 
-            assert gal_x4_lp.intensities_from_grid(
+            assert gal_x4_lp.profile_image_from_grid(
                 grid=np.array([[0.0, 49.0]])
             ) == pytest.approx(
-                gal_x4_lp.intensities_from_grid(grid=np.array([[0.0, 51.0]])), 1e-5
+                gal_x4_lp.profile_image_from_grid(grid=np.array([[0.0, 51.0]])), 1e-5
             )
 
-            assert gal_x4_lp.intensities_from_grid(
+            assert gal_x4_lp.profile_image_from_grid(
                 grid=np.array([[100.0, 49.0]])
             ) == pytest.approx(
-                gal_x4_lp.intensities_from_grid(grid=np.array([[100.0, 51.0]])), 1e-5
+                gal_x4_lp.profile_image_from_grid(grid=np.array([[100.0, 51.0]])), 1e-5
             )
 
-            assert gal_x4_lp.intensities_from_grid(
+            assert gal_x4_lp.profile_image_from_grid(
                 grid=np.array([[49.0, 49.0]])
             ) == pytest.approx(
-                gal_x4_lp.intensities_from_grid(grid=np.array([[51.0, 51.0]])), 1e-5
+                gal_x4_lp.profile_image_from_grid(grid=np.array([[51.0, 51.0]])), 1e-5
             )
 
 

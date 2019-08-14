@@ -246,7 +246,7 @@ class PSF(scaled_array.ScaledSquarePixelArray):
             pixel_scales=(pixel_scale, pixel_scale),
             sub_grid_size=1,
         )
-        gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
+        gaussian_1d = gaussian.image_from_grid(grid=grid_1d)
 
         gaussian_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=gaussian_1d,
@@ -284,7 +284,7 @@ class PSF(scaled_array.ScaledSquarePixelArray):
             sub_grid_size=1,
         )
 
-        gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
+        gaussian_1d = gaussian.image_from_grid(grid=grid_1d)
         gaussian_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=gaussian_1d,
             mask=np.full(fill_value=False, shape=shape),
