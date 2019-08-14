@@ -272,7 +272,7 @@ class TestPlaneRedshifts:
 
     def test__from_main_plane_redshifts_and_slices(self):
 
-        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
+        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
             lens_redshifts=[1.0],
             source_plane_redshift=3.0,
             planes_between_lenses=[1, 1],
@@ -282,7 +282,7 @@ class TestPlaneRedshifts:
 
     def test__different_number_of_slices_between_planes(self):
 
-        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
+        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
             lens_redshifts=[1.0],
             source_plane_redshift=2.0,
             planes_between_lenses=[2, 3],
@@ -302,21 +302,21 @@ class TestPlaneRedshifts:
     ):
 
         with pytest.raises(exc.RayTracingException):
-            lens_util.ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
+            lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
                 lens_redshifts=[1.0],
                 source_plane_redshift=2.0,
                 planes_between_lenses=[2, 3, 1],
             )
 
         with pytest.raises(exc.RayTracingException):
-            lens_util.ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
+            lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
                 lens_redshifts=[1.0],
                 source_plane_redshift=2.0,
                 planes_between_lenses=[2],
             )
 
         with pytest.raises(exc.RayTracingException):
-            lens_util.ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
+            lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
                 lens_redshifts=[1.0, 3.0],
                 source_plane_redshift=2.0,
                 planes_between_lenses=[2],

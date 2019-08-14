@@ -70,7 +70,7 @@ def ordered_plane_redshifts_from_galaxies(galaxies):
     ]
 
 
-def ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
+def ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
     lens_redshifts, planes_between_lenses, source_plane_redshift
 ):
     """Given a set of lens plane redshifts, the source-plane redshift and the number of planes between each, setup the \
