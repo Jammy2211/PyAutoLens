@@ -363,14 +363,16 @@ class Tracer(object):
 
     def traced_deflections_of_planes_from_grid(self, grid, return_in_2d=True):
 
+        grid_calc = grid.copy()
+
         if self.total_planes <= 2:
-            return [plane.deflections_from_grid(grid=grid, return_in_2d=return_in_2d) for plane in self.planes]
+            return [plane.deflections_from_grid(grid=grid_calc, return_in_2d=return_in_2d) for plane in self.planes]
 
         traced_deflections = []
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            scaled_grid = grid
+            scaled_grid = grid_calc
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
@@ -386,14 +388,38 @@ class Tracer(object):
 
                     scaled_grid -= scaled_deflections
 
-            traced_deflections.append(plane.deflections_from_grid(grid=scaled_grid, return_in_2d=False))
+            traced_deflections.append(plane.deflections_from_grid(grid=scaled_grid, return_in_2d=return_in_2d))
 
         return traced_deflections
 
     def traced_grids_of_planes_from_grid(self, grid, return_in_2d=True):
 
-        if self.total_planes == 2:
-            return self.traced_grids_of_x2_planes_from_grid(grid=grid, return_in_2d=return_in_2d)
+        grid_calc = grid.copy()
+
+        traced_grids = []
+        traced_deflections = []
+
+        for (plane_index, plane) in enumerate(self.planes):
+
+            scaled_grid = grid_calc.copy()
+
+            if plane_index > 0:
+                for previous_plane_index in range(plane_index):
+                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                        redshift_0=self.plane_redshifts[previous_plane_index],
+                        redshift_1=plane.redshift,
+                        redshift_final=self.plane_redshifts[-1],
+                        cosmology=self.cosmology,
+                    )
+
+                    scaled_deflections = scaling_factor * traced_deflections[previous_plane_index]
+
+                    scaled_grid -= scaled_deflections
+
+            traced_deflections.append(plane.deflections_from_grid(grid=scaled_grid, return_in_2d=return_in_2d))
+            traced_grids.append(scaled_grid)
+
+        return traced_grids
 
     def traced_grids_of_x2_planes_from_grid(self, grid, return_in_2d=True):
 
