@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from astropy import cosmology as cosmo
+from skimage import measure
 
 from autolens import exc, dimensions as dim
 from autolens.data.instrument import abstract_data
@@ -1037,6 +1038,58 @@ class TestAbstractPlane(object):
             assert summary_text[i] == "\n"
             i += 1
 
+def critical_curve_via_magnification_from_plane_and_grid_stack(plane, grid_stack):
+
+    magnification_2d = plane.magnification(
+        return_in_2d=True, return_binned=False
+    )
+
+    inverse_magnification_2d = 1 / magnification_2d
+
+    critical_curves_indices = measure.find_contours(inverse_magnification_2d, 0)
+
+    no_critical_curves = len(critical_curves_indices)
+    contours = []
+    critical_curves = []
+
+    for jj in np.arange(no_critical_curves):
+
+        contours.append(critical_curves_indices[jj])
+        contour_x, contour_y = contours[jj].T
+        pixel_coord = np.stack((contour_x, contour_y), axis=-1)
+
+        critical_curve = grid_stack.sub.unlensed_grid_2d.marching_squares_grid_pixels_to_grid_arcsec(
+            grid_pixels=pixel_coord, shape=magnification_2d.shape)
+
+        critical_curves.append(critical_curve)
+
+    return critical_curves
+
+
+def caustics_via_magnification_from_plane_and_grid_stack(plane, grid_stack):
+
+    caustics = []
+
+    critical_curves = critical_curve_via_magnification_from_plane_and_grid_stack(
+        plane=plane, grid_stack=grid_stack
+    )
+
+    for i in range(len(critical_curves)):
+
+        critical_curve = critical_curves[i]
+
+        deflections_1d = plane.deflections(
+            grid_override=critical_curves, return_in_2d=False, return_binned=False
+        )
+
+        print(critical_curve.shape)
+        print(deflections_1d)
+
+        caustic = critical_curve - deflections_1d
+
+        caustics.append(caustic)
+
+    return caustics
 
 class TestAbstractPlaneGridded(object):
     class TestImage:
@@ -2028,7 +2081,7 @@ class TestAbstractPlaneGridded(object):
             ) == (4, 4)
 
     class TestDeflectionAnglesviaPotential(object):
-        def test__compare_plane_deflections_via_potential_and_calculation(self, grid_stack):
+        def test__compare_plane_deflections_via_potential_and_calculation(self):
 
             grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05
@@ -2062,9 +2115,761 @@ class TestAbstractPlaneGridded(object):
                 deflections_via_potential - deflections_via_calculation
             )
 
-            print(deflections_via_potential)
+            assert mean_error < 1e-4
+
+        def test__deflections_via_potential_same_as_its_galaxy___use_multiple_galaxies(
+            self
+        ):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            g0_deflections = g0.deflections_from_grid(
+                grid=grid_stack.sub.unlensed_grid_1d,
+                return_in_2d=False,
+                return_binned=True,
+            )
+
+            g1_deflections = g1.deflections_from_grid(
+                grid=grid_stack.sub.unlensed_grid_1d,
+                return_in_2d=False,
+                return_binned=True,
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            deflections = plane.deflections(return_in_2d=False, return_binned=True)
+
+            assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
+
+    class TestConvergenceviaJacobian(object):
+        def test__compare_plane_convergence_via_jacobian_and_calculation(self):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05,
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0),einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0),einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            convergence_via_calculation =plane.convergence(
+                grid=grid_stack, return_in_2d=False, return_binned=False
+            )
+
+            convergence_via_jacobian = plane.convergence_from_jacobian(
+                grid=grid_stack, return_in_2d=False, return_binned=False
+            )
+
+            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+            assert mean_error < 1e-1
+
+        def test__convergence_sub_grid_binning_two_component_galaxy_plane(self):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0),einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            convergence_binned_reg_grid = plane.convergence_from_jacobian(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=True
+            )
+
+            convergence_sub_grid = plane.convergence_from_jacobian(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=False
+            )
+
+            pixel_1_reg_grid = convergence_binned_reg_grid[0]
+            pixel_1_from_av_sub_grid = (
+                convergence_sub_grid[0]
+                + convergence_sub_grid[1]
+                + convergence_sub_grid[2]
+                + convergence_sub_grid[3]
+            ) / 4
+
+            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+            pixel_10000_reg_grid = convergence_binned_reg_grid[99]
+
+            pixel_10000_from_av_sub_grid = (
+                convergence_sub_grid[399]
+                + convergence_sub_grid[398]
+                + convergence_sub_grid[397]
+                + convergence_sub_grid[396]
+            ) / 4
+
+            assert pixel_10000_reg_grid == pytest.approx(
+                pixel_10000_from_av_sub_grid, 1e-4
+            )
+
+            convergence_via_calculation = plane.convergence(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=True
+            )
+
+            convergence_via_jacobian = plane.convergence_from_jacobian(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=True
+            )
+
+            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+            assert convergence_via_jacobian.shape == (400,)
+            assert mean_error < 1e-1
+
+        def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(
+            self
+        ):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            g0_convergence = g0.convergence_from_jacobian(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=True
+            )
+
+            g1_convergence = g1.convergence_from_jacobian(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=True
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            convergence = plane.convergence_from_jacobian(
+                return_in_2d=False, return_binned=True)
+
+            assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
+
+    class TestShearviaJacobian(object):
+        def test__shear_sub_grid_binning_two_component_galaxy_plane(self):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0),einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            shear_binned_reg_grid = plane.shear_from_jacobian(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=True
+            )
+
+            shear_sub_grid = plane.shear_from_jacobian(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=False
+            )
+
+            pixel_1_reg_grid = shear_binned_reg_grid[0]
+            pixel_1_from_av_sub_grid = (
+                shear_sub_grid[0]
+                + shear_sub_grid[1]
+                + shear_sub_grid[2]
+                + shear_sub_grid[3]
+            ) / 4
+
+            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+            pixel_10000_reg_grid = shear_binned_reg_grid[99]
+
+            pixel_10000_from_av_sub_grid = (
+                shear_sub_grid[399]
+                + shear_sub_grid[398]
+                + shear_sub_grid[397]
+                + shear_sub_grid[396]
+            ) / 4
+
+            assert pixel_10000_reg_grid == pytest.approx(
+                pixel_10000_from_av_sub_grid, 1e-4
+            )
+
+        def test__plane_shear_via_jacobian_same_as_multiple_galaxies(
+            self
+        ):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            g0_shear = g0.shear_from_jacobian(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=True
+            )
+
+            g1_shear = g1.shear_from_jacobian(
+                grid=grid_stack.sub, return_in_2d=False, return_binned=True
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            shear = plane.shear_from_jacobian(
+                return_in_2d=False, return_binned=True)
+
+            assert shear == pytest.approx(g0_shear + g1_shear, 1.0e-8)
+
+    class TestJacobian(object):
+        def test__jacobian_components__two_component_galaxy_plane(self):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05,
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            jacobian = plane.lensing_jacobian(return_in_2d=False)
+
+            A_12 = jacobian[0, 1]
+            A_21 = jacobian[1, 0]
+
+            mean_error = np.mean(A_12 - A_21)
 
             assert mean_error < 1e-4
+
+            jacobian = plane.lensing_jacobian(
+                return_in_2d=False, return_binned=True
+            )
+
+            A_12 = jacobian[0, 1]
+            A_21 = jacobian[1, 0]
+
+            mean_error = np.mean(A_12 - A_21)
+
+            assert mean_error < 1e-4
+
+        def test__jacobian_sub_grid_binning_two_component_galaxy_plane(self):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            jacobian_binned_reg_grid = plane.lensing_jacobian(
+                return_in_2d=False, return_binned=True
+            )
+            a11_binned_reg_grid = jacobian_binned_reg_grid[0, 0]
+
+            jacobian_sub_grid = plane.lensing_jacobian(
+                return_in_2d=False, return_binned=False
+            )
+            a11_sub_grid = jacobian_sub_grid[0, 0]
+
+            pixel_1_reg_grid = a11_binned_reg_grid[0]
+            pixel_1_from_av_sub_grid = (
+                a11_sub_grid[0] + a11_sub_grid[1] + a11_sub_grid[2] + a11_sub_grid[3]
+            ) / 4
+
+            assert jacobian_binned_reg_grid.shape == (2, 2, 100)
+            assert jacobian_sub_grid.shape == (2, 2, 400)
+            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+            pixel_10000_reg_grid = a11_binned_reg_grid[99]
+
+            pixel_10000_from_av_sub_grid = (
+                a11_sub_grid[399]
+                + a11_sub_grid[398]
+                + a11_sub_grid[397]
+                + a11_sub_grid[396]
+            ) / 4
+
+            assert pixel_10000_reg_grid == pytest.approx(
+                pixel_10000_from_av_sub_grid, 1e-4
+            )
+
+        def test_lambda_t_sub_grid_binning_two_component_galaxy_plane(self):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            lambda_t_binned_reg_grid = plane.tangential_eigen_value_from_shear_and_convergence(
+                return_in_2d=False, return_binned=True
+            )
+
+            lambda_t_sub_grid = plane.tangential_eigen_value_from_shear_and_convergence(
+                return_in_2d=False, return_binned=False
+            )
+
+            pixel_1_reg_grid = lambda_t_binned_reg_grid[0]
+            pixel_1_from_av_sub_grid = (
+                lambda_t_sub_grid[0]
+                + lambda_t_sub_grid[1]
+                + lambda_t_sub_grid[2]
+                + lambda_t_sub_grid[3]
+            ) / 4
+
+            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+            pixel_10000_reg_grid = lambda_t_binned_reg_grid[99]
+
+            pixel_10000_from_av_sub_grid = (
+                lambda_t_sub_grid[399]
+                + lambda_t_sub_grid[398]
+                + lambda_t_sub_grid[397]
+                + lambda_t_sub_grid[396]
+            ) / 4
+
+            assert pixel_10000_reg_grid == pytest.approx(
+                pixel_10000_from_av_sub_grid, 1e-4
+            )
+
+        def test_lambda_r_sub_grid_binning_two_component_galaxy_plane(self):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            lambda_r_binned_reg_grid = plane.radial_eigen_value_from_shear_and_convergence(
+                return_in_2d=False, return_binned=True
+            )
+
+            lambda_r_sub_grid = plane.radial_eigen_value_from_shear_and_convergence(
+                return_in_2d=False, return_binned=False
+            )
+
+            pixel_1_reg_grid = lambda_r_binned_reg_grid[0]
+            pixel_1_from_av_sub_grid = (
+                lambda_r_sub_grid[0]
+                + lambda_r_sub_grid[1]
+                + lambda_r_sub_grid[2]
+                + lambda_r_sub_grid[3]
+            ) / 4
+
+            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+            pixel_10000_reg_grid = lambda_r_binned_reg_grid[99]
+
+            pixel_10000_from_av_sub_grid = (
+                lambda_r_sub_grid[399]
+                + lambda_r_sub_grid[398]
+                + lambda_r_sub_grid[397]
+                + lambda_r_sub_grid[396]
+            ) / 4
+
+            assert pixel_10000_reg_grid == pytest.approx(
+                pixel_10000_from_av_sub_grid, 1e-4
+            )
+
+    class TestMagnification(object):
+        def test__compare_magnification_from_eigen_values_and_from_determinant__two_component_galaxy_plane(
+            self
+        ):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05,
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            magnification_via_determinant = plane.magnification(
+                return_in_2d=True
+            )
+
+            tangential_eigen_value = plane.tangential_eigen_value_from_shear_and_convergence(
+                return_in_2d=True
+            )
+
+            radal_eigen_value = plane.radial_eigen_value_from_shear_and_convergence(
+                return_in_2d=True
+            )
+
+            magnification_via_eigen_values = 1 / (
+                tangential_eigen_value * radal_eigen_value
+            )
+
+            mean_error = np.mean(
+                magnification_via_determinant - magnification_via_eigen_values
+            )
+
+            assert mean_error < 1e-4
+
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            magnification_via_determinant = plane.magnification(
+                return_in_2d=True, return_binned=False
+            )
+
+            tangential_eigen_value = plane.tangential_eigen_value_from_shear_and_convergence(
+                return_in_2d=True, return_binned=False
+            )
+
+            radal_eigen_value = plane.radial_eigen_value_from_shear_and_convergence(
+                return_in_2d=True, return_binned=False
+            )
+
+            magnification_via_eigen_values = 1 / (
+                tangential_eigen_value * radal_eigen_value
+            )
+
+            mean_error = np.mean(
+                magnification_via_determinant - magnification_via_eigen_values
+            )
+
+            assert mean_error < 1e-4
+
+        def test__compare_magnification_from_determinant_and_from_convergence_and_shear__two_component_galaxy(
+            self
+        ):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05,
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            magnification_via_determinant = plane.magnification(
+                return_in_2d=True, return_binned=False
+            )
+
+            convergence = plane.convergence_from_jacobian(return_in_2d=True)
+
+            shear = plane.shear_from_jacobian(return_in_2d=True)
+
+            magnification_via_convergence_and_shear = 1 / (
+                (1 - convergence) ** 2 - shear ** 2
+            )
+
+            mean_error = np.mean(
+                magnification_via_determinant - magnification_via_convergence_and_shear
+            )
+
+            assert mean_error < 1e-4
+
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            magnification_via_determinant = plane.magnification(
+                return_in_2d=True, return_binned=False
+            )
+
+            convergence = plane.convergence_from_jacobian(
+                return_in_2d=True, return_binned=False
+            )
+
+            shear = plane.shear_from_jacobian(
+                return_in_2d=True, return_binned=False
+            )
+
+            magnification_via_convergence_and_shear = 1 / (
+                (1 - convergence) ** 2 - shear ** 2
+            )
+
+            mean_error = np.mean(
+                magnification_via_determinant - magnification_via_convergence_and_shear
+            )
+
+            assert mean_error < 1e-4
+
+    class TestCriticalCurvesandCaustics(object):
+
+        def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
+            self
+        ):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
+            )
+
+            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.EllipticalIsothermal(
+                 centre=(0.0, 0.0), einstein_radius=1.4,axis_ratio=0.7, phi=40.0)
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_plane_and_grid_stack(
+                plane=plane, grid_stack=grid_stack
+            )[
+                0
+            ]
+
+            critical_curve_tangential_from_lambda_t = plane.tangential_critical_curve()
+
+            assert critical_curve_tangential_from_lambda_t == pytest.approx(
+                critical_curve_tangential_from_magnification, 1e-4
+            )
+
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_plane_and_grid_stack(
+                plane=plane, grid_stack=grid_stack
+            )[
+                0
+             ]
+
+            critical_curve_tangential_from_lambda_t = plane.tangential_critical_curve()
+
+            assert critical_curve_tangential_from_lambda_t == pytest.approx(
+                critical_curve_tangential_from_magnification, 1e-4
+            )
+
+        def test__compare_radial_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
+            self
+        ):
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
+            )
+
+            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.EllipticalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0)
+                          )
+
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0)
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None,
+            )
+
+            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_plane_and_grid_stack(
+                plane=plane, grid_stack=grid_stack
+            )[
+                1
+            ]
+
+            critical_curve_radial_from_lambda_t = plane.radial_critical_curve()
+
+            assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
+                sum(critical_curve_radial_from_magnification), 1e-2
+            )
+
+            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            plane = pl.AbstractGriddedPlane(
+                galaxies=[g0, g1],
+                grid_stack=grid_stack,
+                compute_deflections=False,
+                border=None,
+                redshift=None
+            )
+
+            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_plane_and_grid_stack(
+                plane=plane, grid_stack=grid_stack
+            )[
+                1
+            ]
+
+            critical_curve_radial_from_lambda_t = plane.radial_critical_curve()
+
+            assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
+                sum(critical_curve_radial_from_magnification), 1e-2
+            )
 
 
 class TestAbstractDataPlane(object):
