@@ -470,7 +470,7 @@ def plot_convergence(
     output_filename="tracer_convergence",
 ):
 
-    convergence = tracer.convergence(return_in_2d=True, return_binned=True)
+    convergence = tracer.convergence_from_grid(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=convergence,

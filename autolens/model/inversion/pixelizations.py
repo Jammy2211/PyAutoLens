@@ -13,7 +13,7 @@ class Pixelization(object):
         """ Abstract base class for a pixelization, which discretizes grid_stack of (y,x) coordinates into pixels.
         """
 
-    def mapper_from_grid_stack_and_border(self, grid_stack, border):
+    def mapper_from_regular_grid_and_pixel_centres(self, grid_stack, border):
         raise NotImplementedError(
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
@@ -113,7 +113,7 @@ class Rectangular(Pixelization):
     def neighbors_from_pixelization(self):
         return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
 
-    def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
+    def mapper_from_regular_grid_and_pixel_centres(self, grid_stack, border, hyper_image=None):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
         1) If a border is supplied, relocate all of the grid-stack's regular and sub grid pixels beyond the border.
@@ -263,7 +263,7 @@ class Voronoi(Pixelization):
             pixels=pixels, ridge_points=np.asarray(ridge_points)
         )
 
-    def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
+    def mapper_from_regular_grid_and_pixel_centres(self, grid_stack, border, hyper_image=None):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
         1) (before this routine is called), setup the 'pix' grid as part of the grid-stack, which corresponds to a \

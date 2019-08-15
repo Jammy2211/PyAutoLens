@@ -32,7 +32,7 @@ class TestRectangular:
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None, hyper_image=np.ones((2, 2))
         )
 
@@ -133,7 +133,7 @@ class TestRectangular:
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None
         )
 
@@ -232,7 +232,7 @@ class TestRectangular:
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None
         )
 
@@ -296,7 +296,7 @@ class TestRectangular:
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grid_stack_and_border(grid_stack, border)
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(grid_stack, border)
 
         assert mapper.is_image_plane_pixelization == False
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
@@ -393,7 +393,7 @@ class TestSparseToRegularGrid:
             regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse,
         )
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None, hyper_image=np.ones((2, 2))
         )
 
@@ -477,7 +477,7 @@ class TestSparseToRegularGrid:
             regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse,
         )
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None
         )
 
@@ -578,7 +578,7 @@ class TestSparseToRegularGrid:
             regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse,
         )
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None
         )
 
@@ -661,7 +661,7 @@ class TestSparseToRegularGrid:
             regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse,
         )
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None
         )
 
@@ -727,7 +727,7 @@ class TestVoronoiMagnification:
 
         pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None, hyper_image=np.ones((2, 2))
         )
 
@@ -810,7 +810,7 @@ class TestVoronoiMagnification:
 
         pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None
         )
 
@@ -869,7 +869,7 @@ class TestVoronoiMagnification:
             regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse,
         )
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None
         )
 
@@ -969,7 +969,7 @@ class TestVoronoiMagnification:
 
         pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None
         )
 
@@ -1069,7 +1069,7 @@ class TestVoronoiMagnification:
 
         pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=None
         )
 
@@ -1139,7 +1139,7 @@ class TestVoronoiMagnification:
 
         pix = pixelizations.VoronoiMagnification(shape=(5, 1))
 
-        mapper = pix.mapper_from_grid_stack_and_border(
+        mapper = pix.mapper_from_regular_grid_and_pixel_centres(
             grid_stack=grid_stack, border=border
         )
 

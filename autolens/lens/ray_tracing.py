@@ -361,40 +361,13 @@ class Tracer(object):
     def galaxies(self):
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
-    def traced_deflections_of_planes_from_grid(self, grid, return_in_2d=True):
-
-        grid_calc = grid.copy()
-
-        if self.total_planes <= 2:
-            return [plane.deflections_from_grid(grid=grid_calc, return_in_2d=return_in_2d) for plane in self.planes]
-
-        traced_deflections = []
-
-        for (plane_index, plane) in enumerate(self.planes):
-
-            scaled_grid = grid_calc
-
-            if plane_index > 0:
-                for previous_plane_index in range(plane_index):
-
-                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
-                        redshift_0=self.plane_redshifts[previous_plane_index],
-                        redshift_1=plane.redshift,
-                        redshift_final=self.plane_redshifts[-1],
-                        cosmology=self.cosmology,
-                    )
-
-                    scaled_deflections = scaling_factor * traced_deflections[previous_plane_index]
-
-                    scaled_grid -= scaled_deflections
-
-            traced_deflections.append(plane.deflections_from_grid(grid=scaled_grid, return_in_2d=return_in_2d))
-
-        return traced_deflections
-
     def traced_grids_of_planes_from_grid(self, grid, return_in_2d=True):
 
         grid_calc = grid.copy()
+
+        if self.total_planes == 2:
+            deflections = self.image_plane.deflections_from_grid(grid=grid_calc, return_in_2d=return_in_2d)
+            return [grid, grid - deflections]
 
         traced_grids = []
         traced_deflections = []
@@ -420,6 +393,12 @@ class Tracer(object):
             traced_grids.append(scaled_grid)
 
         return traced_grids
+
+    def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1, return_in_2d=True):
+
+        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid, return_in_2d=return_in_2d)
+
+        return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
     def traced_grids_of_x2_planes_from_grid(self, grid, return_in_2d=True):
 
@@ -505,7 +484,7 @@ class Tracer(object):
 
     @property
     def mappers_of_planes(self):
-        return list(filter(None, [plane.mapper for plane in self.planes]))
+        return list(filter(None, [plane.mapper_from_regular_grid_and_pixel_centres for plane in self.planes]))
 
     @property
     def regularizations_of_planes(self):
@@ -515,7 +494,7 @@ class Tracer(object):
     def convergence(self, return_in_2d=True, return_binned=True):
         return sum(
             [
-                plane.convergence(return_in_2d=False, return_binned=False)
+                plane.convergence_from_grid(return_in_2d=False, return_binned=False)
                 for plane in self.planes
             ]
         )

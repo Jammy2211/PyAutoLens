@@ -50,12 +50,12 @@ def plot_inversion_subplot(
 
     ratio = float(
         (
-            inversion.mapper.geometry.arc_second_maxima[1]
-            - inversion.mapper.geometry.arc_second_minima[1]
+            inversion.mapper_from_regular_grid_and_pixel_centres.geometry.arc_second_maxima[1]
+            - inversion.mapper_from_regular_grid_and_pixel_centres.geometry.arc_second_minima[1]
         )
         / (
-            inversion.mapper.geometry.arc_second_maxima[0]
-            - inversion.mapper.geometry.arc_second_minima[0]
+            inversion.mapper_from_regular_grid_and_pixel_centres.geometry.arc_second_maxima[0]
+            - inversion.mapper_from_regular_grid_and_pixel_centres.geometry.arc_second_minima[0]
         )
     )
 
@@ -695,7 +695,7 @@ def plot_pixelization_regularization_weights(
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     regularization_weights = inversion.regularization.regularization_weights_from_mapper(
-        mapper=inversion.mapper
+        mapper=inversion.mapper_from_regular_grid_and_pixel_centres
     )
 
     plot_inversion_with_source_values(
@@ -773,9 +773,9 @@ def plot_inversion_with_source_values(
     output_filename="pixelization_source_values",
 ):
 
-    if isinstance(inversion.mapper, mappers.RectangularMapper):
+    if isinstance(inversion.mapper_from_regular_grid_and_pixel_centres, mappers.RectangularMapper):
 
-        reconstructed_pixelization = inversion.mapper.reconstructed_pixelization_from_solution_vector(
+        reconstructed_pixelization = inversion.mapper_from_regular_grid_and_pixel_centres.reconstructed_pixelization_from_solution_vector(
             solution_vector=source_pixel_values
         )
 
@@ -810,7 +810,7 @@ def plot_inversion_with_source_values(
         )
 
         mapper_plotters.plot_rectangular_mapper(
-            mapper=inversion.mapper,
+            mapper=inversion.mapper_from_regular_grid_and_pixel_centres,
             should_plot_centres=should_plot_centres,
             should_plot_grid=should_plot_grid,
             should_plot_border=should_plot_border,
@@ -834,10 +834,10 @@ def plot_inversion_with_source_values(
             output_format=output_format,
         )
 
-    elif isinstance(inversion.mapper, mappers.VoronoiMapper):
+    elif isinstance(inversion.mapper_from_regular_grid_and_pixel_centres, mappers.VoronoiMapper):
 
         mapper_plotters.plot_voronoi_mapper(
-            mapper=inversion.mapper,
+            mapper=inversion.mapper_from_regular_grid_and_pixel_centres,
             source_pixel_values=source_pixel_values,
             should_plot_centres=should_plot_centres,
             should_plot_grid=should_plot_grid,
