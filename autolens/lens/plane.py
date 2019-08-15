@@ -276,14 +276,14 @@ class Plane(object):
         return grid - self.deflections_from_grid(grid=grid, return_in_2d=False, return_binned=False)
 
     @reshape_returned_grid
-    def deflections_via_potential(self, return_in_2d=True, return_binned=True):
-        potential_2d = self.potential(return_in_2d=True, return_binned=False)
+    def deflections_via_potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+        potential_2d = self.potential_from_grid(grid=grid, return_in_2d=True, return_binned=False)
 
         deflections_y_2d = np.gradient(
-            potential_2d, self.grid_stack.sub.in_2d[:, 0, 0], axis=0
+            potential_2d, grid.in_2d[:, 0, 0], axis=0
         )
         deflections_x_2d = np.gradient(
-            potential_2d, self.grid_stack.sub.in_2d[0, :, 1], axis=1
+            potential_2d, grid.in_2d[0, :, 1], axis=1
         )
 
         return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
@@ -842,19 +842,6 @@ class Plane(object):
             4,
         )
 
-    @reshape_returned_grid
-    def deflections_via_potential(
-            self, return_in_2d=True, return_binned=True
-    ):
-        potential_2d = self.potential(
-            grid=self.grid_stack.sub.unlensed_grid_2d, return_in_2d=True, return_binned=False
-        )
-
-        deflections_y_2d = np.gradient(potential_2d, self.grid_stack.sub.unlensed_grid_2d[:, 0, 0], axis=0)
-        deflections_x_2d = np.gradient(potential_2d, self.grid_stack.sub.unlensed_grid_2d[0, :, 1], axis=1)
-
-        return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
-
     @reshape_returned_array
     def lensing_jacobian_a11_from_deflections_2d(
             self, return_in_2d=True, return_binned=True
@@ -1020,7 +1007,6 @@ class Plane(object):
         ]
 
 
-class AbstractDataPlane(AbstractGriddedPlane):
     def blurred_profile_image_plane_image_1d_from_convolver_image(
         self, convolver_image
     ):
