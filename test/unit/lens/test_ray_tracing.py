@@ -1622,7 +1622,6 @@ class TestTracer(object):
 
             tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0, g1, g2],
-                image_plane_grid_stack=grid_stack_7x7,
                 cosmology=cosmo.Planck15,
             )
 
@@ -1721,7 +1720,6 @@ class TestTracer(object):
 
             tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0, g1, g2, g3],
-                image_plane_grid_stack=grid_stack_7x7,
                 cosmology=cosmo.Planck15,
             )
 
@@ -1855,7 +1853,240 @@ class TestTracer(object):
                 1.0, 1e-4
             )
 
-    class TestSetupFromGalaxies:
+        def test__6_galaxies__tracer_planes_are_correct(self, grid_stack_7x7):
+
+            g0 = g.Galaxy(redshift=2.0)
+            g1 = g.Galaxy(redshift=2.0)
+            g2 = g.Galaxy(redshift=0.1)
+            g3 = g.Galaxy(redshift=3.0)
+            g4 = g.Galaxy(redshift=1.0)
+            g5 = g.Galaxy(redshift=3.0)
+
+            tracer = ray_tracing.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2, g3, g4, g5],
+                cosmology=cosmo.Planck15,
+            )
+
+            assert tracer.planes[0].galaxies == [g2]
+            assert tracer.planes[1].galaxies == [g4]
+            assert tracer.planes[2].galaxies == [g0, g1]
+            assert tracer.planes[3].galaxies == [g3, g5]
+
+    class TestTracedDeflectionsFromGrid:
+        def test__x2_planes__no_galaxy__all_deflections_are_zeros(
+            self, sub_grid_7x7_simple
+        ):
+
+            tracer = ray_tracing.Tracer.from_galaxies(
+                galaxies=[g.Galaxy(redshift=0.5), g.Galaxy(redshift=1.0)],
+            )
+
+            traced_deflections_of_planes = tracer.traced_deflections_of_planes_from_grid(
+                grid=sub_grid_7x7_simple, return_in_2d=False)
+
+            assert traced_deflections_of_planes[0][0] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[0][1] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[0][2] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[0][3] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+
+            assert traced_deflections_of_planes[1][0] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[1][1] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[1][2] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[1][3] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+
+        def test__x2_planes__sis_lens__traced_deflection_are_correct(
+            self, sub_grid_7x7_simple, gal_x1_mp
+        ):
+
+            tracer = ray_tracing.Tracer.from_galaxies(
+                galaxies=[gal_x1_mp, g.Galaxy(redshift=1.0)],
+            )
+
+            traced_deflections_of_planes = tracer.traced_deflections_of_planes_from_grid(grid=sub_grid_7x7_simple, return_in_2d=False)
+
+            assert traced_deflections_of_planes[0][0] == pytest.approx(
+                np.array([0.707, 0.707]), 1e-3
+            )
+            assert traced_deflections_of_planes[0][1] == pytest.approx(
+                np.array([1.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[0][2] == pytest.approx(
+                np.array([0.707, 0.707]), 1e-3
+            )
+            assert traced_deflections_of_planes[0][3] == pytest.approx(
+                np.array([1.0, 0.0]), 1e-3
+            )
+
+            assert traced_deflections_of_planes[1][0] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[1][1] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[1][2] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[1][3] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+
+        def test__same_as_above_but_x2_sis_lenses__deflections_double(
+            self, sub_grid_7x7_simple, gal_x1_mp
+        ):
+
+            tracer = ray_tracing.Tracer.from_galaxies(
+                galaxies=[gal_x1_mp, gal_x1_mp, g.Galaxy(redshift=1.0)],
+            )
+
+            traced_deflections_of_planes = tracer.traced_deflections_of_planes_from_grid(
+                grid=sub_grid_7x7_simple, return_in_2d=False)
+
+            assert traced_deflections_of_planes[0][0] == pytest.approx(
+                np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3
+            )
+            assert traced_deflections_of_planes[0][1] == pytest.approx(
+                np.array([2.0 * 1.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[0][2] == pytest.approx(
+                np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3
+            )
+            assert traced_deflections_of_planes[0][3] == pytest.approx(
+                np.array([2.0 * 1.0, 0.0]), 1e-3
+            )
+
+            assert traced_deflections_of_planes[1][0] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[1][1] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[1][2] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[1][3] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+
+        def test__multi_plane_x4_planes__traced_deflections_are_correct_including_cosmology_scaling__sis_mass_profile(
+            self, sub_grid_7x7_simple
+        ):
+
+            g0 = g.Galaxy(
+                redshift=2.0, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=2.0, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g2 = g.Galaxy(
+                redshift=0.1, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g3 = g.Galaxy(
+                redshift=3.0,
+            )
+            g4 = g.Galaxy(
+                redshift=1.0, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g5 = g.Galaxy(
+                redshift=3.0,
+            )
+
+            tracer = ray_tracing.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2, g3, g4, g5],
+                cosmology=cosmo.Planck15,
+            )
+
+            traced_deflections_of_planes = tracer.traced_deflections_of_planes_from_grid(grid=sub_grid_7x7_simple, return_in_2d=False)
+
+            # The scaling factors are as follows and were computed independently from the test.
+            beta_01 = 0.9348
+            beta_02 = 0.9839601
+            # Beta_03 = 1.0
+            beta_12 = 0.7539734
+            # Beta_13 = 1.0
+            # Beta_23 = 1.0
+
+            val = np.sqrt(2) / 2.0
+
+            assert traced_deflections_of_planes[0][0] == pytest.approx(
+                np.array([val, val]), 1e-4
+            )
+            assert traced_deflections_of_planes[0][1] == pytest.approx(
+                np.array([1.0, 0.0]), 1e-4
+            )
+
+            defl11 = g0.deflections_from_grid(
+                grid=np.array([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
+            )
+            defl12 = g0.deflections_from_grid(
+                grid=np.array([[(1.0 - beta_01 * 1.0), 0.0]])
+            )
+
+            assert traced_deflections_of_planes[1][0] == pytest.approx(
+                defl11[0], 1e-4
+            )
+            assert traced_deflections_of_planes[1][1] == pytest.approx(
+                defl12[0], 1e-4
+            )
+
+            # 2 Galaxies in this plane, so multiply by 2.0
+
+            defl21 = 2.0 * g0.deflections_from_grid(
+                grid=np.array(
+                    [
+                        [
+                            (1.0 - beta_02 * val - beta_12 * defl11[0, 0]),
+                            (1.0 - beta_02 * val - beta_12 * defl11[0, 1]),
+                        ]
+                    ]
+                )
+            )
+            defl22 = 2.0 * g0.deflections_from_grid(
+                grid=np.array([[(1.0 - beta_02 * 1.0 - beta_12 * defl12[0, 0]), 0.0]])
+            )
+
+            assert traced_deflections_of_planes[2][0] == pytest.approx(
+                defl21[0], 1e-4
+            )
+            assert traced_deflections_of_planes[2][1] == pytest.approx(
+                defl22[0], 1e-4
+            )
+
+            assert traced_deflections_of_planes[3][0] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+            assert traced_deflections_of_planes[3][1] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3
+            )
+
+        # def test__grid_attributes_passed(self, sub_grid_7x7_simple):
+        #     tracer = ray_tracing.Tracer.from_galaxies(
+        #         galaxies=[g.Galaxy(redshift=0.5), g.Galaxy(redshift=0.5)],
+        #     )
+        #
+        #     traced_deflections_of_planes = tracer.traced_deflections_of_planes_from_grid(
+        #         grid=sub_grid_7x7_simple, return_in_2d=False)
+        #
+        #     assert (
+        #         traced_deflections_of_planes[0].mask == sub_grid_7x7_simple.sub.mask
+        #     ).all()
+
+    class TestTracedGridsFromGrid:
         def test__x2_planes__no_galaxy__image_and_source_planes_setup__same_coordinates(
             self, sub_grid_7x7
         ):

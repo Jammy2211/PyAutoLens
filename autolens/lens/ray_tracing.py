@@ -77,8 +77,6 @@ class Tracer(object):
             galaxies=galaxies, plane_redshifts=plane_redshifts
         )
 
-        image_plane)
-
         planes = []
 
         for plane_index in range(0, len(plane_redshifts)):
@@ -363,31 +361,34 @@ class Tracer(object):
     def galaxies(self):
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
-    @reshape_returned_array
-    def profile_image_plane_image(self, return_in_2d=True, return_binned=True):
-        return sum(
-            self.profile_image_plane_image_of_planes(
-                return_in_2d=False, return_binned=False
-            )
-        )
+    def traced_deflections_of_planes_from_grid(self, grid, return_in_2d=True):
 
-    def profile_image_plane_image_of_planes(
-        self, return_in_2d=True, return_binned=True
-    ):
-        return [
-            plane.profile_image_from_grid(
-                return_in_2d=return_in_2d, return_binned=return_binned
-            )
-            for plane in self.planes
-        ]
+        if self.total_planes <= 2:
+            return [plane.deflections_from_grid(grid=grid, return_in_2d=return_in_2d) for plane in self.planes]
 
-    def padded_profile_image_plane_image_2d_from_psf_shape(self, psf_shape):
+        traced_deflections = []
 
-        padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf_shape)
+        for (plane_index, plane) in enumerate(self.planes):
 
-        return padded_tracer.profile_image_from_grid(
-            return_in_2d=True, return_binned=True
-        )
+            scaled_grid = grid
+
+            if plane_index > 0:
+                for previous_plane_index in range(plane_index):
+
+                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                        redshift_0=self.plane_redshifts[previous_plane_index],
+                        redshift_1=plane.redshift,
+                        redshift_final=self.plane_redshifts[-1],
+                        cosmology=self.cosmology,
+                    )
+
+                    scaled_deflections = scaling_factor * traced_deflections[previous_plane_index]
+
+                    scaled_grid -= scaled_deflections
+
+            traced_deflections.append(plane.deflections_from_grid(grid=scaled_grid, return_in_2d=False))
+
+        return traced_deflections
 
     def traced_grids_of_planes_from_grid(self, grid, return_in_2d=True):
 
@@ -438,12 +439,31 @@ class Tracer(object):
 
         return traced_grids
 
-    #  compute_deflections = lens_util.compute_deflections_at_next_plane(
-    #      plane_index=plane_index, total_planes=len(plane_redshifts)
-    #  )
+    @reshape_returned_array
+    def profile_image_plane_image(self, return_in_2d=True, return_binned=True):
+        return sum(
+            self.profile_image_plane_image_of_planes(
+                return_in_2d=False, return_binned=False
+            )
+        )
 
-    new_grid_stack = image_plane_grid_stack
+    def profile_image_plane_image_of_planes(
+        self, return_in_2d=True, return_binned=True
+    ):
+        return [
+            plane.profile_image_from_grid(
+                return_in_2d=return_in_2d, return_binned=return_binned
+            )
+            for plane in self.planes
+        ]
 
+    def padded_profile_image_plane_image_2d_from_psf_shape(self, psf_shape):
+
+        padded_tracer = self.padded_tracer_from_psf_shape(psf_shape=psf_shape)
+
+        return padded_tracer.profile_image_from_grid(
+            return_in_2d=True, return_binned=True
+        )
 
     @reshape_returned_array_blurring
     def profile_image_plane_blurring_image(self, return_in_2d=True):
