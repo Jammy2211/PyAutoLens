@@ -204,7 +204,7 @@ class TestImagePassing(object):
     def test_galaxy_image_dict(
         self, lens_galaxy, source_galaxy, grid_stack_7x7, convolver_image_7x7
     ):
-        tracer = rt.Tracer.from_galaxies_and_image_plane_grid_stack(
+        tracer = rt.Tracer.from_galaxies(
             galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack_7x7
         )
 
@@ -511,7 +511,7 @@ class TestImagePassing(object):
         )
         g1 = g.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
 
-        tracer = rt.Tracer.from_galaxies_and_image_plane_grid_stack(
+        tracer = rt.Tracer.from_galaxies(
             galaxies=[g0, g1], image_plane_grid_stack=lens_data_7x7.grid_stack
         )
 

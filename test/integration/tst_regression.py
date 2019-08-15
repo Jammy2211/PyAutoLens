@@ -41,7 +41,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
         shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=1
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+    tracer = ray_tracing.Tracer.from_galaxies(
         galaxies=galaxies, image_plane_grid_stack=grid_stack
     )
 

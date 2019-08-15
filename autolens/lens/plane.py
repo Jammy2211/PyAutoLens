@@ -17,7 +17,7 @@ from autolens.data.array.util import grid_util
 
 class Plane(object):
 
-    def __init__(self, redshift, galaxies=None, cosmology=cosmo.Planck15):
+    def __init__(self, redshift=None, galaxies=None, cosmology=cosmo.Planck15):
         """A plane of galaxies where all galaxies are at the same redshift.
 
         Parameters

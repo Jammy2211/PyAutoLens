@@ -2560,7 +2560,6 @@ class TestPlane(object):
                 np.array([-1.0, 0.0]), 1e-3
             )
 
-
         def test__plane_has_no_galaxies__traced_grid_is_input_grid_of_sub_grid_7x7(
             self, sub_grid_7x7
         ):
