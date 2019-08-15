@@ -62,7 +62,7 @@ def make_rectangular_pixelization():
 
 @pytest.fixture(name="rectangular_mapper")
 def make_rectangular_mapper(rectangular_pixelization, grid_stack, border):
-    return rectangular_pixelization.mapper_from_grid_stack_and_border(
+    return rectangular_pixelization.mapper_from_regular_grid_and_pixel_centres(
         grid_stack=grid_stack, border=border
     )
 

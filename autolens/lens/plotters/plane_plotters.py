@@ -190,7 +190,7 @@ def plot_convergence(
     output_filename="plane_convergence",
 ):
 
-    convergence = plane.convergence(return_in_2d=True, return_binned=True)
+    convergence = plane.convergence_from_grid(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=convergence,

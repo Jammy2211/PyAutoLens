@@ -183,7 +183,7 @@ class Plane(object):
         )
 
     @reshape_returned_array
-    def convergence(self, return_in_2d=True, return_binned=True):
+    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
         of each galaxy's mass profile.
 
@@ -211,7 +211,7 @@ class Plane(object):
             return sum(
                 map(
                     lambda g: g.convergence_from_grid(
-                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        grid=grid,
                         return_in_2d=False,
                         return_binned=False,
                     ),
@@ -219,10 +219,10 @@ class Plane(object):
                 )
             )
         else:
-            return np.full((self.grid_stack.sub.shape[0]), 0.0)
+            return np.full((grid.shape[0]), 0.0)
 
     @reshape_returned_array
-    def potential(self, return_in_2d=True, return_binned=True):
+    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """Compute the potential of the list of galaxies of the plane's sub-grid, by summing the individual potentials \
         of each galaxy's mass profile.
 
@@ -250,7 +250,7 @@ class Plane(object):
             return sum(
                 map(
                     lambda g: g.potential_from_grid(
-                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        grid=grid,
                         return_in_2d=False,
                         return_binned=False,
                     ),
@@ -258,7 +258,7 @@ class Plane(object):
                 )
             )
         else:
-            return np.full((self.grid_stack.sub.shape[0]), 0.0)
+            return np.full((grid.shape[0]), 0.0)
 
     @reshape_returned_grid
     def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -525,8 +525,7 @@ class Plane(object):
             galaxies=self.galaxies,
         )
 
-    @property
-    def mapper(self):
+    def mapper_from_regular_grid_sub_grid_and_border(self, regular_grid, sub_grid, border):
 
         galaxies_with_pixelization = list(
             filter(lambda galaxy: galaxy.pixelization is not None, self.galaxies)
@@ -538,7 +537,7 @@ class Plane(object):
 
             pixelization = galaxies_with_pixelization[0].pixelization
 
-            return pixelization.mapper_from_grid_stack_and_border(
+            return pixelization.mapper_from_regular_grid_and_pixel_centres(
                 grid_stack=self.grid_stack,
                 border=self.border,
                 hyper_image=galaxies_with_pixelization[0].hyper_galaxy_image_1d,
