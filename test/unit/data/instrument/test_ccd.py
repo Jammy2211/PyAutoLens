@@ -1961,7 +1961,7 @@ class TestSimulateCCD(object):
 
         g1 = g.Galaxy(redshift=1.0, light=lp.SphericalSersic(intensity=1.0))
 
-        tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        tracer = ray_tracing.Tracer.from_galaxies(
             galaxies=[g0, g1], image_plane_grid_stack=image_plane_grid_stack
         )
 
@@ -2025,7 +2025,7 @@ class TestSimulateCCD(object):
 
         source_galaxy = g.Galaxy(redshift=1.0, light=lp.EllipticalSersic(intensity=0.3))
 
-        tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        tracer = ray_tracing.Tracer.from_galaxies(
             galaxies=[lens_galaxy, source_galaxy],
             image_plane_grid_stack=image_plane_grid_stack,
         )

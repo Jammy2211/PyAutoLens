@@ -778,7 +778,7 @@ class TestPhase(object):
             regularization=reg.Constant(coefficient=1.0),
         )
 
-        tracer_no_border = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        tracer_no_border = ray_tracing.Tracer.from_galaxies(
             galaxies=[lens_galaxy, source_galaxy],
             image_plane_grid_stack=lens_data_7x7.grid_stack,
             border=None,
@@ -786,7 +786,7 @@ class TestPhase(object):
 
         mapper_no_border = tracer_no_border.mappers_of_planes[0]
 
-        tracer_with_border = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        tracer_with_border = ray_tracing.Tracer.from_galaxies(
             galaxies=[lens_galaxy, source_galaxy],
             image_plane_grid_stack=lens_data_7x7.grid_stack,
             border=lens_data_7x7.border,

@@ -56,7 +56,7 @@ class TestLensProfileFit:
             g0 = g.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -167,7 +167,7 @@ class TestLensProfileFit:
             g0 = g.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -290,7 +290,7 @@ class TestLensProfileFit:
                 hyper_minimum_value=0.0,
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -394,7 +394,7 @@ class TestLensProfileFit:
             g0 = g.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -506,7 +506,7 @@ class TestLensProfileFit:
             g0 = g.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -620,7 +620,7 @@ class TestLensProfileFit:
             g0 = g.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -712,7 +712,7 @@ class TestLensProfileFit:
                 redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0, g1], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -807,7 +807,7 @@ class TestLensProfileFit:
             )
             g2 = g.Galaxy(redshift=1.0)
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0, g1, g2], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -911,7 +911,7 @@ class TestLensProfileFit:
                 redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0, g1], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -1021,7 +1021,7 @@ class TestLensProfileFit:
                 redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0, g1], image_plane_grid_stack=lens_data_7x7.grid_stack
             )
 
@@ -1093,7 +1093,7 @@ class TestLensInversionFit:
 
             g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g.Galaxy(redshift=0.5), g0],
                 image_plane_grid_stack=lens_data_7x7.grid_stack,
                 border=None,
@@ -1207,7 +1207,7 @@ class TestLensInversionFit:
             g0 = g.Galaxy(redshift=0.5)
             g1 = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0, g1],
                 image_plane_grid_stack=lens_data_7x7.grid_stack,
                 border=None,
@@ -1279,7 +1279,7 @@ class TestLensInversionFit:
                 hyper_minimum_value=0.0,
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g.Galaxy(redshift=0.5), g0],
                 image_plane_grid_stack=lens_data_7x7.grid_stack,
                 border=None,
@@ -1409,7 +1409,7 @@ class TestLensInversionFit:
 
             g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g.Galaxy(redshift=0.5), g0],
                 image_plane_grid_stack=lens_data_7x7.grid_stack,
                 border=None,
@@ -1448,7 +1448,7 @@ class TestLensProfileInversionFit:
             reg = regularization.Constant(coefficient=1.0)
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[galaxy_light, galaxy_pix],
                 image_plane_grid_stack=lens_data_7x7.grid_stack,
                 border=None,
@@ -1602,7 +1602,7 @@ class TestLensProfileInversionFit:
             reg = regularization.Constant(coefficient=1.0)
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0, g1, g2, galaxy_pix],
                 image_plane_grid_stack=lens_data_7x7.grid_stack,
                 border=None,
@@ -1737,7 +1737,7 @@ class TestLensProfileInversionFit:
             reg = regularization.Constant(coefficient=1.0)
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[galaxy_light, galaxy_pix],
                 image_plane_grid_stack=lens_data_7x7.grid_stack,
                 border=None,
@@ -1901,7 +1901,7 @@ class TestLensProfileInversionFit:
             reg = regularization.Constant(coefficient=1.0)
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[galaxy_light, galaxy_pix],
                 image_plane_grid_stack=lens_data_7x7.grid_stack,
                 border=None,

@@ -710,7 +710,7 @@ class PhaseImaging(Phase):
             else:
                 border = None
 
-            return ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+            return ray_tracing.Tracer.from_galaxies(
                 galaxies=instance.galaxies,
                 image_plane_grid_stack=image_plane_grid_stack,
                 border=border,

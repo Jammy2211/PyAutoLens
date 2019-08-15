@@ -42,7 +42,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
     )
 
     # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD instrument.
-    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+    tracer = ray_tracing.Tracer.from_galaxies(
         galaxies=galaxies, image_plane_grid_stack=image_plane_grid_stack
     )
 

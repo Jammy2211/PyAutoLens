@@ -50,7 +50,7 @@ def fit_with_offset_centre(centre):
         pixelization=pixelization_grid
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+    tracer = ray_tracing.Tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid_stack=grid_stack_with_pixelization_grid,
     )
