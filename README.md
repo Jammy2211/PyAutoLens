@@ -221,6 +221,8 @@ The following papers use **PyAutoLens**:
 
 [Andrew Robertson](https://github.com/Andrew-Robertson) - Critical curve & caustic calculations.
 
+Mattia Negrello - Visibility models in the uv-plane via direct Fourier transforms.
+
 [Andrea Enia](https://github.com/AndreaEnia) - Voronoi source-plane plotting tools.
 
 [Aristeidis Amvrosiadis](https://github.com/Sketos) - ALMA imaging data loading.
