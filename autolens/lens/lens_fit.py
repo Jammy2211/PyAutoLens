@@ -5,7 +5,7 @@ from autolens import exc
 from autolens.lens.util import lens_fit_util as util
 from autolens.model.galaxy import galaxy as g
 
-from autolens.data.array.grids import reshape_returned_regular_array
+from autolens.array.grids import reshape_returned_regular_array
 
 
 class LensDataFit(af.DataFit1D):

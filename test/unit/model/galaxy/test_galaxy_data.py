@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data.array import grids
-from autolens.data.array import scaled_array as sca
+from autolens.array import grids
+from autolens.array import scaled_array as sca
 from autolens.model.galaxy import galaxy as g, galaxy_data as gd
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp

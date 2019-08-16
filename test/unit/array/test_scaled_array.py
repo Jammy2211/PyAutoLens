@@ -4,11 +4,11 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data.array.util import array_util, grid_util, binning_util
-from autolens.data.array import mask as msk
-from autolens.data.array import scaled_array
+from autolens.array.util import array_util, grid_util, binning_util
+from autolens.array import mask as msk
+from autolens.array import scaled_array
 
-test_data_dir = "{}/../../test_files/array/".format(
+test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 

@@ -6,8 +6,8 @@ import pytest
 
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
-from autolens.data.array.util import array_util
-from autolens.data.array import grids, mask as msk
+from autolens.array.util import array_util
+from autolens.array import grids, mask as msk
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit

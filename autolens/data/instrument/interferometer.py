@@ -3,9 +3,10 @@ import scipy.signal
 from skimage.transform import resize, rescale
 
 from autolens import exc
-from autolens.data.array.util import array_util, grid_util, mapping_util
+from autolens.array.util import array_util, grid_util
+from autolens.array.mapping_util import array_mapping_util
 from autolens.data.instrument import abstract_data
-from autolens.data.array import scaled_array
+from autolens.array import scaled_array
 
 
 class InterferometerData(abstract_data.AbstractData):
@@ -187,7 +188,7 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
         )
         gaussian_1d = gaussian.image_from_grid(grid=grid_1d)
 
-        gaussian_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        gaussian_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=gaussian_1d,
             mask=np.full(fill_value=False, shape=shape),
             sub_grid_size=1,

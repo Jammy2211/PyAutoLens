@@ -1,4 +1,4 @@
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 
 import numpy as np
 

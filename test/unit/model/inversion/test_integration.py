@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.array import grids, mask as msk
+from autolens.array import grids, mask as msk
 from autolens.model.inversion import mappers as m
 from autolens.model.inversion import pixelizations, regularization
 from test.unit.mock.data.mock_grids import MockPixSubGrid, MockPixGridStack

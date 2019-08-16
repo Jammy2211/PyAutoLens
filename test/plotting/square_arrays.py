@@ -1,4 +1,4 @@
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg

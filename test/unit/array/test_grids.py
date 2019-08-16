@@ -2,11 +2,9 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd
-from autolens.data.array import grids
-from autolens.data.array import mask as msk
-from autolens.data.array.util import grid_util, mapping_util, mask_util
+from autolens.array import grids, mask as msk
+from autolens.array.util import grid_util, mask_util
+from autolens.array.mapping_util import mask_mapping_util, sparse_mapping_util
 from autolens.model.profiles import mass_profiles as mp
 
 
@@ -55,7 +53,7 @@ class TestGrid:
         assert type(grid) == grids.Grid
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scale == 2.0
-        assert (grid.mask.one_to_two == mask.one_to_two).all()
+        assert (grid.mask.mask_1d_index_to_mask_2d_index == mask.mask_1d_index_to_mask_2d_index).all()
         assert grid.interpolator == None
 
         grid_2d = mask.grid_2d_from_grid_1d(grid_1d=grid)
@@ -209,7 +207,7 @@ class TestGrid:
         assert type(grid) == grids.Grid
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scale == 2.0
-        assert (grid.mask.one_to_two == mask.one_to_two).all()
+        assert (grid.mask.mask_1d_index_to_mask_2d_index == mask.mask_1d_index_to_mask_2d_index).all()
 
         mask = np.array(
             [[False, False, False], [False, False, False], [False, False, False]]
@@ -293,7 +291,7 @@ class TestGrid:
 
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scale == 2.0
-        assert (blurring_grid.mask.one_to_two == blurring_mask.one_to_two).all()
+        assert (blurring_grid.mask.mask_1d_index_to_mask_2d_index == blurring_mask.mask_1d_index_to_mask_2d_index).all()
         assert blurring_grid.sub_grid_size == 1
 
     def test__new_grid__with_interpolator__returns_grid_with_interpolator(self):
@@ -1029,7 +1027,7 @@ class TestMappings:
             [[True, False, True], [False, False, False], [True, False, False]]
         )
 
-        sub_to_image_util = mapping_util.sub_to_regular_from_mask(mask, sub_grid_size=2)
+        sub_to_image_util = mask_mapping_util.sub_mask_index_1d_to_mask_index_1d_from_mask(mask, sub_grid_size=2)
 
         mask = msk.Mask(mask, pixel_scale=3.0)
 
@@ -1208,7 +1206,7 @@ class TestSparseToRegularGrid:
                 "int"
             )
 
-            sparse_to_unmasked_sparse_util = mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
+            sparse_to_unmasked_sparse_util = sparse_mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
                 total_sparse_pixels=total_sparse_pixels,
                 mask=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
@@ -1216,7 +1214,7 @@ class TestSparseToRegularGrid:
                 "int"
             )
 
-            unmasked_sparse_to_sparse_util = mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
+            unmasked_sparse_to_sparse_util = sparse_mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
                 mask=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
                 total_sparse_pixels=total_sparse_pixels,
@@ -1224,12 +1222,12 @@ class TestSparseToRegularGrid:
                 "int"
             )
 
-            regular_to_sparse_util = mapping_util.regular_to_sparse_from_sparse_mappings(
+            regular_to_sparse_util = sparse_mapping_util.regular_to_sparse_from_sparse_mappings(
                 regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
                 unmasked_sparse_to_sparse=unmasked_sparse_to_sparse_util,
             )
 
-            sparse_grid_util = mapping_util.sparse_grid_from_unmasked_sparse_grid(
+            sparse_grid_util = sparse_mapping_util.sparse_grid_from_unmasked_sparse_grid(
                 unmasked_sparse_grid=unmasked_sparse_grid_util,
                 sparse_to_unmasked_sparse=sparse_to_unmasked_sparse_util,
             )

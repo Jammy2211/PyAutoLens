@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import scipy.spatial
 
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.inversion import pixelizations
 from autolens.model.inversion.util import pixelization_util
 

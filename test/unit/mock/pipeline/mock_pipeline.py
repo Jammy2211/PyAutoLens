@@ -2,7 +2,7 @@ import numpy as np
 
 import autofit as af
 from autolens.model.galaxy import galaxy as g
-from autolens.data.array.util import binning_util
+from autolens.array.util import binning_util
 
 
 class MockAnalysis(object):

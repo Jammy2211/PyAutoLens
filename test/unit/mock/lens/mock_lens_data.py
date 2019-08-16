@@ -1,4 +1,4 @@
-from autolens.data.array.grids import reshape_returned_regular_array
+from autolens.array.grids import reshape_returned_regular_array
 
 
 class MockLensData(object):

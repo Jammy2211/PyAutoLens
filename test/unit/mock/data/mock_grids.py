@@ -1,10 +1,8 @@
 import numpy as np
 
-from autolens.data.array.util import grid_util
+from autolens.array.util import grid_util
 
-from autolens.data.array import grids
-
-from test.unit.mock.data import mock_mask
+from autolens.array import grids
 
 
 class MockGrid(grids.Grid):

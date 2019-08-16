@@ -5,11 +5,11 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data.array import grids
-from autolens.data.array import scaled_array
+from autolens.array import grids
+from autolens.array import scaled_array
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
-from autolens.data.array.util import binning_util
+from autolens.array.util import binning_util
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g

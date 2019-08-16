@@ -20,9 +20,9 @@ class ConvolverMappingMatrix(convolution.Convolver):
         super(ConvolverMappingMatrix, self).__init__(mask, psf)
 
     def convolve_mapping_matrix(self, mapping_matrix):
-        """For a given inversion mapping matrix, convolve every pixel's mapped regular with the PSF kernel.
+        """For a given inversion mapping_util matrix, convolve every pixel's mapped regular with the PSF kernel.
 
-        A mapping matrix provides non-zero entries in all elements which map two pixels to one another
+        A mapping_util matrix provides non-zero entries in all elements which map two pixels to one another
         (see *inversions.mappers*).
 
         For example, lets take an regular which is masked using a 'cross' of 5 pixels:
@@ -31,7 +31,7 @@ class ConvolverMappingMatrix(convolution.Convolver):
         [[False, False, False]],
         [[ True, False,  True]]
 
-        As example mapping matrix of this cross is as follows (5 regular pixels x 3 source pixels):
+        As example mapping_util matrix of this cross is as follows (5 regular pixels x 3 source pixels):
 
         [1, 0, 0] [0->0]
         [1, 0, 0] [1->0]
@@ -39,7 +39,7 @@ class ConvolverMappingMatrix(convolution.Convolver):
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        For each source-pixel, we can create an regular of its unit-surface brightnesses by mapping the non-zero
+        For each source-pixel, we can create an regular of its unit-surface brightnesses by mapping_util the non-zero
         entries back to masks. For example, doing this for source pixel 1 gives:
 
         [[0.0, 1.0, 0.0]],
@@ -73,8 +73,8 @@ class ConvolverMappingMatrix(convolution.Convolver):
         [[0.0, 0.7, 0.7]],
         [[0.0, 0.0, 0.0]]
 
-        Finally, we map each of these blurred regular back to a blurred mapping matrix, which is analogous to the
-        mapping matrix.
+        Finally, we map each of these blurred regular back to a blurred mapping_util matrix, which is analogous to the
+        mapping_util matrix.
 
         [0.6, 0.0, 0.0] [0->0]
         [0.6, 0.0, 0.0] [1->0]
@@ -82,13 +82,13 @@ class ConvolverMappingMatrix(convolution.Convolver):
         [0.0, 0.7, 0.0] [3->1]
         [0.0, 0.0, 0.6] [4->2]
 
-        If the mapping matrix is sub-gridded, we perform the convolution on the fractional surface brightnesses in an
+        If the mapping_util matrix is sub-gridded, we perform the convolution on the fractional surface brightnesses in an
         identical fashion to above.
 
         Parameters
         -----------
         mapping_matrix : ndarray
-            The 2D mapping matix describing how every inversion pixel maps to an datas_ pixel.
+            The 2D mapping_util matix describing how every inversion pixel maps to an datas_ pixel.
         """
         return self.convolve_matrix_jit(
             mapping_matrix,

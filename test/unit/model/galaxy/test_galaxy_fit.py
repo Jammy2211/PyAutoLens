@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 
 import autofit as af
-from autolens.data.array import mask as msk, scaled_array as sca
+from autolens.array import scaled_array as sca
+from autolens.array import mask as msk
 from autolens.model.galaxy import galaxy as g, galaxy_fit
 from autolens.model.galaxy import galaxy_data as gd
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp

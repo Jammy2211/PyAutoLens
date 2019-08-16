@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data.array.util import mapping_util
+from autolens.array.mapping_util import array_mapping_util
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import plane as pl
@@ -38,7 +38,7 @@ class TestPlaneImageFromGrid:
             )
         )
 
-        plane_image_galaxy = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=plane_image_galaxy,
             mask=np.full(fill_value=False, shape=(3, 3)),
             sub_grid_size=1,
@@ -83,7 +83,7 @@ class TestPlaneImageFromGrid:
             )
         )
 
-        plane_image_galaxy = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=plane_image_galaxy,
             mask=np.full(fill_value=False, shape=(3, 3)),
             sub_grid_size=1,
@@ -114,7 +114,7 @@ class TestPlaneImageFromGrid:
             )
         )
 
-        plane_image_galaxy = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=plane_image_galaxy,
             mask=np.full(fill_value=False, shape=(2, 3)),
             sub_grid_size=1,
@@ -145,7 +145,7 @@ class TestPlaneImageFromGrid:
             )
         )
 
-        plane_image_galaxy = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=plane_image_galaxy,
             mask=np.full(fill_value=False, shape=(3, 2)),
             sub_grid_size=1,
@@ -179,7 +179,7 @@ class TestPlaneImageFromGrid:
             )
         )
 
-        plane_image_galaxy = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=plane_image_galaxy,
             mask=np.full(fill_value=False, shape=(3, 3)),
             sub_grid_size=1,

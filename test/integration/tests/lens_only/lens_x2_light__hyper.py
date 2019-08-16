@@ -1,5 +1,5 @@
 import autofit as af
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline.phase import phase_imaging
 from autolens.pipeline import pipeline as pl

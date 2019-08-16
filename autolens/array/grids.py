@@ -5,14 +5,14 @@ from sklearn.cluster import KMeans
 
 from autolens import decorator_util
 from autolens import exc
-from autolens.data.array import mask as msk, scaled_array
-from autolens.data.array.util import (
+from autolens.array import mask as msk, scaled_array
+from autolens.array.util import (
     grid_util,
-    mapping_util,
     array_util,
     mask_util,
     binning_util,
 )
+from autolens.array.mapping_util import array_mapping_util, grid_mapping_util, sparse_mapping_util
 
 
 def check_input_grid_and_options_are_compatible(grid):
@@ -780,7 +780,7 @@ class Grid(np.ndarray):
         mask_shape = (grid_2d.shape[0], grid_2d.shape[1])
 
         mask = np.full(fill_value=False, shape=mask_shape)
-        grid_1d = mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
+        grid_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
             sub_grid_2d=grid_2d, mask=mask, sub_grid_size=1
         )
 
@@ -819,7 +819,7 @@ class Grid(np.ndarray):
     @property
     def unlensed_grid_2d(self):
         return Grid(
-            arr=mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+            arr=grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
                 sub_grid_1d=self.unlensed_grid_1d,
                 mask=self.mask,
                 sub_grid_size=self.sub_grid_size,
@@ -831,7 +831,7 @@ class Grid(np.ndarray):
     @property
     def unlensed_unmasked_grid_2d(self):
         return Grid(
-            arr=mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+            arr=grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
                 mask=np.full(self.mask.shape, False),
                 sub_grid_1d=self.unlensed_unmasked_grid_1d,
                 sub_grid_size=self.sub_grid_size,
@@ -856,12 +856,12 @@ class Grid(np.ndarray):
             self.mask.shape[1] * self.sub_grid_size,
         )
 
-        sub_one_to_two = self.mask.sub_one_to_two_from_sub_grid_size(
+        sub_one_to_two = self.mask.sub_mask_1d_index_to_sub_mask_2d_index_from_sub_grid_size(
             sub_grid_size=self.sub_grid_size
         )
 
-        return mask_util.mask_from_shape_and_one_to_two(
-            shape=sub_shape, one_to_two=sub_one_to_two
+        return mask_util.mask_from_shape_and_mask_1d_index_to_mask_2d_index(
+            shape=sub_shape, mask_1d_index_to_mask_2d_index=sub_one_to_two
         )
 
     def marching_squares_grid_pixels_to_grid_arcsec(self, grid_pixels, shape):
@@ -884,7 +884,7 @@ class Grid(np.ndarray):
     def array_2d_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original 2D array. 
         
-        Values which were masked in the mapping to the 1D array are returned as zeros.
+        Values which were masked in the mapping_util to the 1D array are returned as zeros.
 
         Parameters
         -----------
@@ -907,7 +907,7 @@ class Grid(np.ndarray):
     def array_1d_from_array_2d(self, array_2d):
         """ Map a 2D array to its masked 1D array..
 
-        Values which are masked in the mapping to the 1D array are returned as zeros.
+        Values which are masked in the mapping_util to the 1D array are returned as zeros.
 
         Parameters
         -----------
@@ -919,7 +919,7 @@ class Grid(np.ndarray):
     def grid_2d_from_grid_1d(self, grid_1d):
         """Map a 1D grid the same dimension as the grid to its original 2D grid.
 
-        Values which were masked in the mapping to the 1D array are returned as zeros.
+        Values which were masked in the mapping_util to the 1D array are returned as zeros.
 
         Parameters
         -----------
@@ -931,7 +931,7 @@ class Grid(np.ndarray):
     def grid_1d_from_grid_2d(self, grid_2d):
         """ Map a 2D grid to its masked 1D grid.. 
 
-        Values which are masked in the mapping to the 1D grid are returned as zeros.
+        Values which are masked in the mapping_util to the 1D grid are returned as zeros.
 
         Parameters
         -----------
@@ -996,7 +996,7 @@ class Grid(np.ndarray):
     def sub_array_1d_from_sub_array_2d(self, sub_array_2d):
         """ Map a 2D sub-array to its masked 1D sub-array.
 
-        Values which are masked in the mapping to the 1D array are returned as zeros.
+        Values which are masked in the mapping_util to the 1D array are returned as zeros.
 
         Parameters
         -----------
@@ -1123,7 +1123,7 @@ class Grid(np.ndarray):
             An array describing the PSF kernel of the image.
         """
 
-        padded_array_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        padded_array_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=padded_array_1d,
             mask=np.full(fill_value=False, shape=self.mask.shape),
             sub_grid_size=1,
@@ -1132,7 +1132,7 @@ class Grid(np.ndarray):
         # noinspection PyUnresolvedReferences
         blurred_padded_array_2d = psf.convolve(array_2d=padded_array_2d)
 
-        return mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        return array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=blurred_padded_array_2d,
             mask=np.full(self.mask.shape, False),
             sub_grid_size=1,
@@ -1141,14 +1141,14 @@ class Grid(np.ndarray):
     @property
     @array_util.Memoizer()
     def sub_to_regular(self):
-        """The mapping between every sub-pixel and its host regular-pixel.
+        """The mapping_util between every sub-pixel and its host regular-pixel.
 
         For example:
 
         - sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd regular pixel.
         - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th regular pixel.
         """
-        return self.mask.sub_to_regular_from_sub_grid_size(
+        return self.mask.sub_mask_1d_index_to_mask_1d_index_from_sub_grid_size(
             sub_grid_size=self.sub_grid_size
         )
 
@@ -1394,7 +1394,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        unmasked_sparse_to_sparse = mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_to_sparse = sparse_mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
             mask=regular_grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=total_sparse_pixels,
@@ -1402,7 +1402,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
             "int"
         )
 
-        sparse_to_unmasked_sparse = mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
+        sparse_to_unmasked_sparse = sparse_mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
             total_sparse_pixels=total_sparse_pixels,
             mask=regular_grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
@@ -1417,12 +1417,12 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
             origin=origin,
         ).astype("int")
 
-        regular_to_sparse = mapping_util.regular_to_sparse_from_sparse_mappings(
+        regular_to_sparse = sparse_mapping_util.regular_to_sparse_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
         ).astype("int")
 
-        sparse_grid = mapping_util.sparse_grid_from_unmasked_sparse_grid(
+        sparse_grid = sparse_mapping_util.sparse_grid_from_unmasked_sparse_grid(
             unmasked_sparse_grid=unmasked_sparse_grid,
             sparse_to_unmasked_sparse=sparse_to_unmasked_sparse,
         )
@@ -1463,7 +1463,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 
         kmeans = kmeans.fit(X=cluster_grid, sample_weight=cluster_weight_map)
 
-        regular_to_sparse = mapping_util.regular_to_sparse_from_cluster_grid(
+        regular_to_sparse = sparse_mapping_util.regular_to_sparse_from_cluster_grid(
             cluster_labels=kmeans.labels_,
             cluster_to_regular_all=cluster_grid.cluster_to_regular_all,
             cluster_to_regular_sizes=cluster_grid.cluster_to_regular_sizes,

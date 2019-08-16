@@ -5,9 +5,8 @@ import pytest
 
 import autofit as af
 from autolens import dimensions as dim
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.array.util import grid_util
 
 from test.unit.mock.model import mock_cosmology
 

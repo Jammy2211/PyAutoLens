@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from autolens.data.array.util import grid_util
+from autolens.array.util import grid_util
 
 
 test_data_dir = "{}/../test_files/array/".format(

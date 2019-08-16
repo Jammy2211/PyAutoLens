@@ -1,5 +1,6 @@
 from autolens import exc
-from autolens.data.array.util import grid_util, mapping_util
+from autolens.array.util import grid_util
+from autolens.array.mapping_util import array_mapping_util
 from autolens.lens import plane as pl
 
 import numpy as np
@@ -34,7 +35,7 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
         )
     )
 
-    image_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+    image_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
         sub_array_1d=image_1d,
         mask=np.full(fill_value=False, shape=shape),
         sub_grid_size=1,

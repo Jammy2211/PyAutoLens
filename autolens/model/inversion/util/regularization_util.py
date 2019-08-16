@@ -62,7 +62,7 @@ def adaptive_pixel_signals_from_images(
         A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
         low signal regions.
     regular_to_pix : ndarray
-        A 1D array mapping every pixel on the regular-grid to a pixel on the pixelization.
+        A 1D array mapping_util every pixel on the regular-grid to a pixel on the pixelization.
     hyper_image : ndarray
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """

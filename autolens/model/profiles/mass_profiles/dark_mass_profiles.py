@@ -1,7 +1,6 @@
 from pyquad import quad_grid
 
 import numpy as np
-from scipy import special
 from scipy.integrate import quad
 from scipy.optimize import fsolve
 from astropy import cosmology as cosmo
@@ -15,11 +14,11 @@ from scipy import special
 import autofit as af
 from autolens import dimensions as dim
 from autolens import decorator_util
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.array.grids import reshape_returned_array, reshape_returned_grid
 
 
 def jit_integrand(integrand_function):

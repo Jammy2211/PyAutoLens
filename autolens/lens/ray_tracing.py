@@ -1,16 +1,15 @@
 import numpy as np
 from astropy import cosmology as cosmo
-from functools import wraps
 
 from autolens import exc
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 from autolens.model.inversion import inversions as inv
 from autolens.model.galaxy import galaxy as g
 
-from autolens.data.array.grids import (
+from autolens.array.grids import (
     reshape_returned_array,
     reshape_returned_array_blurring,
     reshape_returned_grid,

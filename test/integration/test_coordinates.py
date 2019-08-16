@@ -1,4 +1,4 @@
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 import numpy as np
 import pytest

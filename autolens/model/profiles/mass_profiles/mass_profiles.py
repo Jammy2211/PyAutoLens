@@ -1,6 +1,3 @@
-import inspect
-from pyquad import quad_grid
-
 import numpy as np
 from scipy.integrate import quad
 from scipy.optimize import root_scalar
@@ -11,11 +8,9 @@ from skimage import measure
 import autofit as af
 from autolens import dimensions as dim
 from autolens import text_util
-from autolens.data.array import grids
 from autolens.model.profiles import geometry_profiles
-from autolens.data.array.util import grid_util
 
-from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.array.grids import reshape_returned_array, reshape_returned_grid
 
 
 class MassProfile(object):

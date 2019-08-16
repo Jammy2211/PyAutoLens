@@ -6,7 +6,7 @@ from autolens import decorator_util
 def mapping_matrix_from_sub_to_pix(
     sub_to_pix, pixels, regular_pixels, sub_to_regular, sub_grid_fraction
 ):
-    """Computes the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
+    """Computes the mapping_util matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
     Parameters
     -----------

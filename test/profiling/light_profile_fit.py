@@ -1,6 +1,6 @@
 import time
 
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp

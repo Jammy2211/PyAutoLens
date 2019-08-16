@@ -26,7 +26,7 @@ class TestMappingMatrix:
             sub=MockPixSubGrid(three_pixels, sub_to_regular, sub_grid_size=1),
         )
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+        mapping_matrix = mapper_mapping_util_matrix_from_sub_to_pix(
             sub_to_pix=sub_to_pix,
             pixels=6,
             regular_pixels=grids.regular.shape[0],
@@ -55,7 +55,7 @@ class TestMappingMatrix:
             sub=MockPixSubGrid(five_pixels, sub_to_regular, sub_grid_size=1),
         )
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+        mapping_matrix = mapper_mapping_util_matrix_from_sub_to_pix(
             sub_to_pix=sub_to_pix,
             pixels=8,
             regular_pixels=grids.regular.shape[0],
@@ -110,7 +110,7 @@ class TestMappingMatrix:
             sub=MockPixSubGrid(five_pixels, sub_to_regular, sub_grid_size=2),
         )
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+        mapping_matrix = mapper_mapping_util_matrix_from_sub_to_pix(
             sub_to_pix=sub_to_pix,
             pixels=8,
             regular_pixels=grids.regular.shape[0],
@@ -147,7 +147,7 @@ class TestMappingMatrix:
             sub=MockPixSubGrid(five_pixels, sub_to_regular, sub_grid_size=2),
         )
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+        mapping_matrix = mapper_mapping_util_matrix_from_sub_to_pix(
             sub_to_pix=sub_to_pix,
             pixels=8,
             regular_pixels=grids.regular.shape[0],
@@ -281,7 +281,7 @@ class TestMappingMatrix:
             sub=MockPixSubGrid(three_pixels, sub_to_regular, sub_grid_size=4),
         )
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
+        mapping_matrix = mapper_mapping_util_matrix_from_sub_to_pix(
             sub_to_pix=sub_to_pix,
             pixels=6,
             regular_pixels=grids.regular.shape[0],
