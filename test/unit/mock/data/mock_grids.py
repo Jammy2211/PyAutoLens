@@ -6,23 +6,6 @@ from autolens.array import grids
 
 
 class MockGrid(grids.Grid):
-    def __new__(cls, mask, pixel_scale=1.0, *args, **kwargs):
-
-        regular_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-            mask=mask, pixel_scales=(pixel_scale, pixel_scale), sub_grid_size=1
-        )
-
-        obj = regular_grid.view(cls)
-        obj.mask = mask
-        obj.interpolator = None
-
-        return obj
-
-    def __init__(self, mask, pixel_scale=1.0):
-        pass
-
-
-class MockGrid(grids.Grid):
     def __new__(cls, mask, pixel_scale=1.0, sub_grid_size=2, *args, **kwargs):
 
         sub_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
@@ -49,14 +32,6 @@ class MockClusterGrid(grids.ClusterGrid):
     pass
 
 
-class MockGridStack(grids.GridStack):
-    def __init__(self, regular, sub, blurring, pixelization=None):
-
-        super(MockGridStack, self).__init__(
-            regular=regular, sub=sub, blurring=blurring, pixelization=pixelization
-        )
-
-
 class MockPixSubGrid(np.ndarray):
     def __new__(cls, sub_grid, *args, **kwargs):
         return sub_grid.view(cls)
@@ -70,21 +45,3 @@ class MockPixSubGrid(np.ndarray):
         self.sub_grid_size = sub_grid_size
         self.sub_grid_length = int(sub_grid_size ** 2.0)
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
-
-
-class MockPixGridStack(object):
-    def __init__(
-        self, regular, sub, blurring=None, pix=None, regular_to_pixelization=None
-    ):
-        self.regular = grids.Grid(regular, mask=None)
-        self.sub = sub
-        self.blurring = (
-            grids.Grid(blurring, mask=None) if blurring is not None else None
-        )
-        self.pixelization = (
-            grids.PixelizationGrid(
-                pix, regular_to_pixelization=regular_to_pixelization, mask=None
-            )
-            if pix is not None
-            else np.array([[0.0, 0.0]])
-        )
