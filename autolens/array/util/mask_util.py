@@ -636,34 +636,33 @@ def border_pixels_from_mask(mask):
     return border_pixels
 
 # @decorator_util.jit()
-# def border_sub_pixels_from_mask_sub_grid_size_and_origin(mask, sub_grid_size, origin):
-#     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
-#
-#      1) is not fully surrounding by False mask values.
-#      2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
-#      left, right).
-#
-#      The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge \
-#      pixels in an annular mask are edge pixels but not borders pixels."""
-#
-#     border_pixels = border_pixels_from_mask(mask=mask)
-#
-#     mask_1d_index_to_mask_2d_index = sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
-#
-#     regular_index = 0
-#
-#     for border_pixel in border_pixels:
-#         y, x = mask_1d_index_to_mask_2d_index[border_pixel]
-#         for y1 in range(sub_grid_size):
-#             for x1 in range(sub_grid_size):
-#
-#
-#     for y in range(mask.shape[0]):
-#         for x in range(mask.shape[1]):
-#             if not mask[y,x]:
-#                 if regular_index in border_pixels:
-#
-#             regular_index += 1
+def sub_border_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
+    """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
+
+     1) is not fully surrounding by False mask values.
+     2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
+     left, right).
+
+     The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge \
+     pixels in an annular mask are edge pixels but not borders pixels."""
+
+    border_pixels = border_pixels_from_mask(mask=mask)
+
+    sub_border_pixels = np.zeros(shape=border_pixels.shape[0])
+
+    mask_1d_index_to_sub_mask_2d_indexes = mask_mapping_util.mask_1d_index_to_sub_mask_1d_indexes_from_mask(
+        mask=mask, sub_grid_size=sub_grid_size)
+
+    border_1d_index = 0
+
+    central_sub_pixel = int(sub_grid_size**2.0/2)
+
+    for border_pixel in border_pixels:
+        sub_border_pixels_of_border_pixel = mask_1d_index_to_sub_mask_2d_indexes[int(border_pixel)]
+        sub_border_pixels[border_1d_index] = sub_border_pixels_of_border_pixel[central_sub_pixel]
+        border_1d_index += 1
+
+    return sub_border_pixels
 
 
 @decorator_util.jit()
