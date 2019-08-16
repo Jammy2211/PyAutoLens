@@ -316,14 +316,6 @@ def make_grid_stack_simple(grid_7x7, sub_grid_7x7, blurring_grid_7x7):
     return grid_stack
 
 
-# BORDERS #
-
-
-@pytest.fixture(name="border_7x7")
-def make_border_7x7():
-    return mock_grids.MockBorders(arr=np.array([0, 1, 2, 3, 5, 6, 7, 8]))
-
-
 # CONVOLVERS #
 
 

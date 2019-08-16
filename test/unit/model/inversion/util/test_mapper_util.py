@@ -30,7 +30,7 @@ class TestMappingMatrix:
             sub_to_pix=sub_to_pix,
             pixels=6,
             regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
+            sub_to_regular=grids.sub.sub_mask_1d_index_to_mask_1d_index,
             sub_grid_fraction=grids.sub.sub_grid_fraction,
         )
 
@@ -59,7 +59,7 @@ class TestMappingMatrix:
             sub_to_pix=sub_to_pix,
             pixels=8,
             regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
+            sub_to_regular=grids.sub.sub_mask_1d_index_to_mask_1d_index,
             sub_grid_fraction=grids.sub.sub_grid_fraction,
         )
 
@@ -114,7 +114,7 @@ class TestMappingMatrix:
             sub_to_pix=sub_to_pix,
             pixels=8,
             regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
+            sub_to_regular=grids.sub.sub_mask_1d_index_to_mask_1d_index,
             sub_grid_fraction=grids.sub.sub_grid_fraction,
         )
 
@@ -151,7 +151,7 @@ class TestMappingMatrix:
             sub_to_pix=sub_to_pix,
             pixels=8,
             regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
+            sub_to_regular=grids.sub.sub_mask_1d_index_to_mask_1d_index,
             sub_grid_fraction=grids.sub.sub_grid_fraction,
         )
 
@@ -285,7 +285,7 @@ class TestMappingMatrix:
             sub_to_pix=sub_to_pix,
             pixels=6,
             regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
+            sub_to_regular=grids.sub.sub_mask_1d_index_to_mask_1d_index,
             sub_grid_fraction=grids.sub.sub_grid_fraction,
         )
 
