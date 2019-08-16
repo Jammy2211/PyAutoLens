@@ -88,21 +88,3 @@ class MockPixGridStack(object):
             if pix is not None
             else np.array([[0.0, 0.0]])
         )
-
-
-class MockBorders(grids.GridBorder):
-    def __new__(cls, arr=np.array([0]), *args, **kwargs):
-        """The borders of a regular grid, containing the pixel-index's of all masked pixels that are on the \
-        mask's border (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels and at one of \
-        the exterior edge's of the mask).
-
-        This is used to relocate demagnified pixel's in a grid to its border, so that they do not disrupt an \
-        adaptive pixelization's inversion.
-
-        Parameters
-        -----------
-        arr : ndarray
-            A 1D array of the integer indexes of an *RegularGrid*'s borders pixels.
-        """
-        border = arr.view(cls)
-        return border

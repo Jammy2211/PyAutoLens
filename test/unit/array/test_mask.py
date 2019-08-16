@@ -1052,7 +1052,7 @@ class TestMaskRegions:
             ]
         )
 
-        edge_pixels_util = mask_util.edge_pixels_from_mask(mask)
+        edge_pixels_util = mask_util.edge_pixels_from_mask(mask=mask)
 
         mask = msk.Mask(mask, pixel_scale=3.0)
 
@@ -1071,12 +1071,32 @@ class TestMaskRegions:
             ]
         )
 
-        border_pixels_util = mask_util.border_pixels_from_mask(mask)
+        border_pixels_util = mask_util.border_pixels_from_mask(mask=mask)
 
         mask = msk.Mask(mask, pixel_scale=3.0)
 
         assert mask.border_pixels == pytest.approx(border_pixels_util, 1e-4)
 
+    def test__sub_border_image_pixels__compare_to_array_util(self):
+        mask = np.array(
+            [
+                [False, False, False, False, False, False, False, True],
+                [False, True, True, True, True, True, False, True],
+                [False, True, False, False, False, True, False, True],
+                [False, True, False, True, False, True, False, True],
+                [False, True, False, False, False, True, False, True],
+                [False, True, True, True, True, True, False, True],
+                [False, False, False, False, False, False, False, True],
+            ]
+        )
+
+        sub_border_pixels_util = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_border_pixels = mask.sub_border_pixels_from_sub_grid_size(sub_grid_size=2)
+
+        assert sub_border_pixels == pytest.approx(sub_border_pixels_util, 1e-4)
 
 class TestMaskedGrid1d:
     def test__simple_grids(self):

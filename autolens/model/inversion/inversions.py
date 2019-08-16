@@ -125,7 +125,7 @@ class Inversion(object):
         return inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.pixelization_values,
             reconstructed_data_1d=self.reconstructed_data_1d,
-            sub_to_regular=self.mapper.grid_stack.sub.sub_to_regular,
+            sub_to_regular=self.mapper.grid_stack.sub.sub_mask_1d_index_to_mask_1d_index,
             pixelization_to_sub_all=self.mapper.pixelization_to_sub_all,
         )
 
@@ -135,7 +135,7 @@ class Inversion(object):
             pixelization_values=self.pixelization_values,
             reconstructed_data_1d=self.reconstructed_data_1d,
             noise_map_1d=self.noise_map_1d,
-            sub_to_regular=self.mapper.grid_stack.sub.sub_to_regular,
+            sub_to_regular=self.mapper.grid_stack.sub.sub_mask_1d_index_to_mask_1d_index,
             pixelization_to_sub_all=self.mapper.pixelization_to_sub_all,
         )
 
@@ -145,7 +145,7 @@ class Inversion(object):
             pixelization_values=self.pixelization_values,
             reconstructed_data_1d=self.reconstructed_data_1d,
             noise_map_1d=self.noise_map_1d,
-            sub_to_regular=self.mapper.grid_stack.sub.sub_to_regular,
+            sub_to_regular=self.mapper.grid_stack.sub.sub_mask_1d_index_to_mask_1d_index,
             pixelization_to_sub_all=self.mapper.pixelization_to_sub_all,
         )
 

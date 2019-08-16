@@ -391,16 +391,6 @@ class GridStack(object):
             blurring=np.array([[0.0, 0.0]]),
         )
 
-    @classmethod
-    def from_unmasked_grid_2d(cls, grid_2d):
-
-        regular_grid = Grid.from_unmasked_grid_2d(grid_2d=grid_2d)
-        sub_grid = Grid.from_unmasked_grid_2d(grid_2d=grid_2d)
-
-        return GridStack(
-            regular=regular_grid, sub=sub_grid, blurring=np.array([[0.0, 0.0]])
-        )
-
     def new_grid_stack_with_interpolator_added_to_each_grid(self, interp_pixel_scale):
         regular = self.regular.new_grid_with_interpolator(
             interp_pixel_scale=interp_pixel_scale
@@ -649,6 +639,7 @@ class Grid(np.ndarray):
         obj.sub_grid_size = sub_grid_size
         obj.sub_grid_length = int(sub_grid_size ** 2.0)
         obj.sub_grid_fraction = 1.0 / obj.sub_grid_length
+        obj.sub_border_pixels = mask.sub_border_pixels_from_sub_grid_size(sub_grid_size=sub_grid_size)
         obj.interpolator = None
         return obj
 
@@ -659,6 +650,7 @@ class Grid(np.ndarray):
             self.sub_grid_length = obj.sub_grid_length
             self.sub_grid_fraction = obj.sub_grid_fraction
             self.mask = obj.mask
+            self.sub_border_pixels = obj.sub_border_pixels
             self.interpolator = obj.interpolator
 
     @classmethod
@@ -773,18 +765,6 @@ class Grid(np.ndarray):
         blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape=psf_shape)
 
         return Grid.from_mask_and_sub_grid_size(mask=blurring_mask, sub_grid_size=1)
-
-    @classmethod
-    def from_unmasked_grid_2d(cls, grid_2d):
-
-        mask_shape = (grid_2d.shape[0], grid_2d.shape[1])
-
-        mask = np.full(fill_value=False, shape=mask_shape)
-        grid_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-            sub_grid_2d=grid_2d, mask=mask, sub_grid_size=1
-        )
-
-        return Grid(arr=grid_1d, mask=mask, sub_grid_size=1)
 
     @property
     def in_2d(self):
@@ -1090,6 +1070,83 @@ class Grid(np.ndarray):
                 interp_pixel_scale=self.interpolator.interp_pixel_scale
             )
 
+    @property
+    def border_grid(self):
+        return self[self.sub_border_pixels]
+
+    def relocated_grid_from_grid(self, grid):
+        """Determine a set of relocated grid_stack from an input set of grid_stack, by relocating their pixels based on the \
+        borders.
+
+        The blurring-grid does not have its coordinates relocated, as it is only used for computing analytic \
+        light-profiles and not inversion-grid_stack.
+
+        Parameters
+        -----------
+        grid_stack : GridStack
+            The grid-stack, whose grid_stack coordinates are relocated.
+        """
+
+        return Grid(
+            arr=self.relocated_grid_from_grid_jit(
+                grid=grid, border_grid=self.border_grid
+            ), mask=grid.mask, sub_grid_size=grid.sub_grid_size)
+
+    @staticmethod
+    @decorator_util.jit()
+    def relocated_grid_from_grid_jit(grid, border_grid):
+        """ Relocate the coordinates of a grid to its border if they are outside the border. This is performed as \
+        follows:
+
+        1) Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
+        2) Compute the radial distance of every grid coordinate from the origin.
+        3) For every coordinate, find its nearest pixel in the border.
+        4) Determine if it is outside the border, by comparing its radial distance from the origin to its paid \
+           border pixel's radial distance.
+        5) If its radial distance is larger, use the ratio of radial distances to move the coordinate to the border \
+           (if its inside the border, do nothing).
+        """
+
+        border_origin = np.zeros(2)
+        border_origin[0] = np.mean(border_grid[:, 0])
+        border_origin[1] = np.mean(border_grid[:, 1])
+        border_grid_radii = np.sqrt(
+            np.add(
+                np.square(np.subtract(border_grid[:, 0], border_origin[0])),
+                np.square(np.subtract(border_grid[:, 1], border_origin[1])),
+            )
+        )
+        border_min_radii = np.min(border_grid_radii)
+
+        grid_radii = np.sqrt(
+            np.add(
+                np.square(np.subtract(grid[:, 0], border_origin[0])),
+                np.square(np.subtract(grid[:, 1], border_origin[1])),
+            )
+        )
+
+        for pixel_index in range(grid.shape[0]):
+
+            if grid_radii[pixel_index] > border_min_radii:
+
+                closest_pixel_index = np.argmin(
+                    np.square(grid[pixel_index, 0] - border_grid[:, 0])
+                    + np.square(grid[pixel_index, 1] - border_grid[:, 1])
+                )
+
+                move_factor = (
+                    border_grid_radii[closest_pixel_index] / grid_radii[pixel_index]
+                )
+
+                if move_factor < 1.0:
+                    grid[pixel_index, :] = (
+                        move_factor * (grid[pixel_index, :] - border_origin[:])
+                        + border_origin[:]
+                    )
+
+        return grid
+
+
     def trimmed_array_2d_from_padded_array_1d_and_image_shape(
         self, padded_array_1d, image_shape
     ):
@@ -1140,7 +1197,7 @@ class Grid(np.ndarray):
 
     @property
     @array_util.Memoizer()
-    def sub_to_regular(self):
+    def sub_mask_1d_index_to_mask_1d_index(self):
         """The mapping_util between every sub-pixel and its host regular-pixel.
 
         For example:
@@ -1479,139 +1536,6 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
     @property
     def total_sparse_pixels(self):
         return len(self.sparse)
-
-
-class GridBorder(np.ndarray):
-    def __new__(cls, arr, *args, **kwargs):
-        """The borders of a regular grid, containing the pixel-index's of all masked pixels that are on the \
-        mask's border (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels and at one of \
-        the exterior edge's of the mask).
-
-        This is used to relocate demagnified pixel's in a grid to its border, so that they do not disrupt an \
-        adaptive pixelization's inversion.
-
-        Parameters
-        -----------
-        arr : ndarray
-            A 1D array of the integer indexes of an *RegularGrid*'s borders pixels.
-        """
-        border = arr.view(cls)
-        return border
-
-    @classmethod
-    def from_mask(cls, mask):
-        """Setup the regular-grid border using a mask.
-
-        Parameters
-        -----------
-        mask : Mask
-            The mask the masked borders pixel index's are computed from.
-        """
-        return cls(mask.border_pixels)
-
-    def relocated_grid_stack_from_grid_stack(self, grid_stack):
-        """Determine a set of relocated grid_stack from an input set of grid_stack, by relocating their pixels based on the \
-        borders.
-
-        The blurring-grid does not have its coordinates relocated, as it is only used for computing analytic \
-        light-profiles and not inversion-grid_stack.
-
-        Parameters
-        -----------
-        grid_stack : GridStack
-            The grid-stack, whose grid_stack coordinates are relocated.
-        """
-
-        border_grid = grid_stack.regular[self]
-
-        return GridStack(
-            regular=self.relocated_grid_from_grid_jit(
-                grid=grid_stack.regular, border_grid=border_grid
-            ),
-            sub=self.relocated_grid_from_grid_jit(
-                grid=grid_stack.sub, border_grid=border_grid
-            ),
-            blurring=None,
-            pixelization=self.relocated_grid_from_grid_jit(
-                grid=grid_stack.pixelization, border_grid=border_grid
-            ),
-        )
-
-    @staticmethod
-    @decorator_util.jit()
-    def relocated_grid_from_grid_jit(grid, border_grid):
-        """ Relocate the coordinates of a grid to its border if they are outside the border. This is performed as \
-        follows:
-
-        1) Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
-        2) Compute the radial distance of every grid coordinate from the origin.
-        3) For every coordinate, find its nearest pixel in the border.
-        4) Determine if it is outside the border, by comparing its radial distance from the origin to its paid \
-           border pixel's radial distance.
-        5) If its radial distance is larger, use the ratio of radial distances to move the coordinate to the border \
-           (if its inside the border, do nothing).
-        """
-
-        border_origin = np.zeros(2)
-        border_origin[0] = np.mean(border_grid[:, 0])
-        border_origin[1] = np.mean(border_grid[:, 1])
-        border_grid_radii = np.sqrt(
-            np.add(
-                np.square(np.subtract(border_grid[:, 0], border_origin[0])),
-                np.square(np.subtract(border_grid[:, 1], border_origin[1])),
-            )
-        )
-        border_min_radii = np.min(border_grid_radii)
-
-        grid_radii = np.sqrt(
-            np.add(
-                np.square(np.subtract(grid[:, 0], border_origin[0])),
-                np.square(np.subtract(grid[:, 1], border_origin[1])),
-            )
-        )
-
-        for pixel_index in range(grid.shape[0]):
-
-            if grid_radii[pixel_index] > border_min_radii:
-
-                closest_pixel_index = np.argmin(
-                    np.square(grid[pixel_index, 0] - border_grid[:, 0])
-                    + np.square(grid[pixel_index, 1] - border_grid[:, 1])
-                )
-
-                move_factor = (
-                    border_grid_radii[closest_pixel_index] / grid_radii[pixel_index]
-                )
-
-                if move_factor < 1.0:
-                    grid[pixel_index, :] = (
-                        move_factor * (grid[pixel_index, :] - border_origin[:])
-                        + border_origin[:]
-                    )
-
-        return grid
-
-    @property
-    def total_pixels(self):
-        return self.shape[0]
-
-    def __reduce__(self):
-        # Get the parent's __reduce__ tuple
-        pickled_state = super(GridBorder, self).__reduce__()
-        # Create our own tuple to pass to __setstate__
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super(GridBorder, self).__setstate__(state[0:-1])
 
 
 class Interpolator(object):

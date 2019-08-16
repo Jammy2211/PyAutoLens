@@ -605,6 +605,13 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         return mask_util.border_pixels_from_mask(mask=self).astype("int")
 
+    def sub_border_pixels_from_sub_grid_size(self, sub_grid_size):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        an annulus mask).
+        """
+        return mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=self, sub_grid_size=sub_grid_size).astype("int")
+
     @property
     def masked_grid_1d(self):
         return grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(

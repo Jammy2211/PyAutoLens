@@ -84,7 +84,7 @@ class Mapper(object):
             sub_to_pix=self.sub_to_pixelization,
             pixels=self.pixels,
             regular_pixels=self.grid_stack.regular.shape[0],
-            sub_to_regular=self.grid_stack.sub.sub_to_regular,
+            sub_to_regular=self.grid_stack.sub.sub_mask_1d_index_to_mask_1d_index,
             sub_grid_fraction=self.grid_stack.sub.sub_grid_fraction,
         )
 
@@ -237,7 +237,7 @@ class VoronoiMapper(Mapper):
         return mapper_util.voronoi_sub_to_pix_from_grids_and_geometry(
             sub_grid=self.grid_stack.sub,
             regular_to_nearest_pix=self.grid_stack.pixelization.regular_to_pixelization,
-            sub_to_regular=self.grid_stack.sub.sub_to_regular,
+            sub_to_regular=self.grid_stack.sub.sub_mask_1d_index_to_mask_1d_index,
             pixel_centres=self.geometry.pixel_centres,
             pixel_neighbors=self.geometry.pixel_neighbors,
             pixel_neighbors_size=self.geometry.pixel_neighbors_size,
