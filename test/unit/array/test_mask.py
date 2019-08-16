@@ -1002,7 +1002,7 @@ class TestMaskMappings:
             [[True, False, True], [False, False, False], [True, False, False]]
         )
 
-        sub_to_regular_util = mask_mapping_util.sub_mask_index_1d_to_mask_index_1d_from_mask(
+        sub_to_regular_util = mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
             mask=mask, sub_grid_size=2
         )
 

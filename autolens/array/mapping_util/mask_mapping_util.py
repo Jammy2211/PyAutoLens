@@ -10,7 +10,7 @@ logger.level = logging.DEBUG
 
 
 @decorator_util.jit()
-def sub_mask_index_1d_to_mask_index_1d_from_mask(mask, sub_grid_size):
+def sub_mask_1d_index_to_mask_1d_index_from_mask(mask, sub_grid_size):
     """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on \
     this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
 
@@ -33,20 +33,51 @@ def sub_mask_index_1d_to_mask_index_1d_from_mask(mask, sub_grid_size):
     )
 
     sub_mask_1d_index_to_mask_1d_index = np.zeros(shape=total_sub_pixels)
-    regular_index = 0
-    sub_index = 0
+    mask_1d_index = 0
+    sub_mask_1d_index = 0
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
                 for y1 in range(sub_grid_size):
                     for x1 in range(sub_grid_size):
-                        sub_mask_1d_index_to_mask_1d_index[sub_index] = regular_index
-                        sub_index += 1
+                        sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index] = mask_1d_index
+                        sub_mask_1d_index += 1
 
-                regular_index += 1
+                mask_1d_index += 1
 
     return sub_mask_1d_index_to_mask_1d_index
+
+
+# @decorator_util.jit()
+def mask_1d_index_to_sub_mask_1d_indexes_from_mask(mask, sub_grid_size):
+    """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on \
+    this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
+
+    For example, for a sub-grid size of 2, the following mappings from sub-pixels to 2D array pixels are:
+
+    - sub_to_regular[0] = 0 -> The first sub-pixel maps to the first unmasked pixel on the regular 2D array.
+    - sub_to_regular[3] = 0 -> The fourth sub-pixel maps to the first unmasked pixel on the regular 2D array.
+    - sub_to_regular[7] = 1 -> The eighth sub-pixel maps to the second unmasked pixel on the regular 2D array.
+
+    The term 'regular' is used because the regular-grid is defined as the grid of coordinates on the centre of every \
+    pixel on the 2D array. Thus, this array maps sub-pixels on a sub-grid to regular-pixels on a regular-grid.
+
+
+                     [True, False, True]])
+    sub_to_regular = sub_to_regular_from_mask(mask=mask, sub_grid_size=2)
+    """
+
+    total_pixels = mask_util.total_pixels_from_mask(mask=mask)
+
+    mask_1d_index_to_sub_mask_indexes = [[] for _ in range(total_pixels)]
+
+    sub_mask_1d_index_to_mask_1d_index = sub_mask_1d_index_to_mask_1d_index_from_mask(mask=mask, sub_grid_size=sub_grid_size).astype('int')
+
+    for sub_mask_1d_index, mask_1d_index in enumerate(sub_mask_1d_index_to_mask_1d_index):
+        mask_1d_index_to_sub_mask_indexes[mask_1d_index].append(sub_mask_1d_index)
+
+    return mask_1d_index_to_sub_mask_indexes
 
 
 @decorator_util.jit()
@@ -86,13 +117,13 @@ def sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(sub_mask):
 
     sub_mask_2d_index_to_1d_index = np.full(fill_value=-1, shape=sub_mask.shape)
 
-    sub_mask_index = 0
+    sub_mask_1d_index = 0
 
     for sub_mask_y in range(sub_mask.shape[0]):
         for sub_mask_x in range(sub_mask.shape[1]):
             if sub_mask[sub_mask_y, sub_mask_x] == False:
-                sub_mask_2d_index_to_1d_index[sub_mask_y, sub_mask_x] = sub_mask_index
-                sub_mask_index += 1
+                sub_mask_2d_index_to_1d_index[sub_mask_y, sub_mask_x] = sub_mask_1d_index
+                sub_mask_1d_index += 1
 
     return sub_mask_2d_index_to_1d_index
 
@@ -134,17 +165,17 @@ def sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(mask, sub
         mask=mask, sub_grid_size=sub_grid_size
     )
     sub_mask_1d_index_to_sub_mask_2d_index = np.zeros(shape=(total_sub_pixels, 2))
-    sub_pixel_count = 0
+    sub_mask_1d_index = 0
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
                 for y1 in range(sub_grid_size):
                     for x1 in range(sub_grid_size):
-                        sub_mask_1d_index_to_sub_mask_2d_index[sub_pixel_count, :] = (
+                        sub_mask_1d_index_to_sub_mask_2d_index[sub_mask_1d_index, :] = (
                             (y * sub_grid_size) + y1,
                             (x * sub_grid_size) + x1,
                         )
-                        sub_pixel_count += 1
+                        sub_mask_1d_index += 1
 
     return sub_mask_1d_index_to_sub_mask_2d_index

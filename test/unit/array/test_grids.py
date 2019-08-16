@@ -1027,7 +1027,7 @@ class TestMappings:
             [[True, False, True], [False, False, False], [True, False, False]]
         )
 
-        sub_to_image_util = mask_mapping_util.sub_mask_index_1d_to_mask_index_1d_from_mask(mask, sub_grid_size=2)
+        sub_to_image_util = mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(mask, sub_grid_size=2)
 
         mask = msk.Mask(mask, pixel_scale=3.0)
 
