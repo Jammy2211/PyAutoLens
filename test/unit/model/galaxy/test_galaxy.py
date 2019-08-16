@@ -5,7 +5,7 @@ from skimage import measure
 from autolens import exc, dimensions as dim
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.data.array import grids
+from autolens.array import grids
 
 from test.unit.mock.model import mock_cosmology
 

@@ -1,7 +1,7 @@
 import autofit as af
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp

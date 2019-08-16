@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data.array import grids, mask
+from autolens.array import grids, mask
 from autolens.model.inversion import inversions
 from test.unit.mock.model import mock_inversion
 

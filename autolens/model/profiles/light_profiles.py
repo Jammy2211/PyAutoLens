@@ -7,7 +7,7 @@ from autolens import dimensions as dim
 from autolens import text_util
 from autolens.model.profiles import geometry_profiles
 
-from autolens.data.array.grids import reshape_returned_array
+from autolens.array.grids import reshape_returned_array
 
 
 class LightProfile(object):

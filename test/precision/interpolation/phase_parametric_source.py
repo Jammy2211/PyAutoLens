@@ -2,7 +2,7 @@ import autolens.pipeline.phase.phase_imaging
 import autofit as af
 import autofit as af
 from autolens.pipeline.phase import phase_imaging
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp

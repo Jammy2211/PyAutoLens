@@ -5,7 +5,8 @@ import pytest
 
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
-from autolens.data.array import grids, mask as msk, scaled_array
+from autolens.array import scaled_array
+from autolens.array import grids, mask as msk
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion.plotters import mapper_plotters

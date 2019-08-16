@@ -1,7 +1,8 @@
 from autolens import exc
-from autolens.data.array import grids, mask as msk, scaled_array
+from autolens.array import grids, scaled_array
+from autolens.array import mask as msk
 
-from autolens.data.array.grids import reshape_returned_regular_array
+from autolens.array.grids import reshape_returned_regular_array
 
 
 class GalaxyData(object):

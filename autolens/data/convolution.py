@@ -5,7 +5,7 @@ from autolens import exc
 
 
 class Convolver(object):
-    """Class to setup the 1D convolution of an regular / mapping matrix.
+    """Class to setup the 1D convolution of an regular / mapping_util matrix.
 
     Take a simple 3x3 regular and masks:
 
@@ -97,7 +97,7 @@ class Convolver(object):
     image_frame_lengths = 9
 
     Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of a
-    masked regular or the masked regular of a mapping in the inversion module.
+    masked regular or the masked regular of a mapping_util in the inversion module.
 
     BLURRING FRAMES:
     --------------
@@ -105,7 +105,7 @@ class Convolver(object):
     Whilst the scheme above accounts for all blurred light within the masks, it does not account for the fact that \
     pixels outside of the masks will also blur light into it. This effect is accounted for using blurring frames.
 
-    It is omitted for mapping matrix blurring, as an inversion does not fit datas outside of the masks.
+    It is omitted for mapping_util matrix blurring, as an inversion does not fit datas outside of the masks.
 
     First, a blurring masks is computed from a masks, which describes all pixels which are close enough to the masks \
     to blur light into it for a given psf size. Following the example above, the following blurring masks is \

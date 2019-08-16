@@ -5,10 +5,10 @@ from scipy.stats import norm
 import numpy as np
 
 from autolens import exc
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.data.instrument import abstract_data
-from autolens.data.array.util import array_util
-from autolens.data.array.scaled_array import ScaledSquarePixelArray, Array
+from autolens.array.util import array_util
+from autolens.array.scaled_array import ScaledSquarePixelArray, Array
 
 logger = logging.getLogger(__name__)
 

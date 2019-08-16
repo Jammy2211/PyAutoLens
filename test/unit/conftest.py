@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 import autofit as af
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.lens import lens_fit
 from autolens.lens import plane as pl
 from autolens.lens import ray_tracing

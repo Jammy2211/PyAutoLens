@@ -1,6 +1,6 @@
 import numpy as np
 
-from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.array.grids import reshape_returned_array, reshape_returned_grid
 
 
 class MockGalaxy(object):

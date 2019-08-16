@@ -3,8 +3,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 from autolens import dimensions as dim
-from autolens.data.array import grids
-from autolens.data.array import mask as msk
+from autolens.array import grids, mask as msk
 from autolens.model.profiles import mass_profiles as mp
 
 from test.unit.mock.model import mock_cosmology

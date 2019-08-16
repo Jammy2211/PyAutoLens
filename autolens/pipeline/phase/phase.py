@@ -2,8 +2,8 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.data.array import mask as msk
-from autolens.data.array.util import binning_util
+from autolens.array import mask as msk
+from autolens.array.util import binning_util
 from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 

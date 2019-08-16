@@ -1,9 +1,9 @@
 import numpy as np
 import scipy.spatial
-import sklearn.cluster
 
 from autolens import exc
-from autolens.data.array import grids, scaled_array
+from autolens.array import scaled_array
+from autolens.array import grids
 from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 

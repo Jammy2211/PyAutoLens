@@ -2,7 +2,7 @@ import time
 
 from autolens.model.profiles import mass_profiles as mp
 from autolens.lens import lens_data as ld
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 
 from test.simulation import simulation_util
 

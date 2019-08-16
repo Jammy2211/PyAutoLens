@@ -3,7 +3,7 @@ import shutil
 import numpy as np
 import pytest
 
-from autolens.data.array.util import binning_util
+from autolens.array.util import binning_util
 
 
 class TestBinnedPaddingArray:

@@ -1,8 +1,5 @@
 import numpy as np
-import pytest
 
-from autolens import exc
-from autolens.data.array import grids, mask
 from autolens.model.inversion.util import inversion_util
 
 

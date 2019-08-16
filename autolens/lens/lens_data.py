@@ -1,10 +1,9 @@
-import autofit as af
-from autolens.data.array import grids
-from autolens.data.array import mask as msk
+from autolens.array import grids
+from autolens.array import mask as msk
 from autolens.data.convolution import ConvolverImage
 from autolens.model.inversion import convolution as inversion_convolution
 
-from autolens.data.array.grids import reshape_returned_regular_array
+from autolens.array.grids import reshape_returned_regular_array
 
 
 class LensData(object):
@@ -43,7 +42,7 @@ class LensData(object):
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         inversion_psf_shape : (int, int)
-            The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
+            The shape of the PSF used for convolving the inversion mapping_util matrix. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         positions : [[]]
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \

@@ -7,7 +7,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens import exc
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
 from autolens.lens import ray_tracing

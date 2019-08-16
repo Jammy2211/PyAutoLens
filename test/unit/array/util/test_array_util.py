@@ -3,9 +3,9 @@ import shutil
 import numpy as np
 import pytest
 
-from autolens.data.array.util import array_util
+from autolens.array.util import array_util
 
-test_data_path = "{}/../../../test_files/array/".format(
+test_data_path = "{}/../../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 

@@ -4,8 +4,8 @@ import pytest
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
 from autolens.data import convolution
-from autolens.data.array import grids
-from autolens.data.array import mask as msk
+from autolens.array import grids
+from autolens.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.model.inversion import convolution as inversion_convolution
 

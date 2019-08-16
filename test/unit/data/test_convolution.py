@@ -4,7 +4,7 @@ import pytest
 from autolens import exc
 from autolens.data import convolution
 from autolens.data.instrument import abstract_data
-from autolens.data.array import mask
+from autolens.array import mask
 
 
 @pytest.fixture(name="simple_mask_index_array")

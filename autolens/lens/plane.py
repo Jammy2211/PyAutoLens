@@ -4,15 +4,14 @@ from skimage import measure
 
 import autofit as af
 from autolens import exc, dimensions as dim
-from autolens.data.array import scaled_array
-from autolens.data.array.grids import (
+from autolens.array import scaled_array
+from autolens.array.grids import (
     reshape_returned_array,
-    reshape_returned_array_blurring,
     reshape_returned_grid,
 )
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
-from autolens.data.array.util import grid_util
+from autolens.array.util import grid_util
 
 
 class Plane(object):

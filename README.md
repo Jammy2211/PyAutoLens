@@ -17,7 +17,7 @@ With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. 
 ```python
 import autofit as af
 from autolens.pipeline.phase import phase_imaging
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.data.instrument import ccd
 from autolens.model.profiles import light_profiles as lp

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.array.util import mapping_util
+from autolens.array.mapping_util import array_mapping_util
 from autolens.model.inversion import mappers
 from autolens.model.inversion import pixelizations
 from test.unit.mock.data.mock_grids import MockPixSubGrid, MockPixGridStack
@@ -872,7 +872,7 @@ class TestRectangularMapper:
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            recon_pix_util = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(4, 3)),
                 sub_grid_size=1,
@@ -893,7 +893,7 @@ class TestRectangularMapper:
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            recon_pix_util = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(3, 4)),
                 sub_grid_size=1,

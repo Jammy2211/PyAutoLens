@@ -8,7 +8,7 @@ import scipy.special
 
 import autofit as af
 from autolens import dimensions as dim
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import light_profiles as lp
 
 from test.unit.mock.model import mock_cosmology
