@@ -568,7 +568,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         - sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd regular pixel.
         - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th regular pixel.
         """
-        return mask_mapping_util.sub_mask_index_1d_to_mask_index_1d_from_mask(
+        return mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
             mask=self, sub_grid_size=sub_grid_size
         ).astype("int")
 
