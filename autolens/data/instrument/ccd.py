@@ -553,7 +553,7 @@ class SimulatedCCDData(CCDData):
         """
 
         if psf is not None:
-            image_plane_image_2d = tracer.padded_profile_image_plane_image_2d_from_psf_shape(
+            image_plane_image_2d = tracer.padded_profile_image_2d_from_grid_and_psf_shape(
                 psf_shape=psf.shape
             )
         else:

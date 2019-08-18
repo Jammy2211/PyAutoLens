@@ -1,4 +1,4 @@
-from autolens.array.grids import reshape_returned_regular_array
+from autolens.array.grids import reshape_returned_array
 
 
 class MockLensData(object):
@@ -43,15 +43,15 @@ class MockLensData(object):
 
         self.hyper_noise_map_max = None
 
-    @reshape_returned_regular_array
+    @reshape_returned_array
     def image(self, return_in_2d=True):
         return self.image_1d
 
-    @reshape_returned_regular_array
+    @reshape_returned_array
     def noise_map(self, return_in_2d=True):
         return self.noise_map_1d
 
-    @reshape_returned_regular_array
+    @reshape_returned_array
     def signal_to_noise_map(self, return_in_2d=True):
         return self.signal_to_noise_map_1d
 

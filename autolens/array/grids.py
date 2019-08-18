@@ -26,7 +26,7 @@ def check_input_grid_and_options_are_compatible(grid):
 
 def reshape_returned_array(func):
     @wraps(func)
-    def wrapper(object, grid=None, *args, **kwargs):
+    def wrapper(object, grid, *args, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -55,11 +55,7 @@ def reshape_returned_array(func):
         return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
         return_binned = kwargs["return_binned"] if "return_binned" in kwargs else False
 
-        if grid is None:
-            result = func(object)
-            grid = object.grid_stack.sub
-        else:
-            result = func(object, grid)
+        result = func(object, grid)
 
         if len(result.shape) == 2:
             result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
@@ -92,118 +88,9 @@ def reshape_returned_array(func):
     return wrapper
 
 
-def reshape_returned_regular_array(func):
-    @wraps(func)
-    def wrapper(object, grid=None, *args, **kwargs):
-        """
-
-        This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
-        (e.g. intensities, convergences, potentials). Depending on the input variables, it determines whether the
-        returned array is reshaped to 2D from 1D and if a sub-grid is input, it can bin the sub-gridded values to
-        regular gridded values.
-
-        Parameters
-        ----------
-        object : autolens.model.geometry_profiles.Profile
-            The profiles that owns the function
-        grid : ndarray or Grid or Grid
-            (y,x) in either cartesian or profiles coordinate system
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
-
-        Returns
-        -------
-            An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
-        """
-
-        return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
-
-        if grid is None:
-            result_1d = func(object)
-            grid = object.grid_stack.regular
-        else:
-            result_1d = func(object, grid)
-
-        if not return_in_2d:
-            return result_1d
-
-        check_input_grid_and_options_are_compatible(grid=grid)
-
-        if not return_in_2d:
-
-            return result_1d
-
-        elif return_in_2d:
-
-            return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
-
-    return wrapper
-
-
-def reshape_returned_array_blurring(func):
-    @wraps(func)
-    def wrapper(object, grid=None, *args, **kwargs):
-        """
-
-        This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
-        (e.g. intensities, convergences, potentials). Depending on the input variables, it determines whether the
-        returned array is reshaped to 2D from 1D and if a sub-grid is input, it can bin the sub-gridded values to
-        regular gridded values.
-
-        Parameters
-        ----------
-        object : autolens.model.geometry_profiles.Profile
-            The profiles that owns the function
-        grid : ndarray or Grid or Grid
-            (y,x) in either cartesian or profiles coordinate system
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
-
-        Returns
-        -------
-            An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
-        """
-
-        return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
-
-        if grid is None:
-            result = func(object)
-            grid = object.grid_stack.blurring
-        else:
-            result = func(object, grid)
-
-        if len(result.shape) == 2:
-            result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
-        else:
-            result_1d = result
-
-        if not return_in_2d:
-            return result_1d
-
-        check_input_grid_and_options_are_compatible(grid=grid)
-
-        if not return_in_2d:
-
-            return result_1d
-
-        elif return_in_2d:
-
-            return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
-
-    return wrapper
-
-
 def reshape_returned_grid(func):
     @wraps(func)
-    def wrapper(object, grid=None, *args, **kwargs):
+    def wrapper(object, grid, *args, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 2D grids of physical quantities \
@@ -226,11 +113,7 @@ def reshape_returned_grid(func):
         return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
         return_binned = kwargs["return_binned"] if "return_binned" in kwargs else False
 
-        if grid is None:
-            result = func(object)
-            grid = object.grid_stack.sub
-        else:
-            result = func(object, grid)
+        result = func(object, grid)
 
         if len(result.shape) == 3:
             result_1d = grid.sub_grid_1d_with_sub_dimensions_from_sub_grid_2d(
@@ -835,6 +718,82 @@ class Grid(np.ndarray):
                 interp_pixel_scale=self.interpolator.interp_pixel_scale
             )
 
+    def trimmed_array_2d_from_padded_array_1d_and_image_shape(
+        self, padded_array_1d, image_shape
+    ):
+        """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
+
+        Parameters
+        -----------
+        padded_array_1d : ndarray
+            A 1D array of values which were computed using a padded regular grid
+        """
+
+        # TODO : Raise error if padded grid not used here.
+
+        padded_array_2d = self.array_2d_from_array_1d(array_1d=padded_array_1d)
+        pad_size_0 = self.mask.shape[0] - image_shape[0]
+        pad_size_1 = self.mask.shape[1] - image_shape[1]
+        return padded_array_2d[
+            pad_size_0 // 2 : self.mask.shape[0] - pad_size_0 // 2,
+            pad_size_1 // 2 : self.mask.shape[1] - pad_size_1 // 2,
+        ]
+
+    def convolve_array_1d_with_psf(self, padded_array_1d, psf):
+        """Convolve a 1d padded array of values (e.g. intensities before PSF blurring) with a PSF, and then trim \
+        the convolved array to its original 2D shape.
+
+        Parameters
+        -----------
+        padded_array_1d: ndarray
+            A 1D array of values which were computed using the a padded regular grid.
+        psf : ndarray
+            An array describing the PSF kernel of the image.
+        """
+
+        padded_array_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            sub_array_1d=padded_array_1d,
+            mask=np.full(fill_value=False, shape=self.mask.shape),
+            sub_grid_size=1,
+        )
+
+        # noinspection PyUnresolvedReferences
+        blurred_padded_array_2d = psf.convolve(array_2d=padded_array_2d)
+
+        return array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=blurred_padded_array_2d,
+            mask=np.full(self.mask.shape, False),
+            sub_grid_size=1,
+        )
+
+    def unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
+        self, padded_array_1d, psf, image_shape
+    ):
+        """For a padded grid-stack and psf, compute an unmasked blurred image from an unmasked unblurred image.
+
+        This relies on using the lens instrument's padded-grid, which is a grid of (y,x) coordinates which extends over the \
+        entire image as opposed to just the masked region.
+
+        Parameters
+        ----------
+        psf : abstract_data.PSF
+            The PSF of the image used for convolution.
+        unmasked_image_1d : ndarray
+            The 1D unmasked image which is blurred.
+        """
+
+        padded_array_2d = self.scaled_array_2d_from_array_1d(array_1d=padded_array_1d)
+
+        blurred_image_2d = psf.convolve(array_2d=padded_array_2d)
+
+        blurred_image_1d = self.array_1d_from_array_2d(
+            array_2d=blurred_image_2d
+        )
+
+        return self.trimmed_array_2d_from_padded_array_1d_and_image_shape(
+            padded_array_1d=blurred_image_1d, image_shape=image_shape
+        )
+
     @property
     def border_grid(self):
         return self[self.sub_border_pixels]
@@ -913,54 +872,6 @@ class Grid(np.ndarray):
                     )
 
         return grid
-
-    def trimmed_array_2d_from_padded_array_1d_and_image_shape(
-        self, padded_array_1d, image_shape
-    ):
-        """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
-
-        Parameters
-        -----------
-        padded_array_1d : ndarray
-            A 1D array of values which were computed using a padded regular grid
-        """
-
-        # TODO : Raise error if padded grid not used here.
-
-        padded_array_2d = self.array_2d_from_array_1d(array_1d=padded_array_1d)
-        pad_size_0 = self.mask.shape[0] - image_shape[0]
-        pad_size_1 = self.mask.shape[1] - image_shape[1]
-        return padded_array_2d[
-            pad_size_0 // 2 : self.mask.shape[0] - pad_size_0 // 2,
-            pad_size_1 // 2 : self.mask.shape[1] - pad_size_1 // 2,
-        ]
-
-    def convolve_array_1d_with_psf(self, padded_array_1d, psf):
-        """Convolve a 1d padded array of values (e.g. intensities before PSF blurring) with a PSF, and then trim \
-        the convolved array to its original 2D shape.
-
-        Parameters
-        -----------
-        padded_array_1d: ndarray
-            A 1D array of values which were computed using the a padded regular grid.
-        psf : ndarray
-            An array describing the PSF kernel of the image.
-        """
-
-        padded_array_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=padded_array_1d,
-            mask=np.full(fill_value=False, shape=self.mask.shape),
-            sub_grid_size=1,
-        )
-
-        # noinspection PyUnresolvedReferences
-        blurred_padded_array_2d = psf.convolve(array_2d=padded_array_2d)
-
-        return array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=blurred_padded_array_2d,
-            mask=np.full(self.mask.shape, False),
-            sub_grid_size=1,
-        )
 
     @property
     @array_util.Memoizer()

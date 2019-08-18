@@ -2043,7 +2043,7 @@ class TestSimulateCCD(object):
         )
 
         ccd_data_simulated = ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-            image=tracer.padded_profile_image_plane_image_2d_from_psf_shape(
+            image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
                 psf_shape=(3, 3)
             ),
             pixel_scale=0.1,
