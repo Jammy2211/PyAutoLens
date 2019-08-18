@@ -164,7 +164,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
     def __init__(self, planes, cosmology):
         super(AbstractTracerLensing, self).__init__(planes=planes, cosmology=cosmology)
 
-    def traced_grids_of_planes_from_grid(self, grid):
+    def traced_grids_of_planes_from_grid(self, grid, return_in_2d=True):
 
         grid_calc = grid.copy()
 
@@ -199,9 +199,18 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             traced_deflections.append(
                 plane.deflections_from_grid(grid=scaled_grid, return_in_2d=False, return_binned=False)
             )
-            traced_grids.append(grids.Grid(arr=scaled_grid, mask=grid.mask, sub_grid_size=grid.sub_grid_size))
+            traced_grids.append(scaled_grid)
 
         return traced_grids
+
+    def traced_positions_of_planes_from_positions(self, positions):
+
+        traced_positions = []
+
+        for position_grid in positions:
+            traced_positions.append(self.traced_grids_of_planes_from_grid(grid=position_grid))
+
+        return traced_positions
 
     def deflections_between_planes_from_grid(
         self, grid, plane_i=0, plane_j=-1, return_in_2d=True
