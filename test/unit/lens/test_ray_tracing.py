@@ -1289,7 +1289,7 @@ class TestAbstractTracer(object):
 class TestAbstractTracerData(object):
     class TestBlurredProfileImages:
         def test__blurred_image_plane_image_1d_of_planes(
-            self, grid_stack_7x7, convolver_image_7x7
+            self, grid_stack_7x7, convolver_7x7
         ):
 
             g0 = g.Galaxy(
@@ -1321,12 +1321,12 @@ class TestAbstractTracerData(object):
                 border=None,
             )
 
-            blurred_image_1d_0 = plane_0.blurred_profile_image_plane_image_1d_from_convolver_image(
-                convolver_image=convolver_image_7x7
+            blurred_image_1d_0 = plane_0.blurred_profile_image_from_grid_and_convolver(
+                convolver=convolver_7x7
             )
 
-            blurred_image_1d_1 = plane_1.blurred_profile_image_plane_image_1d_from_convolver_image(
-                convolver_image=convolver_image_7x7
+            blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_convolver(
+                convolver=convolver_7x7
             )
 
             tracer = ray_tracing.Tracer(
@@ -1334,7 +1334,7 @@ class TestAbstractTracerData(object):
             )
 
             blurred_image_plane_images_1d = tracer.blurred_profile_image_plane_image_1d_of_planes_from_convolver_image(
-                convolver_image=convolver_image_7x7
+                convolver_image=convolver_7x7
             )
 
             assert (blurred_image_plane_images_1d[0] == blurred_image_1d_0).all()
@@ -1344,7 +1344,7 @@ class TestAbstractTracerData(object):
             ).all()
 
             blurred_image_plane_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-                convolver_image=convolver_image_7x7
+                convolver_image=convolver_7x7
             )
 
             assert blurred_image_plane_image_1d == pytest.approx(
@@ -1352,7 +1352,7 @@ class TestAbstractTracerData(object):
             )
 
             blurred_image_plane_images = tracer.blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(
-                convolver_image=convolver_image_7x7
+                convolver_image=convolver_7x7
             )
 
             blurred_image_0 = grid_stack_7x7.scaled_array_2d_from_array_1d(
@@ -1373,7 +1373,7 @@ class TestAbstractTracerData(object):
             )
 
             blurred_image_plane_images_1ds = tracer.blurred_profile_image_plane_image_1d_of_planes_from_convolver_image(
-                convolver_image=convolver_image_7x7
+                convolver_image=convolver_7x7
             )
 
             assert (blurred_image_plane_images_1ds[0] == blurred_image_1d_0).all()
@@ -1497,7 +1497,7 @@ class TestAbstractTracerData(object):
             grid_stack_7x7,
             image_1d_7x7,
             noise_map_1d_7x7,
-            convolver_mapping_matrix_7x7,
+            convolver_7x7,
         ):
 
             pix = pixelizations.Rectangular(shape=(3, 3))
@@ -1514,7 +1514,7 @@ class TestAbstractTracerData(object):
             inversion = tracer.inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
                 image_1d=image_1d_7x7,
                 noise_map_1d=noise_map_1d_7x7,
-                convolver_mapping_matrix=convolver_mapping_matrix_7x7,
+                convolver_mapping_matrix=convolver_7x7,
             )
 
             assert inversion.reconstructed_data_1d == pytest.approx(

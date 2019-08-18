@@ -122,12 +122,12 @@ def plot_plane_image(
         grid = None
 
     if plot_origin:
-        origin = plane.plane_image.origin
+        origin = plane.plane_image_from_grid.origin
     else:
         origin = None
 
     array_plotters.plot_array(
-        array=plane.plane_image,
+        array=plane.plane_image_from_grid,
         origin=origin,
         positions=positions,
         grid=grid,

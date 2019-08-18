@@ -7,7 +7,7 @@ from autolens.data import convolution
 from autolens.array import grids
 from autolens.array import mask as msk
 from autolens.lens import lens_data as ld
-from autolens.model.inversion import convolution as inversion_convolution
+
 
 
 @pytest.fixture(name="lens_data_7x7")
@@ -233,7 +233,7 @@ class TestLensData(object):
         assert (lens_data_7x7.border == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
     def test__convolvers(self, lens_data_7x7):
-        assert type(lens_data_7x7.convolver_image) == convolution.ConvolverImage
+        assert type(lens_data_7x7.convolver_image) == convolution.Convolver
         assert (
             type(lens_data_7x7.convolver_mapping_matrix)
             == inversion_convolution.ConvolverMappingMatrix

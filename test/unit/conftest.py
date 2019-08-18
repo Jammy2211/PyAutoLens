@@ -170,7 +170,7 @@ def make_interferometer_data_7x7(
 @pytest.fixture(name="transformer_7x7_7")
 def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
     return mock_data.MockTransformer(
-        uv_wavelengths=uv_wavelengths_7, grid_radians=grid_7x7.regular.in_radians
+        uv_wavelengths=uv_wavelengths_7, grid_radians=grid_7x7.unlensed_unsubbed_1d.in_radians
     )
 
 
@@ -296,16 +296,11 @@ def make_cluster_grid_7x7(mask_7x7):
 # CONVOLVERS #
 
 
-@pytest.fixture(name="convolver_image_7x7")
-def make_convolver_image_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
-    return mock_convolution.MockConvolverImage(
+@pytest.fixture(name="convolver_7x7")
+def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
+    return mock_convolution.MockConvolver(
         mask=mask_7x7, blurring_mask=blurring_mask_7x7, psf=psf_3x3
     )
-
-
-@pytest.fixture(name="convolver_mapping_matrix_7x7")
-def make_convolver_mapping_matrix_7x7(mask_7x7, psf_3x3):
-    return mock_convolution.MockConvolverMappingMatrix(mask=mask_7x7, psf=psf_3x3)
 
 
 #
@@ -471,15 +466,13 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 def make_lens_data_7x7(
     ccd_data_7x7,
     mask_7x7,
-    convolver_image_7x7,
-    convolver_mapping_matrix_7x7,
+    convolver_7x7,
     cluster_grid_7x7,
 ):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_7x7,
         mask=mask_7x7,
-        convolver_image=convolver_image_7x7,
-        convolver_mapping_matrix=convolver_mapping_matrix_7x7,
+        convolver=convolver_7x7,
         cluster=cluster_grid_7x7,
     )
 
@@ -489,7 +482,7 @@ def make_lens_data_7x7(
 
 @pytest.fixture(name="plane_7x7")
 def make_plane_7x7(gal_x1_lp_x1_mp):
-    return pl.Plane(galaxies=[gal_x1_lp_x1_mp], compute_deflections=False)
+    return pl.Plane(galaxies=[gal_x1_lp_x1_mp])
 
 
 # Ray Tracing #

@@ -818,116 +818,6 @@ class TestDeflectionsViaPotential(object):
         assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
 
 
-class TestConvergenceViajacobian(object):
-    def test__compare_sis_convergence_via_jacobian_and_calculation(self):
-
-        sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
-
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.05
-        )
-
-        convergence_via_calculation = sis.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
-        )
-
-        convergence_via_jacobian = sis.convergence_from_jacobian(
-            grid=grid, return_in_2d=True, return_binned=True
-        )
-
-        mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-        assert convergence_via_jacobian.shape == (20, 20)
-        assert mean_error < 1e-1
-
-        convergence_via_calculation = sis.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
-
-        convergence_via_jacobian = sis.convergence_from_jacobian(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
-
-        mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-        assert convergence_via_jacobian.shape == (400,)
-        assert mean_error < 1e-1
-
-    def test__compare_sie_at_phi_45__convergence_via_jacobian_and_calculation(self):
-
-        sie = mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0
-        )
-
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.05
-        )
-
-        convergence_via_calculation = sie.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
-        )
-
-        convergence_via_jacobian = sie.convergence_from_jacobian(
-            grid=grid, return_in_2d=True, return_binned=True
-        )
-
-        mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-        assert mean_error < 1e-1
-
-    def test__convergence(self):
-
-        sie = mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
-        )
-
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
-        )
-
-        convergence_binned_reg_grid = sie.convergence_from_jacobian(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
-
-        convergence_sub_grid = sie.convergence_from_jacobian(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
-
-        pixel_1_reg_grid = convergence_binned_reg_grid[0]
-        pixel_1_from_av_sub_grid = (
-            convergence_sub_grid[0]
-            + convergence_sub_grid[1]
-            + convergence_sub_grid[2]
-            + convergence_sub_grid[3]
-        ) / 4
-
-        assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
-
-        pixel_10000_reg_grid = convergence_binned_reg_grid[99]
-
-        pixel_10000_from_av_sub_grid = (
-            convergence_sub_grid[399]
-            + convergence_sub_grid[398]
-            + convergence_sub_grid[397]
-            + convergence_sub_grid[396]
-        ) / 4
-
-        assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
-
-        convergence_via_calculation = sie.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
-
-        convergence_via_jacobian = sie.convergence_from_jacobian(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
-
-        mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-        assert convergence_via_jacobian.shape == (400,)
-        assert mean_error < 1e-1
-
-
 class TestJacobianandMagnification(object):
     def test__jacobian_components(self):
 
@@ -977,11 +867,11 @@ class TestJacobianandMagnification(object):
             grid=grid, return_in_2d=True
         )
 
-        tangential_eigen_value = sie.tangential_eigen_value_from_shear_and_convergence(
+        tangential_eigen_value = sie.tangential_eigen_value_from_grid(
             grid=grid, return_in_2d=True
         )
 
-        radal_eigen_value = sie.radial_eigen_value_from_shear_and_convergence(
+        radal_eigen_value = sie.radial_eigen_value_from_grid(
             grid=grid, return_in_2d=True
         )
 
@@ -1007,11 +897,11 @@ class TestJacobianandMagnification(object):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        tangential_eigen_value = sie.tangential_eigen_value_from_shear_and_convergence(
+        tangential_eigen_value = sie.tangential_eigen_value_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        radal_eigen_value = sie.radial_eigen_value_from_shear_and_convergence(
+        radal_eigen_value = sie.radial_eigen_value_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
@@ -1041,9 +931,9 @@ class TestJacobianandMagnification(object):
             grid=grid, return_in_2d=True
         )
 
-        convergence = sie.convergence_from_jacobian(grid=grid, return_in_2d=True)
+        convergence = sie.convergence_via_jacobian_from_grid(grid=grid, return_in_2d=True)
 
-        shear = sie.shear_from_jacobian(grid=grid, return_in_2d=True)
+        shear = sie.shear_via_jacobian_from_grid(grid=grid, return_in_2d=True)
 
         magnification_via_convergence_and_shear = 1 / (
             (1 - convergence) ** 2 - shear ** 2
@@ -1063,11 +953,11 @@ class TestJacobianandMagnification(object):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        convergence = sie.convergence_from_jacobian(
+        convergence = sie.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        shear = sie.shear_from_jacobian(
+        shear = sie.shear_via_jacobian_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
@@ -1131,11 +1021,11 @@ class TestJacobianandMagnification(object):
             shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
         )
 
-        shear_binned_reg_grid = sie.shear_from_jacobian(
+        shear_binned_reg_grid = sie.shear_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=True
         )
 
-        shear_sub_grid = sie.shear_from_jacobian(
+        shear_sub_grid = sie.shear_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
         )
 
@@ -1170,11 +1060,11 @@ class TestJacobianandMagnification(object):
             shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
         )
 
-        lambda_t_binned_reg_grid = sie.tangential_eigen_value_from_shear_and_convergence(
+        lambda_t_binned_reg_grid = sie.tangential_eigen_value_from_grid(
             grid=grid, return_in_2d=False, return_binned=True
         )
 
-        lambda_t_sub_grid = sie.tangential_eigen_value_from_shear_and_convergence(
+        lambda_t_sub_grid = sie.tangential_eigen_value_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
         )
 
@@ -1209,11 +1099,11 @@ class TestJacobianandMagnification(object):
             shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
         )
 
-        lambda_r_binned_reg_grid = sie.radial_eigen_value_from_shear_and_convergence(
+        lambda_r_binned_reg_grid = sie.radial_eigen_value_from_grid(
             grid=grid, return_in_2d=False, return_binned=True
         )
 
-        lambda_r_sub_grid = sie.radial_eigen_value_from_shear_and_convergence(
+        lambda_r_sub_grid = sie.radial_eigen_value_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
         )
 
@@ -1290,6 +1180,116 @@ def caustics_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
     return caustics
 
 
+class TestConvergenceViajacobian(object):
+    def test__compare_sis_convergence_via_jacobian_and_calculation(self):
+
+        sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(20, 20), pixel_scale=0.05
+        )
+
+        convergence_via_calculation = sis.convergence_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
+        )
+
+        convergence_via_jacobian = sis.convergence_via_jacobian_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
+        )
+
+        mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+        assert convergence_via_jacobian.shape == (20, 20)
+        assert mean_error < 1e-1
+
+        convergence_via_calculation = sis.convergence_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+
+        convergence_via_jacobian = sis.convergence_via_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+
+        mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+        assert convergence_via_jacobian.shape == (400,)
+        assert mean_error < 1e-1
+
+    def test__compare_sie_at_phi_45__convergence_via_jacobian_and_calculation(self):
+
+        sie = mp.EllipticalIsothermal(
+            centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0
+        )
+
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(20, 20), pixel_scale=0.05
+        )
+
+        convergence_via_calculation = sie.convergence_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
+        )
+
+        convergence_via_jacobian = sie.convergence_via_jacobian_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
+        )
+
+        mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+        assert mean_error < 1e-1
+
+    def test__convergence(self):
+
+        sie = mp.EllipticalIsothermal(
+            centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
+        )
+
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+        )
+
+        convergence_binned_reg_grid = sie.convergence_via_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+
+        convergence_sub_grid = sie.convergence_via_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
+
+        pixel_1_reg_grid = convergence_binned_reg_grid[0]
+        pixel_1_from_av_sub_grid = (
+            convergence_sub_grid[0]
+            + convergence_sub_grid[1]
+            + convergence_sub_grid[2]
+            + convergence_sub_grid[3]
+        ) / 4
+
+        assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+        pixel_10000_reg_grid = convergence_binned_reg_grid[99]
+
+        pixel_10000_from_av_sub_grid = (
+            convergence_sub_grid[399]
+            + convergence_sub_grid[398]
+            + convergence_sub_grid[397]
+            + convergence_sub_grid[396]
+        ) / 4
+
+        assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
+
+        convergence_via_calculation = sie.convergence_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+
+        convergence_via_jacobian = sie.convergence_via_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+
+        mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+        assert convergence_via_jacobian.shape == (400,)
+        assert mean_error < 1e-1
+
+
 class TestCriticalCurvesandCaustics(object):
     def test_compare_magnification_from_determinant_and_from_convergence_and_shear(
         self
@@ -1305,9 +1305,9 @@ class TestCriticalCurvesandCaustics(object):
 
         magnification_via_determinant = sie.magnification_from_grid(grid=grid)
 
-        convergence = sie.convergence_from_jacobian(grid=grid)
+        convergence = sie.convergence_via_jacobian_from_grid(grid=grid)
 
-        shear = sie.shear_from_jacobian(grid=grid)
+        shear = sie.shear_via_jacobian_from_grid(grid=grid)
 
         magnification_via_convergence_and_shear = 1 / (
             (1 - convergence) ** 2 - shear ** 2

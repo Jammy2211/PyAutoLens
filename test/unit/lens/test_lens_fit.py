@@ -724,8 +724,8 @@ class TestLensProfileFit:
                 fit.noise_map(return_in_2d=True)
             )
 
-            model_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-                convolver_image=lens_data_7x7.convolver_image
+            model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
+                convolver=lens_data_7x7.convolver_image
             )
             model_image_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
                 array_1d=model_image_1d
@@ -939,8 +939,8 @@ class TestLensProfileFit:
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_in_2d=True))
 
-            model_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-                convolver_image=lens_data_7x7.convolver_image
+            model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
+                convolver=lens_data_7x7.convolver_image
             )
 
             model_image_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
@@ -1458,8 +1458,8 @@ class TestLensProfileInversionFit:
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
-            blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-                convolver_image=lens_data_7x7.convolver_image
+            blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
+                convolver=lens_data_7x7.convolver_image
             )
 
             blurred_profile_image_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
@@ -1765,8 +1765,8 @@ class TestLensProfileInversionFit:
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_in_2d=True))
 
-            blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-                convolver_image=lens_data_7x7.convolver_image
+            blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
+                convolver=lens_data_7x7.convolver_image
             )
 
             blurred_profile_image_2d = lens_data_7x7.scaled_array_2d_from_array_1d(
@@ -1911,8 +1911,8 @@ class TestLensProfileInversionFit:
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
-            blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-                convolver_image=lens_data_7x7.convolver_image
+            blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
+                convolver=lens_data_7x7.convolver_image
             )
 
             blurred_profile_image_2d = lens_data_7x7.scaled_array_2d_from_array_1d(

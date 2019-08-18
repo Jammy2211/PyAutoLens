@@ -222,8 +222,8 @@ class LensProfileFit(LensTracerFit):
             hyper_background_noise=hyper_background_noise,
         )
 
-        blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-            convolver_image=lens_data.convolver_image
+        blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
+            convolver=lens_data.convolver_image
         )
 
         super(LensProfileFit, self).__init__(
@@ -388,8 +388,8 @@ class LensProfileInversionFit(InversionFit):
             hyper_background_noise=hyper_background_noise,
         )
 
-        self.blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-            convolver_image=lens_data.convolver_image
+        self.blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
+            convolver=lens_data.convolver_image
         )
 
         self.profile_subtracted_image_1d = image_1d - self.blurred_profile_image_1d

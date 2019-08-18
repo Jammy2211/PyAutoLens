@@ -377,7 +377,7 @@ class Galaxy(af.ModelObject):
         return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
 
     @reshape_returned_array
-    def lensing_jacobian_a11_from_grid_and_deflections_2d(
+    def lensing_jacobian_a11_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
 
@@ -388,7 +388,7 @@ class Galaxy(af.ModelObject):
         return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
 
     @reshape_returned_array
-    def lensing_jacobian_a12_from_grid_and_deflections_2d(
+    def lensing_jacobian_a12_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
 
@@ -399,7 +399,7 @@ class Galaxy(af.ModelObject):
         return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
 
     @reshape_returned_array
-    def lensing_jacobian_a21_from_grid_and_deflections_2d(
+    def lensing_jacobian_a21_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
 
@@ -410,7 +410,7 @@ class Galaxy(af.ModelObject):
         return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
 
     @reshape_returned_array
-    def lensing_jacobian_a22_from_grid_and_deflections_2d(
+    def lensing_jacobian_a22_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
 
@@ -422,26 +422,26 @@ class Galaxy(af.ModelObject):
 
     def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
-        a11 = self.lensing_jacobian_a11_from_grid_and_deflections_2d(
+        a11 = self.lensing_jacobian_a11_from_grid(
             grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
-        a12 = self.lensing_jacobian_a12_from_grid_and_deflections_2d(
+        a12 = self.lensing_jacobian_a12_from_grid(
             grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
-        a21 = self.lensing_jacobian_a21_from_grid_and_deflections_2d(
+        a21 = self.lensing_jacobian_a21_from_grid(
             grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
-        a22 = self.lensing_jacobian_a22_from_grid_and_deflections_2d(
+        a22 = self.lensing_jacobian_a22_from_grid(
             grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
         return np.array([[a11, a12], [a21, a22]])
 
     @reshape_returned_array
-    def convergence_from_jacobian(self, grid, return_in_2d=True, return_binned=True):
+    def convergence_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -452,7 +452,7 @@ class Galaxy(af.ModelObject):
         return convergence
 
     @reshape_returned_array
-    def shear_from_jacobian(self, grid, return_in_2d=True, return_binned=True):
+    def shear_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -464,30 +464,30 @@ class Galaxy(af.ModelObject):
         return (gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
 
     @reshape_returned_array
-    def tangential_eigen_value_from_shear_and_convergence(
+    def tangential_eigen_value_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
 
-        convergence = self.convergence_from_jacobian(
+        convergence = self.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
         )
 
-        shear = self.shear_from_jacobian(
+        shear = self.shear_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
         )
 
         return 1 - convergence - shear
 
     @reshape_returned_array
-    def radial_eigen_value_from_shear_and_convergence(
+    def radial_eigen_value_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
 
-        convergence = self.convergence_from_jacobian(
+        convergence = self.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
         )
 
-        shear = self.shear_from_jacobian(
+        shear = self.shear_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
         )
 
@@ -506,7 +506,7 @@ class Galaxy(af.ModelObject):
 
     def tangential_critical_curve_from_grid(self, grid):
 
-        lambda_tangential_2d = self.tangential_eigen_value_from_shear_and_convergence(
+        lambda_tangential_2d = self.tangential_eigen_value_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
@@ -524,7 +524,7 @@ class Galaxy(af.ModelObject):
 
     def radial_critical_curve_from_grid(self, grid):
 
-        lambda_radial_2d = self.radial_eigen_value_from_shear_and_convergence(
+        lambda_radial_2d = self.radial_eigen_value_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 

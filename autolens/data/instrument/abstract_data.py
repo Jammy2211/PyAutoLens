@@ -402,7 +402,7 @@ class PSF(scaled_array.ScaledSquarePixelArray):
         KernelException if either PSF psf dimension is odd
         """
         if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
-            raise exc.KernelException("PSF Kernel must be odd")
+            raise exc.ConvolutionException("PSF Kernel must be odd")
 
         return scipy.signal.convolve2d(array_2d, self, mode="same")
 

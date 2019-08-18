@@ -679,8 +679,8 @@ class Tracer(object):
             Class which performs the PSF convolution of a masked image in 1D.
         """
         return [
-            plane.blurred_profile_image_plane_image_1d_from_convolver_image(
-                convolver_image=convolver_image
+            plane.blurred_profile_image_from_grid_and_convolver(
+                convolver=convolver_image
             )
             for plane in self.planes
         ]

@@ -1040,7 +1040,7 @@ class TestMaskRegions:
         )
 
         mask = msk.Mask(mask, pixel_scale=1.0)
-        blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape=(3, 3))
+        blurring_mask = mask.blurring_mask_from_psf_shape(psf_shape=(3, 3))
 
         assert (blurring_mask == blurring_mask_via_util).all()
 

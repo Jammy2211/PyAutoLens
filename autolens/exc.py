@@ -13,7 +13,7 @@ class DataException(Exception):
     pass
 
 
-class KernelException(Exception):
+class ConvolutionException(Exception):
     pass
 
 

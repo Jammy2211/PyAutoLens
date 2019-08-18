@@ -22,11 +22,7 @@ class MockPixelization(object):
         self.value = value
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
-        return self.value
-
-    # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grid_stack(self, grid_stack, hyper_image=None):
+    def mapper_from_grid_and_pixelization_grid(self, grid, pixelization_grid, relocate_to_border, hyper_image=None):
         return self.value
 
 
