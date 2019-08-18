@@ -26,12 +26,8 @@ class TestRectangular:
             [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
         ), mask=mask, sub_grid_size=1)
 
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
-
         pixelization_grid = MockPixelizationGrid(
                 arr=grid,
-                sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-                sub_grid_size=1,
             )
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
@@ -119,12 +115,8 @@ class TestRectangular:
             ]
         ), mask=mask, sub_grid_size=1)
 
-        sub_mask_1d_index_to_mask_1d_index = np.array(
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-        )
-
         pixelization_grid = MockPixelizationGrid(
-                grid, sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
+                arr=grid,
             )
 
         pix = pixelizations.Rectangular(shape=(3, 3))
@@ -204,33 +196,29 @@ class TestRectangular:
                 [1.0, -1.0],
                 [1.0, -1.0],
                 [1.0, -1.0],
-                [0.0, 0.0],
                 [1.0, 1.0],
                 [1.0, 1.0],
                 [1.0, 1.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
                 [-1.0, -1.0],
                 [-1.0, -1.0],
                 [-1.0, -1.0],
+                [-1.0, 1.0],
+                [-1.0, 1.0],
+                [-1.0, 1.0],
                 [0.0, 0.0],
-                [-1.0, 1.0],
-                [-1.0, 1.0],
-                [-1.0, 1.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
                 [0.0, 0.0],
             ]
         ), mask=mask, sub_grid_size=2)
 
-
-        sub_mask_1d_index_to_mask_1d_index = np.array(
-            [0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2]
-        )
-
         pixelization_grid = MockPixelizationGrid(
-                arr=grid, sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index, sub_grid_size=2
+                arr=grid,
             )
 
         pix = pixelizations.Rectangular(shape=(3, 3))
@@ -243,17 +231,15 @@ class TestRectangular:
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
-        print(mapper.mapping_matrix)
-
         assert (
             mapper.mapping_matrix
             == np.array(
                 [
-                    [0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75],
+                    [0.75, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.75],
+                    [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
                 ]
             )
         ).all()
@@ -298,11 +284,8 @@ class TestRectangular:
             [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]]
         ),mask=mask, sub_grid_size=1)
 
-
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
-
         pixelization_grid = MockPixelizationGrid(
-                grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
+                grid,
             )
 
         pix = pixelizations.Rectangular(shape=(3, 3))
@@ -350,22 +333,8 @@ class TestRectangular:
         ).all()
 
 
-class TestSparseToRegularGrid:
-    def test__3x3_simple_grid__create_using_regular_grid(self):
-
-        regular_grid = np.array(
-            [
-                [1.0, -1.0],
-                [1.0, 0.0],
-                [1.0, 1.0],
-                [0.0, -1.0],
-                [0.0, 0.0],
-                [0.0, 1.0],
-                [-1.0, -1.0],
-                [-1.0, 0.0],
-                [-1.0, 1.0],
-            ]
-        )
+class TestVoronoiMagnification:
+    def test__3x3_simple_grid(self):
 
         mask = msk.Mask(
             array=np.array(
@@ -374,7 +343,7 @@ class TestSparseToRegularGrid:
             pixel_scale=1.0,
         )
 
-        sub_grid = np.array(
+        grid = np.array(
             [
                 [1.0, -1.0],
                 [1.0, 0.0],
@@ -387,27 +356,21 @@ class TestSparseToRegularGrid:
                 [-1.0, 1.0],
             ]
         )
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
-        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
-        sub_grid = MockPixelizationGrid(
-            sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-        )
+        grid = grids.Grid(arr=grid, mask=mask)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=regular_grid
+            unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
 
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=sub_grid,
-            pix=sparse_to_regular_grid.sparse,
-            mask_1d_index_to_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
+        pixelization_grid = MockPixelizationGrid(
+            arr=sparse_to_regular_grid.sparse,
+            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=None, hyper_image=np.ones((2, 2))
+            grid=grid, pixelization_grid=pixelization_grid, relocate_to_border=False, hyper_image=np.ones((2, 2))
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -457,11 +420,7 @@ class TestSparseToRegularGrid:
             )
         ).all()
 
-    def test__3x3_simple_grid__include_mask__create_using_regular_grid(self):
-
-        regular_grid = np.array(
-            [[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]]
-        )
+    def test__3x3_simple_grid__include_mask(self):
 
         mask = msk.Mask(
             array=np.array(
@@ -470,30 +429,23 @@ class TestSparseToRegularGrid:
             pixel_scale=1.0,
         )
 
-        sub_grid = np.array(
+        grid = np.array(
             [[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]]
         )
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
 
-        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
-        sub_grid = MockPixelizationGrid(
-            sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-        )
+        grid = grids.Grid(arr=grid, mask=mask)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=regular_grid
+            unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
 
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=sub_grid,
-            pix=sparse_to_regular_grid.sparse,
-            mask_1d_index_to_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
+        pixelization_grid = MockPixelizationGrid(
+            arr=grid, mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=None
+            grid=grid, pixelization_grid=pixelization_grid, relocate_to_border=False,
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -534,13 +486,9 @@ class TestSparseToRegularGrid:
             )
         ).all()
 
-    def test__3x3_simple_grid__include_mask_and_sub_grid__create_using_regular_grid(
+    def test__3x3_simple_grid__include_mask_and_sub_grid(
         self
     ):
-
-        regular_grid = np.array(
-            [[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]]
-        )
 
         mask = msk.Mask(
             array=np.array(
@@ -549,7 +497,7 @@ class TestSparseToRegularGrid:
             pixel_scale=1.0,
         )
 
-        sub_grid = np.array(
+        grid = np.array(
             [
                 [1.01, 0.0],
                 [1.01, 0.0],
@@ -574,540 +522,26 @@ class TestSparseToRegularGrid:
             ]
         )
 
-        sub_mask_1d_index_to_mask_1d_index = np.array(
-            [0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2]
-        )
-
-        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
-        sub_grid = MockPixelizationGrid(
-            sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=2
-        )
+        grid = grids.Grid(arr=grid, mask=mask, sub_grid_size=2)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=regular_grid
+            unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
 
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=sub_grid,
-            pix=sparse_to_regular_grid.sparse,
-            mask_1d_index_to_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
+        pixelization_grid = MockPixelizationGrid(
+            arr=sparse_to_regular_grid.sparse,
+            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=None
+            grid=grid, pixelization_grid=pixelization_grid, relocate_to_border=False
         )
 
         assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arcsec == pytest.approx((2.02, 2.01), 1.0e-4)
         assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.005), 1.0e-4)
-
-        assert isinstance(mapper, m.VoronoiMapper)
-
-        assert (
-            mapper.mapping_matrix
-            == np.array(
-                [
-                    [0.75, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.75, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 2.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.75, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.75],
-                ]
-            )
-        ).all()
-
-        reg = regularization.Constant(coefficient=1.0)
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
-        )
-
-        assert (
-            regularization_matrix
-            == np.array(
-                [
-                    [3.00000001, -1.0, -1.0, -1.0, 0.0],
-                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
-                    [-1.0, -1.0, 4.00000001, -1.0, -1.0],
-                    [-1.0, 0.0, -1.0, 3.00000001, -1.0],
-                    [0.0, -1.0, -1.0, -1.0, 3.00000001],
-                ]
-            )
-        ).all()
-
-    def test__3x3_simple_grid__include_mask_with_offset_centre__create_using_regular_grid(
-        self
-    ):
-
-        regular_grid = np.array(
-            [[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]]
-        )
-
-        mask = msk.Mask(
-            array=np.array(
-                [
-                    [True, True, True, False, True],
-                    [True, True, False, False, False],
-                    [True, True, True, False, True],
-                    [True, True, True, True, True],
-                    [True, True, True, True, True],
-                ]
-            ),
-            pixel_scale=1.0,
-        )
-
-        sub_grid = np.array(
-            [[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]]
-        )
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
-
-        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
-        sub_grid = MockPixelizationGrid(
-            sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-        )
-
-        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=regular_grid
-        )
-
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=sub_grid,
-            pix=sparse_to_regular_grid.sparse,
-            mask_1d_index_to_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
-        )
-
-        mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=None
-        )
-
-        assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
-        assert mapper.geometry.origin == pytest.approx((1.0, 1.0), 1.0e-4)
-
-        assert isinstance(mapper, m.VoronoiMapper)
-
-        assert (
-            mapper.mapping_matrix
-            == np.array(
-                [
-                    [1.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 1.0],
-                ]
-            )
-        ).all()
-
-        reg = regularization.Constant(coefficient=1.0)
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
-        )
-
-        assert (
-            regularization_matrix
-            == np.array(
-                [
-                    [3.00000001, -1.0, -1.0, -1.0, 0.0],
-                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
-                    [-1.0, -1.0, 4.00000001, -1.0, -1.0],
-                    [-1.0, 0.0, -1.0, 3.00000001, -1.0],
-                    [0.0, -1.0, -1.0, -1.0, 3.00000001],
-                ]
-            )
-        ).all()
-
-
-class TestVoronoiMagnification:
-    def test__5_simple_grid__no_sub_grid(self):
-
-        regular_grid = np.array(
-            [[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]]
-        )
-        sub_grid = np.array(
-            [[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]]
-        )
-
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
-
-        mask_1d_index_to_sparse_1d_index = np.array([0, 1, 2, 3, 4])
-
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=MockPixelizationGrid(
-                sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-            ),
-            pix=regular_grid,
-            mask_1d_index_to_pixelization_1d_index=mask_1d_index_to_sparse_1d_index,
-        )
-
-        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
-
-        mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=None, hyper_image=np.ones((2, 2))
-        )
-
-        assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == regular_grid).all()
-        assert mapper.geometry.origin == (0.0, 0.0)
-        assert (mapper.hyper_image == np.ones((2, 2))).all()
-
-        assert isinstance(mapper, m.VoronoiMapper)
-
-        assert (
-            mapper.mapping_matrix
-            == np.array(
-                [
-                    [1.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 1.0],
-                ]
-            )
-        ).all()
-
-        reg = regularization.Constant(coefficient=1.0)
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
-        )
-
-        assert (
-            regularization_matrix
-            == np.array(
-                [
-                    [3.00000001, -1.0, -1.0, -1.0, 0.0],
-                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
-                    [-1.0, -1.0, 4.00000001, -1.0, -1.0],
-                    [-1.0, 0.0, -1.0, 3.00000001, -1.0],
-                    [0.0, -1.0, -1.0, -1.0, 3.00000001],
-                ]
-            )
-        ).all()
-
-    def test__3x3_simple_grid__include_mask_with_offset_centre__create_using_regular_grid(
-        self
-    ):
-
-        regular_grid = np.array(
-            [[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]]
-        )
-
-        mask = msk.Mask(
-            array=np.array(
-                [
-                    [True, True, True, False, True],
-                    [True, True, False, False, False],
-                    [True, True, True, False, True],
-                    [True, True, True, True, True],
-                    [True, True, True, True, True],
-                ]
-            ),
-            pixel_scale=1.0,
-        )
-
-        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
-
-        sub_grid = np.array(
-            [[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]]
-        )
-
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
-
-        mask_1d_index_to_sparse_1d_index = np.array([0, 1, 2, 3, 4])
-
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=MockPixelizationGrid(
-                sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-            ),
-            pix=regular_grid,
-            mask_1d_index_to_pixelization_1d_index=mask_1d_index_to_sparse_1d_index,
-        )
-
-        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
-
-        mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=None
-        )
-
-        assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == regular_grid).all()
-        assert mapper.geometry.origin == (1.0, 1.0)
-
-        assert isinstance(mapper, m.VoronoiMapper)
-
-        assert (
-            mapper.mapping_matrix
-            == np.array(
-                [
-                    [1.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 1.0],
-                ]
-            )
-        ).all()
-
-        reg = regularization.Constant(coefficient=1.0)
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
-        )
-
-        assert (
-            regularization_matrix
-            == np.array(
-                [
-                    [3.00000001, -1.0, -1.0, -1.0, 0.0],
-                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
-                    [-1.0, -1.0, 4.00000001, -1.0, -1.0],
-                    [-1.0, 0.0, -1.0, 3.00000001, -1.0],
-                    [0.0, -1.0, -1.0, -1.0, 3.00000001],
-                ]
-            )
-        ).all()
-
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
-
-        regular_grid = grids.Grid(arr=regular_grid, mask=mask)
-        sub_grid = MockPixelizationGrid(
-            sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-        )
-
-        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=regular_grid
-        )
-
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=sub_grid,
-            pix=sparse_to_regular_grid.sparse,
-            mask_1d_index_to_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
-        )
-
-        mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=None
-        )
-
-        assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
-        assert mapper.geometry.origin == pytest.approx((1.0, 1.0), 1.0e-4)
-
-        assert isinstance(mapper, m.VoronoiMapper)
-
-        assert (
-            mapper.mapping_matrix
-            == np.array(
-                [
-                    [1.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 1.0],
-                ]
-            )
-        ).all()
-
-        reg = regularization.Constant(coefficient=1.0)
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
-        )
-
-        assert (
-            regularization_matrix
-            == np.array(
-                [
-                    [3.00000001, -1.0, -1.0, -1.0, 0.0],
-                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
-                    [-1.0, -1.0, 4.00000001, -1.0, -1.0],
-                    [-1.0, 0.0, -1.0, 3.00000001, -1.0],
-                    [0.0, -1.0, -1.0, -1.0, 3.00000001],
-                ]
-            )
-        ).all()
-
-    def test__15_grid__no_sub_grid(self):
-
-        regular_grid = np.array(
-            [
-                [0.9, 0.9],
-                [1.0, 1.0],
-                [1.1, 1.1],
-                [-0.9, 0.9],
-                [-1.0, 1.0],
-                [-1.1, 1.1],
-                [-0.01, 0.01],
-                [0.0, 0.0],
-                [0.01, 0.01],
-                [0.9, -0.9],
-                [1.0, -1.0],
-                [1.1, -1.1],
-                [-0.9, -0.9],
-                [-1.0, -1.0],
-                [-1.1, -1.1],
-            ]
-        )
-
-        sub_grid = np.array(
-            [
-                [0.9, 0.9],
-                [1.0, 1.0],
-                [1.1, 1.1],
-                [-0.9, 0.9],
-                [-1.0, 1.0],
-                [-1.1, 1.1],
-                [-0.01, 0.01],
-                [0.0, 0.0],
-                [0.01, 0.01],
-                [0.9, -0.9],
-                [1.0, -1.0],
-                [1.1, -1.1],
-                [-0.9, -0.9],
-                [-1.0, -1.0],
-                [-1.1, -1.1],
-            ]
-        )
-
-        pixel_centers = np.array(
-            [[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]]
-        )
-
-        sub_mask_1d_index_to_mask_1d_index = np.array(
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-        )
-        mask_1d_index_to_sparse_1d_index = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
-
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=MockPixelizationGrid(
-                sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-            ),
-            pix=pixel_centers,
-            mask_1d_index_to_pixelization_1d_index=mask_1d_index_to_sparse_1d_index,
-        )
-
-        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
-
-        mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=None
-        )
-
-        assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.2, 2.2), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == pixel_centers).all()
-        assert mapper.geometry.origin == (0.0, 0.0)
-
-        assert isinstance(mapper, m.VoronoiMapper)
-
-        assert (
-            mapper.mapping_matrix
-            == np.array(
-                [
-                    [1.0, 0.0, 0.0, 0.0, 0.0],
-                    [1.0, 0.0, 0.0, 0.0, 0.0],
-                    [1.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 1.0],
-                    [0.0, 0.0, 0.0, 0.0, 1.0],
-                    [0.0, 0.0, 0.0, 0.0, 1.0],
-                ]
-            )
-        ).all()
-
-        reg = regularization.Constant(coefficient=1.0)
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
-        )
-
-        assert (
-            regularization_matrix
-            == np.array(
-                [
-                    [3.00000001, -1.0, -1.0, -1.0, 0.0],
-                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
-                    [-1.0, -1.0, 4.00000001, -1.0, -1.0],
-                    [-1.0, 0.0, -1.0, 3.00000001, -1.0],
-                    [0.0, -1.0, -1.0, -1.0, 3.00000001],
-                ]
-            )
-        ).all()
-
-    def test__5_simple_grid__include_sub_grid__sets_up_correct_mapper(self):
-
-        regular_grid = np.array(
-            [[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]]
-        )
-
-        sub_grid = np.array(
-            [
-                [1.0, 1.0],
-                [1.0, 1.0],
-                [1.0, 1.0],
-                [0.0, 0.0],
-                [-1.0, 1.0],
-                [-1.0, 1.0],
-                [-1.0, 1.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
-                [1.0, -1.0],
-                [1.0, -1.0],
-                [1.0, -1.0],
-                [0.0, 0.0],
-                [-1.0, -1.0],
-                [-1.0, -1.0],
-                [-1.0, -1.0],
-                [0.0, 0.0],
-            ]
-        )
-
-        sub_mask_1d_index_to_mask_1d_index = np.array(
-            [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
-        )
-
-        pixel_centers = regular_grid
-
-        mask_1d_index_to_sparse_1d_index = np.array([0, 1, 2, 3, 4])
-
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=MockPixelizationGrid(
-                sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=2
-            ),
-            pix=pixel_centers,
-            mask_1d_index_to_pixelization_1d_index=mask_1d_index_to_sparse_1d_index,
-        )
-
-        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
-
-        mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=None
-        )
-
-        assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == pixel_centers).all()
-        assert mapper.geometry.origin == (0.0, 0.0)
 
         assert isinstance(mapper, m.VoronoiMapper)
 
@@ -1142,44 +576,46 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-    def test__same_as_above_but_grid_requires_border_relocation(self):
+    def test__3x3_simple_grid__include_mask_with_offset_centre(
+        self
+    ):
 
-        regular_grid = np.array(
-            [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
-        )
-        sub_grid = np.array(
-            [[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]]
-        )
-        # These will all be relocated to the regular grid edge.
-        pix_grid = np.array(
-            [[1.1, -1.1], [1.1, 1.1], [0.0, 0.0], [-1.1, -1.1], [-1.1, 1.1]]
-        )
-
-        border = grids.GridBorder(arr=np.array([0, 1, 3, 4]))
-
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
-
-        mask_1d_index_to_sparse_1d_index = np.array([0, 1, 2, 3, 4])
-
-        pixelization_grid = MockPixGridStack(
-            regular=regular_grid,
-            sub=MockPixelizationGrid(
-                sub_grid, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
+        mask = msk.Mask(
+            array=np.array(
+                [
+                    [True, True, True, False, True],
+                    [True, True, False, False, False],
+                    [True, True, True, False, True],
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                ]
             ),
-            pix=pix_grid,
-            mask_1d_index_to_pixelization_1d_index=mask_1d_index_to_sparse_1d_index,
+            pixel_scale=1.0,
         )
 
-        pix = pixelizations.VoronoiMagnification(shape=(5, 1))
+        grid = np.array(
+            [[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]]
+        )
+
+        grid = grids.Grid(arr=grid, mask=mask, sub_grid_size=1)
+
+        pix = pixelizations.VoronoiMagnification(shape=(3, 3))
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
+        )
+
+        pixelization_grid = MockPixelizationGrid(
+            arr=sparse_to_regular_grid.sparse, mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
+        )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            pixelization_grid=pixelization_grid, border=border
+            grid=grid, pixelization_grid=pixelization_grid, relocate_to_border=False,
         )
 
         assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert mapper.geometry.pixel_centres == pytest.approx(regular_grid, 1e-4)
-        assert mapper.geometry.origin == (0.0, 0.0)
+        assert (mapper.geometry.pixel_centres == sparse_to_regular_grid.sparse).all()
+        assert mapper.geometry.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
         assert isinstance(mapper, m.VoronoiMapper)
 
@@ -1187,11 +623,11 @@ class TestVoronoiMagnification:
             mapper.mapping_matrix
             == np.array(
                 [
+                    [1.0, 0.0, 0.0, 0.0, 0.0],
                     [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 1.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 1.0],
                 ]
             )
         ).all()

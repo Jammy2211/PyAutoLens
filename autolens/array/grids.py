@@ -380,7 +380,6 @@ class Grid(np.ndarray):
         """
         obj = arr.view(cls)
         obj.mask = mask
-        obj.unlensed_unsubbed_1d = mask.masked_grid_1d
         obj.sub_grid_size = sub_grid_size
         obj.sub_grid_length = int(sub_grid_size ** 2.0)
         obj.sub_grid_fraction = 1.0 / obj.sub_grid_length
@@ -394,7 +393,6 @@ class Grid(np.ndarray):
 
         if isinstance(obj, Grid):
             self.mask = obj.mask
-            self.unlensed_unsubbed_1d = obj.unlensed_unsubbed_1d
             self.sub_grid_size = obj.sub_grid_size
             self.sub_grid_length = obj.sub_grid_length
             self.sub_grid_fraction = obj.sub_grid_fraction
@@ -518,6 +516,19 @@ class Grid(np.ndarray):
     def in_2d(self):
         return self.mask.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d_and_sub_grid_size(
             sub_grid_1d=self, sub_grid_size=self.sub_grid_size
+        )
+
+    @property
+    @array_util.Memoizer()
+    def unlensed_unsubbed_1d(self):
+        return Grid(
+            arr=grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+                mask=self.mask,
+                pixel_scales=self.mask.pixel_scales,
+                sub_grid_size=1,
+            ),
+            mask=self.mask,
+            sub_grid_size=1,
         )
 
     @property

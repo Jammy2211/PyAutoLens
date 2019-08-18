@@ -29,7 +29,7 @@ class TestMappingMatrix:
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=6,
             total_mask_pixels=3,
-            sub_mask_1d_index_to_mask_1d_index=grid.sub_mask_1d_index_to_mask_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
             sub_grid_fraction=grid.sub_grid_fraction,
         )
 
@@ -57,7 +57,7 @@ class TestMappingMatrix:
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
             total_mask_pixels=5,
-            sub_mask_1d_index_to_mask_1d_index=grid.sub_mask_1d_index_to_mask_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
             sub_grid_fraction=grid.sub_grid_fraction,
         )
 
@@ -111,7 +111,7 @@ class TestMappingMatrix:
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
             total_mask_pixels=5,
-            sub_mask_1d_index_to_mask_1d_index=grid.sub_mask_1d_index_to_mask_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
             sub_grid_fraction=grid.sub_grid_fraction,
         )
 
@@ -147,7 +147,7 @@ class TestMappingMatrix:
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
             total_mask_pixels=5,
-            sub_mask_1d_index_to_mask_1d_index=grid.sub_mask_1d_index_to_mask_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
             sub_grid_fraction=grid.sub_grid_fraction,
         )
 
@@ -280,7 +280,7 @@ class TestMappingMatrix:
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=6,
             total_mask_pixels=3,
-            sub_mask_1d_index_to_mask_1d_index=grid.sub_mask_1d_index_to_mask_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
             sub_grid_fraction=grid.sub_grid_fraction,
         )
 
