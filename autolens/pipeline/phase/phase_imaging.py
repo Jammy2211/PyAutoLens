@@ -670,8 +670,8 @@ class PhaseImaging(Phase):
 
                 for galaxy in galaxies:
                     if galaxy.pixelization is not None:
-                        pixelization_grid = galaxy.pixelization.pixelization_grid_from_grid_stack(
-                            grid_stack=grid_stack,
+                        pixelization_grid = galaxy.pixelization.pixelization_grid_from_grid(
+                            grid=grid_stack,
                             hyper_image=galaxy.hyper_galaxy_cluster_image_1d,
                             cluster=self.lens_data.cluster,
                             seed=1,

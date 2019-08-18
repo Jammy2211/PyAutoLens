@@ -1103,8 +1103,8 @@ class TestLensInversionFit:
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
-            mapper = pix.mapper_from_regular_grid_and_pixel_centres(
-                grid_stack=lens_data_7x7.grid_stack, border=None
+            mapper = pix.mapper_from_grid_and_pixelization_grid(
+                grid=lens_data_7x7.grid_stack, border=None
             )
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
                 mapper=mapper,
@@ -1217,8 +1217,8 @@ class TestLensInversionFit:
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
-            mapper = pix.mapper_from_regular_grid_and_pixel_centres(
-                grid_stack=lens_data_7x7.grid_stack, border=None
+            mapper = pix.mapper_from_grid_and_pixelization_grid(
+                grid=lens_data_7x7.grid_stack, border=None
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1306,8 +1306,8 @@ class TestLensInversionFit:
             assert hyper_noise_map_1d == pytest.approx(fit.noise_map_1d, 1e-4)
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_in_2d=True))
 
-            mapper = pix.mapper_from_regular_grid_and_pixel_centres(
-                grid_stack=lens_data_7x7.grid_stack, border=None
+            mapper = pix.mapper_from_grid_and_pixelization_grid(
+                grid=lens_data_7x7.grid_stack, border=None
             )
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
                 mapper=mapper,
@@ -1419,8 +1419,8 @@ class TestLensInversionFit:
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
-            mapper = pix.mapper_from_regular_grid_and_pixel_centres(
-                grid_stack=lens_data_7x7.grid_stack, border=None
+            mapper = pix.mapper_from_grid_and_pixelization_grid(
+                grid=lens_data_7x7.grid_stack, border=None
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1487,8 +1487,8 @@ class TestLensProfileInversionFit:
                 fit.profile_subtracted_image(return_in_2d=True)
             )
 
-            mapper = pix.mapper_from_regular_grid_and_pixel_centres(
-                grid_stack=lens_data_7x7.grid_stack, border=None
+            mapper = pix.mapper_from_grid_and_pixelization_grid(
+                grid=lens_data_7x7.grid_stack, border=None
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1651,8 +1651,8 @@ class TestLensProfileInversionFit:
             profile_subtracted_image_1d = (
                 lens_data_7x7.image_1d - blurred_profile_image_1d
             )
-            mapper = pix.mapper_from_regular_grid_and_pixel_centres(
-                grid_stack=lens_data_7x7.grid_stack, border=None
+            mapper = pix.mapper_from_grid_and_pixelization_grid(
+                grid=lens_data_7x7.grid_stack, border=None
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1792,8 +1792,8 @@ class TestLensProfileInversionFit:
                 fit.profile_subtracted_image(return_in_2d=True)
             )
 
-            mapper = pix.mapper_from_regular_grid_and_pixel_centres(
-                grid_stack=lens_data_7x7.grid_stack, border=None
+            mapper = pix.mapper_from_grid_and_pixelization_grid(
+                grid=lens_data_7x7.grid_stack, border=None
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1923,8 +1923,8 @@ class TestLensProfileInversionFit:
                 lens_data_7x7.image_1d - blurred_profile_image_1d
             )
 
-            mapper = pix.mapper_from_regular_grid_and_pixel_centres(
-                grid_stack=lens_data_7x7.grid_stack, border=None
+            mapper = pix.mapper_from_grid_and_pixelization_grid(
+                grid=lens_data_7x7.grid_stack, border=None
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(

@@ -6,13 +6,12 @@ from sklearn.cluster import KMeans
 from autolens import decorator_util
 from autolens import exc
 from autolens.array import mask as msk, scaled_array
-from autolens.array.util import (
-    grid_util,
-    array_util,
-    mask_util,
-    binning_util,
+from autolens.array.util import grid_util, array_util, mask_util, binning_util
+from autolens.array.mapping_util import (
+    array_mapping_util,
+    grid_mapping_util,
+    sparse_mapping_util,
 )
-from autolens.array.mapping_util import array_mapping_util, grid_mapping_util, sparse_mapping_util
 
 
 def check_input_grid_and_options_are_compatible(grid):
@@ -381,20 +380,24 @@ class Grid(np.ndarray):
         """
         obj = arr.view(cls)
         obj.mask = mask
+        obj.unlensed_unsubbed_1d = mask.masked_grid_1d
         obj.sub_grid_size = sub_grid_size
         obj.sub_grid_length = int(sub_grid_size ** 2.0)
         obj.sub_grid_fraction = 1.0 / obj.sub_grid_length
-        obj.sub_border_pixels = mask.sub_border_pixels_from_sub_grid_size(sub_grid_size=sub_grid_size)
+        obj.sub_border_pixels = mask.sub_border_pixels_from_sub_grid_size(
+            sub_grid_size=sub_grid_size
+        )
         obj.interpolator = None
         return obj
 
     def __array_finalize__(self, obj):
 
         if isinstance(obj, Grid):
+            self.mask = obj.mask
+            self.unlensed_unsubbed_1d = obj.unlensed_unsubbed_1d
             self.sub_grid_size = obj.sub_grid_size
             self.sub_grid_length = obj.sub_grid_length
             self.sub_grid_fraction = obj.sub_grid_fraction
-            self.mask = obj.mask
             self.sub_border_pixels = obj.sub_border_pixels
             self.interpolator = obj.interpolator
 
@@ -518,7 +521,7 @@ class Grid(np.ndarray):
         )
 
     @property
-    def unlensed_grid_1d(self):
+    def unlensed_1d(self):
         return Grid(
             arr=grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
                 mask=self.mask,
@@ -530,7 +533,7 @@ class Grid(np.ndarray):
         )
 
     @property
-    def unlensed_unmasked_grid_1d(self):
+    def unlensed_unmasked_1d(self):
         return Grid(
             grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
                 mask=np.full(self.mask.shape, False),
@@ -542,10 +545,10 @@ class Grid(np.ndarray):
         )
 
     @property
-    def unlensed_grid_2d(self):
+    def unlensed_2d(self):
         return Grid(
             arr=grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
-                sub_grid_1d=self.unlensed_grid_1d,
+                sub_grid_1d=self.unlensed_1d,
                 mask=self.mask,
                 sub_grid_size=self.sub_grid_size,
             ),
@@ -554,11 +557,11 @@ class Grid(np.ndarray):
         )
 
     @property
-    def unlensed_unmasked_grid_2d(self):
+    def unlensed_unmasked_2d(self):
         return Grid(
             arr=grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
                 mask=np.full(self.mask.shape, False),
-                sub_grid_1d=self.unlensed_unmasked_grid_1d,
+                sub_grid_1d=self.unlensed_unmasked_1d,
                 sub_grid_size=self.sub_grid_size,
             ),
             mask=self.mask,
@@ -835,7 +838,10 @@ class Grid(np.ndarray):
         return Grid(
             arr=self.relocated_grid_from_grid_jit(
                 grid=grid, border_grid=self.border_grid
-            ), mask=grid.mask, sub_grid_size=grid.sub_grid_size)
+            ),
+            mask=grid.mask,
+            sub_grid_size=grid.sub_grid_size,
+        )
 
     @staticmethod
     @decorator_util.jit()
@@ -890,7 +896,6 @@ class Grid(np.ndarray):
                     )
 
         return grid
-
 
     def trimmed_array_2d_from_padded_array_1d_and_image_shape(
         self, padded_array_1d, image_shape
@@ -1073,7 +1078,7 @@ class ClusterGrid(Grid):
 
 
 class PixelizationGrid(np.ndarray):
-    def __new__(cls, arr, regular_to_pixelization, *args, **kwargs):
+    def __new__(cls, arr, mask_1d_index_to_nearest_pixelization_1d_index, *args, **kwargs):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
 
@@ -1089,37 +1094,35 @@ class PixelizationGrid(np.ndarray):
         pix_grid : ndarray
             The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        regular_to_pixelization : ndarray
+        mask_1d_index_to_nearest_pixelization_1d_index : ndarray
             A 1D array that maps every regular-grid pixel to its nearest pixelization-grid pixel.
         """
         obj = arr.view(cls)
-        obj.regular_to_pixelization = regular_to_pixelization
+        obj.mask_1d_index_to_nearest_pixelization_1d_index = mask_1d_index_to_nearest_pixelization_1d_index
         obj.interpolator = None
         return obj
 
     @classmethod
-    def from_unmasked_2d_grid_shape_and_regular_grid(
-        cls, unmasked_sparse_shape, regular_grid
-    ):
+    def from_grid_and_unmasked_2d_grid_shape(cls, unmasked_sparse_shape, grid):
 
-        sparse_regular_grid = SparseToRegularGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=unmasked_sparse_shape, regular_grid=regular_grid
+        sparse_regular_grid = SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            unmasked_sparse_shape=unmasked_sparse_shape, grid=grid
         )
 
         return PixelizationGrid(
             arr=sparse_regular_grid.sparse,
-            regular_to_pixelization=sparse_regular_grid.regular_to_sparse,
+            mask_1d_index_to_nearest_pixelization_1d_index=sparse_regular_grid.mask_1d_index_to_sparse_1d_index,
         )
 
     def __array_finalize__(self, obj):
-        if hasattr(obj, "regular_to_pixelization"):
-            self.regular_to_pixelization = obj.regular_to_pixelization
+        if hasattr(obj, "mask_1d_index_to_pixelization_1d_index"):
+            self.mask_1d_index_to_pixelization_1d_index = obj.mask_1d_index_to_pixelization_1d_index
         if hasattr(obj, "interpolator"):
             self.interpolator = obj.interpolator
 
 
 class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
-    def __init__(self, sparse_grid, regular_grid, regular_to_sparse):
+    def __init__(self, sparse_grid, mask_1d_index_to_sparse_1d_index):
         """A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a \
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a regular-grid of unmasked pixels, such \
         that all sparse-grid pixels which map inside of an unmasked regular-grid pixel are included on the sparse grid.
@@ -1151,34 +1154,29 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         origin : (float, float)
             The centre of the unmasked sparse grid, which matches the centre of the mask.
         """
-        self.regular = regular_grid
         self.sparse = sparse_grid
-        self.regular_to_sparse = regular_to_sparse
+        self.mask_1d_index_to_sparse_1d_index = mask_1d_index_to_sparse_1d_index
 
     @classmethod
-    def from_unmasked_2d_grid_shape_and_regular_grid(
-        cls, unmasked_sparse_shape, regular_grid
-    ):
+    def from_grid_and_unmasked_2d_grid_shape(cls, grid, unmasked_sparse_shape):
         """Calculate the image-plane pixelization from a regular-grid of coordinates (and its mask).
 
         See *grid_stacks.SparseToRegularGrid* for details on how this grid is calculated.
 
         Parameters
         -----------
-        regular_grid : grids.RegularGrid
+        grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
-        pixel_scale = regular_grid.mask.pixel_scale
+        pixel_scale = grid.mask.pixel_scale
 
         pixel_scales = (
-            (regular_grid.masked_shape_arcsec[0] + pixel_scale)
-            / (unmasked_sparse_shape[0]),
-            (regular_grid.masked_shape_arcsec[1] + pixel_scale)
-            / (unmasked_sparse_shape[1]),
+            (grid.masked_shape_arcsec[0] + pixel_scale) / (unmasked_sparse_shape[0]),
+            (grid.masked_shape_arcsec[1] + pixel_scale) / (unmasked_sparse_shape[1]),
         )
 
-        origin = regular_grid.mask.centre
+        origin = grid.mask.centre
 
         unmasked_sparse_grid = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=unmasked_sparse_shape,
@@ -1187,17 +1185,17 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
             origin=origin,
         )
 
-        unmasked_sparse_grid_pixel_centres = regular_grid.mask.grid_arcsec_to_grid_pixel_centres(
+        unmasked_sparse_grid_pixel_centres = grid.mask.grid_arcsec_to_grid_pixel_centres(
             grid_arcsec=unmasked_sparse_grid
         )
 
         total_sparse_pixels = mask_util.total_sparse_pixels_from_mask(
-            mask=regular_grid.mask,
+            mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
         unmasked_sparse_to_sparse = sparse_mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
-            mask=regular_grid.mask,
+            mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=total_sparse_pixels,
         ).astype(
@@ -1206,20 +1204,20 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 
         sparse_to_unmasked_sparse = sparse_mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
             total_sparse_pixels=total_sparse_pixels,
-            mask=regular_grid.mask,
+            mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         ).astype(
             "int"
         )
 
         regular_to_unmasked_sparse = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
-            grid_arcsec_1d=regular_grid,
+            grid_arcsec_1d=grid.unlensed_unsubbed_1d,
             shape=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             origin=origin,
         ).astype("int")
 
-        regular_to_sparse = sparse_mapping_util.regular_to_sparse_from_sparse_mappings(
+        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
         ).astype("int")
@@ -1230,16 +1228,13 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         )
 
         return SparseToRegularGrid(
-            sparse_grid=sparse_grid,
-            regular_grid=regular_grid,
-            regular_to_sparse=regular_to_sparse,
+            sparse_grid=sparse_grid, mask_1d_index_to_sparse_1d_index=mask_1d_index_to_sparse_1d_index
         )
 
     @classmethod
     def from_total_pixels_cluster_grid_and_cluster_weight_map(
         cls,
         total_pixels,
-        regular_grid,
         cluster_grid,
         cluster_weight_map,
         n_iter=1,
@@ -1265,7 +1260,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 
         kmeans = kmeans.fit(X=cluster_grid, sample_weight=cluster_weight_map)
 
-        regular_to_sparse = sparse_mapping_util.regular_to_sparse_from_cluster_grid(
+        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_cluster_grid(
             cluster_labels=kmeans.labels_,
             cluster_to_regular_all=cluster_grid.cluster_to_regular_all,
             cluster_to_regular_sizes=cluster_grid.cluster_to_regular_sizes,
@@ -1274,8 +1269,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 
         return SparseToRegularGrid(
             sparse_grid=kmeans.cluster_centers_,
-            regular_grid=regular_grid,
-            regular_to_sparse=regular_to_sparse.astype("int"),
+            mask_1d_index_to_sparse_1d_index=mask_1d_index_to_sparse_1d_index.astype("int"),
         )
 
     @property

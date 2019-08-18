@@ -6,7 +6,11 @@ import shutil
 
 from autolens.array import mask as msk
 from autolens.array.util import binning_util, grid_util, mask_util
-from autolens.array.mapping_util import array_mapping_util, grid_mapping_util, mask_mapping_util
+from autolens.array.mapping_util import (
+    array_mapping_util,
+    grid_mapping_util,
+    mask_mapping_util,
+)
 
 test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
@@ -405,7 +409,6 @@ class TestMaskShapes:
 
 
 class TestMaskMappings:
-
     def test__grid_to_pixel__compare_to_array_util(self):
         mask = np.array([[True, True, True], [True, False, False], [True, True, False]])
 
@@ -415,7 +418,9 @@ class TestMaskMappings:
             mask=mask, sub_grid_size=1
         )
 
-        assert mask.mask_1d_index_to_mask_2d_index == pytest.approx(grid_to_pixel_util, 1e-4)
+        assert mask.mask_1d_index_to_mask_2d_index == pytest.approx(
+            grid_to_pixel_util, 1e-4
+        )
 
     def test__sub_grid_to_pixel__compare_to_array_util(self):
         mask = np.array([[True, True, True], [True, False, False], [True, True, False]])
@@ -426,9 +431,9 @@ class TestMaskMappings:
             mask=mask, sub_grid_size=2
         )
 
-        assert mask.sub_mask_1d_index_to_sub_mask_2d_index_from_sub_grid_size(sub_grid_size=2) == pytest.approx(
-            sub_grid_to_pixel_util, 1e-4
-        )
+        assert mask.sub_mask_1d_index_to_sub_mask_2d_index_from_sub_grid_size(
+            sub_grid_size=2
+        ) == pytest.approx(sub_grid_to_pixel_util, 1e-4)
 
     def test__array_1d_from_array_2d__compare_to_array_util(self):
 
@@ -997,12 +1002,12 @@ class TestMaskMappings:
 
         assert (sub_array_1d == sub_array_1d_new).all()
 
-    def test__sub_to_regular__compare_to_util(self):
+    def test__sub_mask_1d_index_to_mask_1d_index__compare_to_util(self):
         mask = np.array(
             [[True, False, True], [False, False, False], [True, False, False]]
         )
 
-        sub_to_regular_util = mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
+        sub_mask_1d_index_to_mask_1d_index_util = mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
             mask=mask, sub_grid_size=2
         )
 
@@ -1010,7 +1015,7 @@ class TestMaskMappings:
 
         assert (
             mask.sub_mask_1d_index_to_mask_1d_index_from_sub_grid_size(sub_grid_size=2)
-            == sub_to_regular_util
+            == sub_mask_1d_index_to_mask_1d_index_util
         ).all()
 
 
@@ -1090,13 +1095,16 @@ class TestMaskRegions:
             ]
         )
 
-        sub_border_pixels_util = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        sub_border_pixels_util = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2
+        )
 
         mask = msk.Mask(mask, pixel_scale=3.0)
 
         sub_border_pixels = mask.sub_border_pixels_from_sub_grid_size(sub_grid_size=2)
 
         assert sub_border_pixels == pytest.approx(sub_border_pixels_util, 1e-4)
+
 
 class TestMaskedGrid1d:
     def test__simple_grids(self):

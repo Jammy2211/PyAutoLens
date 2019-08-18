@@ -6,7 +6,7 @@ import numpy as np
 
 
 class Mapper(object):
-    def __init__(self, pixels, grid_stack, border, hyper_image=None):
+    def __init__(self, pixels, grid, pixelization_grid, hyper_image=None):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxy.array.grid_stack* module) to discretized pixels in a pixelization.
 
@@ -31,8 +31,8 @@ class Mapper(object):
             A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         self.pixels = pixels
-        self.grid_stack = grid_stack
-        self.border = border
+        self.grid = grid
+        self.pixelization_grid = pixelization_grid
         self.hyper_image = hyper_image
 
     @property
@@ -80,56 +80,44 @@ class Mapper(object):
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
         [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
         """
-        return mapper_mapping_util_matrix_from_sub_to_pix(
-            sub_to_pix=self.sub_to_pixelization,
+        return mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+            sub_mask_1d_index_to_pixelization_1d_index=self.sub_mask_1d_index_to_pixelization_1d_index,
             pixels=self.pixels,
-            regular_pixels=self.grid_stack.regular.shape[0],
-            sub_to_regular=self.grid_stack.sub.sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_fraction=self.grid_stack.sub.sub_grid_fraction,
+            total_mask_pixels=self.grid.mask.pixels_in_mask,
+            sub_mask_1d_index_to_mask_1d_index=self.grid.sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=self.grid.sub_grid_fraction,
         )
 
     @property
-    def regular_to_pixelization(self):
-        raise NotImplementedError("regular_to_pixelization should be overridden")
-
-    @property
-    def sub_to_pixelization(self):
+    def sub_mask_1d_index_to_pixelization_1d_index(self):
         raise NotImplementedError("sub_to_pixelization should be overridden")
 
     @property
-    def pixelization_to_regular_all(self):
-        """Compute the mappings between a pixelization's pixels and the unmasked regular-grid pixels. These mappings \
-        are determined after the regular-grid is used to determine the pixelization.
-
-        The pixelization's pixels map to different number of regular-grid pixels, thus a list of lists is used to \
-        represent these mappings"""
-
-        pixelization_to_regular_all = [[] for _ in range(self.pixels)]
-
-        for regular_pixel, pix_pixel in enumerate(self.regular_to_pixelization):
-
-            pixelization_to_regular_all[pix_pixel].append(regular_pixel)
-
-        return pixelization_to_regular_all
-
-    @property
-    def pixelization_to_sub_all(self):
+    def pixelization_1d_index_to_all_sub_mask_1d_indexes(self):
         """Compute the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings \
         are determined after the regular-grid is used to determine the pixelization.
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
         represent these mappings"""
 
-        pixelization_to_sub_all = [[] for _ in range(self.pixels)]
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [] for _ in range(self.pixels)
+        ]
 
-        for regular_pixel, pix_pixel in enumerate(self.sub_to_pixelization):
-            pixelization_to_sub_all[pix_pixel].append(regular_pixel)
+        for mask_1d_index, pixelization_1d_index in enumerate(
+            self.sub_mask_1d_index_to_pixelization_1d_index
+        ):
+            pixelization_1d_index_to_all_sub_mask_1d_indexes[pixelization_1d_index].append(
+                mask_1d_index
+            )
 
-        return pixelization_to_sub_all
+        return pixelization_1d_index_to_all_sub_mask_1d_indexes
 
 
 class RectangularMapper(Mapper):
-    def __init__(self, pixels, grid_stack, border, shape, geometry, hyper_image=None):
+    def __init__(
+        self, pixels, grid, pixelization_grid, shape, geometry, hyper_image=None
+    ):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxy.array.grid_stack* module) to pixels discretized on a rectangular grid.
 
@@ -151,7 +139,10 @@ class RectangularMapper(Mapper):
         self.shape = shape
         self.geometry = geometry
         super(RectangularMapper, self).__init__(
-            pixels=pixels, grid_stack=grid_stack, border=border, hyper_image=hyper_image
+            pixels=pixels,
+            grid=grid,
+            pixelization_grid=pixelization_grid,
+            hyper_image=hyper_image,
         )
 
     @property
@@ -159,17 +150,10 @@ class RectangularMapper(Mapper):
         return False
 
     @property
-    def regular_to_pixelization(self):
-        """The 1D index mappings between the regular grid's pixels and rectangular pixelization's pixels."""
-        return self.geometry.grid_arcsec_1d_to_grid_pixel_indexes_1d(
-            grid_arcsec=self.grid_stack.regular
-        )
-
-    @property
-    def sub_to_pixelization(self):
+    def sub_mask_1d_index_to_pixelization_1d_index(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
         return self.geometry.grid_arcsec_1d_to_grid_pixel_indexes_1d(
-            grid_arcsec=self.grid_stack.sub
+            grid_arcsec=self.grid
         )
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
@@ -188,7 +172,9 @@ class RectangularMapper(Mapper):
 
 
 class VoronoiMapper(Mapper):
-    def __init__(self, pixels, grid_stack, border, voronoi, geometry, hyper_image=None):
+    def __init__(
+        self, pixels, grid, pixelization_grid, voronoi, geometry, hyper_image=None
+    ):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxy.array.grid_stack* module) to pixels discretized on a Voronoi grid.
 
@@ -213,7 +199,10 @@ class VoronoiMapper(Mapper):
         self.voronoi = voronoi
         self.geometry = geometry
         super(VoronoiMapper, self).__init__(
-            pixels=pixels, grid_stack=grid_stack, border=border, hyper_image=hyper_image
+            pixels=pixels,
+            grid=grid,
+            pixelization_grid=pixelization_grid,
+            hyper_image=hyper_image,
         )
 
     @property
@@ -221,23 +210,12 @@ class VoronoiMapper(Mapper):
         return True
 
     @property
-    def regular_to_pixelization(self):
-        """The 1D index mappings between the regular pixels and Voronoi pixelization pixels."""
-        return mapper_util.voronoi_regular_to_pix_from_grids_and_geometry(
-            regular_grid=self.grid_stack.regular,
-            regular_to_nearest_pix=self.grid_stack.pixelization.regular_to_pixelization,
-            pixel_centres=self.geometry.pixel_centres,
-            pixel_neighbors=self.geometry.pixel_neighbors,
-            pixel_neighbors_size=self.geometry.pixel_neighbors_size,
-        ).astype("int")
-
-    @property
-    def sub_to_pixelization(self):
+    def sub_mask_1d_index_to_pixelization_1d_index(self):
         """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
-        return mapper_util.voronoi_sub_to_pix_from_grids_and_geometry(
-            sub_grid=self.grid_stack.sub,
-            regular_to_nearest_pix=self.grid_stack.pixelization.regular_to_pixelization,
-            sub_to_regular=self.grid_stack.sub.sub_mask_1d_index_to_mask_1d_index,
+        return mapper_util.voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
+            grid=self.grid,
+            mask_1d_index_to_nearest_pixelization_1d_index=self.pixelization_grid.mask_1d_index_to_pixelization_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=self.grid.sub_mask_1d_index_to_mask_1d_index,
             pixel_centres=self.geometry.pixel_centres,
             pixel_neighbors=self.geometry.pixel_neighbors,
             pixel_neighbors_size=self.geometry.pixel_neighbors_size,

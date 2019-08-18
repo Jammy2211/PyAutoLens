@@ -5,17 +5,13 @@ from skimage import measure
 import autofit as af
 from autolens import exc, dimensions as dim
 from autolens.array import scaled_array
-from autolens.array.grids import (
-    reshape_returned_array,
-    reshape_returned_grid,
-)
+from autolens.array.grids import reshape_returned_array, reshape_returned_grid
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 from autolens.array.util import grid_util
 
 
 class Plane(object):
-
     def __init__(self, redshift=None, galaxies=None, cosmology=cosmo.Planck15):
         """A plane of galaxies where all galaxies are at the same redshift.
 
@@ -45,7 +41,6 @@ class Plane(object):
                 )
             else:
                 redshift = galaxies[0].redshift
-
 
         self.redshift = redshift
         self.galaxies = galaxies
@@ -140,9 +135,7 @@ class Plane(object):
             return sum(
                 map(
                     lambda galaxy: galaxy.profile_image_from_grid(
-                        grid=grid,
-                        return_in_2d=False,
-                        return_binned=False,
+                        grid=grid, return_in_2d=False, return_binned=False
                     ),
                     self.galaxies,
                 )
@@ -169,9 +162,7 @@ class Plane(object):
         self, grid, galaxy, return_in_2d=True, return_binned=True
     ):
         return galaxy.profile_image_from_grid(
-            grid=grid,
-            return_in_2d=return_in_2d,
-            return_binned=return_binned,
+            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
     @reshape_returned_array
@@ -203,9 +194,7 @@ class Plane(object):
             return sum(
                 map(
                     lambda g: g.convergence_from_grid(
-                        grid=grid,
-                        return_in_2d=False,
-                        return_binned=False,
+                        grid=grid, return_in_2d=False, return_binned=False
                     ),
                     self.galaxies,
                 )
@@ -242,9 +231,7 @@ class Plane(object):
             return sum(
                 map(
                     lambda g: g.potential_from_grid(
-                        grid=grid,
-                        return_in_2d=False,
-                        return_binned=False,
+                        grid=grid, return_in_2d=False, return_binned=False
                     ),
                     self.galaxies,
                 )
@@ -258,9 +245,7 @@ class Plane(object):
             return sum(
                 map(
                     lambda g: g.deflections_from_grid(
-                        grid=grid,
-                        return_in_2d=False,
-                        return_binned=False,
+                        grid=grid, return_in_2d=False, return_binned=False
                     ),
                     self.galaxies,
                 )
@@ -272,24 +257,26 @@ class Plane(object):
     def traced_grid_from_grid(self, grid, return_in_2d=True):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
 
-        return grid - self.deflections_from_grid(grid=grid, return_in_2d=False, return_binned=False)
+        return grid - self.deflections_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
 
     @reshape_returned_grid
-    def deflections_via_potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
-        potential_2d = self.potential_from_grid(grid=grid, return_in_2d=True, return_binned=False)
+    def deflections_via_potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
+        potential_2d = self.potential_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
 
-        deflections_y_2d = np.gradient(
-            potential_2d, grid.in_2d[:, 0, 0], axis=0
-        )
-        deflections_x_2d = np.gradient(
-            potential_2d, grid.in_2d[0, :, 1], axis=1
-        )
+        deflections_y_2d = np.gradient(potential_2d, grid.in_2d[:, 0, 0], axis=0)
+        deflections_x_2d = np.gradient(potential_2d, grid.in_2d[0, :, 1], axis=1)
 
         return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
 
     @reshape_returned_array
     def lensing_jacobian_a11_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -302,7 +289,7 @@ class Plane(object):
 
     @reshape_returned_array
     def lensing_jacobian_a12_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -315,7 +302,7 @@ class Plane(object):
 
     @reshape_returned_array
     def lensing_jacobian_a21_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -328,7 +315,7 @@ class Plane(object):
 
     @reshape_returned_array
     def lensing_jacobian_a22_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -380,7 +367,7 @@ class Plane(object):
 
     @reshape_returned_array
     def tangential_eigen_value_from_shear_and_convergence(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         convergence = self.convergence_from_jacobian(
@@ -393,7 +380,7 @@ class Plane(object):
 
     @reshape_returned_array
     def radial_eigen_value_from_shear_and_convergence(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         convergence = self.convergence_from_jacobian(
@@ -517,7 +504,9 @@ class Plane(object):
             galaxies=self.galaxies,
         )
 
-    def mapper_from_regular_grid_sub_grid_and_border(self, regular_grid, sub_grid, border):
+    def mapper_from_regular_grid_sub_grid_and_border(
+        self, regular_grid, sub_grid, border
+    ):
 
         galaxies_with_pixelization = list(
             filter(lambda galaxy: galaxy.pixelization is not None, self.galaxies)
@@ -529,8 +518,8 @@ class Plane(object):
 
             pixelization = galaxies_with_pixelization[0].pixelization
 
-            return pixelization.mapper_from_regular_grid_and_pixel_centres(
-                grid_stack=self.grid_stack,
+            return pixelization.mapper_from_grid_and_pixelization_grid(
+                grid=self.grid_stack,
                 border=self.border,
                 hyper_image=galaxies_with_pixelization[0].hyper_galaxy_image_1d,
             )
@@ -843,64 +832,80 @@ class Plane(object):
 
     @reshape_returned_array
     def lensing_jacobian_a11_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections(
-            grid=self.grid_stack.sub.unlensed_grid_2d, return_in_2d=True, return_binned=False
+            grid=self.grid_stack.sub.unlensed_2d, return_in_2d=True, return_binned=False
         )
 
-        return 1.0 - np.gradient(deflections_2d[:, :, 1], self.grid_stack.sub.unlensed_grid_2d[0, :, 1], axis=1)
+        return 1.0 - np.gradient(
+            deflections_2d[:, :, 1], self.grid_stack.sub.unlensed_2d[0, :, 1], axis=1
+        )
 
     @reshape_returned_array
     def lensing_jacobian_a12_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections(
-            grid=self.grid_stack.sub.unlensed_grid_2d, return_in_2d=True, return_binned=False
+            grid=self.grid_stack.sub.unlensed_2d, return_in_2d=True, return_binned=False
         )
 
-        return -1.0 * np.gradient(deflections_2d[:, :, 1], self.grid_stack.sub.unlensed_grid_2d[:, 0, 0], axis=0)
+        return -1.0 * np.gradient(
+            deflections_2d[:, :, 1], self.grid_stack.sub.unlensed_2d[:, 0, 0], axis=0
+        )
 
     @reshape_returned_array
     def lensing_jacobian_a21_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections(
-            grid=self.grid_stack.sub.unlensed_grid_2d, return_in_2d=True, return_binned=False
+            grid=self.grid_stack.sub.unlensed_2d, return_in_2d=True, return_binned=False
         )
 
-        return -1.0 * np.gradient(deflections_2d[:, :, 0], self.grid_stack.sub.unlensed_grid_2d[0, :, 1], axis=1)
+        return -1.0 * np.gradient(
+            deflections_2d[:, :, 0], self.grid_stack.sub.unlensed_2d[0, :, 1], axis=1
+        )
 
     @reshape_returned_array
     def lensing_jacobian_a22_from_deflections_2d(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections(
-            grid=self.grid_stack.sub.unlensed_grid_2d, return_in_2d=True, return_binned=False
+            grid=self.grid_stack.sub.unlensed_2d, return_in_2d=True, return_binned=False
         )
 
-        return 1 - np.gradient(deflections_2d[:, :, 0], self.grid_stack.sub.unlensed_grid_2d[:, 0, 0], axis=0)
+        return 1 - np.gradient(
+            deflections_2d[:, :, 0], self.grid_stack.sub.unlensed_2d[:, 0, 0], axis=0
+        )
 
     def lensing_jacobian(self, return_in_2d=True, return_binned=True):
 
         a11 = self.lensing_jacobian_a11_from_deflections_2d(
-            grid=self.grid_stack.sub.unlensed_grid_2d, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=self.grid_stack.sub.unlensed_2d,
+            return_in_2d=return_in_2d,
+            return_binned=return_binned,
         )
 
         a12 = self.lensing_jacobian_a12_from_deflections_2d(
-            grid=self.grid_stack.sub.unlensed_grid_2d, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=self.grid_stack.sub.unlensed_2d,
+            return_in_2d=return_in_2d,
+            return_binned=return_binned,
         )
 
         a21 = self.lensing_jacobian_a21_from_deflections_2d(
-            grid=self.grid_stack.sub.unlensed_grid_2d, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=self.grid_stack.sub.unlensed_2d,
+            return_in_2d=return_in_2d,
+            return_binned=return_binned,
         )
 
         a22 = self.lensing_jacobian_a22_from_deflections_2d(
-            grid=self.grid_stack.sub.unlensed_grid_2d, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=self.grid_stack.sub.unlensed_2d,
+            return_in_2d=return_in_2d,
+            return_binned=return_binned,
         )
 
         return np.array([[a11, a12], [a21, a22]])
@@ -908,9 +913,7 @@ class Plane(object):
     @reshape_returned_array
     def convergence_from_jacobian(self, return_in_2d=True, return_binned=True):
 
-        jacobian = self.lensing_jacobian(
-            return_in_2d=False, return_binned=False
-        )
+        jacobian = self.lensing_jacobian(return_in_2d=False, return_binned=False)
 
         convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
 
@@ -919,9 +922,7 @@ class Plane(object):
     @reshape_returned_array
     def shear_from_jacobian(self, return_in_2d=True, return_binned=True):
 
-        jacobian = self.lensing_jacobian(
-            return_in_2d=True, return_binned=False
-        )
+        jacobian = self.lensing_jacobian(return_in_2d=True, return_binned=False)
 
         gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
         gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
@@ -930,40 +931,34 @@ class Plane(object):
 
     @reshape_returned_array
     def tangential_eigen_value_from_shear_and_convergence(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         convergence = self.convergence_from_jacobian(
             return_in_2d=False, return_binned=False
         )
 
-        shear = self.shear_from_jacobian(
-            return_in_2d=False, return_binned=False
-        )
+        shear = self.shear_from_jacobian(return_in_2d=False, return_binned=False)
 
         return 1 - convergence - shear
 
     @reshape_returned_array
     def radial_eigen_value_from_shear_and_convergence(
-            self, return_in_2d=True, return_binned=True
+        self, return_in_2d=True, return_binned=True
     ):
 
         convergence = self.convergence_from_jacobian(
             return_in_2d=False, return_binned=False
         )
 
-        shear = self.shear_from_jacobian(
-            return_in_2d=False, return_binned=False
-        )
+        shear = self.shear_from_jacobian(return_in_2d=False, return_binned=False)
 
         return 1 - convergence + shear
 
     @reshape_returned_array
     def magnification(self, return_in_2d=True, return_binned=True):
 
-        jacobian = self.lensing_jacobian(
-            return_in_2d=False, return_binned=False
-        )
+        jacobian = self.lensing_jacobian(return_in_2d=False, return_binned=False)
 
         det_jacobian = jacobian[0, 0] * jacobian[1, 1] - jacobian[0, 1] * jacobian[1, 0]
 
@@ -982,8 +977,10 @@ class Plane(object):
         if tangential_critical_curve_indices == []:
             return []
 
-        return self.grid_stack.sub.unlensed_grid_2d.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=tangential_critical_curve_indices[0], shape=lambda_tangential_2d.shape)
+        return self.grid_stack.sub.unlensed_2d.marching_squares_grid_pixels_to_grid_arcsec(
+            grid_pixels=tangential_critical_curve_indices[0],
+            shape=lambda_tangential_2d.shape,
+        )
 
     def radial_critical_curve(self):
 
@@ -996,15 +993,12 @@ class Plane(object):
         if radial_critical_curve_indices == []:
             return []
 
-        return self.grid_stack.sub.unlensed_grid_2d.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape)
+        return self.grid_stack.sub.unlensed_2d.marching_squares_grid_pixels_to_grid_arcsec(
+            grid_pixels=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape
+        )
 
     def critical_curves(self):
-        return [
-            self.tangential_critical_curve(),
-            self.radial_critical_curve(),
-        ]
-
+        return [self.tangential_critical_curve(), self.radial_critical_curve()]
 
     def blurred_profile_image_plane_image_1d_from_convolver_image(
         self, convolver_image

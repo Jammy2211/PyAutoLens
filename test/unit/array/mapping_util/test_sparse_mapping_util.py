@@ -11,7 +11,6 @@ test_data_dir = "{}/../test_files/array/".format(
 )
 
 
-
 class TestSparseToUnmaskedSparse:
     def test__mask_full_false__image_mask_and_pixel_centres_fully_overlap__each_sparse_maps_to_unmaked_sparse(
         self
@@ -337,39 +336,39 @@ class TestRegularToSparse:
 
         regular_to_unmasked_sparse = np.array([0, 1, 2, 3, 4])
         unmasked_sparse_to_sparse = np.array([0, 1, 2, 3, 4])
-        regular_to_sparse = sparse_mapping_util.regular_to_sparse_from_sparse_mappings(
+        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
         )
 
-        assert (regular_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+        assert (mask_1d_index_to_sparse_1d_index == np.array([0, 1, 2, 3, 4])).all()
 
         regular_to_unmasked_sparse = np.array([0, 1, 2, 3, 4])
         unmasked_sparse_to_sparse = np.array([0, 1, 5, 7, 18])
-        regular_to_sparse = sparse_mapping_util.regular_to_sparse_from_sparse_mappings(
+        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
         )
 
-        assert (regular_to_sparse == np.array([0, 1, 5, 7, 18])).all()
+        assert (mask_1d_index_to_sparse_1d_index == np.array([0, 1, 5, 7, 18])).all()
 
         regular_to_unmasked_sparse = np.array([1, 1, 1, 1, 2])
         unmasked_sparse_to_sparse = np.array([0, 10, 15, 3, 4])
-        regular_to_sparse = sparse_mapping_util.regular_to_sparse_from_sparse_mappings(
+        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
         )
 
-        assert (regular_to_sparse == np.array([10, 10, 10, 10, 15])).all()
+        assert (mask_1d_index_to_sparse_1d_index == np.array([10, 10, 10, 10, 15])).all()
 
         regular_to_unmasked_sparse = np.array([5, 6, 7, 8, 9])
         unmasked_sparse_to_sparse = np.array([0, 1, 2, 3, 4, 19, 18, 17, 16, 15])
-        regular_to_sparse = sparse_mapping_util.regular_to_sparse_from_sparse_mappings(
+        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
         )
 
-        assert (regular_to_sparse == np.array([19, 18, 17, 16, 15])).all()
+        assert (mask_1d_index_to_sparse_1d_index == np.array([19, 18, 17, 16, 15])).all()
 
 
 class TestSparseGridFromUnmaskedSparseGrid:

@@ -44,9 +44,9 @@ class MockRegularization(object):
 
 
 class MockMapper(object):
-    def __init__(self, matrix_shape, grid_stack=None):
+    def __init__(self, matrix_shape, grid=None):
 
-        self.grid_stack = grid_stack
+        self.grid = grid
         self.mapping_matrix = np.ones(matrix_shape)
         self.geometry = MockGeometry()
 

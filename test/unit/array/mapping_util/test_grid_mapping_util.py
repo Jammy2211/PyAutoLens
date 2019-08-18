@@ -8,6 +8,7 @@ test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
+
 class TestSubGrid1DFromSubGrid2D(object):
     def test__map_simple_grids__sub_grid_1(self):
 
@@ -131,7 +132,7 @@ class TestSubGrid1DFromSubGrid2D(object):
                 ]
             )
         ).all()
-        
+
 
 class TestSubGrid2DFromSubGrid1d(object):
     def test__simple_2d_array__is_masked_and_mapped__sub_grid_size_1(self):

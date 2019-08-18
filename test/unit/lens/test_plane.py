@@ -18,11 +18,10 @@ from test.unit.mock.model.mock_cosmology import MockCosmology
 
 planck = cosmo.Planck15
 
+
 def critical_curve_via_magnification_from_plane_and_grid_stack(plane, grid_stack):
 
-    magnification_2d = plane.magnification(
-        return_in_2d=True, return_binned=False
-    )
+    magnification_2d = plane.magnification(return_in_2d=True, return_binned=False)
 
     inverse_magnification_2d = 1 / magnification_2d
 
@@ -38,12 +37,14 @@ def critical_curve_via_magnification_from_plane_and_grid_stack(plane, grid_stack
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid_stack.sub.unlensed_grid_2d.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=pixel_coord, shape=magnification_2d.shape)
+        critical_curve = grid_stack.sub.unlensed_2d.marching_squares_grid_pixels_to_grid_arcsec(
+            grid_pixels=pixel_coord, shape=magnification_2d.shape
+        )
 
         critical_curves.append(critical_curve)
 
     return critical_curves
+
 
 def caustics_via_magnification_from_plane_and_grid_stack(plane, grid_stack):
 
@@ -238,9 +239,7 @@ class TestAbstractPlane(object):
             plane = pl.Plane(galaxies=[galaxy], redshift=None)
             assert plane.has_hyper_galaxy is True
 
-            plane = pl.Plane(
-                galaxies=[galaxy, g.Galaxy(redshift=0.5)], redshift=None
-            )
+            plane = pl.Plane(galaxies=[galaxy, g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_hyper_galaxy is True
 
     class TestRegularization:
@@ -269,9 +268,7 @@ class TestAbstractPlane(object):
             )
             galaxy_no_pix = g.Galaxy(redshift=0.5)
 
-            plane = pl.Plane(
-                galaxies=[galaxy_no_pix, galaxy_pix], redshift=None
-            )
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], redshift=None)
 
             assert plane.regularization.shape == (2, 2)
 
@@ -287,9 +284,7 @@ class TestAbstractPlane(object):
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
 
-            plane = pl.Plane(
-                galaxies=[galaxy_pix_0, galaxy_pix_1], redshift=None
-            )
+            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], redshift=None)
 
             with pytest.raises(exc.PixelizationException):
                 print(plane.regularization)
@@ -606,9 +601,7 @@ class TestAbstractPlane(object):
                 redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
             )
 
-            plane = pl.Plane(
-                galaxies=[sis_0], redshift=0.5, cosmology=cosmology
-            )
+            plane = pl.Plane(galaxies=[sis_0], redshift=0.5, cosmology=cosmology)
 
             assert plane.einstein_radius_in_units(
                 unit_length="arcsec"
@@ -623,9 +616,7 @@ class TestAbstractPlane(object):
                 unit_mass="solMass", redshift_source=1.0
             ) == pytest.approx(2.0 * np.pi, 1.0e-4)
 
-            plane = pl.Plane(
-                galaxies=[sis_1], redshift=0.5, cosmology=cosmology
-            )
+            plane = pl.Plane(galaxies=[sis_1], redshift=0.5, cosmology=cosmology)
 
             assert plane.einstein_radius_in_units(
                 unit_length="arcsec"
@@ -640,9 +631,7 @@ class TestAbstractPlane(object):
                 unit_mass="solMass", redshift_source=1.0
             ) == pytest.approx(2.0 * np.pi * 2.0 ** 2.0, 1.0e-4)
 
-            plane = pl.Plane(
-                galaxies=[sis_0, sis_1], redshift=0.5, cosmology=cosmology
-            )
+            plane = pl.Plane(galaxies=[sis_0, sis_1], redshift=0.5, cosmology=cosmology)
 
             assert plane.einstein_radius_in_units(
                 unit_length="arcsec"
@@ -1089,7 +1078,6 @@ class TestAbstractPlane(object):
 
 
 class TestAbstractPlaneGridded(object):
-
     class TestImage:
         def test__profile_image_from_grid__same_as_its_light_profile_image(
             self, sub_grid_7x7, gal_x1_lp
@@ -1097,20 +1085,25 @@ class TestAbstractPlaneGridded(object):
 
             light_profile = gal_x1_lp.light_profiles[0]
 
-            lp_sub_image_1d = light_profile.image_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=False)
+            lp_sub_image_1d = light_profile.image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
 
             # Perform sub gridding average manually
             lp_image_pixel_0 = (
-                lp_sub_image_1d[0] + lp_sub_image_1d[1] + lp_sub_image_1d[2] + lp_sub_image_1d[3]
+                lp_sub_image_1d[0]
+                + lp_sub_image_1d[1]
+                + lp_sub_image_1d[2]
+                + lp_sub_image_1d[3]
             ) / 4
             lp_image_pixel_1 = (
-                lp_sub_image_1d[4] + lp_sub_image_1d[5] + lp_sub_image_1d[6] + lp_sub_image_1d[7]
+                lp_sub_image_1d[4]
+                + lp_sub_image_1d[5]
+                + lp_sub_image_1d[6]
+                + lp_sub_image_1d[7]
             ) / 4
 
-            plane = pl.Plane(
-                galaxies=[gal_x1_lp],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[gal_x1_lp], redshift=None)
 
             profile_image_1d = plane.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=True
@@ -1119,15 +1112,15 @@ class TestAbstractPlaneGridded(object):
             assert (profile_image_1d[0] == lp_image_pixel_0).all()
             assert (profile_image_1d[1] == lp_image_pixel_1).all()
 
-            lp_sub_image_2d = light_profile.image_from_grid(grid=sub_grid_7x7, return_in_2d=True, return_binned=True)
+            lp_sub_image_2d = light_profile.image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+            )
 
             profile_image_2d = plane.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=True, return_binned=True
             )
 
-            assert (
-                profile_image_2d
-                == lp_sub_image_2d).all()
+            assert (profile_image_2d == lp_sub_image_2d).all()
 
         def test__profile_image_from_grid__same_as_its_galaxy_image(
             self, sub_grid_7x7, gal_x1_lp
@@ -1140,10 +1133,7 @@ class TestAbstractPlaneGridded(object):
                 return_binned=False,
             )
 
-            plane = pl.Plane(
-                galaxies=[gal_x1_lp],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[gal_x1_lp], redshift=None)
 
             profile_image_1d = plane.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=False
@@ -1157,10 +1147,7 @@ class TestAbstractPlaneGridded(object):
                 redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
             )
 
-            plane = pl.Plane(
-                galaxies=[g0],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0], redshift=None)
 
             profile_image_of_galaxies = plane.profile_images_of_galaxies_from_grid(
                 grid=sub_grid_7x7, return_in_2d=True, return_binned=True
@@ -1171,10 +1158,7 @@ class TestAbstractPlaneGridded(object):
             )
 
             assert profile_image_of_galaxy.shape == (7, 7)
-            assert (
-                profile_image_of_galaxies[0]
-                == profile_image_of_galaxy
-            ).all()
+            assert (profile_image_of_galaxies[0] == profile_image_of_galaxy).all()
 
         def test__profile_images_of_galaxies(self, sub_grid_7x7):
 
@@ -1220,10 +1204,7 @@ class TestAbstractPlaneGridded(object):
                 + lp1_sub_image[7]
             ) / 4
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
             profile_image = plane.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=True
@@ -1265,27 +1246,19 @@ class TestAbstractPlaneGridded(object):
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
             profile_image = plane.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
-            assert profile_image == pytest.approx(
-                g0_image + g1_image, 1.0e-4
-            )
+            assert profile_image == pytest.approx(g0_image + g1_image, 1.0e-4)
 
         def test__plane_has_no_galaxies__image_is_zeros_size_of_unlensed_regular_grid(
             self, sub_grid_7x7
         ):
 
-            plane = pl.Plane(
-                galaxies=[],
-                redshift=0.5,
-            )
+            plane = pl.Plane(galaxies=[], redshift=0.5)
 
             profile_image = plane.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=True, return_binned=True
@@ -1321,12 +1294,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_convergence = mp0.convergence_from_grid(
-                grid=sub_grid_7x7
-            )
-            mp1_sub_convergence = mp1.convergence_from_grid(
-                grid=sub_grid_7x7
-            )
+            mp0_sub_convergence = mp0.convergence_from_grid(grid=sub_grid_7x7)
+            mp1_sub_convergence = mp1.convergence_from_grid(grid=sub_grid_7x7)
 
             mp_sub_convergence = mp0_sub_convergence + mp1_sub_convergence
 
@@ -1345,12 +1314,11 @@ class TestAbstractPlaneGridded(object):
                 + mp_sub_convergence[7]
             ) / 4
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
-            convergence = plane.convergence_from_grid(grid=sub_grid_7x7, return_in_2d=True, return_binned=True)
+            convergence = plane.convergence_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+            )
 
             assert convergence[2, 2] == pytest.approx(mp_convergence_pixel_0, 1.0e-4)
             assert convergence[2, 3] == pytest.approx(mp_convergence_pixel_1, 1.0e-4)
@@ -1374,12 +1342,11 @@ class TestAbstractPlaneGridded(object):
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
-            convergence = plane.convergence_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=True)
+            convergence = plane.convergence_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
 
             assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
 
@@ -1387,20 +1354,23 @@ class TestAbstractPlaneGridded(object):
             self, sub_grid_7x7
         ):
 
-            plane = pl.Plane(
-                galaxies=[],
-                redshift=0.5,
-            )
+            plane = pl.Plane(galaxies=[], redshift=0.5)
 
-            convergence = plane.convergence_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=False)
+            convergence = plane.convergence_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
 
             assert convergence.shape[0] == sub_grid_7x7.shape[0]
 
-            convergence = plane.convergence_from_grid(grid=sub_grid_7x7, return_in_2d=True, return_binned=False)
+            convergence = plane.convergence_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=False
+            )
 
             assert convergence.shape == (14, 14)
 
-            convergence = plane.convergence_from_grid(grid=sub_grid_7x7, return_in_2d=True, return_binned=True)
+            convergence = plane.convergence_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+            )
 
             assert convergence.shape == (7, 7)
 
@@ -1429,12 +1399,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_potential = mp0.potential_from_grid(
-                grid=sub_grid_7x7
-            )
-            mp1_sub_potential = mp1.potential_from_grid(
-                grid=sub_grid_7x7
-            )
+            mp0_sub_potential = mp0.potential_from_grid(grid=sub_grid_7x7)
+            mp1_sub_potential = mp1.potential_from_grid(grid=sub_grid_7x7)
 
             mp_sub_potential = mp0_sub_potential + mp1_sub_potential
 
@@ -1453,12 +1419,11 @@ class TestAbstractPlaneGridded(object):
                 + mp_sub_potential[7]
             ) / 4
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
-            potential = plane.potential_from_grid(grid=sub_grid_7x7, return_in_2d=True, return_binned=True)
+            potential = plane.potential_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+            )
 
             assert potential[2, 2] == pytest.approx(mp_potential_pixel_0, 1.0e-4)
             assert potential[2, 3] == pytest.approx(mp_potential_pixel_1, 1.0e-4)
@@ -1481,32 +1446,34 @@ class TestAbstractPlaneGridded(object):
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
-            potential = plane.potential_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=True)
+            potential = plane.potential_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
 
             assert potential == pytest.approx(g0_potential + g1_potential, 1.0e-8)
 
         def test__plane_has_no_galaxies__potential_is_zeros_size_of_reshaped_sub_grid_array(
             self, sub_grid_7x7
         ):
-            plane = pl.Plane(
-                galaxies=[],
-                redshift=0.5,
-            )
+            plane = pl.Plane(galaxies=[], redshift=0.5)
 
-            potential = plane.potential_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=False)
+            potential = plane.potential_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
 
             assert potential.shape[0] == sub_grid_7x7.shape[0]
 
-            potential = plane.potential_from_grid(grid=sub_grid_7x7, return_in_2d=True, return_binned=False)
+            potential = plane.potential_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=False
+            )
 
             assert potential.shape == (14, 14)
 
-            potential = plane.potential_from_grid(grid=sub_grid_7x7, return_in_2d=True, return_binned=True)
+            potential = plane.potential_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+            )
 
             assert potential.shape == (7, 7)
 
@@ -1528,12 +1495,8 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.deflections_from_grid(
-                grid=sub_grid_7x7
-            )
-            mp1_sub_image = mp1.deflections_from_grid(
-                grid=sub_grid_7x7
-            )
+            mp0_sub_image = mp0.deflections_from_grid(grid=sub_grid_7x7)
+            mp1_sub_image = mp1.deflections_from_grid(grid=sub_grid_7x7)
 
             # Perform sub gridding average manually
             mp0_image_pixel_0x = (
@@ -1586,12 +1549,11 @@ class TestAbstractPlaneGridded(object):
                 + mp1_sub_image[7, 1]
             ) / 4
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
-            deflections = plane.deflections_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=True)
+            deflections = plane.deflections_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
 
             assert deflections[0, 0] == pytest.approx(
                 mp0_image_pixel_0x + mp1_image_pixel_0x, 1.0e-4
@@ -1621,46 +1583,39 @@ class TestAbstractPlaneGridded(object):
             )
 
             g0_deflections = g0.deflections_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=False,
-                return_binned=True,
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             g1_deflections = g1.deflections_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=False,
-                return_binned=True,
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
-            deflections = plane.deflections_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=True)
+            deflections = plane.deflections_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
 
             assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
 
         def test__deflections_numerics__x2_galaxy_in_plane__or_galaxy_x2_sis__deflections_double(
             self, grid_7x7, gal_x1_mp, gal_x2_mp
         ):
-            plane = pl.Plane(
-                galaxies=[gal_x2_mp],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[gal_x2_mp], redshift=None)
 
-            deflections = plane.deflections_from_grid(grid=grid_7x7, return_in_2d=False, return_binned=False)
+            deflections = plane.deflections_from_grid(
+                grid=grid_7x7, return_in_2d=False, return_binned=False
+            )
 
             assert deflections[0:2] == pytest.approx(
                 np.array([[3.0 * 0.707, -3.0 * 0.707], [3.0, 0.0]]), 1e-3
             )
 
-            plane = pl.Plane(
-                galaxies=[gal_x1_mp, gal_x1_mp],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 
-            deflections = plane.deflections_from_grid(grid=grid_7x7, return_in_2d=False, return_binned=False)
+            deflections = plane.deflections_from_grid(
+                grid=grid_7x7, return_in_2d=False, return_binned=False
+            )
 
             assert deflections[0:2] == pytest.approx(
                 np.array([[2.0 * 0.707, -2.0 * 0.707], [2.0, 0.0]]), 1e-3
@@ -1670,12 +1625,11 @@ class TestAbstractPlaneGridded(object):
             self, sub_grid_7x7
         ):
 
-            plane = pl.Plane(
-                redshift=0.5,
-                galaxies=[],
-            )
+            plane = pl.Plane(redshift=0.5, galaxies=[])
 
-            deflections = plane.deflections_from_grid(grid=sub_grid_7x7, return_in_2d=True, return_binned=True)
+            deflections = plane.deflections_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+            )
 
             assert deflections.shape == (7, 7, 2)
             assert (deflections[0, 0] == 0.0).all()
@@ -1684,7 +1638,6 @@ class TestAbstractPlaneGridded(object):
             assert (deflections[1, 1] == 0.0).all()
 
     class TestDeflectionAnglesviaPotential(object):
-        
         def test__compare_plane_deflections_via_potential_and_calculation(self):
 
             grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
@@ -1699,10 +1652,7 @@ class TestAbstractPlaneGridded(object):
                 redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
             )
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
             deflections_via_calculation = plane.deflections_from_grid(
                 grid=grid, return_in_2d=False, return_binned=True
@@ -1733,40 +1683,39 @@ class TestAbstractPlaneGridded(object):
             )
 
             g0_deflections = g0.deflections_via_potential_from_grid(
-                grid=grid,
-                return_in_2d=False,
-                return_binned=True,
+                grid=grid, return_in_2d=False, return_binned=True
             )
 
             g1_deflections = g1.deflections_via_potential_from_grid(
-                grid=grid,
-                return_in_2d=False,
-                return_binned=True,
+                grid=grid, return_in_2d=False, return_binned=True
             )
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
-            deflections = plane.deflections_via_potential_from_grid(grid=grid, return_in_2d=False, return_binned=True)
+            deflections = plane.deflections_via_potential_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
 
             assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
 
     class TestConvergenceviaJacobian(object):
         def test__compare_plane_convergence_via_jacobian_and_calculation(self):
             grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05,
+                shape=(20, 20), pixel_scale=0.05
             )
 
             g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0),einstein_radius=1.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0),einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -1777,7 +1726,7 @@ class TestAbstractPlaneGridded(object):
                 redshift=None,
             )
 
-            convergence_via_calculation =plane.convergence(
+            convergence_via_calculation = plane.convergence(
                 grid=grid_stack, return_in_2d=False, return_binned=False
             )
 
@@ -1795,13 +1744,17 @@ class TestAbstractPlaneGridded(object):
             )
 
             g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0),einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -1856,9 +1809,7 @@ class TestAbstractPlaneGridded(object):
             assert convergence_via_jacobian.shape == (400,)
             assert mean_error < 1e-1
 
-        def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(
-            self
-        ):
+        def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(self):
             grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
             )
@@ -1887,7 +1838,8 @@ class TestAbstractPlaneGridded(object):
             )
 
             convergence = plane.convergence_from_jacobian(
-                return_in_2d=False, return_binned=True)
+                return_in_2d=False, return_binned=True
+            )
 
             assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
 
@@ -1898,13 +1850,17 @@ class TestAbstractPlaneGridded(object):
             )
 
             g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0),einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -1946,9 +1902,7 @@ class TestAbstractPlaneGridded(object):
                 pixel_10000_from_av_sub_grid, 1e-4
             )
 
-        def test__plane_shear_via_jacobian_same_as_multiple_galaxies(
-            self
-        ):
+        def test__plane_shear_via_jacobian_same_as_multiple_galaxies(self):
             grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
             )
@@ -1976,25 +1930,28 @@ class TestAbstractPlaneGridded(object):
                 redshift=None,
             )
 
-            shear = plane.shear_from_jacobian(
-                return_in_2d=False, return_binned=True)
+            shear = plane.shear_from_jacobian(return_in_2d=False, return_binned=True)
 
             assert shear == pytest.approx(g0_shear + g1_shear, 1.0e-8)
 
     class TestJacobian(object):
         def test__jacobian_components__two_component_galaxy_plane(self):
             grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05,
+                shape=(20, 20), pixel_scale=0.05
             )
 
             g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -2014,9 +1971,7 @@ class TestAbstractPlaneGridded(object):
 
             assert mean_error < 1e-4
 
-            jacobian = plane.lensing_jacobian(
-                return_in_2d=False, return_binned=True
-            )
+            jacobian = plane.lensing_jacobian(return_in_2d=False, return_binned=True)
 
             A_12 = jacobian[0, 1]
             A_21 = jacobian[1, 0]
@@ -2031,13 +1986,17 @@ class TestAbstractPlaneGridded(object):
             )
 
             g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -2086,13 +2045,17 @@ class TestAbstractPlaneGridded(object):
             )
 
             g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -2140,13 +2103,17 @@ class TestAbstractPlaneGridded(object):
             )
 
             g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -2193,17 +2160,21 @@ class TestAbstractPlaneGridded(object):
             self
         ):
             grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(10, 10), pixel_scale=0.05,
+                shape=(10, 10), pixel_scale=0.05
             )
 
             g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -2214,9 +2185,7 @@ class TestAbstractPlaneGridded(object):
                 redshift=None,
             )
 
-            magnification_via_determinant = plane.magnification(
-                return_in_2d=True
-            )
+            magnification_via_determinant = plane.magnification(return_in_2d=True)
 
             tangential_eigen_value = plane.tangential_eigen_value_from_shear_and_convergence(
                 return_in_2d=True
@@ -2274,17 +2243,21 @@ class TestAbstractPlaneGridded(object):
             self
         ):
             grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(10, 10), pixel_scale=0.05,
+                shape=(10, 10), pixel_scale=0.05
             )
 
             g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -2333,9 +2306,7 @@ class TestAbstractPlaneGridded(object):
                 return_in_2d=True, return_binned=False
             )
 
-            shear = plane.shear_from_jacobian(
-                return_in_2d=True, return_binned=False
-            )
+            shear = plane.shear_from_jacobian(return_in_2d=True, return_binned=False)
 
             magnification_via_convergence_and_shear = 1 / (
                 (1 - convergence) ** 2 - shear ** 2
@@ -2348,7 +2319,6 @@ class TestAbstractPlaneGridded(object):
             assert mean_error < 1e-4
 
     class TestCriticalCurvesandCaustics(object):
-
         def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
@@ -2356,13 +2326,18 @@ class TestAbstractPlaneGridded(object):
                 shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
             )
 
-            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.EllipticalIsothermal(
-                 centre=(0.0, 0.0), einstein_radius=1.4,axis_ratio=0.7, phi=40.0)
+            g0 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.EllipticalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
+                ),
             )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -2401,7 +2376,7 @@ class TestAbstractPlaneGridded(object):
                 plane=plane, grid_stack=grid_stack
             )[
                 0
-             ]
+            ]
 
             critical_curve_tangential_from_lambda_t = plane.tangential_critical_curve()
 
@@ -2416,13 +2391,18 @@ class TestAbstractPlaneGridded(object):
                 shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
             )
 
-            g0 = g.Galaxy(redshift=0.5, mass_profile=mp.EllipticalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0)
-                          )
+            g0 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.EllipticalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
+                ),
+            )
 
             g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0)
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
             )
 
             plane = pl.Plane(
@@ -2454,7 +2434,7 @@ class TestAbstractPlaneGridded(object):
                 grid_stack=grid_stack,
                 compute_deflections=False,
                 border=None,
-                redshift=None
+                redshift=None,
             )
 
             critical_curve_radial_from_magnification = critical_curve_via_magnification_from_plane_and_grid_stack(
@@ -2475,10 +2455,7 @@ class TestAbstractPlaneGridded(object):
         ):
             galaxy_no_pix = g.Galaxy(redshift=0.5)
 
-            plane = pl.Plane(
-                galaxies=[galaxy_no_pix],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[galaxy_no_pix], redshift=None)
 
             assert plane.mapper_from_regular_grid_sub_grid_and_border is None
 
@@ -2663,9 +2640,7 @@ class TestAbstractPlaneGridded(object):
 
 class TestAbstractDataPlane(object):
     class TestBlurredImagePlaneImage:
-        def test__blurred_image_of_galaxies(
-            self, sub_grid_7x7, convolver_image_7x7
-        ):
+        def test__blurred_image_of_galaxies(self, sub_grid_7x7, convolver_image_7x7):
 
             g0 = g.Galaxy(
                 redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
@@ -2722,9 +2697,7 @@ class TestAbstractDataPlane(object):
             assert (blurred_images_1d_of_galaxies[1] == blurred_g1_image).all()
 
     class TestVisibilities:
-        def test__visibilities_from_transformer(
-            self, sub_grid_7x7, transformer_7x7_7
-        ):
+        def test__visibilities_from_transformer(self, sub_grid_7x7, transformer_7x7_7):
 
             g0 = g.Galaxy(
                 redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
@@ -3273,9 +3246,7 @@ class TestAbstractDataPlane(object):
 
 
 class TestPlane(object):
-
     class TestTracedGrid:
-
         def test__traced_grid_same_as_manual_deflections_calc_via_galaxy___use_multiple_galaxies(
             self, sub_grid_7x7
         ):
@@ -3291,57 +3262,46 @@ class TestPlane(object):
             )
 
             g0_deflections = g0.deflections_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=False,
-                return_binned=False,
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             g1_deflections = g1.deflections_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=False,
-                return_binned=False,
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             traced_grid = sub_grid_7x7 - (g0_deflections + g1_deflections)
 
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                redshift=None,
-            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=None)
 
-            plane_traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=False)
+            plane_traced_grid = plane.traced_grid_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
 
             assert plane_traced_grid == pytest.approx(traced_grid, 1.0e-4)
 
-        def test__traced_grid_numerics__uses_deflections__x2_sis_galaxies(self, sub_grid_7x7_simple, gal_x1_mp):
+        def test__traced_grid_numerics__uses_deflections__x2_sis_galaxies(
+            self, sub_grid_7x7_simple, gal_x1_mp
+        ):
 
-            plane = pl.Plane(
-                galaxies=[gal_x1_mp, gal_x1_mp],
-                redshift=None,
+            plane = pl.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
+
+            traced_grid = plane.traced_grid_from_grid(
+                grid=sub_grid_7x7_simple, return_in_2d=False, return_binned=False
             )
-
-            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7_simple, return_in_2d=False, return_binned=False)
 
             assert traced_grid[0] == pytest.approx(
                 np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3
             )
-            assert traced_grid[1] == pytest.approx(
-                np.array([-1.0, 0.0]), 1e-3
-            )
+            assert traced_grid[1] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
             assert traced_grid[2] == pytest.approx(
                 np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3
             )
-            assert traced_grid[3] == pytest.approx(
-                np.array([-1.0, 0.0]), 1e-3
-            )
+            assert traced_grid[3] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
 
         def test__plane_has_no_galaxies__traced_grid_is_input_grid_of_sub_grid_7x7(
             self, sub_grid_7x7
         ):
-            plane = pl.Plane(
-                galaxies=[],
-                redshift=1.0,
-            )
+            plane = pl.Plane(galaxies=[], redshift=1.0)
 
             traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7)
 

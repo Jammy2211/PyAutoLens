@@ -4,7 +4,7 @@ import pytest
 from autolens.array.mapping_util import array_mapping_util
 from autolens.model.inversion import mappers
 from autolens.model.inversion import pixelizations
-from test.unit.mock.data.mock_grids import MockPixSubGrid, MockPixGridStack
+from test.unit.mock.data.mock_grids import MockPixelizationGrid, MockPixelizationGrid2
 from test.unit.mock.model.mock_inversion import MockGeometry
 
 
@@ -70,35 +70,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
-                pixels=9, shape=(3, 3), grid_stack=grids, geometry=geometry, border=None
+                pixels=9,
+                shape=(3, 3),
+                grid=grid,
+                pixelization_grid=pixelization_grid,
+                geometry=geometry,
             )
 
             assert (
-                pix.regular_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
-            assert (
-                pix.sub_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-            ).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [2],
-                [3],
-                [4],
-                [5],
-                [6],
-                [7],
-                [8],
-            ]
-            assert pix.pixelization_to_sub_all == [
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [2],
@@ -136,35 +127,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
-                pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry
+                pixels=9,
+                shape=(3, 3),
+                grid=grid,
+                pixelization_grid=pixelization_grid,
+                geometry=geometry,
             )
 
             assert (
-                pix.regular_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
-            assert (
-                pix.sub_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-            ).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [2],
-                [3],
-                [4],
-                [5],
-                [6],
-                [7],
-                [8],
-            ]
-            assert pix.pixelization_to_sub_all == [
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [2],
@@ -200,35 +182,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
-                pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry
+                pixels=9,
+                shape=(3, 3),
+                grid=grid,
+                pixelization_grid=pixelization_grid,
+                geometry=geometry,
             )
 
             assert (
-                pix.regular_to_pixelization == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])
             ).all()
-            assert (
-                pix.sub_to_pixelization == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])
-            ).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [],
-                [2],
-                [],
-                [1, 3, 4, 5, 7],
-                [],
-                [6],
-                [],
-                [8],
-            ]
-            assert pix.pixelization_to_sub_all == [
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [],
                 [2],
@@ -271,38 +244,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
                 pixels=12,
                 shape=(4, 3),
-                grid_stack=grids,
-                border=None,
+                grid=grid,
+                pixelization_grid=pixelization_grid,
                 geometry=geometry,
             )
 
-            assert (pix.regular_to_pixelization == np.array([0, 1, 2, 3, 8, 11])).all()
-            assert (pix.sub_to_pixelization == np.array([0, 1, 2, 3, 8, 11])).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [2],
-                [3],
-                [],
-                [],
-                [],
-                [],
-                [4],
-                [],
-                [],
-                [5],
-            ]
-            assert pix.pixelization_to_sub_all == [
+            assert (
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 8, 11])
+            ).all()
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [2],
@@ -347,38 +308,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
                 pixels=12,
                 shape=(3, 4),
-                grid_stack=grids,
-                border=None,
+                grid=grid,
+                pixelization_grid=pixelization_grid,
                 geometry=geometry,
             )
 
-            assert (pix.regular_to_pixelization == np.array([0, 1, 2, 6, 9, 11])).all()
-            assert (pix.sub_to_pixelization == np.array([0, 1, 2, 6, 9, 11])).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [2],
-                [],
-                [],
-                [],
-                [3],
-                [],
-                [],
-                [4],
-                [],
-                [5],
-            ]
-            assert pix.pixelization_to_sub_all == [
+            assert (
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 6, 9, 11])
+            ).all()
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [2],
@@ -409,31 +358,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
-                pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry
+                pixels=9,
+                shape=(3, 3),
+                grid=grid,
+                pixelization_grid=pixelization_grid,
+                geometry=geometry,
             )
 
-            assert (pix.regular_to_pixelization == np.array([0, 1, 2, 7, 8])).all()
-            assert (pix.sub_to_pixelization == np.array([0, 1, 2, 7, 8])).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [2],
-                [],
-                [],
-                [],
-                [],
-                [3],
-                [4],
-            ]
-            assert pix.pixelization_to_sub_all == [
+            assert (
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 7, 8])
+            ).all()
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [2],
@@ -459,31 +403,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
-                pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry
+                pixels=9,
+                shape=(3, 3),
+                grid=grid,
+                pixelization_grid=pixelization_grid,
+                geometry=geometry,
             )
 
-            assert (pix.regular_to_pixelization == np.array([0, 1, 3, 5, 8])).all()
-            assert (pix.sub_to_pixelization == np.array([0, 1, 3, 5, 8])).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [],
-                [2],
-                [],
-                [3],
-                [],
-                [],
-                [4],
-            ]
-            assert pix.pixelization_to_sub_all == [
+            assert (
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 3, 5, 8])
+            ).all()
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [],
@@ -510,38 +449,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
                 pixels=12,
                 shape=(4, 3),
-                grid_stack=grids,
-                border=None,
+                grid=grid,
+                pixelization_grid=pixelization_grid,
                 geometry=geometry,
             )
 
-            assert (pix.regular_to_pixelization == np.array([0, 1, 3, 10, 11])).all()
-            assert (pix.sub_to_pixelization == np.array([0, 1, 3, 10, 11])).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [],
-                [2],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [3],
-                [4],
-            ]
-            assert pix.pixelization_to_sub_all == [
+            assert (
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 3, 10, 11])
+            ).all()
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [],
@@ -568,11 +495,10 @@ class TestRectangularMapper:
 
             pix = pixelizations.Rectangular(shape=(3, 4))
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
@@ -580,28 +506,17 @@ class TestRectangularMapper:
             pix = mappers.RectangularMapper(
                 pixels=12,
                 shape=(3, 4),
-                grid_stack=grids,
-                border=None,
+                grid=grid,
+                pixelization_grid=pixelization_grid,
                 geometry=geometry,
             )
 
-            assert (pix.regular_to_pixelization == np.array([0, 1, 4, 10, 11])).all()
-            assert (pix.sub_to_pixelization == np.array([0, 1, 4, 10, 11])).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [],
-                [],
-                [2],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [3],
-                [4],
-            ]
-            assert pix.pixelization_to_sub_all == [
+            assert (
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 4, 10, 11])
+            ).all()
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [],
@@ -654,35 +569,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_sub_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_sub_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
-                pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry
+                pixels=9,
+                shape=(3, 3),
+                grid=grid,
+                pixelization_grid=pixelization_grid,
+                geometry=geometry,
             )
 
             assert (
-                pix.regular_to_pixelization == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
-            assert (
-                pix.sub_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-            ).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [],
-                [2],
-                [],
-                [1, 3, 4, 5, 7],
-                [],
-                [6],
-                [],
-                [8],
-            ]
-            assert pix.pixelization_to_sub_all == [
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [2],
@@ -720,35 +626,26 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
-                pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry
+                pixels=9,
+                shape=(3, 3),
+                grid=grid,
+                pixelization_grid=pixelization_grid,
+                geometry=geometry,
             )
 
             assert (
-                pix.regular_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
-            assert (
-                pix.sub_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-            ).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [2],
-                [3],
-                [4],
-                [5],
-                [6],
-                [7],
-                [8],
-            ]
-            assert pix.pixelization_to_sub_all == [
+
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [2],
@@ -775,38 +672,25 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(
-                    pixelization_grid, sub_to_regular=np.ones((1)), sub_grid_size=1
-                ),
+            grid = MockPixelizationGrid(
+                pixelization_grid,
+                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                sub_grid_size=1,
             )
 
             pix = mappers.RectangularMapper(
                 pixels=12,
                 shape=(4, 3),
-                grid_stack=grids,
-                border=None,
+                grid=grid,
+                pixelization_grid=pixelization_grid,
                 geometry=geometry,
             )
 
-            assert (pix.regular_to_pixelization == np.array([0, 1, 3, 10, 11])).all()
-            assert (pix.sub_to_pixelization == np.array([0, 1, 3, 10, 11])).all()
-            assert pix.pixelization_to_regular_all == [
-                [0],
-                [1],
-                [],
-                [2],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [3],
-                [4],
-            ]
-            assert pix.pixelization_to_sub_all == [
+            assert (
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 3, 10, 11])
+            ).all()
+            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
                 [1],
                 [],
@@ -843,7 +727,11 @@ class TestRectangularMapper:
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             pix = mappers.RectangularMapper(
-                pixels=9, shape=(3, 3), grid_stack=None, border=None, geometry=geometry
+                pixels=9,
+                shape=(3, 3),
+                grid=None,
+                pixelization_grid=pixelization_grid,
+                geometry=geometry,
             )
 
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(
@@ -862,10 +750,11 @@ class TestRectangularMapper:
             pix = mappers.RectangularMapper(
                 pixels=9,
                 shape=(4, 3),
-                grid_stack=None,
-                border=None,
+                grid=None,
+                pixelization_grid=None,
                 geometry=MockGeometry(),
             )
+
             solution = np.array(
                 [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0]
             )
@@ -883,8 +772,8 @@ class TestRectangularMapper:
             pix = mappers.RectangularMapper(
                 pixels=9,
                 shape=(3, 4),
-                grid_stack=None,
-                border=None,
+                grid=None,
+                pixelization_grid=None,
                 geometry=MockGeometry(),
             )
             solution = np.array(
@@ -903,91 +792,6 @@ class TestRectangularMapper:
 
 
 class TestVoronoiMapper:
-    class TestImageToPixelizationViaNearestNeighborsForTesting:
-        def test__grid_to_pixel_pixels_via_nearest_neighbour__case1__correct_pairs(
-            self
-        ):
-            pixel_centers = np.array(
-                [[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]]
-            )
-            image_grid = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
-
-            image_to_pixelization = grid_to_pixel_pixels_via_nearest_neighbour(
-                image_grid, pixel_centers
-            )
-
-            assert image_to_pixelization[0] == 0
-            assert image_to_pixelization[1] == 1
-            assert image_to_pixelization[2] == 2
-            assert image_to_pixelization[3] == 3
-
-        def test__grid_to_pixel_pixels_via_nearest_neighbour___case2__correct_pairs(
-            self
-        ):
-            pixel_centers = np.array(
-                [[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]]
-            )
-            image_grid = np.array(
-                [
-                    [1.1, 1.1],
-                    [-1.1, 1.1],
-                    [-1.1, -1.1],
-                    [1.1, -1.1],
-                    [0.9, -0.9],
-                    [-0.9, -0.9],
-                    [-0.9, 0.9],
-                    [0.9, 0.9],
-                ]
-            )
-
-            image_to_pixelization = grid_to_pixel_pixels_via_nearest_neighbour(
-                image_grid, pixel_centers
-            )
-
-            assert image_to_pixelization[0] == 0
-            assert image_to_pixelization[1] == 1
-            assert image_to_pixelization[2] == 2
-            assert image_to_pixelization[3] == 3
-            assert image_to_pixelization[4] == 3
-            assert image_to_pixelization[5] == 2
-            assert image_to_pixelization[6] == 1
-            assert image_to_pixelization[7] == 0
-
-        def test__grid_to_pixel_pixels_via_nearest_neighbour___case3__correct_pairs(
-            self
-        ):
-            pixel_centers = np.array(
-                [
-                    [1.0, 1.0],
-                    [-1.0, 1.0],
-                    [-1.0, -1.0],
-                    [1.0, -1.0],
-                    [0.0, 0.0],
-                    [2.0, 2.0],
-                ]
-            )
-            image_grid = np.array(
-                [
-                    [0.1, 0.1],
-                    [-0.1, -0.1],
-                    [0.49, 0.49],
-                    [0.51, 0.51],
-                    [1.01, 1.01],
-                    [1.51, 1.51],
-                ]
-            )
-
-            image_to_pixelization = grid_to_pixel_pixels_via_nearest_neighbour(
-                image_grid, pixel_centers
-            )
-
-            assert image_to_pixelization[0] == 4
-            assert image_to_pixelization[1] == 4
-            assert image_to_pixelization[2] == 4
-            assert image_to_pixelization[3] == 0
-            assert image_to_pixelization[4] == 0
-            assert image_to_pixelization[5] == 5
-
     class TestSubToPixelizationViaNearestNeighborsForTesting:
         def test__grid_to_pixel_pixels_via_nearest_neighbour__case1__correct_pairs(
             self
@@ -1073,65 +877,6 @@ class TestVoronoiMapper:
             assert sub_to_pix[4] == 0
             assert sub_to_pix[5] == 5
 
-    class TestRegularToPixelization:
-        def test__image_to_pixelization_of_mapper_matches_nearest_neighbor_calculation(
-            self
-        ):
-
-            pixel_centers = np.array(
-                [[-1.0, -1.0], [-0.9, 0.9], [1.0, -1.1], [1.2, 1.2]]
-            )
-
-            pixelization_grid = np.array(
-                [
-                    [-1.0, -1.0],
-                    [-1.0, 0.0],
-                    [-1.0, 1.0],
-                    [0.0, -1.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [1.0, -1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                ]
-            )
-
-            regular_to_pixelization_nearest_neighbour = grid_to_pixel_pixels_via_nearest_neighbour(
-                pixelization_grid, pixel_centers
-            )
-
-            sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-            regular_to_nearest_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
-            grids = MockPixGridStack(
-                regular=pixelization_grid,
-                sub=MockPixSubGrid(np.array([]), sub_to_regular, sub_grid_size=1),
-                pix=pixelization_grid,
-                regular_to_pixelization=regular_to_nearest_pix,
-            )
-
-            pix = pixelizations.Voronoi()
-            voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
-            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization(
-                pixels=6, ridge_points=voronoi.ridge_points
-            )
-
-            mapper = mappers.VoronoiMapper(
-                pixels=6,
-                grid_stack=grids,
-                border=None,
-                voronoi=voronoi,
-                geometry=MockGeometry(
-                    pixel_centres=pixel_centers,
-                    pixel_neighbors=pixel_neighbors,
-                    pixel_neighbors_size=pixel_neighbors_size,
-                ),
-            )
-
-            assert (
-                mapper.regular_to_pixelization
-                == regular_to_pixelization_nearest_neighbour
-            ).all()
-
     class TestSubToPixelization:
         def test__sub_to_pix_of_mapper_matches_nearest_neighbor_calculation(self):
 
@@ -1172,29 +917,31 @@ class TestVoronoiMapper:
                 pixelization_sub_grid, pixel_centers
             )
 
-            sub_to_regular = np.array(
+            sub_mask_1d_index_to_mask_1d_index = np.array(
                 [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
             )
             regular_to_nearest_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
-            grids = MockPixGridStack(
-                regular=np.array([]),
-                sub=MockPixSubGrid(
-                    pixelization_sub_grid, sub_to_regular, sub_grid_size=1
-                ),
-                pix=pixelization_sub_grid,
-                regular_to_pixelization=regular_to_nearest_pix,
+            grid = MockPixelizationGrid(
+                pixelization_sub_grid,
+                sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+                sub_grid_size=1,
             )
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
-            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization(
+            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixels_and_ridge_points(
                 pixels=6, ridge_points=voronoi.ridge_points
+            )
+
+            pixelization_grid = MockPixelizationGrid2(
+                arr=pixelization_sub_grid,
+                mask_1d_index_to_pixelization_1d_index=regular_to_nearest_pix,
             )
 
             mapper = mappers.VoronoiMapper(
                 pixels=6,
-                grid_stack=grids,
-                border=None,
+                grid=grid,
+                pixelization_grid=pixelization_grid,
                 voronoi=voronoi,
                 geometry=MockGeometry(
                     pixel_centres=pixel_centers,
@@ -1203,4 +950,7 @@ class TestVoronoiMapper:
                 ),
             )
 
-            assert (mapper.sub_to_pixelization == sub_to_pix_nearest_neighbour).all()
+            assert (
+                mapper.sub_mask_1d_index_to_pixelization_1d_index
+                == sub_to_pix_nearest_neighbour
+            ).all()

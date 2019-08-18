@@ -47,26 +47,15 @@ class Tracer(object):
 
     @classmethod
     def x2_plane_tracer_from_lens__source_galaxies_and_image_plane_grid_stack(
-        cls,
-        lens_galaxies,
-        source_galaxies,
-        cosmology=cosmo.Planck15,
+        cls, lens_galaxies, source_galaxies, cosmology=cosmo.Planck15
     ):
-        image_plane = pl.Plane(
-            galaxies=lens_galaxies,
-            cosmology=cosmology,
-        )
+        image_plane = pl.Plane(galaxies=lens_galaxies, cosmology=cosmology)
 
-        source_plane = pl.Plane(
-            galaxies=source_galaxies,
-            cosmology=cosmology,
-        )
+        source_plane = pl.Plane(galaxies=source_galaxies, cosmology=cosmology)
         return Tracer(planes=[image_plane, source_plane], cosmology=cosmology)
 
     @classmethod
-    def from_galaxies(
-        cls, galaxies, cosmology=cosmo.Planck15
-    ):
+    def from_galaxies(cls, galaxies, cosmology=cosmo.Planck15):
 
         plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(
             galaxies=galaxies
@@ -81,10 +70,7 @@ class Tracer(object):
         for plane_index in range(0, len(plane_redshifts)):
 
             planes.append(
-                pl.Plane(
-                    galaxies=galaxies_in_planes[plane_index],
-                    cosmology=cosmology,
-                )
+                pl.Plane(galaxies=galaxies_in_planes[plane_index], cosmology=cosmology)
             )
 
         return Tracer(planes=planes, cosmology=cosmology)
@@ -365,7 +351,9 @@ class Tracer(object):
         grid_calc = grid.copy()
 
         if self.total_planes == 2:
-            deflections = self.image_plane.deflections_from_grid(grid=grid_calc, return_in_2d=return_in_2d)
+            deflections = self.image_plane.deflections_from_grid(
+                grid=grid_calc, return_in_2d=return_in_2d
+            )
             return [grid, grid - deflections]
 
         traced_grids = []
@@ -384,18 +372,26 @@ class Tracer(object):
                         cosmology=self.cosmology,
                     )
 
-                    scaled_deflections = scaling_factor * traced_deflections[previous_plane_index]
+                    scaled_deflections = (
+                        scaling_factor * traced_deflections[previous_plane_index]
+                    )
 
                     scaled_grid -= scaled_deflections
 
-            traced_deflections.append(plane.deflections_from_grid(grid=scaled_grid, return_in_2d=return_in_2d))
+            traced_deflections.append(
+                plane.deflections_from_grid(grid=scaled_grid, return_in_2d=return_in_2d)
+            )
             traced_grids.append(scaled_grid)
 
         return traced_grids
 
-    def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1, return_in_2d=True):
+    def deflections_between_planes_from_grid(
+        self, grid, plane_i=0, plane_j=-1, return_in_2d=True
+    ):
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid, return_in_2d=return_in_2d)
+        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
+            grid=grid, return_in_2d=return_in_2d
+        )
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
@@ -406,7 +402,9 @@ class Tracer(object):
         traced_grids.append(traced_grid)
 
         for plane in self.planes[0:-1]:
-            traced_grid = plane.traced_grid_from_grid(grid=traced_grid, return_in_2d=return_in_2d)
+            traced_grid = plane.traced_grid_from_grid(
+                grid=traced_grid, return_in_2d=return_in_2d
+            )
             traced_grids.append(traced_grid)
 
         return traced_grids
@@ -438,7 +436,9 @@ class Tracer(object):
                         deflections_stack=scaled_deflections_stack,
                     )
 
-            traced_grid = plane.traced_grid_from_grid(grid=traced_grid, return_in_2d=return_in_2d)
+            traced_grid = plane.traced_grid_from_grid(
+                grid=traced_grid, return_in_2d=return_in_2d
+            )
             traced_grids.append(traced_grid)
 
         return traced_grids
@@ -483,7 +483,12 @@ class Tracer(object):
 
     @property
     def mappers_of_planes(self):
-        return list(filter(None, [plane.mapper_from_regular_grid_and_pixel_centres for plane in self.planes]))
+        return list(
+            filter(
+                None,
+                [plane.mapper_from_grid_and_pixelization_grid for plane in self.planes],
+            )
+        )
 
     @property
     def regularizations_of_planes(self):
@@ -795,7 +800,9 @@ class Tracer(object):
         for plane in self.planes:
             for galaxy in plane.galaxies:
 
-                galaxy_image_dict[galaxy] = plane.profile_image_of_galaxy_from_grid_and_galaxy(
+                galaxy_image_dict[
+                    galaxy
+                ] = plane.profile_image_of_galaxy_from_grid_and_galaxy(
                     galaxy=galaxy, return_in_2d=False, return_binned=True
                 )
 
