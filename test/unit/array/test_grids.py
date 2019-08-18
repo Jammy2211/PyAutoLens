@@ -240,6 +240,48 @@ class TestGrid:
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, False, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        blurring_mask_util = mask_util.blurring_mask_from_mask_and_psf_shape(
+            mask=mask, psf_shape=(3, 5)
+        )
+
+        blurring_grid_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_grid_size=1
+        )
+
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+
+        blurring_grid = grid.blurring_grid_from_psf_shape(
+            psf_shape=(3, 5)
+        )
+
+        blurring_mask = mask.blurring_mask_from_psf_shape(psf_shape=(3, 5))
+
+        assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
+        assert blurring_grid.pixel_scale == 2.0
+        assert (
+            blurring_grid.mask.mask_1d_index_to_mask_2d_index
+            == blurring_mask.mask_1d_index_to_mask_2d_index
+        ).all()
+        assert blurring_grid.sub_grid_size == 1
+
+    def test__blurring_grid_from_psf_shape__compare_to_array_util(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
                 [True, True, False, True, True, True, False, True, True],
                 [True, True, True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True, True, True],
@@ -265,7 +307,7 @@ class TestGrid:
             mask=mask, psf_shape=(3, 5)
         )
 
-        blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape=(3, 5))
+        blurring_mask = mask.blurring_mask_from_psf_shape(psf_shape=(3, 5))
 
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scale == 2.0

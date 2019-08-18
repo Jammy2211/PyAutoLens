@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from astropy import cosmology as cosmo
+from skimage import measure
 
 from autolens import exc, dimensions as dim
 from autolens.array import grids
@@ -19,9 +20,9 @@ from test.unit.mock.model.mock_cosmology import MockCosmology
 planck = cosmo.Planck15
 
 
-def critical_curve_via_magnification_from_plane_and_grid_stack(plane, grid_stack):
+def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
 
-    magnification_2d = plane.magnification(return_in_2d=True, return_binned=False)
+    magnification_2d = plane.magnification_from_grid(grid=grid, return_in_2d=True, return_binned=False)
 
     inverse_magnification_2d = 1 / magnification_2d
 
@@ -37,7 +38,7 @@ def critical_curve_via_magnification_from_plane_and_grid_stack(plane, grid_stack
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid_stack.sub.unlensed_2d.marching_squares_grid_pixels_to_grid_arcsec(
+        critical_curve = grid.marching_squares_grid_pixels_to_grid_arcsec(
             grid_pixels=pixel_coord, shape=magnification_2d.shape
         )
 
@@ -46,24 +47,21 @@ def critical_curve_via_magnification_from_plane_and_grid_stack(plane, grid_stack
     return critical_curves
 
 
-def caustics_via_magnification_from_plane_and_grid_stack(plane, grid_stack):
+def caustics_via_magnification_from_plane_and_grid(plane, grid):
 
     caustics = []
 
-    critical_curves = critical_curve_via_magnification_from_plane_and_grid_stack(
-        plane=plane, grid_stack=grid_stack
+    critical_curves = critical_curve_via_magnification_from_plane_and_grid(
+        plane=plane, grid=grid
     )
 
     for i in range(len(critical_curves)):
 
         critical_curve = critical_curves[i]
 
-        deflections_1d = plane.deflections(
-            grid_override=critical_curves, return_in_2d=False, return_binned=False
+        deflections_1d = plane.deflections_from_grid(
+            grid=critical_curve, return_in_2d=False, return_binned=False
         )
-
-        print(critical_curve.shape)
-        print(deflections_1d)
 
         caustic = critical_curve - deflections_1d
 
@@ -73,87 +71,6 @@ def caustics_via_magnification_from_plane_and_grid_stack(plane, grid_stack):
 
 
 class TestAbstractPlane(object):
-    class TestCosmology:
-        def test__all_cosmological_quantities_match_cosmology_util(self):
-
-            plane = pl.Plane(redshift=0.1, cosmology=planck)
-
-            assert (
-                plane.arcsec_per_kpc
-                == cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
-                    redshift=0.1, cosmology=planck
-                )
-            )
-
-            assert (
-                plane.kpc_per_arcsec
-                == cosmology_util.kpc_per_arcsec_from_redshift_and_cosmology(
-                    redshift=0.1, cosmology=planck
-                )
-            )
-
-            assert plane.angular_diameter_distance_to_earth_in_units(
-                unit_length="arcsec"
-            ) == cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
-                redshift=0.1, cosmology=planck, unit_length="arcsec"
-            )
-
-            plane = pl.Plane(redshift=0.1, cosmology=planck)
-
-            assert plane.angular_diameter_distance_to_earth_in_units(
-                unit_length="kpc"
-            ) == cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
-                redshift=0.1, cosmology=planck, unit_length="kpc"
-            )
-
-            plane = pl.Plane(redshift=1.0, cosmology=planck)
-
-            assert (
-                plane.arcsec_per_kpc
-                == cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
-                    redshift=1.0, cosmology=planck
-                )
-            )
-
-            assert (
-                plane.kpc_per_arcsec
-                == cosmology_util.kpc_per_arcsec_from_redshift_and_cosmology(
-                    redshift=1.0, cosmology=planck
-                )
-            )
-
-            assert plane.angular_diameter_distance_to_earth_in_units(
-                unit_length="arcsec"
-            ) == cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
-                redshift=1.0, cosmology=planck, unit_length="arcsec"
-            )
-
-            plane = pl.Plane(redshift=1.0, cosmology=planck)
-
-            assert plane.angular_diameter_distance_to_earth_in_units(
-                unit_length="kpc"
-            ) == cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
-                redshift=1.0, cosmology=planck, unit_length="kpc"
-            )
-
-            plane = pl.Plane(redshift=0.6)
-
-            assert plane.cosmic_average_density_in_units(
-                unit_length="arcsec", unit_mass="solMass"
-            ) == cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
-                redshift=0.6,
-                cosmology=planck,
-                unit_length="arcsec",
-                unit_mass="solMass",
-            )
-
-            plane = pl.Plane(redshift=0.6, cosmology=planck)
-
-            assert plane.cosmic_average_density_in_units(
-                unit_length="kpc", unit_mass="solMass"
-            ) == cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
-                redshift=0.6, cosmology=planck, unit_length="kpc", unit_mass="solMass"
-            )
 
     class TestProperties:
         def test__has_light_profile(self):
@@ -241,463 +158,6 @@ class TestAbstractPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy, g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_hyper_galaxy is True
-
-    class TestRegularization:
-        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self):
-            galaxy_no_pix = g.Galaxy(redshift=0.5)
-
-            plane = pl.Plane(galaxies=[galaxy_no_pix], redshift=None)
-
-            assert plane.regularization is None
-
-        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self):
-            galaxy_pix = g.Galaxy(
-                redshift=0.5,
-                pixelization=mock_inv.MockPixelization(value=1),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
-            )
-
-            plane = pl.Plane(galaxies=[galaxy_pix], redshift=None)
-
-            assert plane.regularization.shape == (1, 1)
-
-            galaxy_pix = g.Galaxy(
-                redshift=0.5,
-                pixelization=mock_inv.MockPixelization(value=1),
-                regularization=mock_inv.MockRegularization(matrix_shape=(2, 2)),
-            )
-            galaxy_no_pix = g.Galaxy(redshift=0.5)
-
-            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], redshift=None)
-
-            assert plane.regularization.shape == (2, 2)
-
-        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self):
-            galaxy_pix_0 = g.Galaxy(
-                redshift=0.5,
-                pixelization=mock_inv.MockPixelization(value=1),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
-            )
-            galaxy_pix_1 = g.Galaxy(
-                redshift=0.5,
-                pixelization=mock_inv.MockPixelization(value=2),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
-            )
-
-            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], redshift=None)
-
-            with pytest.raises(exc.PixelizationException):
-                print(plane.regularization)
-
-    class TestLuminosities:
-        def test__within_circle_different_luminosity_units__same_as_galaxy_luminosities(
-            self
-        ):
-            g0 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=1.0))
-            g1 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=2.0))
-
-            radius = dim.Length(1.0, "arcsec")
-
-            g0_luminosity = g0.luminosity_within_circle_in_units(
-                radius=radius, unit_luminosity="eps"
-            )
-            g1_luminosity = g1.luminosity_within_circle_in_units(
-                radius=radius, unit_luminosity="eps"
-            )
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_luminosities = plane.luminosities_of_galaxies_within_circles_in_units(
-                radius=radius, unit_luminosity="eps"
-            )
-
-            assert plane_luminosities[0] == g0_luminosity
-            assert plane_luminosities[1] == g1_luminosity
-
-            g0_luminosity = g0.luminosity_within_circle_in_units(
-                radius=radius, unit_luminosity="counts", exposure_time=3.0
-            )
-            g1_luminosity = g1.luminosity_within_circle_in_units(
-                radius=radius, unit_luminosity="counts", exposure_time=3.0
-            )
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_luminosities = plane.luminosities_of_galaxies_within_circles_in_units(
-                radius=radius, unit_luminosity="counts", exposure_time=3.0
-            )
-
-            assert plane_luminosities[0] == g0_luminosity
-            assert plane_luminosities[1] == g1_luminosity
-
-        def test__within_circle_different_distance_units__same_as_galaxy_luminosities(
-            self
-        ):
-            g0 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=1.0))
-            g1 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=2.0))
-
-            radius = dim.Length(1.0, "arcsec")
-
-            g0_luminosity = g0.luminosity_within_circle_in_units(radius=radius)
-            g1_luminosity = g1.luminosity_within_circle_in_units(radius=radius)
-
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_luminosities = plane.luminosities_of_galaxies_within_circles_in_units(
-                radius=radius
-            )
-
-            assert plane_luminosities[0] == g0_luminosity
-            assert plane_luminosities[1] == g1_luminosity
-
-            radius = dim.Length(1.0, "kpc")
-
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            g0_luminosity = g0.luminosity_within_circle_in_units(radius=radius)
-            g1_luminosity = g1.luminosity_within_circle_in_units(radius=radius)
-
-            plane_luminosities = plane.luminosities_of_galaxies_within_circles_in_units(
-                radius=radius
-            )
-
-            assert plane_luminosities[0] == g0_luminosity
-            assert plane_luminosities[1] == g1_luminosity
-
-        def test__within_ellipse_different_luminosity_units__same_as_galaxy_luminosities(
-            self
-        ):
-            g0 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=1.0))
-            g1 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=2.0))
-
-            major_axis = dim.Length(1.0, "arcsec")
-
-            g0_luminosity = g0.luminosity_within_ellipse_in_units(
-                major_axis=major_axis, unit_luminosity="eps"
-            )
-            g1_luminosity = g1.luminosity_within_ellipse_in_units(
-                major_axis=major_axis, unit_luminosity="eps"
-            )
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses_in_units(
-                major_axis=major_axis, unit_luminosity="eps"
-            )
-
-            assert plane_luminosities[0] == g0_luminosity
-            assert plane_luminosities[1] == g1_luminosity
-
-            g0_luminosity = g0.luminosity_within_ellipse_in_units(
-                major_axis=major_axis, unit_luminosity="counts", exposure_time=3.0
-            )
-            g1_luminosity = g1.luminosity_within_ellipse_in_units(
-                major_axis=major_axis, unit_luminosity="counts", exposure_time=3.0
-            )
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses_in_units(
-                major_axis=major_axis, unit_luminosity="counts", exposure_time=3.0
-            )
-
-            assert plane_luminosities[0] == g0_luminosity
-            assert plane_luminosities[1] == g1_luminosity
-
-        def test__within_ellipse_different_distance_units__same_as_galaxy_luminosities(
-            self
-        ):
-            g0 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=1.0))
-            g1 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=2.0))
-
-            major_axis = dim.Length(1.0, "arcsec")
-
-            g0_luminosity = g0.luminosity_within_ellipse_in_units(major_axis=major_axis)
-            g1_luminosity = g1.luminosity_within_ellipse_in_units(major_axis=major_axis)
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses_in_units(
-                major_axis=major_axis
-            )
-
-            assert plane_luminosities[0] == g0_luminosity
-            assert plane_luminosities[1] == g1_luminosity
-
-            major_axis = dim.Length(1.0, "kpc")
-
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-
-            g0_luminosity = g0.luminosity_within_ellipse_in_units(major_axis=major_axis)
-            g1_luminosity = g1.luminosity_within_ellipse_in_units(major_axis=major_axis)
-
-            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses_in_units(
-                major_axis=major_axis
-            )
-
-            assert plane_luminosities[0] == g0_luminosity
-            assert plane_luminosities[1] == g1_luminosity
-
-    class TestMasses:
-        def test__within_circle_different_mass_units__same_as_galaxy_masses(self):
-            g0 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            g1 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
-            )
-
-            radius = dim.Length(1.0, "arcsec")
-
-            g0_mass = g0.mass_within_circle_in_units(radius=radius, unit_mass="angular")
-            g1_mass = g1.mass_within_circle_in_units(radius=radius, unit_mass="angular")
-
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-
-            plane_masses = plane.masses_of_galaxies_within_circles_in_units(
-                radius=radius, unit_mass="angular"
-            )
-
-            assert plane_masses[0] == g0_mass
-            assert plane_masses[1] == g1_mass
-
-            g0_mass = g0.mass_within_circle_in_units(
-                radius=radius, unit_mass="solMass", redshift_source=1.0
-            )
-            g1_mass = g1.mass_within_circle_in_units(
-                radius=radius, unit_mass="solMass", redshift_source=1.0
-            )
-
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-
-            plane_masses = plane.masses_of_galaxies_within_circles_in_units(
-                radius=radius, unit_mass="solMass", redshift_source=1.0
-            )
-
-            assert plane_masses[0] == g0_mass
-            assert plane_masses[1] == g1_mass
-
-        def test__within_circle_different_distance_units__same_as_galaxy_masses(self):
-            radius = dim.Length(1.0, "arcsec")
-
-            g0 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            g1 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
-            )
-
-            g0_mass = g0.mass_within_circle_in_units(radius=radius, redshift_source=1.0)
-            g1_mass = g1.mass_within_circle_in_units(radius=radius, redshift_source=1.0)
-
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_masses = plane.masses_of_galaxies_within_circles_in_units(
-                radius=radius, redshift_source=1.0
-            )
-
-            assert plane_masses[0] == g0_mass
-            assert plane_masses[1] == g1_mass
-
-            radius = dim.Length(1.0, "kpc")
-
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            g0_mass = g0.mass_within_circle_in_units(
-                radius=radius, redshift_source=1.0, kpc_per_arcsec=plane.kpc_per_arcsec
-            )
-            g1_mass = g1.mass_within_circle_in_units(
-                radius=radius, redshift_source=1.0, kpc_per_arcsec=plane.kpc_per_arcsec
-            )
-
-            plane_masses = plane.masses_of_galaxies_within_circles_in_units(
-                radius=radius, redshift_source=1.0
-            )
-
-            assert plane_masses[0] == g0_mass
-            assert plane_masses[1] == g1_mass
-
-        def test__within_ellipse_different_mass_units__same_as_galaxy_masses(self):
-            g0 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            g1 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
-            )
-
-            major_axis = dim.Length(1.0, "arcsec")
-
-            g0_mass = g0.mass_within_ellipse_in_units(
-                major_axis=major_axis, unit_mass="angular"
-            )
-            g1_mass = g1.mass_within_ellipse_in_units(
-                major_axis=major_axis, unit_mass="angular"
-            )
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(
-                major_axis=major_axis, unit_mass="angular"
-            )
-
-            assert plane_masses[0] == g0_mass
-            assert plane_masses[1] == g1_mass
-
-            g0_mass = g0.mass_within_ellipse_in_units(
-                major_axis=major_axis, unit_mass="solMass", redshift_source=1.0
-            )
-            g1_mass = g1.mass_within_ellipse_in_units(
-                major_axis=major_axis, unit_mass="solMass", redshift_source=1.0
-            )
-
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(
-                major_axis=major_axis, unit_mass="solMass", redshift_source=1.0
-            )
-
-            assert plane_masses[0] == g0_mass
-            assert plane_masses[1] == g1_mass
-
-        def test__within_ellipse_different_distance_units__same_as_galaxy_masses(self):
-            g0 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            g1 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
-            )
-
-            major_axis = dim.Length(1.0, "arcsec")
-
-            g0_mass = g0.mass_within_ellipse_in_units(
-                major_axis=major_axis, redshift_source=1.0
-            )
-            g1_mass = g1.mass_within_ellipse_in_units(
-                major_axis=major_axis, redshift_source=1.0
-            )
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(
-                major_axis=major_axis, redshift_source=1.0
-            )
-
-            assert plane_masses[0] == g0_mass
-            assert plane_masses[1] == g1_mass
-
-            major_axis = dim.Length(1.0, "kpc")
-
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
-            g0_mass = g0.mass_within_ellipse_in_units(
-                major_axis=major_axis,
-                redshift_source=1.0,
-                kpc_per_arcsec=plane.kpc_per_arcsec,
-            )
-            g1_mass = g1.mass_within_ellipse_in_units(
-                major_axis=major_axis,
-                redshift_source=1.0,
-                kpc_per_arcsec=plane.kpc_per_arcsec,
-            )
-            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(
-                major_axis=major_axis, redshift_source=1.0
-            )
-
-            assert plane_masses[0] == g0_mass
-            assert plane_masses[1] == g1_mass
-
-    class TestEinsteinRadiiAndMass:
-        def test__plane_has_galaxies_with_sis_profiles__einstein_radius_and_mass_sum_of_sis_profiles(
-            self
-        ):
-            cosmology = MockCosmology(
-                arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0
-            )
-
-            sis_0 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            sis_1 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
-            )
-
-            plane = pl.Plane(galaxies=[sis_0], redshift=0.5, cosmology=cosmology)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(1.0, 1.0e-4)
-            assert plane.einstein_radius_in_units(unit_length="kpc") == pytest.approx(
-                2.0, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(
-                unit_mass="solMass", redshift_source=1.0
-            ) == pytest.approx(2.0 * np.pi, 1.0e-4)
-
-            plane = pl.Plane(galaxies=[sis_1], redshift=0.5, cosmology=cosmology)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(2.0, 1.0e-4)
-            assert plane.einstein_radius_in_units(unit_length="kpc") == pytest.approx(
-                4.0, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi * 2.0 ** 2.0, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(
-                unit_mass="solMass", redshift_source=1.0
-            ) == pytest.approx(2.0 * np.pi * 2.0 ** 2.0, 1.0e-4)
-
-            plane = pl.Plane(galaxies=[sis_0, sis_1], redshift=0.5, cosmology=cosmology)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(3.0, 1.0e-4)
-            assert plane.einstein_radius_in_units(unit_length="kpc") == pytest.approx(
-                2.0 * 3.0, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi * (1.0 + 2.0 ** 2.0), 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(
-                unit_mass="solMass", redshift_source=1.0
-            ) == pytest.approx(2.0 * np.pi * (1.0 + 2.0 ** 2.0), 1.0e-4)
-
-        def test__include_galaxy_with_no_mass_profile__does_not_impact_einstein_radius_or_mass(
-            self
-        ):
-            sis_0 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            sis_1 = g.Galaxy(
-                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
-            )
-            g0 = g.Galaxy(redshift=0.5)
-
-            plane = pl.Plane(galaxies=[sis_0, g0], redshift=0.5)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(1.0, 1.0e-4)
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi, 1.0e-4
-            )
-
-            plane = pl.Plane(galaxies=[sis_1, g0], redshift=0.5)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(2.0, 1.0e-4)
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi * 2.0 ** 2.0, 1.0e-4
-            )
-
-            plane = pl.Plane(galaxies=[sis_0, sis_1, g0], redshift=0.5)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(3.0, 1.0e-4)
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi * (1.0 + 2.0 ** 2.0), 1.0e-4
-            )
-
-        def test__only_galaxies_without_mass_profiles__einstein_radius_and_mass_are_none(
-            self
-        ):
-            g0 = g.Galaxy(redshift=0.5)
-
-            plane = pl.Plane(galaxies=[g0], redshift=0.5)
-
-            assert plane.einstein_radius_in_units() is None
-            assert plane.einstein_mass_in_units() is None
-
-            plane = pl.Plane(galaxies=[g0, g0], redshift=0.5)
-
-            assert plane.einstein_radius_in_units() is None
-            assert plane.einstein_mass_in_units() is None
 
     class TestMassProfileGeometry:
         def test__extract_centres_of_all_mass_profiles_of_all_galaxies(self):
@@ -817,268 +277,93 @@ class TestAbstractPlane(object):
             )
             assert plane.phis_of_galaxy_mass_profiles == [[0.9], [0.8], [0.7, 0.6]]
 
-    class TestSummarize:
-        def test__plane_x2_galaxies__summarize_is_correct(self):
-            sersic_0 = lp.SphericalSersic(
-                intensity=1.0, effective_radius=2.0, sersic_index=2.0
-            )
-            sersic_1 = lp.SphericalSersic(
-                intensity=2.0, effective_radius=2.0, sersic_index=2.0
-            )
 
-            sis_0 = mp.SphericalIsothermal(einstein_radius=1.0)
-            sis_1 = mp.SphericalIsothermal(einstein_radius=2.0)
+class TestAbstractPlaneCosmology(object):
 
-            g0 = g.Galaxy(
-                redshift=0.5,
-                light_profile_0=sersic_0,
-                light_profile_1=sersic_1,
-                mass_profile_0=sis_0,
-                mass_profile_1=sis_1,
-            )
+    def test__all_cosmological_quantities_match_cosmology_util(self):
 
-            g1 = g.Galaxy(redshift=0.6, light_profile_0=sersic_0, mass_profile_0=sis_0)
+        plane = pl.Plane(redshift=0.1, cosmology=planck)
 
-            plane = pl.Plane(galaxies=[g0, g1], redshift=0.6)
+        assert (
+            plane.arcsec_per_kpc
+            == cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
+                redshift=0.1, cosmology=planck
+            )
+        )
 
-            summary_text = plane.summarize_in_units(
-                radii=[dim.Length(10.0), dim.Length(500.0)],
-                whitespace=50,
-                unit_length="arcsec",
-                unit_luminosity="eps",
-                unit_mass="angular",
+        assert (
+            plane.kpc_per_arcsec
+            == cosmology_util.kpc_per_arcsec_from_redshift_and_cosmology(
+                redshift=0.1, cosmology=planck
             )
+        )
 
-            i = 0
-            assert summary_text[i] == "Plane\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "redshift                                          0.60"
+        assert plane.angular_diameter_distance_to_earth_in_units(
+            unit_length="arcsec"
+        ) == cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+            redshift=0.1, cosmology=planck, unit_length="arcsec"
+        )
+
+        plane = pl.Plane(redshift=0.1, cosmology=planck)
+
+        assert plane.angular_diameter_distance_to_earth_in_units(
+            unit_length="kpc"
+        ) == cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+            redshift=0.1, cosmology=planck, unit_length="kpc"
+        )
+
+        plane = pl.Plane(redshift=1.0, cosmology=planck)
+
+        assert (
+            plane.arcsec_per_kpc
+            == cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
+                redshift=1.0, cosmology=planck
             )
-            i += 1
-            assert (
-                summary_text[i]
-                == "kpc_per_arcsec                                    6.88"
+        )
+
+        assert (
+            plane.kpc_per_arcsec
+            == cosmology_util.kpc_per_arcsec_from_redshift_and_cosmology(
+                redshift=1.0, cosmology=planck
             )
-            i += 1
-            assert (
-                summary_text[i]
-                == "angular_diameter_distance_to_earth                206264.81"
-            )
-            i += 1
-            assert summary_text[i] == "\n"
-            i += 1
-            assert summary_text[i] == "Galaxy\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "redshift                                          0.50"
-            )
-            i += 1
-            assert summary_text[i] == "\nGALAXY LIGHT\n\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_10.00_arcsec                    1.8854e+02 eps"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_500.00_arcsec                   1.9573e+02 eps"
-            )
-            i += 1
-            assert summary_text[i] == "\nLIGHT PROFILES:\n\n"
-            i += 1
-            assert summary_text[i] == "Light Profile = SphericalSersic\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_10.00_arcsec                    6.2848e+01 eps"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_500.00_arcsec                   6.5243e+01 eps"
-            )
-            i += 1
-            assert summary_text[i] == "\n"
-            i += 1
-            assert summary_text[i] == "Light Profile = SphericalSersic\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_10.00_arcsec                    1.2570e+02 eps"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_500.00_arcsec                   1.3049e+02 eps"
-            )
-            i += 1
-            assert summary_text[i] == "\n"
-            i += 1
-            assert summary_text[i] == "\nGALAXY MASS\n\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_radius                                   3.00 arcsec"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_mass                                     1.5708e+01 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_10.00_arcsec                          9.4248e+01 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_500.00_arcsec                         4.7124e+03 angular"
-            )
-            i += 1
-            assert summary_text[i] == "\nMASS PROFILES:\n\n"
-            i += 1
-            assert summary_text[i] == "Mass Profile = SphericalIsothermal\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_radius                                   1.00 arcsec"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_mass                                     3.1416e+00 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_10.00_arcsec                          3.1416e+01 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_500.00_arcsec                         1.5708e+03 angular"
-            )
-            i += 1
-            assert summary_text[i] == "\n"
-            i += 1
-            assert summary_text[i] == "Mass Profile = SphericalIsothermal\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_radius                                   2.00 arcsec"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_mass                                     1.2566e+01 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_10.00_arcsec                          6.2832e+01 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_500.00_arcsec                         3.1416e+03 angular"
-            )
-            i += 1
-            assert summary_text[i] == "\n"
-            i += 1
-            assert summary_text[i] == "\n"
-            i += 1
-            assert summary_text[i] == "Galaxy\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "redshift                                          0.60"
-            )
-            i += 1
-            assert summary_text[i] == "\nGALAXY LIGHT\n\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_10.00_arcsec                    6.2848e+01 eps"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_500.00_arcsec                   6.5243e+01 eps"
-            )
-            i += 1
-            assert summary_text[i] == "\nLIGHT PROFILES:\n\n"
-            i += 1
-            assert summary_text[i] == "Light Profile = SphericalSersic\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_10.00_arcsec                    6.2848e+01 eps"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "luminosity_within_500.00_arcsec                   6.5243e+01 eps"
-            )
-            i += 1
-            assert summary_text[i] == "\n"
-            i += 1
-            assert summary_text[i] == "\nGALAXY MASS\n\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_radius                                   1.00 arcsec"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_mass                                     3.1416e+00 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_10.00_arcsec                          3.1416e+01 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_500.00_arcsec                         1.5708e+03 angular"
-            )
-            i += 1
-            assert summary_text[i] == "\nMASS PROFILES:\n\n"
-            i += 1
-            assert summary_text[i] == "Mass Profile = SphericalIsothermal\n"
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_radius                                   1.00 arcsec"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "einstein_mass                                     3.1416e+00 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_10.00_arcsec                          3.1416e+01 angular"
-            )
-            i += 1
-            assert (
-                summary_text[i]
-                == "mass_within_500.00_arcsec                         1.5708e+03 angular"
-            )
-            i += 1
-            assert summary_text[i] == "\n"
-            i += 1
+        )
+
+        assert plane.angular_diameter_distance_to_earth_in_units(
+            unit_length="arcsec"
+        ) == cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+            redshift=1.0, cosmology=planck, unit_length="arcsec"
+        )
+
+        plane = pl.Plane(redshift=1.0, cosmology=planck)
+
+        assert plane.angular_diameter_distance_to_earth_in_units(
+            unit_length="kpc"
+        ) == cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+            redshift=1.0, cosmology=planck, unit_length="kpc"
+        )
+
+        plane = pl.Plane(redshift=0.6)
+
+        assert plane.cosmic_average_density_in_units(
+            unit_length="arcsec", unit_mass="solMass"
+        ) == cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
+            redshift=0.6,
+            cosmology=planck,
+            unit_length="arcsec",
+            unit_mass="solMass",
+        )
+
+        plane = pl.Plane(redshift=0.6, cosmology=planck)
+
+        assert plane.cosmic_average_density_in_units(
+            unit_length="kpc", unit_mass="solMass"
+        ) == cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
+            redshift=0.6, cosmology=planck, unit_length="kpc", unit_mass="solMass"
+        )
 
 
-class TestAbstractPlaneGridded(object):
-    class TestImage:
+class TestAbstractPlaneLensing(object):
+    class TestProfileImage:
         def test__profile_image_from_grid__same_as_its_light_profile_image(
             self, sub_grid_7x7, gal_x1_lp
         ):
@@ -1698,245 +983,10 @@ class TestAbstractPlaneGridded(object):
 
             assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
 
-    class TestConvergenceviaJacobian(object):
-        def test__compare_plane_convergence_via_jacobian_and_calculation(self):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05
-            )
-
-            g0 = g.Galaxy(
-                redshift=0.5,
-                mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = g.Galaxy(
-                redshift=0.5,
-                mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
-                redshift=None,
-            )
-
-            convergence_via_calculation = plane.convergence(
-                grid=grid_stack, return_in_2d=False, return_binned=False
-            )
-
-            convergence_via_jacobian = plane.convergence_from_jacobian(
-                grid=grid_stack, return_in_2d=False, return_binned=False
-            )
-
-            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-            assert mean_error < 1e-1
-
-        def test__convergence_sub_grid_binning_two_component_galaxy_plane(self):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
-            )
-
-            g0 = g.Galaxy(
-                redshift=0.5,
-                mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = g.Galaxy(
-                redshift=0.5,
-                mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
-                redshift=None,
-            )
-
-            convergence_binned_reg_grid = plane.convergence_from_jacobian(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=True
-            )
-
-            convergence_sub_grid = plane.convergence_from_jacobian(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=False
-            )
-
-            pixel_1_reg_grid = convergence_binned_reg_grid[0]
-            pixel_1_from_av_sub_grid = (
-                convergence_sub_grid[0]
-                + convergence_sub_grid[1]
-                + convergence_sub_grid[2]
-                + convergence_sub_grid[3]
-            ) / 4
-
-            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
-
-            pixel_10000_reg_grid = convergence_binned_reg_grid[99]
-
-            pixel_10000_from_av_sub_grid = (
-                convergence_sub_grid[399]
-                + convergence_sub_grid[398]
-                + convergence_sub_grid[397]
-                + convergence_sub_grid[396]
-            ) / 4
-
-            assert pixel_10000_reg_grid == pytest.approx(
-                pixel_10000_from_av_sub_grid, 1e-4
-            )
-
-            convergence_via_calculation = plane.convergence(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=True
-            )
-
-            convergence_via_jacobian = plane.convergence_from_jacobian(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=True
-            )
-
-            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-            assert convergence_via_jacobian.shape == (400,)
-            assert mean_error < 1e-1
-
-        def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(self):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
-            )
-
-            g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
-            )
-
-            g0_convergence = g0.convergence_from_jacobian(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=True
-            )
-
-            g1_convergence = g1.convergence_from_jacobian(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=True
-            )
-
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
-                redshift=None,
-            )
-
-            convergence = plane.convergence_from_jacobian(
-                return_in_2d=False, return_binned=True
-            )
-
-            assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
-
-    class TestShearviaJacobian(object):
-        def test__shear_sub_grid_binning_two_component_galaxy_plane(self):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
-            )
-
-            g0 = g.Galaxy(
-                redshift=0.5,
-                mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = g.Galaxy(
-                redshift=0.5,
-                mass_profile=mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
-                redshift=None,
-            )
-
-            shear_binned_reg_grid = plane.shear_from_jacobian(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=True
-            )
-
-            shear_sub_grid = plane.shear_from_jacobian(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=False
-            )
-
-            pixel_1_reg_grid = shear_binned_reg_grid[0]
-            pixel_1_from_av_sub_grid = (
-                shear_sub_grid[0]
-                + shear_sub_grid[1]
-                + shear_sub_grid[2]
-                + shear_sub_grid[3]
-            ) / 4
-
-            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
-
-            pixel_10000_reg_grid = shear_binned_reg_grid[99]
-
-            pixel_10000_from_av_sub_grid = (
-                shear_sub_grid[399]
-                + shear_sub_grid[398]
-                + shear_sub_grid[397]
-                + shear_sub_grid[396]
-            ) / 4
-
-            assert pixel_10000_reg_grid == pytest.approx(
-                pixel_10000_from_av_sub_grid, 1e-4
-            )
-
-        def test__plane_shear_via_jacobian_same_as_multiple_galaxies(self):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
-            )
-
-            g0 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            g1 = g.Galaxy(
-                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
-            )
-
-            g0_shear = g0.shear_from_jacobian(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=True
-            )
-
-            g1_shear = g1.shear_from_jacobian(
-                grid=grid_stack.sub, return_in_2d=False, return_binned=True
-            )
-
-            plane = pl.Plane(
-                galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
-                redshift=None,
-            )
-
-            shear = plane.shear_from_jacobian(return_in_2d=False, return_binned=True)
-
-            assert shear == pytest.approx(g0_shear + g1_shear, 1.0e-8)
-
     class TestJacobian(object):
+
         def test__jacobian_components__two_component_galaxy_plane(self):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(20, 20), pixel_scale=0.05
             )
 
@@ -1956,13 +1006,10 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            jacobian = plane.lensing_jacobian(return_in_2d=False)
+            jacobian = plane.lensing_jacobian_from_grid(grid=grid, return_in_2d=False)
 
             A_12 = jacobian[0, 1]
             A_21 = jacobian[1, 0]
@@ -1971,7 +1018,7 @@ class TestAbstractPlaneGridded(object):
 
             assert mean_error < 1e-4
 
-            jacobian = plane.lensing_jacobian(return_in_2d=False, return_binned=True)
+            jacobian = plane.lensing_jacobian_from_grid(grid=grid, return_in_2d=False, return_binned=True)
 
             A_12 = jacobian[0, 1]
             A_21 = jacobian[1, 0]
@@ -1981,7 +1028,7 @@ class TestAbstractPlaneGridded(object):
             assert mean_error < 1e-4
 
         def test__jacobian_sub_grid_binning_two_component_galaxy_plane(self):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
             )
 
@@ -2001,19 +1048,16 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            jacobian_binned_reg_grid = plane.lensing_jacobian(
-                return_in_2d=False, return_binned=True
+            jacobian_binned_reg_grid = plane.lensing_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
             )
             a11_binned_reg_grid = jacobian_binned_reg_grid[0, 0]
 
-            jacobian_sub_grid = plane.lensing_jacobian(
-                return_in_2d=False, return_binned=False
+            jacobian_sub_grid = plane.lensing_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
             )
             a11_sub_grid = jacobian_sub_grid[0, 0]
 
@@ -2040,7 +1084,7 @@ class TestAbstractPlaneGridded(object):
             )
 
         def test_lambda_t_sub_grid_binning_two_component_galaxy_plane(self):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
             )
 
@@ -2060,18 +1104,15 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            lambda_t_binned_reg_grid = plane.tangential_eigen_value_from_shear_and_convergence(
-                return_in_2d=False, return_binned=True
+            lambda_t_binned_reg_grid = plane.tangential_eigen_value_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
             )
 
-            lambda_t_sub_grid = plane.tangential_eigen_value_from_shear_and_convergence(
-                return_in_2d=False, return_binned=False
+            lambda_t_sub_grid = plane.tangential_eigen_value_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
             )
 
             pixel_1_reg_grid = lambda_t_binned_reg_grid[0]
@@ -2098,7 +1139,7 @@ class TestAbstractPlaneGridded(object):
             )
 
         def test_lambda_r_sub_grid_binning_two_component_galaxy_plane(self):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
             )
 
@@ -2118,18 +1159,15 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            lambda_r_binned_reg_grid = plane.radial_eigen_value_from_shear_and_convergence(
-                return_in_2d=False, return_binned=True
+            lambda_r_binned_reg_grid = plane.radial_eigen_value_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
             )
 
-            lambda_r_sub_grid = plane.radial_eigen_value_from_shear_and_convergence(
-                return_in_2d=False, return_binned=False
+            lambda_r_sub_grid = plane.radial_eigen_value_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
             )
 
             pixel_1_reg_grid = lambda_r_binned_reg_grid[0]
@@ -2155,11 +1193,232 @@ class TestAbstractPlaneGridded(object):
                 pixel_10000_from_av_sub_grid, 1e-4
             )
 
+    class TestConvergenceviaJacobian(object):
+        def test__compare_plane_convergence_via_jacobian_and_calculation(self):
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            plane = pl.Plane(
+                galaxies=[g0, g1],
+                redshift=None,
+            )
+
+            convergence_via_calculation = plane.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+
+            convergence_via_jacobian = plane.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+
+            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+            assert mean_error < 1e-1
+
+        def test__convergence_sub_grid_binning_two_component_galaxy_plane(self):
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            plane = pl.Plane(
+                galaxies=[g0, g1],
+                redshift=None,
+            )
+
+            convergence_binned_reg_grid = plane.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            convergence_sub_grid = plane.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+
+            pixel_1_reg_grid = convergence_binned_reg_grid[0]
+            pixel_1_from_av_sub_grid = (
+                convergence_sub_grid[0]
+                + convergence_sub_grid[1]
+                + convergence_sub_grid[2]
+                + convergence_sub_grid[3]
+            ) / 4
+
+            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+            pixel_10000_reg_grid = convergence_binned_reg_grid[99]
+
+            pixel_10000_from_av_sub_grid = (
+                convergence_sub_grid[399]
+                + convergence_sub_grid[398]
+                + convergence_sub_grid[397]
+                + convergence_sub_grid[396]
+            ) / 4
+
+            assert pixel_10000_reg_grid == pytest.approx(
+                pixel_10000_from_av_sub_grid, 1e-4
+            )
+
+            convergence_via_calculation = plane.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            convergence_via_jacobian = plane.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+            assert convergence_via_jacobian.shape == (400,)
+            assert mean_error < 1e-1
+
+        def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(self):
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            g0_convergence = g0.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            g1_convergence = g1.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            plane = pl.Plane(
+                galaxies=[g0, g1],
+                redshift=None,
+            )
+
+            convergence = plane.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
+
+    class TestShearviaJacobian(object):
+        def test__shear_sub_grid_binning_two_component_galaxy_plane(self):
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            plane = pl.Plane(
+                galaxies=[g0, g1],
+                redshift=None,
+            )
+
+            shear_binned_reg_grid = plane.shear_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            shear_sub_grid = plane.shear_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+
+            pixel_1_reg_grid = shear_binned_reg_grid[0]
+            pixel_1_from_av_sub_grid = (
+                shear_sub_grid[0]
+                + shear_sub_grid[1]
+                + shear_sub_grid[2]
+                + shear_sub_grid[3]
+            ) / 4
+
+            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+            pixel_10000_reg_grid = shear_binned_reg_grid[99]
+
+            pixel_10000_from_av_sub_grid = (
+                shear_sub_grid[399]
+                + shear_sub_grid[398]
+                + shear_sub_grid[397]
+                + shear_sub_grid[396]
+            ) / 4
+
+            assert pixel_10000_reg_grid == pytest.approx(
+                pixel_10000_from_av_sub_grid, 1e-4
+            )
+
+        def test__plane_shear_via_jacobian_same_as_multiple_galaxies(self):
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, mass_profile=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            g0_shear = g0.shear_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            g1_shear = g1.shear_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            plane = pl.Plane(
+                galaxies=[g0, g1],
+                redshift=None,
+            )
+
+            shear = plane.shear_via_jacobian_from_grid(grid=grid, return_in_2d=False, return_binned=True)
+
+            assert shear == pytest.approx(g0_shear + g1_shear, 1.0e-8)
+
     class TestMagnification(object):
         def test__compare_magnification_from_eigen_values_and_from_determinant__two_component_galaxy_plane(
             self
         ):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05
             )
 
@@ -2179,20 +1438,17 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            magnification_via_determinant = plane.magnification(return_in_2d=True)
+            magnification_via_determinant = plane.magnification_from_grid(grid=grid, return_in_2d=True)
 
-            tangential_eigen_value = plane.tangential_eigen_value_from_shear_and_convergence(
-                return_in_2d=True
+            tangential_eigen_value = plane.tangential_eigen_value_from_grid(
+                grid=grid, return_in_2d=True
             )
 
-            radal_eigen_value = plane.radial_eigen_value_from_shear_and_convergence(
-                return_in_2d=True
+            radal_eigen_value = plane.radial_eigen_value_from_grid(
+                grid=grid, return_in_2d=True
             )
 
             magnification_via_eigen_values = 1 / (
@@ -2205,28 +1461,25 @@ class TestAbstractPlaneGridded(object):
 
             assert mean_error < 1e-4
 
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
             )
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            magnification_via_determinant = plane.magnification(
-                return_in_2d=True, return_binned=False
+            magnification_via_determinant = plane.magnification_from_grid(
+                grid=grid, return_in_2d=True, return_binned=False
             )
 
-            tangential_eigen_value = plane.tangential_eigen_value_from_shear_and_convergence(
-                return_in_2d=True, return_binned=False
+            tangential_eigen_value = plane.tangential_eigen_value_from_grid(
+                grid=grid, return_in_2d=True, return_binned=False
             )
 
-            radal_eigen_value = plane.radial_eigen_value_from_shear_and_convergence(
-                return_in_2d=True, return_binned=False
+            radal_eigen_value = plane.radial_eigen_value_from_grid(
+                grid=grid, return_in_2d=True, return_binned=False
             )
 
             magnification_via_eigen_values = 1 / (
@@ -2242,7 +1495,7 @@ class TestAbstractPlaneGridded(object):
         def test__compare_magnification_from_determinant_and_from_convergence_and_shear__two_component_galaxy(
             self
         ):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05
             )
 
@@ -2262,19 +1515,16 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            magnification_via_determinant = plane.magnification(
-                return_in_2d=True, return_binned=False
+            magnification_via_determinant = plane.magnification_from_grid(
+                grid=grid, return_in_2d=True, return_binned=False
             )
 
-            convergence = plane.convergence_from_jacobian(return_in_2d=True)
+            convergence = plane.convergence_via_jacobian_from_grid(grid=grid, return_in_2d=True)
 
-            shear = plane.shear_from_jacobian(return_in_2d=True)
+            shear = plane.shear_via_jacobian_from_grid(grid=grid, return_in_2d=True)
 
             magnification_via_convergence_and_shear = 1 / (
                 (1 - convergence) ** 2 - shear ** 2
@@ -2286,27 +1536,24 @@ class TestAbstractPlaneGridded(object):
 
             assert mean_error < 1e-4
 
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
             )
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            magnification_via_determinant = plane.magnification(
-                return_in_2d=True, return_binned=False
+            magnification_via_determinant = plane.magnification_from_grid(
+                grid=grid, return_in_2d=True, return_binned=False
             )
 
-            convergence = plane.convergence_from_jacobian(
-                return_in_2d=True, return_binned=False
+            convergence = plane.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=True, return_binned=False
             )
 
-            shear = plane.shear_from_jacobian(return_in_2d=True, return_binned=False)
+            shear = plane.shear_via_jacobian_from_grid(grid=grid, return_in_2d=True, return_binned=False)
 
             magnification_via_convergence_and_shear = 1 / (
                 (1 - convergence) ** 2 - shear ** 2
@@ -2322,7 +1569,7 @@ class TestAbstractPlaneGridded(object):
         def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
             )
 
@@ -2342,43 +1589,37 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_plane_and_grid_stack(
-                plane=plane, grid_stack=grid_stack
+            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_plane_and_grid(
+                plane=plane, grid=grid
             )[
                 0
             ]
 
-            critical_curve_tangential_from_lambda_t = plane.tangential_critical_curve()
+            critical_curve_tangential_from_lambda_t = plane.critical_curves_from_grid(grid=grid)[0]
 
             assert critical_curve_tangential_from_lambda_t == pytest.approx(
                 critical_curve_tangential_from_magnification, 1e-4
             )
 
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
             )
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_plane_and_grid_stack(
-                plane=plane, grid_stack=grid_stack
+            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_plane_and_grid(
+                plane=plane, grid=grid
             )[
                 0
             ]
 
-            critical_curve_tangential_from_lambda_t = plane.tangential_critical_curve()
+            critical_curve_tangential_from_lambda_t = plane.critical_curves_from_grid(grid=grid)[0]
 
             assert critical_curve_tangential_from_lambda_t == pytest.approx(
                 critical_curve_tangential_from_magnification, 1e-4
@@ -2387,7 +1628,7 @@ class TestAbstractPlaneGridded(object):
         def test__compare_radial_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
             )
 
@@ -2407,47 +1648,673 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_plane_and_grid_stack(
-                plane=plane, grid_stack=grid_stack
+            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_plane_and_grid(
+                plane=plane, grid=grid
             )[
                 1
             ]
 
-            critical_curve_radial_from_lambda_t = plane.radial_critical_curve()
+            critical_curve_radial_from_lambda_t = plane.critical_curves_from_grid(grid=grid)[1]
 
             assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
                 sum(critical_curve_radial_from_magnification), 1e-2
             )
 
-            grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
                 shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
             )
 
             plane = pl.Plane(
                 galaxies=[g0, g1],
-                grid_stack=grid_stack,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
-            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_plane_and_grid_stack(
-                plane=plane, grid_stack=grid_stack
+            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_plane_and_grid(
+                plane=plane, grid=grid
             )[
                 1
             ]
 
-            critical_curve_radial_from_lambda_t = plane.radial_critical_curve()
+            critical_curve_radial_from_lambda_t = plane.critical_curves_from_grid(grid=grid)[1]
 
             assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
                 sum(critical_curve_radial_from_magnification), 1e-2
             )
+
+        def test__compare_tangential_caustic_from_magnification_and_lambda_t__two_component_galaxy(
+                self
+        ):
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.25
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.EllipticalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
+                ),
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            plane = pl.Plane(
+                galaxies=[g0, g1],
+                redshift=None,
+            )
+
+            caustic_tangential_from_magnification = caustics_via_magnification_from_plane_and_grid(
+                plane=plane, grid=grid
+            )[
+                0
+            ]
+
+            caustic_tangential_from_lambda_t = plane.caustics_from_grid(
+                grid=grid
+            )[0]
+
+            assert caustic_tangential_from_lambda_t == pytest.approx(
+                caustic_tangential_from_magnification, 5e-1
+            )
+
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.5, sub_grid_size=2
+            )
+
+            caustic_tangential_from_magnification = caustics_via_magnification_from_plane_and_grid(
+                plane=plane, grid=grid
+            )[
+                0
+            ]
+
+            caustic_tangential_from_lambda_t = plane.caustics_from_grid(
+                grid=grid
+            )[0]
+
+            assert caustic_tangential_from_lambda_t == pytest.approx(
+                caustic_tangential_from_magnification, 5e-1
+            )
+        def test__compare_radial_caustic_from_magnification_and_lambda_t__two_component_galaxy(
+                self
+        ):
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(60, 60), pixel_scale=0.5, sub_grid_size=2
+            )
+
+            g0 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.EllipticalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
+                ),
+            )
+
+            g1 = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            plane = pl.Plane(
+                galaxies=[g0, g1],
+                redshift=None,
+            )
+
+            caustic_radial_from_magnification = caustics_via_magnification_from_plane_and_grid(
+                plane=plane, grid=grid
+            )[
+                1
+            ]
+
+            caustic_radial_from_lambda_t = plane.caustics_from_grid(
+                grid=grid
+            )[1]
+
+            assert sum(caustic_radial_from_lambda_t) == pytest.approx(
+                sum(caustic_radial_from_magnification), 1e-2
+            )
+
+    class TestLuminosities:
+        def test__within_circle_different_luminosity_units__same_as_galaxy_luminosities(
+            self
+        ):
+            g0 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=2.0))
+
+            radius = dim.Length(1.0, "arcsec")
+
+            g0_luminosity = g0.luminosity_within_circle_in_units(
+                radius=radius, unit_luminosity="eps"
+            )
+            g1_luminosity = g1.luminosity_within_circle_in_units(
+                radius=radius, unit_luminosity="eps"
+            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles_in_units(
+                radius=radius, unit_luminosity="eps"
+            )
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+            g0_luminosity = g0.luminosity_within_circle_in_units(
+                radius=radius, unit_luminosity="counts", exposure_time=3.0
+            )
+            g1_luminosity = g1.luminosity_within_circle_in_units(
+                radius=radius, unit_luminosity="counts", exposure_time=3.0
+            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles_in_units(
+                radius=radius, unit_luminosity="counts", exposure_time=3.0
+            )
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+        def test__within_circle_different_distance_units__same_as_galaxy_luminosities(
+            self
+        ):
+            g0 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=2.0))
+
+            radius = dim.Length(1.0, "arcsec")
+
+            g0_luminosity = g0.luminosity_within_circle_in_units(radius=radius)
+            g1_luminosity = g1.luminosity_within_circle_in_units(radius=radius)
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles_in_units(
+                radius=radius
+            )
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+            radius = dim.Length(1.0, "kpc")
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            g0_luminosity = g0.luminosity_within_circle_in_units(radius=radius)
+            g1_luminosity = g1.luminosity_within_circle_in_units(radius=radius)
+
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles_in_units(
+                radius=radius
+            )
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+        def test__within_ellipse_different_luminosity_units__same_as_galaxy_luminosities(
+            self
+        ):
+            g0 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=2.0))
+
+            major_axis = dim.Length(1.0, "arcsec")
+
+            g0_luminosity = g0.luminosity_within_ellipse_in_units(
+                major_axis=major_axis, unit_luminosity="eps"
+            )
+            g1_luminosity = g1.luminosity_within_ellipse_in_units(
+                major_axis=major_axis, unit_luminosity="eps"
+            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses_in_units(
+                major_axis=major_axis, unit_luminosity="eps"
+            )
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+            g0_luminosity = g0.luminosity_within_ellipse_in_units(
+                major_axis=major_axis, unit_luminosity="counts", exposure_time=3.0
+            )
+            g1_luminosity = g1.luminosity_within_ellipse_in_units(
+                major_axis=major_axis, unit_luminosity="counts", exposure_time=3.0
+            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses_in_units(
+                major_axis=major_axis, unit_luminosity="counts", exposure_time=3.0
+            )
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+        def test__within_ellipse_different_distance_units__same_as_galaxy_luminosities(
+            self
+        ):
+            g0 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=1.0))
+            g1 = g.Galaxy(redshift=0.5, luminosity=lp.SphericalSersic(intensity=2.0))
+
+            major_axis = dim.Length(1.0, "arcsec")
+
+            g0_luminosity = g0.luminosity_within_ellipse_in_units(major_axis=major_axis)
+            g1_luminosity = g1.luminosity_within_ellipse_in_units(major_axis=major_axis)
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses_in_units(
+                major_axis=major_axis
+            )
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+            major_axis = dim.Length(1.0, "kpc")
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+
+            g0_luminosity = g0.luminosity_within_ellipse_in_units(major_axis=major_axis)
+            g1_luminosity = g1.luminosity_within_ellipse_in_units(major_axis=major_axis)
+
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses_in_units(
+                major_axis=major_axis
+            )
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+    class TestMasses:
+        def test__within_circle_different_mass_units__same_as_galaxy_masses(self):
+            g0 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            radius = dim.Length(1.0, "arcsec")
+
+            g0_mass = g0.mass_within_circle_in_units(radius=radius, unit_mass="angular")
+            g1_mass = g1.mass_within_circle_in_units(radius=radius, unit_mass="angular")
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+
+            plane_masses = plane.masses_of_galaxies_within_circles_in_units(
+                radius=radius, unit_mass="angular"
+            )
+
+            assert plane_masses[0] == g0_mass
+            assert plane_masses[1] == g1_mass
+
+            g0_mass = g0.mass_within_circle_in_units(
+                radius=radius, unit_mass="solMass", redshift_source=1.0
+            )
+            g1_mass = g1.mass_within_circle_in_units(
+                radius=radius, unit_mass="solMass", redshift_source=1.0
+            )
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+
+            plane_masses = plane.masses_of_galaxies_within_circles_in_units(
+                radius=radius, unit_mass="solMass", redshift_source=1.0
+            )
+
+            assert plane_masses[0] == g0_mass
+            assert plane_masses[1] == g1_mass
+
+        def test__within_circle_different_distance_units__same_as_galaxy_masses(self):
+            radius = dim.Length(1.0, "arcsec")
+
+            g0 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            g0_mass = g0.mass_within_circle_in_units(radius=radius, redshift_source=1.0)
+            g1_mass = g1.mass_within_circle_in_units(radius=radius, redshift_source=1.0)
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_masses = plane.masses_of_galaxies_within_circles_in_units(
+                radius=radius, redshift_source=1.0
+            )
+
+            assert plane_masses[0] == g0_mass
+            assert plane_masses[1] == g1_mass
+
+            radius = dim.Length(1.0, "kpc")
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            g0_mass = g0.mass_within_circle_in_units(
+                radius=radius, redshift_source=1.0, kpc_per_arcsec=plane.kpc_per_arcsec
+            )
+            g1_mass = g1.mass_within_circle_in_units(
+                radius=radius, redshift_source=1.0, kpc_per_arcsec=plane.kpc_per_arcsec
+            )
+
+            plane_masses = plane.masses_of_galaxies_within_circles_in_units(
+                radius=radius, redshift_source=1.0
+            )
+
+            assert plane_masses[0] == g0_mass
+            assert plane_masses[1] == g1_mass
+
+        def test__within_ellipse_different_mass_units__same_as_galaxy_masses(self):
+            g0 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            major_axis = dim.Length(1.0, "arcsec")
+
+            g0_mass = g0.mass_within_ellipse_in_units(
+                major_axis=major_axis, unit_mass="angular"
+            )
+            g1_mass = g1.mass_within_ellipse_in_units(
+                major_axis=major_axis, unit_mass="angular"
+            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(
+                major_axis=major_axis, unit_mass="angular"
+            )
+
+            assert plane_masses[0] == g0_mass
+            assert plane_masses[1] == g1_mass
+
+            g0_mass = g0.mass_within_ellipse_in_units(
+                major_axis=major_axis, unit_mass="solMass", redshift_source=1.0
+            )
+            g1_mass = g1.mass_within_ellipse_in_units(
+                major_axis=major_axis, unit_mass="solMass", redshift_source=1.0
+            )
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(
+                major_axis=major_axis, unit_mass="solMass", redshift_source=1.0
+            )
+
+            assert plane_masses[0] == g0_mass
+            assert plane_masses[1] == g1_mass
+
+        def test__within_ellipse_different_distance_units__same_as_galaxy_masses(self):
+            g0 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            major_axis = dim.Length(1.0, "arcsec")
+
+            g0_mass = g0.mass_within_ellipse_in_units(
+                major_axis=major_axis, redshift_source=1.0
+            )
+            g1_mass = g1.mass_within_ellipse_in_units(
+                major_axis=major_axis, redshift_source=1.0
+            )
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(
+                major_axis=major_axis, redshift_source=1.0
+            )
+
+            assert plane_masses[0] == g0_mass
+            assert plane_masses[1] == g1_mass
+
+            major_axis = dim.Length(1.0, "kpc")
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.5)
+            g0_mass = g0.mass_within_ellipse_in_units(
+                major_axis=major_axis,
+                redshift_source=1.0,
+                kpc_per_arcsec=plane.kpc_per_arcsec,
+            )
+            g1_mass = g1.mass_within_ellipse_in_units(
+                major_axis=major_axis,
+                redshift_source=1.0,
+                kpc_per_arcsec=plane.kpc_per_arcsec,
+            )
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_units(
+                major_axis=major_axis, redshift_source=1.0
+            )
+
+            assert plane_masses[0] == g0_mass
+            assert plane_masses[1] == g1_mass
+
+    class TestEinsteinRadiiAndMass:
+        def test__plane_has_galaxies_with_sis_profiles__einstein_radius_and_mass_sum_of_sis_profiles(
+            self
+        ):
+            cosmology = MockCosmology(
+                arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0
+            )
+
+            sis_0 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            sis_1 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+
+            plane = pl.Plane(galaxies=[sis_0], redshift=0.5, cosmology=cosmology)
+
+            assert plane.einstein_radius_in_units(
+                unit_length="arcsec"
+            ) == pytest.approx(1.0, 1.0e-4)
+            assert plane.einstein_radius_in_units(unit_length="kpc") == pytest.approx(
+                2.0, 1.0e-4
+            )
+            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
+                np.pi, 1.0e-4
+            )
+            assert plane.einstein_mass_in_units(
+                unit_mass="solMass", redshift_source=1.0
+            ) == pytest.approx(2.0 * np.pi, 1.0e-4)
+
+            plane = pl.Plane(galaxies=[sis_1], redshift=0.5, cosmology=cosmology)
+
+            assert plane.einstein_radius_in_units(
+                unit_length="arcsec"
+            ) == pytest.approx(2.0, 1.0e-4)
+            assert plane.einstein_radius_in_units(unit_length="kpc") == pytest.approx(
+                4.0, 1.0e-4
+            )
+            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
+                np.pi * 2.0 ** 2.0, 1.0e-4
+            )
+            assert plane.einstein_mass_in_units(
+                unit_mass="solMass", redshift_source=1.0
+            ) == pytest.approx(2.0 * np.pi * 2.0 ** 2.0, 1.0e-4)
+
+            plane = pl.Plane(galaxies=[sis_0, sis_1], redshift=0.5, cosmology=cosmology)
+
+            assert plane.einstein_radius_in_units(
+                unit_length="arcsec"
+            ) == pytest.approx(3.0, 1.0e-4)
+            assert plane.einstein_radius_in_units(unit_length="kpc") == pytest.approx(
+                2.0 * 3.0, 1.0e-4
+            )
+            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
+                np.pi * (1.0 + 2.0 ** 2.0), 1.0e-4
+            )
+            assert plane.einstein_mass_in_units(
+                unit_mass="solMass", redshift_source=1.0
+            ) == pytest.approx(2.0 * np.pi * (1.0 + 2.0 ** 2.0), 1.0e-4)
+
+        def test__include_galaxy_with_no_mass_profile__does_not_impact_einstein_radius_or_mass(
+            self
+        ):
+            sis_0 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            sis_1 = g.Galaxy(
+                redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=2.0)
+            )
+            g0 = g.Galaxy(redshift=0.5)
+
+            plane = pl.Plane(galaxies=[sis_0, g0], redshift=0.5)
+
+            assert plane.einstein_radius_in_units(
+                unit_length="arcsec"
+            ) == pytest.approx(1.0, 1.0e-4)
+            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
+                np.pi, 1.0e-4
+            )
+
+            plane = pl.Plane(galaxies=[sis_1, g0], redshift=0.5)
+
+            assert plane.einstein_radius_in_units(
+                unit_length="arcsec"
+            ) == pytest.approx(2.0, 1.0e-4)
+            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
+                np.pi * 2.0 ** 2.0, 1.0e-4
+            )
+
+            plane = pl.Plane(galaxies=[sis_0, sis_1, g0], redshift=0.5)
+
+            assert plane.einstein_radius_in_units(
+                unit_length="arcsec"
+            ) == pytest.approx(3.0, 1.0e-4)
+            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
+                np.pi * (1.0 + 2.0 ** 2.0), 1.0e-4
+            )
+
+        def test__only_galaxies_without_mass_profiles__einstein_radius_and_mass_are_none(
+            self
+        ):
+            g0 = g.Galaxy(redshift=0.5)
+
+            plane = pl.Plane(galaxies=[g0], redshift=0.5)
+
+            assert plane.einstein_radius_in_units() is None
+            assert plane.einstein_mass_in_units() is None
+
+            plane = pl.Plane(galaxies=[g0, g0], redshift=0.5)
+
+            assert plane.einstein_radius_in_units() is None
+            assert plane.einstein_mass_in_units() is None
+
+
+class TestAbstractPlaneData(object):
+
+    class TestBlurredImagePlaneImage:
+        def test__blurred_image_of_galaxies(self, sub_grid_7x7, blurring_grid_7x7, convolver_7x7):
+
+            g0 = g.Galaxy(
+                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
+            )
+            g1 = g.Galaxy(
+                redshift=1.0, light_profile=lp.EllipticalSersic(intensity=2.0)
+            )
+
+            g0_image_1d = g0.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            g0_blurring_image_1d = g0.profile_image_from_grid(
+                grid=blurring_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            g1_image_1d = g1.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            g1_blurring_image_1d = g1.profile_image_from_grid(
+                grid=blurring_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            blurred_g0_image = convolver_7x7.convolve_image(
+                image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
+            )
+
+            blurred_g1_image = convolver_7x7.convolve_image(
+                image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
+            )
+
+            plane = pl.Plane(
+                redshift=0.5,
+                galaxies=[g0, g1],
+            )
+
+            blurred_image_1d = plane.blurred_profile_image_from_grid_and_convolver(
+                grid=sub_grid_7x7, preload_blurring_grid=blurring_grid_7x7, convolver=convolver_7x7,
+            )
+
+            assert blurred_image_1d == pytest.approx(
+                blurred_g0_image + blurred_g1_image, 1.0e-4
+            )
+
+            blurred_image_1d = plane.blurred_profile_image_from_grid_and_convolver(
+                grid=sub_grid_7x7, convolver=convolver_7x7,
+            )
+
+            assert blurred_image_1d == pytest.approx(
+                blurred_g0_image + blurred_g1_image, 1.0e-4
+            )
+
+            convolver_7x7.blurring_mask = None
+
+            blurred_image_1d = plane.blurred_profile_image_from_grid_and_convolver(
+                grid=sub_grid_7x7, convolver=convolver_7x7,
+            )
+
+            assert blurred_image_1d == pytest.approx(
+                blurred_g0_image + blurred_g1_image, 1.0e-4)
+
+            blurred_images_1d_of_galaxies = plane.blurred_profile_1d_images_of_galaxies_from_grid_and_convolver(
+                grid=sub_grid_7x7, preload_blurring_grid=blurring_grid_7x7, convolver=convolver_7x7
+            )
+
+            assert blurred_images_1d_of_galaxies[0] == pytest.approx(blurred_g0_image, 1.0e-4)
+            assert blurred_images_1d_of_galaxies[1] == pytest.approx(blurred_g1_image, 1.0e-4)
+
+    class TestVisibilities:
+        def test__visibilities_from_grid_and_transformer(self, sub_grid_7x7, transformer_7x7_7):
+
+            g0 = g.Galaxy(
+                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
+            )
+
+            image_1d = g0.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            visibilities = transformer_7x7_7.visibilities_from_image_1d(
+                image_1d=image_1d
+            )
+
+            plane = pl.Plane(
+                redshift=0.5,
+                galaxies=[g0],
+            )
+
+            plane_visibilities = plane.visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            assert (visibilities == plane_visibilities).all()
+
+            g1 = g.Galaxy(
+                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0)
+            )
+
+            image_1d = g0.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            ) + g1.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            visibilities = transformer_7x7_7.visibilities_from_image_1d(
+                image_1d=image_1d
+            )
+
+            plane = pl.Plane(
+                redshift=0.5,
+                galaxies=[g0, g1],
+            )
+
+            plane_visibilities = plane.visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            assert visibilities == pytest.approx(plane_visibilities, 1.0e-4)
 
     class TestMapper:
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(
@@ -2455,9 +2322,11 @@ class TestAbstractPlaneGridded(object):
         ):
             galaxy_no_pix = g.Galaxy(redshift=0.5)
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix], redshift=None)
+            plane = pl.Plane(galaxies=[galaxy_no_pix], redshift=0.5)
 
-            assert plane.mapper_from_regular_grid_sub_grid_and_border is None
+            mapper = plane.mapper_from_grid_and_pixelization_grid(grid=sub_grid_7x7, pixelization_grid=sub_grid_7x7)
+
+            assert mapper is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(
             self, sub_grid_7x7
@@ -2471,13 +2340,12 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[galaxy_pix],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=[mock_grids.MockBorders()],
-                redshift=None,
+                redshift=0.5,
             )
 
-            assert plane.mapper_from_regular_grid_sub_grid_and_border == 1
+            mapper = plane.mapper_from_grid_and_pixelization_grid(grid=sub_grid_7x7, pixelization_grid=sub_grid_7x7)
+
+            assert mapper == 1
 
             galaxy_pix = g.Galaxy(
                 redshift=0.5,
@@ -2488,15 +2356,14 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[galaxy_no_pix, galaxy_pix],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=[mock_grids.MockBorders()],
-                redshift=None,
+                redshift=0.5,
             )
 
-            assert plane.mapper_from_regular_grid_sub_grid_and_border == 1
+            mapper = plane.mapper_from_grid_and_pixelization_grid(grid=sub_grid_7x7, pixelization_grid=sub_grid_7x7)
 
-        def test__plane_has_no_border__still_returns_mapper(self, sub_grid_7x7):
+            assert mapper == 1
+
+        def test__relocate_to_border_is_false__still_returns_mapper(self, sub_grid_7x7):
             galaxy_pix = g.Galaxy(
                 redshift=0.5,
                 pixelization=mock_inv.MockPixelization(value=1),
@@ -2506,13 +2373,13 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[galaxy_no_pix, galaxy_pix],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=None,
-                redshift=None,
+                redshift=0.5,
             )
 
-            assert plane.mapper_from_regular_grid_sub_grid_and_border == 1
+            mapper = plane.mapper_from_grid_and_pixelization_grid(grid=sub_grid_7x7,
+                                                                  pixelization_grid=sub_grid_7x7, relocate_to_border=False)
+
+            assert mapper == 1
 
         def test__2_galaxies_in_plane__both_have_pixelization__raises_error(
             self, sub_grid_7x7
@@ -2530,40 +2397,84 @@ class TestAbstractPlaneGridded(object):
 
             plane = pl.Plane(
                 galaxies=[galaxy_pix_0, galaxy_pix_1],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=[mock_grids.MockBorders()],
                 redshift=None,
             )
 
             with pytest.raises(exc.PixelizationException):
-                plane.mapper_from_regular_grid_sub_grid_and_border
+                plane.mapper_from_grid_and_pixelization_grid(grid=sub_grid_7x7,
+                                                             pixelization_grid=sub_grid_7x7, relocate_to_border=False)
+
+    class TestRegularization:
+        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self):
+            galaxy_no_pix = g.Galaxy(redshift=0.5)
+
+            plane = pl.Plane(galaxies=[galaxy_no_pix], redshift=None)
+
+            assert plane.regularization is None
+
+        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self):
+            galaxy_pix = g.Galaxy(
+                redshift=0.5,
+                pixelization=mock_inv.MockPixelization(value=1),
+                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+            )
+
+            plane = pl.Plane(galaxies=[galaxy_pix], redshift=None)
+
+            assert plane.regularization.shape == (1, 1)
+
+            galaxy_pix = g.Galaxy(
+                redshift=0.5,
+                pixelization=mock_inv.MockPixelization(value=1),
+                regularization=mock_inv.MockRegularization(matrix_shape=(2, 2)),
+            )
+            galaxy_no_pix = g.Galaxy(redshift=0.5)
+
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], redshift=None)
+
+            assert plane.regularization.shape == (2, 2)
+
+        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self):
+            galaxy_pix_0 = g.Galaxy(
+                redshift=0.5,
+                pixelization=mock_inv.MockPixelization(value=1),
+                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+            )
+            galaxy_pix_1 = g.Galaxy(
+                redshift=0.5,
+                pixelization=mock_inv.MockPixelization(value=2),
+                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+            )
+
+            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], redshift=None)
+
+            with pytest.raises(exc.PixelizationException):
+                print(plane.regularization)
 
     class TestPlaneImage:
         def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(
             self, sub_grid_7x7
         ):
 
-            sub_grid_7x7.regular[1] = np.array([2.0, 2.0])
+            sub_grid_7x7[1] = np.array([2.0, 2.0])
 
             galaxy = g.Galaxy(redshift=0.5, light=lp.EllipticalSersic(intensity=1.0))
 
             plane = pl.Plane(
                 galaxies=[galaxy],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
 
             plane_image_from_func = lens_util.plane_image_of_galaxies_from_grid(
-                shape=(7, 7), grid=sub_grid_7x7.regular, galaxies=[galaxy]
+                shape=(7, 7), grid=sub_grid_7x7.unlensed_unsubbed_1d, galaxies=[galaxy]
             )
 
-            assert (plane_image_from_func == plane.plane_image).all()
+            plane_image_from_plane = plane.plane_image_from_grid(grid=sub_grid_7x7)
+
+            assert (plane_image_from_func == plane_image_from_plane).all()
 
         def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(
-            self, sub_grid_7x7
+            self,
         ):
             # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
             # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
@@ -2571,7 +2482,7 @@ class TestAbstractPlaneGridded(object):
 
             mask = msk.Mask(array=np.full((5, 5), False), pixel_scale=1.0)
 
-            sub_grid_7x7.regular = grids.Grid(
+            grid = grids.Grid(
                 np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask
             )
 
@@ -2581,15 +2492,14 @@ class TestAbstractPlaneGridded(object):
             )
             plane = pl.Plane(
                 galaxies=[g0],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
+            
+            plane_image = plane.plane_image_from_grid(grid=grid)
 
-            assert plane.plane_image.shape == (5, 5)
+            assert plane_image.shape == (5, 5)
             assert np.unravel_index(
-                plane.plane_image.argmax(), plane.plane_image.shape
+                plane_image.argmax(), plane_image.shape
             ) == (0, 0)
 
             g0 = g.Galaxy(
@@ -2598,13 +2508,13 @@ class TestAbstractPlaneGridded(object):
             )
             plane = pl.Plane(
                 galaxies=[g0],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
+
+            plane_image = plane.plane_image_from_grid(grid=grid)
+
             assert np.unravel_index(
-                plane.plane_image.argmax(), plane.plane_image.shape
+                plane_image.argmax(), plane_image.shape
             ) == (0, 4)
 
             g0 = g.Galaxy(
@@ -2613,13 +2523,13 @@ class TestAbstractPlaneGridded(object):
             )
             plane = pl.Plane(
                 galaxies=[g0],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
+
+            plane_image = plane.plane_image_from_grid(grid=grid)
+
             assert np.unravel_index(
-                plane.plane_image.argmax(), plane.plane_image.shape
+                plane_image.argmax(), plane_image.shape
             ) == (4, 0)
 
             g0 = g.Galaxy(
@@ -2628,130 +2538,14 @@ class TestAbstractPlaneGridded(object):
             )
             plane = pl.Plane(
                 galaxies=[g0],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=None,
                 redshift=None,
             )
+
+            plane_image = plane.plane_image_from_grid(grid=grid)
+
             assert np.unravel_index(
-                plane.plane_image.argmax(), plane.plane_image.shape
+                plane_image.argmax(), plane_image.shape
             ) == (4, 4)
-
-
-class TestAbstractDataPlane(object):
-    class TestBlurredImagePlaneImage:
-        def test__blurred_image_of_galaxies(self, sub_grid_7x7, convolver_image_7x7):
-
-            g0 = g.Galaxy(
-                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
-            )
-            g1 = g.Galaxy(
-                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0)
-            )
-
-            g0_image_1d = g0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
-
-            g0_blurring_image_1d = g0.profile_image_from_grid(
-                grid=sub_grid_7x7.blurring, return_in_2d=False, return_binned=False
-            )
-
-            g1_image_1d = g1.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
-
-            g1_blurring_image_1d = g1.profile_image_from_grid(
-                grid=sub_grid_7x7.blurring, return_in_2d=False, return_binned=False
-            )
-
-            blurred_g0_image = convolver_image_7x7.convolve_image(
-                image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
-            )
-
-            blurred_g1_image = convolver_image_7x7.convolve_image(
-                image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
-            )
-
-            plane = pl.Plane(
-                redshift=0.5,
-                galaxies=[g0, g1],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=None,
-            )
-
-            blurred_image_1d = plane.blurred_profile_image_1d_from_convolver_image(
-                convolver_image=convolver_image_7x7
-            )
-
-            assert blurred_image_1d == pytest.approx(
-                blurred_g0_image + blurred_g1_image, 1.0e-4
-            )
-
-            blurred_images_1d_of_galaxies = plane.blurred_profile_images_1d_of_galaxies_from_convolver_image(
-                convolver_image=convolver_image_7x7
-            )
-
-            assert (blurred_images_1d_of_galaxies[0] == blurred_g0_image).all()
-            assert (blurred_images_1d_of_galaxies[1] == blurred_g1_image).all()
-
-    class TestVisibilities:
-        def test__visibilities_from_transformer(self, sub_grid_7x7, transformer_7x7_7):
-
-            g0 = g.Galaxy(
-                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
-            )
-
-            intensities_1d = g0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
-
-            visibilities = transformer_7x7_7.visibilities_from_intensities(
-                intensities_1d=intensities_1d
-            )
-
-            plane = pl.Plane(
-                redshift=0.5,
-                galaxies=[g0],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=None,
-            )
-
-            plane_visibilities = plane.visibilities_from_transformer(
-                transformer=transformer_7x7_7
-            )
-
-            assert (visibilities == plane_visibilities).all()
-
-            g1 = g.Galaxy(
-                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0)
-            )
-
-            intensities_1d = g0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            ) + g1.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
-
-            visibilities = transformer_7x7_7.visibilities_from_intensities(
-                intensities_1d=intensities_1d
-            )
-
-            plane = pl.Plane(
-                redshift=0.5,
-                galaxies=[g0, g1],
-                grid_stack=sub_grid_7x7,
-                compute_deflections=False,
-                border=None,
-            )
-
-            plane_visibilities = plane.visibilities_from_transformer(
-                transformer=transformer_7x7_7
-            )
-
-            assert visibilities == pytest.approx(plane_visibilities, 1.0e-4)
 
     class TestContributionMaps:
         def test__x2_hyper_galaxy__use_numerical_values_for_noise_scaling(self):
@@ -2785,9 +2579,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_0, galaxy_1],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             assert (
@@ -2833,9 +2624,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_0],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             assert (
@@ -2845,9 +2633,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_1],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             assert (
@@ -2857,9 +2642,7 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_1, galaxy_0],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
+
             )
 
             assert (
@@ -2890,9 +2673,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy, g.Galaxy(redshift=0.5), g.Galaxy(redshift=0.5)],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             assert (
@@ -2937,9 +2717,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_0, galaxy_1],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(
@@ -2995,9 +2772,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_0],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(
@@ -3008,9 +2782,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_1],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(
@@ -3021,9 +2792,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_1, galaxy_0],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(
@@ -3076,9 +2844,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_0, g.Galaxy(redshift=0.5)],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(
@@ -3090,9 +2855,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[g.Galaxy(redshift=0.5), galaxy_1],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(
@@ -3109,9 +2871,6 @@ class TestAbstractDataPlane(object):
                     galaxy_0,
                     g.Galaxy(redshift=0.5),
                 ],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_maps_1d = plane.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(
@@ -3168,9 +2927,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_0],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(
@@ -3181,9 +2937,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_1],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(
@@ -3194,9 +2947,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[galaxy_1, galaxy_0],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(
@@ -3214,9 +2964,6 @@ class TestAbstractDataPlane(object):
                     galaxy_0,
                     g.Galaxy(redshift=0.5),
                 ],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
 
             hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(
@@ -3235,9 +2982,6 @@ class TestAbstractDataPlane(object):
             plane = pl.Plane(
                 redshift=0.5,
                 galaxies=[g.Galaxy(redshift=0.5)],
-                grid_stack=None,
-                compute_deflections=False,
-                border=None,
             )
             hyper_noise_map_1d = plane.hyper_noise_map_1d_from_noise_map_1d(
                 noise_map_1d=noise_map_1d
@@ -3310,12 +3054,12 @@ class TestPlane(object):
     class TestGalaxies:
         def test__no_galaxies__raises_exception_if_no_plane_redshift_input(self):
             plane = pl.Plane(
-                galaxies=[], grid_stack=None, compute_deflections=False, redshift=0.5
+                galaxies=[], redshift=0.5
             )
             assert plane.redshift == 0.5
 
             with pytest.raises(exc.RayTracingException):
-                pl.Plane(galaxies=[], grid_stack=None, compute_deflections=False)
+                pl.Plane(galaxies=[])
 
         def test__galaxy_redshifts_gives_list_of_redshifts(self):
             g0 = g.Galaxy(redshift=1.0)
@@ -3323,7 +3067,7 @@ class TestPlane(object):
             g2 = g.Galaxy(redshift=1.0)
 
             plane = pl.Plane(
-                galaxies=[g0, g1, g2], grid_stack=None, compute_deflections=False
+                galaxies=[g0, g1, g2],
             )
 
             assert plane.redshift == 1.0
@@ -3336,7 +3080,7 @@ class TestPlane(object):
             g1 = g.Galaxy(redshift=1.0)
 
             with pytest.raises(exc.RayTracingException):
-                pl.Plane(galaxies=[g0, g1], grid_stack=None, compute_deflections=False)
+                pl.Plane(galaxies=[g0, g1])
 
             g0 = g.Galaxy(redshift=0.4)
             g1 = g.Galaxy(redshift=0.5)
@@ -3344,12 +3088,269 @@ class TestPlane(object):
 
             plane = pl.Plane(
                 galaxies=[g0, g1, g2],
-                grid_stack=None,
-                compute_deflections=False,
                 redshift=0.5,
             )
 
             assert plane.redshift == 0.5
+
+    class TestSummarize:
+        def test__plane_x2_galaxies__summarize_is_correct(self):
+            sersic_0 = lp.SphericalSersic(
+                intensity=1.0, effective_radius=2.0, sersic_index=2.0
+            )
+            sersic_1 = lp.SphericalSersic(
+                intensity=2.0, effective_radius=2.0, sersic_index=2.0
+            )
+
+            sis_0 = mp.SphericalIsothermal(einstein_radius=1.0)
+            sis_1 = mp.SphericalIsothermal(einstein_radius=2.0)
+
+            g0 = g.Galaxy(
+                redshift=0.5,
+                light_profile_0=sersic_0,
+                light_profile_1=sersic_1,
+                mass_profile_0=sis_0,
+                mass_profile_1=sis_1,
+            )
+
+            g1 = g.Galaxy(redshift=0.6, light_profile_0=sersic_0, mass_profile_0=sis_0)
+
+            plane = pl.Plane(galaxies=[g0, g1], redshift=0.6)
+
+            summary_text = plane.summarize_in_units(
+                radii=[dim.Length(10.0), dim.Length(500.0)],
+                whitespace=50,
+                unit_length="arcsec",
+                unit_luminosity="eps",
+                unit_mass="angular",
+            )
+
+            i = 0
+            assert summary_text[i] == "Plane\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "redshift                                          0.60"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "kpc_per_arcsec                                    6.88"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "angular_diameter_distance_to_earth                206264.81"
+            )
+            i += 1
+            assert summary_text[i] == "\n"
+            i += 1
+            assert summary_text[i] == "Galaxy\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "redshift                                          0.50"
+            )
+            i += 1
+            assert summary_text[i] == "\nGALAXY LIGHT\n\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_10.00_arcsec                    1.8854e+02 eps"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_500.00_arcsec                   1.9573e+02 eps"
+            )
+            i += 1
+            assert summary_text[i] == "\nLIGHT PROFILES:\n\n"
+            i += 1
+            assert summary_text[i] == "Light Profile = SphericalSersic\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_10.00_arcsec                    6.2848e+01 eps"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_500.00_arcsec                   6.5243e+01 eps"
+            )
+            i += 1
+            assert summary_text[i] == "\n"
+            i += 1
+            assert summary_text[i] == "Light Profile = SphericalSersic\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_10.00_arcsec                    1.2570e+02 eps"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_500.00_arcsec                   1.3049e+02 eps"
+            )
+            i += 1
+            assert summary_text[i] == "\n"
+            i += 1
+            assert summary_text[i] == "\nGALAXY MASS\n\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_radius                                   3.00 arcsec"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_mass                                     1.5708e+01 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_10.00_arcsec                          9.4248e+01 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_500.00_arcsec                         4.7124e+03 angular"
+            )
+            i += 1
+            assert summary_text[i] == "\nMASS PROFILES:\n\n"
+            i += 1
+            assert summary_text[i] == "Mass Profile = SphericalIsothermal\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_radius                                   1.00 arcsec"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_mass                                     3.1416e+00 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_10.00_arcsec                          3.1416e+01 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_500.00_arcsec                         1.5708e+03 angular"
+            )
+            i += 1
+            assert summary_text[i] == "\n"
+            i += 1
+            assert summary_text[i] == "Mass Profile = SphericalIsothermal\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_radius                                   2.00 arcsec"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_mass                                     1.2566e+01 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_10.00_arcsec                          6.2832e+01 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_500.00_arcsec                         3.1416e+03 angular"
+            )
+            i += 1
+            assert summary_text[i] == "\n"
+            i += 1
+            assert summary_text[i] == "\n"
+            i += 1
+            assert summary_text[i] == "Galaxy\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "redshift                                          0.60"
+            )
+            i += 1
+            assert summary_text[i] == "\nGALAXY LIGHT\n\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_10.00_arcsec                    6.2848e+01 eps"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_500.00_arcsec                   6.5243e+01 eps"
+            )
+            i += 1
+            assert summary_text[i] == "\nLIGHT PROFILES:\n\n"
+            i += 1
+            assert summary_text[i] == "Light Profile = SphericalSersic\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_10.00_arcsec                    6.2848e+01 eps"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "luminosity_within_500.00_arcsec                   6.5243e+01 eps"
+            )
+            i += 1
+            assert summary_text[i] == "\n"
+            i += 1
+            assert summary_text[i] == "\nGALAXY MASS\n\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_radius                                   1.00 arcsec"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_mass                                     3.1416e+00 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_10.00_arcsec                          3.1416e+01 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_500.00_arcsec                         1.5708e+03 angular"
+            )
+            i += 1
+            assert summary_text[i] == "\nMASS PROFILES:\n\n"
+            i += 1
+            assert summary_text[i] == "Mass Profile = SphericalIsothermal\n"
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_radius                                   1.00 arcsec"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "einstein_mass                                     3.1416e+00 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_10.00_arcsec                          3.1416e+01 angular"
+            )
+            i += 1
+            assert (
+                summary_text[i]
+                == "mass_within_500.00_arcsec                         1.5708e+03 angular"
+            )
+            i += 1
+            assert summary_text[i] == "\n"
+            i += 1
 
 
 class TestPlaneImage:

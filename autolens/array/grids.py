@@ -508,7 +508,7 @@ class Grid(np.ndarray):
         |x|x|x|x|x|x|x|x|x|
         """
 
-        blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape=psf_shape)
+        blurring_mask = mask.blurring_mask_from_psf_shape(psf_shape=psf_shape)
 
         return Grid.from_mask_and_sub_grid_size(mask=blurring_mask, sub_grid_size=1)
 
@@ -602,6 +602,12 @@ class Grid(np.ndarray):
         return mask_util.mask_from_shape_and_mask_1d_index_to_mask_2d_index(
             shape=sub_shape, mask_1d_index_to_mask_2d_index=sub_one_to_two
         )
+
+    def blurring_grid_from_psf_shape(self, psf_shape):
+
+        blurring_mask = self.mask.blurring_mask_from_psf_shape(psf_shape=psf_shape)
+
+        return Grid.from_mask_and_sub_grid_size(mask=blurring_mask, sub_grid_size=1)
 
     def marching_squares_grid_pixels_to_grid_arcsec(self, grid_pixels, shape):
 

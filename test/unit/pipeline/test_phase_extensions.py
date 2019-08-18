@@ -202,7 +202,7 @@ class TestImagePassing(object):
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
     def test_galaxy_image_dict(
-        self, lens_galaxy, source_galaxy, grid_stack_7x7, convolver_image_7x7
+        self, lens_galaxy, source_galaxy, grid_stack_7x7, convolver_7x7
     ):
         tracer = rt.Tracer.from_galaxies(
             galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack_7x7
@@ -211,16 +211,16 @@ class TestImagePassing(object):
         assert (
             len(
                 tracer.galaxy_image_dict_from_convolver_image(
-                    convolver_image=convolver_image_7x7
+                    convolver_image=convolver_7x7
                 )
             )
             == 2
         )
         assert lens_galaxy in tracer.galaxy_image_dict_from_convolver_image(
-            convolver_image=convolver_image_7x7
+            convolver_image=convolver_7x7
         )
         assert source_galaxy in tracer.galaxy_image_dict_from_convolver_image(
-            convolver_image=convolver_image_7x7
+            convolver_image=convolver_7x7
         )
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_images(

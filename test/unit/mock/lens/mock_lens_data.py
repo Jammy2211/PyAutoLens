@@ -8,8 +8,7 @@ class MockLensData(object):
         mask,
         grid_stack,
         border,
-        convolver_image,
-        convolver_mapping_matrix,
+        convolver,
         cluster,
     ):
 
@@ -26,8 +25,7 @@ class MockLensData(object):
         self.grid_stack = grid_stack
         self.sub_grid_size = self.grid_stack.sub.sub_grid_size
         self.border = border
-        self.convolver_image = convolver_image
-        self.convolver_mapping_matrix = convolver_mapping_matrix
+        self.convolver = convolver
 
         self.image_1d = self.mask_2d.array_1d_from_array_2d(
             array_2d=self.unmasked_image

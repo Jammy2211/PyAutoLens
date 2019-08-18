@@ -12,98 +12,98 @@ from test.unit.mock.model import mock_cosmology
 
 class TestLightProfiles(object):
     class TestIntensity:
-        def test__no_light_profiles__intensities_returned_as_0s_of_shape_grid(
-            self, grid_stack_7x7
+        def test__no_light_profiles__profile_image_returned_as_0s_of_shape_grid(
+            self, sub_grid_7x7
         ):
 
             galaxy = g.Galaxy(redshift=0.5)
 
-            intensities = galaxy.profile_image_from_grid(grid=grid_stack_7x7.regular)
+            profile_image = galaxy.profile_image_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=False)
 
             assert (
-                intensities == np.zeros(shape=grid_stack_7x7.regular.shape[0])
+                profile_image == np.zeros(shape=sub_grid_7x7.shape[0])
             ).all()
 
-        def test__using_no_light_profiles__check_reshaping_decorator_of_returned_intensities(
-            self, grid_stack_7x7
+        def test__using_no_light_profiles__check_reshaping_decorator_of_returned_profile_image(
+            self, sub_grid_7x7
         ):
             galaxy = g.Galaxy(redshift=0.5)
 
-            intensities = galaxy.profile_image_from_grid(
-                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned=False
+            profile_image = galaxy.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
             )
 
-            assert (intensities == np.zeros(shape=(7, 7))).all()
+            assert (profile_image == np.zeros(shape=(7, 7))).all()
 
-            intensities = galaxy.profile_image_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=False
+            profile_image = galaxy.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
-            assert (intensities == np.zeros(shape=grid_stack_7x7.sub.shape[0])).all()
+            assert (profile_image == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
-            intensities = galaxy.profile_image_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=True
+            profile_image = galaxy.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             assert (
-                intensities == np.zeros(shape=grid_stack_7x7.regular.shape[0])
+                profile_image == np.zeros(shape=sub_grid_7x7.shape[0]//4)
             ).all()
 
-        def test__galaxies_with_x1_and_x2_light_profiles__intensities_is_same_individual_profiles(
+        def test__galaxies_with_x1_and_x2_light_profiles__profile_image_is_same_individual_profiles(
             self, lp_0, gal_x1_lp, lp_1, gal_x2_lp
         ):
 
-            lp_intensities = lp_0.image_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_profile_image = lp_0.image_from_grid(grid=np.array([[1.05, -0.55]]))
 
-            gal_lp_intensities = gal_x1_lp.profile_image_from_grid(
+            gal_lp_profile_image = gal_x1_lp.profile_image_from_grid(
                 grid=np.array([[1.05, -0.55]])
             )
 
-            assert lp_intensities == gal_lp_intensities
+            assert lp_profile_image == gal_lp_profile_image
 
-            lp_intensities = lp_0.image_from_grid(grid=np.array([[1.05, -0.55]]))
-            lp_intensities += lp_1.image_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_profile_image = lp_0.image_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_profile_image += lp_1.image_from_grid(grid=np.array([[1.05, -0.55]]))
 
-            gal_intensities = gal_x2_lp.profile_image_from_grid(
+            gal_profile_image = gal_x2_lp.profile_image_from_grid(
                 grid=np.array([[1.05, -0.55]])
             )
 
-            assert lp_intensities == gal_intensities
+            assert lp_profile_image == gal_profile_image
 
         def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper_by_binning_sum_of_light_profile_values(
-            self, grid_stack_7x7, gal_x2_lp
+            self, sub_grid_7x7, gal_x2_lp
         ):
 
-            lp_0_intensities = gal_x2_lp.light_profile_0.image_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=False
+            lp_0_profile_image = gal_x2_lp.light_profile_0.image_from_grid(
+                grid=sub_grid_7x7, return_binned=False
             )
 
-            lp_1_intensities = gal_x2_lp.light_profile_1.image_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=False
+            lp_1_profile_image = gal_x2_lp.light_profile_1.image_from_grid(
+                grid=sub_grid_7x7, return_binned=False
             )
 
-            lp_intensities = lp_0_intensities + lp_1_intensities
+            lp_profile_image = lp_0_profile_image + lp_1_profile_image
 
-            lp_intensities_0 = (
-                lp_intensities[0]
-                + lp_intensities[1]
-                + lp_intensities[2]
-                + lp_intensities[3]
+            lp_profile_image_0 = (
+                lp_profile_image[0]
+                + lp_profile_image[1]
+                + lp_profile_image[2]
+                + lp_profile_image[3]
             ) / 4.0
 
-            lp_intensities_1 = (
-                lp_intensities[4]
-                + lp_intensities[5]
-                + lp_intensities[6]
-                + lp_intensities[7]
+            lp_profile_image_1 = (
+                lp_profile_image[4]
+                + lp_profile_image[5]
+                + lp_profile_image[6]
+                + lp_profile_image[7]
             ) / 4.0
 
-            gal_intensities = gal_x2_lp.profile_image_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=True
+            gal_profile_image = gal_x2_lp.profile_image_from_grid(
+                grid=sub_grid_7x7, return_binned=True
             )
 
-            assert gal_intensities[0] == lp_intensities_0
-            assert gal_intensities[1] == lp_intensities_1
+            assert gal_profile_image[0] == lp_profile_image_0
+            assert gal_profile_image[1] == lp_profile_image_1
 
     class TestLuminosityWithin:
         def test__two_profile_galaxy__is_sum_of_individual_profiles(
@@ -350,41 +350,41 @@ def caustics_via_magnification_from_galaxy_and_grid(galaxy, grid):
 class TestMassProfiles(object):
     class TestConvergence:
         def test__no_mass_profiles__convergence_returned_as_0s_of_shape_grid(
-            self, grid_stack_7x7
+            self, sub_grid_7x7
         ):
 
             galaxy = g.Galaxy(redshift=0.5)
 
-            convergence = galaxy.convergence_from_grid(grid=grid_stack_7x7.regular)
+            convergence = galaxy.convergence_from_grid(grid=sub_grid_7x7)
 
             assert (
-                convergence == np.zeros(shape=grid_stack_7x7.regular.shape[0])
+                convergence == np.zeros(shape=sub_grid_7x7.shape[0])
             ).all()
 
         def test__using_no_mass_profiles__check_reshaping_decorator_of_returned_convergence(
-            self, grid_stack_7x7
+            self, sub_grid_7x7
         ):
 
             galaxy = g.Galaxy(redshift=0.5)
 
             convergence = galaxy.convergence_from_grid(
-                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
             )
 
             assert (convergence == np.zeros(shape=(7, 7))).all()
 
             convergence = galaxy.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
-            assert (convergence == np.zeros(shape=grid_stack_7x7.sub.shape[0])).all()
+            assert (convergence == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
             convergence = galaxy.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=True
+                grid=sub_grid_7x7, return_binned=True
             )
 
             assert (
-                convergence == np.zeros(shape=grid_stack_7x7.regular.shape[0])
+                convergence == np.zeros(shape=sub_grid_7x7.shape[0]//4)
             ).all()
 
         def test__galaxies_with_x1_and_x2_mass_profiles__convergence_is_same_individual_profiles(
@@ -409,15 +409,15 @@ class TestMassProfiles(object):
             assert mp_convergence == gal_convergence
 
         def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper_by_binning_sum_of_mass_profile_values(
-            self, grid_stack_7x7, gal_x2_mp
+            self, sub_grid_7x7, gal_x2_mp
         ):
 
             mp_0_convergence = gal_x2_mp.mass_profile_0.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=False
+                grid=sub_grid_7x7, return_binned=False
             )
 
             mp_1_convergence = gal_x2_mp.mass_profile_1.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=False
+                grid=sub_grid_7x7, return_binned=False
             )
 
             mp_convergence = mp_0_convergence + mp_1_convergence
@@ -437,7 +437,7 @@ class TestMassProfiles(object):
             ) / 4.0
 
             gal_convergence = gal_x2_mp.convergence_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=True
+                grid=sub_grid_7x7, return_binned=True
             )
 
             assert gal_convergence[0] == mp_convergence_0
@@ -445,36 +445,36 @@ class TestMassProfiles(object):
 
     class TestPotential:
         def test__no_mass_profiles__potential_returned_as_0s_of_shape_grid(
-            self, grid_stack_7x7
+            self, sub_grid_7x7
         ):
             galaxy = g.Galaxy(redshift=0.5)
 
-            potential = galaxy.potential_from_grid(grid=grid_stack_7x7.regular)
+            potential = galaxy.potential_from_grid(grid=sub_grid_7x7)
 
-            assert (potential == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
+            assert (potential == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
         def test__using_no_mass_profiles__check_reshaping_decorator_of_returned_potential(
-            self, grid_stack_7x7
+            self, sub_grid_7x7
         ):
             galaxy = g.Galaxy(redshift=0.5)
 
             potential = galaxy.potential_from_grid(
-                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
             )
 
             assert (potential == np.zeros(shape=(7, 7))).all()
 
             potential = galaxy.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
-            assert (potential == np.zeros(shape=grid_stack_7x7.sub.shape[0])).all()
+            assert (potential == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
             potential = galaxy.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=True
+                grid=sub_grid_7x7, return_binned=True
             )
 
-            assert (potential == np.zeros(shape=grid_stack_7x7.regular.shape[0])).all()
+            assert (potential == np.zeros(shape=sub_grid_7x7.shape[0]//4)).all()
 
         def test__galaxies_with_x1_and_x2_mass_profiles__potential_is_same_individual_profiles(
             self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
@@ -497,14 +497,14 @@ class TestMassProfiles(object):
             assert mp_potential == gal_potential
 
         def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper_by_binning_sum_of_mass_profile_values(
-            self, grid_stack_7x7, gal_x2_mp
+            self, sub_grid_7x7, gal_x2_mp
         ):
             mp_0_potential = gal_x2_mp.mass_profile_0.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=False
+                grid=sub_grid_7x7, return_binned=False
             )
 
             mp_1_potential = gal_x2_mp.mass_profile_1.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=False
+                grid=sub_grid_7x7, return_binned=False
             )
 
             mp_potential = mp_0_potential + mp_1_potential
@@ -518,7 +518,7 @@ class TestMassProfiles(object):
             ) / 4.0
 
             gal_potential = gal_x2_mp.potential_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=True
+                grid=sub_grid_7x7, return_binned=True
             )
 
             assert gal_potential[0] == mp_potential_0
@@ -526,43 +526,43 @@ class TestMassProfiles(object):
 
     class TestDeflectionAngles:
         def test__no_mass_profiles__deflections_returned_as_0s_of_shape_grid(
-            self, grid_stack_7x7
+            self, sub_grid_7x7
         ):
 
             galaxy = g.Galaxy(redshift=0.5)
 
-            deflections = galaxy.deflections_from_grid(grid=grid_stack_7x7.regular)
+            deflections = galaxy.deflections_from_grid(grid=sub_grid_7x7)
 
             assert (
-                deflections == np.zeros(shape=(grid_stack_7x7.regular.shape[0], 2))
+                deflections == np.zeros(shape=(sub_grid_7x7.shape[0], 2))
             ).all()
 
         def test__using_no_mass_profiles__check_reshaping_decorator_of_returned_deflections(
-            self, grid_stack_7x7
+            self, sub_grid_7x7
         ):
 
             galaxy = g.Galaxy(redshift=0.5)
 
             deflections = galaxy.deflections_from_grid(
-                grid=grid_stack_7x7.regular, return_in_2d=True, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
             )
 
             assert (deflections == np.zeros(shape=(7, 7, 2))).all()
 
             deflections = galaxy.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_in_2d=False, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             assert (
-                deflections == np.zeros(shape=(grid_stack_7x7.sub.shape[0], 2))
+                deflections == np.zeros(shape=(sub_grid_7x7.shape[0], 2))
             ).all()
 
             deflections = galaxy.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=True
+                grid=sub_grid_7x7, return_binned=True
             )
 
             assert (
-                deflections == np.zeros(shape=(grid_stack_7x7.regular.shape[0], 2))
+                deflections == np.zeros(shape=(sub_grid_7x7.shape[0]//4, 2))
             ).all()
 
         def test__galaxies_with_x1_and_x2_mass_profiles__deflections_is_same_individual_profiles(
@@ -587,15 +587,15 @@ class TestMassProfiles(object):
             assert (mp_deflections == gal_deflections).all()
 
         def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper_by_binning_sum_of_mass_profile_values(
-            self, grid_stack_7x7, gal_x2_mp
+            self, sub_grid_7x7, gal_x2_mp
         ):
 
             mp_0_deflections = gal_x2_mp.mass_profile_0.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=False
+                grid=sub_grid_7x7, return_binned=False
             )
 
             mp_1_deflections = gal_x2_mp.mass_profile_1.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=False
+                grid=sub_grid_7x7, return_binned=False
             )
 
             mp_deflections = mp_0_deflections + mp_1_deflections
@@ -615,7 +615,7 @@ class TestMassProfiles(object):
             ) / 4.0
 
             gal_deflections = gal_x2_mp.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=True
+                grid=sub_grid_7x7, return_binned=True
             )
 
             assert gal_deflections[0, 0] == mp_deflections_y_0
@@ -636,7 +636,7 @@ class TestMassProfiles(object):
             ) / 4.0
 
             gal_deflections = gal_x2_mp.deflections_from_grid(
-                grid=grid_stack_7x7.sub, return_binned=True
+                grid=sub_grid_7x7, return_binned=True
             )
 
             assert gal_deflections[0, 1] == mp_deflections_x_0
@@ -1049,210 +1049,6 @@ class TestMassProfiles(object):
 
             assert mean_error < 1e-4
 
-    class TestConvergenceviaJacobian(object):
-        def test__compare_galaxy_convergence_via_jacobian_and_calculation(self):
-            mass_profile_1 = mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=1.0
-            )
-
-            galaxy = g.Galaxy(mass_1=mass_profile_1, redshift=1)
-
-            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05
-            )
-
-            convergence_via_calculation = galaxy.convergence_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True
-            )
-
-            convergence_via_jacobian = galaxy.convergence_from_jacobian(
-                grid=grid, return_in_2d=True, return_binned=True
-            )
-
-            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-            assert mean_error < 1e-1
-
-        def test__compare_two_component_galaxy_convergence_via_jacobian_and_calculation(
-            self
-        ):
-            mass_profile_1 = mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=1.0
-            )
-            mass_profile_2 = mp.SphericalIsothermal(
-                centre=(1.0, 1.0), einstein_radius=1.0
-            )
-
-            galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
-
-            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05
-            )
-
-            convergence_via_calculation = galaxy.convergence_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True
-            )
-
-            convergence_via_jacobian = galaxy.convergence_from_jacobian(
-                grid=grid, return_in_2d=True, return_binned=True
-            )
-
-            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-            assert mean_error < 1e-1
-
-        def test__convergence_sub_grid_binning_two_component_galaxy(self):
-            mass_profile_1 = mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=1.0
-            )
-            mass_profile_2 = mp.SphericalIsothermal(
-                centre=(1.0, 1.0), einstein_radius=1.0
-            )
-
-            galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
-
-            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
-            )
-
-            convergence_binned_reg_grid = galaxy.convergence_from_jacobian(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
-
-            convergence_sub_grid = galaxy.convergence_from_jacobian(
-                grid=grid, return_in_2d=False, return_binned=False
-            )
-
-            pixel_1_reg_grid = convergence_binned_reg_grid[0]
-            pixel_1_from_av_sub_grid = (
-                convergence_sub_grid[0]
-                + convergence_sub_grid[1]
-                + convergence_sub_grid[2]
-                + convergence_sub_grid[3]
-            ) / 4
-
-            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
-
-            pixel_10000_reg_grid = convergence_binned_reg_grid[99]
-
-            pixel_10000_from_av_sub_grid = (
-                convergence_sub_grid[399]
-                + convergence_sub_grid[398]
-                + convergence_sub_grid[397]
-                + convergence_sub_grid[396]
-            ) / 4
-
-            assert pixel_10000_reg_grid == pytest.approx(
-                pixel_10000_from_av_sub_grid, 1e-4
-            )
-
-            convergence_via_calculation = galaxy.convergence_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
-
-            convergence_via_jacobian = galaxy.convergence_from_jacobian(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
-
-            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-            assert convergence_via_jacobian.shape == (400,)
-            assert mean_error < 1e-1
-
-        def test__galaxies_with_x1_and_x2_mass_profiles__convergence_via_jacobian_is_same_individual_profiles(
-            self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
-        ):
-            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
-            )
-
-            mp_convergence = mp_0.convergence_from_jacobian(grid=grid)
-
-            gal_mp_convergence = gal_x1_mp.convergence_from_jacobian(grid=grid)
-
-            mean_error = np.mean(mp_convergence - gal_mp_convergence)
-
-            assert mean_error < 1e-4
-
-            mp_convergence = mp_0.convergence_from_jacobian(grid=grid)
-            mp_convergence += mp_1.convergence_from_jacobian(grid=grid)
-
-            gal_convergence = gal_x2_mp.convergence_from_jacobian(grid=grid)
-
-            mean_error = np.mean(mp_convergence - gal_convergence)
-
-            assert mean_error < 1e-4
-
-    class TestShearviaJacobian(object):
-        def test__galaxies_with_x1_and_x2_mass_profiles__shear_via_jacobian_is_same_individual_profiles(
-            self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
-        ):
-            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
-            )
-
-            mp_shear = mp_0.shear_from_jacobian(grid=grid)
-
-            gal_mp_shear = gal_x1_mp.shear_from_jacobian(grid=grid)
-
-            mean_error = np.mean(mp_shear - gal_mp_shear)
-
-            assert mean_error < 1e-4
-
-            mp_shear = mp_0.shear_from_jacobian(grid=grid)
-            mp_shear += mp_1.shear_from_jacobian(grid=grid)
-
-            gal_shear = gal_x2_mp.shear_from_jacobian(grid=grid)
-
-            mean_error = np.mean(mp_shear - gal_shear)
-
-            assert mean_error < 1e-4
-
-        def test_shear_sub_grid_binning_two_component_galaxy(self):
-            mass_profile_1 = mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=1.0
-            )
-            mass_profile_2 = mp.SphericalIsothermal(
-                centre=(1.0, 1.0), einstein_radius=1.0
-            )
-
-            galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
-
-            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
-            )
-
-            shear_binned_reg_grid = galaxy.shear_from_jacobian(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
-
-            shear_sub_grid = galaxy.shear_from_jacobian(
-                grid=grid, return_in_2d=False, return_binned=False
-            )
-
-            pixel_1_reg_grid = shear_binned_reg_grid[0]
-            pixel_1_from_av_sub_grid = (
-                shear_sub_grid[0]
-                + shear_sub_grid[1]
-                + shear_sub_grid[2]
-                + shear_sub_grid[3]
-            ) / 4
-
-            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
-
-            pixel_10000_reg_grid = shear_binned_reg_grid[99]
-
-            pixel_10000_from_av_sub_grid = (
-                shear_sub_grid[399]
-                + shear_sub_grid[398]
-                + shear_sub_grid[397]
-                + shear_sub_grid[396]
-            ) / 4
-
-            assert pixel_10000_reg_grid == pytest.approx(
-                pixel_10000_from_av_sub_grid, 1e-4
-            )
-
     class TestJacobian(object):
         def test__jacobian_components(self):
             mass_profile_1 = mp.SphericalIsothermal(
@@ -1387,11 +1183,11 @@ class TestMassProfiles(object):
                 shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
             )
 
-            lambda_t_binned_reg_grid = galaxy.tangential_eigen_value_from_shear_and_convergence(
+            lambda_t_binned_reg_grid = galaxy.tangential_eigen_value_from_grid(
                 grid=grid, return_in_2d=False, return_binned=True
             )
 
-            lambda_t_sub_grid = galaxy.tangential_eigen_value_from_shear_and_convergence(
+            lambda_t_sub_grid = galaxy.tangential_eigen_value_from_grid(
                 grid=grid, return_in_2d=False, return_binned=False
             )
 
@@ -1432,11 +1228,11 @@ class TestMassProfiles(object):
                 shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
             )
 
-            lambda_r_binned_reg_grid = galaxy.radial_eigen_value_from_shear_and_convergence(
+            lambda_r_binned_reg_grid = galaxy.radial_eigen_value_from_grid(
                 grid=grid, return_in_2d=False, return_binned=True
             )
 
-            lambda_r_sub_grid = galaxy.radial_eigen_value_from_shear_and_convergence(
+            lambda_r_sub_grid = galaxy.radial_eigen_value_from_grid(
                 grid=grid, return_in_2d=False, return_binned=False
             )
 
@@ -1463,6 +1259,210 @@ class TestMassProfiles(object):
                 pixel_10000_from_av_sub_grid, 1e-4
             )
 
+    class TestConvergenceviaJacobian(object):
+        def test__compare_galaxy_convergence_via_jacobian_and_calculation(self):
+            mass_profile_1 = mp.SphericalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=1.0
+            )
+
+            galaxy = g.Galaxy(mass_1=mass_profile_1, redshift=1)
+
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05
+            )
+
+            convergence_via_calculation = galaxy.convergence_from_grid(
+                grid=grid, return_in_2d=True, return_binned=True
+            )
+
+            convergence_via_jacobian = galaxy.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=True, return_binned=True
+            )
+
+            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+            assert mean_error < 1e-1
+
+        def test__compare_two_component_galaxy_convergence_via_jacobian_and_calculation(
+            self
+        ):
+            mass_profile_1 = mp.SphericalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=1.0
+            )
+            mass_profile_2 = mp.SphericalIsothermal(
+                centre=(1.0, 1.0), einstein_radius=1.0
+            )
+
+            galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
+
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05
+            )
+
+            convergence_via_calculation = galaxy.convergence_from_grid(
+                grid=grid, return_in_2d=True, return_binned=True
+            )
+
+            convergence_via_jacobian = galaxy.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=True, return_binned=True
+            )
+
+            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+            assert mean_error < 1e-1
+
+        def test__convergence_sub_grid_binning_two_component_galaxy(self):
+            mass_profile_1 = mp.SphericalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=1.0
+            )
+            mass_profile_2 = mp.SphericalIsothermal(
+                centre=(1.0, 1.0), einstein_radius=1.0
+            )
+
+            galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
+
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            convergence_binned_reg_grid = galaxy.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            convergence_sub_grid = galaxy.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+
+            pixel_1_reg_grid = convergence_binned_reg_grid[0]
+            pixel_1_from_av_sub_grid = (
+                convergence_sub_grid[0]
+                + convergence_sub_grid[1]
+                + convergence_sub_grid[2]
+                + convergence_sub_grid[3]
+            ) / 4
+
+            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+            pixel_10000_reg_grid = convergence_binned_reg_grid[99]
+
+            pixel_10000_from_av_sub_grid = (
+                convergence_sub_grid[399]
+                + convergence_sub_grid[398]
+                + convergence_sub_grid[397]
+                + convergence_sub_grid[396]
+            ) / 4
+
+            assert pixel_10000_reg_grid == pytest.approx(
+                pixel_10000_from_av_sub_grid, 1e-4
+            )
+
+            convergence_via_calculation = galaxy.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            convergence_via_jacobian = galaxy.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+            assert convergence_via_jacobian.shape == (400,)
+            assert mean_error < 1e-1
+
+        def test__galaxies_with_x1_and_x2_mass_profiles__convergence_via_jacobian_is_same_individual_profiles(
+            self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
+        ):
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            mp_convergence = mp_0.convergence_via_jacobian_from_grid(grid=grid)
+
+            gal_mp_convergence = gal_x1_mp.convergence_via_jacobian_from_grid(grid=grid)
+
+            mean_error = np.mean(mp_convergence - gal_mp_convergence)
+
+            assert mean_error < 1e-4
+
+            mp_convergence = mp_0.convergence_via_jacobian_from_grid(grid=grid)
+            mp_convergence += mp_1.convergence_via_jacobian_from_grid(grid=grid)
+
+            gal_convergence = gal_x2_mp.convergence_via_jacobian_from_grid(grid=grid)
+
+            mean_error = np.mean(mp_convergence - gal_convergence)
+
+            assert mean_error < 1e-4
+
+    class TestShearviaJacobian(object):
+        def test__galaxies_with_x1_and_x2_mass_profiles__shear_via_jacobian_is_same_individual_profiles(
+            self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
+        ):
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            mp_shear = mp_0.shear_via_jacobian_from_grid(grid=grid)
+
+            gal_mp_shear = gal_x1_mp.shear_via_jacobian_from_grid(grid=grid)
+
+            mean_error = np.mean(mp_shear - gal_mp_shear)
+
+            assert mean_error < 1e-4
+
+            mp_shear = mp_0.shear_via_jacobian_from_grid(grid=grid)
+            mp_shear += mp_1.shear_via_jacobian_from_grid(grid=grid)
+
+            gal_shear = gal_x2_mp.shear_via_jacobian_from_grid(grid=grid)
+
+            mean_error = np.mean(mp_shear - gal_shear)
+
+            assert mean_error < 1e-4
+
+        def test_shear_sub_grid_binning_two_component_galaxy(self):
+            mass_profile_1 = mp.SphericalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=1.0
+            )
+            mass_profile_2 = mp.SphericalIsothermal(
+                centre=(1.0, 1.0), einstein_radius=1.0
+            )
+
+            galaxy = g.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
+
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+            )
+
+            shear_binned_reg_grid = galaxy.shear_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=True
+            )
+
+            shear_sub_grid = galaxy.shear_via_jacobian_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+
+            pixel_1_reg_grid = shear_binned_reg_grid[0]
+            pixel_1_from_av_sub_grid = (
+                shear_sub_grid[0]
+                + shear_sub_grid[1]
+                + shear_sub_grid[2]
+                + shear_sub_grid[3]
+            ) / 4
+
+            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+
+            pixel_10000_reg_grid = shear_binned_reg_grid[99]
+
+            pixel_10000_from_av_sub_grid = (
+                shear_sub_grid[399]
+                + shear_sub_grid[398]
+                + shear_sub_grid[397]
+                + shear_sub_grid[396]
+            ) / 4
+
+            assert pixel_10000_reg_grid == pytest.approx(
+                pixel_10000_from_av_sub_grid, 1e-4
+            )
+
     class TestMagnification(object):
         def test__compare_magnification_from_eigen_values_and_from_determinant__two_component_galaxy(
             self
@@ -1483,11 +1483,11 @@ class TestMassProfiles(object):
                 grid=grid, return_in_2d=True
             )
 
-            tangential_eigen_value = galaxy.tangential_eigen_value_from_shear_and_convergence(
+            tangential_eigen_value = galaxy.tangential_eigen_value_from_grid(
                 grid=grid, return_in_2d=True
             )
 
-            radal_eigen_value = galaxy.radial_eigen_value_from_shear_and_convergence(
+            radal_eigen_value = galaxy.radial_eigen_value_from_grid(
                 grid=grid, return_in_2d=True
             )
 
@@ -1509,11 +1509,11 @@ class TestMassProfiles(object):
                 grid=grid, return_in_2d=True, return_binned=False
             )
 
-            tangential_eigen_value = galaxy.tangential_eigen_value_from_shear_and_convergence(
+            tangential_eigen_value = galaxy.tangential_eigen_value_from_grid(
                 grid=grid, return_in_2d=True, return_binned=False
             )
 
-            radal_eigen_value = galaxy.radial_eigen_value_from_shear_and_convergence(
+            radal_eigen_value = galaxy.radial_eigen_value_from_grid(
                 grid=grid, return_in_2d=True, return_binned=False
             )
 
@@ -1546,9 +1546,9 @@ class TestMassProfiles(object):
                 grid=grid, return_in_2d=True
             )
 
-            convergence = galaxy.convergence_from_jacobian(grid=grid, return_in_2d=True)
+            convergence = galaxy.convergence_via_jacobian_from_grid(grid=grid, return_in_2d=True)
 
-            shear = galaxy.shear_from_jacobian(grid=grid, return_in_2d=True)
+            shear = galaxy.shear_via_jacobian_from_grid(grid=grid, return_in_2d=True)
 
             magnification_via_convergence_and_shear = 1 / (
                 (1 - convergence) ** 2 - shear ** 2
@@ -1568,11 +1568,11 @@ class TestMassProfiles(object):
                 grid=grid, return_in_2d=True, return_binned=False
             )
 
-            convergence = galaxy.convergence_from_jacobian(
+            convergence = galaxy.convergence_via_jacobian_from_grid(
                 grid=grid, return_in_2d=True, return_binned=False
             )
 
-            shear = galaxy.shear_from_jacobian(
+            shear = galaxy.shear_via_jacobian_from_grid(
                 grid=grid, return_in_2d=True, return_binned=False
             )
 
@@ -1609,9 +1609,9 @@ class TestMassProfiles(object):
                 0
             ]
 
-            critical_curve_tangential_from_lambda_t = galaxy.tangential_critical_curve_from_grid(
+            critical_curve_tangential_from_lambda_t = galaxy.critical_curves_from_grid(
                 grid=grid
-            )
+            )[0]
 
             assert critical_curve_tangential_from_lambda_t == pytest.approx(
                 critical_curve_tangential_from_magnification, 5e-1
@@ -1627,9 +1627,9 @@ class TestMassProfiles(object):
                 0
             ]
 
-            critical_curve_tangential_from_lambda_t = galaxy.tangential_critical_curve_from_grid(
+            critical_curve_tangential_from_lambda_t = galaxy.critical_curves_from_grid(
                 grid=grid
-            )
+            )[0]
 
             assert critical_curve_tangential_from_lambda_t == pytest.approx(
                 critical_curve_tangential_from_magnification, 5e-1
@@ -1657,9 +1657,9 @@ class TestMassProfiles(object):
                 1
             ]
 
-            critical_curve_radial_from_lambda_t = galaxy.radial_critical_curve_from_grid(
+            critical_curve_radial_from_lambda_t = galaxy.critical_curves_from_grid(
                 grid=grid
-            )
+            )[1]
 
             assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
                 sum(critical_curve_radial_from_magnification), 5e-1
@@ -1675,9 +1675,9 @@ class TestMassProfiles(object):
                 1
             ]
 
-            critical_curve_radial_from_lambda_t = galaxy.radial_critical_curve_from_grid(
+            critical_curve_radial_from_lambda_t = galaxy.critical_curves_from_grid(
                 grid=grid
-            )
+            )[1]
 
             assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
                 sum(critical_curve_radial_from_magnification), 5e-1
@@ -1705,9 +1705,9 @@ class TestMassProfiles(object):
                 0
             ]
 
-            caustic_tangential_from_lambda_t = galaxy.tangential_caustic_from_grid(
+            caustic_tangential_from_lambda_t = galaxy.caustics_from_grid(
                 grid=grid
-            )
+            )[0]
 
             assert caustic_tangential_from_lambda_t == pytest.approx(
                 caustic_tangential_from_magnification, 5e-1
@@ -1723,9 +1723,9 @@ class TestMassProfiles(object):
                 0
             ]
 
-            caustic_tangential_from_lambda_t = galaxy.tangential_caustic_from_grid(
+            caustic_tangential_from_lambda_t = galaxy.caustics_from_grid(
                 grid=grid
-            )
+            )[0]
 
             assert caustic_tangential_from_lambda_t == pytest.approx(
                 caustic_tangential_from_magnification, 5e-1
@@ -1752,7 +1752,7 @@ class TestMassProfiles(object):
             )[
                 1
             ]
-            caustic_radial_from_lambda_t = galaxy.radial_caustic_from_grid(grid=grid)
+            caustic_radial_from_lambda_t = galaxy.caustics_from_grid(grid=grid)[1]
 
             assert sum(caustic_radial_from_lambda_t) == pytest.approx(
                 sum(caustic_radial_from_magnification), 5e-1

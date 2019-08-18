@@ -324,7 +324,7 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
         KernelException if either PrimaryBeam primary_beam dimension is odd
         """
         if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
-            raise exc.KernelException("PrimaryBeam Kernel must be odd")
+            raise exc.ConvolutionException("PrimaryBeam Kernel must be odd")
 
         return scipy.signal.convolve2d(array_2d, self, mode="same")
 

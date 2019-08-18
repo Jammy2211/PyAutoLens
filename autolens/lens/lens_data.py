@@ -1,7 +1,7 @@
 from autolens.array import grids
 from autolens.array import mask as msk
-from autolens.data.convolution import ConvolverImage
-from autolens.model.inversion import convolution as inversion_convolution
+from autolens.data.convolution import Convolver
+
 
 from autolens.array.grids import reshape_returned_regular_array
 
@@ -78,9 +78,9 @@ class LensData(object):
         else:
             self.image_psf_shape = image_psf_shape
 
-        self.convolver_image = ConvolverImage(
+        self.convolver_image = Convolver(
             mask=mask,
-            blurring_mask=mask.blurring_mask_for_psf_shape(
+            blurring_mask=mask.blurring_mask_from_psf_shape(
                 psf_shape=self.image_psf_shape
             ),
             psf=self.psf.resized_scaled_array_from_array(

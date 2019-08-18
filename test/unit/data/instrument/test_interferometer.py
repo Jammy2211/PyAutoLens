@@ -583,7 +583,7 @@ class TestPrimaryBeam(object):
 
             psf = interferometer.PrimaryBeam(array=kernel, pixel_scale=1.0)
 
-            with pytest.raises(exc.KernelException):
+            with pytest.raises(exc.ConvolutionException):
                 psf.convolve(np.ones((5, 5)))
 
         def test__image_is_3x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
