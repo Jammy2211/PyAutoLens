@@ -122,7 +122,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     )
 
     ccd_simulated = ccd.SimulatedCCDData.from_image_and_exposure_arrays(
-        image=tracer.padded_profile_image_plane_image_2d_from_psf_shape(
+        image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
             psf_shape=psf.shape
         ),
         pixel_scale=0.2,

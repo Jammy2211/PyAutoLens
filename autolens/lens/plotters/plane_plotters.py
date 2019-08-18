@@ -254,7 +254,7 @@ def plot_potential(
     output_filename="plane_potential",
 ):
 
-    potential = plane.potential(return_in_2d=True, return_binned=True)
+    potential = plane.potential_from_grid(return_in_2d=True, return_binned=True)
 
     array_plotters.plot_array(
         array=potential,

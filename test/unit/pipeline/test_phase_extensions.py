@@ -210,17 +210,17 @@ class TestImagePassing(object):
 
         assert (
             len(
-                tracer.galaxy_image_dict_from_convolver_image(
-                    convolver_image=convolver_7x7
+                tracer.galaxy_image_dict_from_convolver(
+                    convolver=convolver_7x7
                 )
             )
             == 2
         )
-        assert lens_galaxy in tracer.galaxy_image_dict_from_convolver_image(
-            convolver_image=convolver_7x7
+        assert lens_galaxy in tracer.galaxy_image_dict_from_convolver(
+            convolver=convolver_7x7
         )
-        assert source_galaxy in tracer.galaxy_image_dict_from_convolver_image(
-            convolver_image=convolver_7x7
+        assert source_galaxy in tracer.galaxy_image_dict_from_convolver(
+            convolver=convolver_7x7
         )
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_images(

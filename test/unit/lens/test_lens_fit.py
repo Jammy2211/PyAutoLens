@@ -1029,8 +1029,8 @@ class TestLensProfileFit:
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
-            blurred_profile_image_2d_of_planes = tracer.blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(
-                convolver_image=lens_data_7x7.convolver_image
+            blurred_profile_image_2d_of_planes = tracer.blurred_profile_image_2d_of_planes_from_grid_and_convolver(
+                convolver=lens_data_7x7.convolver_image
             )
 
             assert (
@@ -1040,7 +1040,7 @@ class TestLensProfileFit:
                 blurred_profile_image_2d_of_planes[1] == fit.model_image_2d_of_planes[1]
             ).all()
 
-            unmasked_blurred_profile_image = tracer.unmasked_blurred_profile_image_plane_image_from_psf(
+            unmasked_blurred_profile_image = tracer.unmasked_blurred_profile_image_from_grid_and_psf(
                 psf=lens_data_7x7.psf
             )
 
@@ -1049,7 +1049,7 @@ class TestLensProfileFit:
                 == fit.unmasked_blurred_profile_image_plane_image
             ).all()
 
-            unmasked_blurred_profile_image_of_planes = tracer.unmasked_blurred_profile_image_plane_image_of_planes_from_psf(
+            unmasked_blurred_profile_image_of_planes = tracer.unmasked_blurred_profile_image_of_planes_from_grid_and_psf(
                 psf=lens_data_7x7.psf
             )
 
@@ -1062,7 +1062,7 @@ class TestLensProfileFit:
                 == fit.unmasked_blurred_profile_image_plane_image_of_planes[1]
             ).all()
 
-            unmasked_blurred_profile_image_of_galaxies = tracer.unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(
+            unmasked_blurred_profile_image_of_galaxies = tracer.unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
                 psf=lens_data_7x7.psf
             )
 
