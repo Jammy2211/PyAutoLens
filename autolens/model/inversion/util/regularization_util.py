@@ -38,7 +38,11 @@ def constant_regularization_matrix_from_pixel_neighbors(
 
 @decorator_util.jit()
 def adaptive_pixel_signals_from_images(
-    pixels, signal_scale, sub_to_pix, sub_to_regular, hyper_image
+    pixels,
+    signal_scale,
+    sub_mask_1d_index_to_pixelization_1d_index,
+    sub_mask_1d_index_to_mask_1d_index,
+    hyper_image,
 ):
     """Compute the (hyper) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
     These pixel-signals are used to compute the effective regularization weight of each pixel.
@@ -70,10 +74,12 @@ def adaptive_pixel_signals_from_images(
     pixel_signals = np.zeros((pixels,))
     pixel_sizes = np.zeros((pixels,))
 
-    for sub_index in range(len(sub_to_pix)):
-        regular_index = sub_to_regular[sub_index]
-        pixel_signals[sub_to_pix[sub_index]] += hyper_image[regular_index]
-        pixel_sizes[sub_to_pix[sub_index]] += 1
+    for sub_mask_1d_index in range(len(sub_mask_1d_index_to_pixelization_1d_index)):
+        mask_1d_index = sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index]
+        pixel_signals[
+            sub_mask_1d_index_to_pixelization_1d_index[sub_mask_1d_index]
+        ] += hyper_image[mask_1d_index]
+        pixel_sizes[sub_mask_1d_index_to_pixelization_1d_index[sub_mask_1d_index]] += 1
 
     pixel_sizes[pixel_sizes == 0] = 1
     pixel_signals /= pixel_sizes

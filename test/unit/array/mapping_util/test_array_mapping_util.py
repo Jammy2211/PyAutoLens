@@ -8,8 +8,8 @@ test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
-class TestMap1dIndexesTo2dIndex(object):
 
+class TestMap1dIndexesTo2dIndex(object):
     def test__9_1d_indexes_from_0_to_8__map_to_shape_3x3(self):
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])

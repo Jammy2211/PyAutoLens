@@ -321,7 +321,9 @@ def padded_mask_2d_to_mask_1d_index_from_mask_2d_and_bin_up_factor(
         array_2d=mask_2d, bin_up_factor=bin_up_factor, pad_value=True
     )
 
-    return mask_mapping_util.sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(sub_mask=padded_mask_2d)
+    return mask_mapping_util.sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(
+        sub_mask=padded_mask_2d
+    )
 
 
 @decorator_util.jit()

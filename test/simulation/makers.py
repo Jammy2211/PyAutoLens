@@ -312,9 +312,7 @@ def make_lens_sis__source_smooth(data_resolutions, sub_grid_size):
         )
 
 
-def make_lens_sis__source_smooth__offset_centre(
-    data_resolutions, sub_grid_size
-):
+def make_lens_sis__source_smooth__offset_centre(data_resolutions, sub_grid_size):
 
     data_type = "lens_sis__source_smooth__offset_centre"
 

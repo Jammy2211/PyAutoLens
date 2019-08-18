@@ -8,6 +8,7 @@ from autolens.array.util import mask_util
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
+
 @decorator_util.jit()
 def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
     total_sparse_pixels, mask, unmasked_sparse_grid_pixel_centres
@@ -82,7 +83,7 @@ def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
 
 
 @decorator_util.jit()
-def regular_to_sparse_from_sparse_mappings(
+def mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
     regular_to_unmasked_sparse, unmasked_sparse_to_sparse
 ):
     """Using the mapping_util between the regular-grid and unmasked pixelization grid, compute the mapping_util between each \
@@ -97,14 +98,14 @@ def regular_to_sparse_from_sparse_mappings(
     """
     total_regular_pixels = regular_to_unmasked_sparse.shape[0]
 
-    regular_to_sparse = np.zeros(total_regular_pixels)
+    mask_1d_index_to_sparse_1d_index = np.zeros(total_regular_pixels)
 
     for regular_index in range(total_regular_pixels):
-        regular_to_sparse[regular_index] = unmasked_sparse_to_sparse[
+        mask_1d_index_to_sparse_1d_index[regular_index] = unmasked_sparse_to_sparse[
             regular_to_unmasked_sparse[regular_index]
         ]
 
-    return regular_to_sparse
+    return mask_1d_index_to_sparse_1d_index
 
 
 @decorator_util.jit()
@@ -138,17 +139,17 @@ def sparse_grid_from_unmasked_sparse_grid(
 
 
 @decorator_util.jit()
-def regular_to_sparse_from_cluster_grid(
+def mask_1d_index_to_sparse_1d_index_from_cluster_grid(
     cluster_labels,
     cluster_to_regular_all,
     cluster_to_regular_sizes,
     total_regular_pixels,
 ):
-    regular_to_sparse = np.zeros(total_regular_pixels)
+    mask_1d_index_to_sparse_1d_index = np.zeros(total_regular_pixels)
 
     for cluster_index in range(cluster_to_regular_all.shape[0]):
         for cluster_count in range(cluster_to_regular_sizes[cluster_index]):
             regular_index = cluster_to_regular_all[cluster_index, cluster_count]
-            regular_to_sparse[regular_index] = cluster_labels[cluster_index]
+            mask_1d_index_to_sparse_1d_index[regular_index] = cluster_labels[cluster_index]
 
-    return regular_to_sparse
+    return mask_1d_index_to_sparse_1d_index

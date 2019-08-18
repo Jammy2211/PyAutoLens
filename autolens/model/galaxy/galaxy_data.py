@@ -172,7 +172,7 @@ class GalaxyFitData(object):
             return sum(
                 map(
                     lambda g: g.convergence_from_grid(
-                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        grid=self.grid_stack.sub.unlensed_1d,
                         return_in_2d=False,
                         return_binned=True,
                     ),
@@ -183,7 +183,7 @@ class GalaxyFitData(object):
             return sum(
                 map(
                     lambda g: g.potential_from_grid(
-                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        grid=self.grid_stack.sub.unlensed_1d,
                         return_in_2d=False,
                         return_binned=True,
                     ),
@@ -194,7 +194,7 @@ class GalaxyFitData(object):
             return sum(
                 map(
                     lambda g: g.deflections_from_grid(
-                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        grid=self.grid_stack.sub.unlensed_1d,
                         return_in_2d=False,
                         return_binned=True,
                     ),
@@ -205,7 +205,7 @@ class GalaxyFitData(object):
             return sum(
                 map(
                     lambda g: g.deflections_from_grid(
-                        grid=self.grid_stack.sub.unlensed_grid_1d,
+                        grid=self.grid_stack.sub.unlensed_1d,
                         return_in_2d=False,
                         return_binned=True,
                     ),

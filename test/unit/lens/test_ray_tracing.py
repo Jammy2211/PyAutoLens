@@ -328,19 +328,19 @@ class TestAbstractTracer(object):
             )
 
             g0_convergence = g0.convergence_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d,
+                grid=grid_stack_7x7.sub.unlensed_1d,
                 return_in_2d=True,
                 return_binned=True,
             )
 
             g1_convergence = g1.convergence_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d,
+                grid=grid_stack_7x7.sub.unlensed_1d,
                 return_in_2d=True,
                 return_binned=True,
             )
 
             g2_convergence = g2.convergence_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d,
+                grid=grid_stack_7x7.sub.unlensed_1d,
                 return_in_2d=True,
                 return_binned=True,
             )
@@ -433,19 +433,19 @@ class TestAbstractTracer(object):
             )
 
             g0_potential = g0.potential_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d,
+                grid=grid_stack_7x7.sub.unlensed_1d,
                 return_in_2d=True,
                 return_binned=True,
             )
 
             g1_potential = g1.potential_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d,
+                grid=grid_stack_7x7.sub.unlensed_1d,
                 return_in_2d=True,
                 return_binned=True,
             )
 
             g2_potential = g2.potential_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d,
+                grid=grid_stack_7x7.sub.unlensed_1d,
                 return_in_2d=True,
                 return_binned=True,
             )
@@ -552,19 +552,19 @@ class TestAbstractTracer(object):
             )
 
             g0_deflections = g0.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d,
+                grid=grid_stack_7x7.sub.unlensed_1d,
                 return_in_2d=True,
                 return_binned=True,
             )
 
             g1_deflections = g1.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d,
+                grid=grid_stack_7x7.sub.unlensed_1d,
                 return_in_2d=True,
                 return_binned=True,
             )
 
             g2_deflections = g2.deflections_from_grid(
-                grid=grid_stack_7x7.sub.unlensed_grid_1d,
+                grid=grid_stack_7x7.sub.unlensed_1d,
                 return_in_2d=True,
                 return_binned=True,
             )
@@ -1620,8 +1620,7 @@ class TestTracer(object):
             g2 = g.Galaxy(redshift=2.0)
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g0, g1, g2],
-                cosmology=cosmo.Planck15,
+                galaxies=[g0, g1, g2], cosmology=cosmo.Planck15
             )
 
             assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == pytest.approx(
@@ -1718,8 +1717,7 @@ class TestTracer(object):
             g3 = g.Galaxy(redshift=3.0)
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g0, g1, g2, g3],
-                cosmology=cosmo.Planck15,
+                galaxies=[g0, g1, g2, g3], cosmology=cosmo.Planck15
             )
 
             assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == pytest.approx(
@@ -1862,8 +1860,7 @@ class TestTracer(object):
             g5 = g.Galaxy(redshift=3.0)
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g0, g1, g2, g3, g4, g5],
-                cosmology=cosmo.Planck15,
+                galaxies=[g0, g1, g2, g3, g4, g5], cosmology=cosmo.Planck15
             )
 
             assert tracer.planes[0].galaxies == [g2]
@@ -1877,10 +1874,12 @@ class TestTracer(object):
         ):
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g.Galaxy(redshift=0.5), g.Galaxy(redshift=1.0)],
+                galaxies=[g.Galaxy(redshift=0.5), g.Galaxy(redshift=1.0)]
             )
 
-            traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(grid=sub_grid_7x7, return_in_2d=False)
+            traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False
+            )
 
             assert traced_grids_of_planes[0][0] == pytest.approx(
                 np.array([1.25, -1.25]), 1e-3
@@ -1913,10 +1912,12 @@ class TestTracer(object):
         ):
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[gal_x1_mp, g.Galaxy(redshift=1.0)],
+                galaxies=[gal_x1_mp, g.Galaxy(redshift=1.0)]
             )
 
-            traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(grid=sub_grid_7x7_simple, return_in_2d=False)
+            traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
+                grid=sub_grid_7x7_simple, return_in_2d=False
+            )
 
             assert traced_grids_of_planes[0][0] == pytest.approx(
                 np.array([1.0, 1.0]), 1e-3
@@ -1949,10 +1950,12 @@ class TestTracer(object):
         ):
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[gal_x1_mp, gal_x1_mp, g.Galaxy(redshift=1.0)],
+                galaxies=[gal_x1_mp, gal_x1_mp, g.Galaxy(redshift=1.0)]
             )
 
-            traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(grid=sub_grid_7x7_simple, return_in_2d=False)
+            traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
+                grid=sub_grid_7x7_simple, return_in_2d=False
+            )
 
             assert traced_grids_of_planes[0][0] == pytest.approx(
                 np.array([1.0, 1.0]), 1e-3
@@ -2005,13 +2008,16 @@ class TestTracer(object):
             )
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g0, g1, g2, g3, g4, g5],
-                cosmology=cosmo.Planck15,
+                galaxies=[g0, g1, g2, g3, g4, g5], cosmology=cosmo.Planck15
             )
 
-            traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(grid=sub_grid_7x7_simple[0:2], return_in_2d=False)
+            traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
+                grid=sub_grid_7x7_simple[0:2], return_in_2d=False
+            )
 
-            traced_deflections_of_planes = tracer.deflections_between_planes_from_grid(grid=sub_grid_7x7_simple, return_in_2d=False)
+            traced_deflections_of_planes = tracer.deflections_between_planes_from_grid(
+                grid=sub_grid_7x7_simple, return_in_2d=False
+            )
 
             # The scaling factors are as follows and were computed independently from the test.
             beta_01 = 0.9348
@@ -2097,11 +2103,12 @@ class TestTracer(object):
         ):
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g.Galaxy(redshift=0.5), g.Galaxy(redshift=1.0)],
+                galaxies=[g.Galaxy(redshift=0.5), g.Galaxy(redshift=1.0)]
             )
 
             traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_i=0, plane_j=0, return_in_2d=False)
+                grid=sub_grid_7x7_simple, plane_i=0, plane_j=0, return_in_2d=False
+            )
 
             assert traced_deflections_between_planes[0] == pytest.approx(
                 np.array([0.0, 0.0]), 1e-3
@@ -2117,7 +2124,8 @@ class TestTracer(object):
             )
 
             traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_i=0, plane_j=1, return_in_2d=False)
+                grid=sub_grid_7x7_simple, plane_i=0, plane_j=1, return_in_2d=False
+            )
 
             assert traced_deflections_between_planes[0] == pytest.approx(
                 np.array([0.0, 0.0]), 1e-3
@@ -2137,11 +2145,12 @@ class TestTracer(object):
         ):
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[gal_x1_mp, g.Galaxy(redshift=1.0)],
+                galaxies=[gal_x1_mp, g.Galaxy(redshift=1.0)]
             )
 
             traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_i=0, plane_j=1, return_in_2d=False)
+                grid=sub_grid_7x7_simple, plane_i=0, plane_j=1, return_in_2d=False
+            )
 
             assert traced_deflections_between_planes[0] == pytest.approx(
                 np.array([0.707, 0.707]), 1e-3
@@ -2161,11 +2170,12 @@ class TestTracer(object):
         ):
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[gal_x1_mp, gal_x1_mp, g.Galaxy(redshift=1.0)],
+                galaxies=[gal_x1_mp, gal_x1_mp, g.Galaxy(redshift=1.0)]
             )
 
             traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_i=0, plane_j=1, return_in_2d=False)
+                grid=sub_grid_7x7_simple, plane_i=0, plane_j=1, return_in_2d=False
+            )
 
             assert traced_deflections_between_planes[0] == pytest.approx(
                 np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3
@@ -2235,42 +2245,42 @@ class TestTracer(object):
         #         grid=np.array([[(1.0 - beta_01 * 1.0), 0.0]])
         #     )
 
-            # assert traced_deflections_of_planes[1][0] == pytest.approx(
-            #     defl11[0], 1e-4
-            # )
-            # assert traced_deflections_of_planes[1][1] == pytest.approx(
-            #     defl12[0], 1e-4
-            # )
+        # assert traced_deflections_of_planes[1][0] == pytest.approx(
+        #     defl11[0], 1e-4
+        # )
+        # assert traced_deflections_of_planes[1][1] == pytest.approx(
+        #     defl12[0], 1e-4
+        # )
 
-            # 2 Galaxies in this plane, so multiply by 2.0
+        # 2 Galaxies in this plane, so multiply by 2.0
 
-            # defl21 = 2.0 * g0.deflections_from_grid(
-            #     grid=np.array(
-            #         [
-            #             [
-            #                 (1.0 - beta_02 * val - beta_12 * defl11[0, 0]),
-            #                 (1.0 - beta_02 * val - beta_12 * defl11[0, 1]),
-            #             ]
-            #         ]
-            #     )
-            # )
-            # defl22 = 2.0 * g0.deflections_from_grid(
-            #     grid=np.array([[(1.0 - beta_02 * 1.0 - beta_12 * defl12[0, 0]), 0.0]])
-            # )
+        # defl21 = 2.0 * g0.deflections_from_grid(
+        #     grid=np.array(
+        #         [
+        #             [
+        #                 (1.0 - beta_02 * val - beta_12 * defl11[0, 0]),
+        #                 (1.0 - beta_02 * val - beta_12 * defl11[0, 1]),
+        #             ]
+        #         ]
+        #     )
+        # )
+        # defl22 = 2.0 * g0.deflections_from_grid(
+        #     grid=np.array([[(1.0 - beta_02 * 1.0 - beta_12 * defl12[0, 0]), 0.0]])
+        # )
 
-            # assert deflections_between_planes[2][0] == pytest.approx(
-            #     defl21[0], 1e-4
-            # )
-            # assert deflections_between_planes[2][1] == pytest.approx(
-            #     defl22[0], 1e-4
-            # )
-            #
-            # assert deflections_between_planes[3][0] == pytest.approx(
-            #     np.array([0.0, 0.0]), 1e-3
-            # )
-            # assert deflections_between_planes[3][1] == pytest.approx(
-            #     np.array([0.0, 0.0]), 1e-3
-            # )
+        # assert deflections_between_planes[2][0] == pytest.approx(
+        #     defl21[0], 1e-4
+        # )
+        # assert deflections_between_planes[2][1] == pytest.approx(
+        #     defl22[0], 1e-4
+        # )
+        #
+        # assert deflections_between_planes[3][0] == pytest.approx(
+        #     np.array([0.0, 0.0]), 1e-3
+        # )
+        # assert deflections_between_planes[3][1] == pytest.approx(
+        #     np.array([0.0, 0.0]), 1e-3
+        # )
 
         # def test__grid_attributes_passed(self, sub_grid_7x7_simple):
         #     tracer = ray_tracing.Tracer.from_galaxies(
@@ -2553,12 +2563,8 @@ class TestTracer(object):
 
             image_plane_image = (
                 plane_0.profile_image_from_grid(return_in_2d=True, return_binned=True)
-                + plane_1.profile_image_from_grid(
-                    return_in_2d=True, return_binned=True
-                )
-                + plane_2.profile_image_from_grid(
-                    return_in_2d=True, return_binned=True
-                )
+                + plane_1.profile_image_from_grid(return_in_2d=True, return_binned=True)
+                + plane_2.profile_image_from_grid(return_in_2d=True, return_binned=True)
             )
 
             tracer_profile_image_plane_image = tracer.profile_image_from_grid(
@@ -2611,12 +2617,8 @@ class TestTracer(object):
 
             image_plane_image = (
                 plane_0.profile_image_from_grid(return_in_2d=True, return_binned=True)
-                + plane_1.profile_image_from_grid(
-                    return_in_2d=True, return_binned=True
-                )
-                + plane_2.profile_image_from_grid(
-                    return_in_2d=True, return_binned=True
-                )
+                + plane_1.profile_image_from_grid(return_in_2d=True, return_binned=True)
+                + plane_2.profile_image_from_grid(return_in_2d=True, return_binned=True)
             )
 
             tracer_profile_image_plane_image = tracer.profile_image_from_grid(
@@ -2678,12 +2680,8 @@ class TestTracer(object):
 
             image_plane_image = (
                 plane_0.profile_image_from_grid(return_in_2d=True, return_binned=True)
-                + plane_1.profile_image_from_grid(
-                    return_in_2d=True, return_binned=True
-                )
-                + plane_2.profile_image_from_grid(
-                    return_in_2d=True, return_binned=True
-                )
+                + plane_1.profile_image_from_grid(return_in_2d=True, return_binned=True)
+                + plane_2.profile_image_from_grid(return_in_2d=True, return_binned=True)
             )
 
             tracer_profile_image_plane_image = tracer.profile_image_from_grid(
@@ -3357,7 +3355,9 @@ class TestTracerPositions(object):
             grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
         )
 
-        assert tracer.planes[1].deflections_from_grid[0] == pytest.approx(defl11[[0]], 1e-4)
+        assert tracer.planes[1].deflections_from_grid[0] == pytest.approx(
+            defl11[[0]], 1e-4
+        )
 
         assert tracer.planes[2].positions[0] == pytest.approx(
             np.array(
@@ -3384,7 +3384,9 @@ class TestTracerPositions(object):
             )
         )
 
-        assert tracer.planes[2].deflections_from_grid[0] == pytest.approx(defl21[[0]], 1e-4)
+        assert tracer.planes[2].deflections_from_grid[0] == pytest.approx(
+            defl21[[0]], 1e-4
+        )
 
         coord1 = (
             1.0
@@ -3457,7 +3459,9 @@ class TestTracerPositions(object):
             grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
         )
 
-        assert tracer.planes[1].deflections_from_grid[0] == pytest.approx(defl11[[0]], 1e-4)
+        assert tracer.planes[1].deflections_from_grid[0] == pytest.approx(
+            defl11[[0]], 1e-4
+        )
 
         assert tracer.planes[2].positions[0] == pytest.approx(
             np.array(
@@ -3484,7 +3488,9 @@ class TestTracerPositions(object):
             )
         )
 
-        assert tracer.planes[2].deflections_from_grid[0] == pytest.approx(defl21[[0]], 1e-4)
+        assert tracer.planes[2].deflections_from_grid[0] == pytest.approx(
+            defl21[[0]], 1e-4
+        )
 
         coord1 = (
             1.0
@@ -3519,7 +3525,9 @@ class TestTracerPositions(object):
             grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
         )
 
-        assert tracer.planes[1].deflections_from_grid[1] == pytest.approx(defl11[[0]], 1e-4)
+        assert tracer.planes[1].deflections_from_grid[1] == pytest.approx(
+            defl11[[0]], 1e-4
+        )
         assert tracer.planes[2].positions[1] == pytest.approx(
             np.array(
                 [
@@ -3545,7 +3553,9 @@ class TestTracerPositions(object):
             )
         )
 
-        assert tracer.planes[2].deflections_from_grid[1] == pytest.approx(defl21[[0]], 1e-4)
+        assert tracer.planes[2].deflections_from_grid[1] == pytest.approx(
+            defl21[[0]], 1e-4
+        )
 
         coord1 = (
             1.0

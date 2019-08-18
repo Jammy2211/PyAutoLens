@@ -1850,7 +1850,6 @@ class TestEdgePixels(object):
 
 
 class TestBorderPixels(object):
-
     def test__7x7_mask_with_small_numbers_of_pixels__border_is_pixel_indexes(self):
 
         mask = np.array(
@@ -2054,8 +2053,9 @@ class TestBorderPixels(object):
 
 
 class TestSubBorderPixels(object):
-
-    def test__7x7_mask_with_small_numbers_of_pixels__sub_grid_size_1__border_is_pixel_indexes(self):
+    def test__7x7_mask_with_small_numbers_of_pixels__sub_grid_size_1__border_is_pixel_indexes(
+        self
+    ):
 
         mask = np.array(
             [
@@ -2069,7 +2069,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=1
+        )
 
         assert (sub_border_pixels == np.array([0])).all()
 
@@ -2085,7 +2087,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=1
+        )
 
         assert (sub_border_pixels == np.array([0, 1, 2])).all()
 
@@ -2101,11 +2105,15 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=1
+        )
 
         assert (sub_border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
-    def test__7x7_mask_with_small_numbers_of_pixels__sub_grid_size_2__border_is_central_sub_pixel_indexes(self):
+    def test__7x7_mask_with_small_numbers_of_pixels__sub_grid_size_2__border_is_central_sub_pixel_indexes(
+        self
+    ):
 
         mask = np.array(
             [
@@ -2119,7 +2127,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2
+        )
 
         assert (sub_border_pixels == np.array([2])).all()
 
@@ -2135,7 +2145,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2
+        )
 
         assert (sub_border_pixels == np.array([2, 6, 10])).all()
 
@@ -2151,11 +2163,15 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2
+        )
 
         assert (sub_border_pixels == np.array([2, 6, 10, 14, 22, 26, 30, 34])).all()
 
-    def test__7x7_mask_with_small_numbers_of_pixels__sub_grid_size_3__border_is_central_sub_pixel_indexes(self):
+    def test__7x7_mask_with_small_numbers_of_pixels__sub_grid_size_3__border_is_central_sub_pixel_indexes(
+        self
+    ):
 
         mask = np.array(
             [
@@ -2169,7 +2185,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=3)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=3
+        )
 
         assert (sub_border_pixels == np.array([4])).all()
 
@@ -2185,7 +2203,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=3)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=3
+        )
 
         assert (sub_border_pixels == np.array([4, 13, 22])).all()
 
@@ -2201,7 +2221,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=3)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=3
+        )
 
         assert (sub_border_pixels == np.array([4, 13, 22, 31, 49, 58, 67, 76])).all()
 
@@ -2221,7 +2243,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2
+        )
 
         assert (
             sub_border_pixels
@@ -2272,7 +2296,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2
+        )
 
         assert (
             sub_border_pixels
@@ -2322,7 +2348,9 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        sub_border_pixels = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2
+        )
 
         assert (
             sub_border_pixels

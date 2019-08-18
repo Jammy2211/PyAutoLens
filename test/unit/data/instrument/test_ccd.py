@@ -1965,7 +1965,9 @@ class TestSimulateCCD(object):
             galaxies=[g0, g1], image_plane_grid_stack=image_plane_grid_stack
         )
 
-        deflections = tracer.deflections_from_grid(return_in_2d=True, return_binned=True)
+        deflections = tracer.deflections_from_grid(
+            return_in_2d=True, return_binned=True
+        )
 
         ccd_data_simulated_via_deflections = ccd.SimulatedCCDData.from_deflections_galaxies_and_exposure_arrays(
             deflections=deflections,

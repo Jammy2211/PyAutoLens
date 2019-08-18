@@ -3,13 +3,12 @@ import logging
 import numpy as np
 
 from autolens import exc
-from autolens.array.util import (
-    grid_util,
-    array_util,
-    mask_util,
-    binning_util,
+from autolens.array.util import grid_util, array_util, mask_util, binning_util
+from autolens.array.mapping_util import (
+    array_mapping_util,
+    grid_mapping_util,
+    mask_mapping_util,
 )
-from autolens.array.mapping_util import array_mapping_util, grid_mapping_util, mask_mapping_util
 from autolens.array import scaled_array
 
 logging.basicConfig()
@@ -315,13 +314,17 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     @property
     def mask_1d_index_to_mask_2d_index(self):
         """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
-        return self.sub_mask_1d_index_to_sub_mask_2d_index_from_sub_grid_size(sub_grid_size=1)
+        return self.sub_mask_1d_index_to_sub_mask_2d_index_from_sub_grid_size(
+            sub_grid_size=1
+        )
 
     def sub_mask_1d_index_to_sub_mask_2d_index_from_sub_grid_size(self, sub_grid_size):
         """A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates."""
         return mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
             mask=self, sub_grid_size=sub_grid_size
-        ).astype("int")
+        ).astype(
+            "int"
+        )
 
     def array_1d_from_array_2d(self, array_2d):
         """For a 2D array (e.g. an image, noise_map, etc.) map it to a masked 1D array of valuees using this mask.
@@ -610,7 +613,9 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        return mask_util.sub_border_pixels_from_mask_and_sub_grid_size(mask=self, sub_grid_size=sub_grid_size).astype("int")
+        return mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+            mask=self, sub_grid_size=sub_grid_size
+        ).astype("int")
 
     @property
     def masked_grid_1d(self):
