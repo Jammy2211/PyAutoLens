@@ -98,7 +98,7 @@ class ConvolverMappingMatrix(convolution.Convolver):
         )
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def convolve_matrix_jit(
         mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths
     ):

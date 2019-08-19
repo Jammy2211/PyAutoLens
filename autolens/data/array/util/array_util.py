@@ -58,7 +58,7 @@ class Memoizer(object):
         return wrapper
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def extracted_array_2d_from_array_2d_and_coordinates(array_2d, y0, y1, x0, x1):
     """Resize an array to a new size by extracting a sub-set of the array.
 
@@ -111,7 +111,7 @@ def extracted_array_2d_from_array_2d_and_coordinates(array_2d, y0, y1, x0, x1):
     return resized_array
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def resized_array_2d_from_array_2d_and_resized_shape(
     array_2d, resized_shape, origin=(-1, -1), pad_value=0.0
 ):
@@ -202,7 +202,7 @@ def resized_array_2d_from_array_2d_and_resized_shape(
     return resized_array
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def resized_array_2d_from_array_2d_and_resized_shape(
     array_2d, resized_shape, origin=(-1, -1), pad_value=0.0
 ):
@@ -293,7 +293,7 @@ def resized_array_2d_from_array_2d_and_resized_shape(
     return resized_array
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def replace_noise_map_2d_values_where_image_2d_values_are_negative(
     image_2d, noise_map_2d, target_signal_to_noise=2.0
 ):

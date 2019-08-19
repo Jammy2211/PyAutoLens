@@ -214,7 +214,7 @@ class Convolver(object):
                     image_index += 1
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def frame_at_coordinates_jit(coordinates, mask, mask_index_array, psf):
         """ Compute the frame (indexes of pixels light is blurred into) and psf_frame (psf kernel values of those \
         pixels) for a given coordinate in a masks and its PSF.
@@ -326,7 +326,7 @@ class ConvolverImage(Convolver):
         )
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def convolve_jit(
         image_array,
         image_frame_indexes,
