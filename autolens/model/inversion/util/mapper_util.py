@@ -2,7 +2,7 @@ import numpy as np
 from autolens import decorator_util
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
     sub_mask_1d_index_to_pixelization_1d_index,
     pixels,
@@ -37,7 +37,7 @@ def mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
     return mapping_matrix
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
     grid,
     mask_1d_index_to_nearest_pixelization_1d_index,

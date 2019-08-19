@@ -5,7 +5,7 @@ from autolens.array.util import array_util, mask_util
 from autolens.array.mapping_util import mask_mapping_util
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def padded_binning_shape_2d_from_shape_2d_and_bin_up_factor(shape_2d, bin_up_factor):
 
     shape_remainder = (shape_2d[0] % bin_up_factor, shape_2d[1] % bin_up_factor)
@@ -25,7 +25,7 @@ def padded_binning_shape_2d_from_shape_2d_and_bin_up_factor(shape_2d, bin_up_fac
     return (shape_2d[0] + shape_pad[0], shape_2d[1] + shape_pad[1])
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def padded_binning_array_2d_from_array_2d_and_bin_up_factor(
     array_2d, bin_up_factor, pad_value=0.0
 ):
@@ -65,7 +65,7 @@ def padded_binning_array_2d_from_array_2d_and_bin_up_factor(
     )
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
     array_2d, bin_up_factor
 ):
@@ -121,7 +121,7 @@ def binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
     return binned_array_2d
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
     array_2d, bin_up_factor
 ):
@@ -177,7 +177,7 @@ def binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
     return binned_array_2d
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(array_2d, bin_up_factor):
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine \
      the value of the new pixel.
@@ -231,7 +231,7 @@ def binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(array_2d, bin_up_f
     return binned_array_2d
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def binned_up_mask_2d_from_mask_2d_and_bin_up_factor(mask_2d, bin_up_factor):
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine \
      the value of the new pixel.
@@ -289,7 +289,7 @@ def binned_up_mask_2d_from_mask_2d_and_bin_up_factor(mask_2d, bin_up_factor):
     return binned_mask_2d
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def padded_mask_2d_to_mask_1d_index_from_mask_2d_and_bin_up_factor(
     mask_2d, bin_up_factor
 ):
@@ -326,7 +326,7 @@ def padded_mask_2d_to_mask_1d_index_from_mask_2d_and_bin_up_factor(
     )
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def padded_mask_2d_to_binned_mask_1d_index_from_mask_2d_and_bin_up_factor(
     mask_2d, bin_up_factor
 ):
@@ -407,7 +407,7 @@ def padded_mask_2d_to_binned_mask_1d_index_from_mask_2d_and_bin_up_factor(
     return padded_mask_2d_index_to_binned_mask_1d_index
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def masked_array_1d_to_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(
     mask_2d, bin_up_factor
 ):
@@ -501,7 +501,7 @@ def masked_array_1d_to_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(
     return masked_array_1d_to_binned_masked_array_1d
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def binned_masked_array_1d_to_masked_array_1d_from_mask_2d_and_bin_up_factor(
     mask_2d, bin_up_factor
 ):
@@ -601,7 +601,7 @@ def binned_masked_array_1d_to_masked_array_1d_from_mask_2d_and_bin_up_factor(
     return binned_masked_array_1d_to_masked_array_1d
 
 
-# @decorator_util.jit()
+# #@decorator_util.jit()
 def binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
     mask_2d, bin_up_factor
 ):

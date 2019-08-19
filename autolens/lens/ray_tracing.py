@@ -337,7 +337,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         """
 
         if redshift <= self.plane_redshifts[0]:
-            return grid
+            return grid.copy()
 
         plane_index_with_redshift = [
             plane_index
@@ -350,13 +350,10 @@ class AbstractTracerLensing(AbstractTracerCosmology):
                 plane_index_with_redshift[0]
             ]
 
-        flip = False
-
         for plane_index, plane_redshift in enumerate(self.plane_redshifts):
 
-            if redshift > plane_redshift and not flip:
+            if redshift < plane_redshift:
                 plane_index_insert = plane_index
-                flip = True
 
         planes = self.planes
         planes.insert(

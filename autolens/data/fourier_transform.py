@@ -50,7 +50,7 @@ class Transformer(object):
             )
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def preload_real_transforms(grid_radians, uv_wavelengths, total_image_pixels):
 
         preloaded_real_transforms = np.zeros(
@@ -71,7 +71,7 @@ class Transformer(object):
         return preloaded_real_transforms
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def real_visibilities_via_preload_jit(
         intensities_1d, preloaded_reals, total_visibilities, total_image_pixels
     ):
@@ -85,7 +85,7 @@ class Transformer(object):
         return real_visibilities
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def real_visibilities_jit(
         intensities_1d,
         grid_radians,
@@ -131,7 +131,7 @@ class Transformer(object):
             )
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def preload_imaginary_transforms(grid_radians, uv_wavelengths, total_image_pixels):
 
         preloaded_imaginary_transforms = np.zeros(
@@ -152,7 +152,7 @@ class Transformer(object):
         return preloaded_imaginary_transforms
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def imaginary_visibilities_via_preload_jit(
         intensities_1d, preloaded_imaginarys, total_visibilities, total_image_pixels
     ):
@@ -168,7 +168,7 @@ class Transformer(object):
         return imaginary_visibilities
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def imaginary_visibilities_jit(
         intensities_1d,
         grid_radians,

@@ -5,7 +5,7 @@ from autolens.array.util import mask_util
 from autolens.array.mapping_util import array_mapping_util, grid_mapping_util
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
     """Determine the (y,x) arc-second central coordinates of an array from its shape, pixel-scales and origin.
 
@@ -36,7 +36,7 @@ def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
     return (y_centre_arcsec, x_centre_arcsec)
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
     mask, pixel_scales, sub_grid_size, origin=(0.0, 0.0)
 ):
@@ -258,7 +258,7 @@ def grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
     )
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def grid_arcsec_1d_to_grid_pixels_1d(
     grid_arcsec_1d, shape, pixel_scales, origin=(0.0, 0.0)
 ):
@@ -315,7 +315,7 @@ def grid_arcsec_1d_to_grid_pixels_1d(
     return grid_pixels_1d
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def grid_arcsec_1d_to_grid_pixel_centres_1d(
     grid_arcsec_1d, shape, pixel_scales, origin=(0.0, 0.0)
 ):
@@ -371,7 +371,7 @@ def grid_arcsec_1d_to_grid_pixel_centres_1d(
     return grid_pixels_1d
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def grid_arcsec_1d_to_grid_pixel_indexes_1d(
     grid_arcsec_1d, shape, pixel_scales, origin=(0.0, 0.0)
 ):
@@ -431,7 +431,7 @@ def grid_arcsec_1d_to_grid_pixel_indexes_1d(
     return grid_pixel_indexes_1d
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def grid_pixels_1d_to_grid_arcsec_1d(
     grid_pixels_1d, shape, pixel_scales, origin=(0.0, 0.0)
 ):
@@ -486,7 +486,7 @@ def grid_pixels_1d_to_grid_arcsec_1d(
     return grid_arcsec_1d
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def grid_arcsec_2d_to_grid_pixel_centres_2d(
     grid_arcsec_2d, shape, pixel_scales, origin=(0.0, 0.0)
 ):
