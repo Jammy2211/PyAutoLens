@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def map_1d_indexes_to_2d_indexes_for_shape(indexes_1d, shape):
     """For pixels on a 2D array of shape (rows, columns), map an array of 1D pixel indexes to 2D pixel indexes.
 
@@ -50,7 +50,7 @@ def map_1d_indexes_to_2d_indexes_for_shape(indexes_1d, shape):
     return indexes_2d
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def map_2d_indexes_to_1d_indexes_for_shape(indexes_2d, shape):
     """For pixels on a 2D array of shape (rows, colums), map an array of 2D pixel indexes to 1D pixel indexes.
 
@@ -89,7 +89,7 @@ def map_2d_indexes_to_1d_indexes_for_shape(indexes_2d, shape):
     return indexes_1d
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
     sub_array_2d, mask, sub_grid_size
 ):
@@ -210,7 +210,7 @@ def sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
     )
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def sub_array_2d_from_sub_array_1d_sub_shape_and_sub_mask_1d_index_to_sub_mask_2d_index(
     sub_array_1d, sub_shape, sub_mask_1d_index_to_sub_mask_2d_index
 ):

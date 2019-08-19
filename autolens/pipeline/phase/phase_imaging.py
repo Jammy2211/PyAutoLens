@@ -749,6 +749,7 @@ class PhaseImaging(Phase):
 
             phase_plotters.plot_ray_tracing_for_phase(
                 tracer=tracer,
+                grid=self.lens_data.grid,
                 during_analysis=during_analysis,
                 mask=mask,
                 extract_array_from_mask=self.extract_array_from_mask,

@@ -61,6 +61,7 @@ def plot_ccd_for_phase(
 
 def plot_ray_tracing_for_phase(
     tracer,
+    grid,
     during_analysis,
     mask,
     extract_array_from_mask,
@@ -86,6 +87,7 @@ def plot_ray_tracing_for_phase(
 
         ray_tracing_plotters.plot_ray_tracing_subplot(
             tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -97,6 +99,7 @@ def plot_ray_tracing_for_phase(
 
     ray_tracing_plotters.plot_ray_tracing_individual(
         tracer=tracer,
+        grid=grid,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
@@ -117,6 +120,7 @@ def plot_ray_tracing_for_phase(
 
             ray_tracing_plotters.plot_ray_tracing_individual(
                 tracer=tracer,
+                grid=grid,
                 mask=mask,
                 extract_array_from_mask=extract_array_from_mask,
                 zoom_around_mask=zoom_around_mask,
@@ -139,6 +143,7 @@ def plot_ray_tracing_for_phase(
 
             ray_tracing_plotters.plot_ray_tracing_individual(
                 tracer=tracer,
+                grid=grid,
                 mask=mask,
                 extract_array_from_mask=extract_array_from_mask,
                 zoom_around_mask=zoom_around_mask,
