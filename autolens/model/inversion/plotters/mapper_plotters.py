@@ -62,7 +62,7 @@ def plot_image_and_mapper(
     )
 
     image_grid = convert_grid(
-        grid=mapper.grid_stack.regular.unlensed_1d,
+        grid=mapper.grid.regular.unlensed_1d,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
     )
@@ -219,7 +219,7 @@ def plot_rectangular_mapper(
     )
 
     mapper_grid = convert_grid(
-        grid=mapper.grid_stack.regular, units=units, kpc_per_arcsec=kpc_per_arcsec
+        grid=mapper.grid.regular, units=units, kpc_per_arcsec=kpc_per_arcsec
     )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
@@ -338,7 +338,7 @@ def plot_voronoi_mapper(
     )
 
     mapper_grid = convert_grid(
-        grid=mapper.grid_stack.regular, units=units, kpc_per_arcsec=kpc_per_arcsec
+        grid=mapper.grid.regular, units=units, kpc_per_arcsec=kpc_per_arcsec
     )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
@@ -559,7 +559,7 @@ def plot_plane_grid(
     if should_plot_grid:
 
         grid_units = convert_grid(
-            grid=mapper.grid_stack.regular, units=units, kpc_per_arcsec=kpc_per_arcsec
+            grid=mapper.grid.regular, units=units, kpc_per_arcsec=kpc_per_arcsec
         )
 
         grid_plotters.plot_grid(
@@ -592,7 +592,7 @@ def plot_border(
 
     if should_plot_border:
 
-        border_arcsec = mapper.grid_stack.regular[mapper.border]
+        border_arcsec = mapper.grid.regular[mapper.border]
         border_units = convert_grid(
             grid=border_arcsec, units=units, kpc_per_arcsec=kpc_per_arcsec
         )

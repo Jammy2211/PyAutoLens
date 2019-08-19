@@ -35,7 +35,7 @@ class TestGalaxyFit:
                 galaxy_data=galaxy_data,
                 mask=mask,
                 sub_grid_size=1,
-                use_intensities=True,
+                use_image=True,
             )
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
@@ -109,7 +109,7 @@ class TestGalaxyFit:
                 galaxy_data=galaxy_data,
                 mask=mask,
                 sub_grid_size=1,
-                use_intensities=True,
+                use_image=True,
             )
             fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
 
@@ -177,7 +177,7 @@ class TestGalaxyFit:
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
-                use_intensities=True,
+                use_image=True,
             )
 
             galaxy = g.Galaxy(
@@ -190,9 +190,9 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_1d = galaxy.profile_image_from_grid(
-                grid=galaxy_fit_data.grid_stack.sub
+                grid=galaxy_fit_data.grid
             )
-            model_data_1d = galaxy_fit_data.grid_stack.sub.array_1d_binned_from_sub_array_1d(
+            model_data_1d = galaxy_fit_data.grid.array_1d_binned_from_sub_array_1d(
                 sub_array_1d=model_data_1d
             )
             model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
@@ -250,9 +250,9 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_1d = galaxy.convergence_from_grid(
-                grid=galaxy_fit_data.grid_stack.sub
+                grid=galaxy_fit_data.grid
             )
-            model_data_1d = galaxy_fit_data.grid_stack.sub.array_1d_binned_from_sub_array_1d(
+            model_data_1d = galaxy_fit_data.grid.array_1d_binned_from_sub_array_1d(
                 sub_array_1d=model_data_1d
             )
             model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
@@ -310,9 +310,9 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_1d = galaxy.potential_from_grid(
-                grid=galaxy_fit_data.grid_stack.sub
+                grid=galaxy_fit_data.grid
             )
-            model_data_1d = galaxy_fit_data.grid_stack.sub.array_1d_binned_from_sub_array_1d(
+            model_data_1d = galaxy_fit_data.grid.array_1d_binned_from_sub_array_1d(
                 sub_array_1d=model_data_1d
             )
             model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
@@ -373,7 +373,7 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_2d = galaxy.deflections_from_grid(
-                grid=galaxy_fit_data.grid_stack.sub,
+                grid=galaxy_fit_data.grid,
                 return_in_2d=True,
                 return_binned=True,
             )[:, :, 0]
@@ -433,7 +433,7 @@ class TestGalaxyFit:
             assert fit.model_galaxies == [galaxy]
 
             model_data_2d = galaxy.deflections_from_grid(
-                grid=galaxy_fit_data.grid_stack.sub,
+                grid=galaxy_fit_data.grid,
                 return_in_2d=True,
                 return_binned=True,
             )[:, :, 1]

@@ -278,9 +278,9 @@ class TestPhase(object):
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
         assert analysis.lens_data.interp_pixel_scale == 0.1
-        assert hasattr(analysis.lens_data.grid_stack.regular, "interpolator")
-        assert hasattr(analysis.lens_data.grid_stack.sub, "interpolator")
-        assert hasattr(analysis.lens_data.grid_stack.blurring, "interpolator")
+        assert hasattr(analysis.lens_data.grid.regular, "interpolator")
+        assert hasattr(analysis.lens_data.grid.sub, "interpolator")
+        assert hasattr(analysis.lens_data.grid.blurring, "interpolator")
 
     def test_make_analysis__cluster_pixel_limit__is_input__used_in_analysis(
         self, phase_7x7, ccd_data_7x7
@@ -765,7 +765,7 @@ class TestPhase(object):
     def test__use_border__determines_if_border_pixel_relocation_is_used(
         self, ccd_data_7x7, mask_function_7x7, lens_data_7x7
     ):
-        lens_data_7x7.grid_stack.regular[4] = np.array([100.0, 100.0])
+        lens_data_7x7.grid.regular[4] = np.array([100.0, 100.0])
 
         # noinspection PyTypeChecker
 
@@ -780,7 +780,7 @@ class TestPhase(object):
 
         tracer_no_border = ray_tracing.Tracer.from_galaxies(
             galaxies=[lens_galaxy, source_galaxy],
-            image_plane_grid_stack=lens_data_7x7.grid_stack,
+            image_plane_grid_stack=lens_data_7x7.grid,
             border=None,
         )
 
@@ -790,7 +790,7 @@ class TestPhase(object):
 
         tracer_with_border = ray_tracing.Tracer.from_galaxies(
             galaxies=[lens_galaxy, source_galaxy],
-            image_plane_grid_stack=lens_data_7x7.grid_stack,
+            image_plane_grid_stack=lens_data_7x7.grid,
             border=lens_data_7x7.border,
         )
 
@@ -808,14 +808,14 @@ class TestPhase(object):
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
 
-        analysis.lens_data.grid_stack.regular[4] = np.array([100.0, 100.0])
+        analysis.lens_data.grid.regular[4] = np.array([100.0, 100.0])
 
         instance = phase_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
         mapper = tracer.mappers_of_planes_from_grid[0]
 
         assert (
-            mapper_with_border.grid_stack.regular == mapper.grid_stack.regular
+                mapper_with_border.grid.regular == mapper.grid.regular
         ).all()
 
         phase_7x7 = phase_imaging.PhaseImaging(
@@ -828,13 +828,13 @@ class TestPhase(object):
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
 
-        analysis.lens_data.grid_stack.regular[4] = np.array([100.0, 100.0])
+        analysis.lens_data.grid.regular[4] = np.array([100.0, 100.0])
 
         instance = phase_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
         mapper = tracer.mappers_of_planes_from_grid[0]
 
-        assert (mapper_no_border.grid_stack.regular == mapper.grid_stack.regular).all()
+        assert (mapper_no_border.grid.regular == mapper.grid.regular).all()
 
     def test__inversion_and_cluster_pixel_limit_computed_via_input_of_max_inversion_pixel_limit_and_prior_config(
         self, mask_function_7x7
@@ -878,7 +878,7 @@ class TestPhase(object):
         galaxy = g.Galaxy(redshift=0.5)
 
         grid_stack = analysis.add_grids_to_grid_stack(
-            galaxies=[galaxy, galaxy], grid_stack=analysis.lens_data.grid_stack
+            galaxies=[galaxy, galaxy], grid_stack=analysis.lens_data.grid
         )
 
         assert (grid_stack.pixelization == np.array([[0.0, 0.0]])).all()
@@ -889,7 +889,7 @@ class TestPhase(object):
 
         grid_stack = analysis.add_grids_to_grid_stack(
             galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
-            grid_stack=analysis.lens_data.grid_stack,
+            grid_stack=analysis.lens_data.grid,
         )
 
         assert (grid_stack.pixelization == np.array([[0.0, 0.0]])).all()
@@ -902,7 +902,7 @@ class TestPhase(object):
 
         grid_stack = analysis.add_grids_to_grid_stack(
             galaxies=[galaxy_pix_which_uses_pix_grid],
-            grid_stack=analysis.lens_data.grid_stack,
+            grid_stack=analysis.lens_data.grid,
         )
 
         assert (
@@ -949,7 +949,7 @@ class TestPhase(object):
 
         grid_stack = analysis.add_grids_to_grid_stack(
             galaxies=[galaxy_pix_which_uses_brightness],
-            grid_stack=analysis.lens_data.grid_stack,
+            grid_stack=analysis.lens_data.grid,
         )
 
         assert (

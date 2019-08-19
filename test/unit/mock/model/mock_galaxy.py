@@ -9,7 +9,7 @@ class MockGalaxy(object):
         self.shape = shape
 
     @reshape_returned_array
-    def intensities_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def profile_image_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.full(shape=self.shape, fill_value=self.value)
 
     @reshape_returned_array

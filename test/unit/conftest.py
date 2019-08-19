@@ -386,7 +386,7 @@ def make_gal_data_7x7(image_7x7, noise_map_7x7):
 @pytest.fixture(name="gal_fit_data_7x7_intensities")
 def make_gal_fit_data_7x7_intensities(gal_data_7x7, mask_7x7):
     return gd.GalaxyFitData(
-        galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_intensities=True
+        galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_image=True
     )
 
 

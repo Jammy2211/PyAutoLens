@@ -117,7 +117,7 @@ def plot_plane_image(
 ):
 
     if plot_grid:
-        grid = plane.grid_stack.regular
+        grid = plane.grid.regular
     else:
         grid = None
 
@@ -497,7 +497,7 @@ def plot_plane_grid(
 ):
 
     grid_plotters.plot_grid(
-        grid=plane.grid_stack.regular,
+        grid=plane.grid.regular,
         points=points,
         axis_limits=axis_limits,
         as_subplot=as_subplot,

@@ -254,12 +254,12 @@ class AbstractPhase(af.AbstractPhase):
         def most_likely_image_plane_pixelization_grid(self):
 
             if (
-                self.most_likely_tracer.image_plane.grid_stack.pixelization
+                self.most_likely_tracer.image_plane.grid.pixelization
                 == np.array([[0.0, 0.0]])
             ).all():
                 return None
             else:
-                return self.most_likely_tracer.image_plane.grid_stack.pixelization
+                return self.most_likely_tracer.image_plane.grid.pixelization
 
         @property
         def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
@@ -571,7 +571,7 @@ class GalaxyFitPhase(AbstractPhase):
                 mask=mask,
                 sub_grid_size=self.sub_grid_size,
                 interp_pixel_scale=self.interp_pixel_scale,
-                use_intensities=self.use_intensities,
+                use_image=self.use_intensities,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
                 use_deflections_y=self.use_deflections,
@@ -589,7 +589,7 @@ class GalaxyFitPhase(AbstractPhase):
                 mask=mask,
                 sub_grid_size=self.sub_grid_size,
                 interp_pixel_scale=self.interp_pixel_scale,
-                use_intensities=self.use_intensities,
+                use_image=self.use_intensities,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
                 use_deflections_y=self.use_deflections,
@@ -601,7 +601,7 @@ class GalaxyFitPhase(AbstractPhase):
                 mask=mask,
                 sub_grid_size=self.sub_grid_size,
                 interp_pixel_scale=self.interp_pixel_scale,
-                use_intensities=self.use_intensities,
+                use_image=self.use_intensities,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
                 use_deflections_y=False,

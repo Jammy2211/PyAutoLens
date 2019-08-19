@@ -702,7 +702,7 @@ class PhaseImaging(Phase):
             instance = self.associate_images(instance=instance)
 
             image_plane_grid_stack = self.add_grids_to_grid_stack(
-                galaxies=instance.galaxies, grid_stack=self.lens_data.grid_stack
+                galaxies=instance.galaxies, grid_stack=self.lens_data.grid
             )
 
             if self.use_inversion_border:

@@ -512,7 +512,7 @@ class TestImagePassing(object):
         g1 = g.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
 
         tracer = rt.Tracer.from_galaxies(
-            galaxies=[g0, g1], image_plane_grid_stack=lens_data_7x7.grid_stack
+            galaxies=[g0, g1], image_plane_grid_stack=lens_data_7x7.grid
         )
 
         fit = lens_fit.LensDataFit.for_data_and_tracer(
