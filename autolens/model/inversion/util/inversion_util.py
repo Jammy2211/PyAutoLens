@@ -2,7 +2,7 @@ from autolens import decorator_util
 import numpy as np
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def data_vector_from_blurred_mapping_matrix_and_data(
     blurred_mapping_matrix, image_1d, noise_map_1d
 ):
@@ -23,12 +23,12 @@ def data_vector_from_blurred_mapping_matrix_and_data(
 
     data_vector = np.zeros(mapping_shape[1])
 
-    for sub_mask_1d_index in range(mapping_shape[0]):
+    for mask_1d_index in range(mapping_shape[0]):
         for pixelization_1d_index in range(mapping_shape[1]):
             data_vector[pixelization_1d_index] += (
-                image_1d[sub_mask_1d_index]
-                * blurred_mapping_matrix[sub_mask_1d_index, pixelization_1d_index]
-                / (noise_map_1d[sub_mask_1d_index] ** 2.0)
+                image_1d[mask_1d_index]
+                * blurred_mapping_matrix[mask_1d_index, pixelization_1d_index]
+                / (noise_map_1d[mask_1d_index] ** 2.0)
             )
 
     return data_vector
@@ -46,14 +46,14 @@ def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_m
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
 
-    flist = np.zeros(blurred_mapping_matrix.shape[0])
-    iflist = np.zeros(blurred_mapping_matrix.shape[0], dtype="int")
+    flist = np.zeros(blurred_mapping_matrix.shape[1])
+    iflist = np.zeros(blurred_mapping_matrix.shape[1], dtype="int")
     return curvature_matrix_from_blurred_mapping_matrix_jit(
         blurred_mapping_matrix, noise_map_1d, flist, iflist
     )
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def curvature_matrix_from_blurred_mapping_matrix_jit(
     blurred_mapping_matrix, noise_map_1d, flist, iflist
 ):
@@ -75,13 +75,13 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(
         (blurred_mapping_matrix.shape[1], blurred_mapping_matrix.shape[1])
     )
 
-    for sub_mask_1d_index in range(blurred_mapping_matrix.shape[0]):
+    for mask_1d_index in range(blurred_mapping_matrix.shape[0]):
         index = 0
         for pixelization_1d_index in range(blurred_mapping_matrix.shape[1]):
-            if blurred_mapping_matrix[sub_mask_1d_index, pixelization_1d_index] > 0.0:
+            if blurred_mapping_matrix[mask_1d_index, pixelization_1d_index] > 0.0:
                 flist[index] = (
-                    blurred_mapping_matrix[sub_mask_1d_index, pixelization_1d_index]
-                    / noise_map_1d[sub_mask_1d_index]
+                    blurred_mapping_matrix[mask_1d_index, pixelization_1d_index]
+                    / noise_map_1d[mask_1d_index]
                 )
                 iflist[index] = pixelization_1d_index
                 index += 1
@@ -100,7 +100,7 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(
     return curvature_matrix
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
     blurred_mapping_matrix, solution_vector
 ):
@@ -122,7 +122,7 @@ def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
     return reconstructed_data_vector
 
 
-# #@decorator_util.jit()
+# @decorator_util.jit()
 def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
@@ -150,7 +150,7 @@ def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d
     return pixelization_residuals
 
 
-# #@decorator_util.jit()
+# @decorator_util.jit()
 def pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
@@ -181,7 +181,7 @@ def pixelization_normalized_residual_map_from_pixelization_values_and_reconstruc
     return pixelization_normalized_residuals
 
 
-# #@decorator_util.jit()
+# @decorator_util.jit()
 def pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,

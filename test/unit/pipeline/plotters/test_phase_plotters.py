@@ -50,10 +50,11 @@ def test__plot_ccd_for_phase(
 
 
 def test__plot_ray_tracing_for_phase__dependent_on_input(
-    tracer_x2_plane_7x7, mask_7x7, phase_plotter_path, plot_patch
+    tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, phase_plotter_path, plot_patch
 ):
     phase_plotters.plot_ray_tracing_for_phase(
         tracer=tracer_x2_plane_7x7,
+        grid=sub_grid_7x7,
         during_analysis=False,
         mask=mask_7x7,
         positions=None,
@@ -74,7 +75,7 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
 
     assert phase_plotter_path + "tracer.png" in plot_patch.paths
     assert (
-        phase_plotter_path + "ray_tracing/tracer_image_plane_image.png"
+        phase_plotter_path + "ray_tracing/tracer_profile_image.png"
         in plot_patch.paths
     )
     assert (

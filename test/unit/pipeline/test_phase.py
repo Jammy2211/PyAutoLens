@@ -770,15 +770,9 @@ class TestPhase(object):
         )
         source_galaxy = g.Galaxy(
             redshift=1.0,
-            pixelization=pix.Rectangular(shape=(5, 5)),
+            pixelization=pix.Rectangular(shape=(3, 3)),
             regularization=reg.Constant(coefficient=1.0),
         )
-
-        tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
-
-        mapper_with_border = tracer.mappers_of_planes_from_grid(
-            grid=lens_data_7x7.grid, relocate_to_border=True
-        )[-1]
 
         phase_7x7 = phase_imaging.PhaseImaging(
             galaxies=[lens_galaxy, source_galaxy],
@@ -789,6 +783,7 @@ class TestPhase(object):
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        analysis.lens_data.grid[4] = np.array([[500.0, 0.0]])
 
         instance = phase_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -796,27 +791,26 @@ class TestPhase(object):
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        assert (mapper_with_border.grid == fit.inversion.mapper.grid).all()
+        assert fit.inversion.mapper.grid[4][0] == pytest.approx(97.19584, 1.0e-2)
+        assert fit.inversion.mapper.grid[4][1] == pytest.approx(8.434953, 1.0e-2)
 
-        # mapper_no_border = tracer.mappers_of_planes_from_grid(grid=lens_data_7x7.grid, relocate_to_border=False)[-1]
-        #
-        # phase_7x7 = phase_imaging.PhaseImaging(
-        #     galaxies=[lens_galaxy, source_galaxy],
-        #     mask_function=mask_function_7x7,
-        #     cosmology=cosmo.Planck15,
-        #     phase_name="test_phase",
-        #     use_inversion_border=False,
-        # )
-        #
-        # analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
-        #
-        # analysis.lens_data.grid[4] = np.array([10.0, 0.0])
-        #
-        # instance = phase_7x7.variable.instance_from_unit_vector([])
-        # tracer = analysis.tracer_for_instance(instance=instance)
-        # fit = analysis.fit_for_tracer(tracer=tracer, hyper_image_sky=None, hyper_background_noise=None)
-        #
-        # assert (mapper_no_border.grid == fit.inversion.mapper.grid).all()
+        phase_7x7 = phase_imaging.PhaseImaging(
+            galaxies=[lens_galaxy, source_galaxy],
+            mask_function=mask_function_7x7,
+            cosmology=cosmo.Planck15,
+            phase_name="test_phase",
+            use_inversion_border=False,
+        )
+
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+
+        analysis.lens_data.grid[4] = np.array([300.0, 0.0])
+
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = analysis.fit_for_tracer(tracer=tracer, hyper_image_sky=None, hyper_background_noise=None)
+
+        assert fit.inversion.mapper.grid[4][0] == pytest.approx(200.0, 1.0e-4)
 
     def test__inversion_and_cluster_pixel_limit_computed_via_input_of_max_inversion_pixel_limit_and_prior_config(
         self, mask_function_7x7

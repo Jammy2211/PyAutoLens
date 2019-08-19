@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
     total_sparse_pixels, mask, unmasked_sparse_grid_pixel_centres
 ):
@@ -41,7 +41,7 @@ def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
     return pix_to_full_pix
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
     mask, unmasked_sparse_grid_pixel_centres, total_sparse_pixels
 ):
@@ -81,7 +81,7 @@ def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
     return unmasked_sparse_to_sparse
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
     regular_to_unmasked_sparse, unmasked_sparse_to_sparse
 ):
@@ -107,7 +107,7 @@ def mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
     return mask_1d_index_to_sparse_1d_index
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def sparse_grid_from_unmasked_sparse_grid(
     unmasked_sparse_grid, sparse_to_unmasked_sparse
 ):
@@ -137,7 +137,7 @@ def sparse_grid_from_unmasked_sparse_grid(
     return pix_grid
 
 
-#@decorator_util.jit()
+@decorator_util.jit()
 def mask_1d_index_to_sparse_1d_index_from_binned_grid(
     sparse_labels,
     binned_mask_1d_index_to_mask_1d_indexes,
