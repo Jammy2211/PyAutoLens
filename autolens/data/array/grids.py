@@ -1538,7 +1538,7 @@ class GridBorder(np.ndarray):
         )
 
     @staticmethod
-    @decorator_util.jit()
+    #@decorator_util.jit()
     def relocated_grid_from_grid_jit(grid, border_grid):
         """ Relocate the coordinates of a grid to its border if they are outside the border. This is performed as \
         follows:

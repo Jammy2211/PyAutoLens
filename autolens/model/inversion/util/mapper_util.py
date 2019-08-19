@@ -2,7 +2,7 @@ import numpy as np
 from autolens import decorator_util
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def mapping_matrix_from_sub_to_pix(
     sub_to_pix, pixels, regular_pixels, sub_to_regular, sub_grid_fraction
 ):
@@ -32,7 +32,7 @@ def mapping_matrix_from_sub_to_pix(
     return mapping_matrix
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def voronoi_regular_to_pix_from_grids_and_geometry(
     regular_grid,
     regular_to_nearest_pix,
@@ -110,7 +110,7 @@ def voronoi_regular_to_pix_from_grids_and_geometry(
     return regular_to_pix
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def voronoi_sub_to_pix_from_grids_and_geometry(
     sub_grid,
     regular_to_nearest_pix,

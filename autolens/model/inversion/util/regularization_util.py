@@ -2,7 +2,7 @@ import numpy as np
 from autolens import decorator_util
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def constant_regularization_matrix_from_pixel_neighbors(
     coefficient, pixel_neighbors, pixel_neighbors_size
 ):
@@ -36,7 +36,7 @@ def constant_regularization_matrix_from_pixel_neighbors(
     return regularization_matrix
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def adaptive_pixel_signals_from_images(
     pixels, signal_scale, sub_to_pix, sub_to_regular, hyper_image
 ):
@@ -107,7 +107,7 @@ def adaptive_regularization_weights_from_pixel_signals(
     ) ** 2.0
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def weighted_regularization_matrix_from_pixel_neighbors(
     regularization_weights, pixel_neighbors, pixel_neighbors_size
 ):
