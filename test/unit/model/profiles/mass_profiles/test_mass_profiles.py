@@ -931,7 +931,9 @@ class TestJacobianandMagnification(object):
             grid=grid, return_in_2d=True
         )
 
-        convergence = sie.convergence_via_jacobian_from_grid(grid=grid, return_in_2d=True)
+        convergence = sie.convergence_via_jacobian_from_grid(
+            grid=grid, return_in_2d=True
+        )
 
         shear = sie.shear_via_jacobian_from_grid(grid=grid, return_in_2d=True)
 

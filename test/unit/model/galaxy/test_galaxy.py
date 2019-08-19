@@ -18,11 +18,11 @@ class TestLightProfiles(object):
 
             galaxy = g.Galaxy(redshift=0.5)
 
-            profile_image = galaxy.profile_image_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=False)
+            profile_image = galaxy.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
 
-            assert (
-                profile_image == np.zeros(shape=sub_grid_7x7.shape[0])
-            ).all()
+            assert (profile_image == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
         def test__using_no_light_profiles__check_reshaping_decorator_of_returned_profile_image(
             self, sub_grid_7x7
@@ -45,9 +45,7 @@ class TestLightProfiles(object):
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
-            assert (
-                profile_image == np.zeros(shape=sub_grid_7x7.shape[0]//4)
-            ).all()
+            assert (profile_image == np.zeros(shape=sub_grid_7x7.shape[0] // 4)).all()
 
         def test__galaxies_with_x1_and_x2_light_profiles__profile_image_is_same_individual_profiles(
             self, lp_0, gal_x1_lp, lp_1, gal_x2_lp
@@ -357,9 +355,7 @@ class TestMassProfiles(object):
 
             convergence = galaxy.convergence_from_grid(grid=sub_grid_7x7)
 
-            assert (
-                convergence == np.zeros(shape=sub_grid_7x7.shape[0])
-            ).all()
+            assert (convergence == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
         def test__using_no_mass_profiles__check_reshaping_decorator_of_returned_convergence(
             self, sub_grid_7x7
@@ -383,9 +379,7 @@ class TestMassProfiles(object):
                 grid=sub_grid_7x7, return_binned=True
             )
 
-            assert (
-                convergence == np.zeros(shape=sub_grid_7x7.shape[0]//4)
-            ).all()
+            assert (convergence == np.zeros(shape=sub_grid_7x7.shape[0] // 4)).all()
 
         def test__galaxies_with_x1_and_x2_mass_profiles__convergence_is_same_individual_profiles(
             self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
@@ -474,7 +468,7 @@ class TestMassProfiles(object):
                 grid=sub_grid_7x7, return_binned=True
             )
 
-            assert (potential == np.zeros(shape=sub_grid_7x7.shape[0]//4)).all()
+            assert (potential == np.zeros(shape=sub_grid_7x7.shape[0] // 4)).all()
 
         def test__galaxies_with_x1_and_x2_mass_profiles__potential_is_same_individual_profiles(
             self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
@@ -533,9 +527,7 @@ class TestMassProfiles(object):
 
             deflections = galaxy.deflections_from_grid(grid=sub_grid_7x7)
 
-            assert (
-                deflections == np.zeros(shape=(sub_grid_7x7.shape[0], 2))
-            ).all()
+            assert (deflections == np.zeros(shape=(sub_grid_7x7.shape[0], 2))).all()
 
         def test__using_no_mass_profiles__check_reshaping_decorator_of_returned_deflections(
             self, sub_grid_7x7
@@ -553,16 +545,14 @@ class TestMassProfiles(object):
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
-            assert (
-                deflections == np.zeros(shape=(sub_grid_7x7.shape[0], 2))
-            ).all()
+            assert (deflections == np.zeros(shape=(sub_grid_7x7.shape[0], 2))).all()
 
             deflections = galaxy.deflections_from_grid(
                 grid=sub_grid_7x7, return_binned=True
             )
 
             assert (
-                deflections == np.zeros(shape=(sub_grid_7x7.shape[0]//4, 2))
+                deflections == np.zeros(shape=(sub_grid_7x7.shape[0] // 4, 2))
             ).all()
 
         def test__galaxies_with_x1_and_x2_mass_profiles__deflections_is_same_individual_profiles(
@@ -1546,7 +1536,9 @@ class TestMassProfiles(object):
                 grid=grid, return_in_2d=True
             )
 
-            convergence = galaxy.convergence_via_jacobian_from_grid(grid=grid, return_in_2d=True)
+            convergence = galaxy.convergence_via_jacobian_from_grid(
+                grid=grid, return_in_2d=True
+            )
 
             shear = galaxy.shear_via_jacobian_from_grid(grid=grid, return_in_2d=True)
 
@@ -1705,9 +1697,7 @@ class TestMassProfiles(object):
                 0
             ]
 
-            caustic_tangential_from_lambda_t = galaxy.caustics_from_grid(
-                grid=grid
-            )[0]
+            caustic_tangential_from_lambda_t = galaxy.caustics_from_grid(grid=grid)[0]
 
             assert caustic_tangential_from_lambda_t == pytest.approx(
                 caustic_tangential_from_magnification, 5e-1
@@ -1723,9 +1713,7 @@ class TestMassProfiles(object):
                 0
             ]
 
-            caustic_tangential_from_lambda_t = galaxy.caustics_from_grid(
-                grid=grid
-            )[0]
+            caustic_tangential_from_lambda_t = galaxy.caustics_from_grid(grid=grid)[0]
 
             assert caustic_tangential_from_lambda_t == pytest.approx(
                 caustic_tangential_from_magnification, 5e-1
@@ -2031,6 +2019,15 @@ class TestBooleanProperties(object):
     def test_has_redshift(self):
 
         assert g.Galaxy(redshift=0.1).has_redshift is True
+
+    def test_has_pixelization(self):
+        assert g.Galaxy(redshift=0.5).has_pixelization is False
+        assert (
+            g.Galaxy(
+                redshift=0.5, pixelization=object(), regularization=object()
+            ).has_pixelization
+            is True
+        )
 
     def test_has_regularization(self):
         assert g.Galaxy(redshift=0.5).has_regularization is False

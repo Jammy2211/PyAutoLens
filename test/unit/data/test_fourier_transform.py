@@ -229,9 +229,7 @@ class TestVisiblities(object):
 
         intensities_1d = np.array([3.0, 6.0])
 
-        visibilities = transformer.visibilities_from_image_1d(
-            image_1d=intensities_1d
-        )
+        visibilities = transformer.visibilities_from_image_1d(image_1d=intensities_1d)
 
         assert visibilities[:, 0] == pytest.approx(
             np.array([3.91361, 7.10136, 8.717248]), 1.0e-4

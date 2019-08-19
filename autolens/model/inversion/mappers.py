@@ -107,9 +107,9 @@ class Mapper(object):
         for mask_1d_index, pixelization_1d_index in enumerate(
             self.sub_mask_1d_index_to_pixelization_1d_index
         ):
-            pixelization_1d_index_to_all_sub_mask_1d_indexes[pixelization_1d_index].append(
-                mask_1d_index
-            )
+            pixelization_1d_index_to_all_sub_mask_1d_indexes[
+                pixelization_1d_index
+            ].append(mask_1d_index)
 
         return pixelization_1d_index_to_all_sub_mask_1d_indexes
 
@@ -219,4 +219,6 @@ class VoronoiMapper(Mapper):
             pixel_centres=self.geometry.pixel_centres,
             pixel_neighbors=self.geometry.pixel_neighbors,
             pixel_neighbors_size=self.geometry.pixel_neighbors_size,
-        ).astype("int")
+        ).astype(
+            "int"
+        )

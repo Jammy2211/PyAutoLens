@@ -3,7 +3,6 @@ import logging
 import numpy as np
 
 from autolens import decorator_util
-from autolens.array.util import mask_util
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -139,17 +138,23 @@ def sparse_grid_from_unmasked_sparse_grid(
 
 
 @decorator_util.jit()
-def mask_1d_index_to_sparse_1d_index_from_cluster_grid(
-    cluster_labels,
-    cluster_to_regular_all,
-    cluster_to_regular_sizes,
-    total_regular_pixels,
+def mask_1d_index_to_sparse_1d_index_from_binned_grid(
+    sparse_labels,
+    binned_mask_1d_index_to_mask_1d_indexes,
+    binned_mask_1d_index_to_mask_1d_sizes,
+    total_unbinned_pixels,
 ):
-    mask_1d_index_to_sparse_1d_index = np.zeros(total_regular_pixels)
+    mask_1d_index_to_sparse_1d_index = np.zeros(total_unbinned_pixels)
 
-    for cluster_index in range(cluster_to_regular_all.shape[0]):
-        for cluster_count in range(cluster_to_regular_sizes[cluster_index]):
-            regular_index = cluster_to_regular_all[cluster_index, cluster_count]
-            mask_1d_index_to_sparse_1d_index[regular_index] = cluster_labels[cluster_index]
+    for cluster_index in range(binned_mask_1d_index_to_mask_1d_indexes.shape[0]):
+        for cluster_count in range(
+            binned_mask_1d_index_to_mask_1d_sizes[cluster_index]
+        ):
+            regular_index = binned_mask_1d_index_to_mask_1d_indexes[
+                cluster_index, cluster_count
+            ]
+            mask_1d_index_to_sparse_1d_index[regular_index] = sparse_labels[
+                cluster_index
+            ]
 
     return mask_1d_index_to_sparse_1d_index

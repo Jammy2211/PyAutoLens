@@ -22,8 +22,10 @@ class TestMappingMatrix:
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
 
         grid = MockPixelizationGrid(
-                three_pixels, sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-            )
+            three_pixels,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_size=1,
+        )
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
@@ -50,8 +52,10 @@ class TestMappingMatrix:
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
 
         grid = MockPixelizationGrid(
-                five_pixels, sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-            )
+            five_pixels,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_size=1,
+        )
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
@@ -104,8 +108,8 @@ class TestMappingMatrix:
         )
 
         grid = MockPixelizationGrid(
-                five_pixels, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=2
-            )
+            five_pixels, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=2
+        )
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
@@ -140,8 +144,10 @@ class TestMappingMatrix:
         )
 
         grid = MockPixelizationGrid(
-                five_pixels, sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index, sub_grid_size=2
-            )
+            five_pixels,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_size=2,
+        )
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
@@ -273,8 +279,10 @@ class TestMappingMatrix:
         )
 
         grid = MockPixelizationGrid(
-                three_pixels, sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index, sub_grid_size=4
-            )
+            three_pixels,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_size=4,
+        )
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,

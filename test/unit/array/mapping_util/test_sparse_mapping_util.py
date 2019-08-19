@@ -359,7 +359,9 @@ class TestRegularToSparse:
             unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
         )
 
-        assert (mask_1d_index_to_sparse_1d_index == np.array([10, 10, 10, 10, 15])).all()
+        assert (
+            mask_1d_index_to_sparse_1d_index == np.array([10, 10, 10, 10, 15])
+        ).all()
 
         regular_to_unmasked_sparse = np.array([5, 6, 7, 8, 9])
         unmasked_sparse_to_sparse = np.array([0, 1, 2, 3, 4, 19, 18, 17, 16, 15])
@@ -368,7 +370,9 @@ class TestRegularToSparse:
             unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
         )
 
-        assert (mask_1d_index_to_sparse_1d_index == np.array([19, 18, 17, 16, 15])).all()
+        assert (
+            mask_1d_index_to_sparse_1d_index == np.array([19, 18, 17, 16, 15])
+        ).all()
 
 
 class TestSparseGridFromUnmaskedSparseGrid:

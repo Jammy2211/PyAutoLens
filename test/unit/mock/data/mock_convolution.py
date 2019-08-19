@@ -1,7 +1,6 @@
 from autolens.data import convolution
 
 
-
 class MockConvolver(convolution.Convolver):
     def __init__(self, mask, psf, blurring_mask=None):
 

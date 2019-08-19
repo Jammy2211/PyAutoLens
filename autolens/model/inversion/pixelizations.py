@@ -149,7 +149,7 @@ class Rectangular(Pixelization):
             hyper_image=hyper_image,
         )
 
-    def pixelization_grid_from_grid(self, grid, cluster=None, hyper_image=None, seed=1):
+    def pixelization_grid_from_grid(self, grid, cluster_grid=None, hyper_image=None, seed=1):
         return None
 
 
@@ -337,7 +337,9 @@ class VoronoiMagnification(Voronoi):
         self.shape = (int(shape[0]), int(shape[1]))
         self.pixels = self.shape[0] * self.shape[1]
 
-    def pixelization_grid_from_grid(self, grid, cluster=None, hyper_image=None, seed=1):
+    def pixelization_grid_from_grid(
+        self, grid, cluster_grid=None, hyper_image=None, seed=1
+    ):
 
         sparse_to_regular_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
@@ -373,16 +375,16 @@ class VoronoiBrightnessImage(Voronoi):
 
         return np.power(cluster_weight_map, self.weight_power)
 
-    def pixelization_grid_from_grid(self, grid, cluster=None, hyper_image=None, seed=0):
+    def pixelization_grid_from_grid(self, grid, cluster_grid=None, hyper_image=None, seed=0):
 
         cluster_weight_map = self.cluster_weight_map_from_hyper_image(
             hyper_image=hyper_image
         )
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
             total_pixels=self.pixels,
-            cluster_grid=cluster,
-            cluster_weight_map=cluster_weight_map,
+            binned_grid=cluster_grid,
+            binned_weight_map=cluster_weight_map,
             seed=seed,
         )
 

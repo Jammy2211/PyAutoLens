@@ -59,7 +59,7 @@ source_galaxy = g.Galaxy(
 lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
 
 tracer = ray_tracing.Tracer.from_galaxies(
-    galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid_stack
+    galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid
 )
 fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 

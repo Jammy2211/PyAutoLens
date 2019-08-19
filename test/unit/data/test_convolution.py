@@ -165,7 +165,8 @@ class TestFrameExtraction(object):
         assert 9 == len(simple_convolver.image_frame_1d_indexes)
 
         assert (
-                simple_convolver.image_frame_1d_indexes[4] == np.array([i for i in range(9)])
+            simple_convolver.image_frame_1d_indexes[4]
+            == np.array([i for i in range(9)])
         ).all()
 
     def test_frame_5x5_kernel__at_coords(self):
@@ -1064,11 +1065,11 @@ class TestBlurringFrameIndxes(object):
             [[False, True, False], [True, True, True], [False, True, False]]
         )
 
-        convolver = convolution.Convolver(
-            mask=cross_mask, psf=np.ones((3, 3))
-        )
+        convolver = convolution.Convolver(mask=cross_mask, psf=np.ones((3, 3)))
 
-        convolver = convolver.convolver_with_blurring_mask_added(blurring_mask=blurring_mask)
+        convolver = convolver.convolver_with_blurring_mask_added(
+            blurring_mask=blurring_mask
+        )
 
         assert (
             convolver.blurring_frame_1d_indexes[0]
@@ -1086,6 +1087,7 @@ class TestBlurringFrameIndxes(object):
             convolver.blurring_frame_1d_indexes[3]
             == np.array([2, 3, 4, -1, -1, -1, -1, -1, -1])
         ).all()
+
 
 class TestBlurringFrameKernels(object):
     def test__blurring_region_3x3_kernel(self, cross_mask):
@@ -1284,7 +1286,7 @@ class TestFrameLengths(object):
         # convolver_image.image_frame_indexes[8] == np.array([3, 4, 5, 6, 7, 8])
 
         assert (
-                convolver.image_frame_1d_lengths == np.array([6, 6, 6, 9, 9, 9, 6, 6, 6])
+            convolver.image_frame_1d_lengths == np.array([6, 6, 6, 9, 9, 9, 6, 6, 6])
         ).all()
 
     def test__blurring_frames_from_example_above__lengths_are_right(self, cross_mask):

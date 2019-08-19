@@ -27,12 +27,20 @@ class MockGrid(grids.Grid):
         pass
 
 
-class MockClusterGrid(grids.ClusterGrid):
+class MockClusterGrid(grids.BinnedGrid):
 
     pass
 
+
 class MockPixelizationGrid(np.ndarray):
-    def __new__(cls, arr, mask_1d_index_to_nearest_pixelization_1d_index=None, sub_grid_size=1, *args, **kwargs):
+    def __new__(
+        cls,
+        arr,
+        mask_1d_index_to_nearest_pixelization_1d_index=None,
+        sub_grid_size=1,
+        *args,
+        **kwargs
+    ):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
 
@@ -52,7 +60,9 @@ class MockPixelizationGrid(np.ndarray):
             A 1D array that maps every regular-grid pixel to its nearest pixelization-grid pixel.
         """
         obj = arr.view(cls)
-        obj.mask_1d_index_to_nearest_pixelization_1d_index = mask_1d_index_to_nearest_pixelization_1d_index
+        obj.mask_1d_index_to_nearest_pixelization_1d_index = (
+            mask_1d_index_to_nearest_pixelization_1d_index
+        )
         obj.sub_grid_size = sub_grid_size
         obj.sub_grid_length = int(sub_grid_size ** 2.0)
         obj.sub_grid_fraction = 1.0 / obj.sub_grid_length
@@ -61,4 +71,3 @@ class MockPixelizationGrid(np.ndarray):
 
     def relocated_grid_from_grid(self, grid):
         return grid
-

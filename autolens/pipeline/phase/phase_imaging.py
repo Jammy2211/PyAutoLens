@@ -246,7 +246,7 @@ class PhaseImaging(Phase):
             ccd_data=data,
             mask=mask,
             sub_grid_size=self.sub_grid_size,
-            image_psf_shape=self.image_psf_shape,
+            trimmed_psf_shape=self.image_psf_shape,
             positions=positions,
             interp_pixel_scale=self.interp_pixel_scale,
             cluster_pixel_scale=self.cluster_pixel_scale,
@@ -670,10 +670,10 @@ class PhaseImaging(Phase):
 
                 for galaxy in galaxies:
                     if galaxy.pixelization is not None:
-                        pixelization_grid = galaxy.pixelization.pixelization_grid_from_grid(
+                        pixelization_grid = galaxy.pixelization.traced_pixelization_grids_of_planes_from_grid(
                             grid=grid_stack,
                             hyper_image=galaxy.hyper_galaxy_cluster_image_1d,
-                            cluster=self.lens_data.cluster,
+                            cluster_grid=self.lens_data.cluster,
                             seed=1,
                         )
 
