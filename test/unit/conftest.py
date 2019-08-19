@@ -383,8 +383,8 @@ def make_gal_data_7x7(image_7x7, noise_map_7x7):
     )
 
 
-@pytest.fixture(name="gal_fit_data_7x7_intensities")
-def make_gal_fit_data_7x7_intensities(gal_data_7x7, mask_7x7):
+@pytest.fixture(name="gal_fit_data_7x7_image")
+def make_gal_fit_data_7x7_image(gal_data_7x7, mask_7x7):
     return gd.GalaxyFitData(
         galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_image=True
     )
@@ -421,10 +421,10 @@ def make_gal_fit_data_7x7_deflections_x(gal_data_7x7, mask_7x7):
 # GALAXY FIT #
 
 
-@pytest.fixture(name="gal_fit_7x7_intensities")
-def make_gal_fit_7x7_intensities(gal_fit_data_7x7_intensities, gal_x1_lp):
+@pytest.fixture(name="gal_fit_7x7_image")
+def make_gal_fit_7x7_image(gal_fit_data_7x7_image, gal_x1_lp):
     return galaxy_fit.GalaxyFit(
-        galaxy_data=gal_fit_data_7x7_intensities, model_galaxies=[gal_x1_lp]
+        galaxy_data=gal_fit_data_7x7_image, model_galaxies=[gal_x1_lp]
     )
 
 
