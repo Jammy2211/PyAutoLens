@@ -55,7 +55,7 @@ def plot_intensities(
     grid : ndarray or datas.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    intensities = galaxy.image_from_grid(
+    intensities = galaxy.profile_image_from_grid(
         grid=grid, return_in_2d=True, return_binned=True
     )
 

@@ -2,7 +2,7 @@ from autolens import exc
 from autolens.array import grids, scaled_array
 from autolens.array import mask as msk
 
-from autolens.array.grids import reshape_returned_array
+from autolens.array.grids import reshape_data_array
 
 
 class GalaxyData(object):
@@ -37,7 +37,7 @@ class GalaxyFitData(object):
         mask,
         sub_grid_size=2,
         interp_pixel_scale=None,
-        use_intensities=False,
+        use_image=False,
         use_convergence=False,
         use_potential=False,
         use_deflections_y=False,
@@ -84,15 +84,15 @@ class GalaxyFitData(object):
 
         self.sub_grid_size = sub_grid_size
 
-        self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(3, 3)
+        self.grid = grids.Grid.from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=sub_grid_size
         )
 
         self.interp_pixel_scale = interp_pixel_scale
 
         if interp_pixel_scale is not None:
 
-            self.grid_stack = self.grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
+            self.grid = self.grid.new_grid_with_interpolator(
                 interp_pixel_scale=interp_pixel_scale
             )
 
@@ -101,7 +101,7 @@ class GalaxyFitData(object):
         if all(
             not element
             for element in [
-                use_intensities,
+                use_image,
                 use_convergence,
                 use_potential,
                 use_deflections_y,
@@ -115,7 +115,7 @@ class GalaxyFitData(object):
         if (
             sum(
                 [
-                    use_intensities,
+                    use_image,
                     use_convergence,
                     use_potential,
                     use_deflections_y,
@@ -129,7 +129,7 @@ class GalaxyFitData(object):
                 "one."
             )
 
-        self.use_intensities = use_intensities
+        self.use_image = use_image
         self.use_convergence = use_convergence
         self.use_potential = use_potential
         self.use_deflections_y = use_deflections_y
@@ -147,23 +147,23 @@ class GalaxyFitData(object):
             self.mask_1d = obj.mask_1d
             self.sub_grid_size = obj.sub_grid_size
             self.interp_pixel_scale = obj.interp_pixel_scale
-            self.grid_stack = obj.grid_stack
-            self.use_intensities = obj.use_intensities
+            self.grid = obj.grid
+            self.use_image = obj.use_image
             self.use_convergence = obj.use_convergence
             self.use_potential = obj.use_potential
             self.use_deflections_y = obj.use_deflections_y
             self.use_deflections_x = obj.use_deflections_x
 
     def map_to_scaled_array(self, array_1d):
-        return self.grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=array_1d)
+        return self.grid.scaled_array_2d_from_array_1d(array_1d=array_1d)
 
-    def profile_quantity_from_galaxy_and_sub_grid(self, galaxies, sub_grid):
+    def profile_quantity_from_galaxies(self, galaxies):
 
-        if self.use_intensities:
+        if self.use_image:
             return sum(
                 map(
-                    lambda g: g.image_from_grid(
-                        grid=self.grid_stack.sub, return_in_2d=False, return_binned=True
+                    lambda g: g.profile_image_from_grid(
+                        grid=self.grid, return_in_2d=False, return_binned=True
                     ),
                     galaxies,
                 )
@@ -172,7 +172,7 @@ class GalaxyFitData(object):
             return sum(
                 map(
                     lambda g: g.convergence_from_grid(
-                        grid=self.grid_stack.sub.unlensed_1d,
+                        grid=self.grid,
                         return_in_2d=False,
                         return_binned=True,
                     ),
@@ -183,7 +183,7 @@ class GalaxyFitData(object):
             return sum(
                 map(
                     lambda g: g.potential_from_grid(
-                        grid=self.grid_stack.sub.unlensed_1d,
+                        grid=self.grid,
                         return_in_2d=False,
                         return_binned=True,
                     ),
@@ -194,7 +194,7 @@ class GalaxyFitData(object):
             return sum(
                 map(
                     lambda g: g.deflections_from_grid(
-                        grid=self.grid_stack.sub.unlensed_1d,
+                        grid=self.grid,
                         return_in_2d=False,
                         return_binned=True,
                     ),
@@ -205,7 +205,7 @@ class GalaxyFitData(object):
             return sum(
                 map(
                     lambda g: g.deflections_from_grid(
-                        grid=self.grid_stack.sub.unlensed_1d,
+                        grid=self.grid,
                         return_in_2d=False,
                         return_binned=True,
                     ),
@@ -219,14 +219,14 @@ class GalaxyFitData(object):
         else:
             return self.mask_1d
 
-    @reshape_returned_array
+    @reshape_data_array
     def image(self, return_in_2d=True):
         return self.image_1d
 
-    @reshape_returned_array
+    @reshape_data_array
     def noise_map(self, return_in_2d=True):
         return self.noise_map_1d
 
-    @reshape_returned_array
+    @reshape_data_array
     def signal_to_noise_map(self, return_in_2d=True):
         return self.signal_to_noise_map_1d

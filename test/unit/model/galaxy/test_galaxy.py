@@ -51,7 +51,7 @@ class TestLightProfiles(object):
             self, lp_0, gal_x1_lp, lp_1, gal_x2_lp
         ):
 
-            lp_profile_image = lp_0.image_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_profile_image = lp_0.profile_image_from_grid(grid=np.array([[1.05, -0.55]]))
 
             gal_lp_profile_image = gal_x1_lp.profile_image_from_grid(
                 grid=np.array([[1.05, -0.55]])
@@ -59,8 +59,8 @@ class TestLightProfiles(object):
 
             assert lp_profile_image == gal_lp_profile_image
 
-            lp_profile_image = lp_0.image_from_grid(grid=np.array([[1.05, -0.55]]))
-            lp_profile_image += lp_1.image_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_profile_image = lp_0.profile_image_from_grid(grid=np.array([[1.05, -0.55]]))
+            lp_profile_image += lp_1.profile_image_from_grid(grid=np.array([[1.05, -0.55]]))
 
             gal_profile_image = gal_x2_lp.profile_image_from_grid(
                 grid=np.array([[1.05, -0.55]])
@@ -72,11 +72,11 @@ class TestLightProfiles(object):
             self, sub_grid_7x7, gal_x2_lp
         ):
 
-            lp_0_profile_image = gal_x2_lp.light_profile_0.image_from_grid(
+            lp_0_profile_image = gal_x2_lp.light_profile_0.profile_image_from_grid(
                 grid=sub_grid_7x7, return_binned=False
             )
 
-            lp_1_profile_image = gal_x2_lp.light_profile_1.image_from_grid(
+            lp_1_profile_image = gal_x2_lp.light_profile_1.profile_image_from_grid(
                 grid=sub_grid_7x7, return_binned=False
             )
 

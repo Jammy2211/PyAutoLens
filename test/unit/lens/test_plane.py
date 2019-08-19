@@ -490,7 +490,7 @@ class TestAbstractPlaneLensing(object):
 
             light_profile = gal_x1_lp.light_profiles[0]
 
-            lp_sub_image_1d = light_profile.image_from_grid(
+            lp_sub_image_1d = light_profile.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
@@ -517,7 +517,7 @@ class TestAbstractPlaneLensing(object):
             assert (profile_image_1d[0] == lp_image_pixel_0).all()
             assert (profile_image_1d[1] == lp_image_pixel_1).all()
 
-            lp_sub_image_2d = light_profile.image_from_grid(
+            lp_sub_image_2d = light_profile.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=True, return_binned=True
             )
 
@@ -580,8 +580,8 @@ class TestAbstractPlaneLensing(object):
             lp0 = g0.light_profiles[0]
             lp1 = g1.light_profiles[0]
 
-            lp0_sub_image = lp0.image_from_grid(grid=sub_grid_7x7)
-            lp1_sub_image = lp1.image_from_grid(grid=sub_grid_7x7)
+            lp0_sub_image = lp0.profile_image_from_grid(grid=sub_grid_7x7)
+            lp1_sub_image = lp1.profile_image_from_grid(grid=sub_grid_7x7)
 
             # Perform sub gridding average manually
             lp0_image_pixel_0 = (

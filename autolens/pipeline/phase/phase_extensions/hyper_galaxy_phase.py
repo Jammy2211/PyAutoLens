@@ -76,7 +76,7 @@ class HyperGalaxyPhase(HyperPhase):
                     noise_map_1d=self.lens_data.noise_map_1d,
                     mask_1d=self.lens_data.mask_1d,
                     model_image_1d=self.hyper_model_image_1d,
-                    grid=self.lens_data.grid_stack,
+                    grid=self.lens_data.grid,
                 )
 
                 fit = self.fit_for_hyper_galaxy(
@@ -164,7 +164,7 @@ class HyperGalaxyPhase(HyperPhase):
                 noise_map_1d=noise_map_1d,
                 mask_1d=self.lens_data.mask_1d,
                 model_image_1d=self.hyper_model_image_1d,
-                grid=self.lens_data.grid_stack,
+                grid=self.lens_data.grid,
             )
 
         @classmethod
