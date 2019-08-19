@@ -14,15 +14,15 @@ def make_galaxy_plotter_setup():
 
 def test__individual_images_are_output(
     gal_x1_lp_x1_mp,
-    grid_stack_7x7,
+    sub_grid_7x7,
     mask_7x7,
     positions_7x7,
     galaxy_plotter_path,
     plot_patch,
 ):
-    galaxy_plotters.plot_intensities(
+    galaxy_plotters.plot_image(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -33,11 +33,11 @@ def test__individual_images_are_output(
         output_format="png",
     )
 
-    assert galaxy_plotter_path + "galaxy_intensities.png" in plot_patch.paths
+    assert galaxy_plotter_path + "galaxy_image.png" in plot_patch.paths
 
     galaxy_plotters.plot_convergence(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -54,7 +54,7 @@ def test__individual_images_are_output(
 
     galaxy_plotters.plot_potential(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -71,7 +71,7 @@ def test__individual_images_are_output(
 
     galaxy_plotters.plot_deflections_y(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -88,7 +88,7 @@ def test__individual_images_are_output(
 
     galaxy_plotters.plot_deflections_x(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -106,15 +106,15 @@ def test__individual_images_are_output(
 
 def test__individual_galaxy_quantities__all_are_output(
     gal_x1_lp_x1_mp,
-    grid_stack_7x7,
+    sub_grid_7x7,
     mask_7x7,
     positions_7x7,
     galaxy_plotter_path,
     plot_patch,
 ):
-    galaxy_plotters.plot_intensities_subplot(
+    galaxy_plotters.plot_image_subplot(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -125,11 +125,11 @@ def test__individual_galaxy_quantities__all_are_output(
         output_format="png",
     )
 
-    assert galaxy_plotter_path + "galaxy_individual_intensities.png" in plot_patch.paths
+    assert galaxy_plotter_path + "galaxy_individual_image.png" in plot_patch.paths
 
     galaxy_plotters.plot_convergence_subplot(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -144,7 +144,7 @@ def test__individual_galaxy_quantities__all_are_output(
 
     galaxy_plotters.plot_potential_subplot(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -159,7 +159,7 @@ def test__individual_galaxy_quantities__all_are_output(
 
     galaxy_plotters.plot_deflections_y_subplot(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -174,9 +174,9 @@ def test__individual_galaxy_quantities__all_are_output(
         galaxy_plotter_path + "galaxy_individual_deflections_y.png" in plot_patch.paths
     )
 
-    galaxy_plotters.plot_intensities_subplot(
+    galaxy_plotters.plot_image_subplot(
         galaxy=gal_x1_lp_x1_mp,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -187,4 +187,4 @@ def test__individual_galaxy_quantities__all_are_output(
         output_format="png",
     )
 
-    assert galaxy_plotter_path + "galaxy_individual_intensities.png" in plot_patch.paths
+    assert galaxy_plotter_path + "galaxy_individual_image.png" in plot_patch.paths

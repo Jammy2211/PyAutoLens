@@ -529,8 +529,10 @@ def plot_fit_subplot_for_plane(
 
         plt.subplot(rows, columns, 4)
 
+        traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
+
         plane_plotters.plot_plane_image(
-            plane=fit.tracer.planes[plane_index],
+            plane=fit.tracer.planes[plane_index], grid=traced_grids[plane_index],
             positions=None,
             plot_grid=should_plot_source_grid,
             as_subplot=True,
@@ -589,8 +591,10 @@ def plot_fit_subplot_for_plane(
 
         plt.subplot(rows, columns, 4, aspect=float(aspect_inv))
 
+        traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
+
         inversion_plotters.plot_pixelization_values(
-            inversion=fit.inversion,
+            inversion=fit.inversion, grid=traced_grids[plane_index],
             positions=None,
             should_plot_grid=False,
             should_plot_centres=False,
@@ -672,6 +676,8 @@ def plot_fit_individuals(
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(
         should_plot_image_plane_pix, fit
     )
+
+    traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
@@ -860,7 +866,7 @@ def plot_fit_individuals(
                 output_filename = "fit_plane_image_of_plane_" + str(plane_index)
 
                 plane_plotters.plot_plane_image(
-                    plane=fit.tracer.planes[plane_index],
+                    plane=fit.tracer.planes[plane_index], grid=traced_grids[plane_index],
                     plot_grid=True,
                     units=units,
                     output_path=output_path,

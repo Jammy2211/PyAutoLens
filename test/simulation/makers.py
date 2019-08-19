@@ -98,7 +98,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
 
     ray_tracing_plotters.plot_ray_tracing_individual(
         tracer=tracer,
-        should_plot_image_plane_image=True,
+        should_plot_profile_image=True,
         should_plot_source_plane=True,
         should_plot_convergence=True,
         should_plot_potential=True,
