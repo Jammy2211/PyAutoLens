@@ -1649,13 +1649,13 @@ class TestAbstractTracerLensing(object):
 
             tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+            grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
                 grid=sub_grid_7x7, redshift=0.5
             )
 
-            assert (traced_grid == sub_grid_7x7).all()
+            assert (grid_at_redshift == sub_grid_7x7).all()
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+            grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
                 grid=sub_grid_7x7, redshift=1.0
             )
 
@@ -1663,7 +1663,7 @@ class TestAbstractTracerLensing(object):
                 grid=sub_grid_7x7
             )[1]
 
-            assert (traced_grid == source_plane_grid).all()
+            assert (grid_at_redshift == source_plane_grid).all()
 
         def test__same_as_above_but_for_multi_tracing(self, sub_grid_7x7):
             g0 = g.Galaxy(
@@ -1698,81 +1698,43 @@ class TestAbstractTracerLensing(object):
                 grid=sub_grid_7x7
             )
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+            grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
                 grid=sub_grid_7x7, redshift=0.5
             )
 
-            assert traced_grid == pytest.approx(traced_grids_of_planes[0], 1.0e-4)
+            assert grid_at_redshift == pytest.approx(traced_grids_of_planes[0], 1.0e-4)
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+            grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
                 grid=sub_grid_7x7, redshift=0.75
             )
 
-            assert traced_grid == pytest.approx(traced_grids_of_planes[1], 1.0e-4)
+            assert grid_at_redshift == pytest.approx(traced_grids_of_planes[1], 1.0e-4)
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+            grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
                 grid=sub_grid_7x7, redshift=1.0
             )
 
-            assert traced_grid == pytest.approx(traced_grids_of_planes[2], 1.0e-4)
+            assert grid_at_redshift == pytest.approx(traced_grids_of_planes[2], 1.0e-4)
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+            grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
                 grid=sub_grid_7x7, redshift=1.5
             )
 
-            assert traced_grid == pytest.approx(traced_grids_of_planes[3], 1.0e-4)
+            assert grid_at_redshift == pytest.approx(traced_grids_of_planes[3], 1.0e-4)
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+            grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
                 grid=sub_grid_7x7, redshift=2.0
             )
 
-            assert traced_grid == pytest.approx(traced_grids_of_planes[4], 1.0e-4)
-
-        def test__input_redshift_between_two_planes__performs_ray_tracing_calculation_correctly(
-            self, sub_grid_7x7
-        ):
-
-            g0 = g.Galaxy(
-                redshift=0.5,
-                mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-            g1 = g.Galaxy(
-                redshift=0.75,
-                mass_profile=mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=2.0
-                ),
-            )
-            g2 = g.Galaxy(redshift=2.0)
-
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2])
-
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=0.6
-            )
-
-            scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
-                redshift_0=0.5,
-                redshift_1=0.6,
-                redshift_final=2.0,
-                cosmology=tracer.cosmology,
-            )
-
-            deflections_previous_plane = tracer.planes[0].deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
-            )
-
-            scaled_deflections = scaling_factor * deflections_previous_plane
-
-            scaled_grid = sub_grid_7x7 - scaled_deflections
-
-            assert (scaled_grid == traced_grid).all()
+            assert grid_at_redshift == pytest.approx(traced_grids_of_planes[4], 1.0e-4)
 
         def test__input_redshift_between_two_planes__two_planes_between_earth_and_input_redshift(
             self, sub_grid_7x7
         ):
 
+            sub_grid_7x7[0] = np.array([[1.0, -1.0]])
+            sub_grid_7x7[1] = np.array([[1.0, 0.0]])
+
             g0 = g.Galaxy(
                 redshift=0.5,
                 mass_profile=mp.SphericalIsothermal(
@@ -1789,19 +1751,15 @@ class TestAbstractTracerLensing(object):
 
             tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+            grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
                 grid=sub_grid_7x7, redshift=1.9
             )
 
-            print(traced_grid)
+            assert grid_at_redshift[0][0] == pytest.approx(-1.06587, 1.0e-1)
+            assert grid_at_redshift[0][1] == pytest.approx(1.06587, 1.0e-1)
+            assert grid_at_redshift[1][0] == pytest.approx(-1.921583, 1.0e-1)
+            assert grid_at_redshift[1][1] == pytest.approx(0.0, 1.0e-1)
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=2.0
-            )
-
-            print(traced_grid)
-
-            assert (scaled_grid == traced_grid).all()
 
         def test__input_redshift_before_first_plane__returns_image_plane(
             self, sub_grid_7x7
@@ -1821,11 +1779,11 @@ class TestAbstractTracerLensing(object):
 
             tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+            grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
                 grid=sub_grid_7x7.unlensed_unsubbed_1d, redshift=0.3
             )
 
-            assert (traced_grid == sub_grid_7x7.unlensed_unsubbed_1d).all()
+            assert (grid_at_redshift == sub_grid_7x7.unlensed_unsubbed_1d).all()
 
     class TestEinsteinRadiusAndMass:
         def test__x2_galaxies__values_are_sum_of_each_galaxy(self, sub_grid_7x7):

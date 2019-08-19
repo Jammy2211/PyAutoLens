@@ -85,9 +85,9 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fitter = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
+    fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
-    assert fitter.chi_squared == 0.0
+    assert fit.chi_squared == 0.0
 
     path = "{}/data_temp".format(
         os.path.dirname(os.path.realpath(__file__))

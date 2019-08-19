@@ -2,7 +2,7 @@ from autolens import decorator_util
 import numpy as np
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def data_vector_from_blurred_mapping_matrix_and_data(
     blurred_mapping_matrix, image_1d, noise_map_1d
 ):
@@ -53,7 +53,7 @@ def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_m
     )
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def curvature_matrix_from_blurred_mapping_matrix_jit(
     blurred_mapping_matrix, noise_map_1d, flist, iflist
 ):
@@ -100,7 +100,7 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(
     return curvature_matrix
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
     blurred_mapping_matrix, solution_vector
 ):
@@ -122,7 +122,7 @@ def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
     return reconstructed_data_vector
 
 
-# @decorator_util.jit()
+# #@decorator_util.jit()
 def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
@@ -150,7 +150,7 @@ def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d
     return pixelization_residuals
 
 
-# @decorator_util.jit()
+# #@decorator_util.jit()
 def pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
@@ -181,7 +181,7 @@ def pixelization_normalized_residual_map_from_pixelization_values_and_reconstruc
     return pixelization_normalized_residuals
 
 
-# @decorator_util.jit()
+# #@decorator_util.jit()
 def pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,

@@ -99,6 +99,8 @@ class TestResize:
             array_2d=array, resized_shape=(3, 3)
         )
 
+        print(modified)
+
         assert (
             modified == np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])
         ).all()

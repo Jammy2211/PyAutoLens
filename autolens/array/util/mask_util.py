@@ -6,7 +6,7 @@ from autolens import exc
 from autolens.array.mapping_util import mask_mapping_util
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def mask_centres_from_shape_pixel_scale_and_centre(shape, pixel_scale, centre):
     """Determine the (y,x) arc-second central coordinates of a mask from its shape, pixel-scales and centre.
 
@@ -36,7 +36,7 @@ def mask_centres_from_shape_pixel_scale_and_centre(shape, pixel_scale, centre):
     return (y_centre_arcsec, x_centre_arcsec)
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def total_pixels_from_mask(mask):
     """Compute the total number of unmasked pixels in a mask.
 
@@ -70,7 +70,7 @@ def total_pixels_from_mask(mask):
     return total_regular_pixels
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
     """Compute the total number of sub-pixels in unmasked pixels in a mask.
     
@@ -98,7 +98,7 @@ def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
     return total_pixels_from_mask(mask) * sub_grid_size ** 2
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def total_sparse_pixels_from_mask(mask, unmasked_sparse_grid_pixel_centres):
     """Given the full (i.e. without removing pixels which are outside the regular-mask) pixelization grid's pixel \ 
     center and the regular-mask, compute the total number of pixels which are within the regular-mask and thus used \ \
@@ -127,7 +127,7 @@ def total_sparse_pixels_from_mask(mask, unmasked_sparse_grid_pixel_centres):
     return total_sparse_pixels
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def mask_circular_from_shape_pixel_scale_and_radius(
     shape, pixel_scale, radius_arcsec, centre=(0.0, 0.0)
 ):
@@ -177,7 +177,7 @@ def mask_circular_from_shape_pixel_scale_and_radius(
     return mask
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def mask_circular_annular_from_shape_pixel_scale_and_radii(
     shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0.0, 0.0)
 ):
@@ -229,7 +229,7 @@ def mask_circular_annular_from_shape_pixel_scale_and_radii(
     return mask
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def mask_circular_anti_annular_from_shape_pixel_scale_and_radii(
     shape,
     pixel_scale,
@@ -263,7 +263,7 @@ def mask_circular_anti_annular_from_shape_pixel_scale_and_radii(
     return mask
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_ratio):
     r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
@@ -277,7 +277,7 @@ def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_
     )
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def mask_elliptical_from_shape_pixel_scale_and_radius(
     shape, pixel_scale, major_axis_radius_arcsec, axis_ratio, phi, centre=(0.0, 0.0)
 ):
@@ -335,7 +335,7 @@ def mask_elliptical_from_shape_pixel_scale_and_radius(
     return mask
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def mask_elliptical_annular_from_shape_pixel_scale_and_radius(
     shape,
     pixel_scale,
@@ -418,7 +418,7 @@ def mask_elliptical_annular_from_shape_pixel_scale_and_radius(
     return mask
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def blurring_mask_from_mask_and_psf_shape(mask, psf_shape):
     """Compute a blurring mask from an input mask and psf shape.
 
@@ -473,7 +473,7 @@ def blurring_mask_from_mask_and_psf_shape(mask, psf_shape):
     return blurring_mask
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def mask_from_shape_and_mask_1d_index_to_mask_2d_index(
     shape, mask_1d_index_to_mask_2d_index
 ):
@@ -517,7 +517,7 @@ def mask_from_shape_and_mask_1d_index_to_mask_2d_index(
     return mask
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def total_edge_pixels_from_mask(mask):
     """Compute the total number of borders-pixels in a mask."""
 
@@ -541,7 +541,7 @@ def total_edge_pixels_from_mask(mask):
     return edge_pixel_total
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def edge_pixels_from_mask(mask):
     """Compute a 1D array listing all edge pixel indexes in the mask. An edge pixel is a pixel which is not fully \
     surrounding by False mask values i.e. it is on an edge."""
@@ -573,7 +573,7 @@ def edge_pixels_from_mask(mask):
     return edge_pixels
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def check_if_border_pixel(mask, edge_pixel_1d, mask_1d_index_to_mask_2d_index):
     edge_pixel_index = int(edge_pixel_1d)
 
@@ -591,7 +591,7 @@ def check_if_border_pixel(mask, edge_pixel_1d, mask_1d_index_to_mask_2d_index):
         return False
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def total_border_pixels_from_mask_and_edge_pixels(
     mask, edge_pixels, mask_1d_index_to_mask_2d_index
 ):
@@ -607,7 +607,7 @@ def total_border_pixels_from_mask_and_edge_pixels(
     return border_pixel_total
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def border_pixels_from_mask(mask):
     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
 
@@ -647,7 +647,7 @@ def border_pixels_from_mask(mask):
     return border_pixels
 
 
-# @decorator_util.jit()
+# #@decorator_util.jit()
 def sub_border_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
 
@@ -682,7 +682,7 @@ def sub_border_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
     return sub_border_pixels
 
 
-@decorator_util.jit()
+#@decorator_util.jit()
 def edge_buffed_mask_from_mask(mask):
 
     edge_buffed_mask = mask.copy()
