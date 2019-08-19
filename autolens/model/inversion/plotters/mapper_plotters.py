@@ -635,10 +635,20 @@ def plot_image_plane_source_pixels(grid, mapper, source_pixels, point_colors):
             for source_pixel in source_pixel_set:
                 plt.scatter(
                     y=np.asarray(
-                        grid[mapper.sub_mask_1d_index_to_pixelization_1d_index[source_pixel], 0]
+                        grid[
+                            mapper.sub_mask_1d_index_to_pixelization_1d_index[
+                                source_pixel
+                            ],
+                            0,
+                        ]
                     ),
                     x=np.asarray(
-                        grid[mapper.sub_mask_1d_index_to_pixelization_1d_index[source_pixel], 1]
+                        grid[
+                            mapper.sub_mask_1d_index_to_pixelization_1d_index[
+                                source_pixel
+                            ],
+                            1,
+                        ]
                     ),
                     s=8,
                     color=color,
@@ -668,10 +678,20 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
             for source_pixel in source_pixel_set:
                 plt.scatter(
                     y=np.asarray(
-                        grid[mapper.sub_mask_1d_index_to_pixelization_1d_index[source_pixel], 0]
+                        grid[
+                            mapper.sub_mask_1d_index_to_pixelization_1d_index[
+                                source_pixel
+                            ],
+                            0,
+                        ]
                     ),
                     x=np.asarray(
-                        grid[mapper.sub_mask_1d_index_to_pixelization_1d_index[source_pixel], 1]
+                        grid[
+                            mapper.sub_mask_1d_index_to_pixelization_1d_index[
+                                source_pixel
+                            ],
+                            1,
+                        ]
                     ),
                     s=8,
                     color=color,

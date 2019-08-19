@@ -8,8 +8,7 @@ class TestPhaseTag:
             sub_grid_size=2,
             signal_to_noise_limit=2,
             bin_up_factor=None,
-            image_psf_shape=None,
-            inversion_psf_shape=None,
+            psf_shape=None,
             inner_mask_radii=0.3,
             positions_threshold=2.0,
             interp_pixel_scale=None,
@@ -22,8 +21,7 @@ class TestPhaseTag:
             sub_grid_size=1,
             signal_to_noise_limit=None,
             bin_up_factor=3,
-            image_psf_shape=(2, 2),
-            inversion_psf_shape=(3, 3),
+            psf_shape=(2, 2),
             inner_mask_radii=None,
             positions_threshold=None,
             interp_pixel_scale=0.2,
@@ -31,8 +29,7 @@ class TestPhaseTag:
         )
 
         assert (
-            phase_tag
-            == "phase_tag__sub_1__bin_3__image_psf_2x2__inv_psf_3x3__interp_0.200__cluster_0.300"
+            phase_tag == "phase_tag__sub_1__bin_3__psf_2x2__interp_0.200__cluster_0.300"
         )
 
 
@@ -107,35 +104,14 @@ class TestPhaseTaggers:
         tag = phase_tagging.bin_up_factor_tag_from_bin_up_factor(bin_up_factor=3)
         assert tag == "__bin_3"
 
-    def test__image_psf_shape_tagger(self):
+    def test__psf_shape_tagger(self):
 
-        tag = phase_tagging.image_psf_shape_tag_from_image_psf_shape(
-            image_psf_shape=None
-        )
+        tag = phase_tagging.psf_shape_tag_from_image_psf_shape(psf_shape=None)
         assert tag == ""
-        tag = phase_tagging.image_psf_shape_tag_from_image_psf_shape(
-            image_psf_shape=(2, 2)
-        )
-        assert tag == "__image_psf_2x2"
-        tag = phase_tagging.image_psf_shape_tag_from_image_psf_shape(
-            image_psf_shape=(3, 4)
-        )
-        assert tag == "__image_psf_3x4"
-
-    def test__inversion_psf_shape_tagger(self):
-
-        tag = phase_tagging.inversion_psf_shape_tag_from_inversion_psf_shape(
-            inversion_psf_shape=None
-        )
-        assert tag == ""
-        tag = phase_tagging.inversion_psf_shape_tag_from_inversion_psf_shape(
-            inversion_psf_shape=(2, 2)
-        )
-        assert tag == "__inv_psf_2x2"
-        tag = phase_tagging.inversion_psf_shape_tag_from_inversion_psf_shape(
-            inversion_psf_shape=(3, 4)
-        )
-        assert tag == "__inv_psf_3x4"
+        tag = phase_tagging.psf_shape_tag_from_image_psf_shape(psf_shape=(2, 2))
+        assert tag == "__psf_2x2"
+        tag = phase_tagging.psf_shape_tag_from_image_psf_shape(psf_shape=(3, 4))
+        assert tag == "__psf_3x4"
 
     def test__interp_pixel_scale_tagger(self):
 

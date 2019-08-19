@@ -415,8 +415,8 @@ class TestVoronoiMagnification:
 
         assert (pixelization_grid_manual == pixelization_grid).all()
         assert (
-            pixelization_grid_manual.mask_1d_index_to_pixelization_1d_index
-            == pixelization_grid.mask_1d_index_to_pixelization_1d_index
+            pixelization_grid_manual.mask_1d_index_to_nearest_pixelization_1d_index
+            == pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index
         ).all()
 
 
@@ -535,11 +535,11 @@ class TestVoronoiBrightness:
 
         pixelization_grid_manual = grids.PixelizationGrid(
             arr=sparse_to_regular_grid.sparse,
-            mask_1d_index_to_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
+            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()
         assert (
             pixelization_grid_manual.mask_1d_index_to_nearest_pixelization_1d_index
-            == pixelization_grid.mask_1d_index_to_pixelization_1d_index
+            == pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index
         ).all()

@@ -10,7 +10,8 @@ from autolens.lens.plotters import plane_plotters
 
 
 def plot_ray_tracing_subplot(
-    tracer, grid,
+    tracer,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -67,7 +68,8 @@ def plot_ray_tracing_subplot(
     plt.subplot(rows, columns, 1)
 
     plot_profile_image(
-        tracer=tracer, grid=grid,
+        tracer=tracer,
+        grid=grid,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
@@ -103,7 +105,8 @@ def plot_ray_tracing_subplot(
         plt.subplot(rows, columns, 2)
 
         plot_convergence(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -134,7 +137,8 @@ def plot_ray_tracing_subplot(
         plt.subplot(rows, columns, 3)
 
         plot_potential(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -167,7 +171,8 @@ def plot_ray_tracing_subplot(
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
     plane_plotters.plot_plane_image(
-        plane=tracer.source_plane, grid=source_plane_grid,
+        plane=tracer.source_plane,
+        grid=source_plane_grid,
         as_subplot=True,
         positions=None,
         plot_grid=False,
@@ -197,7 +202,8 @@ def plot_ray_tracing_subplot(
         plt.subplot(rows, columns, 5)
 
         plot_deflections_y(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -228,7 +234,8 @@ def plot_ray_tracing_subplot(
         plt.subplot(rows, columns, 6)
 
         plot_deflections_x(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -266,7 +273,8 @@ def plot_ray_tracing_subplot(
 
 
 def plot_ray_tracing_individual(
-    tracer, grid,
+    tracer,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -299,7 +307,8 @@ def plot_ray_tracing_individual(
     if should_plot_profile_image:
 
         plot_profile_image(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -312,7 +321,8 @@ def plot_ray_tracing_individual(
     if should_plot_convergence:
 
         plot_convergence(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -324,7 +334,8 @@ def plot_ray_tracing_individual(
     if should_plot_potential:
 
         plot_potential(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -338,7 +349,8 @@ def plot_ray_tracing_individual(
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
         plane_plotters.plot_plane_image(
-            plane=tracer.source_plane, grid=source_plane_grid,
+            plane=tracer.source_plane,
+            grid=source_plane_grid,
             positions=None,
             plot_grid=False,
             units=units,
@@ -350,7 +362,8 @@ def plot_ray_tracing_individual(
     if should_plot_deflections:
 
         plot_deflections_y(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -362,7 +375,8 @@ def plot_ray_tracing_individual(
     if should_plot_deflections:
 
         plot_deflections_x(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -373,7 +387,8 @@ def plot_ray_tracing_individual(
 
 
 def plot_profile_image(
-    tracer, grid,
+    tracer,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -445,7 +460,8 @@ def plot_profile_image(
 
 
 def plot_convergence(
-    tracer, grid,
+    tracer,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -474,7 +490,9 @@ def plot_convergence(
     output_filename="tracer_convergence",
 ):
 
-    convergence = tracer.convergence_from_grid(grid=grid, return_in_2d=True, return_binned=True)
+    convergence = tracer.convergence_from_grid(
+        grid=grid, return_in_2d=True, return_binned=True
+    )
 
     array_plotters.plot_array(
         array=convergence,
@@ -509,7 +527,8 @@ def plot_convergence(
 
 
 def plot_potential(
-    tracer, grid,
+    tracer,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -538,7 +557,9 @@ def plot_potential(
     output_filename="tracer_potential",
 ):
 
-    potential = tracer.potential_from_grid(grid=grid, return_in_2d=True, return_binned=True)
+    potential = tracer.potential_from_grid(
+        grid=grid, return_in_2d=True, return_binned=True
+    )
 
     array_plotters.plot_array(
         array=potential,
@@ -573,7 +594,8 @@ def plot_potential(
 
 
 def plot_deflections_y(
-    tracer, grid,
+    tracer,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -602,8 +624,10 @@ def plot_deflections_y(
     output_filename="tracer_deflections_y",
 ):
 
-    deflections = tracer.deflections_from_grid(grid=grid, return_in_2d=False, return_binned=True)
-    deflections_y = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:,0])
+    deflections = tracer.deflections_from_grid(
+        grid=grid, return_in_2d=False, return_binned=True
+    )
+    deflections_y = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
 
     array_plotters.plot_array(
         array=deflections_y,
@@ -638,7 +662,8 @@ def plot_deflections_y(
 
 
 def plot_deflections_x(
-    tracer, grid,
+    tracer,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -667,8 +692,10 @@ def plot_deflections_x(
     output_filename="tracer_deflections_x",
 ):
 
-    deflections = tracer.deflections_from_grid(grid=grid, return_in_2d=False, return_binned=True)
-    deflections_x = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:,1])
+    deflections = tracer.deflections_from_grid(
+        grid=grid, return_in_2d=False, return_binned=True
+    )
+    deflections_x = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
 
     array_plotters.plot_array(
         array=deflections_x,

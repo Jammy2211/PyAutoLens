@@ -1951,7 +1951,7 @@ class TestSimulateCCD(object):
             pixel_scale=1.0,
         )
 
-        image_plane_grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=1.0, sub_grid_size=1
         )
 
@@ -1962,11 +1962,11 @@ class TestSimulateCCD(object):
         g1 = g.Galaxy(redshift=1.0, light=lp.SphericalSersic(intensity=1.0))
 
         tracer = ray_tracing.Tracer.from_galaxies(
-            galaxies=[g0, g1], image_plane_grid_stack=image_plane_grid_stack
+            galaxies=[g0, g1],
         )
 
         deflections = tracer.deflections_from_grid(
-            return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
         ccd_data_simulated_via_deflections = ccd.SimulatedCCDData.from_deflections_galaxies_and_exposure_arrays(
@@ -1980,7 +1980,7 @@ class TestSimulateCCD(object):
         )
 
         tracer_profile_image_plane_image = tracer.profile_image_from_grid(
-            return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
         ccd_data_simulated = ccd.SimulatedCCDData.from_image_and_exposure_arrays(
@@ -2015,7 +2015,7 @@ class TestSimulateCCD(object):
             pixel_scale=1.0,
         )
 
-        image_plane_grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.05, sub_grid_size=1
         )
 
@@ -2029,11 +2029,10 @@ class TestSimulateCCD(object):
 
         tracer = ray_tracing.Tracer.from_galaxies(
             galaxies=[lens_galaxy, source_galaxy],
-            image_plane_grid_stack=image_plane_grid_stack,
         )
 
-        ccd_data_simulated_via_tracer = ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
-            tracer=tracer,
+        ccd_data_simulated_via_tracer = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
+            tracer=tracer, grid=grid,
             pixel_scale=0.1,
             exposure_time=10000.0,
             psf=psf,
@@ -2044,7 +2043,7 @@ class TestSimulateCCD(object):
 
         ccd_data_simulated = ccd.SimulatedCCDData.from_image_and_exposure_arrays(
             image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
-                psf_shape=(3, 3)
+                grid=grid, psf_shape=(3, 3)
             ),
             pixel_scale=0.1,
             exposure_time=10000.0,

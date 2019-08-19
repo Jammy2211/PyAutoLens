@@ -65,7 +65,7 @@ class Galaxy(af.ModelObject):
 
         self.hyper_model_image_1d = None
         self.hyper_galaxy_image_1d = None
-        self.hyper_galaxy_cluster_image_1d = None
+        self.binned_hyper_galaxy_image_1d = None
 
         for name, val in kwargs.items():
             setattr(self, name, val)
@@ -186,7 +186,7 @@ class Galaxy(af.ModelObject):
         if self.has_light_profile:
             return sum(
                 map(
-                    lambda p: p.image_from_grid(
+                    lambda p: p.profile_image_from_grid(
                         grid=grid, return_in_2d=False, return_binned=False
                     ),
                     self.light_profiles,

@@ -22,7 +22,7 @@ class GalaxyFit(af.DataFit1D):
         self.map_to_scaled_array = galaxy_data.grid.scaled_array_2d_from_array_1d
 
         model_data_1d = galaxy_data.profile_quantity_from_galaxies(
-            galaxies=model_galaxies,
+            galaxies=model_galaxies
         )
 
         super(GalaxyFit, self).__init__(

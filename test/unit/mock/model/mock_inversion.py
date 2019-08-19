@@ -34,6 +34,7 @@ class MockPixelization(object):
         else:
             return self.grid * hyper_image
 
+
 class MockRegularization(object):
     def __init__(self, matrix_shape):
         self.shape = matrix_shape

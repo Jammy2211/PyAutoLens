@@ -194,9 +194,7 @@ class Transformer(object):
 
     def visibilities_from_image_1d(self, image_1d):
 
-        real_visibilities = self.real_visibilities_from_image_1d(
-            image_1d=image_1d
-        )
+        real_visibilities = self.real_visibilities_from_image_1d(image_1d=image_1d)
         imaginary_visibilities = self.imaginary_visibilities_from_image_1d(
             image_1d=image_1d
         )

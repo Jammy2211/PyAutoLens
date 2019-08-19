@@ -18,6 +18,7 @@ class LensData(object):
         cluster_pixel_scale=None,
         cluster_pixel_limit=None,
         uses_cluster_inversion=True,
+        relocate_to_border=True,
         hyper_noise_map_max=None,
     ):
         """
@@ -117,7 +118,7 @@ class LensData(object):
 
             if self.cluster_pixel_scale is not None:
 
-                self.cluster_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+                binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
                     mask=self.mask_2d,
                     binned_pixel_scale=cluster_pixel_scale,
                     inversion_pixels_limit=cluster_pixel_limit,
@@ -125,7 +126,7 @@ class LensData(object):
 
             else:
 
-                self.cluster_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+                binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
                     mask=self.mask_2d,
                     binned_pixel_scale=self.pixel_scale,
                     inversion_pixels_limit=cluster_pixel_limit,
@@ -133,11 +134,15 @@ class LensData(object):
 
         else:
 
-            self.cluster_grid = None
+            binned_grid = None
             self.cluster_pixel_limit = None
             self.cluster_pixel_scale = None
 
+        self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
+
         self.hyper_noise_map_max = hyper_noise_map_max
+
+        self.relocate_to_border = relocate_to_border
 
     def new_lens_data_with_modified_image(self, modified_image):
 
@@ -156,6 +161,7 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
+            relocate_to_border=self.relocate_to_border,
         )
 
     def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
@@ -178,6 +184,7 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
+            relocate_to_border=self.relocate_to_border,
         )
 
     def new_lens_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
@@ -197,6 +204,7 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
+            relocate_to_border=self.relocate_to_border,
         )
 
     def mask(self, return_in_2d=True):
@@ -240,3 +248,4 @@ class LensData(object):
             self.cluster_grid = obj.cluster_grid
             self.cluster_pixel_limit = obj.cluster_pixel_limit
             self.hyper_noise_map_max = obj.hyper_noise_map_max
+            self.relocate_to_border = obj.relocate_to_border

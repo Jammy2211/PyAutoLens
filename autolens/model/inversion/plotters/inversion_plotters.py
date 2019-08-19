@@ -50,20 +50,12 @@ def plot_inversion_subplot(
 
     ratio = float(
         (
-            inversion.mapper.geometry.arc_second_maxima[
-                1
-            ]
-            - inversion.mapper.geometry.arc_second_minima[
-                1
-            ]
+            inversion.mapper.geometry.arc_second_maxima[1]
+            - inversion.mapper.geometry.arc_second_minima[1]
         )
         / (
-            inversion.mapper.geometry.arc_second_maxima[
-                0
-            ]
-            - inversion.mapper.geometry.arc_second_minima[
-                0
-            ]
+            inversion.mapper.geometry.arc_second_maxima[0]
+            - inversion.mapper.geometry.arc_second_minima[0]
         )
     )
 
@@ -781,9 +773,7 @@ def plot_inversion_with_source_values(
     output_filename="pixelization_source_values",
 ):
 
-    if isinstance(
-        inversion.mapper, mappers.RectangularMapper
-    ):
+    if isinstance(inversion.mapper, mappers.RectangularMapper):
 
         reconstructed_pixelization = inversion.mapper.reconstructed_pixelization_from_solution_vector(
             solution_vector=source_pixel_values
@@ -844,9 +834,7 @@ def plot_inversion_with_source_values(
             output_format=output_format,
         )
 
-    elif isinstance(
-        inversion.mapper, mappers.VoronoiMapper
-    ):
+    elif isinstance(inversion.mapper, mappers.VoronoiMapper):
 
         mapper_plotters.plot_voronoi_mapper(
             mapper=inversion.mapper,

@@ -22,7 +22,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         pixel_scale=0.2,
     )
 
-    grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=(11, 11), pixel_scale=0.2, sub_grid_size=2
     )
 
@@ -36,12 +36,11 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         redshift=1.0, light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack
-    )
+    tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    ccd_simulated = ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
+    ccd_simulated = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
+        grid=grid,
         pixel_scale=0.2,
         exposure_time=300.0,
         psf=psf,
@@ -84,9 +83,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=2)
 
-    tracer = ray_tracing.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid
-    )
+    tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fitter = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
@@ -104,7 +101,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     psf = abstract_data.PSF.from_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
 
-    grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=(11, 11), pixel_scale=0.2, sub_grid_size=1
     )
 
@@ -116,13 +113,11 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     source_galaxy = g.Galaxy(
         redshift=1.0, light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
     )
-    tracer = ray_tracing.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack
-    )
+    tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     ccd_simulated = ccd.SimulatedCCDData.from_image_and_exposure_arrays(
         image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
-            psf_shape=psf.shape
+            grid=grid, psf_shape=psf.shape
         ),
         pixel_scale=0.2,
         exposure_time=300.0,
@@ -165,9 +160,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
-    tracer = ray_tracing.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid
-    )
+    tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fitter = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 

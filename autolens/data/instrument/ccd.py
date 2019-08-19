@@ -8,6 +8,7 @@ from autolens import exc
 from autolens.array import grids
 from autolens.data.instrument import abstract_data
 from autolens.array.util import array_util
+from autolens.array.mapping_util import grid_mapping_util
 from autolens.array.scaled_array import ScaledSquarePixelArray, Array
 
 logger = logging.getLogger(__name__)
@@ -487,7 +488,10 @@ class SimulatedCCDData(CCDData):
         grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=shape, pixel_scale=pixel_scale
         )
-        deflections_1d = grids.Grid.from_unmasked_grid_2d(grid_2d=deflections)
+
+        deflections_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
+            sub_grid_2d=deflections, mask=np.full(shape=shape, fill_value=False), sub_grid_size=1
+        )
 
         deflected_grid_1d = grid_1d - deflections_1d
 
@@ -515,9 +519,10 @@ class SimulatedCCDData(CCDData):
         )
 
     @classmethod
-    def from_tracer_and_exposure_arrays(
+    def from_tracer_grid_and_exposure_arrays(
         cls,
         tracer,
+        grid,
         pixel_scale,
         exposure_time,
         psf=None,
@@ -554,11 +559,11 @@ class SimulatedCCDData(CCDData):
 
         if psf is not None:
             image_plane_image_2d = tracer.padded_profile_image_2d_from_grid_and_psf_shape(
-                psf_shape=psf.shape
+                grid=grid, psf_shape=psf.shape
             )
         else:
             image_plane_image_2d = tracer.profile_image_from_grid(
-                return_in_2d=True, return_binned=True
+                grid=grid, return_in_2d=True, return_binned=True
             )
 
         return cls.from_image_and_exposure_arrays(

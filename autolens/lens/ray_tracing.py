@@ -87,8 +87,15 @@ class AbstractTracer(object):
 
     @property
     def plane_indexes_with_pixelizations(self):
-        plane_indexes_with_inversions = [plane_index if plane.has_pixelization else None for (plane_index, plane) in enumerate(self.planes)]
-        return [plane_index for plane_index in plane_indexes_with_inversions if plane_index is not None]
+        plane_indexes_with_inversions = [
+            plane_index if plane.has_pixelization else None
+            for (plane_index, plane) in enumerate(self.planes)
+        ]
+        return [
+            plane_index
+            for plane_index in plane_indexes_with_inversions
+            if plane_index is not None
+        ]
 
     @property
     def pixelizations_of_planes(self):
@@ -100,7 +107,10 @@ class AbstractTracer(object):
 
     @property
     def hyper_galaxy_image_1d_of_planes_with_pixelizations(self):
-        return [plane.hyper_galaxy_image_1d_of_galaxy_with_pixelization for plane in self.planes]
+        return [
+            plane.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization
+            for plane in self.planes
+        ]
 
     def plane_with_galaxy(self, galaxy):
         return [plane for plane in self.planes if galaxy in plane.galaxies][0]
@@ -547,20 +557,29 @@ class AbstractTracerData(AbstractTracerLensing):
 
         traced_pixelization_grids_of_planes = []
 
-        pixelization_grids_of_planes = self.pixelization_grids_of_planes_from_grid(grid=grid)
+        pixelization_grids_of_planes = self.pixelization_grids_of_planes_from_grid(
+            grid=grid
+        )
 
         for (plane_index, pixelization_grid) in enumerate(pixelization_grids_of_planes):
 
             if pixelization_grid is None:
                 traced_pixelization_grids_of_planes.append(None)
             else:
-                traced_pixelization_grids = self.traced_grids_of_planes_from_grid(grid=pixelization_grid)
-                traced_pixelization_grids_of_planes.append(traced_pixelization_grids[plane_index])
+                traced_pixelization_grids = self.traced_grids_of_planes_from_grid(
+                    grid=pixelization_grid
+                )
+                traced_pixelization_grids_of_planes.append(
+                    traced_pixelization_grids[plane_index]
+                )
 
         return traced_pixelization_grids_of_planes
 
     def mappers_of_planes_from_grid(
-        self, grid, preload_traced_pixelization_grids_of_planes=None
+        self,
+        grid,
+        relocate_to_border=True,
+        preload_traced_pixelization_grids_of_planes=None,
     ):
 
         mappers_of_planes = []
@@ -568,9 +587,13 @@ class AbstractTracerData(AbstractTracerLensing):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         if preload_traced_pixelization_grids_of_planes is None:
-            traced_pixelization_grids_of_planes = self.traced_pixelization_grids_of_planes_from_grid(grid=grid)
+            traced_pixelization_grids_of_planes = self.traced_pixelization_grids_of_planes_from_grid(
+                grid=grid
+            )
         else:
-            traced_pixelization_grids_of_planes = preload_traced_pixelization_grids_of_planes
+            traced_pixelization_grids_of_planes = (
+                preload_traced_pixelization_grids_of_planes
+            )
 
         for (plane_index, plane) in enumerate(self.planes):
 
@@ -578,20 +601,24 @@ class AbstractTracerData(AbstractTracerLensing):
                 mappers_of_planes.append(None)
             else:
                 traced_grid = traced_grids_of_planes[plane_index]
-                traced_pixelization_grid = traced_pixelization_grids_of_planes[plane_index]
+                traced_pixelization_grid = traced_pixelization_grids_of_planes[
+                    plane_index
+                ]
                 mapper = plane.mapper_from_grid_and_pixelization_grid(
-                    grid=traced_grid, pixelization_grid=traced_pixelization_grid,
-                    relocate_to_border=True)
+                    grid=traced_grid,
+                    pixelization_grid=traced_pixelization_grid,
+                    relocate_to_border=relocate_to_border,
+                )
                 mappers_of_planes.append(mapper)
 
         return mappers_of_planes
 
     def inversion_from_grid_image_1d_noise_map_1d_and_convolver(
-        self, grid, image_1d, noise_map_1d, convolver
+        self, grid, image_1d, noise_map_1d, convolver, relocate_to_border=True
     ):
 
         mappers_of_planes = self.mappers_of_planes_from_grid(
-            grid=grid,
+            grid=grid, relocate_to_border=relocate_to_border
         )
 
         return inv.Inversion.from_data_1d_mapper_and_regularization(
@@ -758,7 +785,7 @@ class Tracer(AbstractTracerData):
             galaxies=lens_galaxies
         )
 
-        plane_redshifts = lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
+        plane_redshifts = lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
             lens_redshifts=lens_redshifts,
             planes_between_lenses=planes_between_lenses,
             source_plane_redshift=source_galaxies[0].redshift,

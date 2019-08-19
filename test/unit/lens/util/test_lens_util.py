@@ -5,7 +5,6 @@ from autolens import exc
 from autolens.array.mapping_util import array_mapping_util
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.galaxy import galaxy as g
-from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 
 
@@ -188,40 +187,6 @@ class TestPlaneImageFromGrid:
         assert (plane_image == plane_image_galaxy).all()
 
 
-class TestSetupTracedGrid:
-    def test__simple_sis_model__deflection_angles(
-        self, grid_stack_simple, gal_x1_mp, gal_x2_mp
-    ):
-
-        deflections = gal_x1_mp.deflections_from_grid(grid=grid_stack_simple.regular)
-
-        grid_traced = lens_util.traced_collection_for_deflections(
-            grid_stack=grid_stack_simple, deflections=deflections
-        )
-
-        assert grid_traced.regular[0] == pytest.approx(
-            np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-2
-        )
-
-        grid_traced = lens_util.traced_collection_for_deflections(
-            grid_stack_simple, 2.0 * deflections
-        )
-
-        assert grid_traced.regular[0] == pytest.approx(
-            np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3
-        )
-
-        deflections = gal_x2_mp.deflections_from_grid(grid=grid_stack_simple.regular)
-
-        grid_traced = lens_util.traced_collection_for_deflections(
-            grid_stack=grid_stack_simple, deflections=deflections
-        )
-
-        assert grid_traced.regular[0] == pytest.approx(
-            np.array([1.0 - 3.0 * 0.707, 1.0 - 3.0 * 0.707]), 1e-3
-        )
-
-
 class TestPlaneRedshifts:
     def test__from_galaxies__3_galaxies_reordered_in_ascending_redshift(self):
 
@@ -272,7 +237,7 @@ class TestPlaneRedshifts:
 
     def test__from_main_plane_redshifts_and_slices(self):
 
-        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
+        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
             lens_redshifts=[1.0],
             source_plane_redshift=3.0,
             planes_between_lenses=[1, 1],
@@ -282,7 +247,7 @@ class TestPlaneRedshifts:
 
     def test__different_number_of_slices_between_planes(self):
 
-        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
+        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
             lens_redshifts=[1.0],
             source_plane_redshift=2.0,
             planes_between_lenses=[2, 3],
@@ -302,21 +267,21 @@ class TestPlaneRedshifts:
     ):
 
         with pytest.raises(exc.RayTracingException):
-            lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
+            lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
                 lens_redshifts=[1.0],
                 source_plane_redshift=2.0,
                 planes_between_lenses=[2, 3, 1],
             )
 
         with pytest.raises(exc.RayTracingException):
-            lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
+            lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
                 lens_redshifts=[1.0],
                 source_plane_redshift=2.0,
                 planes_between_lenses=[2],
             )
 
         with pytest.raises(exc.RayTracingException):
-            lens_util.ordered_plane_redshifts_from_lens__source_plane_redshifts_and_slice_sizes(
+            lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
                 lens_redshifts=[1.0, 3.0],
                 source_plane_redshift=2.0,
                 planes_between_lenses=[2],
@@ -443,84 +408,3 @@ class TestGalaxyOrdering:
         assert galaxies_in_redshift_ordered_planes[4][0].redshift == 1.45
         assert galaxies_in_redshift_ordered_planes[4][1].redshift == 1.55
         assert galaxies_in_redshift_ordered_planes[6][0].redshift == 1.9
-
-
-class TestComputeDeflections:
-    def test__if_plane_is_last_plane_is_false_else_is_true(self):
-
-        assert (
-            lens_util.compute_deflections_at_next_plane(plane_index=0, total_planes=4)
-            == True
-        )
-        assert (
-            lens_util.compute_deflections_at_next_plane(plane_index=2, total_planes=4)
-            == True
-        )
-        assert (
-            lens_util.compute_deflections_at_next_plane(plane_index=3, total_planes=4)
-            == False
-        )
-        assert (
-            lens_util.compute_deflections_at_next_plane(plane_index=3, total_planes=5)
-            == True
-        )
-
-
-class TestScaledDeflections:
-    def test__deflection_stack_is_scaled_by_scaling_factor(
-        self, grid_stack_simple, gal_x1_mp
-    ):
-
-        plane = pl.Plane(galaxies=[gal_x1_mp], grid_stack=grid_stack_simple)
-
-        scaled_deflection_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(
-            plane=plane, scaling_factor=1.0
-        )
-
-        assert (
-            scaled_deflection_stack.regular == plane.deflections_stack.regular
-        ).all()
-        assert (scaled_deflection_stack.sub == plane.deflections_stack.sub).all()
-        assert (
-            scaled_deflection_stack.blurring == plane.deflections_stack.blurring
-        ).all()
-
-        scaled_deflection_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(
-            plane=plane, scaling_factor=2.0
-        )
-
-        assert (
-            scaled_deflection_stack.regular == 2.0 * plane.deflections_stack.regular
-        ).all()
-        assert (scaled_deflection_stack.sub == 2.0 * plane.deflections_stack.sub).all()
-        assert (
-            scaled_deflection_stack.blurring == 2.0 * plane.deflections_stack.blurring
-        ).all()
-
-
-class TestGridStackDeflections:
-    def test__grid_stack_has_deflections_subtracted_from_it(
-        self, grid_stack_simple, gal_x1_mp
-    ):
-
-        plane = pl.Plane(galaxies=[gal_x1_mp], grid_stack=grid_stack_simple)
-
-        deflection_stack = lens_util.scaled_deflections_stack_from_plane_and_scaling_factor(
-            plane=plane, scaling_factor=3.0
-        )
-
-        traced_grid_stack = lens_util.grid_stack_from_deflections_stack(
-            grid_stack=grid_stack_simple, deflections_stack=deflection_stack
-        )
-
-        assert (
-            traced_grid_stack.regular
-            == grid_stack_simple.regular - deflection_stack.regular
-        ).all()
-        assert (
-            traced_grid_stack.sub == grid_stack_simple.sub - deflection_stack.sub
-        ).all()
-        assert (
-            traced_grid_stack.blurring
-            == grid_stack_simple.blurring - deflection_stack.blurring
-        ).all()

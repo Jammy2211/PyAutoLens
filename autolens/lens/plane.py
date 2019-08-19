@@ -99,10 +99,10 @@ class AbstractPlane(object):
             )
 
     @property
-    def hyper_galaxy_image_1d_of_galaxy_with_pixelization(self):
+    def binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization(self):
         galaxies_with_pixelization = self.galaxies_with_pixelization
         if galaxies_with_pixelization:
-            return galaxies_with_pixelization[0].hyper_galaxy_image_1d
+            return galaxies_with_pixelization[0].binned_hyper_galaxy_image_1d
 
     @property
     def has_hyper_galaxy(self):
@@ -793,10 +793,14 @@ class AbstractPlaneData(AbstractPlaneLensing):
         if not self.has_pixelization:
             return None
 
-        hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_of_galaxy_with_pixelization
+        binned_hyper_galaxy_image_1d = (
+            self.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization
+        )
 
         return self.pixelization.pixelization_grid_from_grid(
-            grid=grid, cluster_grid=grid.binned, hyper_image=hyper_galaxy_image_1d
+            grid=grid,
+            cluster_grid=grid.binned,
+            hyper_image=binned_hyper_galaxy_image_1d,
         )
 
     def mapper_from_grid_and_pixelization_grid(
