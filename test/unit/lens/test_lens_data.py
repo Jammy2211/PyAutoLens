@@ -126,7 +126,7 @@ class TestLensData(object):
             == new_blurring_grid.interpolator.wts
         ).all()
 
-    def test__cluster_pixel_scale_is_input__correct_cluster_bin_up_calculated__inversion_max_pixels_changes_bin_up(
+    def test__cluster_pixel_scale_is_input__correct_binned_up_grid_calculated__inversion_max_pixels_changes_bin_up(
         self, ccd_data_7x7, mask_7x7, grid_7x7
     ):
         ccd_data_7x7.pixel_scale = 1.0
@@ -134,11 +134,11 @@ class TestLensData(object):
             ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=1.0
         )
 
-        assert lens_data_7x7.cluster_grid.bin_up_factor == 1
-        assert (lens_data_7x7.mask_2d == lens_data_7x7.cluster_grid.mask).all()
-        assert (lens_data_7x7.cluster_grid == grid_7x7).all()
+        assert lens_data_7x7.grid.binned.bin_up_factor == 1
+        assert (lens_data_7x7.mask_2d == lens_data_7x7.grid.binned.mask).all()
+        assert (lens_data_7x7.grid.binned == grid_7x7).all()
         assert (
-            lens_data_7x7.cluster_grid.cluster_to_regular_all
+            lens_data_7x7.grid.binned.binned_mask_1d_index_to_mask_1d_indexes
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
@@ -147,10 +147,10 @@ class TestLensData(object):
             ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=1.9
         )
 
-        assert lens_data_7x7.cluster_grid.bin_up_factor == 1
-        assert (lens_data_7x7.mask_2d == lens_data_7x7.cluster_grid.mask).all()
+        assert lens_data_7x7.grid.binned.bin_up_factor == 1
+        assert (lens_data_7x7.mask_2d == lens_data_7x7.grid.binned.mask).all()
         assert (
-            lens_data_7x7.cluster_grid.cluster_to_regular_all
+            lens_data_7x7.grid.binned.binned_mask_1d_index_to_mask_1d_indexes
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
@@ -158,9 +158,9 @@ class TestLensData(object):
         lens_data_7x7 = ld.LensData(
             ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=2.0
         )
-        assert lens_data_7x7.cluster_grid.bin_up_factor == 2
+        assert lens_data_7x7.grid.binned.bin_up_factor == 2
         assert (
-            lens_data_7x7.cluster_grid.mask
+            lens_data_7x7.grid.binned.mask
             == np.array(
                 [
                     [True, True, True, True],
@@ -171,11 +171,11 @@ class TestLensData(object):
             )
         ).all()
         assert (
-            lens_data_7x7.cluster_grid
+            lens_data_7x7.grid.binned
             == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
         ).all()
         assert (
-            lens_data_7x7.cluster_grid.cluster_to_regular_all
+            lens_data_7x7.grid.binned.binned_mask_1d_index_to_mask_1d_indexes
             == np.array([[0, -1, -1, -1], [1, 2, -1, -1], [3, 6, -1, -1], [4, 5, 7, 8]])
         ).all()
 
@@ -184,18 +184,18 @@ class TestLensData(object):
             ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=1.0
         )
 
-        assert lens_data_7x7.cluster_grid.bin_up_factor == 1
+        assert lens_data_7x7.grid.binned.bin_up_factor == 1
 
         ccd_data_7x7.pixel_scale = 1.0
         lens_data_7x7 = ld.LensData(
             ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=None
         )
 
-        assert lens_data_7x7.cluster_grid.bin_up_factor == 1
-        assert (lens_data_7x7.mask_2d == lens_data_7x7.cluster_grid.mask).all()
-        assert (lens_data_7x7.cluster_grid == grid_7x7).all()
+        assert lens_data_7x7.grid.binned.bin_up_factor == 1
+        assert (lens_data_7x7.mask_2d == lens_data_7x7.grid.binned.mask).all()
+        assert (lens_data_7x7.grid.binned == grid_7x7).all()
         assert (
-            lens_data_7x7.cluster_grid.cluster_to_regular_all
+            lens_data_7x7.grid.binned.binned_mask_1d_index_to_mask_1d_indexes
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
@@ -207,10 +207,10 @@ class TestLensData(object):
             cluster_pixel_limit=5,
         )
 
-        assert lens_data_7x7.cluster_grid.bin_up_factor == 1
-        assert (lens_data_7x7.mask_2d == lens_data_7x7.cluster_grid.mask).all()
+        assert lens_data_7x7.grid.binned.bin_up_factor == 1
+        assert (lens_data_7x7.mask_2d == lens_data_7x7.grid.binned.mask).all()
         assert (
-            lens_data_7x7.cluster_grid.cluster_to_regular_all
+            lens_data_7x7.grid.binned.binned_mask_1d_index_to_mask_1d_indexes
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
@@ -254,7 +254,7 @@ class TestLensData(object):
             uses_cluster_inversion=False,
         )
 
-        assert lens_data_7x7.cluster_grid == None
+        assert lens_data_7x7.grid.binned == None
         assert lens_data_7x7.cluster_pixel_scale == None
         assert lens_data_7x7.cluster_pixel_limit == None
 

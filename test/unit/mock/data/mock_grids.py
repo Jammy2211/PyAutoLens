@@ -37,6 +37,7 @@ class MockPixelizationGrid(np.ndarray):
         cls,
         arr,
         mask_1d_index_to_nearest_pixelization_1d_index=None,
+        sub_mask_1d_index_to_mask_1d_index=None,
         sub_grid_size=1,
         *args,
         **kwargs
@@ -63,6 +64,7 @@ class MockPixelizationGrid(np.ndarray):
         obj.mask_1d_index_to_nearest_pixelization_1d_index = (
             mask_1d_index_to_nearest_pixelization_1d_index
         )
+        obj.sub_mask_1d_index_to_mask_1d_index = sub_mask_1d_index_to_mask_1d_index
         obj.sub_grid_size = sub_grid_size
         obj.sub_grid_length = int(sub_grid_size ** 2.0)
         obj.sub_grid_fraction = 1.0 / obj.sub_grid_length

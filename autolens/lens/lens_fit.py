@@ -315,6 +315,7 @@ class LensInversionFit(InversionFit):
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
             convolver=lens_data.convolver,
+            relocate_to_border=lens_data.relocate_to_border,
         )
 
         super().__init__(
@@ -331,7 +332,9 @@ class LensInversionFit(InversionFit):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_image_dict = self.tracer.galaxy_image_dict_blank_images_from_grid(grid=self.grid)
+        galaxy_image_dict = self.tracer.galaxy_image_dict_blank_images_from_grid(
+            grid=self.grid
+        )
         galaxy_image_dict.update(
             {self.tracer.planes[-1].galaxies[0]: self.inversion.reconstructed_data_1d}
         )
@@ -393,6 +396,7 @@ class LensProfileInversionFit(InversionFit):
             image_1d=self.profile_subtracted_image_1d,
             noise_map_1d=noise_map_1d,
             convolver=lens_data.convolver,
+            relocate_to_border=lens_data.relocate_to_border,
         )
 
         model_image = self.blurred_profile_image_1d + inversion.reconstructed_data_1d

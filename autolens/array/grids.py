@@ -874,6 +874,26 @@ class Grid(np.ndarray):
             sub_grid_size=grid.sub_grid_size,
         )
 
+    def relocated_pixelization_grid_from_pixelization_grid(self, pixelization_grid):
+        """Determine a set of relocated grid_stack from an input set of grid_stack, by relocating their pixels based on the \
+        borders.
+
+        The blurring-grid does not have its coordinates relocated, as it is only used for computing analytic \
+        light-profiles and not inversion-grid_stack.
+
+        Parameters
+        -----------
+        grid_stack : GridStack
+            The grid-stack, whose grid_stack coordinates are relocated.
+        """
+
+        return PixelizationGrid(
+            arr=self.relocated_grid_from_grid_jit(
+                grid=pixelization_grid, border_grid=self.border_grid
+            ),
+            mask_1d_index_to_nearest_pixelization_1d_index=pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index,
+        )
+
     @staticmethod
     @decorator_util.jit()
     def relocated_grid_from_grid_jit(grid, border_grid):
@@ -1110,9 +1130,9 @@ class PixelizationGrid(np.ndarray):
         )
 
     def __array_finalize__(self, obj):
-        if hasattr(obj, "mask_1d_index_to_pixelization_1d_index"):
-            self.mask_1d_index_to_pixelization_1d_index = (
-                obj.mask_1d_index_to_pixelization_1d_index
+        if hasattr(obj, "mask_1d_index_to_nearest_pixelization_1d_index"):
+            self.mask_1d_index_to_nearest_pixelization_1d_index = (
+                obj.mask_1d_index_to_nearest_pixelization_1d_index
             )
         if hasattr(obj, "interpolator"):
             self.interpolator = obj.interpolator

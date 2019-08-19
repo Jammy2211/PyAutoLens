@@ -160,7 +160,7 @@ class TestAbstractPlane(object):
             plane = pl.Plane(galaxies=[galaxy, g.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_hyper_galaxy is True
 
-        def test__hyper_image_of_galaxy_with_pixelization(self):
+        def test__binned_hyper_image_of_galaxy_with_pixelization(self):
 
             galaxy_pix = g.Galaxy(
                 redshift=0.5,
@@ -169,23 +169,27 @@ class TestAbstractPlane(object):
             )
 
             plane = pl.Plane(galaxies=[galaxy_pix], redshift=None)
-            assert plane.hyper_galaxy_image_1d_of_galaxy_with_pixelization is None
+            assert (
+                plane.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization is None
+            )
 
             galaxy_pix = g.Galaxy(
                 redshift=0.5,
                 pixelization=pixelizations.Pixelization(),
                 regularization=regularization.Regularization(),
-                hyper_galaxy_image_1d=1,
+                binned_hyper_galaxy_image_1d=1,
             )
 
             plane = pl.Plane(
                 galaxies=[galaxy_pix, g.Galaxy(redshift=0.5)], redshift=None
             )
-            assert plane.hyper_galaxy_image_1d_of_galaxy_with_pixelization == 1
+            assert plane.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization == 1
 
             plane = pl.Plane(galaxies=[g.Galaxy(redshift=0.5)], redshift=None)
 
-            assert plane.hyper_galaxy_image_1d_of_galaxy_with_pixelization is None
+            assert (
+                plane.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization is None
+            )
 
     class TestPixelization:
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self):
@@ -2402,9 +2406,7 @@ class TestAbstractPlaneData(object):
 
             plane = pl.Plane(galaxies=[galaxy_no_pix], redshift=0.5)
 
-            pixelization_grid = plane.pixelization_grid_from_grid(
-                grid=sub_grid_7x7,
-            )
+            pixelization_grid = plane.pixelization_grid_from_grid(grid=sub_grid_7x7)
 
             assert pixelization_grid is None
 
@@ -2414,15 +2416,15 @@ class TestAbstractPlaneData(object):
 
             galaxy_pix = g.Galaxy(
                 redshift=0.5,
-                pixelization=mock_inv.MockPixelization(value=1, grid=np.array([[1.0, 1.0]])),
+                pixelization=mock_inv.MockPixelization(
+                    value=1, grid=np.array([[1.0, 1.0]])
+                ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
 
             plane = pl.Plane(galaxies=[galaxy_pix], redshift=0.5)
 
-            pixelization_grid = plane.pixelization_grid_from_grid(
-                grid=sub_grid_7x7,
-            )
+            pixelization_grid = plane.pixelization_grid_from_grid(grid=sub_grid_7x7)
 
             assert (pixelization_grid == np.array([[1.0, 1.0]])).all()
 
@@ -2435,19 +2437,18 @@ class TestAbstractPlaneData(object):
 
             galaxy_pix = g.Galaxy(
                 redshift=0.5,
-                pixelization=mock_inv.MockPixelization(value=1, grid=np.array([[1.0, 1.0]])),
+                pixelization=mock_inv.MockPixelization(
+                    value=1, grid=np.array([[1.0, 1.0]])
+                ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
-                hyper_galaxy_image_1d=2,
+                binned_hyper_galaxy_image_1d=2,
             )
 
             plane = pl.Plane(galaxies=[galaxy_pix], redshift=0.5)
 
-            pixelization_grid = plane.pixelization_grid_from_grid(
-                grid=sub_grid_7x7,
-            )
+            pixelization_grid = plane.pixelization_grid_from_grid(grid=sub_grid_7x7)
 
             assert (pixelization_grid == np.array([[2.0, 2.0]])).all()
-
 
     class TestMapper:
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(

@@ -155,7 +155,9 @@ class TestAbstractTracer(object):
             gal1 = g.Galaxy(redshift=0.5)
             gal2 = g.Galaxy(redshift=0.75)
 
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[gal_pix_0, gal_pix_1, gal0, gal1, gal2])
+            tracer = ray_tracing.Tracer.from_galaxies(
+                galaxies=[gal_pix_0, gal_pix_1, gal0, gal1, gal2]
+            )
 
             assert tracer.plane_indexes_with_pixelizations == [2, 4]
 
@@ -243,7 +245,7 @@ class TestAbstractTracer(object):
 
             assert tracer.has_hyper_galaxy is True
 
-        def test__hyper_model_image_1d_of_galaxy_with_pixelization(self, sub_grid_7x7):
+        def test__binned_hyper_model_image_1d_of_galaxy_with_pixelization(self, sub_grid_7x7):
 
             gal = g.Galaxy(redshift=0.5)
             gal_pix = g.Galaxy(
@@ -264,7 +266,7 @@ class TestAbstractTracer(object):
                 redshift=0.5,
                 pixelization=pixelizations.Pixelization(),
                 regularization=regularization.Constant(),
-                hyper_galaxy_image_1d=1,
+                binned_hyper_galaxy_image_1d=1,
             )
 
             tracer = ray_tracing.Tracer.from_galaxies(galaxies=[gal_pix, gal])
@@ -279,23 +281,32 @@ class TestAbstractTracer(object):
                 redshift=0.5,
                 pixelization=pixelizations.Pixelization(),
                 regularization=regularization.Constant(),
-                hyper_galaxy_image_1d=1,
+                binned_hyper_galaxy_image_1d=1,
             )
 
             gal_pix1 = g.Galaxy(
                 redshift=2.0,
                 pixelization=pixelizations.Pixelization(),
                 regularization=regularization.Constant(),
-                hyper_galaxy_image_1d=2,
+                binned_hyper_galaxy_image_1d=2,
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[gal0, gal1, gal2, gal_pix0, gal_pix1])
+            tracer = ray_tracing.Tracer.from_galaxies(
+                galaxies=[gal0, gal1, gal2, gal_pix0, gal_pix1]
+            )
 
-            assert tracer.hyper_galaxy_image_1d_of_planes_with_pixelizations == [None, 1, None, None, 2]
-
+            assert tracer.hyper_galaxy_image_1d_of_planes_with_pixelizations == [
+                None,
+                1,
+                None,
+                None,
+                2,
+            ]
 
     class TestPixelizations:
-        def test__no_galaxy_has_regularization__returns_list_of_ones(self, sub_grid_7x7):
+        def test__no_galaxy_has_regularization__returns_list_of_ones(
+            self, sub_grid_7x7
+        ):
             galaxy_no_pix = g.Galaxy(redshift=0.5)
 
             tracer = ray_tracing.Tracer.from_galaxies(
@@ -1782,39 +1793,13 @@ class TestAbstractTracerLensing(object):
                 grid=sub_grid_7x7, redshift=1.9
             )
 
-            # First loop, Plane index = 0 #
+            print(traced_grid)
 
-            scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
-                redshift_0=0.5,
-                redshift_1=1.9,
-                redshift_final=2.0,
-                cosmology=tracer.cosmology,
+            traced_grid = tracer.grid_at_redshift_from_grid_and_redshift(
+                grid=sub_grid_7x7, redshift=2.0
             )
 
-            deflections_previous_plane = tracer.planes[0].deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
-            )
-
-            scaled_deflections = scaling_factor * deflections_previous_plane
-
-            scaled_grid = sub_grid_7x7 - scaled_deflections
-
-            # Second loop, Plane index = 1 #
-
-            scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
-                redshift_0=0.75,
-                redshift_1=1.9,
-                redshift_final=2.0,
-                cosmology=tracer.cosmology,
-            )
-
-            deflections_previous_plane = tracer.planes[1].deflections_from_grid(
-                grid=scaled_grid, return_in_2d=False, return_binned=False
-            )
-
-            scaled_deflections = scaling_factor * deflections_previous_plane
-
-            scaled_grid = scaled_grid - scaled_deflections
+            print(traced_grid)
 
             assert (scaled_grid == traced_grid).all()
 
@@ -2175,11 +2160,12 @@ class TestAbstractTracerData(object):
             ).all()
 
     class TestPixelizationGridsOfPlanes:
-
         def test__x2_planes__traced_grid_setup_correctly(self, sub_grid_7x7):
             galaxy_pix = g.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=1, grid=np.array([[1.0, 1.0]])),
+                pixelization=mock_inv.MockPixelization(
+                    value=1, grid=np.array([[1.0, 1.0]])
+                ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
             galaxy_no_pix = g.Galaxy(redshift=0.5)
@@ -2188,7 +2174,9 @@ class TestAbstractTracerData(object):
                 galaxies=[galaxy_no_pix, galaxy_pix]
             )
 
-            pixelization_grids = tracer.pixelization_grids_of_planes_from_grid(grid=sub_grid_7x7)
+            pixelization_grids = tracer.pixelization_grids_of_planes_from_grid(
+                grid=sub_grid_7x7
+            )
 
             assert pixelization_grids[0] == None
             assert (pixelization_grids[1] == np.array([[1.0, 1.0]])).all()
@@ -2197,13 +2185,17 @@ class TestAbstractTracerData(object):
 
             galaxy_pix0 = g.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=1, grid=np.array([[1.0, 1.0]])),
+                pixelization=mock_inv.MockPixelization(
+                    value=1, grid=np.array([[1.0, 1.0]])
+                ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
 
             galaxy_pix1 = g.Galaxy(
                 redshift=2.0,
-                pixelization=mock_inv.MockPixelization(value=1, grid=np.array([[2.0, 2.0]])),
+                pixelization=mock_inv.MockPixelization(
+                    value=1, grid=np.array([[2.0, 2.0]])
+                ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
 
@@ -2212,10 +2204,18 @@ class TestAbstractTracerData(object):
             galaxy_no_pix2 = g.Galaxy(redshift=1.5)
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[galaxy_pix0, galaxy_pix1, galaxy_no_pix0, galaxy_no_pix1, galaxy_no_pix2]
+                galaxies=[
+                    galaxy_pix0,
+                    galaxy_pix1,
+                    galaxy_no_pix0,
+                    galaxy_no_pix1,
+                    galaxy_no_pix2,
+                ]
             )
 
-            pixelization_grids = tracer.pixelization_grids_of_planes_from_grid(grid=sub_grid_7x7)
+            pixelization_grids = tracer.pixelization_grids_of_planes_from_grid(
+                grid=sub_grid_7x7
+            )
 
             assert pixelization_grids[0] == None
             assert pixelization_grids[1] == None
@@ -2224,12 +2224,15 @@ class TestAbstractTracerData(object):
             assert (pixelization_grids[4] == np.array([[2.0, 2.0]])).all()
 
     class TestTracedPixelizationGridsOfPlanes:
-
-        def test__x2_planes__no_mass_profiles__traced_grid_setup_correctly(self, sub_grid_7x7):
+        def test__x2_planes__no_mass_profiles__traced_grid_setup_correctly(
+            self, sub_grid_7x7
+        ):
 
             galaxy_pix = g.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=1, grid=np.array([[1.0, 0.0]])),
+                pixelization=mock_inv.MockPixelization(
+                    value=1, grid=np.array([[1.0, 0.0]])
+                ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
             galaxy_no_pix = g.Galaxy(redshift=0.5)
@@ -2238,19 +2241,29 @@ class TestAbstractTracerData(object):
                 galaxies=[galaxy_no_pix, galaxy_pix]
             )
 
-            traced_pixelization_grids = tracer.traced_pixelization_grids_of_planes_from_grid(grid=sub_grid_7x7)
+            traced_pixelization_grids = tracer.traced_pixelization_grids_of_planes_from_grid(
+                grid=sub_grid_7x7
+            )
 
             assert traced_pixelization_grids[0] == None
             assert (traced_pixelization_grids[1] == np.array([[1.0, 0.0]])).all()
 
-        def test__x2_planes__include_mass_profile__traced_grid_setup_correctly(self, sub_grid_7x7):
+        def test__x2_planes__include_mass_profile__traced_grid_setup_correctly(
+            self, sub_grid_7x7
+        ):
 
-            galaxy_no_pix = g.Galaxy(redshift=0.5, mass_profile=mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.5))
+            galaxy_no_pix = g.Galaxy(
+                redshift=0.5,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=0.5
+                ),
+            )
 
             galaxy_pix = g.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=1, grid=np.array([[1.0, 0.0]])),
+                pixelization=mock_inv.MockPixelization(
+                    value=1, grid=np.array([[1.0, 0.0]])
+                ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
 
@@ -2258,38 +2271,62 @@ class TestAbstractTracerData(object):
                 galaxies=[galaxy_no_pix, galaxy_pix]
             )
 
-            traced_pixelization_grids = tracer.traced_pixelization_grids_of_planes_from_grid(grid=sub_grid_7x7)
+            traced_pixelization_grids = tracer.traced_pixelization_grids_of_planes_from_grid(
+                grid=sub_grid_7x7
+            )
 
             assert traced_pixelization_grids[0] == None
-            assert traced_pixelization_grids[1] == pytest.approx(np.array([[1.0 - 0.5, 0.0]]), 1.0e-4)
+            assert traced_pixelization_grids[1] == pytest.approx(
+                np.array([[1.0 - 0.5, 0.0]]), 1.0e-4
+            )
 
         def test__multi_plane__traced_grid_setup_correctly(self, sub_grid_7x7):
 
             galaxy_pix0 = g.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=1, grid=np.array([[1.0, 1.0]])),
+                pixelization=mock_inv.MockPixelization(
+                    value=1, grid=np.array([[1.0, 1.0]])
+                ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
 
             galaxy_pix1 = g.Galaxy(
                 redshift=2.0,
-                pixelization=mock_inv.MockPixelization(value=1, grid=np.array([[2.0, 2.0]])),
+                pixelization=mock_inv.MockPixelization(
+                    value=1, grid=np.array([[2.0, 2.0]])
+                ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
 
-            galaxy_no_pix0 = g.Galaxy(redshift=0.25, mass_profile=mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.5))
+            galaxy_no_pix0 = g.Galaxy(
+                redshift=0.25,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=0.5
+                ),
+            )
             galaxy_no_pix1 = g.Galaxy(redshift=0.5)
             galaxy_no_pix2 = g.Galaxy(redshift=1.5)
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[galaxy_pix0, galaxy_pix1, galaxy_no_pix0, galaxy_no_pix1, galaxy_no_pix2]
+                galaxies=[
+                    galaxy_pix0,
+                    galaxy_pix1,
+                    galaxy_no_pix0,
+                    galaxy_no_pix1,
+                    galaxy_no_pix2,
+                ]
             )
 
-            traced_pixelization_grids = tracer.traced_pixelization_grids_of_planes_from_grid(grid=sub_grid_7x7)
+            traced_pixelization_grids = tracer.traced_pixelization_grids_of_planes_from_grid(
+                grid=sub_grid_7x7
+            )
 
-            traced_grid_pix0 = tracer.traced_grids_of_planes_from_grid(grid=np.array([[1.0, 1.0]]))[2]
-            traced_grid_pix1 = tracer.traced_grids_of_planes_from_grid(grid=np.array([[2.0, 2.0]]))[4]
+            traced_grid_pix0 = tracer.traced_grids_of_planes_from_grid(
+                grid=np.array([[1.0, 1.0]])
+            )[2]
+            traced_grid_pix1 = tracer.traced_grids_of_planes_from_grid(
+                grid=np.array([[2.0, 2.0]])
+            )[4]
 
             assert traced_pixelization_grids[0] == None
             assert traced_pixelization_grids[1] == None
@@ -2306,12 +2343,12 @@ class TestAbstractTracerData(object):
                 galaxies=[galaxy_no_pix, galaxy_no_pix]
             )
 
-            mappers_of_planes = tracer.mappers_of_planes_from_grid(
-                grid=sub_grid_7x7,
-            )
+            mappers_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_7x7)
             assert mappers_of_planes == [None]
 
-        def test__source_galaxy_has_pixelization__returns_mapper_in_list(self, sub_grid_7x7):
+        def test__source_galaxy_has_pixelization__returns_mapper_in_list(
+            self, sub_grid_7x7
+        ):
             galaxy_pix = g.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(value=1),
@@ -2323,9 +2360,7 @@ class TestAbstractTracerData(object):
                 galaxies=[galaxy_no_pix, galaxy_pix]
             )
 
-            mapper_of_planes = tracer.mappers_of_planes_from_grid(
-                grid=sub_grid_7x7,
-            )
+            mapper_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_7x7)
 
             assert mapper_of_planes == [None, 1]
 
@@ -2333,8 +2368,12 @@ class TestAbstractTracerData(object):
             self, sub_grid_7x7
         ):
 
-            galaxy_no_pix0 = g.Galaxy(redshift=0.25, mass_profile=mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.5))
+            galaxy_no_pix0 = g.Galaxy(
+                redshift=0.25,
+                mass_profile=mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=0.5
+                ),
+            )
             galaxy_no_pix1 = g.Galaxy(redshift=0.5)
             galaxy_no_pix2 = g.Galaxy(redshift=1.5)
 
@@ -2350,12 +2389,16 @@ class TestAbstractTracerData(object):
             )
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[galaxy_no_pix0, galaxy_no_pix1, galaxy_no_pix2, galaxy_pix_0, galaxy_pix_1]
+                galaxies=[
+                    galaxy_no_pix0,
+                    galaxy_no_pix1,
+                    galaxy_no_pix2,
+                    galaxy_pix_0,
+                    galaxy_pix_1,
+                ]
             )
 
-            mappers_of_planes = tracer.mappers_of_planes_from_grid(
-                grid=sub_grid_7x7,
-            )
+            mappers_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_7x7)
 
             assert mappers_of_planes == [None, None, 1, None, 2]
 

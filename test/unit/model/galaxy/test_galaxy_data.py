@@ -71,9 +71,7 @@ class TestGalaxyFitData(object):
             )
         ).all()
 
-    def test__grid(
-        self, gal_data_7x7, mask_7x7, sub_grid_7x7,
-    ):
+    def test__grid(self, gal_data_7x7, mask_7x7, sub_grid_7x7):
 
         galaxy_fit_data = gd.GalaxyFitData(
             galaxy_data=gal_data_7x7, mask=mask_7x7, use_image=True
@@ -96,21 +94,11 @@ class TestGalaxyFitData(object):
             use_image=True,
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(
-            mask=mask_7x7, sub_grid_size=2,
-        )
-        new_grid = grid.new_grid_with_interpolator(
-            interp_pixel_scale=1.0
-        )
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=2)
+        new_grid = grid.new_grid_with_interpolator(interp_pixel_scale=1.0)
         assert (gal_data_7x7.grid == new_grid).all()
-        assert (
-            gal_data_7x7.grid.interpolator.vtx
-            == new_grid.interpolator.vtx
-        ).all()
-        assert (
-            gal_data_7x7.grid.interpolator.wts
-            == new_grid.interpolator.wts
-        ).all()
+        assert (gal_data_7x7.grid.interpolator.vtx == new_grid.interpolator.vtx).all()
+        assert (gal_data_7x7.grid.interpolator.wts == new_grid.interpolator.wts).all()
 
     def test__gal_data_7x7_image(self, gal_data_7x7, mask_7x7):
 
@@ -173,9 +161,7 @@ class TestGalaxyFitData(object):
 
         galaxy = mock_galaxy.MockGalaxy(value=1, shape=36)
 
-        intensities = galaxy_fit_data.profile_quantity_from_galaxies(
-            galaxies=[galaxy]
-        )
+        intensities = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])
 
         assert (intensities == np.ones(9)).all()
 
@@ -255,9 +241,7 @@ class TestGalaxyFitData(object):
 
         galaxy = mock_galaxy.MockGalaxy(value=1, shape=36)
 
-        convergence = galaxy_fit_data.profile_quantity_from_galaxies(
-            galaxies=[galaxy]
-        )
+        convergence = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])
 
         assert (convergence == np.ones(9)).all()
 
@@ -336,9 +320,7 @@ class TestGalaxyFitData(object):
 
         galaxy = mock_galaxy.MockGalaxy(value=1, shape=36)
 
-        potential = galaxy_fit_data.profile_quantity_from_galaxies(
-            galaxies=[galaxy]
-        )
+        potential = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])
 
         assert (potential == np.ones(9)).all()
 
@@ -350,9 +332,7 @@ class TestGalaxyFitData(object):
             grid=galaxy_fit_data.grid, return_binned=True
         )
 
-        potential_gd = galaxy_fit_data.profile_quantity_from_galaxies(
-            galaxies=[galaxy]
-        )
+        potential_gd = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])
 
         assert (potential_gal == potential_gd).all()
 
@@ -429,9 +409,7 @@ class TestGalaxyFitData(object):
             redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
         )
 
-        deflections_gal = galaxy.deflections_from_grid(
-            grid=galaxy_fit_data.grid
-        )
+        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)
         deflections_gal = np.asarray(
             [
                 galaxy_fit_data.grid.array_1d_binned_from_sub_array_1d(
@@ -523,9 +501,7 @@ class TestGalaxyFitData(object):
             redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
         )
 
-        deflections_gal = galaxy.deflections_from_grid(
-            grid=galaxy_fit_data.grid
-        )
+        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)
         deflections_gal = np.asarray(
             [
                 galaxy_fit_data.grid.array_1d_binned_from_sub_array_1d(

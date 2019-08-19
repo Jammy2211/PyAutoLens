@@ -176,15 +176,15 @@ def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     phase_plotters.plot_hyper_images_for_phase(
         hyper_model_image_2d=hyper_model_image_7x7,
         hyper_galaxy_image_2d_path_dict=None,
-        hyper_galaxy_cluster_image_2d_path_dict=None,
+        binned_hyper_galaxy_image_2d_path_dict=None,
         mask=mask_7x7,
-        cluster=cluster_grid_7x7,
+        binned_grid=cluster_grid_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
         units="arcsec",
         should_plot_hyper_model_image=True,
         should_plot_hyper_galaxy_images=False,
-        should_plot_hyper_galaxy_cluster_images=False,
+        should_plot_binned_hyper_galaxy_images=False,
         visualize_path=phase_plotter_path,
     )
 

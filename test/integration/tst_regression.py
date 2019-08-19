@@ -47,7 +47,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    ccd_simulated = ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
+    ccd_simulated = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         exposure_time=100.0,

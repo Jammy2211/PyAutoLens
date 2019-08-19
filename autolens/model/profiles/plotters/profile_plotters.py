@@ -49,7 +49,7 @@ def plot_image(
     grid : ndarray or hyper_galaxy.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    image = light_profile.image_from_grid(
+    image = light_profile.profile_image_from_grid(
         grid=grid, return_in_2d=True, return_binned=True
     )
 

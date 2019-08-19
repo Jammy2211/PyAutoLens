@@ -771,7 +771,7 @@ class TestPrimaryBeam(object):
             gaussian = lp.EllipticalGaussian(
                 centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
             )
-            profile_gaussian_1d = gaussian.image_from_grid(grid)
+            profile_gaussian_1d = gaussian.profile_image_from_grid(grid)
             profile_gaussian_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
                 sub_array_1d=profile_gaussian_1d,
                 mask=np.full(fill_value=False, shape=(3, 3)),

@@ -149,7 +149,9 @@ class Rectangular(Pixelization):
             hyper_image=hyper_image,
         )
 
-    def pixelization_grid_from_grid(self, grid, cluster_grid=None, hyper_image=None, seed=1):
+    def pixelization_grid_from_grid(
+        self, grid, cluster_grid=None, hyper_image=None, seed=1
+    ):
         return None
 
 
@@ -289,8 +291,8 @@ class Voronoi(Pixelization):
 
         if relocate_to_border:
             relocated_grid = grid.relocated_grid_from_grid(grid=grid)
-            relocated_pixelization_grid = grid.relocated_grid_from_grid(
-                grid=pixelization_grid
+            relocated_pixelization_grid = grid.relocated_pixelization_grid_from_pixelization_grid(
+                pixelization_grid=pixelization_grid
             )
         else:
             relocated_grid = grid
@@ -375,7 +377,9 @@ class VoronoiBrightnessImage(Voronoi):
 
         return np.power(cluster_weight_map, self.weight_power)
 
-    def pixelization_grid_from_grid(self, grid, cluster_grid=None, hyper_image=None, seed=0):
+    def pixelization_grid_from_grid(
+        self, grid, cluster_grid=None, hyper_image=None, seed=0
+    ):
 
         cluster_weight_map = self.cluster_weight_map_from_hyper_image(
             hyper_image=hyper_image

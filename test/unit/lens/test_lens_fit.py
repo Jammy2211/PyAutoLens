@@ -898,9 +898,7 @@ class TestLensProfileFit:
                 redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g0, g1],
-            )
+            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1])
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7,
@@ -1181,16 +1179,14 @@ class TestLensInversionFit:
             g0 = g.Galaxy(redshift=0.5)
             g1 = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g0, g1],
-            )
+            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1])
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
             mapper = pix.mapper_from_grid_and_pixelization_grid(
-                grid=lens_data_7x7.grid, pixelization_grid=None,
+                grid=lens_data_7x7.grid, pixelization_grid=None
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1252,7 +1248,7 @@ class TestLensInversionFit:
             )
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g.Galaxy(redshift=0.5), g0],
+                galaxies=[g.Galaxy(redshift=0.5), g0]
             )
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
@@ -1380,7 +1376,7 @@ class TestLensInversionFit:
             g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g.Galaxy(redshift=0.5), g0],
+                galaxies=[g.Galaxy(redshift=0.5), g0]
             )
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
@@ -1388,7 +1384,7 @@ class TestLensInversionFit:
             )
 
             mapper = pix.mapper_from_grid_and_pixelization_grid(
-                grid=lens_data_7x7.grid, relocate_to_border=False,
+                grid=lens_data_7x7.grid, relocate_to_border=False
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1417,7 +1413,7 @@ class TestLensProfileInversionFit:
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[galaxy_light, galaxy_pix],
+                galaxies=[galaxy_light, galaxy_pix]
             )
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
@@ -1568,24 +1564,24 @@ class TestLensProfileInversionFit:
             reg = regularization.Constant(coefficient=1.0)
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g0, g1, g2, galaxy_pix],
-            )
+            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
-            traced_grids = tracer.traced_grids_of_planes_from_grid(grid=lens_data_7x7.grid)
-            traced_blurring_grids = tracer.traced_grids_of_planes_from_grid(grid=lens_data_7x7.blurring_grid)
+            traced_grids = tracer.traced_grids_of_planes_from_grid(
+                grid=lens_data_7x7.grid
+            )
+            traced_blurring_grids = tracer.traced_grids_of_planes_from_grid(
+                grid=lens_data_7x7.blurring_grid
+            )
 
             g0_image_plane_image_1d = g0.profile_image_from_grid(
                 grid=traced_grids[0], return_in_2d=False, return_binned=True
             )
             g0_image_plane_blurring_image_1d = g0.profile_image_from_grid(
-                grid=traced_blurring_grids[0],
-                return_in_2d=False,
-                return_binned=False,
+                grid=traced_blurring_grids[0], return_in_2d=False, return_binned=False
             )
 
             g0_blurred_image_plane_image_1d = lens_data_7x7.convolver.convolve_image(
@@ -1597,9 +1593,7 @@ class TestLensProfileInversionFit:
                 grid=traced_grids[1], return_in_2d=False, return_binned=True
             )
             g1_image_plane_blurring_image_1d = g1.profile_image_from_grid(
-                grid=traced_blurring_grids[1],
-                return_in_2d=False,
-                return_binned=False,
+                grid=traced_blurring_grids[1], return_in_2d=False, return_binned=False
             )
 
             g1_blurred_image_plane_image_1d = lens_data_7x7.convolver.convolve_image(
@@ -1701,7 +1695,7 @@ class TestLensProfileInversionFit:
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[galaxy_light, galaxy_pix],
+                galaxies=[galaxy_light, galaxy_pix]
             )
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(
@@ -1863,7 +1857,7 @@ class TestLensProfileInversionFit:
             galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[galaxy_light, galaxy_pix],
+                galaxies=[galaxy_light, galaxy_pix]
             )
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(

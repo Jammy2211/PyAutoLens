@@ -35,6 +35,8 @@ class MockLensData(object):
 
         self.hyper_noise_map_max = None
 
+        self.relocate_to_border = True
+
     @reshape_data_array
     def image(self, return_in_2d=True):
         return self.image_1d

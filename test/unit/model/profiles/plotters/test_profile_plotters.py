@@ -11,13 +11,7 @@ def make_profile_plotter_setup():
 
 
 def test__all_quantities_are_output(
-    lp_0,
-    mp_0,
-    sub_grid_7x7,
-    mask_7x7,
-    positions_7x7,
-    profile_plotter_path,
-    plot_patch,
+    lp_0, mp_0, sub_grid_7x7, mask_7x7, positions_7x7, profile_plotter_path, plot_patch
 ):
 
     profile_plotters.plot_image(

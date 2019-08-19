@@ -21,18 +21,12 @@ class TestMappingMatrix:
         sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2])
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
 
-        grid = MockPixelizationGrid(
-            three_pixels,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_size=1,
-        )
-
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=6,
             total_mask_pixels=3,
-            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
-            sub_grid_fraction=grid.sub_grid_fraction,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=1.0,
         )
 
         assert (
@@ -51,18 +45,12 @@ class TestMappingMatrix:
         sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2, 7, 6])
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
 
-        grid = MockPixelizationGrid(
-            five_pixels,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_size=1,
-        )
-
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
             total_mask_pixels=5,
-            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
-            sub_grid_fraction=grid.sub_grid_fraction,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=1.0,
         )
 
         assert (
@@ -106,17 +94,12 @@ class TestMappingMatrix:
         sub_mask_1d_index_to_mask_1d_index = np.array(
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
-
-        grid = MockPixelizationGrid(
-            five_pixels, sub_mask_1d_index_to_mask_1d_index, sub_grid_size=2
-        )
-
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
             total_mask_pixels=5,
-            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
-            sub_grid_fraction=grid.sub_grid_fraction,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=0.25,
         )
 
         assert (
@@ -143,18 +126,12 @@ class TestMappingMatrix:
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
 
-        grid = MockPixelizationGrid(
-            five_pixels,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_size=2,
-        )
-
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
             total_mask_pixels=5,
-            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
-            sub_grid_fraction=grid.sub_grid_fraction,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=0.25,
         )
 
         assert (
@@ -278,18 +255,12 @@ class TestMappingMatrix:
             ]
         )
 
-        grid = MockPixelizationGrid(
-            three_pixels,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_size=4,
-        )
-
         mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=6,
             total_mask_pixels=3,
-            sub_mask_1d_index_to_mask_1d_index=grid.mask_1d_index_to_nearest_pixelization_1d_index,
-            sub_grid_fraction=grid.sub_grid_fraction,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=1.0/16.0,
         )
 
         assert (

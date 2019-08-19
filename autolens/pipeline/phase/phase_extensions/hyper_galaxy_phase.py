@@ -72,11 +72,11 @@ class HyperGalaxyPhase(HyperPhase):
                 )
 
                 fit_normal = lens_fit.LensDataFit(
+                    lens_data=self.lens_data,
                     image_1d=self.lens_data.image_1d,
                     noise_map_1d=self.lens_data.noise_map_1d,
                     mask_1d=self.lens_data.mask_1d,
                     model_image_1d=self.hyper_model_image_1d,
-                    grid=self.lens_data.grid,
                 )
 
                 fit = self.fit_for_hyper_galaxy(
@@ -160,11 +160,11 @@ class HyperGalaxyPhase(HyperPhase):
                 ] = self.lens_data.hyper_noise_map_max
 
             return lens_fit.LensDataFit(
+                lens_data=self.lens_data,
                 image_1d=image_1d,
                 noise_map_1d=noise_map_1d,
                 mask_1d=self.lens_data.mask_1d,
                 model_image_1d=self.hyper_model_image_1d,
-                grid=self.lens_data.grid,
             )
 
         @classmethod
@@ -192,7 +192,7 @@ class HyperGalaxyPhase(HyperPhase):
             ccd_data=data,
             mask=results.last.mask_2d,
             sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
-            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).image_psf_shape,
+            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,
             interp_pixel_scale=cast(
                 phase_imaging.PhaseImaging, phase
@@ -203,13 +203,15 @@ class HyperGalaxyPhase(HyperPhase):
             cluster_pixel_limit=cast(
                 phase_imaging.PhaseImaging, phase
             ).cluster_pixel_limit,
-            uses_inversion=cast(phase_imaging.PhaseImaging, phase).uses_inversion,
             uses_cluster_inversion=cast(
                 phase_imaging.PhaseImaging, phase
             ).uses_cluster_inversion,
             hyper_noise_map_max=cast(
                 phase_imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
+            relocate_to_border=cast(
+                phase_imaging.PhaseImaging, phase
+            ).use_inversion_border,
         )
 
         model_image_1d = results.last.hyper_model_image_1d
@@ -347,7 +349,7 @@ class HyperGalaxyAllPhase(HyperPhase):
             ccd_data=data,
             mask=results.last.mask_2d,
             sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
-            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).image_psf_shape,
+            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,
             interp_pixel_scale=cast(
                 phase_imaging.PhaseImaging, phase
@@ -358,13 +360,15 @@ class HyperGalaxyAllPhase(HyperPhase):
             cluster_pixel_limit=cast(
                 phase_imaging.PhaseImaging, phase
             ).cluster_pixel_limit,
-            uses_inversion=cast(phase_imaging.PhaseImaging, phase).uses_inversion,
             uses_cluster_inversion=cast(
                 phase_imaging.PhaseImaging, phase
             ).uses_cluster_inversion,
             hyper_noise_map_max=cast(
                 phase_imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
+            relocate_to_border=cast(
+                phase_imaging.PhaseImaging, phase
+            ).use_inversion_border,
         )
 
         model_image_1d = results.last.hyper_model_image_1d
