@@ -3,8 +3,8 @@ import numpy as np
 
 from autolens import exc
 
-class Convolver(object):
 
+class Convolver(object):
     def __init__(self, mask, psf, blurring_mask=None):
         """ Class to setup the 1D convolution of an regular / mapping_util matrix.
 
@@ -204,7 +204,9 @@ class Convolver(object):
                     image_frame_1d_indexes, image_frame_1d_psfs = self.frame_at_coordinates_jit(
                         (x, y), mask, self.mask_index_array, self.psf[:, :]
                     )
-                    self.image_frame_1d_indexes[mask_1d_index, :] = image_frame_1d_indexes
+                    self.image_frame_1d_indexes[
+                        mask_1d_index, :
+                    ] = image_frame_1d_indexes
                     self.image_frame_1d_psfs[mask_1d_index, :] = image_frame_1d_psfs
                     self.image_frame_1d_lengths[mask_1d_index] = image_frame_1d_indexes[
                         image_frame_1d_indexes >= 0
@@ -240,11 +242,15 @@ class Convolver(object):
                         image_frame_1d_indexes, image_frame_1d_psfs = self.frame_at_coordinates_jit(
                             (x, y), mask, self.mask_index_array, self.psf
                         )
-                        self.blurring_frame_1d_indexes[mask_1d_index, :] = image_frame_1d_indexes
-                        self.blurring_frame_1d_psfs[mask_1d_index, :] = image_frame_1d_psfs
-                        self.blurring_frame_1d_lengths[mask_1d_index] = image_frame_1d_indexes[
-                            image_frame_1d_indexes >= 0
-                        ].shape[0]
+                        self.blurring_frame_1d_indexes[
+                            mask_1d_index, :
+                        ] = image_frame_1d_indexes
+                        self.blurring_frame_1d_psfs[
+                            mask_1d_index, :
+                        ] = image_frame_1d_psfs
+                        self.blurring_frame_1d_lengths[
+                            mask_1d_index
+                        ] = image_frame_1d_indexes[image_frame_1d_indexes >= 0].shape[0]
                         mask_1d_index += 1
 
     def convolver_with_blurring_mask_added(self, blurring_mask):
@@ -302,8 +308,10 @@ class Convolver(object):
         """
 
         if self.blurring_mask is None:
-            raise exc.ConvolutionException('You cannot use the convolve_image function of a Convolver if the Convolver was'
-                                    'not created with a blurring_mask.')
+            raise exc.ConvolutionException(
+                "You cannot use the convolve_image function of a Convolver if the Convolver was"
+                "not created with a blurring_mask."
+            )
 
         return self.convolve_jit(
             image_1d_array=image_array,
@@ -357,7 +365,6 @@ class Convolver(object):
                 blurred_image_1d[vector_index] += image_value * psf_value
 
         return blurred_image_1d
-
 
     def convolve_mapping_matrix(self, mapping_matrix):
         """For a given inversion mapping_util matrix, convolve every pixel's mapped regular with the PSF kernel.
@@ -440,7 +447,10 @@ class Convolver(object):
     @staticmethod
     @decorator_util.jit()
     def convolve_matrix_jit(
-        mapping_matrix, image_frame_1d_indexes, image_frame_1d_psfs, image_frame_1d_lengths
+        mapping_matrix,
+        image_frame_1d_indexes,
+        image_frame_1d_psfs,
+        image_frame_1d_lengths,
     ):
 
         blurred_mapping_matrix = np.zeros(mapping_matrix.shape)

@@ -5,6 +5,7 @@ import numpy as np
 from autolens import exc
 from autolens.array.util import mask_util
 
+
 class MockMask(msk.Mask):
     def __new__(cls, array, pixel_scale=1.0, *args, **kwargs):
 

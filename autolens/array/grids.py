@@ -24,9 +24,56 @@ def check_input_grid_and_options_are_compatible(grid):
         )
 
 
+def reshape_data_array(func):
+    @wraps(func)
+    def wrapper(object, *args, **kwargs):
+        """
+
+        This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
+        (e.g. intensities, convergences, potentials). Depending on the input variables, it determines whether the
+        returned array is reshaped to 2D from 1D and if a sub-grid is input, it can bin the sub-gridded values to
+        regular gridded values.
+
+        Parameters
+        ----------
+        object : autolens.model.geometry_profiles.Profile
+            The profiles that owns the function
+        grid : ndarray or Grid or Grid
+            (y,x) in either cartesian or profiles coordinate system
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
+
+        Returns
+        -------
+            An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
+        """
+
+        return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
+
+        grid = object.grid
+
+        result = func(object)
+
+        if len(result.shape) == 2:
+            result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
+        else:
+            result_1d = result
+
+        if not return_in_2d:
+            return result_1d
+        else:
+            return grid.scaled_array_2d_from_array_1d(array_1d=result_1d)
+
+    return wrapper
+
+
 def reshape_returned_array(func):
     @wraps(func)
-    def wrapper(object, grid, *args, **kwargs):
+    def wrapper(object, grid=None, *args, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -54,6 +101,9 @@ def reshape_returned_array(func):
 
         return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
         return_binned = kwargs["return_binned"] if "return_binned" in kwargs else False
+
+        if grid is None:
+            grid = object.grid
 
         result = func(object, grid)
 
@@ -149,7 +199,7 @@ def reshape_returned_grid(func):
 
 
 class Grid(np.ndarray):
-    def __new__(cls, arr, mask, sub_grid_size=1, *args, **kwargs):
+    def __new__(cls, arr, mask, sub_grid_size=1, binned=None, *args, **kwargs):
         """A regular grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right. 
         
@@ -270,6 +320,7 @@ class Grid(np.ndarray):
             sub_grid_size=sub_grid_size
         )
         obj.interpolator = None
+        obj.binned = None
         return obj
 
     def __array_finalize__(self, obj):
@@ -281,6 +332,7 @@ class Grid(np.ndarray):
             self.sub_grid_fraction = obj.sub_grid_fraction
             self.sub_border_pixels = obj.sub_border_pixels
             self.interpolator = obj.interpolator
+            self.binned = obj.binned
 
     @classmethod
     def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1):
@@ -406,9 +458,7 @@ class Grid(np.ndarray):
     def unlensed_unsubbed_1d(self):
         return Grid(
             arr=grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-                mask=self.mask,
-                pixel_scales=self.mask.pixel_scales,
-                sub_grid_size=1,
+                mask=self.mask, pixel_scales=self.mask.pixel_scales, sub_grid_size=1
             ),
             mask=self.mask,
             sub_grid_size=1,
@@ -688,6 +738,13 @@ class Grid(np.ndarray):
             sub_grid_1d=sub_grid_1d, sub_grid_size=self.sub_grid_size
         )
 
+    def new_grid_with_binned_grid(self, binned_grid):
+        # noinspection PyAttributeOutsideInit
+        # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
+        # TODO: on which the function was called but with a new interpolator set.
+        self.binned = binned_grid
+        return self
+
     def new_grid_with_interpolator(self, interp_pixel_scale):
         # noinspection PyAttributeOutsideInit
         # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
@@ -786,9 +843,7 @@ class Grid(np.ndarray):
 
         blurred_image_2d = psf.convolve(array_2d=padded_array_2d)
 
-        blurred_image_1d = self.array_1d_from_array_2d(
-            array_2d=blurred_image_2d
-        )
+        blurred_image_1d = self.array_1d_from_array_2d(array_2d=blurred_image_2d)
 
         return self.trimmed_array_2d_from_padded_array_1d_and_image_shape(
             padded_array_1d=blurred_image_1d, image_shape=image_shape
@@ -928,85 +983,95 @@ class Grid(np.ndarray):
         super(Grid, self).__setstate__(state[0:-1])
 
 
-class ClusterGrid(Grid):
+class BinnedGrid(Grid):
     def __init__(
         self,
         arr,
         mask,
         bin_up_factor,
-        cluster_to_regular_all,
-        cluster_to_regular_sizes,
-        total_regular_pixels,
+        binned_mask_1d_index_to_mask_1d_indexes,
+        binned_mask_1d_index_to_mask_1d_sizes,
+        total_unbinned_pixels,
     ):
         # noinspection PyArgumentList
-        super(ClusterGrid, self).__init__()
+        super(BinnedGrid, self).__init__()
         self.mask = mask
         self.bin_up_factor = bin_up_factor
-        self.cluster_to_regular_all = cluster_to_regular_all
-        self.cluster_to_regular_sizes = cluster_to_regular_sizes
-        self.total_regular_pixels = total_regular_pixels
+        self.binned_mask_1d_index_to_mask_1d_indexes = (
+            binned_mask_1d_index_to_mask_1d_indexes
+        )
+        self.binned_mask_1d_index_to_mask_1d_sizes = (
+            binned_mask_1d_index_to_mask_1d_sizes
+        )
+        self.total_unbinned_pixels = total_unbinned_pixels
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
-        if isinstance(obj, ClusterGrid):
+        if isinstance(obj, BinnedGrid):
             self.mask = obj.mask
             self.bin_up_factor = obj.bin_up_factor
-            self.cluster_to_regular_all = obj.cluster_to_regular_all
-            self.cluster_to_regular_sizes = obj.cluster_to_regular_sizes
-            self.total_regular_pixels = obj.total_regular_pixels
+            self.binned_mask_1d_index_to_mask_1d_indexes = (
+                obj.binned_mask_1d_index_to_mask_1d_indexes
+            )
+            self.binned_mask_1d_index_to_mask_1d_sizes = (
+                obj.binned_mask_1d_index_to_mask_1d_sizes
+            )
+            self.total_unbinned_pixels = obj.total_unbinned_pixels
 
     @classmethod
-    def from_mask_and_cluster_pixel_scale(
-        cls, mask, cluster_pixel_scale, cluster_pixels_limit=None
+    def from_mask_and_binned_pixel_scale(
+        cls, mask, binned_pixel_scale, inversion_pixels_limit=None
     ):
 
-        if cluster_pixel_scale > mask.pixel_scale:
+        if binned_pixel_scale > mask.pixel_scale:
 
-            cluster_bin_up_factor = int(cluster_pixel_scale / mask.pixel_scale)
+            bin_up_factor = int(binned_pixel_scale / mask.pixel_scale)
 
         else:
 
-            cluster_bin_up_factor = 1
+            bin_up_factor = 1
 
-        cluster_mask = mask.binned_up_mask_from_mask(
-            bin_up_factor=cluster_bin_up_factor
-        )
+        binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
 
-        if cluster_pixels_limit is not None:
+        if inversion_pixels_limit is not None:
 
-            while cluster_mask.pixels_in_mask < cluster_pixels_limit:
+            while binned_mask.pixels_in_mask < inversion_pixels_limit:
 
-                if cluster_bin_up_factor == 1:
+                if bin_up_factor == 1:
                     raise exc.DataException(
                         "The cluster hyper_galaxy image cannot obtain more instrument points that the maximum number of pixels for a "
                         "cluster pixelization, even without any binning up. Either increase the mask size or reduce the "
                         "maximum number of pixels."
                     )
 
-                cluster_bin_up_factor -= 1
-                cluster_mask = mask.binned_up_mask_from_mask(
-                    bin_up_factor=cluster_bin_up_factor
-                )
+                bin_up_factor -= 1
+                binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
 
-        cluster_grid = Grid.from_mask_and_sub_grid_size(
-            mask=cluster_mask, sub_grid_size=1
+        binned_grid = Grid.from_mask_and_sub_grid_size(
+            mask=binned_mask, sub_grid_size=1
         )
-        cluster_to_regular_all, cluster_to_regular_sizes = binning_util.binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
-            mask_2d=mask, bin_up_factor=cluster_bin_up_factor
+        binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
+            mask_2d=mask, bin_up_factor=bin_up_factor
         )
 
-        return ClusterGrid(
-            arr=cluster_grid,
-            mask=cluster_mask,
-            bin_up_factor=cluster_bin_up_factor,
-            cluster_to_regular_all=cluster_to_regular_all.astype("int"),
-            cluster_to_regular_sizes=cluster_to_regular_sizes.astype("int"),
-            total_regular_pixels=mask.pixels_in_mask,
+        return BinnedGrid(
+            arr=binned_grid,
+            mask=binned_mask,
+            bin_up_factor=bin_up_factor,
+            binned_mask_1d_index_to_mask_1d_indexes=binned_mask_1d_index_to_mask_1d_indexes.astype(
+                "int"
+            ),
+            binned_mask_1d_index_to_mask_1d_sizes=binned_mask_1d_index_to_mask_1d_sizes.astype(
+                "int"
+            ),
+            total_unbinned_pixels=mask.pixels_in_mask,
         )
 
 
 class PixelizationGrid(np.ndarray):
-    def __new__(cls, arr, mask_1d_index_to_nearest_pixelization_1d_index, *args, **kwargs):
+    def __new__(
+        cls, arr, mask_1d_index_to_nearest_pixelization_1d_index, *args, **kwargs
+    ):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
 
@@ -1026,7 +1091,9 @@ class PixelizationGrid(np.ndarray):
             A 1D array that maps every regular-grid pixel to its nearest pixelization-grid pixel.
         """
         obj = arr.view(cls)
-        obj.mask_1d_index_to_nearest_pixelization_1d_index = mask_1d_index_to_nearest_pixelization_1d_index
+        obj.mask_1d_index_to_nearest_pixelization_1d_index = (
+            mask_1d_index_to_nearest_pixelization_1d_index
+        )
         obj.interpolator = None
         return obj
 
@@ -1044,7 +1111,9 @@ class PixelizationGrid(np.ndarray):
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "mask_1d_index_to_pixelization_1d_index"):
-            self.mask_1d_index_to_pixelization_1d_index = obj.mask_1d_index_to_pixelization_1d_index
+            self.mask_1d_index_to_pixelization_1d_index = (
+                obj.mask_1d_index_to_pixelization_1d_index
+            )
         if hasattr(obj, "interpolator"):
             self.interpolator = obj.interpolator
 
@@ -1148,7 +1217,9 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
-        ).astype("int")
+        ).astype(
+            "int"
+        )
 
         sparse_grid = sparse_mapping_util.sparse_grid_from_unmasked_sparse_grid(
             unmasked_sparse_grid=unmasked_sparse_grid,
@@ -1156,15 +1227,16 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         )
 
         return SparseToRegularGrid(
-            sparse_grid=sparse_grid, mask_1d_index_to_sparse_1d_index=mask_1d_index_to_sparse_1d_index
+            sparse_grid=sparse_grid,
+            mask_1d_index_to_sparse_1d_index=mask_1d_index_to_sparse_1d_index,
         )
 
     @classmethod
-    def from_total_pixels_cluster_grid_and_cluster_weight_map(
+    def from_total_pixels_binned_grid_and_weight_map(
         cls,
         total_pixels,
-        cluster_grid,
-        cluster_weight_map,
+        binned_grid,
+        binned_weight_map,
         n_iter=1,
         max_iter=5,
         seed=None,
@@ -1175,29 +1247,31 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 
         Parameters
         -----------
-        cluster_grid : grids.RegularGrid
+        binned_grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
-        if total_pixels > cluster_grid.shape[0]:
+        if total_pixels > binned_grid.shape[0]:
             raise exc.PixelizationException
 
         kmeans = KMeans(
             n_clusters=total_pixels, random_state=seed, n_init=n_iter, max_iter=max_iter
         )
 
-        kmeans = kmeans.fit(X=cluster_grid, sample_weight=cluster_weight_map)
+        kmeans = kmeans.fit(X=binned_grid, sample_weight=binned_weight_map)
 
-        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_cluster_grid(
-            cluster_labels=kmeans.labels_,
-            cluster_to_regular_all=cluster_grid.cluster_to_regular_all,
-            cluster_to_regular_sizes=cluster_grid.cluster_to_regular_sizes,
-            total_regular_pixels=cluster_grid.total_regular_pixels,
+        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_binned_grid(
+            sparse_labels=kmeans.labels_,
+            binned_mask_1d_index_to_mask_1d_indexes=binned_grid.binned_mask_1d_index_to_mask_1d_indexes,
+            binned_mask_1d_index_to_mask_1d_sizes=binned_grid.binned_mask_1d_index_to_mask_1d_sizes,
+            total_unbinned_pixels=binned_grid.total_unbinned_pixels,
         )
 
         return SparseToRegularGrid(
             sparse_grid=kmeans.cluster_centers_,
-            mask_1d_index_to_sparse_1d_index=mask_1d_index_to_sparse_1d_index.astype("int"),
+            mask_1d_index_to_sparse_1d_index=mask_1d_index_to_sparse_1d_index.astype(
+                "int"
+            ),
         )
 
     @property

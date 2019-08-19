@@ -204,18 +204,16 @@ class AbstractPhase(af.AbstractPhase):
 
         @property
         def unmasked_model_image(self):
-            return self.most_likely_fit.unmasked_blurred_profile_image_plane_image
+            return self.most_likely_fit.unmasked_blurred_profile_image
 
         @property
         def unmasked_model_image_of_planes(self):
-            return (
-                self.most_likely_fit.unmasked_blurred_profile_image_plane_image_of_planes
-            )
+            return self.most_likely_fit.unmasked_blurred_profile_image_of_planes
 
         @property
         def unmasked_model_image_of_planes_and_galaxies(self):
             fit = self.most_likely_fit
-            return fit.unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies
+            return fit.unmasked_blurred_profile_image_of_planes_and_galaxies
 
         def image_2d_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
             """

@@ -384,9 +384,11 @@ def padded_mask_2d_to_binned_mask_1d_index_from_mask_2d_and_bin_up_factor(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
-    mask_to_binned_mask_2d = np.full(fill_value=-1, shape=padded_mask_2d.shape)
+    padded_mask_2d_index_to_binned_mask_1d_index = np.full(
+        fill_value=-1, shape=padded_mask_2d.shape
+    )
 
-    binned_mask_index = 0
+    binned_mask_1d_index = 0
 
     for bin_y in range(binned_mask_2d.shape[0]):
         for bin_x in range(binned_mask_2d.shape[1]):
@@ -396,11 +398,13 @@ def padded_mask_2d_to_binned_mask_1d_index_from_mask_2d_and_bin_up_factor(
                         mask_y = bin_y * bin_up_factor + bin_y1
                         mask_x = bin_x * bin_up_factor + bin_x1
                         if padded_mask_2d[mask_y, mask_x] == False:
-                            mask_to_binned_mask_2d[mask_y, mask_x] = binned_mask_index
+                            padded_mask_2d_index_to_binned_mask_1d_index[
+                                mask_y, mask_x
+                            ] = binned_mask_1d_index
 
-                binned_mask_index += 1
+                binned_mask_1d_index += 1
 
-    return mask_to_binned_mask_2d
+    return padded_mask_2d_index_to_binned_mask_1d_index
 
 
 @decorator_util.jit()
@@ -487,12 +491,12 @@ def masked_array_1d_to_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(
         for mask_x in range(padded_mask_2d_to_mask_1d_index.shape[1]):
             if padded_mask_2d_to_mask_1d_index[mask_y, mask_x] >= 0:
                 padded_mask_index = padded_mask_2d_to_mask_1d_index[mask_y, mask_x]
-                binned_mask_index = padded_mask_2d_to_binned_mask_1d_index[
+                binned_mask_1d_index = padded_mask_2d_to_binned_mask_1d_index[
                     mask_y, mask_x
                 ]
                 masked_array_1d_to_binned_masked_array_1d[
                     padded_mask_index
-                ] = binned_mask_index
+                ] = binned_mask_1d_index
 
     return masked_array_1d_to_binned_masked_array_1d
 

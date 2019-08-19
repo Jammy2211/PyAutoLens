@@ -262,9 +262,7 @@ class TestGrid:
 
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
-        blurring_grid = grid.blurring_grid_from_psf_shape(
-            psf_shape=(3, 5)
-        )
+        blurring_grid = grid.blurring_grid_from_psf_shape(psf_shape=(3, 5))
 
         blurring_mask = mask.blurring_mask_from_psf_shape(psf_shape=(3, 5))
 
@@ -316,31 +314,6 @@ class TestGrid:
             == blurring_mask.mask_1d_index_to_mask_2d_index
         ).all()
         assert blurring_grid.sub_grid_size == 1
-
-    def test__new_grid__with_interpolator__returns_grid_with_interpolator(self):
-
-        mask = np.array(
-            [
-                [True, True, False, False],
-                [True, False, True, True],
-                [True, True, False, False],
-            ]
-        )
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
-
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
-
-        grid_with_interp = grid.new_grid_with_interpolator(interp_pixel_scale=1.0)
-
-        assert (grid[:, :] == grid_with_interp[:, :]).all()
-        assert grid.mask == grid_with_interp.mask
-
-        interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=grid, interp_pixel_scale=1.0
-        )
-
-        assert (grid.interpolator.vtx == interpolator_manual.vtx).all()
-        assert (grid.interpolator.wts == interpolator_manual.wts).all()
 
     def test__padded_grid_from_psf_shape__matches_grid_2d_after_padding(self):
 
@@ -668,6 +641,48 @@ class TestGrid:
 
         grid = grids.Grid(arr=np.array([[3.5, 2.0], [-1.0, 5.0]]), mask=mask)
         assert grid.xticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
+
+    def test__new_grid__with_interpolator__returns_grid_with_interpolator(self):
+
+        mask = np.array(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ]
+        )
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+
+        grid_with_interp = grid.new_grid_with_interpolator(interp_pixel_scale=1.0)
+
+        assert (grid[:, :] == grid_with_interp[:, :]).all()
+        assert grid.mask == grid_with_interp.mask
+
+        interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=grid, interp_pixel_scale=1.0
+        )
+
+        assert (grid.interpolator.vtx == interpolator_manual.vtx).all()
+        assert (grid.interpolator.wts == interpolator_manual.wts).all()
+
+    def test__new_grid__with_binned__returns_grid_with_binned(self):
+
+        mask = np.array(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ]
+        )
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+
+        grid_with_interp = grid.new_grid_with_binned_grid(binned_grid=1)
+
+        assert grid.binned == 1
 
 
 class TestMappings:
@@ -1251,44 +1266,44 @@ class TestGridBorder(object):
         assert relocated_grid.sub_grid_size == 2
 
 
-class TestClusterGrid:
-    def test__from_mask_and_cluster_pixel_scale__correct_cluster_bin_up_calculated(
+class TestBinnedGrid:
+    def test__from_mask_and_binned_pixel_scale__correct_binned_bin_up_calculated(
         self, mask_7x7, grid_7x7
     ):
 
         mask_7x7.pixel_scale = 1.0
-        cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_7x7, cluster_pixel_scale=1.0
+        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+            mask=mask_7x7, binned_pixel_scale=1.0
         )
 
-        assert (cluster_grid == grid_7x7).all()
-        assert (cluster_grid.mask == mask_7x7).all()
-        assert cluster_grid.bin_up_factor == 1
+        assert (binned_grid == grid_7x7).all()
+        assert (binned_grid.mask == mask_7x7).all()
+        assert binned_grid.bin_up_factor == 1
         assert (
-            cluster_grid.cluster_to_regular_all
+            binned_grid.binned_mask_1d_index_to_mask_1d_indexes
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
         mask_7x7.pixel_scale = 1.0
-        cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_7x7, cluster_pixel_scale=1.9
+        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+            mask=mask_7x7, binned_pixel_scale=1.9
         )
 
-        assert cluster_grid.bin_up_factor == 1
-        assert (cluster_grid.mask == mask_7x7).all()
+        assert binned_grid.bin_up_factor == 1
+        assert (binned_grid.mask == mask_7x7).all()
         assert (
-            cluster_grid.cluster_to_regular_all
+            binned_grid.binned_mask_1d_index_to_mask_1d_indexes
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
         mask_7x7.pixel_scale = 1.0
-        cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_7x7, cluster_pixel_scale=2.0
+        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+            mask=mask_7x7, binned_pixel_scale=2.0
         )
 
-        assert cluster_grid.bin_up_factor == 2
+        assert binned_grid.bin_up_factor == 2
         assert (
-            cluster_grid.mask
+            binned_grid.mask
             == np.array(
                 [
                     [True, True, True, True],
@@ -1300,43 +1315,43 @@ class TestClusterGrid:
         ).all()
 
         assert (
-            cluster_grid
+            binned_grid
             == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
         ).all()
         assert (
-            cluster_grid.cluster_to_regular_all
+            binned_grid.binned_mask_1d_index_to_mask_1d_indexes
             == np.array([[0, -1, -1, -1], [1, 2, -1, -1], [3, 6, -1, -1], [4, 5, 7, 8]])
         ).all()
 
         mask_7x7.pixel_scale = 2.0
-        cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_7x7, cluster_pixel_scale=1.0
+        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+            mask=mask_7x7, binned_pixel_scale=1.0
         )
 
-        assert cluster_grid.bin_up_factor == 1
+        assert binned_grid.bin_up_factor == 1
 
-    def test__from_mask_and_cluster_pixel_scale__maximum_cluster_pixels_changes_bin_up_factor(
+    def test__from_mask_and_binned_pixel_scale__maximum_binned_pixels_changes_bin_up_factor(
         self, mask_7x7, grid_7x7
     ):
 
         mask_7x7.pixel_scale = 1.0
 
-        cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_7x7, cluster_pixel_scale=4.0, cluster_pixels_limit=None
+        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+            mask=mask_7x7, binned_pixel_scale=4.0, inversion_pixels_limit=None
         )
 
-        assert cluster_grid.bin_up_factor == 4
+        assert binned_grid.bin_up_factor == 4
 
-        cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-            mask=mask_7x7, cluster_pixel_scale=4.0, cluster_pixels_limit=9
+        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+            mask=mask_7x7, binned_pixel_scale=4.0, inversion_pixels_limit=9
         )
 
-        assert cluster_grid.bin_up_factor == 1
+        assert binned_grid.bin_up_factor == 1
 
         with pytest.raises(exc.DataException):
 
-            grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-                mask=mask_7x7, cluster_pixel_scale=4.0, cluster_pixels_limit=10
+            grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+                mask=mask_7x7, binned_pixel_scale=4.0, inversion_pixels_limit=10
             )
 
 
@@ -1345,12 +1360,14 @@ class TestPixelizationGrid:
 
         pix_grid = grids.PixelizationGrid(
             arr=np.array([[1.0, 1.0], [2.0, 2.0]]),
-            mask_1d_index_to_pixelization_1d_index=np.array([0, 1]),
+            mask_1d_index_to_nearest_pixelization_1d_index=np.array([0, 1]),
         )
 
         assert type(pix_grid) == grids.PixelizationGrid
         assert (pix_grid == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
-        assert (pix_grid.mask_1d_index_to_nearest_pixelization_1d_index == np.array([0, 1])).all()
+        assert (
+            pix_grid.mask_1d_index_to_nearest_pixelization_1d_index == np.array([0, 1])
+        ).all()
 
     def test__from_unmasked_sparse_shape_and_grid(self):
 
@@ -1374,7 +1391,7 @@ class TestPixelizationGrid:
         assert (sparse_to_grid.sparse == pixelization_grid).all()
         assert (
             sparse_to_grid.mask_1d_index_to_sparse_1d_index
-            == pixelization_grid.mask_1d_index_to_pixelization_1d_index
+            == pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index
         ).all()
 
 
@@ -1446,7 +1463,10 @@ class TestSparseToRegularGrid:
                 sparse_to_unmasked_sparse=sparse_to_unmasked_sparse_util,
             )
 
-            assert (sparse_to_grid.mask_1d_index_to_sparse_1d_index == mask_1d_index_to_sparse_1d_index_util).all()
+            assert (
+                sparse_to_grid.mask_1d_index_to_sparse_1d_index
+                == mask_1d_index_to_sparse_1d_index_util
+            ).all()
             assert (sparse_to_grid.sparse == sparse_grid_util).all()
 
         def test__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_masked_sparse_grid(
@@ -1466,7 +1486,10 @@ class TestSparseToRegularGrid:
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
-            assert (sparse_to_grid.mask_1d_index_to_sparse_1d_index == np.array([0, 1, 2, 3, 4])).all()
+            assert (
+                sparse_to_grid.mask_1d_index_to_sparse_1d_index
+                == np.array([0, 1, 2, 3, 4])
+            ).all()
             assert (
                 sparse_to_grid.sparse
                 == np.array(
@@ -1495,7 +1518,8 @@ class TestSparseToRegularGrid:
             )
 
             assert (
-                sparse_to_grid.mask_1d_index_to_sparse_1d_index == np.array([0, 1, 2, 3, 4, 5, 6, 7])
+                sparse_to_grid.mask_1d_index_to_sparse_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7])
             ).all()
             assert (
                 sparse_to_grid.sparse
@@ -1533,7 +1557,8 @@ class TestSparseToRegularGrid:
             )
 
             assert (
-                sparse_to_grid.mask_1d_index_to_sparse_1d_index == np.array([0, 1, 2, 3, 4, 5])
+                sparse_to_grid.mask_1d_index_to_sparse_1d_index
+                == np.array([0, 1, 2, 3, 4, 5])
             ).all()
             assert (
                 sparse_to_grid.sparse
@@ -1575,7 +1600,10 @@ class TestSparseToRegularGrid:
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
-            assert (sparse_to_grid.mask_1d_index_to_sparse_1d_index == np.array([0, 1, 2, 3, 4])).all()
+            assert (
+                sparse_to_grid.mask_1d_index_to_sparse_1d_index
+                == np.array([0, 1, 2, 3, 4])
+            ).all()
             assert (
                 sparse_to_grid.sparse
                 == np.array(
@@ -1607,7 +1635,10 @@ class TestSparseToRegularGrid:
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
-            assert (sparse_to_grid.mask_1d_index_to_sparse_1d_index == np.array([0, 1, 2, 3, 4])).all()
+            assert (
+                sparse_to_grid.mask_1d_index_to_sparse_1d_index
+                == np.array([0, 1, 2, 3, 4])
+            ).all()
             assert (
                 sparse_to_grid.sparse
                 == np.array(
@@ -1667,7 +1698,8 @@ class TestSparseToRegularGrid:
             )
 
             assert (
-                sparse_to_grid.mask_1d_index_to_sparse_1d_index == np.array([0, 1, 2, 3, 4, 5, 6, 7])
+                sparse_to_grid.mask_1d_index_to_sparse_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7])
             ).all()
             assert (
                 sparse_to_grid.sparse
@@ -1705,7 +1737,8 @@ class TestSparseToRegularGrid:
             )
 
             assert (
-                sparse_to_grid.mask_1d_index_to_sparse_1d_index == np.array([0, 1, 2, 3, 4, 5])
+                sparse_to_grid.mask_1d_index_to_sparse_1d_index
+                == np.array([0, 1, 2, 3, 4, 5])
             ).all()
             assert (
                 sparse_to_grid.sparse
@@ -1764,7 +1797,7 @@ class TestSparseToRegularGrid:
             ).all()
 
     class TestUnmaskeedShapeAndWeightImage:
-        def test__cluster_weight_map_all_ones__kmenas_grid_is_grid_overlapping_image(
+        def test__binned_weight_map_all_ones__kmenas_grid_is_grid_overlapping_image(
             self
         ):
 
@@ -1780,18 +1813,16 @@ class TestSparseToRegularGrid:
                 pixel_scale=0.5,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
-
-            cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-                mask=mask, cluster_pixel_scale=mask.pixel_scale
+            binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+                mask=mask, binned_pixel_scale=mask.pixel_scale
             )
 
-            cluster_weight_map = np.ones(mask.pixels_in_mask)
+            binned_weight_map = np.ones(mask.pixels_in_mask)
 
-            sparse_to_grid_weight = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+            sparse_to_grid_weight = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
                 total_pixels=8,
-                cluster_grid=cluster_grid,
-                cluster_weight_map=cluster_weight_map,
+                binned_grid=binned_grid,
+                binned_weight_map=binned_weight_map,
                 n_iter=10,
                 max_iter=20,
                 seed=1,
@@ -1818,7 +1849,7 @@ class TestSparseToRegularGrid:
                 == np.array([1, 1, 2, 2, 1, 1, 3, 3, 5, 4, 0, 7, 5, 4, 6, 6])
             ).all()
 
-        def test__cluster_weight_map_changes_grid_from_above(self):
+        def test__binned_weight_map_changes_grid_from_above(self):
 
             mask = msk.Mask(
                 array=np.array(
@@ -1832,19 +1863,17 @@ class TestSparseToRegularGrid:
                 pixel_scale=0.5,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
-
-            cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-                mask=mask, cluster_pixel_scale=mask.pixel_scale
+            binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+                mask=mask, binned_pixel_scale=mask.pixel_scale
             )
 
-            cluster_weight_map = np.ones(mask.pixels_in_mask)
-            cluster_weight_map[0:15] = 0.00000001
+            binned_weight_map = np.ones(mask.pixels_in_mask)
+            binned_weight_map[0:15] = 0.00000001
 
-            sparse_to_grid_weight = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+            sparse_to_grid_weight = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
                 total_pixels=8,
-                cluster_grid=cluster_grid,
-                cluster_weight_map=cluster_weight_map,
+                binned_grid=binned_grid,
+                binned_weight_map=binned_weight_map,
                 n_iter=10,
                 max_iter=30,
                 seed=1,
@@ -1859,7 +1888,7 @@ class TestSparseToRegularGrid:
                 == np.array([5, 1, 0, 0, 5, 1, 1, 4, 3, 6, 7, 4, 3, 6, 2, 2])
             ).all()
 
-        def test__cluster_weight_map_all_ones__cluster_pixel_scale_leads_to_binning_up_by_factor_2(
+        def test__binned_weight_map_all_ones__binned_pixel_scale_leads_to_binning_up_by_factor_2(
             self
         ):
 
@@ -1867,18 +1896,16 @@ class TestSparseToRegularGrid:
                 array=np.full(fill_value=False, shape=(8, 8)), pixel_scale=0.5
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
-
-            cluster_grid = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
-                mask=mask, cluster_pixel_scale=2.0 * mask.pixel_scale
+            binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
+                mask=mask, binned_pixel_scale=2.0 * mask.pixel_scale
             )
 
-            cluster_weight_map = np.ones(cluster_grid.shape[0])
+            binned_weight_map = np.ones(binned_grid.shape[0])
 
-            sparse_to_grid_weight = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+            sparse_to_grid_weight = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
                 total_pixels=8,
-                cluster_grid=cluster_grid,
-                cluster_weight_map=cluster_weight_map,
+                binned_grid=binned_grid,
+                binned_weight_map=binned_weight_map,
                 n_iter=10,
                 max_iter=30,
                 seed=1,

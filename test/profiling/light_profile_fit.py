@@ -64,15 +64,14 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
     print("Light profile fit run times for image type " + data_resolution + "\n")
-    print("Number of points = " + str(lens_data.grid_stack.sub.shape[0]) + "\n")
+    print("Number of points = " + str(lens_data.grid.sub.shape[0]) + "\n")
 
     start_overall = time.time()
 
     start = time.time()
     for i in range(repeats):
         tracer = ray_tracing.Tracer.from_galaxies(
-            galaxies=[lens_galaxy, source_galaxy],
-            image_plane_grid_stack=lens_data.grid_stack,
+            galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid
         )
     diff = time.time() - start
     print("Time to Setup Tracer = {}".format(diff / repeats))
@@ -82,7 +81,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
         blurred_profile_image_1d = lens_fit_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.profile_image_from_grid,
             blurring_image_1d=tracer.profile_image_plane_blurring_image,
-            convolver=lens_data.convolver_image,
+            convolver=lens_data.convolver,
         )
         blurred_profile_image = lens_data.scaled_array_2d_from_array_1d(
             array_1d=blurred_profile_image_1d

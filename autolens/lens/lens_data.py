@@ -3,7 +3,7 @@ from autolens.array import mask as msk
 from autolens.data.convolution import Convolver
 
 
-from autolens.array.grids import reshape_returned_array
+from autolens.array.grids import reshape_data_array
 
 
 class LensData(object):
@@ -13,12 +13,10 @@ class LensData(object):
         mask,
         sub_grid_size=2,
         positions=None,
-        image_psf_shape=None,
-        inversion_psf_shape=None,
+        trimmed_psf_shape=None,
         interp_pixel_scale=None,
         cluster_pixel_scale=None,
         cluster_pixel_limit=None,
-        uses_inversion=True,
         uses_cluster_inversion=True,
         hyper_noise_map_max=None,
     ):
@@ -38,7 +36,7 @@ class LensData(object):
         sub_grid_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid_stack each image-pixel on a 2x2 \
             sub-grid.
-        image_psf_shape : (int, int)
+        trimmed_psf_shape : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         inversion_psf_shape : (int, int)
@@ -73,54 +71,40 @@ class LensData(object):
 
         self.sub_grid_size = sub_grid_size
 
-        if image_psf_shape is None:
-            self.image_psf_shape = self.psf.shape
+        if trimmed_psf_shape is None:
+            self.trimmed_psf_shape = self.psf.shape
         else:
-            self.image_psf_shape = image_psf_shape
+            self.trimmed_psf_shape = trimmed_psf_shape
 
-        self.convolver_image = Convolver(
+        self.convolver = Convolver(
             mask=mask,
             blurring_mask=mask.blurring_mask_from_psf_shape(
-                psf_shape=self.image_psf_shape
+                psf_shape=self.trimmed_psf_shape
             ),
             psf=self.psf.resized_scaled_array_from_array(
-                new_shape=self.image_psf_shape
+                new_shape=self.trimmed_psf_shape
             ),
         )
 
-        if inversion_psf_shape is None:
-            self.inversion_psf_shape = self.psf.shape
-        else:
-            self.inversion_psf_shape = inversion_psf_shape
+        self.grid = grids.Grid.from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=sub_grid_size
+        )
 
-        self.uses_inversion = uses_inversion
-
-        if uses_inversion:
-
-            self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(
-                mask=mask,
-                psf=self.psf.resized_scaled_array_from_array(
-                    new_shape=self.inversion_psf_shape
-                ),
-            )
-
-        else:
-
-            self.convolver_mapping_matrix = None
-
-        self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask, sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape
+        self.blurring_grid = grids.Grid.blurring_grid_from_mask_and_psf_shape(
+            mask=mask, psf_shape=self.trimmed_psf_shape
         )
 
         self.interp_pixel_scale = interp_pixel_scale
 
         if interp_pixel_scale is not None:
 
-            self.grid_stack = self.grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
+            self.grid = self.grid.new_grid_with_interpolator(
                 interp_pixel_scale=interp_pixel_scale
             )
 
-        self.border = grids.GridBorder.from_mask(mask=mask)
+            self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
+                interp_pixel_scale=interp_pixel_scale
+            )
 
         self.positions = positions
 
@@ -133,23 +117,23 @@ class LensData(object):
 
             if self.cluster_pixel_scale is not None:
 
-                self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                self.cluster_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
                     mask=self.mask_2d,
-                    cluster_pixel_scale=cluster_pixel_scale,
-                    cluster_pixels_limit=cluster_pixel_limit,
+                    binned_pixel_scale=cluster_pixel_scale,
+                    inversion_pixels_limit=cluster_pixel_limit,
                 )
 
             else:
 
-                self.cluster = grids.ClusterGrid.from_mask_and_cluster_pixel_scale(
+                self.cluster_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
                     mask=self.mask_2d,
-                    cluster_pixel_scale=self.pixel_scale,
-                    cluster_pixels_limit=cluster_pixel_limit,
+                    binned_pixel_scale=self.pixel_scale,
+                    inversion_pixels_limit=cluster_pixel_limit,
                 )
 
         else:
 
-            self.cluster = None
+            self.cluster_grid = None
             self.cluster_pixel_limit = None
             self.cluster_pixel_scale = None
 
@@ -166,12 +150,10 @@ class LensData(object):
             mask=self.mask_2d,
             sub_grid_size=self.sub_grid_size,
             positions=self.positions,
-            image_psf_shape=self.image_psf_shape,
-            inversion_psf_shape=self.inversion_psf_shape,
+            trimmed_psf_shape=self.trimmed_psf_shape,
             interp_pixel_scale=self.interp_pixel_scale,
             cluster_pixel_scale=self.cluster_pixel_scale,
             cluster_pixel_limit=self.cluster_pixel_limit,
-            uses_inversion=self.uses_inversion,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
         )
@@ -190,12 +172,10 @@ class LensData(object):
             mask=binned_up_mask,
             sub_grid_size=self.sub_grid_size,
             positions=self.positions,
-            image_psf_shape=self.image_psf_shape,
-            inversion_psf_shape=self.inversion_psf_shape,
+            trimmed_psf_shape=self.trimmed_psf_shape,
             interp_pixel_scale=self.interp_pixel_scale,
             cluster_pixel_scale=self.cluster_pixel_scale,
             cluster_pixel_limit=self.cluster_pixel_limit,
-            uses_inversion=self.uses_inversion,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
         )
@@ -211,23 +191,13 @@ class LensData(object):
             mask=self.mask_2d,
             sub_grid_size=self.sub_grid_size,
             positions=self.positions,
-            image_psf_shape=self.image_psf_shape,
-            inversion_psf_shape=self.inversion_psf_shape,
+            trimmed_psf_shape=self.trimmed_psf_shape,
             interp_pixel_scale=self.interp_pixel_scale,
             cluster_pixel_scale=self.cluster_pixel_scale,
             cluster_pixel_limit=self.cluster_pixel_limit,
-            uses_inversion=self.uses_inversion,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
         )
-
-    @property
-    def array_1d_from_array_2d(self):
-        return self.grid_stack.regular.array_1d_from_array_2d
-
-    @property
-    def scaled_array_2d_from_array_1d(self):
-        return self.grid_stack.scaled_array_2d_from_array_1d
 
     def mask(self, return_in_2d=True):
         if return_in_2d:
@@ -235,15 +205,15 @@ class LensData(object):
         else:
             return self.mask_1d
 
-    @reshape_returned_array
+    @reshape_data_array
     def image(self, return_in_2d=True):
         return self.image_1d
 
-    @reshape_returned_array
+    @reshape_data_array
     def noise_map(self, return_in_2d=True):
         return self.noise_map_1d
 
-    @reshape_returned_array
+    @reshape_data_array
     def signal_to_noise_map(self, return_in_2d=True):
         return self.signal_to_noise_map_1d
 
@@ -255,19 +225,18 @@ class LensData(object):
             self.mask_2d = obj.mask_2d
             self.mask_1d = obj.mask_1d
             self.psf = obj.psf
+            self.trimmed_psf_shape = obj.trimmed_psf_shape
             self.mask_1d = obj.mask_1d
             self.image_1d = obj.image_1d
             self.noise_map_1d = obj.noise_map_1d
             self.signal_to_noise_map_1d = obj.signal_to_noise_map_1d
             self.sub_grid_size = obj.sub_grid_size
-            self.convolver_image = obj.convolver_image
-            self.uses_inversion = obj.uses_inversion
-            self.convolver_mapping_matrix = obj.convolver_mapping_matrix
-            self.grid_stack = obj.grid_stack
-            self.border = obj.border
+            self.convolver = obj.convolver
+            self.grid = obj.grid
+            self.blurring_grid = obj.blurring_grid
             self.positions = obj.positions
             self.interp_pixel_scale = obj.interp_pixel_scale
             self.uses_cluster_inversion = obj.uses_cluster_inversion
-            self.cluster = obj.cluster
+            self.cluster_grid = obj.cluster_grid
             self.cluster_pixel_limit = obj.cluster_pixel_limit
             self.hyper_noise_map_max = obj.hyper_noise_map_max

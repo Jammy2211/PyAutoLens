@@ -85,8 +85,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=2)
 
     tracer = ray_tracing.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy],
-        image_plane_grid_stack=lens_data.grid_stack,
+        galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid
     )
 
     fitter = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
@@ -167,8 +166,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
     tracer = ray_tracing.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy],
-        image_plane_grid_stack=lens_data.grid_stack,
+        galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid
     )
 
     fitter = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)

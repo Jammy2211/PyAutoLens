@@ -423,7 +423,9 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return np.array([[a11, a12], [a21, a22]])
 
     @reshape_returned_array
-    def convergence_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def convergence_via_jacobian_from_grid(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -461,9 +463,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return 1 - convergence - shear
 
     @reshape_returned_array
-    def radial_eigen_value_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
-    ):
+    def radial_eigen_value_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         convergence = self.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False

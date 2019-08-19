@@ -42,11 +42,11 @@ def fit_with_offset_centre(centre):
 
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
 
-    pixelization_grid = source_galaxy.pixelization.pixelization_grid_from_grid(
-        grid=lens_data.grid_stack
+    pixelization_grid = source_galaxy.pixelization.traced_pixelization_grids_of_planes_from_grid(
+        grid=lens_data.grid
     )
 
-    grid_stack_with_pixelization_grid = lens_data.grid_stack.new_grid_stack_with_grids_added(
+    grid_stack_with_pixelization_grid = lens_data.grid.new_grid_stack_with_grids_added(
         pixelization=pixelization_grid
     )
 

@@ -518,7 +518,7 @@ class TestVoronoiBrightness:
         pixelization_grid = pix.pixelization_grid_from_grid(
             grid=sub_grid_7x7,
             hyper_image=hyper_image,
-            cluster=lens_data_7x7.cluster,
+            cluster_grid=lens_data_7x7.cluster,
             seed=1,
         )
 
@@ -526,10 +526,10 @@ class TestVoronoiBrightness:
             hyper_image=hyper_image
         )
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
             total_pixels=pix.pixels,
-            cluster_grid=lens_data_7x7.cluster,
-            cluster_weight_map=cluster_weight_map,
+            binned_grid=lens_data_7x7.cluster,
+            binned_weight_map=cluster_weight_map,
             seed=1,
         )
 

@@ -12,7 +12,6 @@ from autolens.array.util import grid_util
 
 
 class AbstractPlane(object):
-
     def __init__(self, redshift, galaxies, cosmology):
         """A plane of galaxies where all galaxies are at the same redshift.
 
@@ -68,6 +67,44 @@ class AbstractPlane(object):
         return any([galaxy.regularization for galaxy in self.galaxies])
 
     @property
+    def galaxies_with_pixelization(self):
+        return list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
+
+    @property
+    def galaxies_with_regularization(self):
+        return list(filter(lambda galaxy: galaxy.has_regularization, self.galaxies))
+
+    @property
+    def pixelization(self):
+
+        if len(self.galaxies_with_pixelization) == 0:
+            return None
+        if len(self.galaxies_with_pixelization) == 1:
+            return self.galaxies_with_pixelization[0].pixelization
+        elif len(self.galaxies_with_pixelization) > 1:
+            raise exc.PixelizationException(
+                "The number of galaxies with pixelizations in one plane is above 1"
+            )
+
+    @property
+    def regularization(self):
+
+        if len(self.galaxies_with_regularization) == 0:
+            return None
+        if len(self.galaxies_with_regularization) == 1:
+            return self.galaxies_with_regularization[0].regularization
+        elif len(self.galaxies_with_regularization) > 1:
+            raise exc.PixelizationException(
+                "The number of galaxies with regularizations in one plane is above 1"
+            )
+
+    @property
+    def hyper_galaxy_image_1d_of_galaxy_with_pixelization(self):
+        galaxies_with_pixelization = self.galaxies_with_pixelization
+        if galaxies_with_pixelization:
+            return galaxies_with_pixelization[0].hyper_galaxy_image_1d
+
+    @property
     def has_hyper_galaxy(self):
         return any(list(map(lambda galaxy: galaxy.has_hyper_galaxy, self.galaxies)))
 
@@ -117,10 +154,11 @@ class AbstractPlane(object):
 
 
 class AbstractPlaneCosmology(AbstractPlane):
-
     def __init__(self, redshift, galaxies, cosmology):
 
-        super(AbstractPlaneCosmology, self).__init__(redshift=redshift, galaxies=galaxies, cosmology=cosmology)
+        super(AbstractPlaneCosmology, self).__init__(
+            redshift=redshift, galaxies=galaxies, cosmology=cosmology
+        )
 
     @property
     def arcsec_per_kpc(self):
@@ -149,9 +187,10 @@ class AbstractPlaneCosmology(AbstractPlane):
 
 
 class AbstractPlaneLensing(AbstractPlaneCosmology):
-
     def __init__(self, redshift, galaxies, cosmology):
-        super(AbstractPlaneCosmology, self).__init__(redshift=redshift, galaxies=galaxies, cosmology=cosmology)
+        super(AbstractPlaneCosmology, self).__init__(
+            redshift=redshift, galaxies=galaxies, cosmology=cosmology
+        )
 
     @reshape_returned_array
     def profile_image_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -325,9 +364,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        return 1.0 - np.gradient(
-            deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1
-        )
+        return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
 
     @reshape_returned_array
     def lensing_jacobian_a12_from_grid(
@@ -338,9 +375,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        return -1.0 * np.gradient(
-            deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0
-        )
+        return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
 
     @reshape_returned_array
     def lensing_jacobian_a21_from_grid(
@@ -351,9 +386,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        return -1.0 * np.gradient(
-            deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1
-        )
+        return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
 
     @reshape_returned_array
     def lensing_jacobian_a22_from_grid(
@@ -364,9 +397,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        return 1 - np.gradient(
-            deflections_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0
-        )
+        return 1 - np.gradient(deflections_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
 
     def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
@@ -389,9 +420,13 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         return np.array([[a11, a12], [a21, a22]])
 
     @reshape_returned_array
-    def convergence_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def convergence_via_jacobian_from_grid(
+        self, grid, return_in_2d=True, return_binned=True
+    ):
 
-        jacobian = self.lensing_jacobian_from_grid(grid=grid, return_in_2d=False, return_binned=False)
+        jacobian = self.lensing_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
 
         convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
 
@@ -400,7 +435,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
     @reshape_returned_array
     def shear_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
-        jacobian = self.lensing_jacobian_from_grid(grid=grid, return_in_2d=True, return_binned=False)
+        jacobian = self.lensing_jacobian_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
 
         gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
         gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
@@ -416,27 +453,31 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid, return_in_2d=False, return_binned=False
         )
 
-        shear = self.shear_via_jacobian_from_grid(grid=grid, return_in_2d=False, return_binned=False)
+        shear = self.shear_via_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
 
         return 1 - convergence - shear
 
     @reshape_returned_array
-    def radial_eigen_value_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
-    ):
+    def radial_eigen_value_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         convergence = self.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
         )
 
-        shear = self.shear_via_jacobian_from_grid(grid=grid, return_in_2d=False, return_binned=False)
+        shear = self.shear_via_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
 
         return 1 - convergence + shear
 
     @reshape_returned_array
     def magnification_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
-        jacobian = self.lensing_jacobian_from_grid(grid=grid, return_in_2d=False, return_binned=False)
+        jacobian = self.lensing_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
 
         det_jacobian = jacobian[0, 0] * jacobian[1, 1] - jacobian[0, 1] * jacobian[1, 0]
 
@@ -670,42 +711,57 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
 
 class AbstractPlaneData(AbstractPlaneLensing):
-
     def __init__(self, redshift, galaxies, cosmology):
 
-        super(AbstractPlaneData, self).__init__(redshift=redshift, galaxies=galaxies, cosmology=cosmology)
+        super(AbstractPlaneData, self).__init__(
+            redshift=redshift, galaxies=galaxies, cosmology=cosmology
+        )
 
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None,
+        self, grid, convolver, preload_blurring_grid=None
     ):
 
         if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(psf_shape=convolver.psf.shape)
+            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
+                psf_shape=convolver.psf.shape
+            )
 
         if convolver.blurring_mask is None:
-            blurring_mask = grid.mask.blurring_mask_from_psf_shape(psf_shape=convolver.psf.shape)
-            convolver = convolver.convolver_with_blurring_mask_added(blurring_mask=blurring_mask)
+            blurring_mask = grid.mask.blurring_mask_from_psf_shape(
+                psf_shape=convolver.psf.shape
+            )
+            convolver = convolver.convolver_with_blurring_mask_added(
+                blurring_mask=blurring_mask
+            )
 
         image_array = self.profile_image_from_grid(
             grid=grid, return_in_2d=False, return_binned=True
         )
 
-        blurring_array = self.profile_image_from_grid(grid=preload_blurring_grid, return_in_2d=False, return_binned=True)
+        blurring_array = self.profile_image_from_grid(
+            grid=preload_blurring_grid, return_in_2d=False, return_binned=True
+        )
 
         return convolver.convolve_image(
             image_array=image_array, blurring_array=blurring_array
         )
 
     def blurred_profile_1d_images_of_galaxies_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None,
+        self, grid, convolver, preload_blurring_grid=None
     ):
 
         if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(psf_shape=convolver.psf.shape)
+            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
+                psf_shape=convolver.psf.shape
+            )
 
         if convolver.blurring_mask is None:
-            blurring_mask = grid.mask.blurring_mask_from_psf_shape(psf_shape=convolver.psf.shape)
-            convolver = convolver.convolver_with_blurring_mask_added(blurring_mask=blurring_mask)
+            blurring_mask = grid.mask.blurring_mask_from_psf_shape(
+                psf_shape=convolver.psf.shape
+            )
+            convolver = convolver.convolver_with_blurring_mask_added(
+                blurring_mask=blurring_mask
+            )
 
         return list(
             map(
@@ -716,7 +772,9 @@ class AbstractPlaneData(AbstractPlaneLensing):
                 self.profile_images_of_galaxies_from_grid(
                     grid=grid, return_in_2d=False, return_binned=True
                 ),
-                self.profile_images_of_galaxies_from_grid(grid=preload_blurring_grid, return_in_2d=False, return_binned=True),
+                self.profile_images_of_galaxies_from_grid(
+                    grid=preload_blurring_grid, return_in_2d=False, return_binned=True
+                ),
             )
         )
 
@@ -730,24 +788,19 @@ class AbstractPlaneData(AbstractPlaneLensing):
             image_1d=profile_image_plane_image_1d
         )
 
-    @property
-    def regularization(self):
+    def pixelization_grid_from_grid(self, grid):
 
-        galaxies_with_regularization = list(
-            filter(lambda galaxy: galaxy.has_regularization, self.galaxies)
+        if not self.has_pixelization:
+            return None
+
+        hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_of_galaxy_with_pixelization
+
+        return self.pixelization.pixelization_grid_from_grid(
+            grid=grid, cluster_grid=grid.binned, hyper_image=hyper_galaxy_image_1d
         )
 
-        if len(galaxies_with_regularization) == 0:
-            return None
-        if len(galaxies_with_regularization) == 1:
-            return galaxies_with_regularization[0].regularization
-        elif len(galaxies_with_regularization) > 1:
-            raise exc.PixelizationException(
-                "The number of galaxies with regularizations in one plane is above 1"
-            )
-
     def mapper_from_grid_and_pixelization_grid(
-        self, grid, pixelization_grid, relocate_to_border=True,
+        self, grid, pixelization_grid, relocate_to_border=True
     ):
 
         galaxies_with_pixelization = list(
@@ -862,10 +915,11 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
 
 class Plane(AbstractPlaneData):
-
     def __init__(self, redshift=None, galaxies=None, cosmology=cosmo.Planck15):
 
-        super(Plane, self).__init__(redshift=redshift, galaxies=galaxies, cosmology=cosmology)
+        super(Plane, self).__init__(
+            redshift=redshift, galaxies=galaxies, cosmology=cosmology
+        )
 
     # noinspection PyUnusedLocal
     def summarize_in_units(

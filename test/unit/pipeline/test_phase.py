@@ -784,7 +784,9 @@ class TestPhase(object):
             border=None,
         )
 
-        mapper_no_border = tracer_no_border.mappers_of_planes_from_grid_and_pixelization_grid[0]
+        mapper_no_border = tracer_no_border.mappers_of_planes_from_grid[
+            0
+        ]
 
         tracer_with_border = ray_tracing.Tracer.from_galaxies(
             galaxies=[lens_galaxy, source_galaxy],
@@ -792,7 +794,9 @@ class TestPhase(object):
             border=lens_data_7x7.border,
         )
 
-        mapper_with_border = tracer_with_border.mappers_of_planes_from_grid_and_pixelization_grid[0]
+        mapper_with_border = tracer_with_border.mappers_of_planes_from_grid[
+            0
+        ]
 
         phase_7x7 = phase_imaging.PhaseImaging(
             galaxies=[lens_galaxy, source_galaxy],
@@ -808,7 +812,7 @@ class TestPhase(object):
 
         instance = phase_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
-        mapper = tracer.mappers_of_planes_from_grid_and_pixelization_grid[0]
+        mapper = tracer.mappers_of_planes_from_grid[0]
 
         assert (
             mapper_with_border.grid_stack.regular == mapper.grid_stack.regular
@@ -828,7 +832,7 @@ class TestPhase(object):
 
         instance = phase_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
-        mapper = tracer.mappers_of_planes_from_grid_and_pixelization_grid[0]
+        mapper = tracer.mappers_of_planes_from_grid[0]
 
         assert (mapper_no_border.grid_stack.regular == mapper.grid_stack.regular).all()
 

@@ -170,7 +170,8 @@ def make_interferometer_data_7x7(
 @pytest.fixture(name="transformer_7x7_7")
 def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
     return mock_data.MockTransformer(
-        uv_wavelengths=uv_wavelengths_7, grid_radians=grid_7x7.unlensed_unsubbed_1d.in_radians
+        uv_wavelengths=uv_wavelengths_7,
+        grid_radians=grid_7x7.unlensed_unsubbed_1d.in_radians,
     )
 
 
@@ -288,8 +289,8 @@ def make_blurring_grid_7x7(blurring_mask_7x7):
 
 @pytest.fixture(name="cluster_grid_7x7")
 def make_cluster_grid_7x7(mask_7x7):
-    return mock_grids.MockClusterGrid.from_mask_and_cluster_pixel_scale(
-        mask=mask_7x7, cluster_pixel_scale=mask_7x7.pixel_scale
+    return mock_grids.MockClusterGrid.from_mask_and_binned_pixel_scale(
+        mask=mask_7x7, binned_pixel_scale=mask_7x7.pixel_scale
     )
 
 
@@ -466,12 +467,16 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 def make_lens_data_7x7(
     ccd_data_7x7,
     mask_7x7,
+    sub_grid_7x7,
+    blurring_grid_7x7,
     convolver_7x7,
     cluster_grid_7x7,
 ):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_7x7,
         mask=mask_7x7,
+        grid=sub_grid_7x7,
+        blurring_grid=blurring_grid_7x7,
         convolver=convolver_7x7,
         cluster=cluster_grid_7x7,
     )

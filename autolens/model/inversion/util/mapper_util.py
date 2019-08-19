@@ -82,33 +82,55 @@ def voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
 
         while True:
 
-            nearest_pixelization_pixel_center = pixel_centres[nearest_pixelization_1d_index]
+            nearest_pixelization_pixel_center = pixel_centres[
+                nearest_pixelization_1d_index
+            ]
 
             sub_pixel_to_nearest_pixelization_distance = (
-                                                  grid[sub_mask_1d_index, 0] - nearest_pixelization_pixel_center[0]
-            ) ** 2 + (grid[sub_mask_1d_index, 1] - nearest_pixelization_pixel_center[1]) ** 2
+                (grid[sub_mask_1d_index, 0] - nearest_pixelization_pixel_center[0]) ** 2
+                + (grid[sub_mask_1d_index, 1] - nearest_pixelization_pixel_center[1])
+                ** 2
+            )
 
             closest_separation_from_pixelization_to_neighbor = 1.0e8
 
-            for neighbor_pixelization_1d_index in range(pixel_neighbors_size[nearest_pixelization_1d_index]):
+            for neighbor_pixelization_1d_index in range(
+                pixel_neighbors_size[nearest_pixelization_1d_index]
+            ):
 
-                neighbor = pixel_neighbors[nearest_pixelization_1d_index, neighbor_pixelization_1d_index]
+                neighbor = pixel_neighbors[
+                    nearest_pixelization_1d_index, neighbor_pixelization_1d_index
+                ]
 
                 separation_from_neighbor = (
-                                                   grid[sub_mask_1d_index, 0] - pixel_centres[neighbor, 0]
+                    grid[sub_mask_1d_index, 0] - pixel_centres[neighbor, 0]
                 ) ** 2 + (grid[sub_mask_1d_index, 1] - pixel_centres[neighbor, 1]) ** 2
 
-                if separation_from_neighbor < closest_separation_from_pixelization_to_neighbor:
-                    closest_separation_from_pixelization_to_neighbor = separation_from_neighbor
-                    closest_neighbor_pixelization_1d_index = neighbor_pixelization_1d_index
+                if (
+                    separation_from_neighbor
+                    < closest_separation_from_pixelization_to_neighbor
+                ):
+                    closest_separation_from_pixelization_to_neighbor = (
+                        separation_from_neighbor
+                    )
+                    closest_neighbor_pixelization_1d_index = (
+                        neighbor_pixelization_1d_index
+                    )
 
             neighboring_pixelization_1d_index = pixel_neighbors[
                 nearest_pixelization_1d_index, closest_neighbor_pixelization_1d_index
             ]
-            sub_pixel_to_neighboring_pixelization_distance = closest_separation_from_pixelization_to_neighbor
+            sub_pixel_to_neighboring_pixelization_distance = (
+                closest_separation_from_pixelization_to_neighbor
+            )
 
-            if sub_pixel_to_nearest_pixelization_distance <= sub_pixel_to_neighboring_pixelization_distance:
-                sub_mask_1d_index_to_pixeliztion_1d_index[sub_mask_1d_index] = nearest_pixelization_1d_index
+            if (
+                sub_pixel_to_nearest_pixelization_distance
+                <= sub_pixel_to_neighboring_pixelization_distance
+            ):
+                sub_mask_1d_index_to_pixeliztion_1d_index[
+                    sub_mask_1d_index
+                ] = nearest_pixelization_1d_index
                 break
             else:
                 nearest_pixelization_1d_index = neighboring_pixelization_1d_index
