@@ -695,7 +695,7 @@ class TestPhase(object):
     #     galaxy = g.Galaxy(redshift=0.5)
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy, galaxy], grid_stack=analysis.lens_data.grid
+    #         galaxies=[galaxy, galaxy], grid=analysis.lens_data.grid
     #     )
     #
     #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
@@ -706,7 +706,7 @@ class TestPhase(object):
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
-    #         grid_stack=analysis.lens_data.grid,
+    #         grid=analysis.lens_data.grid,
     #     )
     #
     #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
@@ -719,7 +719,7 @@ class TestPhase(object):
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_uses_pix_grid],
-    #         grid_stack=analysis.lens_data.grid,
+    #         grid=analysis.lens_data.grid,
     #     )
     #
     #     assert (
@@ -766,7 +766,7 @@ class TestPhase(object):
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_uses_brightness],
-    #         grid_stack=analysis.lens_data.grid,
+    #         grid=analysis.lens_data.grid,
     #     )
     #
     #     assert (

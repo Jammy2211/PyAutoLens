@@ -225,7 +225,7 @@ class TestPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
@@ -955,7 +955,7 @@ class TestSersicMassRadialGradient(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)

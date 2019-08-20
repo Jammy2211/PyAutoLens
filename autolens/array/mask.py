@@ -434,14 +434,14 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     def array_1d_binned_from_sub_array_1d_and_sub_grid_size(
         self, sub_array_1d, sub_grid_size
     ):
-        """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
+        """For an input 1D sub-array, map its values to a 1D array of values by summing each set \of sub-pixel \
         values and dividing by the total number of sub-pixels.
 
         Parameters
         -----------
         sub_array_1d : ndarray
             A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
-            a 1d regular array.
+            a 1d array.
         """
 
         sub_grid_length = int(sub_grid_size ** 2.0)
@@ -492,14 +492,14 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     def sub_grid_1d_with_sub_dimensions_from_sub_grid_2d_and_sub_grid_size(
         self, sub_grid_2d, sub_grid_size
     ):
-        """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
+        """For an input 1D sub-array, map its values to a 1D array of values by summing each set \of sub-pixel \
         values and dividing by the total number of sub-pixels.
 
         Parameters
         -----------
         sub_grid_2d : ndarray
             A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
-            a 1d regular array.
+            a 1d array.
         """
         return grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
             sub_grid_2d=sub_grid_2d, mask=self, sub_grid_size=sub_grid_size
@@ -508,14 +508,14 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     def grid_1d_binned_from_sub_grid_1d_and_sub_grid_size(
         self, sub_grid_1d, sub_grid_size
     ):
-        """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
+        """For an input 1D sub-array, map its values to a 1D array of values by summing each set \of sub-pixel \
         values and dividing by the total number of sub-pixels.
 
         Parameters
         -----------
         sub_grid_1d : ndarray
             A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
-            a 1d regular array.
+            a 1d array.
         """
 
         grid_1d_y = self.array_1d_binned_from_sub_array_1d_and_sub_grid_size(
@@ -531,14 +531,14 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     def grid_2d_binned_from_sub_grid_1d_and_sub_grid_size(
         self, sub_grid_1d, sub_grid_size
     ):
-        """For an input 1D sub-array, map its values to a 1D regular array of values by summing each set \of sub-pixel \
+        """For an input 1D sub-array, map its values to a 1D array of values by summing each set \of sub-pixel \
         values and dividing by the total number of sub-pixels.
 
         Parameters
         -----------
         sub_grid_1d : ndarray
             A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
-            a 1d regular array.
+            a 1d array.
         """
 
         grid_1d = self.grid_1d_binned_from_sub_grid_1d_and_sub_grid_size(
@@ -556,7 +556,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         Parameters
         -----------
         sub_grid_1d : ndgrid
-            The 1D sub_grid which is mapped to its masked 2D sub-grid.
+            The 1D grid which is mapped to its masked 2D sub-grid.
         """
         return grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
             sub_grid_1d=sub_grid_1d, mask=self, sub_grid_size=sub_grid_size
@@ -564,12 +564,12 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @array_util.Memoizer()
     def sub_mask_1d_index_to_mask_1d_index_from_sub_grid_size(self, sub_grid_size):
-        """The mapping_util between every sub-pixel and its host regular-pixel.
+        """The mapping_util between every sub-pixel and its host pixel.
 
         For example:
 
-        - sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd regular pixel.
-        - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th regular pixel.
+        - sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd pixel.
+        - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th pixel.
         """
         return mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
             mask=self, sub_grid_size=sub_grid_size
@@ -578,7 +578,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     @array_util.Memoizer()
     def blurring_mask_from_psf_shape(self, psf_shape):
         """Compute a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
-        pixels via PSF convolution (see grid_stack.RegularGrid.blurring_grid_from_mask_and_psf_shape).
+        pixels via PSF convolution (see grid.RegularGrid.blurring_grid_from_mask_and_psf_shape).
 
         Parameters
         ----------

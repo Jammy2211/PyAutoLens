@@ -27,16 +27,16 @@ class AbstractTracer(object):
         according to the lens-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
         have redshifts.
 
-        This tracer has only one grid-stack (see grid_stack.GridStack) which is used for ray-tracing.
+        This tracer has only one grid-stack (see grid.GridStack) which is used for ray-tracing.
 
         Parameters
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         image_plane_grid_stack : grid_stacks.GridStack
-            The image-plane grid stack which is traced. (includes the regular-grid, sub-grid, blurring-grid, etc.).
+            The image-plane grid stack which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
         border : masks.RegularGridBorder
-            The border of the regular-grid, which is used to relocate demagnified traced pixels to the \
+            The border of the grid, which is used to relocate demagnified traced pixels to the \
             source-plane borders.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
@@ -763,19 +763,19 @@ class Tracer(AbstractTracerData):
         according to the lens-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
         have redshifts.
 
-        This tracer has only one grid-stack (see grid_stack.GridStack) which is used for ray-tracing.
+        This tracer has only one grid-stack (see grid.GridStack) which is used for ray-tracing.
 
         Parameters
         ----------
         lens_galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         image_plane_grid_stack : grid_stacks.GridStack
-            The image-plane grid stack which is traced. (includes the regular-grid, sub-grid, blurring-grid, etc.).
+            The image-plane grid stack which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
         planes_between_lenses : [int]
             The number of slices between each main plane. The first entry in this list determines the number of slices \
             between Earth (redshift 0.0) and main plane 0, the next between main planes 0 and 1, etc.
         border : masks.RegularGridBorder
-            The border of the regular-grid, which is used to relocate demagnified traced pixels to the \
+            The border of the grid, which is used to relocate demagnified traced pixels to the \
             source-plane borders.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.

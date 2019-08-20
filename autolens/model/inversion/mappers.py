@@ -8,25 +8,25 @@ import numpy as np
 class Mapper(object):
     def __init__(self, pixels, grid, pixelization_grid, hyper_image=None):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *hyper_galaxy.array.grid_stack* module) to discretized pixels in a pixelization.
+        a grid, see the *hyper_galaxy.array.grid* module) to discretized pixels in a pixelization.
 
-        1D arrays are used to represent these mappings, for example between the different grid_stack in a grid-stack \
-        (e.g. the regular / sub grid_stack). This follows the syntax grid_to_grid, whereby the index of a value on one grid \
+        1D arrays are used to represent these mappings, for example between the different grid in a grid-stack \
+        (e.g. the / sub grid). This follows the syntax grid_to_grid, whereby the index of a value on one grid \
         equals that of another grid, for example:
 
-        - image_to_pix[2] = 1  tells us that the 3rd pixel on a regular grid maps to the 2nd pixel of a pixelization.
+        - image_to_pix[2] = 1  tells us that the 3rd pixel on a grid maps to the 2nd pixel of a pixelization.
         - sub_to_pix4] = 2  tells us that the 5th sub-pixel of a sub-grid maps to the 3rd pixel of a pixelization.
         - pix_to_image[2] = 5 tells us that the 3rd pixel of a pixelization maps to the 6th (unmasked) pixel of a \
-                            regular grid.
+                            grid.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the mapper's pixelization.
-        grid_stack: grid_stack.GridStack
-            A stack of grid's which are mapped to the pixelization (includes an regular and sub grid).
-        border : grid_stack.RegularGridBorder
-            The border of the grid-stack's regular-grid.
+        grid: grid.GridStack
+            A stack of grid's which are mapped to the pixelization (includes an and sub grid).
+        border : grid.RegularGridBorder
+            The border of the grid-stack's grid.
         hyper_image : ndarray
             A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
@@ -40,13 +40,13 @@ class Mapper(object):
         """The mapping_util matrix is a matrix representing the mapping_util between every unmasked pixel of a grid and \
         the pixels of a pixelization. Non-zero entries signify a mapping_util, whereas zeros signify no mapping_util.
 
-        For example, if the regular grid has 5 pixels and the pixelization 3 pixels, with the following mappings:
+        For example, if the grid has 5 pixels and the pixelization 3 pixels, with the following mappings:
 
-        regular pixel 0 -> pixelization pixel 0
-        regular pixel 1 -> pixelization pixel 0
-        regular pixel 2 -> pixelization pixel 1
-        regular pixel 3 -> pixelization pixel 1
-        regular pixel 4 -> pixelization pixel 2
+        pixel 0 -> pixelization pixel 0
+        pixel 1 -> pixelization pixel 0
+        pixel 2 -> pixelization pixel 1
+        pixel 3 -> pixelization pixel 1
+        pixel 4 -> pixelization pixel 2
 
         The mapping_util matrix (which is of dimensions regular_pixels x pixelization_pixels) would appear as follows:
 
@@ -56,23 +56,23 @@ class Mapper(object):
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        The mapping_util matrix is in fact built using the sub-grid of the grid-stack, whereby each regular-pixel is \
-        divided into a regular grid of sub-pixels which are all paired to pixels in the pixelization. The entires \
+        The mapping_util matrix is in fact built using the sub-grid of the grid-stack, whereby each pixel is \
+        divided into a grid of sub-pixels which are all paired to pixels in the pixelization. The entires \
         in the mapping_util matrix now become fractional values dependent on the sub-grid size. For example, for a 2x2 \
         sub-grid in each pixel (which means the fraction value is 1.0/(2.0^2) = 0.25, if we have the following mappings:
 
-        regular pixel 0 -> sub pixel 0 -> pixelization pixel 0
-        regular pixel 0 -> sub pixel 1 -> pixelization pixel 1
-        regular pixel 0 -> sub pixel 2 -> pixelization pixel 1
-        regular pixel 0 -> sub pixel 3 -> pixelization pixel 1
-        regular pixel 1 -> sub pixel 0 -> pixelization pixel 1
-        regular pixel 1 -> sub pixel 1 -> pixelization pixel 1
-        regular pixel 1 -> sub pixel 2 -> pixelization pixel 1
-        regular pixel 1 -> sub pixel 3 -> pixelization pixel 1
-        regular pixel 2 -> sub pixel 0 -> pixelization pixel 2
-        regular pixel 2 -> sub pixel 1 -> pixelization pixel 2
-        regular pixel 2 -> sub pixel 2 -> pixelization pixel 3
-        regular pixel 2 -> sub pixel 3 -> pixelization pixel 3
+        pixel 0 -> sub pixel 0 -> pixelization pixel 0
+        pixel 0 -> sub pixel 1 -> pixelization pixel 1
+        pixel 0 -> sub pixel 2 -> pixelization pixel 1
+        pixel 0 -> sub pixel 3 -> pixelization pixel 1
+        pixel 1 -> sub pixel 0 -> pixelization pixel 1
+        pixel 1 -> sub pixel 1 -> pixelization pixel 1
+        pixel 1 -> sub pixel 2 -> pixelization pixel 1
+        pixel 1 -> sub pixel 3 -> pixelization pixel 1
+        pixel 2 -> sub pixel 0 -> pixelization pixel 2
+        pixel 2 -> sub pixel 1 -> pixelization pixel 2
+        pixel 2 -> sub pixel 2 -> pixelization pixel 3
+        pixel 2 -> sub pixel 3 -> pixelization pixel 3
 
         The mapping_util matrix (which is still of dimensions regular_pixels x source_pixels) would appear as follows:
 
@@ -95,7 +95,7 @@ class Mapper(object):
     @property
     def pixelization_1d_index_to_all_sub_mask_1d_indexes(self):
         """Compute the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings \
-        are determined after the regular-grid is used to determine the pixelization.
+        are determined after the grid is used to determine the pixelization.
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
         represent these mappings"""
@@ -119,18 +119,18 @@ class RectangularMapper(Mapper):
         self, pixels, grid, pixelization_grid, shape, geometry, hyper_image=None
     ):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *hyper_galaxy.array.grid_stack* module) to pixels discretized on a rectangular grid.
+        a grid, see the *hyper_galaxy.array.grid* module) to pixels discretized on a rectangular grid.
 
-        The regular and uniform geometry of the rectangular grid is used to perform efficient pixel pairings.
+        The and uniform geometry of the rectangular grid is used to perform efficient pixel pairings.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the rectangular pixelization (y_pixels*x_pixels).
-        grid_stack : grid_stack.GridStack
+        grid : grid.GridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grid_stack.RegularGridBorder
-            The border of the grid-stack's regular-grid.
+        border : grid.RegularGridBorder
+            The border of the grid-stack's grid.
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
         geometry : pixelization.Rectangular.Geometry
@@ -176,19 +176,19 @@ class VoronoiMapper(Mapper):
         self, pixels, grid, pixelization_grid, voronoi, geometry, hyper_image=None
     ):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *hyper_galaxy.array.grid_stack* module) to pixels discretized on a Voronoi grid.
+        a grid, see the *hyper_galaxy.array.grid* module) to pixels discretized on a Voronoi grid.
 
-        The irregular and non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge \
-        of how different grid_stack map to one another.
+        The irand non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge \
+        of how different grid map to one another.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the Voronoi pixelization.
-        grid_stack : grid_stack.GridStack
+        grid : grid.GridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grid_stack.RegularGridBorder
-            The border of the grid-stack's regular-grid.
+        border : grid.RegularGridBorder
+            The border of the grid-stack's grid.
         voronoi : scipy.spatial.Voronoi
             Class storing the Voronoi grid's geometry.
         geometry : pixelization.Voronoi.Geometry

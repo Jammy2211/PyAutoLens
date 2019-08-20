@@ -262,7 +262,7 @@ class TestSersic(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
@@ -308,7 +308,7 @@ class TestSersic(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
@@ -333,25 +333,25 @@ class TestSersic(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         sersic = mp.EllipticalSersic()
 
         convergence = sersic.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         # potential = sersic.potential_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned=False)
+        #     grid=grid, return_in_2d=True, return_binned=False)
         #
         # assert potential.shape == (2, 2)
 
         deflections = sersic.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -359,18 +359,18 @@ class TestSersic(object):
         sersic = mp.SphericalSersic()
 
         convergence = sersic.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         # potential = sersic.potential_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned=False)
+        #     grid=grid, return_in_2d=True, return_binned=False)
         #
         # assert potential.shape == (2, 2)
 
         deflections = sersic.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -590,7 +590,7 @@ class TestExponential(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = exponential.deflections_from_grid(grid=regular_with_interp)
@@ -635,7 +635,7 @@ class TestExponential(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = exponential.deflections_from_grid(grid=regular_with_interp)
@@ -660,25 +660,25 @@ class TestExponential(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         exponential = mp.EllipticalExponential()
 
         convergence = exponential.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         # potential = exponential.potential_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned=False)
+        #     grid=grid, return_in_2d=True, return_binned=False)
         #
         # assert potential.shape == (2, 2)
 
         deflections = exponential.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -686,18 +686,18 @@ class TestExponential(object):
         exponential = mp.SphericalExponential()
 
         convergence = exponential.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         # potential = exponential.potential_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned=False)
+        #     grid=grid, return_in_2d=True, return_binned=False)
         #
         # assert potential.shape == (2, 2)
 
         deflections = exponential.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -901,7 +901,7 @@ class TestDevVaucouleurs(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = dev.deflections_from_grid(grid=regular_with_interp)
@@ -946,7 +946,7 @@ class TestDevVaucouleurs(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = dev.deflections_from_grid(grid=regular_with_interp)
@@ -971,25 +971,25 @@ class TestDevVaucouleurs(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         dev_vaucouleurs = mp.EllipticalDevVaucouleurs()
 
         convergence = dev_vaucouleurs.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         # potential = dev_vaucouleurs.potential_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned=False)
+        #     grid=grid, return_in_2d=True, return_binned=False)
         #
         # assert potential.shape == (2, 2)
 
         deflections = dev_vaucouleurs.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -997,18 +997,18 @@ class TestDevVaucouleurs(object):
         dev_vaucouleurs = mp.SphericalDevVaucouleurs()
 
         convergence = dev_vaucouleurs.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         # potential = dev_vaucouleurs.potential_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned=False)
+        #     grid=grid, return_in_2d=True, return_binned=False)
         #
         # assert potential.shape == (2, 2)
 
         deflections = dev_vaucouleurs.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -1369,7 +1369,7 @@ class TestSersicMassRadialGradient(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
@@ -1417,7 +1417,7 @@ class TestSersicMassRadialGradient(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
@@ -1442,25 +1442,25 @@ class TestSersicMassRadialGradient(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         sersic = mp.EllipticalSersicRadialGradient()
 
         convergence = sersic.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         # potential = sersic.potential_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned=False)
+        #     grid=grid, return_in_2d=True, return_binned=False)
         #
         # assert potential.shape == (2, 2)
 
         deflections = sersic.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -1468,18 +1468,18 @@ class TestSersicMassRadialGradient(object):
         sersic = mp.SphericalSersicRadialGradient()
 
         convergence = sersic.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         # potential = sersic.potential_from_grid(
-        #     grid=regular_grid, return_in_2d=True, return_binned=False)
+        #     grid=grid, return_in_2d=True, return_binned=False)
         #
         # assert potential.shape == (2, 2)
 
         deflections = sersic.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)

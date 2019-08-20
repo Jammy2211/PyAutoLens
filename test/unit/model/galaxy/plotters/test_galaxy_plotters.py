@@ -42,7 +42,7 @@ def test__individual_images_are_output(
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -59,7 +59,7 @@ def test__individual_images_are_output(
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -76,7 +76,7 @@ def test__individual_images_are_output(
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -93,7 +93,7 @@ def test__individual_images_are_output(
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -103,6 +103,22 @@ def test__individual_images_are_output(
 
     assert galaxy_plotter_path + "galaxy_deflections_x.png" in plot_patch.paths
 
+    galaxy_plotters.plot_magnification(
+        galaxy=gal_x1_lp_x1_mp,
+        grid=sub_grid_7x7,
+        mask=mask_7x7,
+        extract_array_from_mask=True,
+        zoom_around_mask=True,
+        positions=positions_7x7,
+        plot_critical_curves=False,
+        plot_caustics=True,
+        cb_tick_values=[1.0],
+        cb_tick_labels=["1.0"],
+        output_path=galaxy_plotter_path,
+        output_format="png",
+    )
+
+    assert galaxy_plotter_path + "galaxy_magnification.png" in plot_patch.paths
 
 def test__individual_galaxy_quantities__all_are_output(
     gal_x1_lp_x1_mp,

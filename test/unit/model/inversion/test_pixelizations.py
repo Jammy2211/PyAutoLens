@@ -524,7 +524,7 @@ class TestVoronoiBrightness:
             hyper_image=hyper_image
         )
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
+        sparse_to_grid = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
             total_pixels=pix.pixels,
             binned_grid=lens_data_7x7.grid.binned,
             binned_weight_map=cluster_weight_map,
@@ -532,8 +532,8 @@ class TestVoronoiBrightness:
         )
 
         pixelization_grid_manual = grids.PixelizationGrid(
-            arr=sparse_to_regular_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
+            arr=sparse_to_grid.sparse,
+            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()

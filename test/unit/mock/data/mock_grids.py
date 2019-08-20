@@ -8,13 +8,13 @@ from autolens.array import grids
 class MockGrid(grids.Grid):
     def __new__(cls, mask, pixel_scale=1.0, sub_grid_size=2, *args, **kwargs):
 
-        sub_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask,
             pixel_scales=(pixel_scale, pixel_scale),
             sub_grid_size=sub_grid_size,
         )
 
-        obj = sub_grid.view(cls)
+        obj = grid.view(cls)
         obj.mask = mask
         obj.sub_grid_size = sub_grid_size
         obj.sub_grid_length = int(obj.sub_grid_size ** 2.0)
@@ -58,7 +58,7 @@ class MockPixelizationGrid(np.ndarray):
             The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
         mask_1d_index_to_nearest_pixelization_1d_index : ndarray
-            A 1D array that maps every regular-grid pixel to its nearest pixelization-grid pixel.
+            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
         obj = arr.view(cls)
         obj.mask_1d_index_to_nearest_pixelization_1d_index = (

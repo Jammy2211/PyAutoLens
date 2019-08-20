@@ -663,7 +663,7 @@ class TestAbstractPlaneLensing(object):
 
             assert profile_image == pytest.approx(g0_image + g1_image, 1.0e-4)
 
-        def test__plane_has_no_galaxies__image_is_zeros_size_of_unlensed_regular_grid(
+        def test__plane_has_no_galaxies__image_is_zeros_size_of_unlensed_grid(
             self, sub_grid_7x7
         ):
 
@@ -1030,7 +1030,7 @@ class TestAbstractPlaneLensing(object):
                 np.array([[2.0 * 0.707, -2.0 * 0.707], [2.0, 0.0]]), 1e-3
             )
 
-        def test__plane_has_no_galaxies__deflections_are_zeros_size_of_unlensed_regular_grid(
+        def test__plane_has_no_galaxies__deflections_are_zeros_size_of_unlensed_grid(
             self, sub_grid_7x7
         ):
 
@@ -3364,7 +3364,7 @@ class TestPlane(object):
 
 
 class TestPlaneImage:
-    def test__compute_xticks_from_regular_grid_correctly(self):
+    def test__compute_xticks_from_grid_correctly(self):
         plane_image = pl.PlaneImage(
             array=np.ones((3, 3)), pixel_scales=(5.0, 1.0), grid=None
         )
@@ -3386,7 +3386,7 @@ class TestPlaneImage:
             np.array([-3.0, -1.0, 1.0, 3.0]), 1e-2
         )
 
-    def test__compute_yticks_from_regular_grid_correctly(self):
+    def test__compute_yticks_from_grid_correctly(self):
         plane_image = pl.PlaneImage(
             array=np.ones((3, 3)), pixel_scales=(1.0, 5.0), grid=None
         )

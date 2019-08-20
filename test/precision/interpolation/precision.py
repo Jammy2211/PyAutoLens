@@ -38,7 +38,7 @@ for data_resolution in ["HST_Up"]:
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
     print("Deflection angle run times for image type " + data_resolution + "\n")
-    print("Number of points = " + str(lens_data.grid.regular.shape[0]) + "\n")
+    print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")
 
     interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
         mask=lens_data.mask_2d, grid=lens_data.grid.sub, pixel_scale_interpolation_grid=0.05
@@ -109,9 +109,9 @@ for data_resolution in ["HST_Up"]:
     # print("interpolation x std percent difference: ", np.std(difference_percent_x))
     # print("interpolation x mean percent difference: ", np.max(difference_percent_x))
     #
-    # difference_percent_y_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    # difference_percent_y_2d = lens_data.grid.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
     #     sub_array_1d=difference_percent_y)
-    # difference_percent_x_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    # difference_percent_x_2d = lens_data.grid.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
     #     sub_array_1d=difference_percent_x)
     #
     # array_plotters.plot_array(array=difference_percent_y_2d)

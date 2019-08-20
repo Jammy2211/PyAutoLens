@@ -6,9 +6,9 @@ from autolens import exc
 
 class Convolver(object):
     def __init__(self, mask, psf, blurring_mask=None):
-        """ Class to setup the 1D convolution of an regular / mapping_util matrix.
+        """ Class to setup the 1D convolution of an / mapping_util matrix.
 
-        Take a simple 3x3 regular and masks:
+        Take a simple 3x3 and masks:
 
         [[2, 8, 2],
         [5, 7, 5],
@@ -18,7 +18,7 @@ class Convolver(object):
         [False, False, False],
         [True, False, True]]
 
-        A set of values in a corresponding 1d array of this regular might be represented as:
+        A set of values in a corresponding 1d array of this might be represented as:
 
         [2, 8, 2, 5, 7, 5, 3, 1, 4]
 
@@ -26,8 +26,8 @@ class Convolver(object):
 
         [8, 5, 7, 5, 1]
 
-        Setup is required to perform 2D real-space convolution on the masked regular array. This module finds the \
-        relationship between the unmasked 2D regular datas, masked regular datas and psf, so that 2D real-space convolutions \
+        Setup is required to perform 2D real-space convolution on the masked array. This module finds the \
+        relationship between the unmasked 2D datas, masked datas and psf, so that 2D real-space convolutions \
         can be efficiently applied to reduced 1D masked arrays.
 
         This calculation also accounts for the blurring of light outside of the masked regions which blurs into \
@@ -36,7 +36,7 @@ class Convolver(object):
         IMAGE FRAMES:
         ------------
 
-        For a masked regular in 2D, one can compute for every pixel all of the unmasked pixels it will blur light into for \
+        For a masked in 2D, one can compute for every pixel all of the unmasked pixels it will blur light into for \
         a given PSF psf size, e.g.:
 
         |x|x|x|x|x|x|x|x|x|x|
@@ -66,9 +66,9 @@ class Convolver(object):
 
         For every unmasked pixel, the Convolver over-lays the PSF and computes three quantities;
 
-        image_frame_indexes - The indexes of all masked regular pixels it will blur light into.
-        image_frame_psfs - The psf values that overlap each masked regular pixel it will blur light into.
-        image_frame_length - The number of masked regular-pixels it will blur light into (unmasked pixels are excluded)
+        image_frame_indexes - The indexes of all masked pixels it will blur light into.
+        image_frame_psfs - The psf values that overlap each masked pixel it will blur light into.
+        image_frame_length - The number of masked pixels it will blur light into (unmasked pixels are excluded)
 
         For example, if we had the following 3x3 psf:
 
@@ -98,7 +98,7 @@ class Convolver(object):
         image_frame_lengths = 9
 
         Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of a
-        masked regular or the masked regular of a mapping_util in the inversion module.
+        masked or the masked of a mapping_util in the inversion module.
 
         BLURRING FRAMES:
         --------------
@@ -138,36 +138,36 @@ class Convolver(object):
 
         For every unmasked blurring-pixel, the Convolver over-lays the PSF psf and computes three quantities;
 
-        blurring_frame_indexes - The indexes of all unmasked regular pixels (not unmasked blurring regular pixels) it will \
+        blurring_frame_indexes - The indexes of all unmasked pixels (not unmasked blurring pixels) it will \
         blur light into.
-        bluring_frame_kernels - The psf values that overlap each regular pixel it will blur light into.
-        blurring_frame_length - The number of regular-pixels it will blur light into.
+        bluring_frame_kernels - The psf values that overlap each pixel it will blur light into.
+        blurring_frame_length - The number of pixels it will blur light into.
 
         The blurring frame therefore does not perform any blurring which blurs light into other blurring pixels. \
         It only performs computations which add light inside of the masks.
 
-        For pixel 0 above, when we overlap the 3x3 psf above only 1 unmasked regular pixels overlaps the psf, such that:
+        For pixel 0 above, when we overlap the 3x3 psf above only 1 unmasked pixels overlaps the psf, such that:
 
-        blurring_frame_indexes = [0] (This 0 refers to regular pixel 0 within the masks, not blurring_frame_pixel 0)
+        blurring_frame_indexes = [0] (This 0 refers to pixel 0 within the masks, not blurring_frame_pixel 0)
         blurring_frame_psfs = [0.9]
         blurring_frame_length = 1
 
-        For pixel 1 above, when we overlap the 3x3 psf above 2 unmasked regular pixels overlap the psf, such that:
+        For pixel 1 above, when we overlap the 3x3 psf above 2 unmasked pixels overlap the psf, such that:
 
-        blurring_frame_indexes = [0, 1]  (This 0 and 1 refer to regular pixels 0 and 1 within the masks)
+        blurring_frame_indexes = [0, 1]  (This 0 and 1 refer to pixels 0 and 1 within the masks)
         blurring_frame_psfs = [0.8, 0.9]
         blurring_frame_length = 2
 
-        For pixel 3 above, when we overlap the 3x3 psf above 3 unmasked regular pixels overlap the psf, such that:
+        For pixel 3 above, when we overlap the 3x3 psf above 3 unmasked pixels overlap the psf, such that:
 
-        blurring_frame_indexes = [0, 1, 2]  (Again, these are regular pixels 0, 1 and 2)
+        blurring_frame_indexes = [0, 1, 2]  (Again, these are pixels 0, 1 and 2)
         blurring_frame_psfs = [0.7, 0.8, 0.9]
         blurring_frame_length = 3
 
         Parameters
         ----------
         mask : Mask
-            The regular masks, where True eliminates datas.
+            The masks, where True eliminates datas.
         blurring_mask : Mask
             A masks of pixels outside the masks but whose light blurs into it after PSF convolution.
         psf : regular.PSF or ndarray
@@ -297,14 +297,14 @@ class Convolver(object):
         return frame, psf_frame
 
     def convolve_image(self, image_array, blurring_array):
-        """For a given 1D regular array and blurring array, convolve the two using this convolver.
+        """For a given 1D array and blurring array, convolve the two using this convolver.
 
         Parameters
         -----------
         image_array : ndarray
-            1D array of the regular values which are to be blurred with the convolver's PSF.
+            1D array of the values which are to be blurred with the convolver's PSF.
         blurring_array : ndarray
-            1D array of the blurring regular values which blur into the regular-array after PSF convolution.
+            1D array of the blurring values which blur into the array after PSF convolution.
         """
 
         if self.blurring_mask is None:
@@ -367,18 +367,18 @@ class Convolver(object):
         return blurred_image_1d
 
     def convolve_mapping_matrix(self, mapping_matrix):
-        """For a given inversion mapping_util matrix, convolve every pixel's mapped regular with the PSF kernel.
+        """For a given inversion mapping_util matrix, convolve every pixel's mapped with the PSF kernel.
 
         A mapping_util matrix provides non-zero entries in all elements which map two pixels to one another
         (see *inversions.mappers*).
 
-        For example, lets take an regular which is masked using a 'cross' of 5 pixels:
+        For example, lets take an which is masked using a 'cross' of 5 pixels:
 
         [[ True, False,  True]],
         [[False, False, False]],
         [[ True, False,  True]]
 
-        As example mapping_util matrix of this cross is as follows (5 regular pixels x 3 source pixels):
+        As example mapping_util matrix of this cross is as follows (5 pixels x 3 source pixels):
 
         [1, 0, 0] [0->0]
         [1, 0, 0] [1->0]
@@ -386,7 +386,7 @@ class Convolver(object):
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        For each source-pixel, we can create an regular of its unit-surface brightnesses by mapping_util the non-zero
+        For each source-pixel, we can create an of its unit-surface brightnesses by mapping_util the non-zero
         entries back to masks. For example, doing this for source pixel 1 gives:
 
         [[0.0, 1.0, 0.0]],
@@ -399,7 +399,7 @@ class Convolver(object):
         [[0.0, 1.0, 1.0]]
         [[0.0, 0.0, 0.0]]
 
-        We then convolve each of these regular with our PSF kernel, in 2 dimensions, like we would a hyper regular. For
+        We then convolve each of these with our PSF kernel, in 2 dimensions, like we would a hyper regular. For
         example, using the kernel below:
 
         kernel:
@@ -420,7 +420,7 @@ class Convolver(object):
         [[0.0, 0.7, 0.7]],
         [[0.0, 0.0, 0.0]]
 
-        Finally, we map each of these blurred regular back to a blurred mapping_util matrix, which is analogous to the
+        Finally, we map each of these blurred back to a blurred mapping_util matrix, which is analogous to the
         mapping_util matrix.
 
         [0.6, 0.0, 0.0] [0->0]

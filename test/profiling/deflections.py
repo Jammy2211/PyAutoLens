@@ -130,7 +130,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     #                                            scale_radius=10.0, inner_slope=0.5)
     #
     # start = time.time()
-    # mass_profile.deflections_from_grid(grid=lens_data.grid_stack)
+    # mass_profile.deflections_from_grid(grid=lens_data.grid)
     # diff = time.time() - start
     # print("EllipticalGeneralizedNFW (inner_slope = 1.0) time = {}".format(diff))
 

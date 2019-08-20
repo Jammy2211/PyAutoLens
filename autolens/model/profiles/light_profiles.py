@@ -26,7 +26,7 @@ class LightProfile(object):
 
     # noinspection PyMethodMayBeStatic
     def profile_image_from_grid(
-        self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None
+        self, grid, return_in_2d=True, return_binned=True, grid_radial_minimum=None
     ):
         """
         Abstract method for obtaining intensity at a grid of Cartesian (y,x) coordinates.
@@ -276,7 +276,7 @@ class EllipticalGaussian(EllipticalLightProfile):
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def profile_image_from_grid(
-        self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None
+        self, grid, return_in_2d=True, return_binned=True, grid_radial_minimum=None
     ):
         """
         Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
@@ -470,7 +470,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def profile_image_from_grid(
-        self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None
+        self, grid, return_in_2d=True, return_binned=True, grid_radial_minimum=None
     ):
         """ Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 

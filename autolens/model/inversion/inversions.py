@@ -31,7 +31,7 @@ class Inversion(object):
         convolver : ccd.convolution.Convolver
             The convolver used to blur the mapping_util matrix with the PSF.
         mapper : inversion.mappers.Mapper
-            The mapping_util between the image-pixels (via its regular / sub-grid) and pixelization pixels.
+            The mapping_util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
             inversion

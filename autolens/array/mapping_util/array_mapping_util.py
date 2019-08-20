@@ -95,11 +95,11 @@ def sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
 ):
     """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
-    A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the regular grid) \
+    A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the grid) \
     multiplid by the sub_grid_size. E.g., it is an array that would be generated using the sub-grid and not binning \
-    up values in sub-pixels back to the regular-grid.
+    up values in sub-pixels back to the grid.
 
-    The regular pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
+    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
     with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a \
     sub-grid size of 2 where all pixels are unmasked:
 

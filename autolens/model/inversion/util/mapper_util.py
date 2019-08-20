@@ -19,11 +19,11 @@ def mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
     pixels : int
         The number of pixels in the pixelization.
     total_mask_pixels : int
-        The number of datas pixels in the observed datas and thus on the regular grid.
+        The number of datas pixels in the observed datas and thus on the grid.
     sub_mask_1d_index_to_mask_1d_index : ndarray
         The mappings between the observed regular's sub-pixels and observed regular's pixels.
     sub_grid_fraction : float
-        The fractional area each sub-pixel takes up in an regular-pixel.
+        The fractional area each sub-pixel takes up in an pixel.
     """
 
     mapping_matrix = np.zeros((total_mask_pixels, pixels))
@@ -47,7 +47,7 @@ def voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
     pixel_neighbors_size,
 ):
     """ Compute the mappings between a set of sub-grid pixels and pixelization pixels, using information on \
-    how the regular pixels hosting each sub-pixel map to their closest pixelization pixel on the image-plane pix-grid \
+    how the pixels hosting each sub-pixel map to their closest pixelization pixel on the image-plane pix-grid \
     and the pixelization's pixel centres.
 
     To determine the complete set of sub-pixel to pixelization pixel mappings, we must pair every sub-pixel to \
@@ -56,11 +56,11 @@ def voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
 
     Parameters
     ----------
-    regular_grid : RegularGrid
+    grid : RegularGrid
         The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
-        to an irregular grid via lens.
+        to an irgrid via lens.
     mask_1d_index_to_nearest_pixelization_1d_index : ndarray
-        A 1D array that maps every regular-grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
+        A 1D array that maps every grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
         2D array).
     pixel_centres : (float, float)
         The (y,x) centre of every Voronoi pixel in arc-seconds.

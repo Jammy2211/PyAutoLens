@@ -1678,7 +1678,7 @@ class TestCriticalCurvesandCaustics(object):
             sum(tangential_caustic_from_magnification), 5e-1
         )
 
-    def test__compare_radial_caustic_from_magnification_and_lambda_r__regular_grid(
+    def test__compare_radial_caustic_from_magnification_and_lambda_r__grid(
         self
     ):
 

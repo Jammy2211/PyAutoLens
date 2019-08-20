@@ -238,12 +238,12 @@ class TestReconstructedDataVectorAndImage:
 #                                         [False, False, False],
 #                                         [True, True, True]]), pixel_scale=1.0)
 #
-#         grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+#         grid = grids.Grid.grid_stack_from_mask_sub_grid_size_and_psf_shape(
 #             mask=msk, sub_grid_size=1, psf_shape=(1,1))
 #
 #         inv = inversions.Inversion(
 #             image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
-#             mapper=mock_inversion.MockMapper(matrix_shape, grid_stack),
+#             mapper=mock_inversion.MockMapper(matrix_shape, grid),
 #             regularization=mock_inversion.MockRegularization(matrix_shape))
 #
 #         inv.pixelization_values = np.array([1.0, 1.0, 1.0, 1.0])

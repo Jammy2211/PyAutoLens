@@ -69,7 +69,7 @@ class GalaxyFitData(object):
             The masked 1D array of the noise_map-map
         grid_stacks : ccd.masks.GridStack
             Grids of (y,x) Cartesian coordinates which map over the masked 1D fit instrument array's pixels (includes an \
-            regular-grid, sub-grid, etc.)
+            grid, sub-grid, etc.)
         """
         self.unmasked_image = galaxy_data.image
         self.pixel_scale = galaxy_data.pixel_scale

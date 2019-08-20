@@ -200,14 +200,14 @@ class TestGaussian:
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         gaussian = lp.EllipticalGaussian()
 
         image = gaussian.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)
@@ -215,7 +215,7 @@ class TestGaussian:
         gaussian = lp.SphericalGaussian()
 
         image = gaussian.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)
@@ -394,14 +394,14 @@ class TestSersic:
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         sersic = lp.EllipticalSersic()
 
         image = sersic.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)
@@ -409,7 +409,7 @@ class TestSersic:
         sersic = lp.SphericalSersic()
 
         image = sersic.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)
@@ -545,14 +545,14 @@ class TestExponential:
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         exponential = lp.EllipticalExponential()
 
         image = exponential.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)
@@ -560,7 +560,7 @@ class TestExponential:
         exponential = lp.SphericalExponential()
 
         image = exponential.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)
@@ -698,14 +698,14 @@ class TestDevVaucouleurs:
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs()
 
         image = dev_vaucouleurs.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)
@@ -713,7 +713,7 @@ class TestDevVaucouleurs:
         dev_vaucouleurs = lp.SphericalDevVaucouleurs()
 
         image = dev_vaucouleurs.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)
@@ -869,14 +869,14 @@ class TestCoreSersic(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         core_sersic = lp.EllipticalCoreSersic()
 
         image = core_sersic.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)
@@ -884,7 +884,7 @@ class TestCoreSersic(object):
         core_sersic = lp.SphericalCoreSersic()
 
         image = core_sersic.profile_image_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert image.shape == (2, 2)

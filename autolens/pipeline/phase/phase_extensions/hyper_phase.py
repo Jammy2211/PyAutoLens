@@ -7,13 +7,13 @@ from autolens.pipeline.phase import phase_imaging as ph
 class HyperPhase(object):
     def __init__(self, phase: ph.PhaseImaging, hyper_name: str):
         """
-        Abstract HyperPhase. Wraps a regular phase, performing that phase before performing the action
+        Abstract HyperPhase. Wraps a phase, performing that phase before performing the action
         specified by the run_hyper.
 
         Parameters
         ----------
         phase
-            A regular phase
+            A phase
         """
         self.phase = phase
         self.hyper_name = hyper_name

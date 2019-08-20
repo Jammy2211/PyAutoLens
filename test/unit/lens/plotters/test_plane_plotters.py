@@ -97,6 +97,20 @@ def test__all_individual_plotters__output_file_with_default_name(
 
     assert plane_plotter_path + "plane_deflections_x.png" in plot_patch.paths
 
+    plane_plotters.plot_magnification(
+        plane=plane_7x7,
+        grid=sub_grid_7x7,
+        mask=mask_7x7,
+        extract_array_from_mask=True,
+        zoom_around_mask=True,
+        cb_tick_values=[1.0],
+        cb_tick_labels=["1.0"],
+        output_path=plane_plotter_path,
+        output_format="png",
+    )
+
+    assert plane_plotter_path + "plane_magnification.png" in plot_patch.paths
+
     plane_plotters.plot_plane_grid(
         plane=plane_7x7,
         grid=sub_grid_7x7,
