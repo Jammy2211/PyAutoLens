@@ -287,9 +287,9 @@ def make_blurring_grid_7x7(blurring_mask_7x7):
     )
 
 
-@pytest.fixture(name="cluster_grid_7x7")
-def make_cluster_grid_7x7(mask_7x7):
-    return mock_grids.MockClusterGrid.from_mask_and_binned_pixel_scale(
+@pytest.fixture(name="binned_grid_7x7")
+def make_binned_grid_7x7(mask_7x7):
+    return mock_grids.MockBinnedGrid.from_mask_and_binned_pixel_scale(
         mask=mask_7x7, binned_pixel_scale=mask_7x7.pixel_scale
     )
 
@@ -470,7 +470,7 @@ def make_lens_data_7x7(
     sub_grid_7x7,
     blurring_grid_7x7,
     convolver_7x7,
-    cluster_grid_7x7,
+    binned_grid_7x7,
 ):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_7x7,
@@ -478,7 +478,7 @@ def make_lens_data_7x7(
         grid=sub_grid_7x7,
         blurring_grid=blurring_grid_7x7,
         convolver=convolver_7x7,
-        cluster=cluster_grid_7x7,
+        binned_grid=binned_grid_7x7,
     )
 
 

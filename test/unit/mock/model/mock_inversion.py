@@ -24,7 +24,7 @@ class MockPixelization(object):
 
     # noinspection PyUnusedLocal,PyShadowingNames
     def mapper_from_grid_and_pixelization_grid(
-        self, grid, pixelization_grid, relocate_to_border, hyper_image=None
+        self, grid, pixelization_grid, use_inversion_border, hyper_image=None
     ):
         return self.value
 

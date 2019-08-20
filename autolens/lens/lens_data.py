@@ -18,8 +18,9 @@ class LensData(object):
         cluster_pixel_scale=None,
         cluster_pixel_limit=None,
         uses_cluster_inversion=True,
-        relocate_to_border=True,
+        use_inversion_border=True,
         hyper_noise_map_max=None,
+        preload_pixelization_grids_of_planes=None,
     ):
         """
         The lens instrument is the collection of instrument (image, noise-map, PSF), a mask, grid_stack, convolver \
@@ -91,19 +92,11 @@ class LensData(object):
             mask=mask, sub_grid_size=sub_grid_size
         )
 
-        self.blurring_grid = grids.Grid.blurring_grid_from_mask_and_psf_shape(
-            mask=mask, psf_shape=self.trimmed_psf_shape
-        )
-
         self.interp_pixel_scale = interp_pixel_scale
 
         if interp_pixel_scale is not None:
 
             self.grid = self.grid.new_grid_with_interpolator(
-                interp_pixel_scale=interp_pixel_scale
-            )
-
-            self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
                 interp_pixel_scale=interp_pixel_scale
             )
 
@@ -142,7 +135,19 @@ class LensData(object):
 
         self.hyper_noise_map_max = hyper_noise_map_max
 
-        self.relocate_to_border = relocate_to_border
+        self.use_inversion_border = use_inversion_border
+
+        self.preload_blurring_grid = grids.Grid.blurring_grid_from_mask_and_psf_shape(
+            mask=mask, psf_shape=self.trimmed_psf_shape
+        )
+
+        if interp_pixel_scale is not None:
+
+            self.preload_blurring_grid = self.preload_blurring_grid.new_grid_with_interpolator(
+                interp_pixel_scale=interp_pixel_scale
+            )
+
+        self.preload_pixelization_grids_of_planes = preload_pixelization_grids_of_planes
 
     def new_lens_data_with_modified_image(self, modified_image):
 
@@ -161,7 +166,8 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
-            relocate_to_border=self.relocate_to_border,
+            use_inversion_border=self.use_inversion_border,
+            preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes
         )
 
     def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
@@ -184,7 +190,8 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
-            relocate_to_border=self.relocate_to_border,
+            use_inversion_border=self.use_inversion_border,
+            preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes
         )
 
     def new_lens_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
@@ -204,7 +211,8 @@ class LensData(object):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
-            relocate_to_border=self.relocate_to_border,
+            use_inversion_border=self.use_inversion_border,
+            preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes
         )
 
     def mask(self, return_in_2d=True):
@@ -241,11 +249,12 @@ class LensData(object):
             self.sub_grid_size = obj.sub_grid_size
             self.convolver = obj.convolver
             self.grid = obj.grid
-            self.blurring_grid = obj.blurring_grid
+            self.preload_blurring_grid = obj.preload_blurring_grid
             self.positions = obj.positions
             self.interp_pixel_scale = obj.interp_pixel_scale
             self.uses_cluster_inversion = obj.uses_cluster_inversion
             self.cluster_grid = obj.cluster_grid
             self.cluster_pixel_limit = obj.cluster_pixel_limit
             self.hyper_noise_map_max = obj.hyper_noise_map_max
-            self.relocate_to_border = obj.relocate_to_border
+            self.use_inversion_border = obj.use_inversion_border
+            self.preload_pixelization_grids_of_planes = obj.preload_pixelization_grids_of_planes

@@ -123,22 +123,10 @@ class PhaseImaging(Phase):
         )
 
     @property
-    def uses_hyper_images(self):
-        if self.galaxies:
-            for galaxy in self.galaxies:
-                if galaxy.hyper_galaxy is not None or isinstance_or_prior(
-                    galaxy.regularization, reg.AdaptiveBrightness
-                ):
-                    return True
-        return False
-
-    @property
-    def uses_inversion(self):
-        if self.galaxies:
-            for galaxy in self.galaxies:
-                if galaxy.pixelization is not None:
-                    return True
-        return False
+    def pixelization(self):
+        for galaxy in self.galaxies:
+            if galaxy.pixelization is not None:
+                return galaxy.pixelization
 
     @property
     def uses_cluster_inversion(self):
@@ -239,6 +227,15 @@ class PhaseImaging(Phase):
                 "pipeline when you ran it."
             )
 
+        preload_pixelization_grids_of_planes = None
+
+        if results is not None:
+            if results.last is not None:
+                if hasattr(results.last, "hyper_combined"):
+                    if self.pixelization is not None:
+                        if type(self.pixelization) == type(results.last.pixelization):
+                            preload_pixelization_grids_of_planes = results.last.hyper_combined.most_likely_pixelization_grids_of_planes
+
         lens_data = ld.LensData(
             ccd_data=data,
             mask=mask,
@@ -250,7 +247,8 @@ class PhaseImaging(Phase):
             cluster_pixel_limit=self.cluster_pixel_limit,
             uses_cluster_inversion=self.uses_cluster_inversion,
             hyper_noise_map_max=self.hyper_noise_map_max,
-            relocate_to_border=self.use_inversion_border,
+            use_inversion_border=self.use_inversion_border,
+            preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
         )
 
         modified_image = self.modify_image(
@@ -279,7 +277,6 @@ class PhaseImaging(Phase):
             positions_threshold=self.positions_threshold,
             image_path=self.optimizer.image_path,
             results=results,
-            use_inversion_border=self.use_inversion_border,
             inversion_pixel_limit=self.inversion_pixel_limit,
         )
 
@@ -360,7 +357,6 @@ class PhaseImaging(Phase):
             lens_data,
             cosmology,
             positions_threshold,
-            use_inversion_border=True,
             inversion_pixel_limit=None,
             image_path=None,
             results=None,
@@ -485,7 +481,6 @@ class PhaseImaging(Phase):
                 "plots", "plot_lens_fit_plane_images_of_planes", bool
             )
 
-            self.use_inversion_border = use_inversion_border
             self.inversion_pixel_limit = inversion_pixel_limit
 
             mask = self.lens_data.mask_2d if self.should_plot_mask else None
@@ -525,14 +520,6 @@ class PhaseImaging(Phase):
                 "plots", "plot_binned_hyper_galaxy_images", bool
             )
 
-            self.pixelization_last = None
-
-            if results is not None:
-                if results.last is not None:
-                    self.pixelization_last = results.last.most_likely_pixelization
-
-            self.preload_pixelization_grid = None
-
             if self.last_results is not None:
 
                 self.hyper_galaxy_image_1d_path_dict = (
@@ -563,11 +550,6 @@ class PhaseImaging(Phase):
                         should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
                         should_plot_binned_hyper_galaxy_images=self.plot_binned_hyper_galaxy_images,
                         visualize_path=image_path,
-                    )
-
-                if hasattr(self.results.last, "hyper_combined"):
-                    self.preload_pixelization_grid = (
-                        self.results.last.hyper_combined.most_likely_image_plane_pixelization_grid
                     )
 
         def fit(self, instance):
@@ -644,24 +626,6 @@ class PhaseImaging(Phase):
                             ]
             return instance
 
-        def setup_peload_pixelization_grid(self, galaxies):
-
-            pixelization = self.pixelization_for_galaxies(galaxies=galaxies)
-
-            same_pixelizations = False
-
-            if pixelization is not None and self.pixelization_last is not None:
-                if type(pixelization) is type(self.pixelization_last):
-                    same_pixelizations = True
-
-            if self.preload_pixelization_grid is not None and same_pixelizations:
-
-                return self.preload_pixelization_grid
-
-            else:
-
-                return None
-
         def hyper_image_sky_for_instance(self, instance):
 
             if hasattr(instance, "hyper_image_sky"):
@@ -679,10 +643,6 @@ class PhaseImaging(Phase):
         def tracer_for_instance(self, instance):
 
             instance = self.associate_images(instance=instance)
-
-            preload_pixelization_grids = self.setup_peload_pixelization_grid(
-                galaxies=instance.galaxies
-            )
 
             return ray_tracing.Tracer.from_galaxies(
                 galaxies=instance.galaxies, cosmology=self.cosmology
@@ -759,7 +719,7 @@ class PhaseImaging(Phase):
                 should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
                 should_plot_all_at_end_png=self.plot_ray_tracing_all_at_end_png,
                 should_plot_all_at_end_fits=self.plot_ray_tracing_all_at_end_fits,
-                should_plot_image_plane_image=self.plot_ray_tracing_image_plane_image,
+                should_plot_image_plane_image=self.plot_ray_tracing_profile_image,
                 should_plot_source_plane=self.plot_ray_tracing_source_plane,
                 should_plot_convergence=self.plot_ray_tracing_convergence,
                 should_plot_potential=self.plot_ray_tracing_potential,
@@ -811,8 +771,3 @@ class PhaseImaging(Phase):
                 visualize_path=image_path,
                 subplot_path=subplot_path,
             )
-
-        def pixelization_for_galaxies(self, galaxies):
-            for galaxy in galaxies:
-                if galaxy.pixelization is not None:
-                    return galaxy.pixelization

@@ -27,6 +27,7 @@ class MockResults(object):
         constant=None,
         analysis=None,
         optimizer=None,
+        pixelization=None
     ):
         self.model_image = model_image
         self.unmasked_model_image = model_image
@@ -36,7 +37,8 @@ class MockResults(object):
         self.variable = af.ModelMapper()
         self.analysis = analysis
         self.optimizer = optimizer
-        self.most_likely_pixelization = None
+        self.pixelization = pixelization
+        self.hyper_combined = MockHyperCombinedPhase()
 
     @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
@@ -205,7 +207,6 @@ class MockResults(object):
 
         return hyper_model_image_1d
 
-
 class MockResult:
     def __init__(self, constant, figure_of_merit, variable=None):
         self.constant = constant
@@ -215,6 +216,16 @@ class MockResult:
         self.gaussian_tuples = None
         self.mask_2d = None
         self.positions = None
+
+class MockHyperCombinedPhase(object):
+
+    def __init__(self):
+
+        pass
+
+    @property
+    def most_likely_pixelization_grids_of_planes(self):
+        return 1
 
 
 class MockNLO(af.NonLinearOptimizer):

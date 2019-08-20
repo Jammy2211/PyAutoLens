@@ -2497,7 +2497,7 @@ class TestAbstractPlaneData(object):
 
             assert mapper == 1
 
-        def test__relocate_to_border_is_false__still_returns_mapper(self, sub_grid_7x7):
+        def test__use_inversion_border_is_false__still_returns_mapper(self, sub_grid_7x7):
             galaxy_pix = g.Galaxy(
                 redshift=0.5,
                 pixelization=mock_inv.MockPixelization(value=1),
@@ -2510,7 +2510,7 @@ class TestAbstractPlaneData(object):
             mapper = plane.mapper_from_grid_and_pixelization_grid(
                 grid=sub_grid_7x7,
                 pixelization_grid=sub_grid_7x7,
-                relocate_to_border=False,
+                use_inversion_border=False,
             )
 
             assert mapper == 1
@@ -2535,7 +2535,7 @@ class TestAbstractPlaneData(object):
                 plane.mapper_from_grid_and_pixelization_grid(
                     grid=sub_grid_7x7,
                     pixelization_grid=sub_grid_7x7,
-                    relocate_to_border=False,
+                    use_inversion_border=False,
                 )
 
     class TestPlaneImage:

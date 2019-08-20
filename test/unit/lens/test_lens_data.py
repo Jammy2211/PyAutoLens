@@ -92,7 +92,7 @@ class TestLensData(object):
 
         assert (lens_data_7x7.grid.unlensed_unsubbed_1d == grid_7x7).all()
         assert (lens_data_7x7.grid == sub_grid_7x7).all()
-        assert (lens_data_7x7.blurring_grid == blurring_grid_7x7).all()
+        assert (lens_data_7x7.preload_blurring_grid == blurring_grid_7x7).all()
 
     def test__interp_pixel_scale_input__grids_nclude_interpolators(
         self, ccd_data_7x7, mask_7x7
@@ -116,13 +116,13 @@ class TestLensData(object):
         assert (lens_data_7x7.grid.interpolator.vtx == new_grid.interpolator.vtx).all()
         assert (lens_data_7x7.grid.interpolator.wts == new_grid.interpolator.wts).all()
 
-        assert (lens_data_7x7.blurring_grid == new_blurring_grid).all()
+        assert (lens_data_7x7.preload_blurring_grid == new_blurring_grid).all()
         assert (
-            lens_data_7x7.blurring_grid.interpolator.vtx
+            lens_data_7x7.preload_blurring_grid.interpolator.vtx
             == new_blurring_grid.interpolator.vtx
         ).all()
         assert (
-            lens_data_7x7.blurring_grid.interpolator.wts
+            lens_data_7x7.preload_blurring_grid.interpolator.wts
             == new_blurring_grid.interpolator.wts
         ).all()
 

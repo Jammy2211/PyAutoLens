@@ -2,7 +2,7 @@ from autolens.array.grids import reshape_data_array
 
 
 class MockLensData(object):
-    def __init__(self, ccd_data, mask, grid, blurring_grid, convolver, cluster):
+    def __init__(self, ccd_data, mask, grid, blurring_grid, convolver, binned_grid):
 
         self.ccd_data = ccd_data
         self.unmasked_image = ccd_data.image
@@ -15,7 +15,7 @@ class MockLensData(object):
         self.mask_1d = self.mask_2d.array_1d_from_array_2d(array_2d=self.mask_2d)
 
         self.grid = grid
-        self.blurring_grid = blurring_grid
+        self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
         self.sub_grid_size = self.grid.sub_grid_size
         self.convolver = convolver
 
@@ -29,13 +29,13 @@ class MockLensData(object):
 
         self.positions = None
 
-        self.cluster = cluster
-
-        self.uses_cluster_inversion = False
-
         self.hyper_noise_map_max = None
 
-        self.relocate_to_border = True
+        self.uses_cluster_inversion = False
+        self.use_inversion_border = True
+
+        self.preload_blurring_grid = blurring_grid
+        self.preload_pixelization_grids_of_planes = None
 
     @reshape_data_array
     def image(self, return_in_2d=True):

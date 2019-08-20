@@ -245,13 +245,13 @@ class AbstractPhase(af.AbstractPhase):
             return self.most_likely_fit.positions
 
         @property
-        def most_likely_pixelization(self):
+        def pixelization(self):
             for galaxy in self.most_likely_fit.tracer.galaxies:
                 if galaxy.pixelization is not None:
                     return galaxy.pixelization
 
         @property
-        def most_likely_image_plane_pixelization_grid(self):
+        def most_likely_pixelization_grids_of_planes(self):
             return self.most_likely_tracer.pixelization_grids_of_planes_from_grid(
                 grid=self.most_likely_fit.grid
             )[-1]
@@ -441,8 +441,8 @@ class Phase(AbstractPhase):
             self.plot_ray_tracing_as_subplot = af.conf.instance.visualize.get(
                 "plots", "plot_ray_tracing_as_subplot", bool
             )
-            self.plot_ray_tracing_image_plane_image = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_image_plane_image", bool
+            self.plot_ray_tracing_profile_image = af.conf.instance.visualize.get(
+                "plots", "plot_ray_tracing_profile_image", bool
             )
             self.plot_ray_tracing_source_plane = af.conf.instance.visualize.get(
                 "plots", "plot_ray_tracing_source_plane_image", bool

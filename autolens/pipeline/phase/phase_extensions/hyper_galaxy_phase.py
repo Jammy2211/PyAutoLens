@@ -58,11 +58,11 @@ class HyperGalaxyPhase(HyperPhase):
                     instance=instance
                 )
 
-                hyper_model_image_2d = self.lens_data.scaled_array_2d_from_array_1d(
+                hyper_model_image_2d = self.lens_data.grid.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_model_image_1d
                 )
 
-                hyper_galaxy_image_2d = self.lens_data.scaled_array_2d_from_array_1d(
+                hyper_galaxy_image_2d = self.lens_data.grid.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_galaxy_image_1d_path_dict
                 )
 
@@ -209,9 +209,10 @@ class HyperGalaxyPhase(HyperPhase):
             hyper_noise_map_max=cast(
                 phase_imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
-            relocate_to_border=cast(
+            use_inversion_border=cast(
                 phase_imaging.PhaseImaging, phase
             ).use_inversion_border,
+            preload_pixelization_grids_of_planes=None,
         )
 
         model_image_1d = results.last.hyper_model_image_1d
@@ -221,7 +222,7 @@ class HyperGalaxyPhase(HyperPhase):
         hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
             hyper_result.constant
         )
-        hyper_result.analysis.uses_hyper_images = True
+
         hyper_result.analysis.hyper_model_image_1d = model_image_1d
         hyper_result.analysis.hyper_galaxy_image_1d_path_dict = (
             hyper_galaxy_image_1d_path_dict
@@ -366,9 +367,10 @@ class HyperGalaxyAllPhase(HyperPhase):
             hyper_noise_map_max=cast(
                 phase_imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
-            relocate_to_border=cast(
+            use_inversion_border=cast(
                 phase_imaging.PhaseImaging, phase
             ).use_inversion_border,
+            preload_pixelization_grids_of_planes=None,
         )
 
         model_image_1d = results.last.hyper_model_image_1d
@@ -378,7 +380,7 @@ class HyperGalaxyAllPhase(HyperPhase):
         hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
             hyper_result.constant
         )
-        hyper_result.analysis.uses_hyper_images = True
+
         hyper_result.analysis.hyper_model_image_1d = model_image_1d
         hyper_result.analysis.hyper_galaxy_image_1d_path_dict = (
             hyper_galaxy_image_1d_path_dict
