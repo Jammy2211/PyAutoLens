@@ -803,7 +803,7 @@ class TestLensProfileFit:
                 grid=lens_data_7x7.grid, return_in_2d=False
             )
             traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=lens_data_7x7.blurring_grid, return_in_2d=False
+                grid=lens_data_7x7.preload_blurring_grid, return_in_2d=False
             )
 
             g0_image_plane_image_1d = g0.profile_image_from_grid(
@@ -1273,7 +1273,7 @@ class TestLensInversionFit:
             assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_in_2d=True))
 
             mapper = pix.mapper_from_grid_and_pixelization_grid(
-                grid=lens_data_7x7.grid, relocate_to_border=False
+                grid=lens_data_7x7.grid, use_inversion_border=False
             )
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
                 mapper=mapper,
@@ -1384,7 +1384,7 @@ class TestLensInversionFit:
             )
 
             mapper = pix.mapper_from_grid_and_pixelization_grid(
-                grid=lens_data_7x7.grid, relocate_to_border=False
+                grid=lens_data_7x7.grid, use_inversion_border=False
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1450,7 +1450,7 @@ class TestLensProfileInversionFit:
             )
 
             mapper = pix.mapper_from_grid_and_pixelization_grid(
-                grid=lens_data_7x7.grid, relocate_to_border=False
+                grid=lens_data_7x7.grid, use_inversion_border=False
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1574,7 +1574,7 @@ class TestLensProfileInversionFit:
                 grid=lens_data_7x7.grid
             )
             traced_blurring_grids = tracer.traced_grids_of_planes_from_grid(
-                grid=lens_data_7x7.blurring_grid
+                grid=lens_data_7x7.preload_blurring_grid
             )
 
             g0_image_plane_image_1d = g0.profile_image_from_grid(
@@ -1609,7 +1609,7 @@ class TestLensProfileInversionFit:
                 lens_data_7x7.image_1d - blurred_profile_image_1d
             )
             mapper = pix.mapper_from_grid_and_pixelization_grid(
-                grid=lens_data_7x7.grid, relocate_to_border=False
+                grid=lens_data_7x7.grid, use_inversion_border=False
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1748,7 +1748,7 @@ class TestLensProfileInversionFit:
             )
 
             mapper = pix.mapper_from_grid_and_pixelization_grid(
-                grid=lens_data_7x7.grid, relocate_to_border=False
+                grid=lens_data_7x7.grid, use_inversion_border=False
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
@@ -1877,7 +1877,7 @@ class TestLensProfileInversionFit:
             )
 
             mapper = pix.mapper_from_grid_and_pixelization_grid(
-                grid=lens_data_7x7.grid, relocate_to_border=False
+                grid=lens_data_7x7.grid, use_inversion_border=False
             )
 
             inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(

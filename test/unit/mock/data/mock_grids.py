@@ -27,7 +27,7 @@ class MockGrid(grids.Grid):
         pass
 
 
-class MockClusterGrid(grids.BinnedGrid):
+class MockBinnedGrid(grids.BinnedGrid):
 
     pass
 

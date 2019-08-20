@@ -868,9 +868,9 @@ def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
     if hasattr(fit, "inversion"):
         if (
             should_plot_image_plane_pix
-            and fit.inversion.mapper_from_grid_and_pixelization_grid.is_image_plane_pixelization
+            and fit.inversion.mapper.is_image_plane_pixelization
         ):
-            return fit.tracer.image_plane.grid.pixelization
+            return fit.tracer.pixelization_grids_of_planes_from_grid(grid=fit.grid)[-1]
     else:
         return None
 

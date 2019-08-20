@@ -127,12 +127,6 @@ class Galaxy(af.ModelObject):
     def uses_cluster_inversion(self):
         return type(self.pixelization) is pix.VoronoiBrightnessImage
 
-    @property
-    def uses_hyper_images(self):
-        return self.has_hyper_galaxy or isinstance(
-            self.regularization, reg.AdaptiveBrightness
-        )
-
     def __repr__(self):
         string = "Redshift: {}".format(self.redshift)
         if self.pixelization:

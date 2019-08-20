@@ -566,18 +566,18 @@ def plot_fit_subplot_for_plane(
 
         ratio = float(
             (
-                fit.inversion.mapper_from_grid_and_pixelization_grid.geometry.arc_second_maxima[
+                fit.inversion.mapper.geometry.arc_second_maxima[
                     1
                 ]
-                - fit.inversion.mapper_from_grid_and_pixelization_grid.geometry.arc_second_minima[
+                - fit.inversion.mapper.geometry.arc_second_minima[
                     1
                 ]
             )
             / (
-                fit.inversion.mapper_from_grid_and_pixelization_grid.geometry.arc_second_maxima[
+                fit.inversion.mapper.geometry.arc_second_maxima[
                     0
                 ]
-                - fit.inversion.mapper_from_grid_and_pixelization_grid.geometry.arc_second_minima[
+                - fit.inversion.mapper.geometry.arc_second_minima[
                     0
                 ]
             )
@@ -592,11 +592,8 @@ def plot_fit_subplot_for_plane(
 
         plt.subplot(rows, columns, 4, aspect=float(aspect_inv))
 
-        traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
-
         inversion_plotters.plot_pixelization_values(
             inversion=fit.inversion,
-            grid=traced_grids[plane_index],
             positions=None,
             should_plot_grid=False,
             should_plot_centres=False,

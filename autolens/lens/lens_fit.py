@@ -15,7 +15,7 @@ class LensDataFit(af.DataFit1D):
         self.psf = lens_data.psf
         self.convolver = lens_data.convolver
         self.grid = lens_data.grid
-        self.blurring_grid = lens_data.blurring_grid
+        self.blurring_grid = lens_data.preload_blurring_grid
         self.positions = lens_data.positions
 
         super().__init__(
@@ -216,7 +216,7 @@ class LensProfileFit(LensTracerFit):
         blurred_profile_image_1d = tracer.blurred_profile_image_1d_from_grid_and_convolver(
             grid=lens_data.grid,
             convolver=lens_data.convolver,
-            preload_blurring_grid=lens_data.blurring_grid,
+            preload_blurring_grid=lens_data.preload_blurring_grid,
         )
 
         super(LensProfileFit, self).__init__(
@@ -315,7 +315,8 @@ class LensInversionFit(InversionFit):
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
             convolver=lens_data.convolver,
-            relocate_to_border=lens_data.relocate_to_border,
+            use_inversion_border=lens_data.use_inversion_border,
+            preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
         )
 
         super().__init__(
@@ -386,7 +387,7 @@ class LensProfileInversionFit(InversionFit):
         self.blurred_profile_image_1d = tracer.blurred_profile_image_1d_from_grid_and_convolver(
             grid=lens_data.grid,
             convolver=lens_data.convolver,
-            preload_blurring_grid=lens_data.blurring_grid,
+            preload_blurring_grid=lens_data.preload_blurring_grid,
         )
 
         self.profile_subtracted_image_1d = image_1d - self.blurred_profile_image_1d
@@ -396,7 +397,8 @@ class LensProfileInversionFit(InversionFit):
             image_1d=self.profile_subtracted_image_1d,
             noise_map_1d=noise_map_1d,
             convolver=lens_data.convolver,
-            relocate_to_border=lens_data.relocate_to_border,
+            use_inversion_border=lens_data.use_inversion_border,
+            preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
         )
 
         model_image = self.blurred_profile_image_1d + inversion.reconstructed_data_1d
