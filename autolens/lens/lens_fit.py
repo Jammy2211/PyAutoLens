@@ -5,11 +5,18 @@ from autolens import exc
 from autolens.lens.util import lens_fit_util as util
 from autolens.model.galaxy import galaxy as g
 
-from autolens.data.array.grids import reshape_returned_regular_array
+from autolens.array.grids import reshape_array
 
 
 class LensDataFit(af.DataFit1D):
-    def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d, grid_stack):
+    def __init__(self, lens_data, image_1d, noise_map_1d, mask_1d, model_image_1d):
+
+        self.mask_2d = lens_data.mask_2d
+        self.psf = lens_data.psf
+        self.convolver = lens_data.convolver
+        self.grid = lens_data.grid
+        self.blurring_grid = lens_data.preload_blurring_grid
+        self.positions = lens_data.positions
 
         super().__init__(
             data_1d=image_1d,
@@ -17,8 +24,6 @@ class LensDataFit(af.DataFit1D):
             mask_1d=mask_1d,
             model_data_1d=model_image_1d,
         )
-
-        self.grid_stack = grid_stack
 
     @property
     def image_1d(self):
@@ -34,31 +39,31 @@ class LensDataFit(af.DataFit1D):
         else:
             return self.mask_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def image(self):
         return self.image_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def noise_map(self):
         return self.noise_map_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def signal_to_noise_map(self):
         return self.signal_to_noise_map_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def model_image(self):
         return self.model_image_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def residual_map(self):
         return self.residual_map_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def normalized_residual_map(self):
         return self.normalized_residual_map_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def chi_squared_map(self):
         return self.chi_squared_map_1d
 
@@ -111,15 +116,7 @@ class LensDataFit(af.DataFit1D):
 
 class LensTracerFit(LensDataFit):
     def __init__(
-        self,
-        image_1d,
-        noise_map_1d,
-        mask_1d,
-        model_image_1d,
-        tracer,
-        psf,
-        mask_2d,
-        positions,
+        self, lens_data, image_1d, noise_map_1d, mask_1d, model_image_1d, tracer
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens instrument's hyper_galaxy.
@@ -132,19 +129,15 @@ class LensTracerFit(LensDataFit):
             A function which maps the 1D lens hyper_galaxy to its unmasked 2D array.
         """
 
-        self.mask_2d = mask_2d
-        self.positions = positions
+        self.tracer = tracer
 
         super().__init__(
+            lens_data=lens_data,
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
             mask_1d=mask_1d,
             model_image_1d=model_image_1d,
-            grid_stack=tracer.grid_stack,
         )
-
-        self.tracer = tracer
-        self.psf = psf
 
     @property
     def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
@@ -163,9 +156,7 @@ class LensTracerFit(LensDataFit):
 
         for galalxy, galaxy_image in self.galaxy_image_1d_dict.items():
 
-            galaxy_image_2d_dict[
-                galalxy
-            ] = self.grid_stack.regular.scaled_array_2d_from_array_1d(
+            galaxy_image_2d_dict[galalxy] = self.grid.scaled_array_2d_from_array_1d(
                 array_1d=galaxy_image
             )
 
@@ -173,24 +164,24 @@ class LensTracerFit(LensDataFit):
 
     @property
     def total_inversions(self):
-        return len(self.tracer.mappers_of_planes)
+        return len(self.tracer.regularizations_of_planes)
 
     @property
-    def unmasked_blurred_profile_image_plane_image(self):
-        return self.tracer.unmasked_blurred_profile_image_plane_image_from_psf(
-            psf=self.psf
+    def unmasked_blurred_profile_image(self):
+        return self.tracer.unmasked_blurred_profile_image_from_grid_and_psf(
+            grid=self.grid, psf=self.psf
         )
 
     @property
-    def unmasked_blurred_profile_image_plane_image_of_planes(self):
-        return self.tracer.unmasked_blurred_profile_image_plane_image_of_planes_from_psf(
-            psf=self.psf
+    def unmasked_blurred_profile_image_of_planes(self):
+        return self.tracer.unmasked_blurred_profile_image_of_planes_from_grid_and_psf(
+            grid=self.grid, psf=self.psf
         )
 
     @property
-    def unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies(self):
-        return self.tracer.unmasked_blurred_profile_image_plane_image_of_plane_and_galaxies_from_psf(
-            psf=self.psf
+    def unmasked_blurred_profile_image_of_planes_and_galaxies(self):
+        return self.tracer.unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
+            grid=self.grid, psf=self.psf
         )
 
 
@@ -222,36 +213,38 @@ class LensProfileFit(LensTracerFit):
             hyper_background_noise=hyper_background_noise,
         )
 
-        blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-            convolver_image=lens_data.convolver_image
+        blurred_profile_image_1d = tracer.blurred_profile_image_1d_from_grid_and_convolver(
+            grid=lens_data.grid,
+            convolver=lens_data.convolver,
+            preload_blurring_grid=lens_data.preload_blurring_grid,
         )
 
         super(LensProfileFit, self).__init__(
+            lens_data=lens_data,
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
             mask_1d=lens_data.mask_1d,
             model_image_1d=blurred_profile_image_1d,
-            mask_2d=lens_data.mask_2d,
             tracer=tracer,
-            psf=lens_data.psf,
-            positions=lens_data.positions,
         )
-
-        self.convolver_image = lens_data.convolver_image
 
     @property
     def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        return self.tracer.galaxy_image_dict_from_convolver_image(
-            convolver_image=self.convolver_image
+        return self.tracer.galaxy_image_dict_from_grid_and_convolver(
+            grid=self.grid,
+            convolver=self.convolver,
+            preload_blurring_grid=self.blurring_grid,
         )
 
     @property
     def model_image_2d_of_planes(self):
-        return self.tracer.blurred_profile_image_plane_image_2d_of_planes_from_convolver_image(
-            convolver_image=self.convolver_image
+        return self.tracer.blurred_profile_image_2d_of_planes_from_grid_and_convolver(
+            grid=self.grid,
+            convolver=self.convolver,
+            preload_blurring_grid=self.blurring_grid,
         )
 
     @property
@@ -265,14 +258,12 @@ class InversionFit(LensTracerFit):
     ):
 
         super().__init__(
+            lens_data=lens_data,
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
             mask_1d=lens_data.mask_1d,
             model_image_1d=model_image_1d,
-            mask_2d=lens_data.mask_2d,
-            psf=lens_data.psf,
             tracer=tracer,
-            positions=lens_data.positions,
         )
 
         self.inversion = inversion
@@ -319,10 +310,13 @@ class LensInversionFit(InversionFit):
             hyper_background_noise=hyper_background_noise,
         )
 
-        inversion = tracer.inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
+        inversion = tracer.inversion_from_grid_image_1d_noise_map_1d_and_convolver(
+            grid=lens_data.grid,
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
-            convolver_mapping_matrix=lens_data.convolver_mapping_matrix,
+            convolver=lens_data.convolver,
+            inversion_uses_border=lens_data.inversion_uses_border,
+            preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
         )
 
         super().__init__(
@@ -339,7 +333,9 @@ class LensInversionFit(InversionFit):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_image_dict = self.tracer.galaxy_image_dict_blank_images
+        galaxy_image_dict = self.tracer.galaxy_image_dict_blank_images_from_grid(
+            grid=self.grid
+        )
         galaxy_image_dict.update(
             {self.tracer.planes[-1].galaxies[0]: self.inversion.reconstructed_data_1d}
         )
@@ -388,16 +384,21 @@ class LensProfileInversionFit(InversionFit):
             hyper_background_noise=hyper_background_noise,
         )
 
-        self.blurred_profile_image_1d = tracer.blurred_profile_image_plane_image_1d_from_convolver_image(
-            convolver_image=lens_data.convolver_image
+        self.blurred_profile_image_1d = tracer.blurred_profile_image_1d_from_grid_and_convolver(
+            grid=lens_data.grid,
+            convolver=lens_data.convolver,
+            preload_blurring_grid=lens_data.preload_blurring_grid,
         )
 
         self.profile_subtracted_image_1d = image_1d - self.blurred_profile_image_1d
 
-        inversion = tracer.inversion_from_image_1d_noise_map_1d_and_convolver_mapping_matrix(
+        inversion = tracer.inversion_from_grid_image_1d_noise_map_1d_and_convolver(
+            grid=lens_data.grid,
             image_1d=self.profile_subtracted_image_1d,
             noise_map_1d=noise_map_1d,
-            convolver_mapping_matrix=lens_data.convolver_mapping_matrix,
+            convolver=lens_data.convolver,
+            inversion_uses_border=lens_data.inversion_uses_border,
+            preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
         )
 
         model_image = self.blurred_profile_image_1d + inversion.reconstructed_data_1d
@@ -411,26 +412,28 @@ class LensProfileInversionFit(InversionFit):
             inversion=inversion,
         )
 
-        self.convolver_image = lens_data.convolver_image
+        self.convolver = lens_data.convolver
 
     @property
     def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_image_dict = self.tracer.galaxy_image_dict_from_convolver_image(
-            convolver_image=self.convolver_image
+        galaxy_image_dict = self.tracer.galaxy_image_dict_from_grid_and_convolver(
+            grid=self.grid,
+            convolver=self.convolver,
+            preload_blurring_grid=self.blurring_grid,
         )
         galaxy_image_dict.update(
             {self.tracer.planes[-1].galaxies[0]: self.inversion.reconstructed_data_1d}
         )
         return galaxy_image_dict
 
-    @reshape_returned_regular_array
+    @reshape_array
     def blurred_profile_image(self, return_in_2d=True):
         return self.blurred_profile_image_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def profile_subtracted_image(self, return_in_2d=True):
         return self.profile_subtracted_image_1d
 

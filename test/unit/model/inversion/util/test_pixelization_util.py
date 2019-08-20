@@ -1,11 +1,7 @@
 import numpy as np
-import pytest
 import scipy.spatial
 
-from autolens.data.array import grids, mask
 from autolens.model.inversion.util import pixelization_util
-from autolens.model.inversion import regularization
-from autolens.model.galaxy import galaxy as g
 
 
 class TestRectangular:

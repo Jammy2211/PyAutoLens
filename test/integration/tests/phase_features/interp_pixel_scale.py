@@ -6,7 +6,7 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.integration.tests import runner
 
 test_type = "phase_features"
-test_name = "interp_pixel_scale"
+test_name = "pixel_scale_interpolation_grid"
 data_type = "lens_mass__source_smooth"
 data_resolution = "LSST"
 
@@ -20,7 +20,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalPowerLaw),
             source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
         ),
-        interp_pixel_scale=0.3,
+        pixel_scale_interpolation_grid=0.3,
         optimizer_class=optimizer_class,
     )
 

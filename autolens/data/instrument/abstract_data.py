@@ -6,8 +6,9 @@ from astropy import units
 from skimage.transform import resize, rescale
 
 from autolens import exc
-from autolens.data.array.util import array_util, grid_util, mapping_util
-from autolens.data.array import scaled_array
+from autolens.array.util import array_util, grid_util
+from autolens.array.mapping_util import array_mapping_util
+from autolens.array import scaled_array
 from autolens.model.profiles.light_profiles import EllipticalGaussian
 
 
@@ -246,9 +247,9 @@ class PSF(scaled_array.ScaledSquarePixelArray):
             pixel_scales=(pixel_scale, pixel_scale),
             sub_grid_size=1,
         )
-        gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
+        gaussian_1d = gaussian.profile_image_from_grid(grid=grid_1d)
 
-        gaussian_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        gaussian_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=gaussian_1d,
             mask=np.full(fill_value=False, shape=shape),
             sub_grid_size=1,
@@ -284,8 +285,8 @@ class PSF(scaled_array.ScaledSquarePixelArray):
             sub_grid_size=1,
         )
 
-        gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
-        gaussian_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        gaussian_1d = gaussian.profile_image_from_grid(grid=grid_1d)
+        gaussian_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=gaussian_1d,
             mask=np.full(fill_value=False, shape=shape),
             sub_grid_size=1,
@@ -401,7 +402,7 @@ class PSF(scaled_array.ScaledSquarePixelArray):
         KernelException if either PSF psf dimension is odd
         """
         if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
-            raise exc.KernelException("PSF Kernel must be odd")
+            raise exc.ConvolutionException("PSF Kernel must be odd")
 
         return scipy.signal.convolve2d(array_2d, self, mode="same")
 

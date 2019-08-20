@@ -1,4 +1,4 @@
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
@@ -46,8 +46,8 @@ source_galaxy = g.Galaxy(
 
 lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
 
-tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
-    galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid_stack
+tracer = ray_tracing.Tracer.from_galaxies(
+    galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid
 )
 fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 

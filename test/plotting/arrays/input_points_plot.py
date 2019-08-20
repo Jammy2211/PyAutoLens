@@ -1,4 +1,4 @@
-from autolens.data.array import scaled_array
+from autolens.array import scaled_array
 from autolens.plotters import array_plotters
 import numpy as np
 

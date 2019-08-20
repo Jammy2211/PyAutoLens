@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from autolens import exc
-from autolens.data.array.util import array_util
+from autolens.array.util import array_util
 
 
 def get_subplot_rows_columns_figsize(number_subplots):

@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autolens import exc
-from autolens.data.array.util import array_util, grid_util, binning_util
+from autolens.array.util import array_util, grid_util, binning_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

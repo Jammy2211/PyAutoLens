@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens.model.inversion.util import mapper_util
-from test.unit.mock.data.mock_grids import MockPixSubGrid, MockPixGridStack
+from test.unit.mock.data.mock_grids import MockPixelizationGrid
 
 
 @pytest.fixture(name="three_pixels")
@@ -18,20 +18,15 @@ def make_five_pixels():
 class TestMappingMatrix:
     def test__3_image_pixels__6_pixel_pixels__sub_grid_1x1(self, three_pixels):
 
-        sub_to_pix = np.array([0, 1, 2])
-        sub_to_regular = np.array([0, 1, 2])
+        sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2])
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
 
-        grids = MockPixGridStack(
-            regular=three_pixels,
-            sub=MockPixSubGrid(three_pixels, sub_to_regular, sub_grid_size=1),
-        )
-
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
-            sub_to_pix=sub_to_pix,
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=6,
-            regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
-            sub_grid_fraction=grids.sub.sub_grid_fraction,
+            total_mask_pixels=3,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=1.0,
         )
 
         assert (
@@ -47,20 +42,15 @@ class TestMappingMatrix:
 
     def test__5_image_pixels__8_pixel_pixels__sub_grid_1x1(self, five_pixels):
 
-        sub_to_pix = np.array([0, 1, 2, 7, 6])
-        sub_to_regular = np.array([0, 1, 2, 3, 4])
+        sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2, 7, 6])
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
 
-        grids = MockPixGridStack(
-            regular=five_pixels,
-            sub=MockPixSubGrid(five_pixels, sub_to_regular, sub_grid_size=1),
-        )
-
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
-            sub_to_pix=sub_to_pix,
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
-            regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
-            sub_grid_fraction=grids.sub.sub_grid_fraction,
+            total_mask_pixels=5,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=1.0,
         )
 
         assert (
@@ -98,24 +88,18 @@ class TestMappingMatrix:
         self, five_pixels
     ):
 
-        sub_to_pix = np.array(
+        sub_mask_1d_index_to_pixelization_1d_index = np.array(
             [0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2]
         )
-        sub_to_regular = np.array(
+        sub_mask_1d_index_to_mask_1d_index = np.array(
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
-
-        grids = MockPixGridStack(
-            regular=five_pixels,
-            sub=MockPixSubGrid(five_pixels, sub_to_regular, sub_grid_size=2),
-        )
-
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
-            sub_to_pix=sub_to_pix,
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
-            regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
-            sub_grid_fraction=grids.sub.sub_grid_fraction,
+            total_mask_pixels=5,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=0.25,
         )
 
         assert (
@@ -135,24 +119,19 @@ class TestMappingMatrix:
         self, five_pixels
     ):
 
-        sub_to_pix = np.array(
+        sub_mask_1d_index_to_pixelization_1d_index = np.array(
             [0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2]
         )
-        sub_to_regular = np.array(
+        sub_mask_1d_index_to_mask_1d_index = np.array(
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
 
-        grids = MockPixGridStack(
-            regular=five_pixels,
-            sub=MockPixSubGrid(five_pixels, sub_to_regular, sub_grid_size=2),
-        )
-
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
-            sub_to_pix=sub_to_pix,
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
-            regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
-            sub_grid_fraction=grids.sub.sub_grid_fraction,
+            total_mask_pixels=5,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=0.25,
         )
 
         assert (
@@ -170,7 +149,7 @@ class TestMappingMatrix:
 
     def test__3_image_pixels__6_pixel_pixels__sub_grid_4x4(self, three_pixels):
 
-        sub_to_pix = np.array(
+        sub_mask_1d_index_to_pixelization_1d_index = np.array(
             [
                 0,
                 0,
@@ -223,7 +202,7 @@ class TestMappingMatrix:
             ]
         )
 
-        sub_to_regular = np.array(
+        sub_mask_1d_index_to_mask_1d_index = np.array(
             [
                 0,
                 0,
@@ -276,17 +255,12 @@ class TestMappingMatrix:
             ]
         )
 
-        grids = MockPixGridStack(
-            regular=three_pixels,
-            sub=MockPixSubGrid(three_pixels, sub_to_regular, sub_grid_size=4),
-        )
-
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(
-            sub_to_pix=sub_to_pix,
+        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=6,
-            regular_pixels=grids.regular.shape[0],
-            sub_to_regular=grids.sub.sub_to_regular,
-            sub_grid_fraction=grids.sub.sub_grid_fraction,
+            total_mask_pixels=3,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            sub_grid_fraction=1.0/16.0,
         )
 
         assert (

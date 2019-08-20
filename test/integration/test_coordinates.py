@@ -1,4 +1,4 @@
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 import numpy as np
 import pytest
@@ -20,28 +20,28 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
     )
 
     sersic = lp.SphericalSersic(centre=(2.0, -2.0))
-    image_1d = sersic.intensities_from_grid(grid=regular)
+    image_1d = sersic.profile_image_from_grid(grid=regular)
     image_2d = regular.array_2d_from_array_1d(array_1d=image_1d)
 
     assert image_1d.argmax() == 0
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 0)
 
     sersic = lp.SphericalSersic(centre=(2.0, 2.0))
-    image_1d = sersic.intensities_from_grid(grid=regular)
+    image_1d = sersic.profile_image_from_grid(grid=regular)
     image_2d = regular.array_2d_from_array_1d(array_1d=image_1d)
 
     assert image_1d.argmax() == 4
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 4)
 
     sersic = lp.SphericalSersic(centre=(-2.0, -2.0))
-    image_1d = sersic.intensities_from_grid(grid=regular)
+    image_1d = sersic.profile_image_from_grid(grid=regular)
     image_2d = regular.array_2d_from_array_1d(array_1d=image_1d)
 
     assert image_1d.argmax() == 20
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 0)
 
     sersic = lp.SphericalSersic(centre=(-2.0, 2.0))
-    image_1d = sersic.intensities_from_grid(grid=regular)
+    image_1d = sersic.profile_image_from_grid(grid=regular)
     image_2d = regular.array_2d_from_array_1d(array_1d=image_1d)
 
     assert image_1d.argmax() == 24

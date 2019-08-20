@@ -42,22 +42,22 @@ class TestRegularizationWeighted:
 
         reg = regularization.AdaptiveBrightness(signal_scale=2.0)
 
-        sub_to_pix = np.array([0, 1, 2, 3, 3, 4, 5])
-        sub_to_regular = np.array([0, 1, 2, 3, 3, 4, 5])
+        sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2, 3, 3, 4, 5])
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 3, 4, 5])
         galaxy_image = np.array([2.0, 1.0, 1.0, 4.0, 5.0, 6.0, 1.0])
 
         pixel_signals = reg.pixel_signals_from_images(
             pixels=6,
-            sub_to_pix=sub_to_pix,
-            sub_to_regular=sub_to_regular,
+            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
             hyper_image=galaxy_image,
         )
 
         pixel_signals_util = reg_util.adaptive_pixel_signals_from_images(
             pixels=6,
             signal_scale=2.0,
-            sub_to_pix=sub_to_pix,
-            sub_to_regular=sub_to_regular,
+            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
             hyper_image=galaxy_image,
         )
 

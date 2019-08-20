@@ -1,7 +1,8 @@
 from autolens import decorator_util
 import numpy as np
 
-from autolens.data.array.util import mask_util, mapping_util
+from autolens.array.util import mask_util
+from autolens.array.mapping_util import array_mapping_util, grid_mapping_util
 
 
 #@decorator_util.jit()
@@ -160,7 +161,7 @@ def grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
         mask=mask, pixel_scales=pixel_scales, sub_grid_size=sub_grid_size, origin=origin
     )
 
-    return mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
+    return grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
         sub_grid_1d=grid_1d, mask=mask, sub_grid_size=sub_grid_size
     )
 

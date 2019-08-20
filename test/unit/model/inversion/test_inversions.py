@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data.array import grids, mask
+from autolens.array import grids, mask
 from autolens.model.inversion import inversions
 from test.unit.mock.model import mock_inversion
 
@@ -150,15 +150,13 @@ class TestReconstructedDataVectorAndImage:
             pixel_scale=1.0,
         )
 
-        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=msk, sub_grid_size=1, psf_shape=(1, 1)
-        )
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=msk, sub_grid_size=1)
 
         inv = inversions.Inversion.from_data_1d_mapper_and_regularization(
             image_1d=np.ones(9),
             noise_map_1d=np.ones(9),
             convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(matrix_shape, grid_stack),
+            mapper=mock_inversion.MockMapper(matrix_shape=matrix_shape, grid=grid),
             regularization=mock_inversion.MockRegularization(matrix_shape),
         )
 
@@ -196,15 +194,13 @@ class TestReconstructedDataVectorAndImage:
             pixel_scale=1.0,
         )
 
-        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
-            mask=msk, sub_grid_size=1, psf_shape=(1, 1)
-        )
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=msk, sub_grid_size=1)
 
         inv = inversions.Inversion.from_data_1d_mapper_and_regularization(
             image_1d=np.ones(9),
             noise_map_1d=np.ones(9),
             convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(matrix_shape, grid_stack),
+            mapper=mock_inversion.MockMapper(matrix_shape=matrix_shape, grid=grid),
             regularization=mock_inversion.MockRegularization(matrix_shape),
         )
 
@@ -259,4 +255,4 @@ class TestReconstructedDataVectorAndImage:
 #         pixelization_residuals_util = \
 #             inversion_util.pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
 #                 pixelization_values=inv.pixelization_values, reconstructed_data_1d=inv.reconstructed_data_1d,
-#                 sub_to_regular=inv.mapper.sub_to_regular, pixelization_to_sub_all=inv.mapper.pixelization_to_sub_all)
+#                 sub_mask_1d_index_to_mask_1d_index=inv.mapper.sub_mask_1d_index_to_mask_1d_index, pixelization_1d_index_to_all_sub_mask_1d_indexes=inv.mapper.pixelization_1d_index_to_all_sub_mask_1d_indexes)

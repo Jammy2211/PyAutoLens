@@ -10,7 +10,8 @@ from astropy import units
 from astropy.coordinates import Angle
 
 from autolens import exc
-from autolens.data.array.util import grid_util, mapping_util
+from autolens.array.util import grid_util
+from autolens.array.mapping_util import array_mapping_util
 from autolens.data.instrument import abstract_data
 
 logger = logging.getLogger(__name__)
@@ -327,7 +328,7 @@ class TestPSF(object):
 
             psf = abstract_data.PSF(array=kernel, pixel_scale=1.0)
 
-            with pytest.raises(exc.KernelException):
+            with pytest.raises(exc.ConvolutionException):
                 psf.convolve(np.ones((5, 5)))
 
         def test__image_is_3x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
@@ -532,8 +533,8 @@ class TestPSF(object):
             gaussian = lp.EllipticalGaussian(
                 centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
             )
-            profile_gaussian_1d = gaussian.intensities_from_grid(grid)
-            profile_gaussian_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            profile_gaussian_1d = gaussian.profile_image_from_grid(grid)
+            profile_gaussian_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
                 sub_array_1d=profile_gaussian_1d,
                 mask=np.full(fill_value=False, shape=(3, 3)),
                 sub_grid_size=1,

@@ -3,11 +3,11 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens import dimensions as dim
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
 
 
 class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
@@ -26,11 +26,11 @@ class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
         super(MassSheet, self).__init__(centre=centre)
         self.kappa = kappa
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.full(shape=grid.shape[0], fill_value=self.kappa)
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.zeros((grid.shape[0],))
 
@@ -82,11 +82,11 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
     ):
         return 0.0
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.zeros((grid.shape[0],))
 

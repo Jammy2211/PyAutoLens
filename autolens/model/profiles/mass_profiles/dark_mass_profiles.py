@@ -1,7 +1,6 @@
 from pyquad import quad_grid
 
 import numpy as np
-from scipy import special
 from scipy.integrate import quad
 from scipy.optimize import fsolve
 from astropy import cosmology as cosmo
@@ -15,11 +14,11 @@ from scipy import special
 import autofit as af
 from autolens import dimensions as dim
 from autolens import decorator_util
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
 
 
 def jit_integrand(integrand_function):
@@ -155,7 +154,7 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
 
         return eta_min, eta_max, minimum_log_eta, maximum_log_eta, bin_size
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -524,7 +523,7 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
 
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(
@@ -908,7 +907,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         grid_radius = grid_radius + 0j
         return np.real(self.coord_func_m(grid_radius=grid_radius))
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.zeros((grid.shape[0],))
 
@@ -1118,7 +1117,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         elif r == 1:
             return 1
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -1280,7 +1279,7 @@ class SphericalNFW(EllipticalNFW):
 
     # TODO : Make this use numpy arithmetic
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):

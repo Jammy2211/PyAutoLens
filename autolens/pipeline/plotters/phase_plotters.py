@@ -61,6 +61,7 @@ def plot_ccd_for_phase(
 
 def plot_ray_tracing_for_phase(
     tracer,
+    grid,
     during_analysis,
     mask,
     extract_array_from_mask,
@@ -86,6 +87,7 @@ def plot_ray_tracing_for_phase(
 
         ray_tracing_plotters.plot_ray_tracing_subplot(
             tracer=tracer,
+            grid=grid,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -97,11 +99,12 @@ def plot_ray_tracing_for_phase(
 
     ray_tracing_plotters.plot_ray_tracing_individual(
         tracer=tracer,
+        grid=grid,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions,
-        should_plot_image_plane_image=should_plot_image_plane_image,
+        should_plot_profile_image=should_plot_image_plane_image,
         should_plot_source_plane=should_plot_source_plane,
         should_plot_convergence=should_plot_convergence,
         should_plot_potential=should_plot_potential,
@@ -117,11 +120,12 @@ def plot_ray_tracing_for_phase(
 
             ray_tracing_plotters.plot_ray_tracing_individual(
                 tracer=tracer,
+                grid=grid,
                 mask=mask,
                 extract_array_from_mask=extract_array_from_mask,
                 zoom_around_mask=zoom_around_mask,
                 positions=positions,
-                should_plot_image_plane_image=True,
+                should_plot_profile_image=True,
                 should_plot_source_plane=True,
                 should_plot_convergence=True,
                 should_plot_potential=True,
@@ -139,11 +143,12 @@ def plot_ray_tracing_for_phase(
 
             ray_tracing_plotters.plot_ray_tracing_individual(
                 tracer=tracer,
+                grid=grid,
                 mask=mask,
                 extract_array_from_mask=extract_array_from_mask,
                 zoom_around_mask=zoom_around_mask,
                 positions=positions,
-                should_plot_image_plane_image=True,
+                should_plot_profile_image=True,
                 should_plot_source_plane=True,
                 should_plot_convergence=True,
                 should_plot_potential=True,
@@ -320,15 +325,15 @@ def plot_lens_fit_for_phase(
 def plot_hyper_images_for_phase(
     hyper_model_image_2d,
     hyper_galaxy_image_2d_path_dict,
-    hyper_galaxy_cluster_image_2d_path_dict,
+    binned_hyper_galaxy_image_2d_path_dict,
     mask,
-    cluster,
+    binned_grid,
     extract_array_from_mask,
     zoom_around_mask,
     units,
     should_plot_hyper_model_image,
     should_plot_hyper_galaxy_images,
-    should_plot_hyper_galaxy_cluster_images,
+    should_plot_binned_hyper_galaxy_images,
     visualize_path,
 ):
 
@@ -361,13 +366,13 @@ def plot_hyper_images_for_phase(
         )
 
     if (
-        should_plot_hyper_galaxy_cluster_images
-        and hyper_galaxy_cluster_image_2d_path_dict is not None
+        should_plot_binned_hyper_galaxy_images
+        and binned_hyper_galaxy_image_2d_path_dict is not None
     ):
 
-        hyper_plotters.plot_hyper_galaxy_cluster_images_subplot(
-            hyper_galaxy_cluster_image_path_dict=hyper_galaxy_cluster_image_2d_path_dict,
-            mask=cluster.mask,
+        hyper_plotters.plot_binned_hyper_galaxy_images_subplot(
+            hyper_galaxy_cluster_image_path_dict=binned_hyper_galaxy_image_2d_path_dict,
+            mask=binned_grid.mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
             units=units,

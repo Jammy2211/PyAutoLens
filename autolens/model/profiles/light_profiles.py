@@ -7,13 +7,13 @@ from autolens import dimensions as dim
 from autolens import text_util
 from autolens.model.profiles import geometry_profiles
 
-from autolens.data.array.grids import reshape_returned_array
+from autolens.array.grids import reshape_array_from_grid
 
 
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    def intensities_from_grid_radii(self, grid_radii):
+    def profile_image_from_grid_radii(self, grid_radii):
         """
         Abstract method for obtaining intensity at on a grid of radii.
 
@@ -25,7 +25,7 @@ class LightProfile(object):
         raise NotImplementedError("intensity_at_radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
-    def intensities_from_grid(
+    def profile_image_from_grid(
         self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None
     ):
         """
@@ -178,7 +178,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
         The axis ratio is set to 1.0 for computing the luminosity within a circle"""
         r = x * axis_ratio
-        return 2 * np.pi * r * self.intensities_from_grid_radii(x)
+        return 2 * np.pi * r * self.profile_image_from_grid_radii(x)
 
     @dim.convert_units_to_input_units
     def summarize_in_units(
@@ -259,7 +259,7 @@ class EllipticalGaussian(EllipticalLightProfile):
         self.intensity = intensity
         self.sigma = sigma
 
-    def intensities_from_grid_radii(self, grid_radii):
+    def profile_image_from_grid_radii(self, grid_radii):
         """Calculate the intensity of the Gaussian light profile on a grid of radial coordinates.
 
         Parameters
@@ -272,10 +272,10 @@ class EllipticalGaussian(EllipticalLightProfile):
             np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))),
         )
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def intensities_from_grid(
+    def profile_image_from_grid(
         self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None
     ):
         """
@@ -288,7 +288,7 @@ class EllipticalGaussian(EllipticalLightProfile):
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
         """
-        return self.intensities_from_grid_radii(self.grid_to_elliptical_radii(grid))
+        return self.profile_image_from_grid_radii(self.grid_to_elliptical_radii(grid))
 
 
 class SphericalGaussian(EllipticalGaussian):
@@ -440,7 +440,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
             sersic_index=sersic_index,
         )
 
-    def intensities_from_grid_radii(self, grid_radii):
+    def profile_image_from_grid_radii(self, grid_radii):
         """
         Calculate the intensity of the Sersic light profile on a grid of radial coordinates.
 
@@ -466,10 +466,10 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
             ),
         )
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def intensities_from_grid(
+    def profile_image_from_grid(
         self, grid, return_in_2d=False, return_binned=False, grid_radial_minimum=None
     ):
         """ Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
@@ -481,7 +481,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
         """
-        return self.intensities_from_grid_radii(self.grid_to_eccentric_radii(grid))
+        return self.profile_image_from_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
 class SphericalSersic(EllipticalSersic):
@@ -735,7 +735,7 @@ class EllipticalCoreSersic(EllipticalSersic):
             )
         )
 
-    def intensities_from_grid_radii(self, grid_radii):
+    def profile_image_from_grid_radii(self, grid_radii):
         """Calculate the intensity of the cored-Sersic light profile on a grid of radial coordinates.
 
         Parameters

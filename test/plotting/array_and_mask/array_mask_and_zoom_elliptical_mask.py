@@ -1,4 +1,4 @@
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from test.simulation import simulation_util
 from autolens.plotters import array_plotters
 

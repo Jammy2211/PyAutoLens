@@ -2,12 +2,11 @@ def phase_tag_from_phase_settings(
     sub_grid_size,
     signal_to_noise_limit,
     bin_up_factor,
-    image_psf_shape,
-    inversion_psf_shape,
+    psf_shape,
     positions_threshold,
     inner_mask_radii,
-    interp_pixel_scale,
-    cluster_pixel_scale,
+    pixel_scale_interpolation_grid,
+    pixel_scale_binned_cluster_grid,
 ):
 
     sub_grid_size_tag = sub_grid_size_tag_from_sub_grid_size(
@@ -19,23 +18,18 @@ def phase_tag_from_phase_settings(
     bin_up_factor_tag = bin_up_factor_tag_from_bin_up_factor(
         bin_up_factor=bin_up_factor
     )
-    image_psf_shape_tag = image_psf_shape_tag_from_image_psf_shape(
-        image_psf_shape=image_psf_shape
-    )
-    inversion_psf_shape_tag = inversion_psf_shape_tag_from_inversion_psf_shape(
-        inversion_psf_shape=inversion_psf_shape
-    )
+    psf_shape_tag = psf_shape_tag_from_image_psf_shape(psf_shape=psf_shape)
     positions_threshold_tag = positions_threshold_tag_from_positions_threshold(
         positions_threshold=positions_threshold
     )
     inner_mask_radii_tag = inner_mask_radii_tag_from_inner_circular_mask_radii(
         inner_mask_radii=inner_mask_radii
     )
-    interp_pixel_scale_tag = interp_pixel_scale_tag_from_interp_pixel_scale(
-        interp_pixel_scale=interp_pixel_scale
+    pixel_scale_interpolation_grid_tag = pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
+        pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
     )
-    cluster_pixel_scale_tag = cluster_pixel_scale_tag_from_cluster_pixel_scale(
-        cluster_pixel_scale=cluster_pixel_scale
+    pixel_scale_binned_cluster_grid_tag = pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(
+        pixel_scale_binned_cluster_grid=pixel_scale_binned_cluster_grid
     )
 
     return (
@@ -43,12 +37,11 @@ def phase_tag_from_phase_settings(
         + sub_grid_size_tag
         + signal_to_noise_limit_tag
         + bin_up_factor_tag
-        + image_psf_shape_tag
-        + inversion_psf_shape_tag
+        + psf_shape_tag
         + positions_threshold_tag
         + inner_mask_radii_tag
-        + interp_pixel_scale_tag
-        + cluster_pixel_scale_tag
+        + pixel_scale_interpolation_grid_tag
+        + pixel_scale_binned_cluster_grid_tag
     )
 
 
@@ -128,7 +121,7 @@ def inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii):
         return "__inner_mask_{0:.2f}".format(inner_mask_radii)
 
 
-def image_psf_shape_tag_from_image_psf_shape(image_psf_shape):
+def psf_shape_tag_from_image_psf_shape(psf_shape):
     """Generate an image psf shape tag, to customize phase names based on size of the image PSF that the original PSF \
     is trimmed to for faster run times.
 
@@ -138,59 +131,41 @@ def image_psf_shape_tag_from_image_psf_shape(image_psf_shape):
     image_psf_shape = 2 -> phase_name_image_psf_shape_2
     image_psf_shape = 2 -> phase_name_image_psf_shape_2
     """
-    if image_psf_shape is None:
+    if psf_shape is None:
         return ""
     else:
-        y = str(image_psf_shape[0])
-        x = str(image_psf_shape[1])
-        return "__image_psf_" + y + "x" + x
+        y = str(psf_shape[0])
+        x = str(psf_shape[1])
+        return "__psf_" + y + "x" + x
 
 
-def inversion_psf_shape_tag_from_inversion_psf_shape(inversion_psf_shape):
-    """Generate an inversion psf shape tag, to customize phase names based on size of the inversion PSF that the \
-    original PSF is trimmed to for faster run times.
-
-    This changes the phase name 'phase_name' as follows:
-
-    inversion_psf_shape = 1 -> phase_name
-    inversion_psf_shape = 2 -> phase_name_inversion_psf_shape_2
-    inversion_psf_shape = 2 -> phase_name_inversion_psf_shape_2
-    """
-    if inversion_psf_shape is None:
-        return ""
-    else:
-        y = str(inversion_psf_shape[0])
-        x = str(inversion_psf_shape[1])
-        return "__inv_psf_" + y + "x" + x
-
-
-def interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale):
+def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(pixel_scale_interpolation_grid):
     """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the interpolation \
     grid that deflection angles are computed on before interpolating to the regular and sub grids.
 
     This changes the phase name 'phase_name' as follows:
 
-    interp_pixel_scale = 1 -> phase_name
-    interp_pixel_scale = 2 -> phase_name_interp_pixel_scale_2
-    interp_pixel_scale = 2 -> phase_name_interp_pixel_scale_2
+    pixel_scale_interpolation_grid = 1 -> phase_name
+    pixel_scale_interpolation_grid = 2 -> phase_name_pixel_scale_interpolation_grid_2
+    pixel_scale_interpolation_grid = 2 -> phase_name_pixel_scale_interpolation_grid_2
     """
-    if interp_pixel_scale is None:
+    if pixel_scale_interpolation_grid is None:
         return ""
     else:
-        return "__interp_{0:.3f}".format(interp_pixel_scale)
+        return "__interp_{0:.3f}".format(pixel_scale_interpolation_grid)
 
 
-def cluster_pixel_scale_tag_from_cluster_pixel_scale(cluster_pixel_scale):
+def pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(pixel_scale_binned_cluster_grid):
     """Generate an clusterolation pixel scale tag, to customize phase names based on the resolution of the clusterolation \
     grid that deflection angles are computed on before clusterolating to the regular and sub grids.
 
     This changes the phase name 'phase_name' as follows:
 
-    cluster_pixel_scale = 1 -> phase_name
-    cluster_pixel_scale = 2 -> phase_name_cluster_pixel_scale_2
-    cluster_pixel_scale = 2 -> phase_name_cluster_pixel_scale_2
+    pixel_scale_binned_cluster_grid = 1 -> phase_name
+    pixel_scale_binned_cluster_grid = 2 -> phase_name_pixel_scale_binned_cluster_grid_2
+    pixel_scale_binned_cluster_grid = 2 -> phase_name_pixel_scale_binned_cluster_grid_2
     """
-    if cluster_pixel_scale is None:
+    if pixel_scale_binned_cluster_grid is None:
         return ""
     else:
-        return "__cluster_{0:.3f}".format(cluster_pixel_scale)
+        return "__cluster_{0:.3f}".format(pixel_scale_binned_cluster_grid)

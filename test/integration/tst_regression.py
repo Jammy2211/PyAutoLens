@@ -4,8 +4,8 @@ import os
 import autofit as af
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd as ccd
-from autolens.data.array import grids
-from autolens.data.array.util import array_util
+from autolens.array import grids
+from autolens.array.util import array_util
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
@@ -41,13 +41,13 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
         shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=1
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+    tracer = ray_tracing.Tracer.from_galaxies(
         galaxies=galaxies, image_plane_grid_stack=grid_stack
     )
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    ccd_simulated = ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
+    ccd_simulated = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         exposure_time=100.0,

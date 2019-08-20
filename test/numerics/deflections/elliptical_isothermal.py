@@ -1,4 +1,4 @@
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import mass_profiles as mp
 
 # This numerics test determines the range of plausible values a power-law mass profile can take and not crash due to

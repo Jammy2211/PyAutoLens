@@ -3,9 +3,9 @@ import shutil
 import numpy as np
 import pytest
 
-from autolens.data.array.util import array_util
+from autolens.array.util import array_util
 
-test_data_path = "{}/../../../test_files/array/".format(
+test_data_path = "{}/../../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
@@ -98,6 +98,8 @@ class TestResize:
         modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(
             array_2d=array, resized_shape=(3, 3)
         )
+
+        print(modified)
 
         assert (
             modified == np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])
