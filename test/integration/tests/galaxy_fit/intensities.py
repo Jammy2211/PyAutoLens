@@ -4,7 +4,8 @@ import numpy as np
 import autofit as af
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.galaxy import galaxy_data as gd
-from autolens.data.array import grids, scaled_array
+from autolens.array import scaled_array
+from autolens.array import grids
 from autolens.pipeline.phase import phase
 from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
@@ -34,7 +35,7 @@ def galaxy_fit_phase():
         ),
     )
 
-    intensities = galaxy.intensities_from_grid(
+    intensities = galaxy.profile_image_from_grid(
         galaxies=[galaxy], grid=grid_stack.sub, return_in_2d=True
     )
 

@@ -9,7 +9,7 @@ from autolens.plotters import plotter_util, array_plotters
 from autolens.model.profiles.plotters import profile_plotters
 
 
-def plot_intensities(
+def plot_image(
     galaxy,
     grid,
     mask=None,
@@ -32,7 +32,7 @@ def plot_intensities(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Galaxy Intensities",
+    title="Galaxy Image",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
@@ -42,25 +42,25 @@ def plot_intensities(
     grid_pointsize=1,
     output_path=None,
     output_format="show",
-    output_filename="galaxy_intensities",
+    output_filename="galaxy_image",
 ):
-    """Plot the intensities (e.g. the datas) of a galaxy, on a regular grid of (y,x) coordinates.
+    """Plot the image (e.g. the datas) of a galaxy, on a regular grid of (y,x) coordinates.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     galaxy : model.galaxy.galaxy.Galaxy
-        The galaxy whose intensities are plotted.
+        The galaxy whose image are plotted.
     grid : ndarray or datas.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    intensities = galaxy.intensities_from_grid(
+    image = galaxy.profile_image_from_grid(
         grid=grid, return_in_2d=True, return_binned=True
     )
 
     array_plotters.plot_array(
-        array=intensities,
+        array=image,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
@@ -477,7 +477,7 @@ def plot_deflections_x(
     )
 
 
-def plot_intensities_subplot(
+def plot_image_subplot(
     galaxy,
     grid,
     mask=None,
@@ -508,7 +508,7 @@ def plot_intensities_subplot(
     grid_pointsize=1,
     output_path=None,
     output_format="show",
-    output_filename="galaxy_individual_intensities",
+    output_filename="galaxy_individual_image",
 ):
 
     total_light_profiles = len(galaxy.light_profiles)
@@ -525,7 +525,7 @@ def plot_intensities_subplot(
 
         plt.subplot(rows, columns, i + 1)
 
-        profile_plotters.plot_intensities(
+        profile_plotters.plot_image(
             light_profile=light_profile,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,

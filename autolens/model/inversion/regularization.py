@@ -221,13 +221,17 @@ class AdaptiveBrightness(Regularization):
         self.signal_scale = signal_scale
 
     def pixel_signals_from_images(
-        self, pixels, sub_to_pix, sub_to_regular, hyper_image
+        self,
+        pixels,
+        sub_mask_1d_index_to_pixelization_1d_index,
+        sub_mask_1d_index_to_mask_1d_index,
+        hyper_image,
     ):
         return regularization_util.adaptive_pixel_signals_from_images(
             pixels=pixels,
             signal_scale=self.signal_scale,
-            sub_to_pix=sub_to_pix,
-            sub_to_regular=sub_to_regular,
+            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
             hyper_image=hyper_image,
         )
 
@@ -251,8 +255,8 @@ class AdaptiveBrightness(Regularization):
 
         pixel_signals = self.pixel_signals_from_images(
             pixels=mapper.pixels,
-            sub_to_pix=mapper.sub_to_pixelization,
-            sub_to_regular=mapper.grid_stack.sub.sub_to_regular,
+            sub_mask_1d_index_to_pixelization_1d_index=mapper.sub_mask_1d_index_to_pixelization_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=mapper.grid.sub_mask_1d_index_to_mask_1d_index,
             hyper_image=mapper.hyper_image,
         )
 

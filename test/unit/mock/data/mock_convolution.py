@@ -1,16 +1,12 @@
 from autolens.data import convolution
-from autolens.model.inversion import convolution as inversion_convolution
 
 
-class MockConvolverImage(convolution.ConvolverImage):
-    def __init__(self, mask, blurring_mask, psf):
+class MockConvolver(convolution.Convolver):
+    def __init__(self, mask, psf, blurring_mask=None):
 
-        super(MockConvolverImage, self).__init__(
+        super(MockConvolver, self).__init__(
             mask=mask, blurring_mask=blurring_mask, psf=psf
         )
 
-
-class MockConvolverMappingMatrix(inversion_convolution.ConvolverMappingMatrix):
-    def __init__(self, mask, psf):
-
-        super(MockConvolverMappingMatrix, self).__init__(mask=mask, psf=psf)
+    def convolver_with_blurring_mask_added(self, blurring_mask):
+        return MockConvolver(mask=self.mask, psf=self.psf, blurring_mask=blurring_mask)

@@ -2,20 +2,12 @@ import numpy as np
 import pytest
 import scipy.spatial
 
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.inversion import pixelizations
 from autolens.model.inversion.util import pixelization_util
 
 
 class TestRectangular:
-    class TestConstructor:
-        def test__number_of_pixels_and_regularization_set_up_correctly(self):
-
-            pix = pixelizations.Rectangular(shape=(3, 3))
-
-            assert pix.shape == (3, 3)
-            assert pix.pixels == 9
-
     class TestGeometry:
         def test__3x3_grid__buffer_is_small__grid_give_min_minus_1_max_1__sets_up_geometry_correctly(
             self
@@ -198,7 +190,7 @@ class TestRectangular:
 
             pix = pixelizations.Rectangular(shape=(7, 5))
 
-            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization()
+            pixel_neighbors, pixel_neighbors_size = pix.pixel_neighbors
             pixel_neighbors_util, pixel_neighbors_size_util = pixelization_util.rectangular_neighbors_from_shape(
                 shape=(7, 5)
             )
@@ -207,13 +199,11 @@ class TestRectangular:
             assert (pixel_neighbors_size == pixel_neighbors_size_util).all()
 
     class TestPixelizationGrid:
-        def test__pixelization_grid_returns_none_as_not_used(self, grid_stack_7x7):
+        def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            assert (
-                pix.pixelization_grid_from_grid_stack(grid_stack=grid_stack_7x7) == None
-            )
+            assert pix.pixelization_grid_from_grid(grid=sub_grid_7x7) == None
 
 
 class TestVoronoi:
@@ -389,7 +379,7 @@ class TestVoronoi:
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(points)
-            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization(
+            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixels_and_ridge_points(
                 pixels=9, ridge_points=voronoi.ridge_points
             )
 
@@ -412,154 +402,142 @@ class TestVoronoiMagnification:
         assert pix.shape == (3, 3)
 
     def test__pixelization_grid_returns_same_as_computed_from_grids_module(
-        self, grid_stack_7x7
+        self, sub_grid_7x7
     ):
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
 
-        pixelization_grid = pix.pixelization_grid_from_grid_stack(
-            grid_stack=grid_stack_7x7
-        )
+        pixelization_grid = pix.pixelization_grid_from_grid(grid=sub_grid_7x7)
 
-        pixelization_grid_manual = grids.PixelizationGrid.from_unmasked_2d_grid_shape_and_regular_grid(
-            unmasked_sparse_shape=(3, 3), regular_grid=grid_stack_7x7.regular
+        pixelization_grid_manual = grids.PixelizationGrid.from_grid_and_unmasked_2d_grid_shape(
+            unmasked_sparse_shape=(3, 3), grid=sub_grid_7x7
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()
         assert (
-            pixelization_grid_manual.regular_to_pixelization
-            == pixelization_grid.regular_to_pixelization
+            pixelization_grid_manual.mask_1d_index_to_nearest_pixelization_1d_index
+            == pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index
         ).all()
 
 
 class TestVoronoiBrightness:
-    def test__number_of_pixels_and_regularization_set_up_correctly(self):
+    def test__hyper_image_doesnt_use_min_and_max_cluster_weight_map_uses_floor_and_power(
+        self
+    ):
 
-        pix = pixelizations.VoronoiBrightnessImage(pixels=5)
+        hyper_image = np.array([0.0, 1.0, 0.0])
 
-        assert pix.pixels == 5
+        pix = pixelizations.VoronoiBrightnessImage(
+            pixels=5, weight_floor=0.0, weight_power=0.0
+        )
 
-    class TestClusterWeightMap:
-        def test__hyper_image_doesnt_use_min_and_max_cluster_weight_map_uses_floor_and_power(
-            self
-        ):
+        cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
+            hyper_image=hyper_image
+        )
 
-            hyper_image = np.array([0.0, 1.0, 0.0])
+        assert (cluster_weight_map == np.ones(3)).all()
 
-            pix = pixelizations.VoronoiBrightnessImage(
-                pixels=5, weight_floor=0.0, weight_power=0.0
-            )
+        pix = pixelizations.VoronoiBrightnessImage(
+            pixels=5, weight_floor=0.0, weight_power=1.0
+        )
 
-            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
-                hyper_image=hyper_image
-            )
+        cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
+            hyper_image=hyper_image
+        )
 
-            assert (cluster_weight_map == np.ones(3)).all()
+        assert (cluster_weight_map == np.array([0.0, 1.0, 0.0])).all()
 
-            pix = pixelizations.VoronoiBrightnessImage(
-                pixels=5, weight_floor=0.0, weight_power=1.0
-            )
+        pix = pixelizations.VoronoiBrightnessImage(
+            pixels=5, weight_floor=1.0, weight_power=1.0
+        )
 
-            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
-                hyper_image=hyper_image
-            )
+        cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
+            hyper_image=hyper_image
+        )
 
-            assert (cluster_weight_map == np.array([0.0, 1.0, 0.0])).all()
+        assert (cluster_weight_map == np.array([1.0, 2.0, 1.0])).all()
 
-            pix = pixelizations.VoronoiBrightnessImage(
-                pixels=5, weight_floor=1.0, weight_power=1.0
-            )
+        pix = pixelizations.VoronoiBrightnessImage(
+            pixels=5, weight_floor=1.0, weight_power=2.0
+        )
 
-            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
-                hyper_image=hyper_image
-            )
+        cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
+            hyper_image=hyper_image
+        )
 
-            assert (cluster_weight_map == np.array([1.0, 2.0, 1.0])).all()
+        assert (cluster_weight_map == np.array([1.0, 4.0, 1.0])).all()
 
-            pix = pixelizations.VoronoiBrightnessImage(
-                pixels=5, weight_floor=1.0, weight_power=2.0
-            )
+    def test__hyper_image_uses_min_and_max__cluster_weight_map_uses_floor_and_power(
+        self
+    ):
 
-            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
-                hyper_image=hyper_image
-            )
+        hyper_image = np.array([-1.0, 1.0, 3.0])
 
-            assert (cluster_weight_map == np.array([1.0, 4.0, 1.0])).all()
+        pix = pixelizations.VoronoiBrightnessImage(
+            pixels=5, weight_floor=0.0, weight_power=1.0
+        )
 
-        def test__hyper_image_uses_min_and_max__cluster_weight_map_uses_floor_and_power(
-            self
-        ):
+        cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
+            hyper_image=hyper_image
+        )
 
-            hyper_image = np.array([-1.0, 1.0, 3.0])
+        assert (cluster_weight_map == np.array([0.0, 0.5, 1.0])).all()
 
-            pix = pixelizations.VoronoiBrightnessImage(
-                pixels=5, weight_floor=0.0, weight_power=1.0
-            )
+        pix = pixelizations.VoronoiBrightnessImage(
+            pixels=5, weight_floor=0.0, weight_power=2.0
+        )
 
-            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
-                hyper_image=hyper_image
-            )
+        cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
+            hyper_image=hyper_image
+        )
 
-            assert (cluster_weight_map == np.array([0.0, 0.5, 1.0])).all()
+        assert (cluster_weight_map == np.array([0.0, 0.25, 1.0])).all()
 
-            pix = pixelizations.VoronoiBrightnessImage(
-                pixels=5, weight_floor=0.0, weight_power=2.0
-            )
+        pix = pixelizations.VoronoiBrightnessImage(
+            pixels=5, weight_floor=1.0, weight_power=1.0
+        )
 
-            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
-                hyper_image=hyper_image
-            )
+        cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
+            hyper_image=hyper_image
+        )
 
-            assert (cluster_weight_map == np.array([0.0, 0.25, 1.0])).all()
+        assert (cluster_weight_map == np.array([3.0, 3.5, 4.0])).all()
 
-            pix = pixelizations.VoronoiBrightnessImage(
-                pixels=5, weight_floor=1.0, weight_power=1.0
-            )
+    def test__pixelization_grid_returns_same_as_computed_from_grids_module(
+        self, sub_grid_7x7, lens_data_7x7
+    ):
 
-            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
-                hyper_image=hyper_image
-            )
+        pix = pixelizations.VoronoiBrightnessImage(
+            pixels=6, weight_floor=0.1, weight_power=2.0
+        )
 
-            print(cluster_weight_map)
+        hyper_image = np.array([0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0])
 
-            assert (cluster_weight_map == np.array([3.0, 3.5, 4.0])).all()
+        pixelization_grid = pix.pixelization_grid_from_grid(
+            grid=sub_grid_7x7,
+            hyper_image=hyper_image,
+            cluster_grid=lens_data_7x7.grid.binned,
+            seed=1,
+        )
 
-        def test__pixelization_grid_returns_same_as_computed_from_grids_module(
-            self, grid_stack_7x7, lens_data_7x7
-        ):
+        cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
+            hyper_image=hyper_image
+        )
 
-            pix = pixelizations.VoronoiBrightnessImage(
-                pixels=6, weight_floor=0.1, weight_power=2.0
-            )
+        sparse_to_regular_grid = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
+            total_pixels=pix.pixels,
+            binned_grid=lens_data_7x7.grid.binned,
+            binned_weight_map=cluster_weight_map,
+            seed=1,
+        )
 
-            hyper_image = np.array([0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0])
+        pixelization_grid_manual = grids.PixelizationGrid(
+            arr=sparse_to_regular_grid.sparse,
+            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
+        )
 
-            pixelization_grid = pix.pixelization_grid_from_grid_stack(
-                grid_stack=grid_stack_7x7,
-                hyper_image=hyper_image,
-                cluster=lens_data_7x7.cluster,
-                seed=1,
-            )
-
-            cluster_weight_map = pix.cluster_weight_map_from_hyper_image(
-                hyper_image=hyper_image
-            )
-
-            sparse_to_regular_grid = grids.SparseToRegularGrid.from_total_pixels_cluster_grid_and_cluster_weight_map(
-                total_pixels=pix.pixels,
-                cluster_grid=lens_data_7x7.cluster,
-                regular_grid=grid_stack_7x7.regular,
-                cluster_weight_map=cluster_weight_map,
-                seed=1,
-            )
-
-            pixelization_grid_manual = grids.PixelizationGrid(
-                arr=sparse_to_regular_grid.sparse,
-                regular_to_pixelization=sparse_to_regular_grid.regular_to_sparse,
-            )
-
-            assert (pixelization_grid_manual == pixelization_grid).all()
-            assert (
-                pixelization_grid_manual.regular_to_pixelization
-                == pixelization_grid.regular_to_pixelization
-            ).all()
+        assert (pixelization_grid_manual == pixelization_grid).all()
+        assert (
+            pixelization_grid_manual.mask_1d_index_to_nearest_pixelization_1d_index
+            == pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index
+        ).all()

@@ -325,8 +325,8 @@ def plot_galaxy_data_array(
     output_format="show",
 ):
 
-    if galaxy_data.use_intensities:
-        title = "Galaxy Data Intensities"
+    if galaxy_data.use_image:
+        title = "Galaxy Data Image"
     elif galaxy_data.use_convergence:
         title = "Galaxy Data Convergence"
     elif galaxy_data.use_potential:

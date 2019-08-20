@@ -3,7 +3,7 @@ from autolens.plotters import plotter_util
 from autolens.plotters import quantity_radii_plotters
 
 
-def plot_intensities(
+def plot_image(
     light_profile,
     grid,
     mask=None,
@@ -26,7 +26,7 @@ def plot_intensities(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Intensities",
+    title="Image",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
@@ -36,25 +36,25 @@ def plot_intensities(
     grid_pointsize=1,
     output_path=None,
     output_format="show",
-    output_filename="intensities",
+    output_filename="image",
 ):
-    """Plot the intensities (e.g. the image) of a light profile, on a regular grid of (y,x) coordinates.
+    """Plot the image of a light profile, on a regular grid of (y,x) coordinates.
 
     Set *autolens.hyper_galaxy.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     light_profile : model.profiles.light_profiles.LightProfile
-        The light profile whose intensities are plotted.
+        The light profile whose image are plotted.
     grid : ndarray or hyper_galaxy.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    intensities = light_profile.intensities_from_grid(
+    image = light_profile.profile_image_from_grid(
         grid=grid, return_in_2d=True, return_binned=True
     )
 
     array_plotters.plot_array(
-        array=intensities,
+        array=image,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,

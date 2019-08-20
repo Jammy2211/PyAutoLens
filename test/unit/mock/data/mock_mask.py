@@ -1,6 +1,9 @@
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 
 import numpy as np
+
+from autolens import exc
+from autolens.array.util import mask_util
 
 
 class MockMask(msk.Mask):
@@ -14,6 +17,23 @@ class MockMask(msk.Mask):
 
     def __init__(self, array, pixel_scale=1.0):
         pass
+
+    def blurring_mask_from_psf_shape(self, psf_shape):
+        """Compute a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
+        pixels via PSF convolution (see grid_stack.RegularGrid.blurring_grid_from_mask_and_psf_shape).
+
+        Parameters
+        ----------
+        psf_shape : (int, int)
+           The shape of the psf which defines the blurring region (e.g. the shape of the PSF)
+        """
+
+        if psf_shape[0] % 2 == 0 or psf_shape[1] % 2 == 0:
+            raise exc.MaskException("psf_size of exterior region must be odd")
+
+        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(self, psf_shape)
+
+        return MockMask(array=blurring_mask, pixel_scale=self.pixel_scale)
 
 
 class MockMask1D(np.ndarray):

@@ -54,7 +54,6 @@ def make_result(lens_data_7x7, instance):
         analysis=phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=cosmo.Planck15,
-            positions_threshold=1.0,
             image_path="",
         ),
         optimizer=None,
@@ -202,25 +201,23 @@ class TestImagePassing(object):
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
     def test_galaxy_image_dict(
-        self, lens_galaxy, source_galaxy, grid_stack_7x7, convolver_image_7x7
+        self, lens_galaxy, source_galaxy, sub_grid_7x7, convolver_7x7
     ):
-        tracer = rt.Tracer.from_galaxies_and_image_plane_grid_stack(
-            galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=grid_stack_7x7
-        )
+        tracer = rt.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         assert (
             len(
-                tracer.galaxy_image_dict_from_convolver_image(
-                    convolver_image=convolver_image_7x7
+                tracer.galaxy_image_dict_from_grid_and_convolver(
+                    grid=sub_grid_7x7, convolver=convolver_7x7
                 )
             )
             == 2
         )
-        assert lens_galaxy in tracer.galaxy_image_dict_from_convolver_image(
-            convolver_image=convolver_image_7x7
+        assert lens_galaxy in tracer.galaxy_image_dict_from_grid_and_convolver(
+            grid=sub_grid_7x7, convolver=convolver_7x7
         )
-        assert source_galaxy in tracer.galaxy_image_dict_from_convolver_image(
-            convolver_image=convolver_image_7x7
+        assert source_galaxy in tracer.galaxy_image_dict_from_grid_and_convolver(
+            grid=sub_grid_7x7, convolver=convolver_7x7
         )
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_images(
@@ -301,7 +298,7 @@ class TestImagePassing(object):
             ),
             mask_function=mask_function_7x7,
             inversion_pixel_limit=5,
-            cluster_pixel_scale=None,
+            pixel_scale_binned_cluster_grid=None,
             optimizer_class=mock_pipeline.MockNLO,
         )
 
@@ -310,12 +307,10 @@ class TestImagePassing(object):
         )
 
         assert (
-            analysis.hyper_galaxy_cluster_image_1d_path_dict[("g0",)]
-            == 2.0 * np.ones(9)
+            analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)] == 2.0 * np.ones(9)
         ).all()
         assert (
-            analysis.hyper_galaxy_cluster_image_1d_path_dict[("g1",)]
-            == 3.0 * np.ones(9)
+            analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)] == 3.0 * np.ones(9)
         ).all()
 
         phase_7x7 = phase_imaging.PhaseImaging(
@@ -330,7 +325,7 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            cluster_pixel_scale=ccd_data_7x7.pixel_scale,
+            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale,
             phase_name="test_phase",
         )
 
@@ -339,20 +334,18 @@ class TestImagePassing(object):
         )
 
         assert (
-            analysis.hyper_galaxy_cluster_image_1d_path_dict[("g0",)]
-            == 2.0 * np.ones(9)
+            analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)] == 2.0 * np.ones(9)
         ).all()
         assert (
-            analysis.hyper_galaxy_cluster_image_1d_path_dict[("g1",)]
-            == 3.0 * np.ones(9)
+            analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)] == 3.0 * np.ones(9)
         ).all()
         assert (
-            len(analysis.hyper_galaxy_cluster_image_1d_path_dict[("g0",)])
-            == analysis.lens_data.cluster.shape[0]
+            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)])
+            == analysis.lens_data.grid.binned.shape[0]
         )
         assert (
-            len(analysis.hyper_galaxy_cluster_image_1d_path_dict[("g1",)])
-            == analysis.lens_data.cluster.shape[0]
+            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)])
+            == analysis.lens_data.grid.binned.shape[0]
         )
 
         phase_7x7 = phase_imaging.PhaseImaging(
@@ -367,7 +360,7 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            cluster_pixel_scale=ccd_data_7x7.pixel_scale * 2.0,
+            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale * 2.0,
             phase_name="test_phase",
         )
 
@@ -376,20 +369,20 @@ class TestImagePassing(object):
         )
 
         assert (
-            analysis.hyper_galaxy_cluster_image_1d_path_dict[("g0",)]
+            analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)]
             == np.array([0.5, 1.0, 1.0, 2.0])
         ).all()
         assert (
-            analysis.hyper_galaxy_cluster_image_1d_path_dict[("g1",)]
+            analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)]
             == np.array([0.75, 1.5, 1.5, 3.0])
         ).all()
         assert (
-            len(analysis.hyper_galaxy_cluster_image_1d_path_dict[("g0",)])
-            == analysis.lens_data.cluster.shape[0]
+            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)])
+            == analysis.lens_data.grid.binned.shape[0]
         )
         assert (
-            len(analysis.hyper_galaxy_cluster_image_1d_path_dict[("g1",)])
-            == analysis.lens_data.cluster.shape[0]
+            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)])
+            == analysis.lens_data.grid.binned.shape[0]
         )
 
         results_collection_7x7[0].galaxy_images = [
@@ -411,7 +404,7 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            cluster_pixel_scale=ccd_data_7x7.pixel_scale * 2.0,
+            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale * 2.0,
             phase_name="test_phase",
         )
 
@@ -420,20 +413,20 @@ class TestImagePassing(object):
         )
 
         assert (
-            analysis.hyper_galaxy_cluster_image_1d_path_dict[("g0",)]
+            analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)]
             == np.array([2.0, 2.0, 1.25, 2.0])
         ).all()
         assert (
-            analysis.hyper_galaxy_cluster_image_1d_path_dict[("g1",)]
+            analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)]
             == np.array([2.0, 2.0, 2.0, 1.25])
         ).all()
         assert (
-            len(analysis.hyper_galaxy_cluster_image_1d_path_dict[("g0",)])
-            == analysis.lens_data.cluster.shape[0]
+            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)])
+            == analysis.lens_data.grid.binned.shape[0]
         )
         assert (
-            len(analysis.hyper_galaxy_cluster_image_1d_path_dict[("g1",)])
-            == analysis.lens_data.cluster.shape[0]
+            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)])
+            == analysis.lens_data.grid.binned.shape[0]
         )
 
     def test_associate_images_(self, instance, result, lens_data_7x7):
@@ -442,7 +435,6 @@ class TestImagePassing(object):
         analysis = phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=None,
-            positions_threshold=None,
             results=results_collection,
             image_path="",
         )
@@ -478,7 +470,6 @@ class TestImagePassing(object):
         analysis = phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=cosmo.Planck15,
-            positions_threshold=None,
             results=results_collection,
             image_path="",
         )
@@ -511,9 +502,7 @@ class TestImagePassing(object):
         )
         g1 = g.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
 
-        tracer = rt.Tracer.from_galaxies_and_image_plane_grid_stack(
-            galaxies=[g0, g1], image_plane_grid_stack=lens_data_7x7.grid_stack
-        )
+        tracer = rt.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = lens_fit.LensDataFit.for_data_and_tracer(
             lens_data=lens_data_7x7, tracer=tracer

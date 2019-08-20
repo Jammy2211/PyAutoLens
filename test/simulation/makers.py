@@ -1,7 +1,7 @@
 import autofit as af
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp
@@ -42,13 +42,13 @@ def simulate_image_from_galaxies_and_output_to_fits(
     )
 
     # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD instrument.
-    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+    tracer = ray_tracing.Tracer.from_galaxies(
         galaxies=galaxies, image_plane_grid_stack=image_plane_grid_stack
     )
 
     # Simulate the CCD instrument, remembering that we use a special image-plane image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.g. the PSF convolution).
-    ccd_data = ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
+    ccd_data = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         psf=psf,
@@ -98,7 +98,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
 
     ray_tracing_plotters.plot_ray_tracing_individual(
         tracer=tracer,
-        should_plot_image_plane_image=True,
+        should_plot_profile_image=True,
         should_plot_source_plane=True,
         should_plot_convergence=True,
         should_plot_potential=True,
@@ -312,9 +312,7 @@ def make_lens_sis__source_smooth(data_resolutions, sub_grid_size):
         )
 
 
-def make_lens_sis__source_smooth__offset_centre(
-    data_resolutions, sub_grid_size
-):
+def make_lens_sis__source_smooth__offset_centre(data_resolutions, sub_grid_size):
 
     data_type = "lens_sis__source_smooth__offset_centre"
 

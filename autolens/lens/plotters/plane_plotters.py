@@ -8,13 +8,14 @@ from matplotlib import pyplot as plt
 from autolens.plotters import plotter_util, grid_plotters, array_plotters
 
 
-def plot_image_plane_image(
+def plot_profile_image(
     plane,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
     positions=None,
-    grid=None,
+    plot_grid=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -30,7 +31,7 @@ def plot_image_plane_image(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Plane Image-Plane Image",
+    title="Plane Profile Image",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
@@ -40,15 +41,18 @@ def plot_image_plane_image(
     grid_pointsize=1,
     output_path=None,
     output_format="show",
-    output_filename="plane_image_plane_image",
+    output_filename="plane_profile_image",
 ):
 
-    image_plane_image = plane.profile_image_plane_image(
-        return_in_2d=True, return_binned=True
+    profile_image = plane.profile_image_from_grid(
+        grid=grid, return_in_2d=True, return_binned=True
     )
 
+    if not plot_grid:
+        grid = None
+
     array_plotters.plot_array(
-        array=image_plane_image,
+        array=profile_image,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
@@ -86,6 +90,7 @@ def plot_image_plane_image(
 
 def plot_plane_image(
     plane,
+    grid,
     plot_origin=True,
     positions=None,
     plot_grid=True,
@@ -113,21 +118,21 @@ def plot_plane_image(
     grid_pointsize=1,
     output_path=None,
     output_format="show",
-    output_filename="plane_image",
+    output_filename="plane_plane_image",
 ):
 
-    if plot_grid:
-        grid = plane.grid_stack.regular
-    else:
+    plane_image = plane.plane_image_from_grid(grid=grid)
+
+    if not plot_grid:
         grid = None
 
     if plot_origin:
-        origin = plane.plane_image.origin
+        origin = plane_image.origin
     else:
         origin = None
 
     array_plotters.plot_array(
-        array=plane.plane_image,
+        array=plane_image,
         origin=origin,
         positions=positions,
         grid=grid,
@@ -162,6 +167,7 @@ def plot_plane_image(
 
 def plot_convergence(
     plane,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -190,7 +196,9 @@ def plot_convergence(
     output_filename="plane_convergence",
 ):
 
-    convergence = plane.convergence(return_in_2d=True, return_binned=True)
+    convergence = plane.convergence_from_grid(
+        grid=grid, return_in_2d=True, return_binned=True
+    )
 
     array_plotters.plot_array(
         array=convergence,
@@ -226,6 +234,7 @@ def plot_convergence(
 
 def plot_potential(
     plane,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -254,7 +263,9 @@ def plot_potential(
     output_filename="plane_potential",
 ):
 
-    potential = plane.potential(return_in_2d=True, return_binned=True)
+    potential = plane.potential_from_grid(
+        grid=grid, return_in_2d=True, return_binned=True
+    )
 
     array_plotters.plot_array(
         array=potential,
@@ -290,6 +301,7 @@ def plot_potential(
 
 def plot_deflections_y(
     plane,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -318,7 +330,10 @@ def plot_deflections_y(
     output_filename="plane_deflections_y",
 ):
 
-    deflections_y = plane.deflections_y(return_in_2d=True, return_binned=True)
+    deflections = plane.deflections_from_grid(
+        grid=grid, return_in_2d=False, return_binned=True
+    )
+    deflections_y = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
 
     array_plotters.plot_array(
         array=deflections_y,
@@ -354,6 +369,7 @@ def plot_deflections_y(
 
 def plot_deflections_x(
     plane,
+    grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
@@ -382,7 +398,10 @@ def plot_deflections_x(
     output_filename="plane_deflections_x",
 ):
 
-    deflections_x = plane.deflections_x(return_in_2d=True, return_binned=True)
+    deflections = plane.deflections_from_grid(
+        grid=grid, return_in_2d=False, return_binned=True
+    )
+    deflections_x = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
 
     array_plotters.plot_array(
         array=deflections_x,
@@ -419,6 +438,7 @@ def plot_deflections_x(
 def plot_image_and_source_plane_subplot(
     image_plane,
     source_plane,
+    grid,
     points=None,
     axis_limits=None,
     units="arcsec",
@@ -436,6 +456,7 @@ def plot_image_and_source_plane_subplot(
 
     plot_plane_grid(
         plane=image_plane,
+        grid=grid,
         axis_limits=axis_limits,
         points=points,
         as_subplot=True,
@@ -451,10 +472,13 @@ def plot_image_and_source_plane_subplot(
         output_format=output_format,
     )
 
+    source_plane_grid = image_plane.traced_grid_from_grid(grid=grid)
+
     plt.subplot(rows, columns, 2)
 
     plot_plane_grid(
         plane=source_plane,
+        grid=source_plane_grid,
         axis_limits=axis_limits,
         points=points,
         as_subplot=True,
@@ -480,6 +504,7 @@ def plot_image_and_source_plane_subplot(
 
 def plot_plane_grid(
     plane,
+    grid,
     axis_limits=None,
     points=None,
     as_subplot=False,
@@ -497,7 +522,7 @@ def plot_plane_grid(
 ):
 
     grid_plotters.plot_grid(
-        grid=plane.grid_stack.regular,
+        grid=grid,
         points=points,
         axis_limits=axis_limits,
         as_subplot=as_subplot,

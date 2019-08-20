@@ -1,4 +1,4 @@
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
@@ -42,15 +42,15 @@ def fit_with_offset_centre(centre):
 
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
 
-    pixelization_grid = source_galaxy.pixelization.pixelization_grid_from_grid_stack(
-        grid_stack=lens_data.grid_stack
+    pixelization_grid = source_galaxy.pixelization.traced_pixelization_grids_of_planes_from_grid(
+        grid=lens_data.grid
     )
 
-    grid_stack_with_pixelization_grid = lens_data.grid_stack.new_grid_stack_with_grids_added(
+    grid_stack_with_pixelization_grid = lens_data.grid.new_grid_stack_with_grids_added(
         pixelization=pixelization_grid
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+    tracer = ray_tracing.Tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid_stack=grid_stack_with_pixelization_grid,
     )

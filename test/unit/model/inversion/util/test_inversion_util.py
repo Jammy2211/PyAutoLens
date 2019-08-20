@@ -1,8 +1,5 @@
 import numpy as np
-import pytest
 
-from autolens import exc
-from autolens.data.array import grids, mask
 from autolens.model.inversion.util import inversion_util
 
 
@@ -141,14 +138,18 @@ class TestPixelizationResiduals(object):
 
         pixelization_values = np.ones(3)
         reconstructed_data_1d = np.ones(9)
-        sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        pixelization_to_sub_all = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [2, 2, 2],
+        ]
 
         pixelization_residuals = inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
-            sub_to_regular=sub_to_regular,
-            pixelization_to_sub_all=pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
         assert (pixelization_residuals == np.zeros(3)).all()
@@ -157,28 +158,36 @@ class TestPixelizationResiduals(object):
 
         pixelization_values = np.ones(3)
         reconstructed_data_1d = 2.0 * np.ones(9)
-        sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+        ]
 
         pixelization_residuals = inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
-            sub_to_regular=sub_to_regular,
-            pixelization_to_sub_all=pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
         assert (pixelization_residuals == 3.0 * np.ones(3)).all()
 
         pixelization_values = np.ones(3)
         reconstructed_data_1d = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0])
-        sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+        ]
 
         pixelization_residuals = inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
-            sub_to_regular=sub_to_regular,
-            pixelization_to_sub_all=pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
         assert (pixelization_residuals == np.array([0.0, 3.0, 6.0])).all()
@@ -192,15 +201,19 @@ class TestPixelizationNormalizedResiduals(object):
         pixelization_values = np.ones(3)
         reconstructed_data_1d = np.ones(9)
         noise_map_1d = np.ones(9)
-        sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        pixelization_to_sub_all = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [2, 2, 2],
+        ]
 
         pixelization_normalized_residuals = inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
-            sub_to_regular=sub_to_regular,
-            pixelization_to_sub_all=pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
         assert (pixelization_normalized_residuals == np.zeros(3)).all()
@@ -210,15 +223,19 @@ class TestPixelizationNormalizedResiduals(object):
         pixelization_values = np.ones(3)
         reconstructed_data_1d = 2.0 * np.ones(9)
         noise_map_1d = 2.0 * np.ones(9)
-        sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+        ]
 
         pixelization_normalized_residuals = inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
-            sub_to_regular=sub_to_regular,
-            pixelization_to_sub_all=pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
         assert (pixelization_normalized_residuals == 1.5 * np.ones(3)).all()
@@ -226,15 +243,19 @@ class TestPixelizationNormalizedResiduals(object):
         pixelization_values = np.ones(3)
         reconstructed_data_1d = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0])
         noise_map_1d = np.array([0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0])
-        sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+        ]
 
         pixelization_normalized_residuals = inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
-            sub_to_regular=sub_to_regular,
-            pixelization_to_sub_all=pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
         assert (pixelization_normalized_residuals == np.array([0.0, 3.0, 3.0])).all()
@@ -248,15 +269,19 @@ class TestPixelizationChiSquareds(object):
         pixelization_values = np.ones(3)
         reconstructed_data_1d = np.ones(9)
         noise_map_1d = np.ones(9)
-        sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        pixelization_to_sub_all = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [2, 2, 2],
+        ]
 
         pixelization_chi_squareds = inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
-            sub_to_regular=sub_to_regular,
-            pixelization_to_sub_all=pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
         assert (pixelization_chi_squareds == np.zeros(3)).all()
@@ -266,15 +291,19 @@ class TestPixelizationChiSquareds(object):
         pixelization_values = np.ones(3)
         reconstructed_data_1d = 2.0 * np.ones(9)
         noise_map_1d = 2.0 * np.ones(9)
-        sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+        ]
 
         pixelization_chi_squareds = inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
-            sub_to_regular=sub_to_regular,
-            pixelization_to_sub_all=pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
         assert (pixelization_chi_squareds == 0.75 * np.ones(3)).all()
@@ -282,15 +311,19 @@ class TestPixelizationChiSquareds(object):
         pixelization_values = np.ones(3)
         reconstructed_data_1d = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0])
         noise_map_1d = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 4.0, 4.0, 4.0])
-        sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        pixelization_to_sub_all = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+        ]
 
         pixelization_chi_squareds = inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
-            sub_to_regular=sub_to_regular,
-            pixelization_to_sub_all=pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
         assert (pixelization_chi_squareds == np.array([0.0, 12.0, 0.75])).all()

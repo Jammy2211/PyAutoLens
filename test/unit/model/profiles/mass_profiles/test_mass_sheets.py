@@ -1,16 +1,9 @@
-import math
-
 import numpy as np
 import pytest
-from astropy import cosmology as cosmo
 
-import autofit as af
 from autolens import dimensions as dim
-from autolens.data.array import grids
-from autolens.data.array import mask as msk
+from autolens.array import grids
 from autolens.model.profiles import mass_profiles as mp
-
-from test.unit.mock.model import mock_cosmology
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 

@@ -5,7 +5,7 @@ from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
 from autolens.data.instrument import interferometer
 from autolens.data import fourier_transform
-from autolens.data.array import scaled_array
+from autolens.array import scaled_array
 
 
 class MockImage(object):

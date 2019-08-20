@@ -11,18 +11,12 @@ def make_profile_plotter_setup():
 
 
 def test__all_quantities_are_output(
-    lp_0,
-    mp_0,
-    grid_stack_7x7,
-    mask_7x7,
-    positions_7x7,
-    profile_plotter_path,
-    plot_patch,
+    lp_0, mp_0, sub_grid_7x7, mask_7x7, positions_7x7, profile_plotter_path, plot_patch
 ):
 
-    profile_plotters.plot_intensities(
+    profile_plotters.plot_image(
         light_profile=lp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -33,11 +27,11 @@ def test__all_quantities_are_output(
         output_format="png",
     )
 
-    assert profile_plotter_path + "intensities.png" in plot_patch.paths
+    assert profile_plotter_path + "image.png" in plot_patch.paths
 
     profile_plotters.plot_convergence(
         mass_profile=mp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -54,7 +48,7 @@ def test__all_quantities_are_output(
 
     profile_plotters.plot_potential(
         mass_profile=mp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -71,7 +65,7 @@ def test__all_quantities_are_output(
 
     profile_plotters.plot_deflections_y(
         mass_profile=mp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -88,7 +82,7 @@ def test__all_quantities_are_output(
 
     profile_plotters.plot_deflections_x(
         mass_profile=mp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,

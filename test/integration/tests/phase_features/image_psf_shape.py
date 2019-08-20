@@ -17,7 +17,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)),
-        image_psf_shape=(3, 3),
+        psf_shape=(3, 3),
         optimizer_class=optimizer_class,
     )
 

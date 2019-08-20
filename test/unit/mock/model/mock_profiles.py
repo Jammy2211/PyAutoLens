@@ -8,7 +8,7 @@ class MockLightProfile(lp.LightProfile):
         self.value = value
         self.size = size
 
-    def intensities_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def profile_image_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return np.array(self.size * [self.value])
 
 

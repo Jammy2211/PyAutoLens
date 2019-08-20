@@ -50,10 +50,11 @@ def test__plot_ccd_for_phase(
 
 
 def test__plot_ray_tracing_for_phase__dependent_on_input(
-    tracer_x2_plane_7x7, mask_7x7, phase_plotter_path, plot_patch
+    tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, phase_plotter_path, plot_patch
 ):
     phase_plotters.plot_ray_tracing_for_phase(
         tracer=tracer_x2_plane_7x7,
+        grid=sub_grid_7x7,
         during_analysis=False,
         mask=mask_7x7,
         positions=None,
@@ -74,7 +75,7 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
 
     assert phase_plotter_path + "tracer.png" in plot_patch.paths
     assert (
-        phase_plotter_path + "ray_tracing/tracer_image_plane_image.png"
+        phase_plotter_path + "ray_tracing/tracer_profile_image.png"
         in plot_patch.paths
     )
     assert (
@@ -176,15 +177,15 @@ def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     phase_plotters.plot_hyper_images_for_phase(
         hyper_model_image_2d=hyper_model_image_7x7,
         hyper_galaxy_image_2d_path_dict=None,
-        hyper_galaxy_cluster_image_2d_path_dict=None,
+        binned_hyper_galaxy_image_2d_path_dict=None,
         mask=mask_7x7,
-        cluster=cluster_grid_7x7,
+        binned_grid=cluster_grid_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
         units="arcsec",
         should_plot_hyper_model_image=True,
         should_plot_hyper_galaxy_images=False,
-        should_plot_hyper_galaxy_cluster_images=False,
+        should_plot_binned_hyper_galaxy_images=False,
         visualize_path=phase_plotter_path,
     )
 

@@ -28,12 +28,12 @@ class Transformer(object):
                 total_image_pixels=self.total_image_pixels,
             )
 
-    def real_visibilities_from_intensities(self, intensities_1d):
+    def real_visibilities_from_image_1d(self, image_1d):
 
         if self.preload_transform:
 
             return self.real_visibilities_via_preload_jit(
-                intensities_1d=intensities_1d,
+                intensities_1d=image_1d,
                 preloaded_reals=self.preload_real_transforms,
                 total_visibilities=self.total_visibilities,
                 total_image_pixels=self.total_image_pixels,
@@ -42,7 +42,7 @@ class Transformer(object):
         else:
 
             return self.real_visibilities_jit(
-                intensities_1d=intensities_1d,
+                intensities_1d=image_1d,
                 grid_radians=self.grid_radians,
                 uv_wavelengths=self.uv_wavelengths,
                 total_visibilities=self.total_visibilities,
@@ -109,12 +109,12 @@ class Transformer(object):
 
         return real_visibilities
 
-    def imaginary_visibilities_from_intensities(self, intensities_1d):
+    def imaginary_visibilities_from_image_1d(self, image_1d):
 
         if self.preload_transform:
 
             return self.imaginary_visibilities_via_preload_jit(
-                intensities_1d=intensities_1d,
+                intensities_1d=image_1d,
                 preloaded_imaginarys=self.preload_imaginary_transforms,
                 total_visibilities=self.total_visibilities,
                 total_image_pixels=self.total_image_pixels,
@@ -123,7 +123,7 @@ class Transformer(object):
         else:
 
             return self.imaginary_visibilities_jit(
-                intensities_1d=intensities_1d,
+                intensities_1d=image_1d,
                 grid_radians=self.grid_radians,
                 uv_wavelengths=self.uv_wavelengths,
                 total_visibilities=self.total_visibilities,
@@ -192,13 +192,11 @@ class Transformer(object):
 
         return imaginary_visibilities
 
-    def visibilities_from_intensities(self, intensities_1d):
+    def visibilities_from_image_1d(self, image_1d):
 
-        real_visibilities = self.real_visibilities_from_intensities(
-            intensities_1d=intensities_1d
-        )
-        imaginary_visibilities = self.imaginary_visibilities_from_intensities(
-            intensities_1d=intensities_1d
+        real_visibilities = self.real_visibilities_from_image_1d(image_1d=image_1d)
+        imaginary_visibilities = self.imaginary_visibilities_from_image_1d(
+            image_1d=image_1d
         )
 
         return np.stack((real_visibilities, imaginary_visibilities), axis=-1)

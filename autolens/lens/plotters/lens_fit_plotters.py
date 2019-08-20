@@ -529,8 +529,11 @@ def plot_fit_subplot_for_plane(
 
         plt.subplot(rows, columns, 4)
 
+        traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
+
         plane_plotters.plot_plane_image(
             plane=fit.tracer.planes[plane_index],
+            grid=traced_grids[plane_index],
             positions=None,
             plot_grid=should_plot_source_grid,
             as_subplot=True,
@@ -563,12 +566,20 @@ def plot_fit_subplot_for_plane(
 
         ratio = float(
             (
-                fit.inversion.mapper.geometry.arc_second_maxima[1]
-                - fit.inversion.mapper.geometry.arc_second_minima[1]
+                fit.inversion.mapper.geometry.arc_second_maxima[
+                    1
+                ]
+                - fit.inversion.mapper.geometry.arc_second_minima[
+                    1
+                ]
             )
             / (
-                fit.inversion.mapper.geometry.arc_second_maxima[0]
-                - fit.inversion.mapper.geometry.arc_second_minima[0]
+                fit.inversion.mapper.geometry.arc_second_maxima[
+                    0
+                ]
+                - fit.inversion.mapper.geometry.arc_second_minima[
+                    0
+                ]
             )
         )
 
@@ -664,6 +675,8 @@ def plot_fit_individuals(
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(
         should_plot_image_plane_pix, fit
     )
+
+    traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
@@ -853,6 +866,7 @@ def plot_fit_individuals(
 
                 plane_plotters.plot_plane_image(
                     plane=fit.tracer.planes[plane_index],
+                    grid=traced_grids[plane_index],
                     plot_grid=True,
                     units=units,
                     output_path=output_path,

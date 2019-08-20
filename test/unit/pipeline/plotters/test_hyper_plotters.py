@@ -153,7 +153,7 @@ def test__plot_hyper_galaxy_images(
 
     assert hyper_plotter_path + "hyper_galaxy_images.png" in plot_patch.paths
 
-    hyper_plotters.plot_hyper_galaxy_cluster_images_subplot(
+    hyper_plotters.plot_binned_hyper_galaxy_images_subplot(
         hyper_galaxy_cluster_image_path_dict=hyper_galaxy_image_path_dict,
         mask=mask_7x7,
         should_plot_mask=True,

@@ -18,16 +18,21 @@ class MockGeometry(object):
 
 
 class MockPixelization(object):
-    def __init__(self, value):
+    def __init__(self, value, grid=None):
         self.value = value
+        self.grid = grid
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grid_stack_and_border(self, grid_stack, border, hyper_image=None):
+    def mapper_from_grid_and_pixelization_grid(
+        self, grid, pixelization_grid, inversion_uses_border, hyper_image=None
+    ):
         return self.value
 
-    # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grid_stack(self, grid_stack, hyper_image=None):
-        return self.value
+    def pixelization_grid_from_grid(self, grid, cluster_grid, hyper_image):
+        if hyper_image is None:
+            return self.grid
+        else:
+            return self.grid * hyper_image
 
 
 class MockRegularization(object):
@@ -44,9 +49,9 @@ class MockRegularization(object):
 
 
 class MockMapper(object):
-    def __init__(self, matrix_shape, grid_stack=None):
+    def __init__(self, matrix_shape, grid=None):
 
-        self.grid_stack = grid_stack
+        self.grid = grid
         self.mapping_matrix = np.ones(matrix_shape)
         self.geometry = MockGeometry()
 

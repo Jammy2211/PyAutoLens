@@ -18,7 +18,7 @@ class Inversion(object):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
 
-        The inversion uses a 2D pixelization to perform the reconstruction by mapping each pixelization pixel to a \
+        The inversion uses a 2D pixelization to perform the reconstruction by mapping_util each pixelization pixel to a \
         set of image pixels via a mapper. The reconstructed pixelization is smoothed via a regularization scheme to \
         prevent over-fitting noise.
 
@@ -29,9 +29,9 @@ class Inversion(object):
         noise_map_1d : ndarray
             Flattened 1D array of the noise-map used by the inversion during the fit.   
         convolver : ccd.convolution.Convolver
-            The convolver used to blur the mapping matrix with the PSF.
+            The convolver used to blur the mapping_util matrix with the PSF.
         mapper : inversion.mappers.Mapper
-            The mapping between the image-pixels (via its regular / sub-grid) and pixelization pixels.
+            The mapping_util between the image-pixels (via its regular / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
             inversion
@@ -101,7 +101,7 @@ class Inversion(object):
 
     @property
     def reconstructed_data_2d(self):
-        return self.mapper.grid_stack.regular.scaled_array_2d_from_array_1d(
+        return self.mapper.grid.scaled_array_2d_from_array_1d(
             array_1d=np.asarray(self.reconstructed_data_1d)
         )
 
@@ -125,8 +125,8 @@ class Inversion(object):
         return inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.pixelization_values,
             reconstructed_data_1d=self.reconstructed_data_1d,
-            sub_to_regular=self.mapper.grid_stack.sub.sub_to_regular,
-            pixelization_to_sub_all=self.mapper.pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=self.mapper.grid.sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=self.mapper.pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
     @property
@@ -135,8 +135,8 @@ class Inversion(object):
             pixelization_values=self.pixelization_values,
             reconstructed_data_1d=self.reconstructed_data_1d,
             noise_map_1d=self.noise_map_1d,
-            sub_to_regular=self.mapper.grid_stack.sub.sub_to_regular,
-            pixelization_to_sub_all=self.mapper.pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=self.mapper.grid.sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=self.mapper.pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
     @property
@@ -145,8 +145,8 @@ class Inversion(object):
             pixelization_values=self.pixelization_values,
             reconstructed_data_1d=self.reconstructed_data_1d,
             noise_map_1d=self.noise_map_1d,
-            sub_to_regular=self.mapper.grid_stack.sub.sub_to_regular,
-            pixelization_to_sub_all=self.mapper.pixelization_to_sub_all,
+            sub_mask_1d_index_to_mask_1d_index=self.mapper.grid.sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_to_all_sub_mask_1d_indexes=self.mapper.pixelization_1d_index_to_all_sub_mask_1d_indexes,
         )
 
     @property

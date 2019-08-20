@@ -1,6 +1,6 @@
 import autofit as af
 
-from autolens.data.array.grids import reshape_returned_regular_array
+from autolens.array.grids import reshape_array
 
 
 class GalaxyFit(af.DataFit1D):
@@ -19,10 +19,10 @@ class GalaxyFit(af.DataFit1D):
         self.galaxy_data = galaxy_data
         self.mask_2d = galaxy_data.mask_2d
         self.model_galaxies = model_galaxies
-        self.map_to_scaled_array = galaxy_data.grid_stack.scaled_array_2d_from_array_1d
+        self.map_to_scaled_array = galaxy_data.grid.scaled_array_2d_from_array_1d
 
-        model_data_1d = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(
-            galaxies=model_galaxies, sub_grid=galaxy_data.grid_stack.sub
+        model_data_1d = galaxy_data.profile_quantity_from_galaxies(
+            galaxies=model_galaxies
         )
 
         super(GalaxyFit, self).__init__(
@@ -33,8 +33,8 @@ class GalaxyFit(af.DataFit1D):
         )
 
     @property
-    def grid_stack(self):
-        return self.galaxy_data.grid_stack
+    def grid(self):
+        return self.galaxy_data.grid
 
     @property
     def image_1d(self):
@@ -50,31 +50,31 @@ class GalaxyFit(af.DataFit1D):
         else:
             return self.mask_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def image(self):
         return self.image_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def noise_map(self):
         return self.noise_map_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def signal_to_noise_map(self):
         return self.signal_to_noise_map_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def model_image(self):
         return self.model_image_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def residual_map(self):
         return self.residual_map_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def normalized_residual_map(self):
         return self.normalized_residual_map_1d
 
-    @reshape_returned_regular_array
+    @reshape_array
     def chi_squared_map(self):
         return self.chi_squared_map_1d
 

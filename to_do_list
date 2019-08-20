@@ -11,6 +11,8 @@ Big Picture:
 
 Small Picture:
 
+- Lensed image from grid.
+- Dont repeat deflections in profile_image and mapper.
 - Plot plane image as square, not rectangle
 - Make sure image plane pix grid also shifts for offset mask.
 - Use model image for norm range on subplots.

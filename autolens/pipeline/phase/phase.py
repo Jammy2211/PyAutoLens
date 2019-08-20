@@ -2,8 +2,8 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.data.array import mask as msk
-from autolens.data.array.util import binning_util
+from autolens.array import mask as msk
+from autolens.array.util import binning_util
 from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 
@@ -204,18 +204,16 @@ class AbstractPhase(af.AbstractPhase):
 
         @property
         def unmasked_model_image(self):
-            return self.most_likely_fit.unmasked_blurred_profile_image_plane_image
+            return self.most_likely_fit.unmasked_blurred_profile_image
 
         @property
         def unmasked_model_image_of_planes(self):
-            return (
-                self.most_likely_fit.unmasked_blurred_profile_image_plane_image_of_planes
-            )
+            return self.most_likely_fit.unmasked_blurred_profile_image_of_planes
 
         @property
         def unmasked_model_image_of_planes_and_galaxies(self):
             fit = self.most_likely_fit
-            return fit.unmasked_blurred_profile_image_plane_image_of_planes_and_galaxies
+            return fit.unmasked_blurred_profile_image_of_planes_and_galaxies
 
         def image_2d_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
             """
@@ -247,21 +245,16 @@ class AbstractPhase(af.AbstractPhase):
             return self.most_likely_fit.positions
 
         @property
-        def most_likely_pixelization(self):
+        def pixelization(self):
             for galaxy in self.most_likely_fit.tracer.galaxies:
                 if galaxy.pixelization is not None:
                     return galaxy.pixelization
 
         @property
-        def most_likely_image_plane_pixelization_grid(self):
-
-            if (
-                self.most_likely_tracer.image_plane.grid_stack.pixelization
-                == np.array([[0.0, 0.0]])
-            ).all():
-                return None
-            else:
-                return self.most_likely_tracer.image_plane.grid_stack.pixelization
+        def most_likely_pixelization_grids_of_planes(self):
+            return self.most_likely_tracer.pixelization_grids_of_planes_from_grid(
+                grid=self.most_likely_fit.grid
+            )[-1]
 
         @property
         def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
@@ -331,76 +324,76 @@ class AbstractPhase(af.AbstractPhase):
 
             return hyper_galaxy_image_2d_path_dict
 
-        def cluster_image_1d_dict_from_cluster(self, cluster) -> {str: g.Galaxy}:
+        def binned_image_1d_dict_from_binned_grid(self, binned_grid) -> {str: g.Galaxy}:
             """
-            A dictionary associating 1D cluster images with their names.
+            A dictionary associating 1D binned images with their names.
             """
 
-            cluster_image_1d_dict = {}
+            binned_image_1d_dict = {}
 
             for galaxy, galaxy_image_2d in self.image_galaxy_2d_dict.items():
-                cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
-                    array_2d=galaxy_image_2d, bin_up_factor=cluster.bin_up_factor
+                binned_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+                    array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
                 )
 
-                cluster_image_1d_dict[galaxy] = cluster.mask.array_1d_from_array_2d(
-                    array_2d=cluster_image_2d
+                binned_image_1d_dict[galaxy] = binned_grid.mask.array_1d_from_array_2d(
+                    array_2d=binned_image_2d
                 )
 
-            return cluster_image_1d_dict
+            return binned_image_1d_dict
 
-        def hyper_galaxy_cluster_image_1d_path_dict_from_cluster(self, cluster):
+        def binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(self, binned_grid):
             """
-            A dictionary associating 1D hyper_galaxy galaxy cluster images with their names.
+            A dictionary associating 1D hyper_galaxy galaxy binned images with their names.
             """
 
-            if cluster is not None:
+            if binned_grid is not None:
 
                 hyper_minimum_percent = af.conf.instance.general.get(
                     "hyper", "hyper_minimum_percent", float
                 )
 
-                cluster_image_1d_galaxy_dict = self.cluster_image_1d_dict_from_cluster(
-                    cluster=cluster
+                binned_image_1d_galaxy_dict = self.binned_image_1d_dict_from_binned_grid(
+                    binned_grid=binned_grid
                 )
 
-                hyper_galaxy_cluster_image_path_dict = {}
+                binned_hyper_galaxy_image_path_dict = {}
 
                 for path, galaxy in self.path_galaxy_tuples:
-                    galaxy_cluster_image_1d = cluster_image_1d_galaxy_dict[path]
+                    binned_galaxy_image_1d = binned_image_1d_galaxy_dict[path]
 
-                    minimum_cluster_value = hyper_minimum_percent * max(
-                        galaxy_cluster_image_1d
+                    minimum_hyper_value = hyper_minimum_percent * max(
+                        binned_galaxy_image_1d
                     )
-                    galaxy_cluster_image_1d[
-                        galaxy_cluster_image_1d < minimum_cluster_value
-                    ] = minimum_cluster_value
+                    binned_galaxy_image_1d[
+                        binned_galaxy_image_1d < minimum_hyper_value
+                    ] = minimum_hyper_value
 
-                    hyper_galaxy_cluster_image_path_dict[path] = galaxy_cluster_image_1d
+                    binned_hyper_galaxy_image_path_dict[path] = binned_galaxy_image_1d
 
-                return hyper_galaxy_cluster_image_path_dict
+                return binned_hyper_galaxy_image_path_dict
 
-        def hyper_galaxy_cluster_image_2d_path_dict_from_cluster(self, cluster):
+        def binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(self, binned_grid):
             """
-            A dictionary associating "D hyper_galaxy galaxy images cluster images with their names.
+            A dictionary associating "D hyper_galaxy galaxy images binned images with their names.
             """
 
-            if cluster is not None:
+            if binned_grid is not None:
 
-                hyper_galaxy_cluster_image_1d_path_dict = self.hyper_galaxy_cluster_image_1d_path_dict_from_cluster(
-                    cluster=cluster
+                binned_hyper_galaxy_image_1d_path_dict = self.binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(
+                    binned_grid=binned_grid
                 )
 
-                hyper_galaxy_cluster_image_2d_path_dict = {}
+                binned_hyper_galaxy_image_2d_path_dict = {}
 
                 for path, galaxy in self.path_galaxy_tuples:
-                    hyper_galaxy_cluster_image_2d_path_dict[
+                    binned_hyper_galaxy_image_2d_path_dict[
                         path
-                    ] = cluster.mask.scaled_array_2d_from_array_1d(
-                        array_1d=hyper_galaxy_cluster_image_1d_path_dict[path]
+                    ] = binned_grid.mask.scaled_array_2d_from_array_1d(
+                        array_1d=binned_hyper_galaxy_image_1d_path_dict[path]
                     )
 
-                return hyper_galaxy_cluster_image_2d_path_dict
+                return binned_hyper_galaxy_image_2d_path_dict
 
         @property
         def hyper_model_image_1d(self):
@@ -448,8 +441,8 @@ class Phase(AbstractPhase):
             self.plot_ray_tracing_as_subplot = af.conf.instance.visualize.get(
                 "plots", "plot_ray_tracing_as_subplot", bool
             )
-            self.plot_ray_tracing_image_plane_image = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_image_plane_image", bool
+            self.plot_ray_tracing_profile_image = af.conf.instance.visualize.get(
+                "plots", "plot_ray_tracing_profile_image", bool
             )
             self.plot_ray_tracing_source_plane = af.conf.instance.visualize.get(
                 "plots", "plot_ray_tracing_source_plane_image", bool
@@ -479,7 +472,7 @@ class GalaxyFitPhase(AbstractPhase):
         use_deflections=False,
         optimizer_class=af.MultiNest,
         sub_grid_size=2,
-        interp_pixel_scale=None,
+        pixel_scale_interpolation_grid=None,
         mask_function=None,
         cosmology=cosmo.Planck15,
     ):
@@ -507,7 +500,7 @@ class GalaxyFitPhase(AbstractPhase):
         self.use_deflections = use_deflections
         self.galaxies = galaxies
         self.sub_grid_size = sub_grid_size
-        self.interp_pixel_scale = interp_pixel_scale
+        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
         self.mask_function = mask_function
 
     def run(self, galaxy_data, results=None, mask=None):
@@ -572,8 +565,8 @@ class GalaxyFitPhase(AbstractPhase):
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 sub_grid_size=self.sub_grid_size,
-                interp_pixel_scale=self.interp_pixel_scale,
-                use_intensities=self.use_intensities,
+                pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
+                use_image=self.use_intensities,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
                 use_deflections_y=self.use_deflections,
@@ -590,8 +583,8 @@ class GalaxyFitPhase(AbstractPhase):
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 sub_grid_size=self.sub_grid_size,
-                interp_pixel_scale=self.interp_pixel_scale,
-                use_intensities=self.use_intensities,
+                pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
+                use_image=self.use_intensities,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
                 use_deflections_y=self.use_deflections,
@@ -602,8 +595,8 @@ class GalaxyFitPhase(AbstractPhase):
                 galaxy_data=galaxy_data[1],
                 mask=mask,
                 sub_grid_size=self.sub_grid_size,
-                interp_pixel_scale=self.interp_pixel_scale,
-                use_intensities=self.use_intensities,
+                pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
+                use_image=self.use_intensities,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
                 use_deflections_y=False,

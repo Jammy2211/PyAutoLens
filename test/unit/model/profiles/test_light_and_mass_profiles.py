@@ -118,8 +118,7 @@ class TestSersic(object):
         )
 
         assert (
-            sersic_lp.intensities_from_grid(grid)
-            == sersic_lmp.intensities_from_grid(grid)
+                sersic_lp.profile_image_from_grid(grid) == sersic_lmp.profile_image_from_grid(grid)
         ).all()
         assert (
             sersic_mp.convergence_from_grid(grid)
@@ -150,8 +149,7 @@ class TestSersic(object):
         )
 
         assert (
-            elliptical.intensities_from_grid(grid)
-            == spherical.intensities_from_grid(grid)
+                elliptical.profile_image_from_grid(grid) == spherical.profile_image_from_grid(grid)
         ).all()
         assert (
             elliptical.convergence_from_grid(grid)
@@ -263,8 +261,7 @@ class TestExponential(object):
         )
 
         assert (
-            sersic_lp.intensities_from_grid(grid)
-            == sersic_lmp.intensities_from_grid(grid)
+                sersic_lp.profile_image_from_grid(grid) == sersic_lmp.profile_image_from_grid(grid)
         ).all()
         assert (
             sersic_mp.convergence_from_grid(grid)
@@ -289,8 +286,7 @@ class TestExponential(object):
         )
 
         assert (
-            elliptical.intensities_from_grid(grid)
-            == spherical.intensities_from_grid(grid)
+                elliptical.profile_image_from_grid(grid) == spherical.profile_image_from_grid(grid)
         ).all()
         assert (
             elliptical.convergence_from_grid(grid)
@@ -402,8 +398,7 @@ class TestDevVaucouleurs(object):
         )
 
         assert (
-            sersic_lp.intensities_from_grid(grid)
-            == sersic_lmp.intensities_from_grid(grid)
+                sersic_lp.profile_image_from_grid(grid) == sersic_lmp.profile_image_from_grid(grid)
         ).all()
         assert (
             sersic_mp.convergence_from_grid(grid)
@@ -428,8 +423,7 @@ class TestDevVaucouleurs(object):
         )
 
         assert (
-            elliptical.intensities_from_grid(grid)
-            == spherical.intensities_from_grid(grid)
+                elliptical.profile_image_from_grid(grid) == spherical.profile_image_from_grid(grid)
         ).all()
         assert (
             elliptical.convergence_from_grid(grid)
@@ -559,8 +553,7 @@ class TestSersicRadialGradient(object):
         )
 
         assert (
-            sersic_lp.intensities_from_grid(grid)
-            == sersic_lmp.intensities_from_grid(grid)
+                sersic_lp.profile_image_from_grid(grid) == sersic_lmp.profile_image_from_grid(grid)
         ).all()
         assert (
             sersic_mp.convergence_from_grid(grid)
@@ -585,8 +578,7 @@ class TestSersicRadialGradient(object):
         )
 
         assert (
-            elliptical.intensities_from_grid(grid)
-            == spherical.intensities_from_grid(grid)
+                elliptical.profile_image_from_grid(grid) == spherical.profile_image_from_grid(grid)
         ).all()
         assert (
             elliptical.convergence_from_grid(grid)
