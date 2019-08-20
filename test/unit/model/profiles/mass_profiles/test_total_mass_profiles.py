@@ -125,13 +125,13 @@ class TestPointMass(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = point_mass.deflections_from_grid(grid=regular_with_interp)
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = point_mass.deflections_from_grid(
@@ -531,10 +531,10 @@ class TestCoredPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
-        true_deflections = cored_power_law.deflections_from_grid(grid=regular)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        true_deflections = cored_power_law.deflections_from_grid(grid=grid)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = cored_power_law.deflections_from_grid(
             grid=regular_with_interp
         )
@@ -542,7 +542,7 @@ class TestCoredPowerLaw(object):
         assert np.max(true_deflections[:, 1] - interp_deflections[:, 1]) < 0.1
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = cored_power_law.deflections_from_grid(
@@ -578,10 +578,10 @@ class TestCoredPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
-        true_deflections = cored_power_law.deflections_from_grid(grid=regular)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        true_deflections = cored_power_law.deflections_from_grid(grid=grid)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = cored_power_law.deflections_from_grid(
             grid=regular_with_interp
         )
@@ -589,7 +589,7 @@ class TestCoredPowerLaw(object):
         assert np.max(true_deflections[:, 1] - interp_deflections[:, 1]) < 0.1
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = cored_power_law.deflections_from_grid(
@@ -958,13 +958,13 @@ class TestPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = power_law.deflections_from_grid(
@@ -1000,13 +1000,13 @@ class TestPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = power_law.deflections_from_grid(
@@ -1367,14 +1367,14 @@ class TestCoredIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = cored_isothermal.deflections_from_grid(
             grid=regular_with_interp
         )
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = cored_isothermal.deflections_from_grid(
@@ -1410,14 +1410,14 @@ class TestCoredIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = cored_isothermal.deflections_from_grid(
             grid=regular_with_interp
         )
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = cored_isothermal.deflections_from_grid(
@@ -1703,12 +1703,12 @@ class TestIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = isothermal.deflections_from_grid(
@@ -1742,12 +1742,12 @@ class TestIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = isothermal.deflections_from_grid(

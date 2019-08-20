@@ -15,13 +15,13 @@ def mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
     Parameters
     -----------
     sub_mask_1d_index_to_pixelization_1d_index : ndarray
-        The mappings between the observed regular's sub-pixels and pixelization's pixels.
+        The mappings between the observed grid's sub-pixels and pixelization's pixels.
     pixels : int
         The number of pixels in the pixelization.
     total_mask_pixels : int
         The number of datas pixels in the observed datas and thus on the grid.
     sub_mask_1d_index_to_mask_1d_index : ndarray
-        The mappings between the observed regular's sub-pixels and observed regular's pixels.
+        The mappings between the observed grid's sub-pixels and observed grid's pixels.
     sub_grid_fraction : float
         The fractional area each sub-pixel takes up in an pixel.
     """

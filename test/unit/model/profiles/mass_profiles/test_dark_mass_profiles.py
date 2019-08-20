@@ -928,13 +928,13 @@ class TestGeneralizedNFW(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = gNFW.deflections_from_grid(grid=regular_with_interp)
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = gNFW.deflections_from_grid(
@@ -1174,15 +1174,15 @@ class TestTruncatedNFW(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = truncated_nfw.deflections_from_grid(
             grid=regular_with_interp
         )
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = truncated_nfw.deflections_from_grid(
@@ -1575,13 +1575,13 @@ class TestNFW(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = nfw.deflections_from_grid(
@@ -1615,13 +1615,13 @@ class TestNFW(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
+        regular_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = nfw.deflections_from_grid(

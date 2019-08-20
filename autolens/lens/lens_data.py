@@ -49,7 +49,7 @@ class LensData(object):
             used to speed up the non-linear sampling.
         pixel_scale_interpolation_grid : float
             If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the regular, sub and blurring grids.
+            interpolated to the grid, sub and blurring grids.
         inversion_pixel_limit : int or None
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
             up run.
