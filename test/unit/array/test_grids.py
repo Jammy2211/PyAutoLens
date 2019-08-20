@@ -1995,23 +1995,23 @@ class TestInterpolator:
             result[0] = 1
             return result
 
-        = grids.Grid.from_mask_and_sub_grid_size(
+        grid = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
 
-        values = func(None, regular)
+        values = func(None, grid)
 
         assert values.ndim == 1
         assert values.shape == (9,)
         assert (values == np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0]])).all()
 
-        = grids.Grid.from_mask_and_sub_grid_size(
+        grid = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
-        regular.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            regular.mask, regular, pixel_scale_interpolation_grid=0.5
+        grid.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            grid.mask, grid, pixel_scale_interpolation_grid=0.5
         )
-        interp_values = func(None, regular)
+        interp_values = func(None, grid)
         assert interp_values.ndim == 1
         assert interp_values.shape == (9,)
         assert (interp_values != np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0]])).any()
@@ -2033,11 +2033,11 @@ class TestInterpolator:
             result[0, :] = 1
             return result
 
-        = grids.Grid.from_mask_and_sub_grid_size(
+        grid = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
 
-        values = func(None, regular)
+        values = func(None, grid)
 
         assert values.ndim == 2
         assert values.shape == (9, 2)
@@ -2048,14 +2048,14 @@ class TestInterpolator:
             )
         ).all()
 
-        = grids.Grid.from_mask_and_sub_grid_size(
+        grid = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
-        regular.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-            regular.mask, regular, pixel_scale_interpolation_grid=0.5
+        grid.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            grid.mask, grid, pixel_scale_interpolation_grid=0.5
         )
 
-        interp_values = func(None, regular)
+        interp_values = func(None, grid)
         assert interp_values.ndim == 2
         assert interp_values.shape == (9, 2)
         assert (

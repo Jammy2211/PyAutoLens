@@ -113,7 +113,7 @@ class Convolver(object):
         computed:
 
         |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example regular.Mask, where:
+        |x|x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
         |x|x|x|x|x|x|x|x|x|x|
         |x|x|o|o|o|o|o|x|x|x|     x = True (Pixel is masked and excluded from lens)
         |x|x|o|x|x|x|o|x|x|x|     o = False (Pixel is not masked and included in lens)
@@ -170,7 +170,7 @@ class Convolver(object):
             The masks, where True eliminates datas.
         blurring_mask : Mask
             A masks of pixels outside the masks but whose light blurs into it after PSF convolution.
-        psf : regular.PSF or ndarray
+        psf : grid.PSF or ndarray
             An array representing a PSF.
         """
 
@@ -399,7 +399,7 @@ class Convolver(object):
         [[0.0, 1.0, 1.0]]
         [[0.0, 0.0, 0.0]]
 
-        We then convolve each of these with our PSF kernel, in 2 dimensions, like we would a hyper regular. For
+        We then convolve each of these with our PSF kernel, in 2 dimensions, like we would a hyper grid. For
         example, using the kernel below:
 
         kernel:

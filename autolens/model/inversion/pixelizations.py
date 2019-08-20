@@ -271,7 +271,7 @@ class Voronoi(Pixelization):
 
         1) (before this routine is called), setup the 'pix' grid as part of the grid-stack, which corresponds to a \
            sparse set of pixels in the image-plane which are traced to form the pixel centres.
-        2) If a border is supplied, relocate all of the grid-stack's regular, sub and pix grid pixels beyond the border.
+        2) If a border is supplied, relocate all of the grid-stack's grid, sub and pix grid pixels beyond the border.
         3) Determine the adaptive-magnification pixelization's pixel centres, by extracting them from the relocated \
            pix grid.
         4) Use these pixelization centres to setup the Voronoi pixelization.

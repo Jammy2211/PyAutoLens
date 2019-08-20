@@ -82,7 +82,7 @@ class GalaxyModel(af.PriorModel):
             The regularization-scheme used to regularization reconstruct the galaxy light when fitting the observed \
             if using an inversion.
         hyper_galaxy : HyperGalaxy
-            A model hyper_galaxy-galaxy used for scaling the observed regular's noise_map.
+            A model hyper_galaxy-galaxy used for scaling the observed grid's noise_map.
         """
 
         super().__init__(

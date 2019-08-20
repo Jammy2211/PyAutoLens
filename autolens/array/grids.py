@@ -404,7 +404,7 @@ class Grid(np.ndarray):
         For a PSF of shape (3,3), the following blurring mask is computed (noting that only pixels that are direct \
         neighbors of the unmasked pixels above will blur light into an unmasked pixel):
 
-        |x|x|x|x|x|x|x|x|x|     This is an example regular.Mask, where:
+        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
         |x|x|x|x|x|x|x|x|x|
         |x|x|o|o|o|o|o|x|x|     x = True (Pixel is masked and excluded from lens)
         |x|x|o|x|x|x|o|x|x|     o = False (Pixel is not masked and included in lens)
@@ -433,7 +433,7 @@ class Grid(np.ndarray):
         For a PSF of shape (5,5), the following blurring mask is computed (noting that pixels that are 2 pixels from an
         direct unmasked pixels now blur light into an unmasked pixel):
 
-        |x|x|x|x|x|x|x|x|x|     This is an example regular.Mask, where:
+        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
         |x|o|o|o|o|o|o|o|x|
         |x|o|o|o|o|o|o|o|x|     x = True (Pixel is masked and excluded from lens)
         |x|o|o|x|x|x|o|o|x|     o = False (Pixel is not masked and included in lens)
@@ -977,12 +977,12 @@ class Grid(np.ndarray):
 
     @property
     def yticks(self):
-        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing a regular"""
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing a grid"""
         return np.linspace(np.min(self[:, 0]), np.max(self[:, 0]), 4)
 
     @property
     def xticks(self):
-        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing a regular"""
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing a grid"""
         return np.linspace(np.min(self[:, 1]), np.max(self[:, 1]), 4)
 
     def __reduce__(self):
