@@ -2,7 +2,7 @@ from autolens import exc
 from autolens.array import grids, scaled_array
 from autolens.array import mask as msk
 
-from autolens.array.grids import reshape_data_array
+from autolens.array.grids import reshape_array
 
 
 class GalaxyData(object):
@@ -36,7 +36,7 @@ class GalaxyFitData(object):
         galaxy_data,
         mask,
         sub_grid_size=2,
-        interp_pixel_scale=None,
+        pixel_scale_interpolation_grid=None,
         use_image=False,
         use_convergence=False,
         use_potential=False,
@@ -88,12 +88,12 @@ class GalaxyFitData(object):
             mask=mask, sub_grid_size=sub_grid_size
         )
 
-        self.interp_pixel_scale = interp_pixel_scale
+        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 
-        if interp_pixel_scale is not None:
+        if pixel_scale_interpolation_grid is not None:
 
             self.grid = self.grid.new_grid_with_interpolator(
-                interp_pixel_scale=interp_pixel_scale
+                pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
 
         self.mask_2d = mask
@@ -146,7 +146,7 @@ class GalaxyFitData(object):
             self.noise_map_1d = obj.noise_map_1d
             self.mask_1d = obj.mask_1d
             self.sub_grid_size = obj.sub_grid_size
-            self.interp_pixel_scale = obj.interp_pixel_scale
+            self.pixel_scale_interpolation_grid = obj.pixel_scale_interpolation_grid
             self.grid = obj.grid
             self.use_image = obj.use_image
             self.use_convergence = obj.use_convergence
@@ -211,14 +211,14 @@ class GalaxyFitData(object):
         else:
             return self.mask_1d
 
-    @reshape_data_array
+    @reshape_array
     def image(self, return_in_2d=True):
         return self.image_1d
 
-    @reshape_data_array
+    @reshape_array
     def noise_map(self, return_in_2d=True):
         return self.noise_map_1d
 
-    @reshape_data_array
+    @reshape_array
     def signal_to_noise_map(self, return_in_2d=True):
         return self.signal_to_noise_map_1d

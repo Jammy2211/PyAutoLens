@@ -79,7 +79,7 @@ class TestGalaxyFitData(object):
 
         assert (galaxy_fit_data.grid == sub_grid_7x7).all()
 
-    def test__interp_pixel_scale(self, image_7x7, mask_7x7):
+    def test__pixel_scale_interpolation_grid(self, image_7x7, mask_7x7):
 
         noise_map = sca.ScaledSquarePixelArray(
             array=2.0 * np.ones((7, 7)), pixel_scale=3.0
@@ -90,12 +90,12 @@ class TestGalaxyFitData(object):
         gal_data_7x7 = gd.GalaxyFitData(
             galaxy_data=gal_data_7x7,
             mask=mask_7x7,
-            interp_pixel_scale=1.0,
+            pixel_scale_interpolation_grid=1.0,
             use_image=True,
         )
 
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=2)
-        new_grid = grid.new_grid_with_interpolator(interp_pixel_scale=1.0)
+        new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
         assert (gal_data_7x7.grid == new_grid).all()
         assert (gal_data_7x7.grid.interpolator.vtx == new_grid.interpolator.vtx).all()
         assert (gal_data_7x7.grid.interpolator.wts == new_grid.interpolator.wts).all()

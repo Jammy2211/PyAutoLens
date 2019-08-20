@@ -5,16 +5,14 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
-- Preload pixelization grids at phase level.
-- Lensed image from grid.
-- Donot repeat deflections in image and mapper.
-
 Big Picture:
 
 - RJLens pipelines.
 
 Small Picture:
 
+- Lensed image from grid.
+- Dont repeat deflections in profile_image and mapper.
 - Plot plane image as square, not rectangle
 - Make sure image plane pix grid also shifts for offset mask.
 - Use model image for norm range on subplots.

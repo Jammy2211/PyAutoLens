@@ -24,7 +24,7 @@ def check_input_grid_and_options_are_compatible(grid):
         )
 
 
-def reshape_data_array(func):
+def reshape_array(func):
     @wraps(func)
     def wrapper(object, *args, **kwargs):
         """
@@ -71,9 +71,9 @@ def reshape_data_array(func):
     return wrapper
 
 
-def reshape_returned_array(func):
+def reshape_array_from_grid(func):
     @wraps(func)
-    def wrapper(object, grid=None, *args, **kwargs):
+    def wrapper(object, grid, *args, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -101,41 +101,42 @@ def reshape_returned_array(func):
 
         return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
         return_binned = kwargs["return_binned"] if "return_binned" in kwargs else False
-
-        if grid is None:
-            grid = object.grid
-
         result = func(object, grid)
 
-        if len(result.shape) == 2:
-            result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
-        else:
-            result_1d = result
-
-        if not return_in_2d and not return_binned:
-            return result_1d
-
-        check_input_grid_and_options_are_compatible(grid=grid)
-
-        if not return_in_2d and not return_binned:
-
-            return result_1d
-
-        elif not return_in_2d and return_binned:
-
-            return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=result_1d)
-
-        elif return_in_2d and not return_binned:
-
-            return grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
-                sub_array_1d=result_1d
-            )
-
-        elif return_in_2d and return_binned:
-
-            return grid.scaled_array_2d_binned_from_sub_array_1d(sub_array_1d=result_1d)
+        return reshape_result_via_grid(grid=grid, result=result, return_in_2d=return_in_2d, return_binned=return_binned)
 
     return wrapper
+
+def reshape_result_via_grid(grid, result, return_in_2d, return_binned):
+
+
+    if len(result.shape) == 2:
+        result_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=result)
+    else:
+        result_1d = result
+
+    if not return_in_2d and not return_binned:
+        return result_1d
+
+    check_input_grid_and_options_are_compatible(grid=grid)
+
+    if not return_in_2d and not return_binned:
+
+        return result_1d
+
+    elif not return_in_2d and return_binned:
+
+        return grid.array_1d_binned_from_sub_array_1d(sub_array_1d=result_1d)
+
+    elif return_in_2d and not return_binned:
+
+        return grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+            sub_array_1d=result_1d
+        )
+
+    elif return_in_2d and return_binned:
+
+        return grid.scaled_array_2d_binned_from_sub_array_1d(sub_array_1d=result_1d)
 
 
 def reshape_returned_grid(func):
@@ -745,12 +746,12 @@ class Grid(np.ndarray):
         self.binned = binned_grid
         return self
 
-    def new_grid_with_interpolator(self, interp_pixel_scale):
+    def new_grid_with_interpolator(self, pixel_scale_interpolation_grid):
         # noinspection PyAttributeOutsideInit
         # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
         # TODO: on which the function was called but with a new interpolator set.
-        self.interpolator = Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=self.mask, grid=self[:, :], interp_pixel_scale=interp_pixel_scale
+        self.interpolator = Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=self.mask, grid=self[:, :], pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
         )
         return self
 
@@ -772,7 +773,7 @@ class Grid(np.ndarray):
             return padded_sub_grid
         else:
             return padded_sub_grid.new_grid_with_interpolator(
-                interp_pixel_scale=self.interpolator.interp_pixel_scale
+                pixel_scale_interpolation_grid=self.interpolator.pixel_scale_interpolation_grid
             )
 
     def trimmed_array_2d_from_padded_array_1d_and_image_shape(
@@ -1039,33 +1040,19 @@ class BinnedGrid(Grid):
             self.total_unbinned_pixels = obj.total_unbinned_pixels
 
     @classmethod
-    def from_mask_and_binned_pixel_scale(
-        cls, mask, binned_pixel_scale, inversion_pixels_limit=None
+    def from_mask_and_pixel_scale_binned_grid(
+        cls, mask, pixel_scale_binned_grid,
     ):
 
-        if binned_pixel_scale > mask.pixel_scale:
+        if pixel_scale_binned_grid > mask.pixel_scale:
 
-            bin_up_factor = int(binned_pixel_scale / mask.pixel_scale)
+            bin_up_factor = int(pixel_scale_binned_grid / mask.pixel_scale)
 
         else:
 
             bin_up_factor = 1
 
         binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
-
-        if inversion_pixels_limit is not None:
-
-            while binned_mask.pixels_in_mask < inversion_pixels_limit:
-
-                if bin_up_factor == 1:
-                    raise exc.DataException(
-                        "The cluster hyper_galaxy image cannot obtain more instrument points that the maximum number of pixels for a "
-                        "cluster pixelization, even without any binning up. Either increase the mask size or reduce the "
-                        "maximum number of pixels."
-                    )
-
-                bin_up_factor -= 1
-                binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
 
         binned_grid = Grid.from_mask_and_sub_grid_size(
             mask=binned_mask, sub_grid_size=1
@@ -1300,10 +1287,10 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 
 
 class Interpolator(object):
-    def __init__(self, grid, interp_grid, interp_pixel_scale):
+    def __init__(self, grid, interp_grid, pixel_scale_interpolation_grid):
         self.grid = grid
         self.interp_grid = interp_grid
-        self.interp_pixel_scale = interp_pixel_scale
+        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
         self.vtx, self.wts = self.interp_weights
 
     @property
@@ -1318,9 +1305,9 @@ class Interpolator(object):
         return vertices, np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
 
     @classmethod
-    def from_mask_grid_and_interp_pixel_scales(cls, mask, grid, interp_pixel_scale):
+    def from_mask_grid_and_pixel_scale_interpolation_grids(cls, mask, grid, pixel_scale_interpolation_grid):
 
-        rescale_factor = mask.pixel_scale / interp_pixel_scale
+        rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
 
         rescaled_mask = mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=rescale_factor
@@ -1332,13 +1319,13 @@ class Interpolator(object):
 
         interp_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=interp_mask,
-            pixel_scales=(interp_pixel_scale, interp_pixel_scale),
+            pixel_scales=(pixel_scale_interpolation_grid, pixel_scale_interpolation_grid),
             sub_grid_size=1,
             origin=mask.origin,
         )
 
         return Interpolator(
-            grid=grid, interp_grid=interp_grid, interp_pixel_scale=interp_pixel_scale
+            grid=grid, interp_grid=interp_grid, pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
         )
 
     def interpolated_values_from_values(self, values):

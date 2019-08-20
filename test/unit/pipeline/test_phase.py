@@ -173,15 +173,6 @@ class TestPhase(object):
             phase_7x7.make_analysis(data=ccd_data_7x7, positions=None)
             phase_7x7.make_analysis(data=ccd_data_7x7)
 
-        # If positions threshold is None, positions should always be None.
-
-        phase_7x7.positions_threshold = None
-        analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
-        )
-
-        assert analysis.lens_data.positions is None
-
     def test_make_analysis__inversion_resolution_error_raised_if_above_inversion_pixel_limit(
         self, phase_7x7, ccd_data_7x7, mask_function_7x7
     ):
@@ -269,20 +260,20 @@ class TestPhase(object):
             analysis.check_inversion_pixels_are_below_limit(instance=instance)
             analysis.fit(instance=instance)
 
-    def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(
+    def test_make_analysis__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(
         self, phase_7x7, ccd_data_7x7
     ):
         # If use positions is true and positions are input, make the positions part of the lens instrument.
 
-        phase_7x7.interp_pixel_scale = 0.1
+        phase_7x7.pixel_scale_interpolation_grid = 0.1
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
-        assert analysis.lens_data.interp_pixel_scale == 0.1
+        assert analysis.lens_data.pixel_scale_interpolation_grid == 0.1
         assert hasattr(analysis.lens_data.grid, "interpolator")
         assert hasattr(analysis.lens_data.preload_blurring_grid, "interpolator")
 
-    def test_make_analysis__cluster_pixel_limit__is_input__used_in_analysis(
-        self, phase_7x7, ccd_data_7x7
+    def test_make_analysis__inversion_pixel_limit__is_input__used_in_analysis(
+        self, phase_7x7, ccd_data_7x7, mask_7x7
     ):
         phase_7x7.galaxies.lens = gm.GalaxyModel(
             redshift=0.5,
@@ -290,13 +281,27 @@ class TestPhase(object):
             regularization=reg.Constant,
         )
 
-        phase_7x7.cluster_pixel_limit = 5
+        phase_7x7.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale
+        phase_7x7.inversion_pixel_limit = 5
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
 
-        assert analysis.lens_data.cluster_pixel_limit == 5
+        assert analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scale
 
-        phase_7x7.cluster_pixel_limit = 10
+        # There are 9 pixels in the mask, so to meet the inversoin pixel limit the pixel scale will be rescaled to the
+        # masks's pixel scale
+
+        phase_7x7.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale * 2.0
+        phase_7x7.inversion_pixel_limit = 5
+
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+
+        assert analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scale
+
+        # This image cannot meet the requirement, so will raise an error.
+
+        phase_7x7.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale * 2.0
+        phase_7x7.inversion_pixel_limit = 10
 
         with pytest.raises(exc.DataException):
             phase_7x7.make_analysis(data=ccd_data_7x7)
@@ -334,26 +339,24 @@ class TestPhase(object):
         self, mask_function_7x7, ccd_data_7x7
     ):
 
-        lens_galaxy = g.Galaxy(redshift=0.5)
         source_galaxy = g.Galaxy(redshift=0.5)
 
         phase_7x7 = phase_imaging.PhaseImaging(
             mask_function=mask_function_7x7,
-            galaxies=[lens_galaxy, source_galaxy],
+            galaxies=[source_galaxy],
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
 
         assert phase_7x7.pixelization == None
 
-        lens_galaxy = g.Galaxy(redshift=0.5)
         source_galaxy = g.Galaxy(
             redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant()
         )
 
         phase_7x7 = phase_imaging.PhaseImaging(
             mask_function=mask_function_7x7,
-            galaxies=[lens_galaxy, source_galaxy],
+            galaxies=[source_galaxy],
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -362,6 +365,19 @@ class TestPhase(object):
             phase_7x7.pixelization,
             pix.Rectangular,
         )
+
+        source_galaxy = gm.GalaxyModel(
+            redshift=0.5, pixelization=pix.Rectangular, regularization=reg.Constant
+        )
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            mask_function=mask_function_7x7,
+            galaxies=[source_galaxy],
+            cosmology=cosmo.FLRW,
+            phase_name="test_phase",
+        )
+
+        assert type(phase_7x7.pixelization) == type(pix.Rectangular)
 
     def test_fit(self, ccd_data_7x7, mask_function_7x7):
         clean_images()
@@ -557,7 +573,7 @@ class TestPhase(object):
             mask_function=mask_function_7x7,
             cosmology=cosmo.Planck15,
             phase_name="test_phase",
-            use_inversion_border=True,
+            inversion_uses_border=True,
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
@@ -577,7 +593,7 @@ class TestPhase(object):
             mask_function=mask_function_7x7,
             cosmology=cosmo.Planck15,
             phase_name="test_phase",
-            use_inversion_border=False,
+            inversion_uses_border=False,
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
@@ -590,7 +606,7 @@ class TestPhase(object):
 
         assert fit.inversion.mapper.grid[4][0] == pytest.approx(200.0, 1.0e-4)
 
-    def test__inversion_and_cluster_pixel_limit_computed_via_input_of_max_inversion_pixel_limit_and_prior_config(
+    def test__inversion_pixel_limit_computed_via_config_or_input(
         self, mask_function_7x7
     ):
         phase_7x7 = phase_imaging.PhaseImaging(
@@ -599,8 +615,7 @@ class TestPhase(object):
             inversion_pixel_limit=None,
         )
 
-        assert phase_7x7.inversion_pixel_limit == 1500
-        assert phase_7x7.cluster_pixel_limit == 1500
+        assert phase_7x7.inversion_pixel_limit == 3000
 
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="phase_7x7",
@@ -609,7 +624,6 @@ class TestPhase(object):
         )
 
         assert phase_7x7.inversion_pixel_limit == 10
-        assert phase_7x7.cluster_pixel_limit == 10
 
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="phase_7x7",
@@ -618,7 +632,6 @@ class TestPhase(object):
         )
 
         assert phase_7x7.inversion_pixel_limit == 2000
-        assert phase_7x7.cluster_pixel_limit == 1500
 
 
     def test__make_analysis_determines_if_pixelization_is_same_as_previous_phas(

@@ -64,10 +64,10 @@ class HyperPhase(object):
             "MultiNest", "extension_combined_n_live_points", int
         )
 
+        phase.is_hyper_phase = True
         phase.optimizer.phase_tag = ""
         phase.phase_tag = ""
         phase.pass_priors = self.pass_priors
-        phase.preload_pixelization_grid = None
 
         return phase
 

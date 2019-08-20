@@ -194,24 +194,22 @@ class HyperGalaxyPhase(HyperPhase):
             sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
             trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,
-            interp_pixel_scale=cast(
+            positions_threshold=cast(phase_imaging.PhaseImaging, phase).positions_threshold,
+            pixel_scale_interpolation_grid=cast(
                 phase_imaging.PhaseImaging, phase
-            ).interp_pixel_scale,
-            cluster_pixel_scale=cast(
+            ).pixel_scale_interpolation_grid,
+            pixel_scale_binned_grid=cast(
                 phase_imaging.PhaseImaging, phase
-            ).cluster_pixel_scale,
-            cluster_pixel_limit=cast(
+            ).pixel_scale_binned_cluster_grid,
+            inversion_pixel_limit=cast(
                 phase_imaging.PhaseImaging, phase
-            ).cluster_pixel_limit,
-            uses_cluster_inversion=cast(
+            ).inversion_pixel_limit,
+            inversion_uses_border=cast(
                 phase_imaging.PhaseImaging, phase
-            ).uses_cluster_inversion,
+            ).inversion_uses_border,
             hyper_noise_map_max=cast(
                 phase_imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
-            use_inversion_border=cast(
-                phase_imaging.PhaseImaging, phase
-            ).use_inversion_border,
             preload_pixelization_grids_of_planes=None,
         )
 
@@ -352,24 +350,22 @@ class HyperGalaxyAllPhase(HyperPhase):
             sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
             trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,
-            interp_pixel_scale=cast(
+            positions_threshold=cast(phase_imaging.PhaseImaging, phase).positions_threshold,
+            pixel_scale_interpolation_grid=cast(
                 phase_imaging.PhaseImaging, phase
-            ).interp_pixel_scale,
-            cluster_pixel_scale=cast(
+            ).pixel_scale_interpolation_grid,
+            pixel_scale_binned_grid=cast(
                 phase_imaging.PhaseImaging, phase
-            ).cluster_pixel_scale,
-            cluster_pixel_limit=cast(
+            ).pixel_scale_binned_cluster_grid,
+            inversion_pixel_limit=cast(
                 phase_imaging.PhaseImaging, phase
-            ).cluster_pixel_limit,
-            uses_cluster_inversion=cast(
+            ).inversion_pixel_limit,
+            inversion_uses_border=cast(
                 phase_imaging.PhaseImaging, phase
-            ).uses_cluster_inversion,
+            ).inversion_uses_border,
             hyper_noise_map_max=cast(
                 phase_imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
-            use_inversion_border=cast(
-                phase_imaging.PhaseImaging, phase
-            ).use_inversion_border,
             preload_pixelization_grids_of_planes=None,
         )
 

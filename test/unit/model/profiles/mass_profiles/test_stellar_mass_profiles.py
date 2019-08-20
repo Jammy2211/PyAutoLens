@@ -264,11 +264,11 @@ class TestSersic(object):
 
         regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=regular, interp_pixel_scale=0.5
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = sersic.deflections_from_grid(
@@ -310,11 +310,11 @@ class TestSersic(object):
 
         regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=regular, interp_pixel_scale=0.5
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = sersic.deflections_from_grid(
@@ -592,11 +592,11 @@ class TestExponential(object):
 
         regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = exponential.deflections_from_grid(grid=regular_with_interp)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=regular, interp_pixel_scale=0.5
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = exponential.deflections_from_grid(
@@ -637,11 +637,11 @@ class TestExponential(object):
 
         regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = exponential.deflections_from_grid(grid=regular_with_interp)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=regular, interp_pixel_scale=0.5
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = exponential.deflections_from_grid(
@@ -903,11 +903,11 @@ class TestDevVaucouleurs(object):
 
         regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = dev.deflections_from_grid(grid=regular_with_interp)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=regular, interp_pixel_scale=0.5
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = dev.deflections_from_grid(
@@ -948,11 +948,11 @@ class TestDevVaucouleurs(object):
 
         regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = dev.deflections_from_grid(grid=regular_with_interp)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=regular, interp_pixel_scale=0.5
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = dev.deflections_from_grid(
@@ -1371,11 +1371,11 @@ class TestSersicMassRadialGradient(object):
 
         regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=regular, interp_pixel_scale=0.5
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = sersic.deflections_from_grid(
@@ -1419,11 +1419,11 @@ class TestSersicMassRadialGradient(object):
 
         regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=regular, interp_pixel_scale=0.5
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=regular, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = sersic.deflections_from_grid(

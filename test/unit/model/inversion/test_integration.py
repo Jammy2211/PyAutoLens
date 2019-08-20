@@ -44,7 +44,7 @@ class TestRectangular:
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid,
             pixelization_grid=pixelization_grid,
-            use_inversion_border=False,
+            inversion_uses_border=False,
             hyper_image=np.ones((2, 2)),
         )
 
@@ -137,7 +137,7 @@ class TestRectangular:
         pix = pixelizations.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=grid, pixelization_grid=pixelization_grid, use_inversion_border=False
+            grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == False
@@ -245,7 +245,7 @@ class TestRectangular:
         pix = pixelizations.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=grid, pixelization_grid=pixelization_grid, use_inversion_border=False
+            grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == False
@@ -317,7 +317,7 @@ class TestRectangular:
         pix = pixelizations.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=grid, pixelization_grid=pixelization_grid, use_inversion_border=True
+            grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=True
         )
 
         assert mapper.is_image_plane_pixelization == False
@@ -400,7 +400,7 @@ class TestVoronoiMagnification:
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid,
             pixelization_grid=pixelization_grid,
-            use_inversion_border=False,
+            inversion_uses_border=False,
             hyper_image=np.ones((2, 2)),
         )
 
@@ -475,7 +475,7 @@ class TestVoronoiMagnification:
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=grid, pixelization_grid=pixelization_grid, use_inversion_border=False
+            grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -563,7 +563,7 @@ class TestVoronoiMagnification:
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=grid, pixelization_grid=pixelization_grid, use_inversion_border=False
+            grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -634,7 +634,7 @@ class TestVoronoiMagnification:
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=grid, pixelization_grid=pixelization_grid, use_inversion_border=False
+            grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == True

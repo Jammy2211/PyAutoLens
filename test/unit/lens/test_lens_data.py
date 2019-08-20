@@ -94,22 +94,22 @@ class TestLensData(object):
         assert (lens_data_7x7.grid == sub_grid_7x7).all()
         assert (lens_data_7x7.preload_blurring_grid == blurring_grid_7x7).all()
 
-    def test__interp_pixel_scale_input__grids_nclude_interpolators(
+    def test__pixel_scale_interpolation_grid_input__grids_nclude_interpolators(
         self, ccd_data_7x7, mask_7x7
     ):
 
         lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7, mask=mask_7x7, interp_pixel_scale=1.0
+            ccd_data=ccd_data_7x7, mask=mask_7x7, pixel_scale_interpolation_grid=1.0
         )
 
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=2)
-        new_grid = grid.new_grid_with_interpolator(interp_pixel_scale=1.0)
+        new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         blurring_grid = grids.Grid.blurring_grid_from_mask_and_psf_shape(
             mask=mask_7x7, psf_shape=(3, 3)
         )
         new_blurring_grid = blurring_grid.new_grid_with_interpolator(
-            interp_pixel_scale=1.0
+            pixel_scale_interpolation_grid=1.0
         )
 
         assert (lens_data_7x7.grid == new_grid).all()
@@ -126,12 +126,12 @@ class TestLensData(object):
             == new_blurring_grid.interpolator.wts
         ).all()
 
-    def test__cluster_pixel_scale_is_input__correct_binned_up_grid_calculated__inversion_max_pixels_changes_bin_up(
+    def test__pixel_scale_binned_grid_is_input__correct_binned_up_grid_calculated(
         self, ccd_data_7x7, mask_7x7, grid_7x7
     ):
         ccd_data_7x7.pixel_scale = 1.0
         lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=1.0
+            ccd_data=ccd_data_7x7, mask=mask_7x7, pixel_scale_binned_grid=1.0
         )
 
         assert lens_data_7x7.grid.binned.bin_up_factor == 1
@@ -144,7 +144,7 @@ class TestLensData(object):
 
         ccd_data_7x7.pixel_scale = 1.0
         lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=1.9
+            ccd_data=ccd_data_7x7, mask=mask_7x7, pixel_scale_binned_grid=1.9
         )
 
         assert lens_data_7x7.grid.binned.bin_up_factor == 1
@@ -156,7 +156,7 @@ class TestLensData(object):
 
         ccd_data_7x7.pixel_scale = 1.0
         lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=2.0
+            ccd_data=ccd_data_7x7, mask=mask_7x7, pixel_scale_binned_grid=2.0
         )
         assert lens_data_7x7.grid.binned.bin_up_factor == 2
         assert (
@@ -181,54 +181,33 @@ class TestLensData(object):
 
         ccd_data_7x7.pixel_scale = 2.0
         lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=1.0
+            ccd_data=ccd_data_7x7, mask=mask_7x7, pixel_scale_binned_grid=1.0
         )
 
         assert lens_data_7x7.grid.binned.bin_up_factor == 1
 
         ccd_data_7x7.pixel_scale = 1.0
         lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_scale=None
+            ccd_data=ccd_data_7x7, mask=mask_7x7, pixel_scale_binned_grid=None
         )
 
-        assert lens_data_7x7.grid.binned.bin_up_factor == 1
-        assert (lens_data_7x7.mask_2d == lens_data_7x7.grid.binned.mask).all()
-        assert (lens_data_7x7.grid.binned == grid_7x7).all()
-        assert (
-            lens_data_7x7.grid.binned.binned_mask_1d_index_to_mask_1d_indexes
-            == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
-        ).all()
-
-        ccd_data_7x7.pixel_scale = 1.0
-        lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7,
-            mask=mask_7x7,
-            cluster_pixel_scale=2.0,
-            cluster_pixel_limit=5,
-        )
-
-        assert lens_data_7x7.grid.binned.bin_up_factor == 1
-        assert (lens_data_7x7.mask_2d == lens_data_7x7.grid.binned.mask).all()
-        assert (
-            lens_data_7x7.grid.binned.binned_mask_1d_index_to_mask_1d_indexes
-            == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
-        ).all()
+        assert lens_data_7x7.grid.binned == None
 
     def test__convolvers(self, lens_data_7x7):
         assert type(lens_data_7x7.convolver) == convolution.Convolver
 
-    def test__inversion_max_pixels(self, ccd_data_7x7, mask_7x7):
+    def test__inversion_pixel_limit(self, ccd_data_7x7, mask_7x7):
         lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_limit=2
+            ccd_data=ccd_data_7x7, mask=mask_7x7, inversion_pixel_limit=2
         )
 
-        assert lens_data_7x7.cluster_pixel_limit == 2
+        assert lens_data_7x7.inversion_pixel_limit == 2
 
         lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7, mask=mask_7x7, cluster_pixel_limit=5
+            ccd_data=ccd_data_7x7, mask=mask_7x7, inversion_pixel_limit=5
         )
 
-        assert lens_data_7x7.cluster_pixel_limit == 5
+        assert lens_data_7x7.inversion_pixel_limit == 5
 
     def test__hyper_noise_map_max(self, ccd_data_7x7, mask_7x7):
         lens_data_7x7 = ld.LensData(
@@ -242,21 +221,6 @@ class TestLensData(object):
         )
 
         assert lens_data_7x7.hyper_noise_map_max == 20.0
-
-    def test__uses_cluster_inversion__does_not_create_cluster_grid_if_false(
-        self, ccd_data_7x7, mask_7x7
-    ):
-        lens_data_7x7 = ld.LensData(
-            ccd_data=ccd_data_7x7,
-            mask=mask_7x7,
-            cluster_pixel_scale=1.0,
-            cluster_pixel_limit=1,
-            uses_cluster_inversion=False,
-        )
-
-        assert lens_data_7x7.grid.binned == None
-        assert lens_data_7x7.cluster_pixel_scale == None
-        assert lens_data_7x7.cluster_pixel_limit == None
 
     def test__different_ccd_data_without_mock_objects__customize_constructor_inputs(
         self
@@ -280,6 +244,7 @@ class TestLensData(object):
             sub_grid_size=8,
             trimmed_psf_shape=(7, 7),
             positions=[np.array([[1.0, 1.0]])],
+            positions_threshold=1.0
         )
 
         assert (lens_data_7x7.unmasked_image == np.ones((19, 19))).all()
@@ -289,6 +254,7 @@ class TestLensData(object):
         assert lens_data_7x7.sub_grid_size == 8
         assert lens_data_7x7.convolver.psf.shape == (7, 7)
         assert (lens_data_7x7.positions[0] == np.array([[1.0, 1.0]])).all()
+        assert lens_data_7x7.positions_threshold == 1.0
 
         assert lens_data_7x7.trimmed_psf_shape == (7, 7)
 

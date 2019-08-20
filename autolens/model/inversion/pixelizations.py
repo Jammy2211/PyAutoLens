@@ -115,7 +115,7 @@ class Rectangular(Pixelization):
         return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
 
     def mapper_from_grid_and_pixelization_grid(
-        self, grid, pixelization_grid=None, use_inversion_border=True, hyper_image=None
+        self, grid, pixelization_grid=None, inversion_uses_border=True, hyper_image=None
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
@@ -133,7 +133,7 @@ class Rectangular(Pixelization):
             A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
-        if use_inversion_border:
+        if inversion_uses_border:
             relocated_grid = grid.relocated_grid_from_grid(grid=grid)
         else:
             relocated_grid = grid
@@ -265,7 +265,7 @@ class Voronoi(Pixelization):
         )
 
     def mapper_from_grid_and_pixelization_grid(
-        self, grid, pixelization_grid=None, use_inversion_border=True, hyper_image=None
+        self, grid, pixelization_grid=None, inversion_uses_border=True, hyper_image=None
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
@@ -289,7 +289,7 @@ class Voronoi(Pixelization):
             A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
-        if use_inversion_border:
+        if inversion_uses_border:
             relocated_grid = grid.relocated_grid_from_grid(grid=grid)
             relocated_pixelization_grid = grid.relocated_pixelization_grid_from_pixelization_grid(
                 pixelization_grid=pixelization_grid
