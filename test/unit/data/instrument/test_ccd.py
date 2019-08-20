@@ -1789,7 +1789,7 @@ class TestSimulateCCD(object):
             np.array([[0.0, 0.0, 0.0], [0.0, 1.05, 0.0], [0.0, 0.0, 0.0]]), 1e-2
         )
 
-        # Because of the regular value is 1.05, the estimated Poisson noise_map_1d is:
+        # Because of the value is 1.05, the estimated Poisson noise_map_1d is:
         # sqrt((1.05 * 20))/20 = 0.2291
 
         assert ccd_data_simulated.poisson_noise_map == pytest.approx(

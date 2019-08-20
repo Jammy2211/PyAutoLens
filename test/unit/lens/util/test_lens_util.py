@@ -9,7 +9,7 @@ from autolens.lens.util import lens_util
 
 
 class TestPlaneImageFromGrid:
-    def test__3x3_grid__extracts_max_min_coordinates__creates_regular_grid_including_half_pixel_offset_from_edge(
+    def test__3x3_grid__extracts_max_min_coordinates__creates_grid_including_half_pixel_offset_from_edge(
         self
     ):
 

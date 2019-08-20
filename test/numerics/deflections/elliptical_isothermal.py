@@ -4,9 +4,9 @@ from autolens.model.profiles import mass_profiles as mp
 # This numerics test determines the range of plausible values a power-law mass profile can take and not crash due to
 # numerical integration. This informs us the limits config file for this profile.
 
-# In this test, we'll pass a regular grid to a power-law profile and compute deflection angles. We will check if
+# In this test, we'll pass a grid to a power-law profile and compute deflection angles. We will check if
 # the pyquad integrator crashes for certain values of (y,x) coordinates.
-regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
     shape=(25, 25), pixel_scale=0.005
 )
 
@@ -18,7 +18,7 @@ for y in y_centres:
     power_law = mp.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_from_grid(grid=regular_grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
 for y in y_centres:
 
@@ -26,7 +26,7 @@ for y in y_centres:
     power_law = mp.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.99999999, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_from_grid(grid=regular_grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
 for y in y_centres:
 
@@ -34,7 +34,7 @@ for y in y_centres:
     power_law = mp.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.005, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_from_grid(grid=regular_grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
 for y in y_centres:
 
@@ -42,7 +42,7 @@ for y in y_centres:
     power_law = mp.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_from_grid(grid=regular_grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
 for y in y_centres:
 
@@ -50,4 +50,4 @@ for y in y_centres:
     power_law = mp.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_from_grid(grid=regular_grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)

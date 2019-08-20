@@ -456,7 +456,9 @@ class Phase(AbstractPhase):
             self.plot_ray_tracing_deflections = af.conf.instance.visualize.get(
                 "plots", "plot_ray_tracing_deflections", bool
             )
-
+            self.plot_ray_tracing_magnification = af.conf.instance.visualize.get(
+                "plots", "plot_ray_tracing_magnification", bool
+            )
 
 class GalaxyFitPhase(AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")

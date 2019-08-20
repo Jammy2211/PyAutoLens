@@ -197,7 +197,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         """Compute the profile-image plane image of the list of galaxies of the plane's sub-grid, by summing the
         individual images of each galaxy's light profile.
 
-        The image is calculated on the sub-grid and binned-up to the original regular grid by taking the mean
+        The image is calculated on the sub-grid and binned-up to the original grid by taking the mean
         value of every set of sub-pixels, provided the *returned_binned_sub_grid* bool is *True*.
 
         If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
@@ -208,7 +208,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -251,7 +251,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
         of each galaxy's mass profile.
 
-        The convergence is calculated on the sub-grid and binned-up to the original regular grid by taking the mean
+        The convergence is calculated on the sub-grid and binned-up to the original grid by taking the mean
         value of every set of sub-pixels, provided the *returned_binned_sub_grid* bool is *True*.
 
         If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
@@ -260,14 +260,14 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         Parameters
         -----------
         grid : RegularGrid
-            The grid (regular or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
+            The grid (or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
             potential is calculated on.
         galaxies : [galaxy.Galaxy]
             The galaxies whose mass profiles are used to compute the surface densities.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -288,7 +288,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         """Compute the potential of the list of galaxies of the plane's sub-grid, by summing the individual potentials \
         of each galaxy's mass profile.
 
-        The potential is calculated on the sub-grid and binned-up to the original regular grid by taking the mean
+        The potential is calculated on the sub-grid and binned-up to the original grid by taking the mean
         value of every set of sub-pixels, provided the *returned_binned_sub_grid* bool is *True*.
 
         If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
@@ -297,14 +297,14 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         Parameters
         -----------
         grid : RegularGrid
-            The grid (regular or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
+            The grid (or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
             potential is calculated on.
         galaxies : [galaxy.Galaxy]
             The galaxies whose mass profiles are used to compute the surface densities.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -899,21 +899,21 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
     @property
     def yticks(self):
-        """Compute the yticks labels of this grid_stack, used for plotting the y-axis ticks when visualizing an image \
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image \
         """
         return np.linspace(
-            np.amin(self.grid_stack.regular[:, 0]),
-            np.amax(self.grid_stack.regular[:, 0]),
+            np.amin(self.grid[:, 0]),
+            np.amax(self.grid[:, 0]),
             4,
         )
 
     @property
     def xticks(self):
-        """Compute the xticks labels of this grid_stack, used for plotting the x-axis ticks when visualizing an \
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an \
         image"""
         return np.linspace(
-            np.amin(self.grid_stack.regular[:, 1]),
-            np.amax(self.grid_stack.regular[:, 1]),
+            np.amin(self.grid[:, 1]),
+            np.amax(self.grid[:, 1]),
             4,
         )
 

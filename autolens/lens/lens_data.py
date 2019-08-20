@@ -23,7 +23,7 @@ class LensData(object):
         preload_pixelization_grids_of_planes=None,
     ):
         """
-        The lens instrument is the collection of instrument (image, noise-map, PSF), a mask, grid_stack, convolver \
+        The lens instrument is the collection of instrument (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
         Whilst the image, noise-map, etc. are loaded in 2D, the lens instrument creates reduced 1D arrays of each \
@@ -36,7 +36,7 @@ class LensData(object):
         mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_grid_size : int
-            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid_stack each image-pixel on a 2x2 \
+            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
             sub-grid.
         trimmed_psf_shape : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \

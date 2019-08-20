@@ -125,7 +125,7 @@ class TestPointMass(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = point_mass.deflections_from_grid(grid=regular_with_interp)
@@ -158,14 +158,14 @@ class TestPointMass(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         point_mass = mp.PointMass()
 
         deflections = point_mass.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -531,7 +531,7 @@ class TestCoredPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
         true_deflections = cored_power_law.deflections_from_grid(grid=regular)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
@@ -578,7 +578,7 @@ class TestCoredPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
         true_deflections = cored_power_law.deflections_from_grid(grid=regular)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
@@ -646,26 +646,26 @@ class TestCoredPowerLaw(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         cored_power_law = mp.EllipticalCoredPowerLaw()
 
         convergence = cored_power_law.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         potential = cored_power_law.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert potential.shape == (2, 2)
 
         deflections = cored_power_law.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -673,19 +673,19 @@ class TestCoredPowerLaw(object):
         cored_power_law = mp.SphericalCoredPowerLaw()
 
         convergence = cored_power_law.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         potential = cored_power_law.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert potential.shape == (2, 2)
 
         deflections = cored_power_law.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -958,7 +958,7 @@ class TestPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
@@ -1000,7 +1000,7 @@ class TestPowerLaw(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
@@ -1025,26 +1025,26 @@ class TestPowerLaw(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         power_law = mp.EllipticalPowerLaw()
 
         convergence = power_law.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         potential = power_law.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert potential.shape == (2, 2)
 
         deflections = power_law.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -1052,19 +1052,19 @@ class TestPowerLaw(object):
         power_law = mp.SphericalPowerLaw()
 
         convergence = power_law.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         potential = power_law.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert potential.shape == (2, 2)
 
         deflections = power_law.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -1367,7 +1367,7 @@ class TestCoredIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = cored_isothermal.deflections_from_grid(
@@ -1410,7 +1410,7 @@ class TestCoredIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = cored_isothermal.deflections_from_grid(
@@ -1436,26 +1436,26 @@ class TestCoredIsothermal(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         cored_isothermal = mp.EllipticalCoredIsothermal()
 
         convergence = cored_isothermal.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         potential = cored_isothermal.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert potential.shape == (2, 2)
 
         deflections = cored_isothermal.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -1463,19 +1463,19 @@ class TestCoredIsothermal(object):
         cored_isothermal = mp.SphericalCoredIsothermal()
 
         convergence = cored_isothermal.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         potential = cored_isothermal.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert potential.shape == (2, 2)
 
         deflections = cored_isothermal.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -1703,7 +1703,7 @@ class TestIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
@@ -1742,7 +1742,7 @@ class TestIsothermal(object):
 
         mask = msk.Mask(mask, pixel_scale=1.0)
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         regular_with_interp = regular.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.5)
         interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
@@ -1766,26 +1766,26 @@ class TestIsothermal(object):
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         isothermal = mp.EllipticalIsothermal()
 
         convergence = isothermal.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         potential = isothermal.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert potential.shape == (2, 2)
 
         deflections = isothermal.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -1793,19 +1793,19 @@ class TestIsothermal(object):
         isothermal = mp.SphericalIsothermal()
 
         convergence = isothermal.convergence_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert convergence.shape == (2, 2)
 
         potential = isothermal.potential_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert potential.shape == (2, 2)
 
         deflections = isothermal.deflections_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert deflections.shape == (2, 2, 2)
@@ -1813,86 +1813,86 @@ class TestIsothermal(object):
 
 def test__reshape_decorators():
 
-    regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=(2, 2), pixel_scale=1.0
     )
 
     isothermal = mp.SphericalIsothermal()
 
     convergence = isothermal.convergence_from_grid(
-        grid=regular_grid, return_in_2d=True, return_binned=False
+        grid=grid, return_in_2d=True, return_binned=False
     )
 
     assert convergence.shape == (2, 2)
 
     deflections = isothermal.deflections_from_grid(
-        grid=regular_grid, return_in_2d=True, return_binned=False
+        grid=grid, return_in_2d=True, return_binned=False
     )
 
     assert deflections.shape == (2, 2, 2)
 
     convergence = isothermal.convergence_from_grid(
-        grid=regular_grid, return_in_2d=False, return_binned=False
+        grid=grid, return_in_2d=False, return_binned=False
     )
 
     assert convergence.shape == (4,)
 
     deflections = isothermal.deflections_from_grid(
-        grid=regular_grid, return_in_2d=False, return_binned=False
+        grid=grid, return_in_2d=False, return_binned=False
     )
 
     assert deflections.shape == (4, 2)
 
-    sub_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=(3, 3), pixel_scale=1.0, sub_grid_size=2
     )
 
     isothermal = mp.SphericalIsothermal()
 
     convergence = isothermal.convergence_from_grid(
-        grid=sub_grid, return_in_2d=True, return_binned=True
+        grid=grid, return_in_2d=True, return_binned=True
     )
 
     assert convergence.shape == (3, 3)
 
     deflections = isothermal.deflections_from_grid(
-        grid=sub_grid, return_in_2d=True, return_binned=True
+        grid=grid, return_in_2d=True, return_binned=True
     )
 
     assert deflections.shape == (3, 3, 2)
 
     convergence = isothermal.convergence_from_grid(
-        grid=sub_grid, return_in_2d=False, return_binned=True
+        grid=grid, return_in_2d=False, return_binned=True
     )
 
     assert convergence.shape == (9,)
 
     deflections = isothermal.deflections_from_grid(
-        grid=sub_grid, return_in_2d=False, return_binned=True
+        grid=grid, return_in_2d=False, return_binned=True
     )
 
     assert deflections.shape == (9, 2)
 
     convergence = isothermal.convergence_from_grid(
-        grid=sub_grid, return_in_2d=True, return_binned=False
+        grid=grid, return_in_2d=True, return_binned=False
     )
 
     assert convergence.shape == (6, 6)
 
     deflections = isothermal.deflections_from_grid(
-        grid=sub_grid, return_in_2d=True, return_binned=False
+        grid=grid, return_in_2d=True, return_binned=False
     )
 
     assert deflections.shape == (6, 6, 2)
 
     convergence = isothermal.convergence_from_grid(
-        grid=sub_grid, return_in_2d=False, return_binned=False
+        grid=grid, return_in_2d=False, return_binned=False
     )
 
     assert convergence.shape == (36,)
 
     deflections = isothermal.deflections_from_grid(
-        grid=sub_grid, return_in_2d=False, return_binned=False
+        grid=grid, return_in_2d=False, return_binned=False
     )
 
     assert deflections.shape == (36, 2)

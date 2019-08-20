@@ -106,7 +106,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -134,7 +134,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -165,7 +165,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -308,7 +308,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -604,7 +604,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -667,7 +667,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -688,7 +688,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -746,7 +746,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -774,7 +774,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -807,7 +807,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """

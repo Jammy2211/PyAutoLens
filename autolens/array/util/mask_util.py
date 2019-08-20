@@ -43,12 +43,12 @@ def total_pixels_from_mask(mask):
     Parameters
      ----------
     mask : ndarray
-        A 2D array of bools, where *False* values are unmasked and included when counting regular pixels.
+        A 2D array of bools, where *False* values are unmasked and included when counting pixels.
 
     Returns
     --------
     int
-        The total number of regular pixels that are unmasked.
+        The total number of pixels that are unmasked.
 
     Examples
     --------
@@ -100,14 +100,14 @@ def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
 
 @decorator_util.jit()
 def total_sparse_pixels_from_mask(mask, unmasked_sparse_grid_pixel_centres):
-    """Given the full (i.e. without removing pixels which are outside the regular-mask) pixelization grid's pixel \ 
-    center and the regular-mask, compute the total number of pixels which are within the regular-mask and thus used \ \
+    """Given the full (i.e. without removing pixels which are outside the mask) pixelization grid's pixel \ 
+    center and the mask, compute the total number of pixels which are within the mask and thus used \ \
     by the pixelization grid.
 
     Parameters
     -----------
     mask : ccd.mask.Mask
-        The regular-mask within which pixelization pixels must be inside
+        The mask within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.
     """
@@ -181,7 +181,7 @@ def mask_circular_from_shape_pixel_scale_and_radius(
 def mask_circular_annular_from_shape_pixel_scale_and_radii(
     shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0.0, 0.0)
 ):
-    """Compute an annular mask from an input inner and outer mask radius and regular shape.
+    """Compute an annular mask from an input inner and outer mask radius and shape.
 
     This creates a 2D array where all values within the inner and outer radii are unmasked and therefore *False*.
 
@@ -238,7 +238,7 @@ def mask_circular_anti_annular_from_shape_pixel_scale_and_radii(
     outer_radius_2_arcsec,
     centre=(0.0, 0.0),
 ):
-    """Compute an annular mask from an input inner and outer mask radius and regular shape."""
+    """Compute an annular mask from an input inner and outer mask radius and shape."""
 
     mask = np.full(shape, True)
 

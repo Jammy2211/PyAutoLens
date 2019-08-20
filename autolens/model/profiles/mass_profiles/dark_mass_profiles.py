@@ -167,7 +167,7 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -527,7 +527,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(
-        self, grid, return_in_2d=False, return_binned=False, tabulate_bins=1000
+        self, grid, return_in_2d=True, return_binned=True, tabulate_bins=1000
     ):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
@@ -541,7 +541,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -609,7 +609,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(
-        self, grid, return_in_2d=False, return_binned=False, tabulate_bins=1000
+        self, grid, return_in_2d=True, return_binned=True, tabulate_bins=1000
     ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
@@ -623,7 +623,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -1131,7 +1131,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -1162,7 +1162,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -1293,7 +1293,7 @@ class SphericalNFW(EllipticalNFW):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -1316,7 +1316,7 @@ class SphericalNFW(EllipticalNFW):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """

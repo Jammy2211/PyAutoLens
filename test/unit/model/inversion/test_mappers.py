@@ -10,7 +10,7 @@ from test.unit.mock.model.mock_inversion import MockGeometry
 
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
     def compute_squared_separation(coordinate1, coordinate2):
-        """Computes the squared separation of two regular_grid (no square root for efficiency)"""
+        """Computes the squared separation of two grid (no square root for efficiency)"""
         return (coordinate1[0] - coordinate2[0]) ** 2 + (
             coordinate1[1] - coordinate2[1]
         ) ** 2
@@ -799,10 +799,10 @@ class TestVoronoiMapper:
             pixel_centers = np.array(
                 [[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]]
             )
-            sub_grid = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
+            grid = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
 
             sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(
-                sub_grid, pixel_centers
+                grid, pixel_centers
             )
 
             assert sub_to_pix[0] == 0
@@ -816,7 +816,7 @@ class TestVoronoiMapper:
             pixel_centers = np.array(
                 [[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]]
             )
-            sub_grid = np.array(
+            grid = np.array(
                 [
                     [1.1, 1.1],
                     [-1.1, 1.1],
@@ -830,7 +830,7 @@ class TestVoronoiMapper:
             )
 
             sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(
-                sub_grid, pixel_centers
+                grid, pixel_centers
             )
 
             assert sub_to_pix[0] == 0
@@ -855,7 +855,7 @@ class TestVoronoiMapper:
                     [2.0, 2.0],
                 ]
             )
-            sub_grid = np.array(
+            grid = np.array(
                 [
                     [0.1, 0.1],
                     [-0.1, -0.1],
@@ -867,7 +867,7 @@ class TestVoronoiMapper:
             )
 
             sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(
-                sub_grid, pixel_centers
+                grid, pixel_centers
             )
 
             assert sub_to_pix[0] == 4

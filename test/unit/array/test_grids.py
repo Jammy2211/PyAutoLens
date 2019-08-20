@@ -1995,7 +1995,7 @@ class TestInterpolator:
             result[0] = 1
             return result
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(
+        = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
 
@@ -2005,7 +2005,7 @@ class TestInterpolator:
         assert values.shape == (9,)
         assert (values == np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0]])).all()
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(
+        = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
         regular.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
@@ -2033,7 +2033,7 @@ class TestInterpolator:
             result[0, :] = 1
             return result
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(
+        = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
 
@@ -2048,7 +2048,7 @@ class TestInterpolator:
             )
         ).all()
 
-        regular = grids.Grid.from_mask_and_sub_grid_size(
+        = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
         regular.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(

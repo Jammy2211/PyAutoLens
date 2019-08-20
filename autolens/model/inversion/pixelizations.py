@@ -10,10 +10,10 @@ from autolens.model.inversion.util import pixelization_util
 
 class Pixelization(object):
     def __init__(self):
-        """ Abstract base class for a pixelization, which discretizes grid_stack of (y,x) coordinates into pixels.
+        """ Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
         """
 
-    def mapper_from_grid_and_pixelization_grid(self, grid_stack, border):
+    def mapper_from_grid_and_pixelization_grid(self, grid, border):
         raise NotImplementedError(
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
@@ -53,7 +53,7 @@ class Rectangular(Pixelization):
         ):
             """The geometry of a rectangular grid.
 
-            This is used to map grid_stack of (y,x) arc-second coordinates to the pixels on the rectangular grid.
+            This is used to map grid of (y,x) arc-second coordinates to the pixels on the rectangular grid.
 
             Parameters
             -----------
@@ -119,16 +119,16 @@ class Rectangular(Pixelization):
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
-        1) If a border is supplied, relocate all of the grid-stack's regular and sub grid pixels beyond the border.
+        1) If a border is supplied, relocate all of the grid-stack's and sub grid pixels beyond the border.
         2) Determine the rectangular pixelization's geometry, by laying the pixelization over the sub-grid.
         3) Setup the rectangular mapper from the relocated grid-stack and rectangular pixelization.
 
         Parameters
         ----------
-        grid : grids.GridStack
+        grid : grids.Grid
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
         border : grids.GridBorder | None
-            The border of the grid-stack's regular-grid.
+            The border of the grid-stack's grid.
         hyper_image : ndarray
             A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
@@ -157,7 +157,7 @@ class Rectangular(Pixelization):
 
 class Voronoi(Pixelization):
     def __init__(self):
-        """Abstract base class for a Voronoi pixelization, which represents pixels as an irregular grid of Voronoi \
+        """Abstract base class for a Voronoi pixelization, which represents pixels as an irgrid of Voronoi \
          cells which can form any shape, size or tesselation.
 
          The grid-stack's coordinates are paired to Voronoi pixels as the nearest-neighbors of the Voronoi \
@@ -281,7 +281,7 @@ class Voronoi(Pixelization):
 
         Parameters
         ----------
-        grid_stack : grids.GridStack
+        grid : grids.Grid
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : grids.GridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
@@ -343,13 +343,13 @@ class VoronoiMagnification(Voronoi):
         self, grid, cluster_grid=None, hyper_image=None, seed=1
     ):
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
         return grids.PixelizationGrid(
-            arr=sparse_to_regular_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
+            arr=sparse_to_grid.sparse,
+            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
         )
 
 
@@ -385,7 +385,7 @@ class VoronoiBrightnessImage(Voronoi):
             hyper_image=hyper_image
         )
 
-        sparse_to_regular_grid = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
+        sparse_to_grid = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
             total_pixels=self.pixels,
             binned_grid=cluster_grid,
             binned_weight_map=cluster_weight_map,
@@ -393,6 +393,6 @@ class VoronoiBrightnessImage(Voronoi):
         )
 
         return grids.PixelizationGrid(
-            arr=sparse_to_regular_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_regular_grid.mask_1d_index_to_sparse_1d_index,
+            arr=sparse_to_grid.sparse,
+            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
         )

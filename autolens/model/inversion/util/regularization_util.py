@@ -50,7 +50,7 @@ def adaptive_pixel_signals_from_images(
     The pixel signals are hyper in the following ways:
 
     1) Divided by the number of datas_-pixels in the pixel, to ensure all pixels have the same \
-    'relative' signal (i.e. a pixel with 10 regular-pixels doesn't have x2 the signal of one with 5).
+    'relative' signal (i.e. a pixel with 10 pixels doesn't have x2 the signal of one with 5).
 
     2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the \
     regularizations weights are defined identically for any datas_ units or signal-to-noise_map ratio.
@@ -66,7 +66,7 @@ def adaptive_pixel_signals_from_images(
         A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
         low signal regions.
     regular_to_pix : ndarray
-        A 1D array mapping_util every pixel on the regular-grid to a pixel on the pixelization.
+        A 1D array mapping_util every pixel on the grid to a pixel on the pixelization.
     hyper_image : ndarray
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """

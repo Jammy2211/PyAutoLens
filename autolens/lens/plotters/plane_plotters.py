@@ -435,6 +435,73 @@ def plot_deflections_x(
     )
 
 
+def plot_magnification(
+    plane,
+    grid,
+    mask=None,
+    extract_array_from_mask=False,
+    zoom_around_mask=False,
+    as_subplot=False,
+    units="arcsec",
+    figsize=(7, 7),
+    aspect="square",
+    cmap="jet",
+    norm="linear",
+    norm_min=None,
+    norm_max=None,
+    linthresh=0.05,
+    linscale=0.01,
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Plane Magnification",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    output_path=None,
+    output_format="show",
+    output_filename="plane_magnification",
+):
+
+    magnification = plane.magnification_from_grid(
+        grid=grid, return_in_2d=True, return_binned=True
+    )
+
+    array_plotters.plot_array(
+        array=magnification,
+        mask=mask,
+        extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask,
+        as_subplot=as_subplot,
+        units=units,
+        kpc_per_arcsec=plane.kpc_per_arcsec,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+
 def plot_image_and_source_plane_subplot(
     image_plane,
     source_plane,

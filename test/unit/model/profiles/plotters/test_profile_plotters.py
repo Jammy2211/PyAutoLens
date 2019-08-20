@@ -36,7 +36,7 @@ def test__all_quantities_are_output(
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -53,7 +53,7 @@ def test__all_quantities_are_output(
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -70,7 +70,7 @@ def test__all_quantities_are_output(
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -87,7 +87,7 @@ def test__all_quantities_are_output(
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -96,3 +96,20 @@ def test__all_quantities_are_output(
     )
 
     assert profile_plotter_path + "deflections_x.png" in plot_patch.paths
+
+    profile_plotters.plot_magnification(
+        mass_profile=mp_0,
+        grid=sub_grid_7x7,
+        mask=mask_7x7,
+        extract_array_from_mask=True,
+        zoom_around_mask=True,
+        positions=positions_7x7,
+        plot_critical_curves=False,
+        plot_caustics=True,
+        cb_tick_values=[1.0],
+        cb_tick_labels=["1.0"],
+        output_path=profile_plotter_path,
+        output_format="png",
+    )
+
+    assert profile_plotter_path + "magnification.png" in plot_patch.paths
