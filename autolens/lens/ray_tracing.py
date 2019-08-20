@@ -10,8 +10,8 @@ from autolens.model.inversion import inversions as inv
 from autolens.model.galaxy import galaxy as g
 
 from autolens.array.grids import (
-    reshape_returned_array,
-    reshape_returned_array,
+    reshape_array_from_grid,
+    reshape_array_from_grid,
     reshape_returned_grid,
 )
 
@@ -250,7 +250,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def profile_image_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return sum(
             self.profile_images_of_planes_from_grid(
@@ -279,7 +279,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             grid=padded_grid, return_in_2d=True, return_binned=True
         )
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return sum(
             [
@@ -290,7 +290,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             ]
         )
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return sum(
             [
@@ -581,7 +581,7 @@ class AbstractTracerData(AbstractTracerLensing):
     def mappers_of_planes_from_grid(
         self,
         grid,
-        use_inversion_border=True,
+        inversion_uses_border=True,
         preload_pixelization_grids_of_planes=None,
     ):
 
@@ -606,18 +606,18 @@ class AbstractTracerData(AbstractTracerLensing):
                 mapper = plane.mapper_from_grid_and_pixelization_grid(
                     grid=traced_grid,
                     pixelization_grid=traced_pixelization_grid,
-                    use_inversion_border=use_inversion_border,
+                    inversion_uses_border=inversion_uses_border,
                 )
                 mappers_of_planes.append(mapper)
 
         return mappers_of_planes
 
     def inversion_from_grid_image_1d_noise_map_1d_and_convolver(
-        self, grid, image_1d, noise_map_1d, convolver, use_inversion_border=True, preload_pixelization_grids_of_planes=None,
+        self, grid, image_1d, noise_map_1d, convolver, inversion_uses_border=True, preload_pixelization_grids_of_planes=None,
     ):
 
         mappers_of_planes = self.mappers_of_planes_from_grid(
-            grid=grid, use_inversion_border=use_inversion_border,
+            grid=grid, inversion_uses_border=inversion_uses_border,
             preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
         )
 

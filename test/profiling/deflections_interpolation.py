@@ -32,13 +32,13 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
         ccd_data=ccd_data,
         mask=mask,
         sub_grid_size=sub_grid_size,
-        interp_pixel_scale=0.05,
+        pixel_scale_interpolation_grid=0.05,
     )
 
     print("Deflection angle run times for image type " + data_resolution + "\n")
     print("Number of points = " + str(lens_data.grid.sub.shape[0]) + "\n")
 
-    print("Interpolation Pixel Scale = " + str(lens_data.interp_pixel_scale) + "\n")
+    print("Interpolation Pixel Scale = " + str(lens_data.pixel_scale_interpolation_grid) + "\n")
     print(
         "Number of Interpolation Points "
         + str(lens_data.grid.sub.interpolator.interp_grid.shape[0])

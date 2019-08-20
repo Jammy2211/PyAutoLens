@@ -11,7 +11,7 @@ from autolens.model.profiles import geometry_profiles
 
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
 
 
 class PointMass(geometry_profiles.SphericalProfile, mp.MassProfile):
@@ -90,7 +90,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
             self.slope - 1
         )
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -120,7 +120,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         return covnergence_grid
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -653,7 +653,7 @@ class SphericalIsothermal(EllipticalIsothermal):
             centre=centre, axis_ratio=1.0, phi=0.0, einstein_radius=einstein_radius
         )
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -730,7 +730,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         )
         self.einstein_radius = einstein_radius
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -760,7 +760,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
 
         return covnergence_grid
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):

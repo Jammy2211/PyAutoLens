@@ -406,19 +406,19 @@ class TestGrid:
             shape=(4, 4), pixel_scale=3.0
         )
 
-        grid = grid.new_grid_with_interpolator(interp_pixel_scale=0.1)
+        grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.1)
 
         padded_grid = grid.padded_grid_from_psf_shape(psf_shape=(3, 3))
 
         assert padded_grid.interpolator is not None
-        assert padded_grid.interpolator.interp_pixel_scale == 0.1
+        assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1
 
         mask = msk.Mask.unmasked_for_shape_and_pixel_scale(
             shape=(6, 6), pixel_scale=3.0
         )
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=padded_grid, interp_pixel_scale=0.1
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=padded_grid, pixel_scale_interpolation_grid=0.1
         )
 
         assert (padded_grid.interpolator.vtx == interpolator.vtx).all()
@@ -428,19 +428,19 @@ class TestGrid:
 
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
-        grid = grid.new_grid_with_interpolator(interp_pixel_scale=0.1)
+        grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.1)
 
         padded_grid = grid.padded_grid_from_psf_shape(psf_shape=(3, 3))
 
         assert padded_grid.interpolator is not None
-        assert padded_grid.interpolator.interp_pixel_scale == 0.1
+        assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1
 
         mask = msk.Mask.unmasked_for_shape_and_pixel_scale(
             shape=(7, 6), pixel_scale=2.0
         )
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=padded_grid, interp_pixel_scale=0.1
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=padded_grid, pixel_scale_interpolation_grid=0.1
         )
 
         assert (padded_grid.interpolator.vtx == interpolator.vtx).all()
@@ -655,13 +655,13 @@ class TestGrid:
 
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        grid_with_interp = grid.new_grid_with_interpolator(interp_pixel_scale=1.0)
+        grid_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (grid[:, :] == grid_with_interp[:, :]).all()
         assert grid.mask == grid_with_interp.mask
 
-        interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=grid, interp_pixel_scale=1.0
+        interpolator_manual = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=1.0
         )
 
         assert (grid.interpolator.vtx == interpolator_manual.vtx).all()
@@ -1267,13 +1267,13 @@ class TestGridBorder(object):
 
 
 class TestBinnedGrid:
-    def test__from_mask_and_binned_pixel_scale__correct_binned_bin_up_calculated(
+    def test__from_mask_and_pixel_scale_binned_grid__correct_binned_bin_up_calculated(
         self, mask_7x7, grid_7x7
     ):
 
         mask_7x7.pixel_scale = 1.0
-        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-            mask=mask_7x7, binned_pixel_scale=1.0
+        binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            mask=mask_7x7, pixel_scale_binned_grid=1.0
         )
 
         assert (binned_grid == grid_7x7).all()
@@ -1285,8 +1285,8 @@ class TestBinnedGrid:
         ).all()
 
         mask_7x7.pixel_scale = 1.0
-        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-            mask=mask_7x7, binned_pixel_scale=1.9
+        binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            mask=mask_7x7, pixel_scale_binned_grid=1.9
         )
 
         assert binned_grid.bin_up_factor == 1
@@ -1297,8 +1297,8 @@ class TestBinnedGrid:
         ).all()
 
         mask_7x7.pixel_scale = 1.0
-        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-            mask=mask_7x7, binned_pixel_scale=2.0
+        binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            mask=mask_7x7, pixel_scale_binned_grid=2.0
         )
 
         assert binned_grid.bin_up_factor == 2
@@ -1324,35 +1324,12 @@ class TestBinnedGrid:
         ).all()
 
         mask_7x7.pixel_scale = 2.0
-        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-            mask=mask_7x7, binned_pixel_scale=1.0
+        binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            mask=mask_7x7, pixel_scale_binned_grid=1.0
         )
 
         assert binned_grid.bin_up_factor == 1
 
-    def test__from_mask_and_binned_pixel_scale__maximum_binned_pixels_changes_bin_up_factor(
-        self, mask_7x7, grid_7x7
-    ):
-
-        mask_7x7.pixel_scale = 1.0
-
-        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-            mask=mask_7x7, binned_pixel_scale=4.0, inversion_pixels_limit=None
-        )
-
-        assert binned_grid.bin_up_factor == 4
-
-        binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-            mask=mask_7x7, binned_pixel_scale=4.0, inversion_pixels_limit=9
-        )
-
-        assert binned_grid.bin_up_factor == 1
-
-        with pytest.raises(exc.DataException):
-
-            grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-                mask=mask_7x7, binned_pixel_scale=4.0, inversion_pixels_limit=10
-            )
 
 
 class TestPixelizationGrid:
@@ -1813,8 +1790,8 @@ class TestSparseToRegularGrid:
                 pixel_scale=0.5,
             )
 
-            binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-                mask=mask, binned_pixel_scale=mask.pixel_scale
+            binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+                mask=mask, pixel_scale_binned_grid=mask.pixel_scale
             )
 
             binned_weight_map = np.ones(mask.pixels_in_mask)
@@ -1863,8 +1840,8 @@ class TestSparseToRegularGrid:
                 pixel_scale=0.5,
             )
 
-            binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-                mask=mask, binned_pixel_scale=mask.pixel_scale
+            binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+                mask=mask, pixel_scale_binned_grid=mask.pixel_scale
             )
 
             binned_weight_map = np.ones(mask.pixels_in_mask)
@@ -1888,7 +1865,7 @@ class TestSparseToRegularGrid:
                 == np.array([5, 1, 0, 0, 5, 1, 1, 4, 3, 6, 7, 4, 3, 6, 2, 2])
             ).all()
 
-        def test__binned_weight_map_all_ones__binned_pixel_scale_leads_to_binning_up_by_factor_2(
+        def test__binned_weight_map_all_ones__pixel_scale_binned_grid_leads_to_binning_up_by_factor_2(
             self
         ):
 
@@ -1896,8 +1873,8 @@ class TestSparseToRegularGrid:
                 array=np.full(fill_value=False, shape=(8, 8)), pixel_scale=0.5
             )
 
-            binned_grid = grids.BinnedGrid.from_mask_and_binned_pixel_scale(
-                mask=mask, binned_pixel_scale=2.0 * mask.pixel_scale
+            binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+                mask=mask, pixel_scale_binned_grid=2.0 * mask.pixel_scale
             )
 
             binned_weight_map = np.ones(binned_grid.shape[0])
@@ -2031,8 +2008,8 @@ class TestInterpolator:
         regular = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
-        regular.interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            regular.mask, regular, interp_pixel_scale=0.5
+        regular.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            regular.mask, regular, pixel_scale_interpolation_grid=0.5
         )
         interp_values = func(None, regular)
         assert interp_values.ndim == 1
@@ -2074,8 +2051,8 @@ class TestInterpolator:
         regular = grids.Grid.from_mask_and_sub_grid_size(
             mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
-        regular.interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            regular.mask, regular, interp_pixel_scale=0.5
+        regular.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            regular.mask, regular, pixel_scale_interpolation_grid=0.5
         )
 
         interp_values = func(None, regular)
@@ -2118,8 +2095,8 @@ class TestInterpolator:
 
         true_deflections = isothermal.deflections_from_grid(grid=grid)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=grid, interp_pixel_scale=1.0
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=1.0
         )
 
         interp_deflections_values = isothermal.deflections_from_grid(
@@ -2154,8 +2131,8 @@ class TestInterpolator:
 
         true_deflections = isothermal.deflections_from_grid(grid=grid)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=grid, interp_pixel_scale=1.0
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=1.0
         )
 
         interp_deflections_values = isothermal.deflections_from_grid(
@@ -2190,8 +2167,8 @@ class TestInterpolator:
 
         true_deflections = isothermal.deflections_from_grid(grid=grid)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=grid, interp_pixel_scale=0.2
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.2
         )
 
         interp_deflections_values = isothermal.deflections_from_grid(
@@ -2208,8 +2185,8 @@ class TestInterpolator:
         assert np.max(true_deflections[:, 0] - interpolated_deflections_y) < 0.001
         assert np.max(true_deflections[:, 1] - interpolated_deflections_x) < 0.001
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=grid, interp_pixel_scale=0.5
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
         interp_deflections_values = isothermal.deflections_from_grid(
@@ -2226,8 +2203,8 @@ class TestInterpolator:
         assert np.max(true_deflections[:, 0] - interpolated_deflections_y) < 0.01
         assert np.max(true_deflections[:, 1] - interpolated_deflections_x) < 0.01
 
-        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-            mask=mask, grid=grid, interp_pixel_scale=1.1
+        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+            mask=mask, grid=grid, pixel_scale_interpolation_grid=1.1
         )
 
         interp_deflections_values = isothermal.deflections_from_grid(
@@ -2250,7 +2227,7 @@ class MockProfile(object):
 
         self.values = values
 
-    @grids.reshape_returned_array
+    @grids.reshape_array_from_grid
     def array_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return self.values
 

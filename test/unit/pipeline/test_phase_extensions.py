@@ -54,7 +54,6 @@ def make_result(lens_data_7x7, instance):
         analysis=phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=cosmo.Planck15,
-            positions_threshold=1.0,
             image_path="",
         ),
         optimizer=None,
@@ -299,7 +298,7 @@ class TestImagePassing(object):
             ),
             mask_function=mask_function_7x7,
             inversion_pixel_limit=5,
-            cluster_pixel_scale=None,
+            pixel_scale_binned_cluster_grid=None,
             optimizer_class=mock_pipeline.MockNLO,
         )
 
@@ -326,7 +325,7 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            cluster_pixel_scale=ccd_data_7x7.pixel_scale,
+            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale,
             phase_name="test_phase",
         )
 
@@ -361,7 +360,7 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            cluster_pixel_scale=ccd_data_7x7.pixel_scale * 2.0,
+            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale * 2.0,
             phase_name="test_phase",
         )
 
@@ -405,7 +404,7 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            cluster_pixel_scale=ccd_data_7x7.pixel_scale * 2.0,
+            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale * 2.0,
             phase_name="test_phase",
         )
 
@@ -436,7 +435,6 @@ class TestImagePassing(object):
         analysis = phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=None,
-            positions_threshold=None,
             results=results_collection,
             image_path="",
         )
@@ -472,7 +470,6 @@ class TestImagePassing(object):
         analysis = phase_imaging.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=cosmo.Planck15,
-            positions_threshold=None,
             results=results_collection,
             image_path="",
         )

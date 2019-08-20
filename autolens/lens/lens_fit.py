@@ -5,7 +5,7 @@ from autolens import exc
 from autolens.lens.util import lens_fit_util as util
 from autolens.model.galaxy import galaxy as g
 
-from autolens.array.grids import reshape_data_array
+from autolens.array.grids import reshape_array
 
 
 class LensDataFit(af.DataFit1D):
@@ -39,31 +39,31 @@ class LensDataFit(af.DataFit1D):
         else:
             return self.mask_1d
 
-    @reshape_data_array
+    @reshape_array
     def image(self):
         return self.image_1d
 
-    @reshape_data_array
+    @reshape_array
     def noise_map(self):
         return self.noise_map_1d
 
-    @reshape_data_array
+    @reshape_array
     def signal_to_noise_map(self):
         return self.signal_to_noise_map_1d
 
-    @reshape_data_array
+    @reshape_array
     def model_image(self):
         return self.model_image_1d
 
-    @reshape_data_array
+    @reshape_array
     def residual_map(self):
         return self.residual_map_1d
 
-    @reshape_data_array
+    @reshape_array
     def normalized_residual_map(self):
         return self.normalized_residual_map_1d
 
-    @reshape_data_array
+    @reshape_array
     def chi_squared_map(self):
         return self.chi_squared_map_1d
 
@@ -315,7 +315,7 @@ class LensInversionFit(InversionFit):
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
             convolver=lens_data.convolver,
-            use_inversion_border=lens_data.use_inversion_border,
+            inversion_uses_border=lens_data.inversion_uses_border,
             preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
         )
 
@@ -397,7 +397,7 @@ class LensProfileInversionFit(InversionFit):
             image_1d=self.profile_subtracted_image_1d,
             noise_map_1d=noise_map_1d,
             convolver=lens_data.convolver,
-            use_inversion_border=lens_data.use_inversion_border,
+            inversion_uses_border=lens_data.inversion_uses_border,
             preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
         )
 
@@ -429,11 +429,11 @@ class LensProfileInversionFit(InversionFit):
         )
         return galaxy_image_dict
 
-    @reshape_data_array
+    @reshape_array
     def blurred_profile_image(self, return_in_2d=True):
         return self.blurred_profile_image_1d
 
-    @reshape_data_array
+    @reshape_array
     def profile_subtracted_image(self, return_in_2d=True):
         return self.profile_subtracted_image_1d
 

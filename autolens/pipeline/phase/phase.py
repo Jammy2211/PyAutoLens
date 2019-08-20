@@ -472,7 +472,7 @@ class GalaxyFitPhase(AbstractPhase):
         use_deflections=False,
         optimizer_class=af.MultiNest,
         sub_grid_size=2,
-        interp_pixel_scale=None,
+        pixel_scale_interpolation_grid=None,
         mask_function=None,
         cosmology=cosmo.Planck15,
     ):
@@ -500,7 +500,7 @@ class GalaxyFitPhase(AbstractPhase):
         self.use_deflections = use_deflections
         self.galaxies = galaxies
         self.sub_grid_size = sub_grid_size
-        self.interp_pixel_scale = interp_pixel_scale
+        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
         self.mask_function = mask_function
 
     def run(self, galaxy_data, results=None, mask=None):
@@ -565,7 +565,7 @@ class GalaxyFitPhase(AbstractPhase):
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 sub_grid_size=self.sub_grid_size,
-                interp_pixel_scale=self.interp_pixel_scale,
+                pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
                 use_image=self.use_intensities,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
@@ -583,7 +583,7 @@ class GalaxyFitPhase(AbstractPhase):
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 sub_grid_size=self.sub_grid_size,
-                interp_pixel_scale=self.interp_pixel_scale,
+                pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
                 use_image=self.use_intensities,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
@@ -595,7 +595,7 @@ class GalaxyFitPhase(AbstractPhase):
                 galaxy_data=galaxy_data[1],
                 mask=mask,
                 sub_grid_size=self.sub_grid_size,
-                interp_pixel_scale=self.interp_pixel_scale,
+                pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
                 use_image=self.use_intensities,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,

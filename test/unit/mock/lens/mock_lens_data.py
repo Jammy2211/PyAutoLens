@@ -1,4 +1,4 @@
-from autolens.array.grids import reshape_data_array
+from autolens.array.grids import reshape_array
 
 
 class MockLensData(object):
@@ -32,20 +32,21 @@ class MockLensData(object):
         self.hyper_noise_map_max = None
 
         self.uses_cluster_inversion = False
-        self.use_inversion_border = True
+        self.inversion_pixel_limit = 1000
+        self.inversion_uses_border = True
 
         self.preload_blurring_grid = blurring_grid
         self.preload_pixelization_grids_of_planes = None
 
-    @reshape_data_array
+    @reshape_array
     def image(self, return_in_2d=True):
         return self.image_1d
 
-    @reshape_data_array
+    @reshape_array
     def noise_map(self, return_in_2d=True):
         return self.noise_map_1d
 
-    @reshape_data_array
+    @reshape_array
     def signal_to_noise_map(self, return_in_2d=True):
         return self.signal_to_noise_map_1d
 

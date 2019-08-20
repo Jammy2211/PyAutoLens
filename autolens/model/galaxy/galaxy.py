@@ -13,7 +13,7 @@ from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
 
 
 def is_light_profile(obj):
@@ -157,7 +157,7 @@ class Galaxy(af.ModelObject):
             )
         )
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def profile_image_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
@@ -268,7 +268,7 @@ class Galaxy(af.ModelObject):
             )
         return None
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """Compute the summed convergence of the galaxy's mass profiles using a grid \
         of Cartesian (y,x) coordinates.
@@ -302,7 +302,7 @@ class Galaxy(af.ModelObject):
             )
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
         """Compute the summed gravitational potential of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
@@ -374,7 +374,7 @@ class Galaxy(af.ModelObject):
 
         return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def lensing_jacobian_a11_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
@@ -385,7 +385,7 @@ class Galaxy(af.ModelObject):
 
         return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def lensing_jacobian_a12_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
@@ -396,7 +396,7 @@ class Galaxy(af.ModelObject):
 
         return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def lensing_jacobian_a21_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
@@ -407,7 +407,7 @@ class Galaxy(af.ModelObject):
 
         return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def lensing_jacobian_a22_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
@@ -438,7 +438,7 @@ class Galaxy(af.ModelObject):
 
         return np.array([[a11, a12], [a21, a22]])
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def convergence_via_jacobian_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
@@ -451,7 +451,7 @@ class Galaxy(af.ModelObject):
 
         return convergence
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def shear_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         jacobian = self.lensing_jacobian_from_grid(
@@ -463,7 +463,7 @@ class Galaxy(af.ModelObject):
 
         return (gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def tangential_eigen_value_from_grid(
         self, grid, return_in_2d=True, return_binned=True
     ):
@@ -478,7 +478,7 @@ class Galaxy(af.ModelObject):
 
         return 1 - convergence - shear
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def radial_eigen_value_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         convergence = self.convergence_via_jacobian_from_grid(
@@ -491,7 +491,7 @@ class Galaxy(af.ModelObject):
 
         return 1 - convergence + shear
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     def magnification_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         jacobian = self.lensing_jacobian_from_grid(

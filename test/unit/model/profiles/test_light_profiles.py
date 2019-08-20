@@ -8,6 +8,7 @@ import scipy.special
 
 import autofit as af
 from autolens import dimensions as dim
+from autolens.data.instrument import abstract_data
 from autolens.array import grids
 from autolens.model.profiles import light_profiles as lp
 

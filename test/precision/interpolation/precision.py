@@ -40,8 +40,8 @@ for data_resolution in ["HST_Up"]:
     print("Deflection angle run times for image type " + data_resolution + "\n")
     print("Number of points = " + str(lens_data.grid.regular.shape[0]) + "\n")
 
-    interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
-        mask=lens_data.mask_2d, grid=lens_data.grid.sub, interp_pixel_scale=0.05
+    interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        mask=lens_data.mask_2d, grid=lens_data.grid.sub, pixel_scale_interpolation_grid=0.05
     )
 
     print(
