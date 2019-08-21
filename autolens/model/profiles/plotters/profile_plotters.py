@@ -46,7 +46,7 @@ def plot_image(
     -----------
     light_profile : model.profiles.light_profiles.LightProfile
         The light profile whose image are plotted.
-    grid : ndarray or hyper_galaxy.array.grid_stacks.RegularGrid
+    grid : ndarray or hyper_galaxy.array.grid_stacks.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     image = light_profile.profile_image_from_grid(
@@ -200,7 +200,7 @@ def plot_convergence(
     -----------
     mass_profile : model.profiles.mass_profiles.MassProfile
         The mass profile whose convergence is plotted.
-    grid : ndarray or hyper_galaxy.array.grid_stacks.RegularGrid
+    grid : ndarray or hyper_galaxy.array.grid_stacks.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
 
@@ -297,7 +297,7 @@ def plot_potential(
     -----------
     mass_profile : model.profiles.mass_profiles.MassProfile
         The mass profile whose potential is plotted.
-    grid : ndarray or hyper_galaxy.array.grid_stacks.RegularGrid
+    grid : ndarray or hyper_galaxy.array.grid_stacks.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     potential = mass_profile.potential_from_grid(
@@ -393,11 +393,13 @@ def plot_deflections_y(
     -----------
     mass_profile : model.profiles.mass_profiles.MassProfile
         The mass profile whose y deflecton angles are plotted.
-    grid : ndarray or hyper_galaxy.array.grid_stacks.RegularGrid
+    grid : ndarray or hyper_galaxy.array.grid_stacks.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
 
-    deflections = mass_profile.deflections_from_grid(grid)
+    deflections = mass_profile.deflections_from_grid(
+        grid, return_in_2d=False, return_binned=True
+    )
     deflections_y = grid.scaled_array_2d_from_array_1d(deflections[:, 0])
 
     lines = plotter_util.get_critical_curve_and_caustic(
@@ -489,10 +491,12 @@ def plot_deflections_x(
      -----------
      mass_profile : model.profiles.mass_profiles.MassProfile
          The mass profile whose x deflecton angles are plotted.
-     grid : ndarray or hyper_galaxy.array.grid_stacks.RegularGrid
+     grid : ndarray or hyper_galaxy.array.grid_stacks.Grid
          The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
      """
-    deflections = mass_profile.deflections_from_grid(grid)
+    deflections = mass_profile.deflections_from_grid(
+        grid, return_in_2d=False, return_binned=True
+    )
     deflections_x = grid.scaled_array_2d_from_array_1d(deflections[:, 1])
 
     lines = plotter_util.get_critical_curve_and_caustic(
@@ -584,7 +588,7 @@ def plot_magnification(
     -----------
     mass_profile : model.profiles.mass_profiles.MassProfile
         The mass profile whose magnification is plotted.
-    grid : ndarray or hyper_galaxy.array.grid_stacks.RegularGrid
+    grid : ndarray or hyper_galaxy.array.grid_stacks.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     magnification = mass_profile.magnification_from_grid(

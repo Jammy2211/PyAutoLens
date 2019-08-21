@@ -601,7 +601,7 @@ def binned_masked_array_1d_to_masked_array_1d_from_mask_2d_and_bin_up_factor(
     return binned_masked_array_1d_to_masked_array_1d
 
 
-# @decorator_util.jit()
+@decorator_util.jit()
 def binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
     mask_2d, bin_up_factor
 ):

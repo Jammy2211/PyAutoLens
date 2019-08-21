@@ -41,9 +41,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
         shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=1
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies(
-        galaxies=galaxies, image_plane_grid_stack=grid
-    )
+    tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 

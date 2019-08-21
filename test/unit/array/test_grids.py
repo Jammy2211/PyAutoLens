@@ -655,7 +655,9 @@ class TestGrid:
 
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        grid_with_interp = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
+        grid_with_interp = grid.new_grid_with_interpolator(
+            pixel_scale_interpolation_grid=1.0
+        )
 
         assert (grid[:, :] == grid_with_interp[:, :]).all()
         assert grid.mask == grid_with_interp.mask
@@ -1331,7 +1333,6 @@ class TestBinnedGrid:
         assert binned_grid.bin_up_factor == 1
 
 
-
 class TestPixelizationGrid:
     def test_pix_grid__attributes(self):
 
@@ -1357,7 +1358,7 @@ class TestPixelizationGrid:
 
         grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
@@ -1372,7 +1373,7 @@ class TestPixelizationGrid:
         ).all()
 
 
-class TestSparseToRegularGrid:
+class TestSparseToGrid:
     class TestUnmaskedShape:
         def test__properties_consistent_with_mapping_util(self):
 
@@ -1385,7 +1386,7 @@ class TestSparseToRegularGrid:
 
             grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(10, 10), grid=grid
             )
 
@@ -1459,7 +1460,7 @@ class TestSparseToRegularGrid:
 
             grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
@@ -1490,7 +1491,7 @@ class TestSparseToRegularGrid:
 
             grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(4, 3), grid=grid
             )
 
@@ -1529,7 +1530,7 @@ class TestSparseToRegularGrid:
 
             grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 4), grid=grid
             )
 
@@ -1573,7 +1574,7 @@ class TestSparseToRegularGrid:
             # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
             # the central (3x3) pixels only.
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
@@ -1608,7 +1609,7 @@ class TestSparseToRegularGrid:
             # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
             # the central (3x3) pixels only.
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
@@ -1629,7 +1630,7 @@ class TestSparseToRegularGrid:
 
             grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask_7x7)
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 grid=grid, unmasked_sparse_shape=(3, 3)
             )
 
@@ -1670,7 +1671,7 @@ class TestSparseToRegularGrid:
 
             grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(4, 3), grid=grid
             )
 
@@ -1709,7 +1710,7 @@ class TestSparseToRegularGrid:
 
             grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 4), grid=grid
             )
 
@@ -1748,7 +1749,7 @@ class TestSparseToRegularGrid:
 
             grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
@@ -1796,7 +1797,7 @@ class TestSparseToRegularGrid:
 
             binned_weight_map = np.ones(mask.pixels_in_mask)
 
-            sparse_to_grid_weight = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
+            sparse_to_grid_weight = grids.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
                 total_pixels=8,
                 binned_grid=binned_grid,
                 binned_weight_map=binned_weight_map,
@@ -1847,7 +1848,7 @@ class TestSparseToRegularGrid:
             binned_weight_map = np.ones(mask.pixels_in_mask)
             binned_weight_map[0:15] = 0.00000001
 
-            sparse_to_grid_weight = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
+            sparse_to_grid_weight = grids.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
                 total_pixels=8,
                 binned_grid=binned_grid,
                 binned_weight_map=binned_weight_map,
@@ -1879,7 +1880,7 @@ class TestSparseToRegularGrid:
 
             binned_weight_map = np.ones(binned_grid.shape[0])
 
-            sparse_to_grid_weight = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
+            sparse_to_grid_weight = grids.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
                 total_pixels=8,
                 binned_grid=binned_grid,
                 binned_weight_map=binned_weight_map,

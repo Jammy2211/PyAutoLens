@@ -166,7 +166,7 @@ class TestGalaxyFit:
             )
 
     class TestCompareToManual:
-        def test__intensities(self, gal_data_7x7, mask_7x7):
+        def test__image(self, gal_data_7x7, mask_7x7):
             galaxy_fit_data = gd.GalaxyFitData(
                 galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_image=True
             )
@@ -180,11 +180,10 @@ class TestGalaxyFit:
 
             assert fit.model_galaxies == [galaxy]
 
-            model_data_1d = galaxy.profile_image_from_grid(grid=galaxy_fit_data.grid)
-            model_data_1d = galaxy_fit_data.grid.array_1d_binned_from_sub_array_1d(
-                sub_array_1d=model_data_1d
+            model_data_2d = galaxy.profile_image_from_grid(
+                grid=galaxy_fit_data.grid, return_in_2d=True, return_binned=True
             )
-            model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
+
             residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=galaxy_fit_data.image(return_in_2d=True),
                 mask=galaxy_fit_data.mask_2d,
@@ -238,11 +237,9 @@ class TestGalaxyFit:
 
             assert fit.model_galaxies == [galaxy]
 
-            model_data_1d = galaxy.convergence_from_grid(grid=galaxy_fit_data.grid)
-            model_data_1d = galaxy_fit_data.grid.array_1d_binned_from_sub_array_1d(
-                sub_array_1d=model_data_1d
+            model_data_2d = galaxy.convergence_from_grid(
+                grid=galaxy_fit_data.grid, return_in_2d=True, return_binned=True
             )
-            model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
 
             residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=galaxy_fit_data.image(return_in_2d=True),
@@ -296,11 +293,9 @@ class TestGalaxyFit:
 
             assert fit.model_galaxies == [galaxy]
 
-            model_data_1d = galaxy.potential_from_grid(grid=galaxy_fit_data.grid)
-            model_data_1d = galaxy_fit_data.grid.array_1d_binned_from_sub_array_1d(
-                sub_array_1d=model_data_1d
+            model_data_2d = galaxy.potential_from_grid(
+                grid=galaxy_fit_data.grid, return_in_2d=True, return_binned=True
             )
-            model_data_2d = galaxy_fit_data.map_to_scaled_array(array_1d=model_data_1d)
 
             residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
                 data=galaxy_fit_data.image(return_in_2d=True),

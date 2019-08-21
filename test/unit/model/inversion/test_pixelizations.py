@@ -524,7 +524,7 @@ class TestVoronoiBrightness:
             hyper_image=hyper_image
         )
 
-        sparse_to_grid = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
+        sparse_to_grid = grids.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
             total_pixels=pix.pixels,
             binned_grid=lens_data_7x7.grid.binned,
             binned_weight_map=cluster_weight_map,

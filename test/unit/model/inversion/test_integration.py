@@ -388,7 +388,7 @@ class TestVoronoiMagnification:
         grid = grids.Grid(arr=grid, mask=mask)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
-        sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
 
@@ -465,7 +465,7 @@ class TestVoronoiMagnification:
         grid = grids.Grid(arr=grid, mask=mask)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
-        sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
 
@@ -553,7 +553,7 @@ class TestVoronoiMagnification:
         grid = grids.Grid(arr=grid, mask=mask, sub_grid_size=2)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
-        sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
 
@@ -624,7 +624,7 @@ class TestVoronoiMagnification:
         grid = grids.Grid(arr=grid, mask=mask, sub_grid_size=1)
 
         pix = pixelizations.VoronoiMagnification(shape=(3, 3))
-        sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
 

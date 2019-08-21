@@ -647,7 +647,6 @@ def border_pixels_from_mask(mask):
     return border_pixels
 
 
-# @decorator_util.jit()
 def sub_border_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
 

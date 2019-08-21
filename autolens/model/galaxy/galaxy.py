@@ -159,12 +159,12 @@ class Galaxy(af.ModelObject):
 
     @reshape_array_from_grid
     def profile_image_from_grid(self, grid, return_in_2d=True, return_binned=True):
-        """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
+        """Calculate the summed image of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
         
         If the galaxy has no light profiles, a grid of zeros is returned.
         
-        See *profiles.light_profiles* for a description of how light profile intensities are computed.
+        See *profiles.light_profiles* for a description of how light profile image are computed.
 
         Parameters
         ----------

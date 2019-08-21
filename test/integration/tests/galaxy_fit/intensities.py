@@ -11,7 +11,7 @@ from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
 
 test_type = "galaxy_fit"
-test_name = "intensities"
+test_name = "image"
 
 test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + "output/"
@@ -35,22 +35,20 @@ def galaxy_fit_phase():
         ),
     )
 
-    intensities = galaxy.profile_image_from_grid(
+    image = galaxy.profile_image_from_grid(
         galaxies=[galaxy], grid=grid.sub, return_in_2d=True
     )
 
     noise_map = scaled_array.ScaledSquarePixelArray(
-        array=np.ones(intensities.shape), pixel_scale=pixel_scale
+        array=np.ones(image.shape), pixel_scale=pixel_scale
     )
 
-    data = gd.GalaxyData(
-        image=intensities, noise_map=noise_map, pixel_scale=pixel_scale
-    )
+    data = gd.GalaxyData(image=image, noise_map=noise_map, pixel_scale=pixel_scale)
 
     phase1 = phase.GalaxyFitPhase(
         phase_name=test_name + "/",
         galaxies=dict(gal=gm.GalaxyModel(redshift=0.5, light=lp.SphericalExponential)),
-        use_intensities=True,
+        use_image=True,
         sub_grid_size=4,
         optimizer_class=af.MultiNest,
     )

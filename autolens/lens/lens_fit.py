@@ -75,7 +75,7 @@ class LensDataFit(af.DataFit1D):
     def for_data_and_tracer(
         cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
-        """Fit lens instrument with a model tracer, automatically determining the type of fit based on the \
+        """Fit lens data with a model tracer, automatically determining the type of fit based on the \
         properties of the galaxies in the tracer.
 
         Parameters
@@ -119,7 +119,7 @@ class LensTracerFit(LensDataFit):
         self, lens_data, image_1d, noise_map_1d, mask_1d, model_image_1d, tracer
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens instrument's hyper_galaxy.
+        the lens data's hyper_galaxy.
 
         Parameters
         -----------
@@ -189,8 +189,8 @@ class LensProfileFit(LensTracerFit):
     def __init__(
         self, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
-        """ An  lens profile fitter, which generates the image-plane image of all galaxies (with light \
-        profiles) in the tracer and blurs it with the lens instrument's PSF.
+        """ An  lens profile fitter, which generates the image of all galaxies (with light \
+        profiles) in the tracer and blurs it with the lens data's PSF.
 
         If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
         without the mask.
@@ -287,7 +287,7 @@ class LensInversionFit(InversionFit):
     def __init__(
         self, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
-        """ An  lens inversion fitter, which fits the lens instrument an inversion using the mapper(s) and \
+        """ An  lens inversion fitter, which fits the lens data an inversion using the mapper(s) and \
         regularization(s) in the galaxies of the tracer.
 
         This inversion use's the lens-image, its PSF and an input noise-map.

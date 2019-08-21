@@ -51,7 +51,6 @@ def sub_mask_1d_index_to_mask_1d_index_from_mask(mask, sub_grid_size):
     return sub_mask_1d_index_to_mask_1d_index
 
 
-# @decorator_util.jit()
 def mask_1d_index_to_sub_mask_1d_indexes_from_mask(mask, sub_grid_size):
     """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on \
     this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.

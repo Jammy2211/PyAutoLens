@@ -27,7 +27,7 @@ class MockResults(object):
         constant=None,
         analysis=None,
         optimizer=None,
-        pixelization=None
+        pixelization=None,
     ):
         self.model_image = model_image
         self.unmasked_model_image = model_image
@@ -207,6 +207,7 @@ class MockResults(object):
 
         return hyper_model_image_1d
 
+
 class MockResult:
     def __init__(self, constant, figure_of_merit, variable=None):
         self.constant = constant
@@ -217,8 +218,8 @@ class MockResult:
         self.mask_2d = None
         self.positions = None
 
-class MockHyperCombinedPhase(object):
 
+class MockHyperCombinedPhase(object):
     def __init__(self):
 
         pass

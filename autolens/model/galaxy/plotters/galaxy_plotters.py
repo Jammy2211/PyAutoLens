@@ -9,13 +9,15 @@ from autolens.plotters import plotter_util, array_plotters
 from autolens.model.profiles.plotters import profile_plotters
 
 
-def plot_image(
+def plot_profile_image(
     galaxy,
     grid,
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
     positions=None,
+    plot_critical_curves=False,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -32,7 +34,7 @@ def plot_image(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Galaxy Image",
+    title="Galaxy Profile Image",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
@@ -42,7 +44,7 @@ def plot_image(
     grid_pointsize=1,
     output_path=None,
     output_format="show",
-    output_filename="galaxy_image",
+    output_filename="galaxy_profile_image",
 ):
     """Plot the image (e.g. the datas) of a galaxy, on a grid of (y,x) coordinates.
 
@@ -52,12 +54,23 @@ def plot_image(
     -----------
     galaxy : model.galaxy.galaxy.Galaxy
         The galaxy whose image are plotted.
-    grid : ndarray or datas.array.grid_stacks.RegularGrid
+    grid : ndarray or datas.array.grid_stacks.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     image = galaxy.profile_image_from_grid(
         grid=grid, return_in_2d=True, return_binned=True
     )
+
+    if galaxy.has_mass_profile:
+
+        lines = plotter_util.get_critical_curve_and_caustic(
+            obj=galaxy,
+            grid=grid,
+            plot_critical_curve=plot_critical_curves,
+            plot_caustics=plot_caustics,
+        )
+    else:
+        lines = None
 
     array_plotters.plot_array(
         array=image,
@@ -65,6 +78,7 @@ def plot_image(
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
         positions=positions,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -140,7 +154,7 @@ def plot_convergence(
     -----------
     galaxy : model.galaxy.galaxy.Galaxy
         The galaxy whose convergence is plotted.
-    grid : ndarray or datas.array.grid_stacks.RegularGrid
+    grid : ndarray or datas.array.grid_stacks.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     convergence = galaxy.convergence_from_grid(
@@ -236,7 +250,7 @@ def plot_potential(
      -----------
     galaxy : model.galaxy.galaxy.Galaxy
          The galaxy whose potential is plotted.
-    grid : ndarray or datas.array.grid_stacks.RegularGrid
+    grid : ndarray or datas.array.grid_stacks.Grid
          The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
      """
     potential = galaxy.potential_from_grid(
@@ -332,10 +346,12 @@ def plot_deflections_y(
     -----------
     galaxy : model.galaxy.galaxy.Galaxy
         The galaxy whose y deflecton angles are plotted.
-    grid : ndarray or datas.array.grid_stacks.RegularGrid
+    grid : ndarray or datas.array.grid_stacks.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    deflections = galaxy.deflections_from_grid(grid)
+    deflections = galaxy.deflections_from_grid(
+        grid, return_in_2d=False, return_binned=True
+    )
     deflections_y = grid.scaled_array_2d_from_array_1d(deflections[:, 0])
 
     lines = plotter_util.get_critical_curve_and_caustic(
@@ -427,10 +443,12 @@ def plot_deflections_x(
      -----------
     galaxy : model.galaxy.galaxy.Galaxy
          The galaxy whose x deflecton angles are plotted.
-     grid : ndarray or datas.array.grid_stacks.RegularGrid
+     grid : ndarray or datas.array.grid_stacks.Grid
          The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
      """
-    deflections = galaxy.deflections_from_grid(grid)
+    deflections = galaxy.deflections_from_grid(
+        grid, return_in_2d=False, return_binned=True
+    )
     deflections_x = grid.scaled_array_2d_from_array_1d(deflections[:, 1])
 
     lines = plotter_util.get_critical_curve_and_caustic(
@@ -522,7 +540,7 @@ def plot_magnification(
      -----------
     galaxy : model.galaxy.galaxy.Galaxy
          The galaxy whose magnification is plotted.
-    grid : ndarray or datas.array.grid_stacks.RegularGrid
+    grid : ndarray or datas.array.grid_stacks.Grid
          The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
      """
     magnification = galaxy.magnification_from_grid(

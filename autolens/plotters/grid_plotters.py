@@ -16,6 +16,7 @@ def plot_grid(
     colors=None,
     axis_limits=None,
     points=None,
+    lines=None,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -42,7 +43,7 @@ def plot_grid(
 
     Parameters
     -----------
-    grid : instrument.array.grids.RegularGrid
+    grid : instrument.array.grids.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
     axis_limits : []
         The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
@@ -122,6 +123,7 @@ def plot_grid(
         symmetric_around_centre=symmetric_around_centre,
     )
     plot_points(grid=grid, points=points, pointcolor=pointcolor)
+    plotter_util.plot_lines(line_lists=lines)
 
     plt.tick_params(labelsize=xyticksize)
     plotter_util.output_figure(
@@ -140,7 +142,7 @@ def convert_grid_units(grid_arcsec, units, kpc_per_arcsec):
 
     Parameters
     -----------
-    grid_arcsec : ndarray or instrument.array.grids.RegularGrid
+    grid_arcsec : ndarray or instrument.array.grids.Grid
         The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -219,7 +221,7 @@ def plot_points(grid, points, pointcolor):
 
     Parameters
     -----------
-    grid : ndarray or instrument.array.grids.RegularGrid
+    grid : ndarray or instrument.array.grids.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
     points : []
         A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \

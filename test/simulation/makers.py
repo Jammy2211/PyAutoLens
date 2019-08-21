@@ -34,19 +34,17 @@ def simulate_image_from_galaxies_and_output_to_fits(
         shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale
     )
 
-    # Setup the image-plane grid stack of the CCD array which will be used for generating the image-plane image of the
+    # Setup the image-plane grid stack of the CCD array which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
-    image_plane_grid_stack = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+    image_plane_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=shape, pixel_scale=pixel_scale, sub_grid_size=sub_grid_size
     )
 
-    # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD instrument.
-    tracer = ray_tracing.Tracer.from_galaxies(
-        galaxies=galaxies, image_plane_grid_stack=image_plane_grid_stack
-    )
+    # Use the input galaxies to setup a tracer, which will generate the image for the simulated CCD instrument.
+    tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
 
-    # Simulate the CCD instrument, remembering that we use a special image-plane image which ensures edge-effects don't
+    # Simulate the CCD instrument, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.g. the PSF convolution).
     ccd_data = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
@@ -57,7 +55,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         add_noise=True,
     )
 
-    # Now, lets output this simulated ccd-instrument to the test/data folder.
+    # Now, lets output this simulated ccd-data to the test/data folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(

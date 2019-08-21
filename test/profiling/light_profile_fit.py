@@ -70,9 +70,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     start = time.time()
     for i in range(repeats):
-        tracer = ray_tracing.Tracer.from_galaxies(
-            galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid
-        )
+        tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
     diff = time.time() - start
     print("Time to Setup Tracer = {}".format(diff / repeats))
 

@@ -16,6 +16,8 @@ def plot_profile_image(
     zoom_around_mask=False,
     positions=None,
     plot_grid=False,
+    plot_critical_curves=False,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -48,6 +50,16 @@ def plot_profile_image(
         grid=grid, return_in_2d=True, return_binned=True
     )
 
+    if plane.has_mass_profile:
+        lines = plotter_util.get_critical_curve_and_caustic(
+            obj=plane,
+            grid=grid,
+            plot_critical_curve=plot_critical_curves,
+            plot_caustics=plot_caustics,
+        )
+    else:
+        lines = None
+
     if not plot_grid:
         grid = None
 
@@ -58,6 +70,7 @@ def plot_profile_image(
         zoom_around_mask=zoom_around_mask,
         positions=positions,
         grid=grid,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=plane.kpc_per_arcsec,
@@ -94,6 +107,7 @@ def plot_plane_image(
     plot_origin=True,
     positions=None,
     plot_grid=True,
+    lines=None,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -136,6 +150,7 @@ def plot_plane_image(
         origin=origin,
         positions=positions,
         grid=grid,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=plane.kpc_per_arcsec,
@@ -171,6 +186,8 @@ def plot_convergence(
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
+    plot_critical_curves=False,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -200,11 +217,19 @@ def plot_convergence(
         grid=grid, return_in_2d=True, return_binned=True
     )
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=plane,
+        grid=grid,
+        plot_critical_curve=plot_critical_curves,
+        plot_caustics=plot_caustics,
+    )
+
     array_plotters.plot_array(
         array=convergence,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=plane.kpc_per_arcsec,
@@ -238,6 +263,8 @@ def plot_potential(
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
+    plot_critical_curves=False,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -267,11 +294,19 @@ def plot_potential(
         grid=grid, return_in_2d=True, return_binned=True
     )
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=plane,
+        grid=grid,
+        plot_critical_curve=plot_critical_curves,
+        plot_caustics=plot_caustics,
+    )
+
     array_plotters.plot_array(
         array=potential,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=plane.kpc_per_arcsec,
@@ -305,6 +340,8 @@ def plot_deflections_y(
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
+    plot_critical_curves=False,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -335,11 +372,19 @@ def plot_deflections_y(
     )
     deflections_y = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=plane,
+        grid=grid,
+        plot_critical_curve=plot_critical_curves,
+        plot_caustics=plot_caustics,
+    )
+
     array_plotters.plot_array(
         array=deflections_y,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=plane.kpc_per_arcsec,
@@ -373,6 +418,8 @@ def plot_deflections_x(
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
+    plot_critical_curves=False,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -403,11 +450,19 @@ def plot_deflections_x(
     )
     deflections_x = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=plane,
+        grid=grid,
+        plot_critical_curve=plot_critical_curves,
+        plot_caustics=plot_caustics,
+    )
+
     array_plotters.plot_array(
         array=deflections_x,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=plane.kpc_per_arcsec,
@@ -441,6 +496,8 @@ def plot_magnification(
     mask=None,
     extract_array_from_mask=False,
     zoom_around_mask=False,
+    plot_critical_curves=False,
+    plot_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -470,11 +527,19 @@ def plot_magnification(
         grid=grid, return_in_2d=True, return_binned=True
     )
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=plane,
+        grid=grid,
+        plot_critical_curve=plot_critical_curves,
+        plot_caustics=plot_caustics,
+    )
+
     array_plotters.plot_array(
         array=magnification,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=plane.kpc_per_arcsec,
@@ -507,6 +572,8 @@ def plot_image_and_source_plane_subplot(
     source_plane,
     grid,
     points=None,
+    plot_critical_curves=False,
+    plot_caustics=False,
     axis_limits=None,
     units="arcsec",
     output_path=None,
@@ -518,6 +585,20 @@ def plot_image_and_source_plane_subplot(
         number_subplots=2
     )
 
+    lines = plotter_util.get_critical_curve_and_caustic(
+        obj=image_plane, grid=grid, plot_critical_curve=True, plot_caustics=True
+    )
+
+    if plot_critical_curves:
+        critical_curves = [lines[0]]
+    else:
+        critical_curves = None
+
+    if plot_caustics:
+        caustics = [lines[1]]
+    else:
+        caustics = None
+
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
@@ -526,6 +607,7 @@ def plot_image_and_source_plane_subplot(
         grid=grid,
         axis_limits=axis_limits,
         points=points,
+        lines=critical_curves,
         as_subplot=True,
         units=units,
         pointsize=3,
@@ -548,6 +630,7 @@ def plot_image_and_source_plane_subplot(
         grid=source_plane_grid,
         axis_limits=axis_limits,
         points=points,
+        lines=caustics,
         as_subplot=True,
         units=units,
         pointsize=3,
@@ -574,6 +657,7 @@ def plot_plane_grid(
     grid,
     axis_limits=None,
     points=None,
+    lines=None,
     as_subplot=False,
     units="arcsec",
     figsize=(12, 8),
@@ -592,6 +676,7 @@ def plot_plane_grid(
         grid=grid,
         points=points,
         axis_limits=axis_limits,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=plane.kpc_per_arcsec,

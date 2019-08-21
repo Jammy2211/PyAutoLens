@@ -52,9 +52,7 @@ def make_result(lens_data_7x7, instance):
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=phase_imaging.PhaseImaging.Analysis(
-            lens_data=lens_data_7x7,
-            cosmology=cosmo.Planck15,
-            image_path="",
+            lens_data=lens_data_7x7, cosmology=cosmo.Planck15, image_path=""
         ),
         optimizer=None,
     )

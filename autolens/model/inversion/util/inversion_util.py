@@ -122,7 +122,6 @@ def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
     return reconstructed_data_vector
 
 
-# @decorator_util.jit()
 def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
@@ -150,7 +149,6 @@ def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d
     return pixelization_residuals
 
 
-# @decorator_util.jit()
 def pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
@@ -181,7 +179,6 @@ def pixelization_normalized_residual_map_from_pixelization_values_and_reconstruc
     return pixelization_normalized_residuals
 
 
-# @decorator_util.jit()
 def pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,

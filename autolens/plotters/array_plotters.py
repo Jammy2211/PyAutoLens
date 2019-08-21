@@ -77,7 +77,7 @@ def plot_array(
         If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     positions : [[]]
         Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-    grid : instrument.array.grids.RegularGrid
+    grid : instrument.array.grids.Grid
         A grid of (y,x) coordinates which may be plotted over the plotted array.
     as_subplot : bool
         Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
@@ -223,7 +223,7 @@ def plot_array(
         pointsize=mask_pointsize,
         zoom_offset_pixels=zoom_offset_pixels,
     )
-    plot_lines(line_lists=lines)
+    plotter_util.plot_lines(line_lists=lines)
     plot_border(
         mask=mask,
         should_plot_border=should_plot_border,
@@ -526,7 +526,7 @@ def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):
     -----------
     array : instrument.array.scaled_array.ScaledArray
         The 2D array of instrument which is plotted, the shape of which is used for converting the grid to units of pixels.
-    grid_arcsec : ndarray or instrument.array.grids.RegularGrid
+    grid_arcsec : ndarray or instrument.array.grids.Grid
         The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -693,29 +693,6 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
         plt.scatter(y=edge_units[:, 0], x=edge_units[:, 1], s=pointsize, c="k")
 
 
-def plot_lines(line_lists):
-    """Plot the liness of the mask or the array on the figure.
-
-    Parameters
-    -----------t.
-    mask : ndarray of instrument.array.mask.Mask
-        The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-    should_plot_lines : bool
-        If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
-    units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
-    kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
-    lines_pointsize : int
-        The size of the points plotted to show the liness.
-    """
-    if line_lists is not None:
-        for line_list in line_lists:
-            for line in line_list:
-                if not line == []:
-                    plt.plot(line[:, 1], line[:, 0], c="r", lw=1.5, zorder=200)
-
-
 def plot_border(
     mask, should_plot_border, units, kpc_per_arcsec, pointsize, zoom_offset_pixels
 ):
@@ -804,7 +781,7 @@ def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_
 
      Parameters
      -----------.
-     grid_arcsec : ndarray or instrument.array.grids.RegularGrid
+     grid_arcsec : ndarray or instrument.array.grids.Grid
          A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
      array : instrument.array.scaled_array.ScaledArray
         The 2D array of instrument which is plotted.

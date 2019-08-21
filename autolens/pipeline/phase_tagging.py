@@ -75,7 +75,7 @@ def sub_grid_size_tag_from_sub_grid_size(sub_grid_size):
 
 def signal_to_noise_limit_tag_from_signal_to_noise_limit(signal_to_noise_limit):
     """Generate a signal to noise limit tag, to customize phase names based on limiting the signal to noise ratio of
-    the instrument being fitted.
+    the data being fitted.
 
     This changes the phase name 'phase_name' as follows:
 
@@ -139,7 +139,9 @@ def psf_shape_tag_from_image_psf_shape(psf_shape):
         return "__psf_" + y + "x" + x
 
 
-def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(pixel_scale_interpolation_grid):
+def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
+    pixel_scale_interpolation_grid
+):
     """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the interpolation \
     grid that deflection angles are computed on before interpolating to the and sub grids.
 
@@ -155,7 +157,9 @@ def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(pixel
         return "__interp_{0:.3f}".format(pixel_scale_interpolation_grid)
 
 
-def pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(pixel_scale_binned_cluster_grid):
+def pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(
+    pixel_scale_binned_cluster_grid
+):
     """Generate an clusterolation pixel scale tag, to customize phase names based on the resolution of the clusterolation \
     grid that deflection angles are computed on before clusterolating to the and sub grids.
 

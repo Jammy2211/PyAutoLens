@@ -259,7 +259,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         Parameters
         -----------
-        grid : RegularGrid
+        grid : Grid
             The grid (or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
             potential is calculated on.
         galaxies : [galaxy.Galaxy]
@@ -296,7 +296,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         Parameters
         -----------
-        grid : RegularGrid
+        grid : Grid
             The grid (or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
             potential is calculated on.
         galaxies : [galaxy.Galaxy]
@@ -901,21 +901,13 @@ class AbstractPlaneData(AbstractPlaneLensing):
     def yticks(self):
         """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image \
         """
-        return np.linspace(
-            np.amin(self.grid[:, 0]),
-            np.amax(self.grid[:, 0]),
-            4,
-        )
+        return np.linspace(np.amin(self.grid[:, 0]), np.amax(self.grid[:, 0]), 4)
 
     @property
     def xticks(self):
         """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an \
         image"""
-        return np.linspace(
-            np.amin(self.grid[:, 1]),
-            np.amax(self.grid[:, 1]),
-            4,
-        )
+        return np.linspace(np.amin(self.grid[:, 1]), np.amax(self.grid[:, 1]), 4)
 
 
 class Plane(AbstractPlaneData):

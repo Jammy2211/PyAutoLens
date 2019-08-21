@@ -52,7 +52,7 @@ def fit_with_offset_centre(centre):
 
     tracer = ray_tracing.Tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy],
-        image_plane_grid_stack=grid_stack_with_pixelization_grid,
+        image_plane_grid=grid_stack_with_pixelization_grid,
     )
     fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 

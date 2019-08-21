@@ -490,7 +490,9 @@ class SimulatedCCDData(CCDData):
         )
 
         deflections_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-            sub_grid_2d=deflections, mask=np.full(shape=shape, fill_value=False), sub_grid_size=1
+            sub_grid_2d=deflections,
+            mask=np.full(shape=shape, fill_value=False),
+            sub_grid_size=1,
         )
 
         deflected_grid_1d = grid_1d - deflections_1d
@@ -814,9 +816,9 @@ def load_ccd_data_from_fits(
     lens_name=None,
 ):
     """Factory for loading the ccd instrument from .fits files, as well as computing properties like the noise-map,
-    exposure-time map, etc. from the ccd-instrument.
+    exposure-time map, etc. from the ccd-data.
 
-    This factory also includes a number of routines for converting the ccd-instrument from units not supported by PyAutoLens \
+    This factory also includes a number of routines for converting the ccd-data from units not supported by PyAutoLens \
     (e.g. adus, electrons) to electrons per second.
 
     Parameters

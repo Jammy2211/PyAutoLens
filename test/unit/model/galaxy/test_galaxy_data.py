@@ -161,21 +161,19 @@ class TestGalaxyFitData(object):
 
         galaxy = mock_galaxy.MockGalaxy(value=1, shape=36)
 
-        intensities = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])
+        image = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])
 
-        assert (intensities == np.ones(9)).all()
+        assert (image == np.ones(9)).all()
 
         galaxy = g.Galaxy(redshift=0.5, light=lp.SphericalSersic(intensity=1.0))
 
-        intensities_gal = galaxy.profile_image_from_grid(
+        image_gal = galaxy.profile_image_from_grid(
             grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=True
         )
 
-        intensities_gd = galaxy_fit_data.profile_quantity_from_galaxies(
-            galaxies=[galaxy]
-        )
+        image_gd = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])
 
-        assert (intensities_gal == intensities_gd).all()
+        assert (image_gal == image_gd).all()
 
     def test__gal_data_7x7_convergence(self, gal_data_7x7, mask_7x7):
 
@@ -329,7 +327,7 @@ class TestGalaxyFitData(object):
         )
 
         potential_gal = galaxy.potential_from_grid(
-            grid=galaxy_fit_data.grid, return_binned=True
+            grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=True
         )
 
         potential_gd = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])

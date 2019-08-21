@@ -864,15 +864,15 @@ class TestJacobianandMagnification(object):
         )
 
         magnification_via_determinant = sie.magnification_from_grid(
-            grid=grid, return_in_2d=True
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         tangential_eigen_value = sie.tangential_eigen_value_from_grid(
-            grid=grid, return_in_2d=True
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         radal_eigen_value = sie.radial_eigen_value_from_grid(
-            grid=grid, return_in_2d=True
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         magnification_via_eigen_values = 1 / (
@@ -928,14 +928,16 @@ class TestJacobianandMagnification(object):
         )
 
         magnification_via_determinant = sie.magnification_from_grid(
-            grid=grid, return_in_2d=True
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         convergence = sie.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=True
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        shear = sie.shear_via_jacobian_from_grid(grid=grid, return_in_2d=True)
+        shear = sie.shear_via_jacobian_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
 
         magnification_via_convergence_and_shear = 1 / (
             (1 - convergence) ** 2 - shear ** 2
@@ -1305,11 +1307,17 @@ class TestCriticalCurvesandCaustics(object):
             shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
         )
 
-        magnification_via_determinant = sie.magnification_from_grid(grid=grid)
+        magnification_via_determinant = sie.magnification_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
 
-        convergence = sie.convergence_via_jacobian_from_grid(grid=grid)
+        convergence = sie.convergence_via_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
 
-        shear = sie.shear_via_jacobian_from_grid(grid=grid)
+        shear = sie.shear_via_jacobian_from_grid(
+            grid=grid, return_in_2d=False, return_binned=False
+        )
 
         magnification_via_convergence_and_shear = 1 / (
             (1 - convergence) ** 2 - shear ** 2
@@ -1678,9 +1686,7 @@ class TestCriticalCurvesandCaustics(object):
             sum(tangential_caustic_from_magnification), 5e-1
         )
 
-    def test__compare_radial_caustic_from_magnification_and_lambda_r__grid(
-        self
-    ):
+    def test__compare_radial_caustic_from_magnification_and_lambda_r__grid(self):
 
         sie = mp.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40

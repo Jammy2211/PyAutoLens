@@ -43,7 +43,7 @@ def plot_ccd_subplot(
     output_filename="ccd_data",
     output_format="show",
 ):
-    """Plot the ccd instrument as a sub-plot of all its quantites (e.g. the instrument, noise_map-map, PSF, Signal-to_noise-map, \
+    """Plot the ccd instrument as a sub-plot of all its quantites (e.g. the data, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -53,9 +53,9 @@ def plot_ccd_subplot(
     ccd_data : instrument.CCDData
         The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the instrument, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     ignore_config : bool
         If *False*, the config file general.ini is used to determine whether the subpot is plotted. If *True*, the \
@@ -293,7 +293,7 @@ def plot_ccd_individual(
     output_path=None,
     output_format="png",
 ):
-    """Plot each attribute of the ccd instrument as individual figures one by one (e.g. the instrument, noise_map-map, PSF, \
+    """Plot each attribute of the ccd instrument as individual figures one by one (e.g. the data, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -303,7 +303,7 @@ def plot_ccd_individual(
     ccd_data : instrument.CCDData
         The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     if should_plot_image:
@@ -428,9 +428,9 @@ def plot_image(
     image : instrument.CCDData
         The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the instrument, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
     data_plotters.plot_image(
@@ -513,7 +513,7 @@ def plot_noise_map(
     image : instrument.CCDData
         The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_noise_map(
@@ -587,7 +587,7 @@ def plot_psf(
     image : instrument.CCDData
         The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_psf(
@@ -661,7 +661,7 @@ def plot_signal_to_noise_map(
     image : instrument.CCDData
         The ccd instrument, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_signal_to_noise_map(
@@ -739,7 +739,7 @@ def plot_absolute_signal_to_noise_map(
     image : instrument.CCDData
         The ccd instrument, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_absolute_signal_to_noise_map(
@@ -817,7 +817,7 @@ def plot_potential_chi_squared_map(
     image : instrument.CCDData
         The ccd instrument, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_potential_chi_squared_map(
@@ -862,7 +862,7 @@ def get_origin(array, plot_origin):
     array : instrument.array.scaled_array.ScaledArray
         The array from which the origin is extracted.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is returned.
+        If true, the origin of the data's coordinate system is returned.
     """
     if plot_origin:
         return array.origin

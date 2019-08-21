@@ -260,7 +260,7 @@ class TestMappingMatrix:
             pixels=6,
             total_mask_pixels=3,
             sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_fraction=1.0/16.0,
+            sub_grid_fraction=1.0 / 16.0,
         )
 
         assert (

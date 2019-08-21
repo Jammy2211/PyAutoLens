@@ -135,7 +135,7 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
         self.inner_slope = inner_slope
 
     def tabulate_integral(self, grid, tabulate_bins):
-        """Tabulate an integral over the surface density of deflection potential of a mass profile. This is used in \
+        """Tabulate an integral over the convergence of deflection potential of a mass profile. This is used in \
         the GeneralizedNFW profile classes to speed up the integration procedure.
 
         Parameters
@@ -163,7 +163,7 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
         Parameters
         ----------
         grid : grids.Grid
-            The grid of (y,x) arc-second coordinates the surface density is computed on.
+            The grid of (y,x) arc-second coordinates the convergence is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
