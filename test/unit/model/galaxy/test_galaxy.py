@@ -52,24 +52,24 @@ class TestLightProfiles(object):
         ):
 
             lp_profile_image = lp_0.profile_image_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             gal_lp_profile_image = gal_x1_lp.profile_image_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             assert lp_profile_image == gal_lp_profile_image
 
             lp_profile_image = lp_0.profile_image_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
             lp_profile_image += lp_1.profile_image_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             gal_profile_image = gal_x2_lp.profile_image_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             assert lp_profile_image == gal_profile_image
@@ -79,11 +79,11 @@ class TestLightProfiles(object):
         ):
 
             lp_0_profile_image = gal_x2_lp.light_profile_0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             lp_1_profile_image = gal_x2_lp.light_profile_1.profile_image_from_grid(
-                grid=sub_grid_7x7, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             lp_profile_image = lp_0_profile_image + lp_1_profile_image
@@ -103,7 +103,7 @@ class TestLightProfiles(object):
             ) / 4.0
 
             gal_profile_image = gal_x2_lp.profile_image_from_grid(
-                grid=sub_grid_7x7, return_binned=True
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             assert gal_profile_image[0] == lp_profile_image_0
@@ -223,11 +223,15 @@ class TestLightProfiles(object):
             )
 
             assert gal_x2_lp.profile_image_from_grid(
-                np.array([[0.0, 0.0]])
-            ) == gal_x2_lp.profile_image_from_grid(grid=np.array([[100.0, 0.0]]))
+                np.array([[0.0, 0.0]]), return_in_2d=False, return_binned=False
+            ) == gal_x2_lp.profile_image_from_grid(
+                grid=np.array([[100.0, 0.0]]), return_in_2d=False, return_binned=False
+            )
             assert gal_x2_lp.profile_image_from_grid(
-                np.array([[49.0, 0.0]])
-            ) == gal_x2_lp.profile_image_from_grid(grid=np.array([[51.0, 0.0]]))
+                np.array([[49.0, 0.0]]), return_in_2d=False, return_binned=False
+            ) == gal_x2_lp.profile_image_from_grid(
+                grid=np.array([[51.0, 0.0]]), return_in_2d=False, return_binned=False
+            )
 
         def test_2d_symmetry(self):
 
@@ -275,27 +279,47 @@ class TestLightProfiles(object):
             )
 
             assert gal_x4_lp.profile_image_from_grid(
-                grid=np.array([[49.0, 0.0]])
+                grid=np.array([[49.0, 0.0]]), return_in_2d=False, return_binned=False
             ) == pytest.approx(
-                gal_x4_lp.profile_image_from_grid(grid=np.array([[51.0, 0.0]])), 1e-5
+                gal_x4_lp.profile_image_from_grid(
+                    grid=np.array([[51.0, 0.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
             )
 
             assert gal_x4_lp.profile_image_from_grid(
-                grid=np.array([[0.0, 49.0]])
+                grid=np.array([[0.0, 49.0]]), return_in_2d=False, return_binned=False
             ) == pytest.approx(
-                gal_x4_lp.profile_image_from_grid(grid=np.array([[0.0, 51.0]])), 1e-5
+                gal_x4_lp.profile_image_from_grid(
+                    grid=np.array([[0.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
             )
 
             assert gal_x4_lp.profile_image_from_grid(
-                grid=np.array([[100.0, 49.0]])
+                grid=np.array([[100.0, 49.0]]), return_in_2d=False, return_binned=False
             ) == pytest.approx(
-                gal_x4_lp.profile_image_from_grid(grid=np.array([[100.0, 51.0]])), 1e-5
+                gal_x4_lp.profile_image_from_grid(
+                    grid=np.array([[100.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
             )
 
             assert gal_x4_lp.profile_image_from_grid(
-                grid=np.array([[49.0, 49.0]])
+                grid=np.array([[49.0, 49.0]]), return_in_2d=False, return_binned=False
             ) == pytest.approx(
-                gal_x4_lp.profile_image_from_grid(grid=np.array([[51.0, 51.0]])), 1e-5
+                gal_x4_lp.profile_image_from_grid(
+                    grid=np.array([[51.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
             )
 
 
@@ -359,7 +383,9 @@ class TestMassProfiles(object):
 
             galaxy = g.Galaxy(redshift=0.5)
 
-            convergence = galaxy.convergence_from_grid(grid=sub_grid_7x7)
+            convergence = galaxy.convergence_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
 
             assert (convergence == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
@@ -382,7 +408,7 @@ class TestMassProfiles(object):
             assert (convergence == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
             convergence = galaxy.convergence_from_grid(
-                grid=sub_grid_7x7, return_binned=True
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             assert (convergence == np.zeros(shape=sub_grid_7x7.shape[0] // 4)).all()
@@ -391,19 +417,25 @@ class TestMassProfiles(object):
             self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
         ):
 
-            mp_convergence = mp_0.convergence_from_grid(grid=np.array([[1.05, -0.55]]))
+            mp_convergence = mp_0.convergence_from_grid(
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
+            )
 
             gal_mp_convergence = gal_x1_mp.convergence_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             assert mp_convergence == gal_mp_convergence
 
-            mp_convergence = mp_0.convergence_from_grid(grid=np.array([[1.05, -0.55]]))
-            mp_convergence += mp_1.convergence_from_grid(grid=np.array([[1.05, -0.55]]))
+            mp_convergence = mp_0.convergence_from_grid(
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
+            )
+            mp_convergence += mp_1.convergence_from_grid(
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
+            )
 
             gal_convergence = gal_x2_mp.convergence_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             assert mp_convergence == gal_convergence
@@ -413,11 +445,11 @@ class TestMassProfiles(object):
         ):
 
             mp_0_convergence = gal_x2_mp.mass_profile_0.convergence_from_grid(
-                grid=sub_grid_7x7, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             mp_1_convergence = gal_x2_mp.mass_profile_1.convergence_from_grid(
-                grid=sub_grid_7x7, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             mp_convergence = mp_0_convergence + mp_1_convergence
@@ -437,7 +469,7 @@ class TestMassProfiles(object):
             ) / 4.0
 
             gal_convergence = gal_x2_mp.convergence_from_grid(
-                grid=sub_grid_7x7, return_binned=True
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             assert gal_convergence[0] == mp_convergence_0
@@ -449,7 +481,9 @@ class TestMassProfiles(object):
         ):
             galaxy = g.Galaxy(redshift=0.5)
 
-            potential = galaxy.potential_from_grid(grid=sub_grid_7x7)
+            potential = galaxy.potential_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
 
             assert (potential == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
@@ -471,7 +505,7 @@ class TestMassProfiles(object):
             assert (potential == np.zeros(shape=sub_grid_7x7.shape[0])).all()
 
             potential = galaxy.potential_from_grid(
-                grid=sub_grid_7x7, return_binned=True
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             assert (potential == np.zeros(shape=sub_grid_7x7.shape[0] // 4)).all()
@@ -479,19 +513,25 @@ class TestMassProfiles(object):
         def test__galaxies_with_x1_and_x2_mass_profiles__potential_is_same_individual_profiles(
             self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
         ):
-            mp_potential = mp_0.potential_from_grid(grid=np.array([[1.05, -0.55]]))
+            mp_potential = mp_0.potential_from_grid(
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
+            )
 
             gal_mp_potential = gal_x1_mp.potential_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             assert mp_potential == gal_mp_potential
 
-            mp_potential = mp_0.potential_from_grid(grid=np.array([[1.05, -0.55]]))
-            mp_potential += mp_1.potential_from_grid(grid=np.array([[1.05, -0.55]]))
+            mp_potential = mp_0.potential_from_grid(
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
+            )
+            mp_potential += mp_1.potential_from_grid(
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
+            )
 
             gal_potential = gal_x2_mp.potential_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             assert mp_potential == gal_potential
@@ -500,11 +540,11 @@ class TestMassProfiles(object):
             self, sub_grid_7x7, gal_x2_mp
         ):
             mp_0_potential = gal_x2_mp.mass_profile_0.potential_from_grid(
-                grid=sub_grid_7x7, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             mp_1_potential = gal_x2_mp.mass_profile_1.potential_from_grid(
-                grid=sub_grid_7x7, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             mp_potential = mp_0_potential + mp_1_potential
@@ -518,7 +558,7 @@ class TestMassProfiles(object):
             ) / 4.0
 
             gal_potential = gal_x2_mp.potential_from_grid(
-                grid=sub_grid_7x7, return_binned=True
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             assert gal_potential[0] == mp_potential_0
@@ -554,7 +594,7 @@ class TestMassProfiles(object):
             assert (deflections == np.zeros(shape=(sub_grid_7x7.shape[0], 2))).all()
 
             deflections = galaxy.deflections_from_grid(
-                grid=sub_grid_7x7, return_binned=True
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             assert (
@@ -565,19 +605,25 @@ class TestMassProfiles(object):
             self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
         ):
 
-            mp_deflections = mp_0.deflections_from_grid(grid=np.array([[1.05, -0.55]]))
+            mp_deflections = mp_0.deflections_from_grid(
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
+            )
 
             gal_mp_deflections = gal_x1_mp.deflections_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             assert (mp_deflections == gal_mp_deflections).all()
 
-            mp_deflections = mp_0.deflections_from_grid(grid=np.array([[1.05, -0.55]]))
-            mp_deflections += mp_1.deflections_from_grid(grid=np.array([[1.05, -0.55]]))
+            mp_deflections = mp_0.deflections_from_grid(
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
+            )
+            mp_deflections += mp_1.deflections_from_grid(
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
+            )
 
             gal_deflections = gal_x2_mp.deflections_from_grid(
-                grid=np.array([[1.05, -0.55]])
+                grid=np.array([[1.05, -0.55]]), return_in_2d=False, return_binned=False
             )
 
             assert (mp_deflections == gal_deflections).all()
@@ -587,11 +633,11 @@ class TestMassProfiles(object):
         ):
 
             mp_0_deflections = gal_x2_mp.mass_profile_0.deflections_from_grid(
-                grid=sub_grid_7x7, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             mp_1_deflections = gal_x2_mp.mass_profile_1.deflections_from_grid(
-                grid=sub_grid_7x7, return_binned=False
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             mp_deflections = mp_0_deflections + mp_1_deflections
@@ -611,7 +657,7 @@ class TestMassProfiles(object):
             ) / 4.0
 
             gal_deflections = gal_x2_mp.deflections_from_grid(
-                grid=sub_grid_7x7, return_binned=True
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             assert gal_deflections[0, 0] == mp_deflections_y_0
@@ -632,7 +678,7 @@ class TestMassProfiles(object):
             ) / 4.0
 
             gal_deflections = gal_x2_mp.deflections_from_grid(
-                grid=sub_grid_7x7, return_binned=True
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
             )
 
             assert gal_deflections[0, 1] == mp_deflections_x_0
@@ -785,35 +831,59 @@ class TestMassProfiles(object):
             gal_x4_mp = g.Galaxy(redshift=0.5, mass_profile_0=mp_0, mass_profile_1=mp_1)
 
             assert gal_x4_mp.convergence_from_grid(
-                np.array([[1.0, 0.0]])
-            ) == gal_x4_mp.convergence_from_grid(grid=np.array([[99.0, 0.0]]))
+                np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
+            ) == gal_x4_mp.convergence_from_grid(
+                grid=np.array([[99.0, 0.0]]), return_in_2d=False, return_binned=False
+            )
 
             assert gal_x4_mp.convergence_from_grid(
-                np.array([[49.0, 0.0]])
-            ) == gal_x4_mp.convergence_from_grid(grid=np.array([[51.0, 0.0]]))
-
-            assert gal_x4_mp.potential_from_grid(
-                grid=np.array([[1.0, 0.0]])
-            ) == pytest.approx(
-                gal_x4_mp.potential_from_grid(grid=np.array([[99.0, 0.0]])), 1e-6
+                np.array([[49.0, 0.0]]), return_in_2d=False, return_binned=False
+            ) == gal_x4_mp.convergence_from_grid(
+                grid=np.array([[51.0, 0.0]]), return_in_2d=False, return_binned=False
             )
 
             assert gal_x4_mp.potential_from_grid(
-                grid=np.array([[49.0, 0.0]])
+                grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
             ) == pytest.approx(
-                gal_x4_mp.potential_from_grid(grid=np.array([[51.0, 0.0]])), 1e-6
+                gal_x4_mp.potential_from_grid(
+                    grid=np.array([[99.0, 0.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-6,
+            )
+
+            assert gal_x4_mp.potential_from_grid(
+                grid=np.array([[49.0, 0.0]]), return_in_2d=False, return_binned=False
+            ) == pytest.approx(
+                gal_x4_mp.potential_from_grid(
+                    grid=np.array([[51.0, 0.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-6,
             )
 
             assert gal_x4_mp.deflections_from_grid(
-                grid=np.array([[1.0, 0.0]])
+                grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
             ) == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[99.0, 0.0]])), 1e-6
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[99.0, 0.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-6,
             )
 
             assert gal_x4_mp.deflections_from_grid(
-                grid=np.array([[49.0, 0.0]])
+                grid=np.array([[49.0, 0.0]]), return_in_2d=False, return_binned=False
             ) == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[51.0, 0.0]])), 1e-6
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[51.0, 0.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-6,
             )
 
         def test_2d_symmetry(self):
@@ -835,106 +905,178 @@ class TestMassProfiles(object):
             )
 
             assert gal_x4_mp.convergence_from_grid(
-                grid=np.array([[49.0, 0.0]])
+                grid=np.array([[49.0, 0.0]]), return_in_2d=False, return_binned=False
             ) == pytest.approx(
-                gal_x4_mp.convergence_from_grid(grid=np.array([[51.0, 0.0]])), 1e-5
-            )
-
-            assert gal_x4_mp.convergence_from_grid(
-                grid=np.array([[0.0, 49.0]])
-            ) == pytest.approx(
-                gal_x4_mp.convergence_from_grid(grid=np.array([[0.0, 51.0]])), 1e-5
-            )
-
-            assert gal_x4_mp.convergence_from_grid(
-                grid=np.array([[100.0, 49.0]])
-            ) == pytest.approx(
-                gal_x4_mp.convergence_from_grid(grid=np.array([[100.0, 51.0]])), 1e-5
-            )
-
-            assert gal_x4_mp.convergence_from_grid(
-                grid=np.array([[49.0, 49.0]])
-            ) == pytest.approx(
-                gal_x4_mp.convergence_from_grid(grid=np.array([[51.0, 51.0]])), 1e-5
-            )
-
-            assert gal_x4_mp.potential_from_grid(
-                grid=np.array([[49.0, 0.0]])
-            ) == pytest.approx(
-                gal_x4_mp.potential_from_grid(grid=np.array([[51.0, 0.0]])), 1e-5
-            )
-
-            assert gal_x4_mp.potential_from_grid(
-                grid=np.array([[0.0, 49.0]])
-            ) == pytest.approx(
-                gal_x4_mp.potential_from_grid(grid=np.array([[0.0, 51.0]])), 1e-5
-            )
-
-            assert gal_x4_mp.potential_from_grid(
-                grid=np.array([[100.0, 49.0]])
-            ) == pytest.approx(
-                gal_x4_mp.potential_from_grid(grid=np.array([[100.0, 51.0]])), 1e-5
-            )
-
-            assert gal_x4_mp.potential_from_grid(
-                grid=np.array([[49.0, 49.0]])
-            ) == pytest.approx(
-                gal_x4_mp.potential_from_grid(grid=np.array([[51.0, 51.0]])), 1e-5
-            )
-
-            assert -1.0 * gal_x4_mp.deflections_from_grid(grid=np.array([[49.0, 0.0]]))[
-                0, 0
-            ] == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[51.0, 0.0]]))[0, 0],
+                gal_x4_mp.convergence_from_grid(
+                    grid=np.array([[51.0, 0.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
                 1e-5,
             )
 
-            assert 1.0 * gal_x4_mp.deflections_from_grid(grid=np.array([[0.0, 49.0]]))[
-                0, 0
-            ] == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[0.0, 51.0]]))[0, 0],
+            assert gal_x4_mp.convergence_from_grid(
+                grid=np.array([[0.0, 49.0]]), return_in_2d=False, return_binned=False
+            ) == pytest.approx(
+                gal_x4_mp.convergence_from_grid(
+                    grid=np.array([[0.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
+            )
+
+            assert gal_x4_mp.convergence_from_grid(
+                grid=np.array([[100.0, 49.0]]), return_in_2d=False, return_binned=False
+            ) == pytest.approx(
+                gal_x4_mp.convergence_from_grid(
+                    grid=np.array([[100.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
+            )
+
+            assert gal_x4_mp.convergence_from_grid(
+                grid=np.array([[49.0, 49.0]]), return_in_2d=False, return_binned=False
+            ) == pytest.approx(
+                gal_x4_mp.convergence_from_grid(
+                    grid=np.array([[51.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
+            )
+
+            assert gal_x4_mp.potential_from_grid(
+                grid=np.array([[49.0, 0.0]]), return_in_2d=False, return_binned=False
+            ) == pytest.approx(
+                gal_x4_mp.potential_from_grid(
+                    grid=np.array([[51.0, 0.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
+            )
+
+            assert gal_x4_mp.potential_from_grid(
+                grid=np.array([[0.0, 49.0]]), return_in_2d=False, return_binned=False
+            ) == pytest.approx(
+                gal_x4_mp.potential_from_grid(
+                    grid=np.array([[0.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
+            )
+
+            assert gal_x4_mp.potential_from_grid(
+                grid=np.array([[100.0, 49.0]]), return_in_2d=False, return_binned=False
+            ) == pytest.approx(
+                gal_x4_mp.potential_from_grid(
+                    grid=np.array([[100.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
+            )
+
+            assert gal_x4_mp.potential_from_grid(
+                grid=np.array([[49.0, 49.0]]), return_in_2d=False, return_binned=False
+            ) == pytest.approx(
+                gal_x4_mp.potential_from_grid(
+                    grid=np.array([[51.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                ),
+                1e-5,
+            )
+
+            assert -1.0 * gal_x4_mp.deflections_from_grid(
+                grid=np.array([[49.0, 0.0]]), return_in_2d=False, return_binned=False
+            )[0, 0] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[51.0, 0.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                )[0, 0],
                 1e-5,
             )
 
             assert 1.0 * gal_x4_mp.deflections_from_grid(
-                grid=np.array([[100.0, 49.0]])
+                grid=np.array([[0.0, 49.0]]), return_in_2d=False, return_binned=False
             )[0, 0] == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[100.0, 51.0]]))[0, 0],
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[0.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                )[0, 0],
                 1e-5,
             )
 
-            assert -1.0 * gal_x4_mp.deflections_from_grid(
-                grid=np.array([[49.0, 49.0]])
+            assert 1.0 * gal_x4_mp.deflections_from_grid(
+                grid=np.array([[100.0, 49.0]]), return_in_2d=False, return_binned=False
             )[0, 0] == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[51.0, 51.0]]))[0, 0],
-                1e-5,
-            )
-
-            assert 1.0 * gal_x4_mp.deflections_from_grid(grid=np.array([[49.0, 0.0]]))[
-                0, 1
-            ] == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[51.0, 0.0]]))[0, 1],
-                1e-5,
-            )
-
-            assert -1.0 * gal_x4_mp.deflections_from_grid(grid=np.array([[0.0, 49.0]]))[
-                0, 1
-            ] == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[0.0, 51.0]]))[0, 1],
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[100.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                )[0, 0],
                 1e-5,
             )
 
             assert -1.0 * gal_x4_mp.deflections_from_grid(
-                grid=np.array([[100.0, 49.0]])
+                grid=np.array([[49.0, 49.0]]), return_in_2d=False, return_binned=False
+            )[0, 0] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[51.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                )[0, 0],
+                1e-5,
+            )
+
+            assert 1.0 * gal_x4_mp.deflections_from_grid(
+                grid=np.array([[49.0, 0.0]]), return_in_2d=False, return_binned=False
             )[0, 1] == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[100.0, 51.0]]))[0, 1],
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[51.0, 0.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                )[0, 1],
                 1e-5,
             )
 
             assert -1.0 * gal_x4_mp.deflections_from_grid(
-                grid=np.array([[49.0, 49.0]])
+                grid=np.array([[0.0, 49.0]]), return_in_2d=False, return_binned=False
             )[0, 1] == pytest.approx(
-                gal_x4_mp.deflections_from_grid(grid=np.array([[51.0, 51.0]]))[0, 1],
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[0.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                )[0, 1],
+                1e-5,
+            )
+
+            assert -1.0 * gal_x4_mp.deflections_from_grid(
+                grid=np.array([[100.0, 49.0]]), return_in_2d=False, return_binned=False
+            )[0, 1] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[100.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                )[0, 1],
+                1e-5,
+            )
+
+            assert -1.0 * gal_x4_mp.deflections_from_grid(
+                grid=np.array([[49.0, 49.0]]), return_in_2d=False, return_binned=False
+            )[0, 1] == pytest.approx(
+                gal_x4_mp.deflections_from_grid(
+                    grid=np.array([[51.0, 51.0]]),
+                    return_in_2d=False,
+                    return_binned=False,
+                )[0, 1],
                 1e-5,
             )
 

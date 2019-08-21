@@ -33,9 +33,7 @@ lens_galaxy = g.Galaxy(
 
 lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
 
-tracer = ray_tracing.Tracer.from_galaxies(
-    galaxies=[lens_galaxy], image_plane_grid_stack=lens_data.grid
-)
+tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy])
 fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 lens_fit_plotters.plot_fit_subplot(
     fit=fit, should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True

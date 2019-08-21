@@ -11,13 +11,14 @@ Big Picture:
 
 Small Picture:
 
-- Lensed image from grid.
-- Dont repeat deflections in profile_image and mapper.
+- Simulated lensed image from discrete image grid.
+- Iterator grids.
+- Unmasked bool.
+- PSF in light profiles, etc.
+- Sort out all bools in all functions.
 - Plot plane image as square, not rectangle
 - Make sure image plane pix grid also shifts for offset mask.
 - Use model image for norm range on subplots.
-- tracers used in some simulations will double calc deflecitons because they use a padded tracer .Add a omit
-  deflections bool or something
 - Unit Test HyperNoise Maps
 - Summarize output
 - Fit Summary with likelhood, evidence, RFF, etc.

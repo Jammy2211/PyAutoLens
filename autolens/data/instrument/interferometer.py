@@ -181,20 +181,17 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
         gaussian = EllipticalGaussian(
             centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma
         )
-        grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-            mask=np.full(shape, False),
-            pixel_scales=(pixel_scale, pixel_scale),
-            sub_grid_size=1,
-        )
-        gaussian_1d = gaussian.profile_image_from_grid(grid=grid_1d)
 
-        gaussian_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=gaussian_1d,
-            mask=np.full(fill_value=False, shape=shape),
-            sub_grid_size=1,
+        from autolens.array import grids
+
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=shape, pixel_scale=pixel_scale, sub_grid_size=1
+        )
+        gaussian = gaussian.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
-        return PrimaryBeam(array=gaussian_2d, pixel_scale=pixel_scale, renormalize=True)
+        return PrimaryBeam(array=gaussian, pixel_scale=pixel_scale, renormalize=True)
 
     @classmethod
     def from_fits_renormalized(cls, file_path, hdu, pixel_scale):

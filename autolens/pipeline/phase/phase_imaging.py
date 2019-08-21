@@ -100,8 +100,8 @@ class PhaseImaging(Phase):
             self.inversion_pixel_limit = inversion_pixel_limit
         else:
             self.inversion_pixel_limit = af.conf.instance.general.get(
-            "inversion", "inversion_pixel_limit_overall", int
-        )
+                "inversion", "inversion_pixel_limit_overall", int
+            )
 
         self.galaxies = galaxies or []
         self.hyper_image_sky = hyper_image_sky
@@ -228,7 +228,9 @@ class PhaseImaging(Phase):
 
             if pixel_scale_binned_cluster_grid > mask.pixel_scale:
 
-                bin_up_factor = int(self.pixel_scale_binned_cluster_grid / mask.pixel_scale)
+                bin_up_factor = int(
+                    self.pixel_scale_binned_cluster_grid / mask.pixel_scale
+                )
 
             else:
 
@@ -240,11 +242,12 @@ class PhaseImaging(Phase):
 
                 if bin_up_factor == 1:
                     raise exc.DataException(
-                        "The pixelization " + str(self.pixelization) + " uses a KMeans clustering algorithm which uses"
+                        "The pixelization "
+                        + str(self.pixelization)
+                        + " uses a KMeans clustering algorithm which uses"
                         "a hyper model image to adapt the pixelization. This hyper model image must have more pixels"
                         "than inversion pixels. Current, the inversion_pixel_limit exceeds the data-points in the image.\n\n"
                         "To rectify this image, manually set the inversion pixel limit in the pipeline phases or change the inversion_pixel_limit_overall parameter in general.ini"
-
                     )
 
                 bin_up_factor -= 1
@@ -259,7 +262,9 @@ class PhaseImaging(Phase):
                 if hasattr(results.last, "hyper_combined"):
                     if self.pixelization is not None:
                         if type(self.pixelization) == type(results.last.pixelization):
-                            preload_pixelization_grids_of_planes = results.last.hyper_combined.most_likely_pixelization_grids_of_planes
+                            preload_pixelization_grids_of_planes = (
+                                results.last.hyper_combined.most_likely_pixelization_grids_of_planes
+                            )
 
         if self.is_hyper_phase:
             preload_pixelization_grids_of_planes = None
@@ -377,13 +382,7 @@ class PhaseImaging(Phase):
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
-        def __init__(
-            self,
-            lens_data,
-            cosmology,
-            image_path=None,
-            results=None,
-        ):
+        def __init__(self, lens_data, cosmology, image_path=None, results=None):
 
             super(PhaseImaging.Analysis, self).__init__(
                 cosmology=cosmology, results=results
@@ -678,7 +677,10 @@ class PhaseImaging(Phase):
 
         def check_positions_trace_within_threshold(self, instance):
 
-            if self.lens_data.positions is not None and self.lens_data.positions_threshold is not None:
+            if (
+                self.lens_data.positions is not None
+                and self.lens_data.positions_threshold is not None
+            ):
 
                 tracer = ray_tracing.Tracer.from_galaxies(galaxies=instance.galaxies)
 
@@ -702,7 +704,10 @@ class PhaseImaging(Phase):
                 if instance.galaxies:
                     for galaxy in instance.galaxies:
                         if galaxy.pixelization is not None:
-                            if galaxy.pixelization.pixels > self.lens_data.inversion_pixel_limit:
+                            if (
+                                galaxy.pixelization.pixels
+                                > self.lens_data.inversion_pixel_limit
+                            ):
                                 raise exc.PixelizationException
 
         def map_to_1d(self, data):

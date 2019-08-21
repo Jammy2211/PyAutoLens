@@ -566,20 +566,12 @@ def plot_fit_subplot_for_plane(
 
         ratio = float(
             (
-                fit.inversion.mapper.geometry.arc_second_maxima[
-                    1
-                ]
-                - fit.inversion.mapper.geometry.arc_second_minima[
-                    1
-                ]
+                fit.inversion.mapper.geometry.arc_second_maxima[1]
+                - fit.inversion.mapper.geometry.arc_second_minima[1]
             )
             / (
-                fit.inversion.mapper.geometry.arc_second_maxima[
-                    0
-                ]
-                - fit.inversion.mapper.geometry.arc_second_minima[
-                    0
-                ]
+                fit.inversion.mapper.geometry.arc_second_maxima[0]
+                - fit.inversion.mapper.geometry.arc_second_minima[0]
             )
         )
 

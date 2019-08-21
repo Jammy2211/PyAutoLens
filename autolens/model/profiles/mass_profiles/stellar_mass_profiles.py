@@ -66,7 +66,7 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
         Parameters
         ----------
         grid : grids.Grid
-            The grid of (y,x) arc-second coordinates the surface density is computed on.
+            The grid of (y,x) arc-second coordinates the convergence is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
@@ -449,7 +449,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         Parameters
         ----------
         grid : grids.Grid
-            The grid of (y,x) arc-second coordinates the surface density is computed on.
+            The grid of (y,x) arc-second coordinates the convergence is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool

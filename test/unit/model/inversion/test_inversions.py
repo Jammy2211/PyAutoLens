@@ -238,7 +238,7 @@ class TestReconstructedDataVectorAndImage:
 #                                         [False, False, False],
 #                                         [True, True, True]]), pixel_scale=1.0)
 #
-#         grid = grids.Grid.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+#         grid = grids.grid_stack_from_mask_sub_grid_size_and_psf_shape(
 #             mask=msk, sub_grid_size=1, psf_shape=(1,1))
 #
 #         inv = inversions.Inversion(

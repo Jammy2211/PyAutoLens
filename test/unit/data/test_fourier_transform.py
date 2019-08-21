@@ -16,10 +16,10 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.ones(shape=(1))
+        image_1d = np.ones(shape=(1))
 
         real_visibilities = transformer.real_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert (real_visibilities == np.ones(shape=4)).all()
@@ -34,10 +34,10 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.ones(shape=(2))
+        image_1d = np.ones(shape=(2))
 
         real_visibilities = transformer.real_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert real_visibilities == pytest.approx(
@@ -55,10 +55,10 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.array([2.0])
+        image_1d = np.array([2.0])
 
         real_visibilities = transformer.real_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert (real_visibilities == np.array([2.0])).all()
@@ -73,10 +73,10 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.array([3.0, 6.0])
+        image_1d = np.array([3.0, 6.0])
 
         real_visibilities = transformer.real_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert real_visibilities == pytest.approx(
@@ -99,13 +99,13 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.array([2.0])
+        image_1d = np.array([2.0])
 
         real_visibilities_via_preload = transformer_preload.real_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
         real_visibilities = transformer.real_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert (real_visibilities_via_preload == real_visibilities).all()
@@ -121,10 +121,10 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.ones(shape=(1))
+        image_1d = np.ones(shape=(1))
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert (imaginary_visibilities == np.zeros(shape=4)).all()
@@ -139,10 +139,10 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.ones(shape=(2))
+        image_1d = np.ones(shape=(2))
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert imaginary_visibilities == pytest.approx(
@@ -160,10 +160,10 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.array([2.0])
+        image_1d = np.array([2.0])
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert (imaginary_visibilities == np.array([0.0])).all()
@@ -178,10 +178,10 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.array([3.0, 6.0])
+        image_1d = np.array([3.0, 6.0])
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert imaginary_visibilities == pytest.approx(
@@ -204,18 +204,18 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.array([2.0])
+        image_1d = np.array([2.0])
 
         imaginary_visibilities_via_preload = transformer_preload.imaginary_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
         imaginary_visibilities = transformer.imaginary_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert (imaginary_visibilities_via_preload == imaginary_visibilities).all()
 
-    def test__visiblities_from_intensities__same_as_individual_calculations_above(self):
+    def test__visiblities_from_image__same_as_individual_calculations_above(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
@@ -227,9 +227,9 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        intensities_1d = np.array([3.0, 6.0])
+        image_1d = np.array([3.0, 6.0])
 
-        visibilities = transformer.visibilities_from_image_1d(image_1d=intensities_1d)
+        visibilities = transformer.visibilities_from_image_1d(image_1d=image_1d)
 
         assert visibilities[:, 0] == pytest.approx(
             np.array([3.91361, 7.10136, 8.717248]), 1.0e-4
@@ -239,10 +239,10 @@ class TestVisiblities(object):
         )
 
         real_visibilities = transformer.real_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
         imaginary_visibilities = transformer.imaginary_visibilities_from_image_1d(
-            image_1d=intensities_1d
+            image_1d=image_1d
         )
 
         assert (visibilities[:, 0] == real_visibilities).all()

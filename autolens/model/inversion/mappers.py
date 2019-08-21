@@ -10,7 +10,7 @@ class Mapper(object):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxy.array.grid* module) to discretized pixels in a pixelization.
 
-        1D arrays are used to represent these mappings, for example between the different grid in a grid-stack \
+        1D arrays are used to represent these mappings, for example between the different grid in a grid \
         (e.g. the / sub grid). This follows the syntax grid_to_grid, whereby the index of a value on one grid \
         equals that of another grid, for example:
 
@@ -23,10 +23,10 @@ class Mapper(object):
         ----------
         pixels : int
             The number of pixels in the mapper's pixelization.
-        grid: grid.GridStack
+        grid: gridStack
             A stack of grid's which are mapped to the pixelization (includes an and sub grid).
-        border : grid.RegularGridBorder
-            The border of the grid-stack's grid.
+        border : grid.GridBorder
+            The border of the grid's grid.
         hyper_image : ndarray
             A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
@@ -56,7 +56,7 @@ class Mapper(object):
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        The mapping_util matrix is in fact built using the sub-grid of the grid-stack, whereby each pixel is \
+        The mapping_util matrix is in fact built using the sub-grid of the grid, whereby each pixel is \
         divided into a grid of sub-pixels which are all paired to pixels in the pixelization. The entires \
         in the mapping_util matrix now become fractional values dependent on the sub-grid size. For example, for a 2x2 \
         sub-grid in each pixel (which means the fraction value is 1.0/(2.0^2) = 0.25, if we have the following mappings:
@@ -127,10 +127,10 @@ class RectangularMapper(Mapper):
         ----------
         pixels : int
             The number of pixels in the rectangular pixelization (y_pixels*x_pixels).
-        grid : grid.GridStack
+        grid : gridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grid.RegularGridBorder
-            The border of the grid-stack's grid.
+        border : grid.GridBorder
+            The border of the grid's grid.
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
         geometry : pixelization.Rectangular.Geometry
@@ -185,10 +185,10 @@ class VoronoiMapper(Mapper):
         ----------
         pixels : int
             The number of pixels in the Voronoi pixelization.
-        grid : grid.GridStack
+        grid : gridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grid.RegularGridBorder
-            The border of the grid-stack's grid.
+        border : grid.GridBorder
+            The border of the grid's grid.
         voronoi : scipy.spatial.Voronoi
             Class storing the Voronoi grid's geometry.
         geometry : pixelization.Voronoi.Geometry

@@ -119,16 +119,16 @@ class Rectangular(Pixelization):
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
-        1) If a border is supplied, relocate all of the grid-stack's and sub grid pixels beyond the border.
+        1) If a border is supplied, relocate all of the grid's and sub grid pixels beyond the border.
         2) Determine the rectangular pixelization's geometry, by laying the pixelization over the sub-grid.
-        3) Setup the rectangular mapper from the relocated grid-stack and rectangular pixelization.
+        3) Setup the rectangular mapper from the relocated grid and rectangular pixelization.
 
         Parameters
         ----------
         grid : grids.Grid
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
         border : grids.GridBorder | None
-            The border of the grid-stack's grid.
+            The border of the grid's grid.
         hyper_image : ndarray
             A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
@@ -160,7 +160,7 @@ class Voronoi(Pixelization):
         """Abstract base class for a Voronoi pixelization, which represents pixels as an irgrid of Voronoi \
          cells which can form any shape, size or tesselation.
 
-         The grid-stack's coordinates are paired to Voronoi pixels as the nearest-neighbors of the Voronoi \
+         The grid's coordinates are paired to Voronoi pixels as the nearest-neighbors of the Voronoi \
         pixel-centers.
          """
         super(Voronoi, self).__init__()
@@ -269,9 +269,9 @@ class Voronoi(Pixelization):
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
-        1) (before this routine is called), setup the 'pix' grid as part of the grid-stack, which corresponds to a \
+        1) (before this routine is called), setup the 'pix' grid as part of the grid, which corresponds to a \
            sparse set of pixels in the image-plane which are traced to form the pixel centres.
-        2) If a border is supplied, relocate all of the grid-stack's grid, sub and pix grid pixels beyond the border.
+        2) If a border is supplied, relocate all of the grid's grid, sub and pix grid pixels beyond the border.
         3) Determine the adaptive-magnification pixelization's pixel centres, by extracting them from the relocated \
            pix grid.
         4) Use these pixelization centres to setup the Voronoi pixelization.
@@ -343,7 +343,7 @@ class VoronoiMagnification(Voronoi):
         self, grid, cluster_grid=None, hyper_image=None, seed=1
     ):
 
-        sparse_to_grid = grids.SparseToRegularGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
@@ -385,7 +385,7 @@ class VoronoiBrightnessImage(Voronoi):
             hyper_image=hyper_image
         )
 
-        sparse_to_grid = grids.SparseToRegularGrid.from_total_pixels_binned_grid_and_weight_map(
+        sparse_to_grid = grids.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
             total_pixels=self.pixels,
             binned_grid=cluster_grid,
             binned_weight_map=cluster_weight_map,

@@ -53,7 +53,7 @@ class CombinedHyperPhase(HyperPhase):
         positions
         mask
         data
-            The instrument
+            the data
         results
             Results from previous phases
         kwargs

@@ -54,11 +54,11 @@ def plot_image(
     Parameters
     -----------
     image : ScaledSquarePixelArray
-        The image of the instrument.
+        The image of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the instrument, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
     origin = get_origin(array=image, plot_origin=plot_origin)
@@ -141,9 +141,9 @@ def plot_noise_map(
     Parameters
     -----------
     noise_map : ScaledSquarePixelArray
-        The noise map of the instrument.
+        The noise map of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=noise_map, plot_origin=plot_origin)
 
@@ -216,9 +216,9 @@ def plot_psf(
     Parameters
     -----------
     signal_to_noise_map : ScaledSquarePixelArray
-        The psf of the instrument.
+        The psf of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=psf, plot_origin=plot_origin)
 
@@ -291,9 +291,9 @@ def plot_signal_to_noise_map(
     Parameters
     -----------
     signal_to_noise_map : ScaledSquarePixelArray
-        The signal-to-noise map of the instrument.
+        The signal-to-noise map of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=signal_to_noise_map, plot_origin=plot_origin)
 
@@ -370,9 +370,9 @@ def plot_absolute_signal_to_noise_map(
     Parameters
     -----------
     absolute_signal_to_noise_map : ScaledSquarePixelArray
-        The absolute signal-to-noise map of the instrument.
+        The absolute signal-to-noise map of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=absolute_signal_to_noise_map, plot_origin=plot_origin)
 
@@ -449,9 +449,9 @@ def plot_potential_chi_squared_map(
     Parameters
     -----------
     potential_chi_squared_map : ScaledSquarePixelArray
-        The signal-to-noise map of the instrument.
+        The signal-to-noise map of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=potential_chi_squared_map, plot_origin=plot_origin)
 
@@ -518,11 +518,11 @@ def plot_visibilities(
     Parameters
     -----------
     image : ScaledSquarePixelArray
-        The image of the instrument.
+        The image of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the instrument, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
 
@@ -576,11 +576,11 @@ def plot_u_wavelengths(
     Parameters
     -----------
     image : ScaledSquarePixelArray
-        The image of the instrument.
+        The image of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the instrument, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
 
@@ -632,11 +632,11 @@ def plot_v_wavelengths(
     Parameters
     -----------
     image : ScaledSquarePixelArray
-        The image of the instrument.
+        The image of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the instrument, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
 
@@ -697,9 +697,9 @@ def plot_primary_beam(
     Parameters
     -----------
     signal_to_noise_map : ScaledSquarePixelArray
-        The primary_beam of the instrument.
+        The primary_beam of the data.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is plotted as a 'x'.
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
     origin = get_origin(array=primary_beam, plot_origin=plot_origin)
 
@@ -741,7 +741,7 @@ def get_origin(array, plot_origin):
     array : instrument.array.scaled_array.ScaledArray
         The array from which the origin is extracted.
     plot_origin : True
-        If true, the origin of the instrument's coordinate system is returned.
+        If true, the origin of the data's coordinate system is returned.
     """
     if plot_origin:
         return array.origin

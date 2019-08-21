@@ -8,7 +8,7 @@ from autolens.array.grids import reshape_array
 class GalaxyData(object):
     def __init__(self, image, noise_map, pixel_scale):
         """ A galaxy-fit instrument is a collection of fit instrument components which are used to fit a galaxy to another galaxy. \
-        This is where a component of a galaxy's light profiles (e.g. intensities) or mass profiles (e.g. convergence \
+        This is where a component of a galaxy's light profiles (e.g. image) or mass profiles (e.g. convergence \
         , potential or deflection angles) are fitted to one another.
 
         This is primarily performed for automatic prior linking, as a means to efficiently link the priors of a galaxy \
@@ -21,7 +21,7 @@ class GalaxyData(object):
         Parameters
         ----------
         image : scaled_array.ScaledSquarePixelArray
-            An image of the quantity of the galaxy that is being fitted (e.g. its intensities, convergence, etc.).
+            An image of the quantity of the galaxy that is being fitted (e.g. its image, convergence, etc.).
         noise_map : scaled_array.ScaledSquarePixelArray
             The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
         """
@@ -44,7 +44,7 @@ class GalaxyFitData(object):
         use_deflections_x=False,
     ):
         """ A galaxy-fit instrument is a collection of fit instrument components which are used to fit a galaxy to another galaxy. \
-        This is where a component of a galaxy's light profiles (e.g. intensities) or mass profiles (e.g. surface \
+        This is where a component of a galaxy's light profiles (e.g. image) or mass profiles (e.g. surface \
         density, potential or deflection angles) are fitted to one another.
 
         This is primarily performed for automatic prior linking, as a means to efficiently link the priors of a galaxy \

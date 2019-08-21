@@ -28,7 +28,7 @@ class HyperGalaxyPhase(HyperPhase):
             Parameters
             ----------
             lens_data: LensData
-                Lens instrument, including an image and noise
+                lens data, including an image and noise
             hyper_model_image_1d: ndarray
                 An image produce of the overall system by a model
             hyper_galaxy_image_1d_path_dict: ndarray
@@ -194,7 +194,9 @@ class HyperGalaxyPhase(HyperPhase):
             sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
             trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,
-            positions_threshold=cast(phase_imaging.PhaseImaging, phase).positions_threshold,
+            positions_threshold=cast(
+                phase_imaging.PhaseImaging, phase
+            ).positions_threshold,
             pixel_scale_interpolation_grid=cast(
                 phase_imaging.PhaseImaging, phase
             ).pixel_scale_interpolation_grid,
@@ -350,7 +352,9 @@ class HyperGalaxyAllPhase(HyperPhase):
             sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
             trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,
-            positions_threshold=cast(phase_imaging.PhaseImaging, phase).positions_threshold,
+            positions_threshold=cast(
+                phase_imaging.PhaseImaging, phase
+            ).positions_threshold,
             pixel_scale_interpolation_grid=cast(
                 phase_imaging.PhaseImaging, phase
             ).pixel_scale_interpolation_grid,

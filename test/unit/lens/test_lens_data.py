@@ -244,7 +244,7 @@ class TestLensData(object):
             sub_grid_size=8,
             trimmed_psf_shape=(7, 7),
             positions=[np.array([[1.0, 1.0]])],
-            positions_threshold=1.0
+            positions_threshold=1.0,
         )
 
         assert (lens_data_7x7.unmasked_image == np.ones((19, 19))).all()

@@ -440,7 +440,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         Parameters
         -----------
         sub_array_1d : ndarray
-            A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
+            A 1D sub-array of values (e.g. image, convergence, potential) which is mapped to
             a 1d array.
         """
 
@@ -498,7 +498,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         Parameters
         -----------
         sub_grid_2d : ndarray
-            A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
+            A 1D sub-array of values (e.g. image, convergence, potential) which is mapped to
             a 1d array.
         """
         return grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
@@ -514,7 +514,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         Parameters
         -----------
         sub_grid_1d : ndarray
-            A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
+            A 1D sub-array of values (e.g. image, convergence, potential) which is mapped to
             a 1d array.
         """
 
@@ -537,7 +537,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         Parameters
         -----------
         sub_grid_1d : ndarray
-            A 1D sub-array of values (e.g. intensities, convergence, potential) which is mapped to
+            A 1D sub-array of values (e.g. image, convergence, potential) which is mapped to
             a 1d array.
         """
 
@@ -578,7 +578,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     @array_util.Memoizer()
     def blurring_mask_from_psf_shape(self, psf_shape):
         """Compute a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
-        pixels via PSF convolution (see grid.RegularGrid.blurring_grid_from_mask_and_psf_shape).
+        pixels via PSF convolution (see grid.Grid.blurring_grid_from_mask_and_psf_shape).
 
         Parameters
         ----------

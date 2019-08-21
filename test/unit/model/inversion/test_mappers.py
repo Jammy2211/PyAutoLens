@@ -801,9 +801,7 @@ class TestVoronoiMapper:
             )
             grid = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
 
-            sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(
-                grid, pixel_centers
-            )
+            sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers)
 
             assert sub_to_pix[0] == 0
             assert sub_to_pix[1] == 1
@@ -829,9 +827,7 @@ class TestVoronoiMapper:
                 ]
             )
 
-            sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(
-                grid, pixel_centers
-            )
+            sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers)
 
             assert sub_to_pix[0] == 0
             assert sub_to_pix[1] == 1
@@ -866,9 +862,7 @@ class TestVoronoiMapper:
                 ]
             )
 
-            sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(
-                grid, pixel_centers
-            )
+            sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers)
 
             assert sub_to_pix[0] == 4
             assert sub_to_pix[1] == 4
@@ -877,9 +871,7 @@ class TestVoronoiMapper:
             assert sub_to_pix[4] == 0
             assert sub_to_pix[5] == 5
 
-
     class TestSubToPixelization:
-
         def test__sub_to_pix_of_mapper_matches_nearest_neighbor_calculation(self):
 
             pixel_centers = np.array(
@@ -922,13 +914,20 @@ class TestVoronoiMapper:
             sub_mask_1d_index_to_mask_1d_index = np.array(
                 [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
             )
-            mask_1d_index_to_nearest_pixelization_1d_index = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
+            mask_1d_index_to_nearest_pixelization_1d_index = np.array(
+                [0, 0, 1, 0, 0, 1, 2, 2, 3]
+            )
 
             grid = MockPixelizationGrid(
-                    arr=grid, sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index, sub_grid_size=1
-                )
+                arr=grid,
+                sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+                sub_grid_size=1,
+            )
 
-            pixelization_grid = MockPixelizationGrid(arr=pixel_centers, mask_1d_index_to_nearest_pixelization_1d_index=mask_1d_index_to_nearest_pixelization_1d_index)
+            pixelization_grid = MockPixelizationGrid(
+                arr=pixel_centers,
+                mask_1d_index_to_nearest_pixelization_1d_index=mask_1d_index_to_nearest_pixelization_1d_index,
+            )
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
@@ -948,4 +947,7 @@ class TestVoronoiMapper:
                 ),
             )
 
-            assert (mapper.sub_mask_1d_index_to_pixelization_1d_index == sub_to_pix_nearest_neighbour).all()
+            assert (
+                mapper.sub_mask_1d_index_to_pixelization_1d_index
+                == sub_to_pix_nearest_neighbour
+            ).all()

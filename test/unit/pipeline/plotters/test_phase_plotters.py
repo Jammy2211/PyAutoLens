@@ -75,8 +75,7 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
 
     assert phase_plotter_path + "tracer.png" in plot_patch.paths
     assert (
-        phase_plotter_path + "ray_tracing/tracer_profile_image.png"
-        in plot_patch.paths
+        phase_plotter_path + "ray_tracing/tracer_profile_image.png" in plot_patch.paths
     )
     assert (
         phase_plotter_path + "ray_tracing/tracer_source_plane.png" in plot_patch.paths

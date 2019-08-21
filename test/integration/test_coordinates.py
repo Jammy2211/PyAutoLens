@@ -89,10 +89,9 @@ def test__deflection_angles():
         shape=(5, 5), pixel_scale=1.0
     )
 
-
     sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_1d = sis.deflections_from_grid(grid=grid, return_in_2d=False)
-    deflections_y_2d = sis.deflections_from_grid(grid=grid, return_in_2d=True)[:,:,0]
+    deflections_y_2d = sis.deflections_from_grid(grid=grid, return_in_2d=True)[:, :, 0]
 
     assert deflections_y_2d[0, 0] == pytest.approx(-1.0 * deflections_y_2d[4, 0], 1e-2)
     assert deflections_y_2d[1, 1] == pytest.approx(-1.0 * deflections_y_2d[3, 1], 1e-2)
@@ -102,7 +101,7 @@ def test__deflection_angles():
 
     sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_1d = sis.deflections_from_grid(grid=grid, return_in_2d=False)
-    deflections_x_2d = sis.deflections_from_grid(grid=grid, return_in_2d=True)[:,:,1]
+    deflections_x_2d = sis.deflections_from_grid(grid=grid, return_in_2d=True)[:, :, 1]
 
     assert deflections_x_2d[0, 0] == pytest.approx(-1.0 * deflections_x_2d[0, 4], 1e-2)
     assert deflections_x_2d[1, 1] == pytest.approx(-1.0 * deflections_x_2d[1, 3], 1e-2)
@@ -123,13 +122,13 @@ def test__deflection_angles():
 #     print(deflections[22])
 #     print(source_grid[22])
 #     stop
-#     source_image = sersic.intensities_from_grid(grid=source_grid)
+#     source_image = sersic.image_from_grid(grid=source_grid)
 #     print(source_image.argmax())
 #
 #     grid = masks.GridStack.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
 #     lens_galaxy = g.Galaxy(mass=sis)
 #     source_galaxy = g.Galaxy(light=sersic)
-#     tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(galaxies=[lens_galaxy], galaxies=[source_galaxy],
+#     tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy], galaxies=[source_galaxy],
 #                                                  image_plane_grids=grid)
 #
 #     print(source_grid)

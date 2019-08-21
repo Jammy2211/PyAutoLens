@@ -525,22 +525,21 @@ class TestPSF(object):
         def test__identical_to_gaussian_light_profile(self):
 
             from autolens.model.profiles import light_profiles as lp
+            from autolens.array import grids
 
-            grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-                mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1
+            grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+                shape=(3, 3), pixel_scale=1.0, sub_grid_size=1
             )
 
             gaussian = lp.EllipticalGaussian(
                 centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
             )
-            profile_gaussian_1d = gaussian.profile_image_from_grid(grid)
-            profile_gaussian_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-                sub_array_1d=profile_gaussian_1d,
-                mask=np.full(fill_value=False, shape=(3, 3)),
-                sub_grid_size=1,
+            profile_gaussian = gaussian.profile_image_from_grid(
+                grid=grid, return_in_2d=True, return_binned=True
             )
+
             profile_psf = abstract_data.PSF(
-                array=profile_gaussian_2d, pixel_scale=1.0, renormalize=True
+                array=profile_gaussian, pixel_scale=1.0, renormalize=True
             )
 
             imaging_psf = abstract_data.PSF.from_gaussian(

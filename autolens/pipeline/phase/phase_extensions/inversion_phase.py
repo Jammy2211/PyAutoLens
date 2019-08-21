@@ -64,6 +64,7 @@ class InversionPhase(VariableFixingHyperPhase):
             phase=phase, variable_classes=variable_classes, hyper_name="inversion"
         )
 
+
 class InversionBackgroundSkyPhase(InversionPhase):
     """
     Phase that makes everything in the variable from the previous phase equal to the

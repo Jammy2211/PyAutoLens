@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.array.mapping_util import array_mapping_util
+from autolens.array import mask as msk
+from autolens.array import grids
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.galaxy import galaxy as g
 from autolens.lens.util import lens_util
@@ -21,8 +22,10 @@ class TestPlaneImageFromGrid:
             shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=np.array(
+        mask = msk.Mask(array=np.full(shape=(3, 3), fill_value=False), pixel_scale=1.0)
+
+        grid = grids.Grid(
+            arr=np.array(
                 [
                     [-1.0, -1.0],
                     [-1.0, 0.0],
@@ -34,13 +37,12 @@ class TestPlaneImageFromGrid:
                     [1.0, 0.0],
                     [1.0, 1.0],
                 ]
-            )
+            ),
+            mask=mask,
         )
 
-        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=plane_image_galaxy,
-            mask=np.full(fill_value=False, shape=(3, 3)),
-            sub_grid_size=1,
+        plane_image_galaxy = galaxy.profile_image_from_grid(
+            grid, return_in_2d=True, return_binned=True
         )
 
         assert (plane_image == plane_image_galaxy).all()
@@ -66,8 +68,10 @@ class TestPlaneImageFromGrid:
             shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=np.array(
+        mask = msk.Mask(array=np.full(shape=(3, 3), fill_value=False), pixel_scale=1.0)
+
+        grid = grids.Grid(
+            arr=np.array(
                 [
                     [-1.0, -1.0],
                     [-1.0, 0.0],
@@ -79,13 +83,12 @@ class TestPlaneImageFromGrid:
                     [1.0, 0.0],
                     [1.0, 1.0],
                 ]
-            )
+            ),
+            mask=mask,
         )
 
-        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=plane_image_galaxy,
-            mask=np.full(fill_value=False, shape=(3, 3)),
-            sub_grid_size=1,
+        plane_image_galaxy = galaxy.profile_image_from_grid(
+            grid=grid, return_binned=True, return_in_2d=True
         )
 
         assert (plane_image == plane_image_galaxy).all()
@@ -100,8 +103,10 @@ class TestPlaneImageFromGrid:
             shape=(2, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=np.array(
+        mask = msk.Mask(array=np.full(shape=(2, 3), fill_value=False), pixel_scale=1.0)
+
+        grid = grids.Grid(
+            arr=np.array(
                 [
                     [-0.75, -1.0],
                     [-0.75, 0.0],
@@ -110,13 +115,12 @@ class TestPlaneImageFromGrid:
                     [0.75, 0.0],
                     [0.75, 1.0],
                 ]
-            )
+            ),
+            mask=mask,
         )
 
-        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=plane_image_galaxy,
-            mask=np.full(fill_value=False, shape=(2, 3)),
-            sub_grid_size=1,
+        plane_image_galaxy = galaxy.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
         assert (plane_image == plane_image_galaxy).all()
@@ -131,8 +135,10 @@ class TestPlaneImageFromGrid:
             shape=(3, 2), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=np.array(
+        mask = msk.Mask(array=np.full(shape=(3, 2), fill_value=False), pixel_scale=1.0)
+
+        grid = grids.Grid(
+            arr=np.array(
                 [
                     [-1.0, -0.75],
                     [-1.0, 0.75],
@@ -141,13 +147,12 @@ class TestPlaneImageFromGrid:
                     [1.0, -0.75],
                     [1.0, 0.75],
                 ]
-            )
+            ),
+            mask=mask,
         )
 
-        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=plane_image_galaxy,
-            mask=np.full(fill_value=False, shape=(3, 2)),
-            sub_grid_size=1,
+        plane_image_galaxy = galaxy.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
         assert (plane_image == plane_image_galaxy).all()
@@ -162,8 +167,10 @@ class TestPlaneImageFromGrid:
             shape=(3, 3), grid=grid_without_buffer, galaxies=[galaxy], buffer=0.02
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=np.array(
+        mask = msk.Mask(array=np.full(shape=(3, 3), fill_value=False), pixel_scale=1.0)
+
+        grid = grids.Grid(
+            arr=np.array(
                 [
                     [-1.0, -1.0],
                     [-1.0, 0.0],
@@ -175,13 +182,12 @@ class TestPlaneImageFromGrid:
                     [1.0, 0.0],
                     [1.0, 1.0],
                 ]
-            )
+            ),
+            mask=mask,
         )
 
-        plane_image_galaxy = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=plane_image_galaxy,
-            mask=np.full(fill_value=False, shape=(3, 3)),
-            sub_grid_size=1,
+        plane_image_galaxy = galaxy.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
         assert (plane_image == plane_image_galaxy).all()

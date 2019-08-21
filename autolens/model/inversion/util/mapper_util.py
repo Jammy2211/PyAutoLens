@@ -56,7 +56,7 @@ def voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
 
     Parameters
     ----------
-    grid : RegularGrid
+    grid : Grid
         The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
         to an irgrid via lens.
     mask_1d_index_to_nearest_pixelization_1d_index : ndarray

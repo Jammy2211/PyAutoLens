@@ -6,7 +6,7 @@ from autolens.lens import lens_data as ld
 
 from test.simulation import simulation_util
 
-# Although we could test the intensities without using an image (e.g. by just making a grid), we have chosen to
+# Although we could test the image without using an image (e.g. by just making a grid), we have chosen to
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
 # analysis
 
