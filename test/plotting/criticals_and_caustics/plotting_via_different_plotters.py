@@ -12,7 +12,7 @@ sis_mass_profile = mass_profiles.EllipticalIsothermal(
 
 profile_plotters.plot_convergence(
     mass_profile=sis_mass_profile,
-    grid=grid.sub,
+    grid=grid,
     plot_critical_curves=False,
     plot_caustics=False,
 )
@@ -21,7 +21,7 @@ profile_plotters.plot_convergence(
 #
 # galaxy_plotters.plot_convergence(
 #     galaxy=galaxy,
-#     grid=grid.sub,
+#     grid=grid,
 #     plot_critical_curves=False,
 #     plot_caustics=True,
 # )

@@ -767,7 +767,7 @@ class TestAbstractPlaneLensing(object):
 
             assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
 
-        def test__plane_has_no_galaxies__convergence_is_zeros_size_of_reshaped_sub_grid_array(
+        def test__plane_has_no_galaxies__convergence_is_zeros_size_of_reshaped_sub_array(
             self, sub_grid_7x7
         ):
 
@@ -875,7 +875,7 @@ class TestAbstractPlaneLensing(object):
 
             assert potential == pytest.approx(g0_potential + g1_potential, 1.0e-8)
 
-        def test__plane_has_no_galaxies__potential_is_zeros_size_of_reshaped_sub_grid_array(
+        def test__plane_has_no_galaxies__potential_is_zeros_size_of_reshaped_sub_array(
             self, sub_grid_7x7
         ):
             plane = pl.Plane(galaxies=[], redshift=0.5)

@@ -1080,14 +1080,14 @@ class TestAbstractTracerLensing(object):
         #         == sub_grid_7x7.unlensed_unsubbed_1d.mask
         #     ).all()
         #     assert (
-        #         tracer.image_plane.grid.sub.mask == sub_grid_7x7.mask
+        #         tracer.image_plane.grid.mask == sub_grid_7x7.mask
         #     ).all()
         #     assert (
         #         tracer.source_plane.grid.mask
         #         == sub_grid_7x7.unlensed_unsubbed_1d.mask
         #     ).all()
         #     assert (
-        #         tracer.source_plane.grid.sub.mask == sub_grid_7x7.mask
+        #         tracer.source_plane.grid.mask == sub_grid_7x7.mask
         #     ).all()
 
     class TestProfileImages:

@@ -34,7 +34,7 @@ def galaxy_fit_phase():
     )
 
     potential = galaxy.convergence_from_grid(
-        galaxies=[galaxy], grid=grid.sub, return_in_2d=True
+        galaxies=[galaxy], grid=grid, return_in_2d=True
     )
 
     noise_map = scaled_array.ScaledSquarePixelArray(
