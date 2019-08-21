@@ -816,6 +816,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 0])
             / (np.sqrt((grid[:, 1] ** 2) * (self.axis_ratio ** 2) + grid[:, 0] ** 2))
         )
+
         deflection_x = np.arcsinh(
             (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 1])
             / (

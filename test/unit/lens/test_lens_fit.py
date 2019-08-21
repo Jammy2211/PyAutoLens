@@ -18,6 +18,75 @@ from autolens.model.profiles import mass_profiles as mp
 from test.unit.mock.model.mock_profiles import MockLightProfile
 
 
+class TestFitProperties:
+
+    def test__total_inversions(self, lens_data_7x7):
+
+        g0 = g.Galaxy(
+            redshift=0.5,
+        )
+
+        g1 = g.Galaxy(
+            redshift=1.0,
+        )
+
+        g2 = g.Galaxy(
+            redshift=2.0,
+        )
+
+        tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+        fit = lens_fit.LensTracerFit(
+            lens_data=lens_data_7x7,
+            tracer=tracer, image_1d=lens_data_7x7.image_1d,
+            noise_map_1d=lens_data_7x7.noise_map_1d,
+            mask_1d=lens_data_7x7.mask_1d,
+            model_image_1d=lens_data_7x7.image_1d,
+        )
+
+        assert fit.total_inversions == 0
+
+        g2 = g.Galaxy(
+            redshift=2.0, pixelization=pixelizations.Rectangular(), regularization=regularization.Constant()
+        )
+
+        tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+        fit = lens_fit.LensTracerFit(
+            lens_data=lens_data_7x7,
+            tracer=tracer, image_1d=lens_data_7x7.image_1d,
+            noise_map_1d=lens_data_7x7.noise_map_1d,
+            mask_1d=lens_data_7x7.mask_1d,
+            model_image_1d=lens_data_7x7.image_1d,
+        )
+
+        assert fit.total_inversions == 1
+
+        g0 = g.Galaxy(
+            redshift=0.5,  pixelization=pixelizations.Rectangular(), regularization=regularization.Constant(),
+        )
+
+        g1 = g.Galaxy(
+            redshift=1.0,  pixelization=pixelizations.Rectangular(), regularization=regularization.Constant(),
+        )
+
+        g2 = g.Galaxy(
+            redshift=2.0, pixelization=pixelizations.Rectangular(), regularization=regularization.Constant(),
+        )
+
+        tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+        fit = lens_fit.LensTracerFit(
+            lens_data=lens_data_7x7,
+            tracer=tracer, image_1d=lens_data_7x7.image_1d,
+            noise_map_1d=lens_data_7x7.noise_map_1d,
+            mask_1d=lens_data_7x7.mask_1d,
+            model_image_1d=lens_data_7x7.image_1d,
+        )
+
+        assert fit.total_inversions == 3
+
+
 class TestLensProfileFit:
     class TestLikelihood:
         def test__1x2_image__no_psf_blurring__tracing_fits_data_with_chi_sq_5(self):

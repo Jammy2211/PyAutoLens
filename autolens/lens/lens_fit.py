@@ -164,7 +164,7 @@ class LensTracerFit(LensDataFit):
 
     @property
     def total_inversions(self):
-        return len(self.tracer.regularizations_of_planes)
+        return len(list(filter(None, self.tracer.regularizations_of_planes)))
 
     @property
     def unmasked_blurred_profile_image(self):

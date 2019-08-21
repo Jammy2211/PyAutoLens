@@ -42,7 +42,7 @@ for data_resolution in ["HST_Up"]:
 
     interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
         mask=lens_data.mask_2d,
-        grid=lens_data.grid.sub,
+        grid=lens_data.grid,
         pixel_scale_interpolation_grid=0.05,
     )
 
@@ -61,7 +61,7 @@ for data_resolution in ["HST_Up"]:
     interp_deflections = mass_profile.deflections_from_grid(
         grid=interpolator.interp_grid
     )
-    deflections = np.zeros((lens_data.grid.sub.shape[0], 2))
+    deflections = np.zeros((lens_data.grid.shape[0], 2))
     deflections[:, 0] = interpolator.interpolated_values_from_values(
         values=interp_deflections[:, 0]
     )
@@ -69,12 +69,12 @@ for data_resolution in ["HST_Up"]:
         values=interp_deflections[:, 1]
     )
 
-    true_deflections = mass_profile.deflections_from_grid(grid=lens_data.grid.sub)
+    true_deflections = mass_profile.deflections_from_grid(grid=lens_data.grid)
 
-    true_deflections_y_2d = lens_data.grid.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
+    true_deflections_y_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
         sub_array_1d=true_deflections[:, 0]
     )
-    true_deflections_x_2d = lens_data.grid.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
+    true_deflections_x_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
         sub_array_1d=true_deflections[:, 1]
     )
 
@@ -88,10 +88,10 @@ for data_resolution in ["HST_Up"]:
     print("interpolation x uncertainty: ", np.std(difference_x))
     print("interpolation x max error: ", np.max(difference_x))
 
-    difference_y_2d = lens_data.grid.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
+    difference_y_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
         sub_array_1d=difference_y
     )
-    difference_x_2d = lens_data.grid.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
+    difference_x_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
         sub_array_1d=difference_x
     )
 
@@ -111,9 +111,9 @@ for data_resolution in ["HST_Up"]:
     # print("interpolation x std percent difference: ", np.std(difference_percent_x))
     # print("interpolation x mean percent difference: ", np.max(difference_percent_x))
     #
-    # difference_percent_y_2d = lens_data.grid.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    # difference_percent_y_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
     #     sub_array_1d=difference_percent_y)
-    # difference_percent_x_2d = lens_data.grid.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    # difference_percent_x_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
     #     sub_array_1d=difference_percent_x)
     #
     # array_plotters.plot_array(array=difference_percent_y_2d)
