@@ -6,8 +6,8 @@ from autolens.model.profiles import light_profiles as lp
 from test.integration.tests import runner
 
 test_type = "model_mapper"
-test_name = "constant_tuples_x1"
-data_type = "lens_only_dev_vaucouleurs"
+test_name = "constant_tuples"
+data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "LSST"
 
 

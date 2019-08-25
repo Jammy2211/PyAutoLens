@@ -38,7 +38,11 @@ def constant_regularization_matrix_from_pixel_neighbors(
 
 @decorator_util.jit()
 def adaptive_pixel_signals_from_images(
-    pixels, signal_scale, sub_to_pix, sub_to_regular, hyper_image
+    pixels,
+    signal_scale,
+    sub_mask_1d_index_to_pixelization_1d_index,
+    sub_mask_1d_index_to_mask_1d_index,
+    hyper_image,
 ):
     """Compute the (hyper) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
     These pixel-signals are used to compute the effective regularization weight of each pixel.
@@ -46,7 +50,7 @@ def adaptive_pixel_signals_from_images(
     The pixel signals are hyper in the following ways:
 
     1) Divided by the number of datas_-pixels in the pixel, to ensure all pixels have the same \
-    'relative' signal (i.e. a pixel with 10 regular-pixels doesn't have x2 the signal of one with 5).
+    'relative' signal (i.e. a pixel with 10 pixels doesn't have x2 the signal of one with 5).
 
     2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the \
     regularizations weights are defined identically for any datas_ units or signal-to-noise_map ratio.
@@ -62,7 +66,7 @@ def adaptive_pixel_signals_from_images(
         A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
         low signal regions.
     regular_to_pix : ndarray
-        A 1D array mapping every pixel on the regular-grid to a pixel on the pixelization.
+        A 1D array mapping_util every pixel on the grid to a pixel on the pixelization.
     hyper_image : ndarray
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
@@ -70,10 +74,12 @@ def adaptive_pixel_signals_from_images(
     pixel_signals = np.zeros((pixels,))
     pixel_sizes = np.zeros((pixels,))
 
-    for sub_index in range(len(sub_to_pix)):
-        regular_index = sub_to_regular[sub_index]
-        pixel_signals[sub_to_pix[sub_index]] += hyper_image[regular_index]
-        pixel_sizes[sub_to_pix[sub_index]] += 1
+    for sub_mask_1d_index in range(len(sub_mask_1d_index_to_pixelization_1d_index)):
+        mask_1d_index = sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index]
+        pixel_signals[
+            sub_mask_1d_index_to_pixelization_1d_index[sub_mask_1d_index]
+        ] += hyper_image[mask_1d_index]
+        pixel_sizes[sub_mask_1d_index_to_pixelization_1d_index[sub_mask_1d_index]] += 1
 
     pixel_sizes[pixel_sizes == 0] = 1
     pixel_signals /= pixel_sizes

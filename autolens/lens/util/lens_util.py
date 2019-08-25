@@ -1,5 +1,6 @@
 from autolens import exc
-from autolens.data.array.util import grid_util, mapping_util
+from autolens.array.util import grid_util
+from autolens.array.mapping_util import array_mapping_util
 from autolens.lens import plane as pl
 
 import numpy as np
@@ -27,14 +28,14 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
 
     image_1d = sum(
         map(
-            lambda g: g.intensities_from_grid(
+            lambda g: g.profile_image_from_grid(
                 grid=uniform_grid, return_in_2d=False, return_binned=False
             ),
             galaxies,
         )
     )
 
-    image_2d = mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+    image_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
         sub_array_1d=image_1d,
         mask=np.full(fill_value=False, shape=shape),
         sub_grid_size=1,
@@ -70,7 +71,7 @@ def ordered_plane_redshifts_from_galaxies(galaxies):
     ]
 
 
-def ordered_plane_redshifts_from_lens_and_source_plane_redshifts_and_slice_sizes(
+def ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
     lens_redshifts, planes_between_lenses, source_plane_redshift
 ):
     """Given a set of lens plane redshifts, the source-plane redshift and the number of planes between each, setup the \
@@ -148,64 +149,3 @@ def galaxies_in_redshift_ordered_planes_from_galaxies(galaxies, plane_redshifts)
         galaxies_in_redshift_ordered_planes[index].append(galaxy)
 
     return galaxies_in_redshift_ordered_planes
-
-
-def compute_deflections_at_next_plane(plane_index, total_planes):
-    """This function determines whether the tracer should compute the deflections at the next plane.
-
-    This is True if there is another plane after this plane, else it is False..
-
-    Parameters
-    -----------
-    plane_index : int
-        The index of the plane we are deciding if we should compute its deflections.
-    total_planes : int
-        The total number of planes."""
-
-    if plane_index < total_planes - 1:
-        return True
-    elif plane_index == total_planes - 1:
-        return False
-    else:
-        raise exc.RayTracingException(
-            "A galaxy was not correctly allocated its previous / next redshifts"
-        )
-
-
-def scaled_deflections_stack_from_plane_and_scaling_factor(plane, scaling_factor):
-    """Given a plane and scaling factor, compute a set of hyper deflections.
-
-    Parameters
-    -----------
-    plane : plane.Plane
-        The plane whose deflection stack is hyper.
-    scaling_factor : float
-        The factor the deflection angles are hyper by, which is typically the scaling factor between redshifts for \
-        multi-plane lensing.
-    """
-
-    def scale(grid):
-        return np.multiply(scaling_factor, grid)
-
-    if plane.deflections_stack is not None:
-        return plane.deflections_stack.apply_function(scale)
-    else:
-        return None
-
-
-def grid_stack_from_deflections_stack(grid_stack, deflections_stack):
-    """For a deflection stack, comput a new grid stack but subtracting the deflections"""
-
-    if deflections_stack is not None:
-
-        def minus(grid, deflections):
-            return grid - deflections
-
-        return grid_stack.map_function(minus, deflections_stack)
-
-
-def traced_collection_for_deflections(grid_stack, deflections):
-    def subtract_scaled_deflections(grid, scaled_deflection):
-        return np.subtract(grid, scaled_deflection)
-
-    return grid_stack.map_function(subtract_scaled_deflections, deflections)

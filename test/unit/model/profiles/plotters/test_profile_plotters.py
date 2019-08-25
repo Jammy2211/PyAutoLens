@@ -11,18 +11,12 @@ def make_profile_plotter_setup():
 
 
 def test__all_quantities_are_output(
-    lp_0,
-    mp_0,
-    grid_stack_7x7,
-    mask_7x7,
-    positions_7x7,
-    profile_plotter_path,
-    plot_patch,
+    lp_0, mp_0, sub_grid_7x7, mask_7x7, positions_7x7, profile_plotter_path, plot_patch
 ):
 
-    profile_plotters.plot_intensities(
+    profile_plotters.plot_image(
         light_profile=lp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -33,16 +27,16 @@ def test__all_quantities_are_output(
         output_format="png",
     )
 
-    assert profile_plotter_path + "intensities.png" in plot_patch.paths
+    assert profile_plotter_path + "image.png" in plot_patch.paths
 
     profile_plotters.plot_convergence(
         mass_profile=mp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -54,12 +48,12 @@ def test__all_quantities_are_output(
 
     profile_plotters.plot_potential(
         mass_profile=mp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -71,12 +65,12 @@ def test__all_quantities_are_output(
 
     profile_plotters.plot_deflections_y(
         mass_profile=mp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -88,12 +82,12 @@ def test__all_quantities_are_output(
 
     profile_plotters.plot_deflections_x(
         mass_profile=mp_0,
-        grid=grid_stack_7x7.sub,
+        grid=sub_grid_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
         zoom_around_mask=True,
         positions=positions_7x7,
-        plot_critical_curves=True,
+        plot_critical_curves=False,
         plot_caustics=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -102,3 +96,20 @@ def test__all_quantities_are_output(
     )
 
     assert profile_plotter_path + "deflections_x.png" in plot_patch.paths
+
+    profile_plotters.plot_magnification(
+        mass_profile=mp_0,
+        grid=sub_grid_7x7,
+        mask=mask_7x7,
+        extract_array_from_mask=True,
+        zoom_around_mask=True,
+        positions=positions_7x7,
+        plot_critical_curves=False,
+        plot_caustics=True,
+        cb_tick_values=[1.0],
+        cb_tick_labels=["1.0"],
+        output_path=profile_plotter_path,
+        output_format="png",
+    )
+
+    assert profile_plotter_path + "magnification.png" in plot_patch.paths

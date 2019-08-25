@@ -26,6 +26,9 @@ class VariableFixingHyperPhase(HyperPhase):
         phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
             "MultiNest", "extension_inversion_n_live_points", int
         )
+        optimizer.multimodal = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_inversion_multimodal", bool
+        )
 
         return phase
 
@@ -63,14 +66,6 @@ class InversionPhase(VariableFixingHyperPhase):
         super().__init__(
             phase=phase, variable_classes=variable_classes, hyper_name="inversion"
         )
-
-    @property
-    def uses_inversion(self):
-        return True
-
-    @property
-    def uses_hyper_images(self):
-        return True
 
 
 class InversionBackgroundSkyPhase(InversionPhase):

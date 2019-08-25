@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from autolens import exc
-from autolens.data.array.util import array_util
+from autolens.array.util import array_util
 
 
 def get_subplot_rows_columns_figsize(number_subplots):
@@ -166,6 +166,29 @@ def get_critical_curve_and_caustic(obj, grid, plot_critical_curve, plot_caustics
         caustics = []
 
     return [critical_curves, caustics]
+
+
+def plot_lines(line_lists):
+    """Plot the liness of the mask or the array on the figure.
+
+    Parameters
+    -----------t.
+    mask : ndarray of instrument.array.mask.Mask
+        The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+    should_plot_lines : bool
+        If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    lines_pointsize : int
+        The size of the points plotted to show the liness.
+    """
+    if line_lists is not None:
+        for line_list in line_lists:
+            for line in line_list:
+                if not line == []:
+                    plt.plot(line[:, 1], line[:, 0], c="r", lw=1.5, zorder=200)
 
 
 def close_figure(as_subplot):

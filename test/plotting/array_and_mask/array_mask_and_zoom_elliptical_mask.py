@@ -1,14 +1,14 @@
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from test.simulation import simulation_util
 from autolens.plotters import array_plotters
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
-# uniform grid of rectangular pixels, but instead uses irregular 'Voronoi' pixels. So, why would we want to do that?
+# uniform grid of rectangular pixels, but instead uses ir'Voronoi' pixels. So, why would we want to do that?
 # Lets take another look at the rectangular grid, and think about its weakness.
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
 ccd_data = simulation_util.load_test_ccd_data(
-    data_type="lens_only_dev_vaucouleurs", data_resolution="LSST"
+    data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 array = ccd_data.image
 
@@ -30,7 +30,7 @@ array_plotters.plot_array(
 )
 
 ccd_data = simulation_util.load_test_ccd_data(
-    data_type="no_lens_light_sis__source_smooth_offset_centre", data_resolution="LSST"
+    data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
 )
 array = ccd_data.image
 

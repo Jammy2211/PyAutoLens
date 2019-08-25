@@ -10,7 +10,7 @@ from test.integration.tests import runner
 
 test_type = "full_pipeline"
 test_name = "hyper_no_lens_light_bg"
-data_type = "no_lens_light__source_smooth"
+data_type = "lens_mass__source_smooth"
 data_resolution = "LSST"
 
 

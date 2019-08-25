@@ -870,7 +870,7 @@ def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
             should_plot_image_plane_pix
             and fit.inversion.mapper.is_image_plane_pixelization
         ):
-            return fit.tracer.image_plane.grid_stack.pixelization
+            return fit.tracer.pixelization_grids_of_planes_from_grid(grid=fit.grid)[-1]
     else:
         return None
 

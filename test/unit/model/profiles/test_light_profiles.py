@@ -8,7 +8,8 @@ import scipy.special
 
 import autofit as af
 from autolens import dimensions as dim
-from autolens.data.array import grids
+from autolens.data.instrument import abstract_data
+from autolens.array import grids
 from autolens.model.profiles import light_profiles as lp
 
 from test.unit.mock.model import mock_cosmology
@@ -79,28 +80,28 @@ class TestGaussian:
         gaussian = lp.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=1.0
         )
-        assert gaussian.intensities_from_grid_radii(grid_radii=1.0) == pytest.approx(
+        assert gaussian.profile_image_from_grid_radii(grid_radii=1.0) == pytest.approx(
             0.24197, 1e-2
         )
 
         gaussian = lp.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=2.0, sigma=1.0
         )
-        assert gaussian.intensities_from_grid_radii(grid_radii=1.0) == pytest.approx(
+        assert gaussian.profile_image_from_grid_radii(grid_radii=1.0) == pytest.approx(
             2.0 * 0.24197, 1e-2
         )
 
         gaussian = lp.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=2.0
         )
-        assert gaussian.intensities_from_grid_radii(grid_radii=1.0) == pytest.approx(
+        assert gaussian.profile_image_from_grid_radii(grid_radii=1.0) == pytest.approx(
             0.1760, 1e-2
         )
 
         gaussian = lp.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=2.0
         )
-        assert gaussian.intensities_from_grid_radii(grid_radii=3.0) == pytest.approx(
+        assert gaussian.profile_image_from_grid_radii(grid_radii=3.0) == pytest.approx(
             0.0647, 1e-2
         )
 
@@ -109,32 +110,32 @@ class TestGaussian:
         gaussian = lp.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=1.0
         )
-        assert gaussian.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
+        assert gaussian.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(0.24197, 1e-2)
 
         gaussian = lp.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=2.0, sigma=1.0
         )
 
-        assert gaussian.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
+        assert gaussian.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(2.0 * 0.24197, 1e-2)
 
         gaussian = lp.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=2.0
         )
 
-        assert gaussian.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
+        assert gaussian.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(0.1760, 1e-2)
 
         gaussian = lp.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=2.0
         )
 
-        assert gaussian.intensities_from_grid(
-            grid=np.array([[0.0, 3.0]])
+        assert gaussian.profile_image_from_grid(
+            grid=np.array([[0.0, 3.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(0.0647, 1e-2)
 
     def test__intensity_from_grid__change_geometry(self):
@@ -142,15 +143,15 @@ class TestGaussian:
         gaussian = lp.EllipticalGaussian(
             centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=1.0
         )
-        assert gaussian.intensities_from_grid(
-            grid=np.array([[1.0, 0.0]])
+        assert gaussian.profile_image_from_grid(
+            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(0.24197, 1e-2)
 
         gaussian = lp.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, intensity=1.0, sigma=1.0
         )
-        assert gaussian.intensities_from_grid(
-            grid=np.array([[1.0, 0.0]])
+        assert gaussian.profile_image_from_grid(
+            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(0.05399, 1e-2)
 
         gaussian_0 = lp.EllipticalGaussian(
@@ -161,11 +162,15 @@ class TestGaussian:
             centre=(3.0, 0.0), axis_ratio=0.5, phi=0.0, intensity=1.0, sigma=1.0
         )
 
-        assert gaussian_0.intensities_from_grid(
-            grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]])
+        assert gaussian_0.profile_image_from_grid(
+            grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]]),
+            return_in_2d=False,
+            return_binned=False,
         ) == pytest.approx(
-            gaussian_1.intensities_from_grid(
-                grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]])
+            gaussian_1.profile_image_from_grid(
+                grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]]),
+                return_in_2d=False,
+                return_binned=False,
             ),
             1e-4,
         )
@@ -178,11 +183,15 @@ class TestGaussian:
             centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, intensity=1.0, sigma=1.0
         )
 
-        assert gaussian_0.intensities_from_grid(
-            grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]])
+        assert gaussian_0.profile_image_from_grid(
+            grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]]),
+            return_in_2d=False,
+            return_binned=False,
         ) == pytest.approx(
-            gaussian_1.intensities_from_grid(
-                grid=np.array([[0.0, 0.0], [0.0, -1.0], [0.0, 1.0]])
+            gaussian_1.profile_image_from_grid(
+                grid=np.array([[0.0, 0.0], [0.0, -1.0], [0.0, 1.0]]),
+                return_in_2d=False,
+                return_binned=False,
             ),
             1e-4,
         )
@@ -194,31 +203,35 @@ class TestGaussian:
         spherical = lp.SphericalGaussian(intensity=3.0, sigma=2.0)
 
         assert (
-            elliptical.intensities_from_grid(grid)
-            == spherical.intensities_from_grid(grid)
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         gaussian = lp.EllipticalGaussian()
 
-        intensities = gaussian.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = gaussian.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
         gaussian = lp.SphericalGaussian()
 
-        intensities = gaussian.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = gaussian.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
 
 class TestSersic:
@@ -297,7 +310,7 @@ class TestSersic:
             effective_radius=0.6,
             sersic_index=4.0,
         )
-        assert sersic.intensities_from_grid_radii(grid_radii=1.0) == pytest.approx(
+        assert sersic.profile_image_from_grid_radii(grid_radii=1.0) == pytest.approx(
             0.351797, 1e-3
         )
 
@@ -309,7 +322,7 @@ class TestSersic:
             sersic_index=2.0,
         )
         # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
-        assert sersic.intensities_from_grid_radii(grid_radii=1.5) == pytest.approx(
+        assert sersic.profile_image_from_grid_radii(grid_radii=1.5) == pytest.approx(
             4.90657319276, 1e-3
         )
 
@@ -321,8 +334,8 @@ class TestSersic:
             effective_radius=2.0,
             sersic_index=2.0,
         )
-        assert sersic.intensities_from_grid(
-            grid=np.array([[1.0, 0.0]])
+        assert sersic.profile_image_from_grid(
+            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(5.38066670129, 1e-3)
 
     def test__intensity_from_grid__change_geometry(self):
@@ -342,9 +355,11 @@ class TestSersic:
             sersic_index=2.0,
         )
 
-        assert sersic_0.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
-        ) == sersic_1.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
+        assert sersic_0.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
+        ) == sersic_1.profile_image_from_grid(
+            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
+        )
 
     def test__spherical_and_elliptical_match(self):
         elliptical = lp.EllipticalSersic(
@@ -360,8 +375,12 @@ class TestSersic:
         )
 
         assert (
-            elliptical.intensities_from_grid(grid)
-            == spherical.intensities_from_grid(grid)
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__summarize_in_units(self):
@@ -395,25 +414,25 @@ class TestSersic:
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         sersic = lp.EllipticalSersic()
 
-        intensities = sersic.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = sersic.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
         sersic = lp.SphericalSersic()
 
-        intensities = sersic.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = sersic.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
 
 class TestExponential:
@@ -487,37 +506,37 @@ class TestExponential:
         exponential = lp.EllipticalExponential(
             axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6
         )
-        assert exponential.intensities_from_grid_radii(grid_radii=1.0) == pytest.approx(
-            0.3266, 1e-3
-        )
+        assert exponential.profile_image_from_grid_radii(
+            grid_radii=1.0
+        ) == pytest.approx(0.3266, 1e-3)
 
         exponential = lp.EllipticalExponential(
             axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0
         )
-        assert exponential.intensities_from_grid_radii(grid_radii=1.5) == pytest.approx(
-            4.5640, 1e-3
-        )
+        assert exponential.profile_image_from_grid_radii(
+            grid_radii=1.5
+        ) == pytest.approx(4.5640, 1e-3)
 
     def test__intensity_from_grid__correct_values(self):
         exponential = lp.EllipticalExponential(
             axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0
         )
-        assert exponential.intensities_from_grid(
-            grid=np.array([[1.0, 0.0]])
+        assert exponential.profile_image_from_grid(
+            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(4.9047, 1e-3)
 
         exponential = lp.EllipticalExponential(
             axis_ratio=0.5, phi=90.0, intensity=2.0, effective_radius=3.0
         )
-        assert exponential.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
+        assert exponential.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(4.8566, 1e-3)
 
         exponential = lp.EllipticalExponential(
             axis_ratio=0.5, phi=90.0, intensity=4.0, effective_radius=3.0
         )
-        assert exponential.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
+        assert exponential.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(2.0 * 4.8566, 1e-3)
 
     def test__intensity_from_grid__change_geometry(self):
@@ -529,9 +548,11 @@ class TestExponential:
             axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0
         )
 
-        assert exponential_0.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
-        ) == exponential_1.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
+        assert exponential_0.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
+        ) == exponential_1.profile_image_from_grid(
+            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
+        )
 
     def test__spherical_and_elliptical_match(self):
         elliptical = lp.EllipticalExponential(
@@ -541,31 +562,35 @@ class TestExponential:
         spherical = lp.SphericalExponential(intensity=3.0, effective_radius=2.0)
 
         assert (
-            elliptical.intensities_from_grid(grid)
-            == spherical.intensities_from_grid(grid)
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         exponential = lp.EllipticalExponential()
 
-        intensities = exponential.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = exponential.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
         exponential = lp.SphericalExponential()
 
-        intensities = exponential.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = exponential.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
 
 class TestDevVaucouleurs:
@@ -639,14 +664,14 @@ class TestDevVaucouleurs:
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs(
             axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6
         )
-        assert dev_vaucouleurs.intensities_from_grid_radii(
+        assert dev_vaucouleurs.profile_image_from_grid_radii(
             grid_radii=1.0
         ) == pytest.approx(0.3518, 1e-3)
 
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs(
             axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0
         )
-        assert dev_vaucouleurs.intensities_from_grid_radii(
+        assert dev_vaucouleurs.profile_image_from_grid_radii(
             grid_radii=1.5
         ) == pytest.approx(5.1081, 1e-3)
 
@@ -654,23 +679,23 @@ class TestDevVaucouleurs:
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs(
             axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0
         )
-        assert dev_vaucouleurs.intensities_from_grid(
-            grid=np.array([[1.0, 0.0]])
+        assert dev_vaucouleurs.profile_image_from_grid(
+            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(5.6697, 1e-3)
 
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs(
             axis_ratio=0.5, phi=90.0, intensity=2.0, effective_radius=3.0
         )
 
-        assert dev_vaucouleurs.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
+        assert dev_vaucouleurs.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(7.4455, 1e-3)
 
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs(
             axis_ratio=0.5, phi=90.0, intensity=4.0, effective_radius=3.0
         )
-        assert dev_vaucouleurs.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
+        assert dev_vaucouleurs.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(2.0 * 7.4455, 1e-3)
 
     def test__intensity_from_grid__change_geometry(self):
@@ -683,9 +708,11 @@ class TestDevVaucouleurs:
             axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0
         )
 
-        assert dev_vaucouleurs_0.intensities_from_grid(
-            grid=np.array([[0.0, 1.0]])
-        ) == dev_vaucouleurs_1.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
+        assert dev_vaucouleurs_0.profile_image_from_grid(
+            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
+        ) == dev_vaucouleurs_1.profile_image_from_grid(
+            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
+        )
 
     def test__spherical_and_elliptical_match(self):
         elliptical = lp.EllipticalDevVaucouleurs(
@@ -695,31 +722,35 @@ class TestDevVaucouleurs:
         spherical = lp.SphericalDevVaucouleurs(intensity=3.0, effective_radius=2.0)
 
         assert (
-            elliptical.intensities_from_grid(grid)
-            == spherical.intensities_from_grid(grid)
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs()
 
-        intensities = dev_vaucouleurs.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = dev_vaucouleurs.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
         dev_vaucouleurs = lp.SphericalDevVaucouleurs()
 
-        intensities = dev_vaucouleurs.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = dev_vaucouleurs.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
 
 class TestCoreSersic(object):
@@ -841,7 +872,7 @@ class TestCoreSersic(object):
             gamma=1.0,
             alpha=1.0,
         )
-        assert core_sersic.intensities_from_grid_radii(0.01) == 0.1
+        assert core_sersic.profile_image_from_grid_radii(0.01) == 0.1
 
     def test__spherical_and_elliptical_match(self):
         elliptical = lp.EllipticalCoreSersic(
@@ -867,31 +898,35 @@ class TestCoreSersic(object):
         )
 
         assert (
-            elliptical.intensities_from_grid(grid)
-            == spherical.intensities_from_grid(grid)
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__reshape_decorators(self):
 
-        regular_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=1.0
         )
 
         core_sersic = lp.EllipticalCoreSersic()
 
-        intensities = core_sersic.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = core_sersic.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
         core_sersic = lp.SphericalCoreSersic()
 
-        intensities = core_sersic.intensities_from_grid(
-            grid=regular_grid, return_in_2d=True, return_binned=False
+        image = core_sersic.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert intensities.shape == (2, 2)
+        assert image.shape == (2, 2)
 
 
 def luminosity_from_radius_and_profile(radius, profile):
@@ -1118,7 +1153,7 @@ class TestLuminosityWithinEllipse(object):
                 eta = sersic.grid_to_elliptical_radii(np.array([[x, y]]))
 
                 if eta < radius:
-                    luminosity_grid += sersic.intensities_from_grid_radii(eta) * area
+                    luminosity_grid += sersic.profile_image_from_grid_radii(eta) * area
 
         luminosity_integral = sersic.luminosity_within_ellipse_in_units(
             major_axis=radius, unit_luminosity="counts", exposure_time=3.0
@@ -1140,6 +1175,11 @@ class TestGrids(object):
 
         elliptical = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0)
 
-        assert elliptical.intensities_from_grid(np.array([[1, 1]])) == pytest.approx(
-            elliptical.intensities_from_grid(np.array([[-1, -1]])), 1e-4
+        assert elliptical.profile_image_from_grid(
+            np.array([[1, 1]]), return_in_2d=False, return_binned=False
+        ) == pytest.approx(
+            elliptical.profile_image_from_grid(
+                np.array([[-1, -1]]), return_in_2d=False, return_binned=False
+            ),
+            1e-4,
         )

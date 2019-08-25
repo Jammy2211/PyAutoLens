@@ -4,12 +4,12 @@ import numpy as np
 
 import autofit as af
 from autolens import dimensions as dim
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
 
 # noinspection PyAbstractClass
 class AbstractEllipticalSersic(mp.EllipticalMassProfile):
@@ -57,7 +57,7 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -66,11 +66,11 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
         Parameters
         ----------
         grid : grids.Grid
-            The grid of (y,x) arc-second coordinates the surface density is computed on.
+            The grid of (y,x) arc-second coordinates the convergence is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -169,7 +169,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -440,7 +440,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         )
         self.mass_to_light_gradient = mass_to_light_gradient
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -449,11 +449,11 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         Parameters
         ----------
         grid : grids.Grid
-            The grid of (y,x) arc-second coordinates the surface density is computed on.
+            The grid of (y,x) arc-second coordinates the convergence is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -475,7 +475,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """

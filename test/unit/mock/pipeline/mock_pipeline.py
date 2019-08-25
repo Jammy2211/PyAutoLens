@@ -2,7 +2,7 @@ import numpy as np
 
 import autofit as af
 from autolens.model.galaxy import galaxy as g
-from autolens.data.array.util import binning_util
+from autolens.array.util import binning_util
 
 
 class MockAnalysis(object):
@@ -27,6 +27,7 @@ class MockResults(object):
         constant=None,
         analysis=None,
         optimizer=None,
+        pixelization=None,
     ):
         self.model_image = model_image
         self.unmasked_model_image = model_image
@@ -36,7 +37,8 @@ class MockResults(object):
         self.variable = af.ModelMapper()
         self.analysis = analysis
         self.optimizer = optimizer
-        self.most_likely_pixelization = None
+        self.pixelization = pixelization
+        self.hyper_combined = MockHyperCombinedPhase()
 
     @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
@@ -123,77 +125,77 @@ class MockResults(object):
 
         return hyper_galaxy_image_2d_path_dict
 
-    def cluster_image_1d_dict_from_cluster(self, cluster) -> {str: g.Galaxy}:
+    def binned_image_1d_dict_from_binned_grid(self, binned_grid) -> {str: g.Galaxy}:
         """
         A dictionary associating 1D cluster images with their names.
         """
 
-        cluster_image_1d_dict = {}
+        binned_image_1d_dict = {}
 
         for galaxy, galaxy_image_2d in self.image_2d_dict.items():
 
-            cluster_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
-                array_2d=galaxy_image_2d, bin_up_factor=cluster.bin_up_factor
+            binned_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+                array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
             )
 
-            cluster_image_1d_dict[galaxy] = cluster.mask.array_1d_from_array_2d(
-                array_2d=cluster_image_2d
+            binned_image_1d_dict[galaxy] = binned_grid.mask.array_1d_from_array_2d(
+                array_2d=binned_image_2d
             )
 
-        return cluster_image_1d_dict
+        return binned_image_1d_dict
 
-    def hyper_galaxy_cluster_image_1d_path_dict_from_cluster(self, cluster):
+    def binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(self, binned_grid):
         """
         A dictionary associating 1D hyper_galaxy galaxy cluster images with their names.
         """
 
-        if cluster is not None:
+        if binned_grid is not None:
 
             hyper_minimum_percent = af.conf.instance.general.get(
                 "hyper", "hyper_minimum_percent", float
             )
 
-            cluster_image_1d_galaxy_dict = self.cluster_image_1d_dict_from_cluster(
-                cluster=cluster
+            binned_image_1d_galaxy_dict = self.binned_image_1d_dict_from_binned_grid(
+                binned_grid=binned_grid
             )
 
-            hyper_galaxy_cluster_image_path_dict = {}
+            binned_hyper_galaxy_image_path_dict = {}
 
             for path, galaxy in self.path_galaxy_tuples:
-                galaxy_cluster_image_1d = cluster_image_1d_galaxy_dict[path]
+                binned_galaxy_image_1d = binned_image_1d_galaxy_dict[path]
 
-                minimum_cluster_value = hyper_minimum_percent * max(
-                    galaxy_cluster_image_1d
+                minimum_hyper_value = hyper_minimum_percent * max(
+                    binned_galaxy_image_1d
                 )
-                galaxy_cluster_image_1d[
-                    galaxy_cluster_image_1d < minimum_cluster_value
-                ] = minimum_cluster_value
+                binned_galaxy_image_1d[
+                    binned_galaxy_image_1d < minimum_hyper_value
+                ] = minimum_hyper_value
 
-                hyper_galaxy_cluster_image_path_dict[path] = galaxy_cluster_image_1d
+                binned_hyper_galaxy_image_path_dict[path] = binned_galaxy_image_1d
 
-            return hyper_galaxy_cluster_image_path_dict
+            return binned_hyper_galaxy_image_path_dict
 
-    def hyper_galaxy_cluster_image_2d_path_dict_from_cluster(self, cluster):
+    def binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(self, binned_grid):
         """
         A dictionary associating "D hyper_galaxy galaxy images cluster images with their names.
         """
 
-        if cluster is not None:
+        if binned_grid is not None:
 
-            hyper_galaxy_cluster_image_1d_path_dict = self.hyper_galaxy_cluster_image_1d_path_dict_from_cluster(
-                cluster=cluster
+            binned_hyper_galaxy_image_1d_path_dict = self.binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(
+                binned_grid=binned_grid
             )
 
-            hyper_galaxy_cluster_image_2d_path_dict = {}
+            binned_hyper_galaxy_image_2d_path_dict = {}
 
             for path, galaxy in self.path_galaxy_tuples:
-                hyper_galaxy_cluster_image_2d_path_dict[
+                binned_hyper_galaxy_image_2d_path_dict[
                     path
-                ] = cluster.mask.scaled_array_2d_from_array_1d(
-                    array_1d=hyper_galaxy_cluster_image_1d_path_dict[path]
+                ] = binned_grid.mask.scaled_array_2d_from_array_1d(
+                    array_1d=binned_hyper_galaxy_image_1d_path_dict[path]
                 )
 
-            return hyper_galaxy_cluster_image_2d_path_dict
+            return binned_hyper_galaxy_image_2d_path_dict
 
     @property
     def hyper_model_image_1d(self):
@@ -215,6 +217,16 @@ class MockResult:
         self.gaussian_tuples = None
         self.mask_2d = None
         self.positions = None
+
+
+class MockHyperCombinedPhase(object):
+    def __init__(self):
+
+        pass
+
+    @property
+    def most_likely_pixelization_grids_of_planes(self):
+        return 1
 
 
 class MockNLO(af.NonLinearOptimizer):
