@@ -247,6 +247,9 @@ class HyperGalaxyPhase(HyperPhase):
             optimizer.n_live_points = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_n_live_points", int
             )
+            optimizer.multimodal = af.conf.instance.non_linear.get(
+                "MultiNest", "extension_hyper_galaxy_multimodal", bool
+            )
 
             optimizer.variable.hyper_galaxy = g.HyperGalaxy
 

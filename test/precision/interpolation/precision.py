@@ -41,9 +41,7 @@ for data_resolution in ["HST_Up"]:
     print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")
 
     interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
-        mask=lens_data.mask_2d,
-        grid=lens_data.grid,
-        pixel_scale_interpolation_grid=0.05,
+        mask=lens_data.mask_2d, grid=lens_data.grid, pixel_scale_interpolation_grid=0.05
     )
 
     print(
