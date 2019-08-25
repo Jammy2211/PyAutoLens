@@ -993,7 +993,7 @@ class TestAbstractTracerLensing(object):
             )
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7_simple, return_in_2d=False, plane_index_limit=0,
+                grid=sub_grid_7x7_simple, return_in_2d=False, plane_index_limit=0
             )
 
             assert traced_grids_of_planes[0][0] == pytest.approx(
@@ -1010,7 +1010,6 @@ class TestAbstractTracerLensing(object):
             )
 
             assert len(traced_grids_of_planes) == 1
-
 
         def test__4_planes__grids_are_correct__upper_plane_limit_removes_final_planes(
             self, sub_grid_7x7_simple
@@ -1091,7 +1090,6 @@ class TestAbstractTracerLensing(object):
         #     ).all()
 
     class TestProfileImages:
-
         def test__x1_plane__single_plane_tracer(self, sub_grid_7x7):
             g0 = g.Galaxy(
                 redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
@@ -1396,7 +1394,9 @@ class TestAbstractTracerLensing(object):
             assert image.shape == (7, 7)
             assert image == pytest.approx(tracer_profile_image, 1.0e-4)
 
-        def test__profile_images_of_planes__planes_without_light_profiles_are_all_zeros(self, sub_grid_7x7):
+        def test__profile_images_of_planes__planes_without_light_profiles_are_all_zeros(
+            self, sub_grid_7x7
+        ):
 
             g0 = g.Galaxy(
                 redshift=0.1, light_profile=lp.EllipticalSersic(intensity=0.1)
@@ -1404,8 +1404,7 @@ class TestAbstractTracerLensing(object):
             g1 = g.Galaxy(
                 redshift=1.0, light_profile=lp.EllipticalSersic(intensity=0.2)
             )
-            g2 = g.Galaxy(
-                redshift=2.0, )
+            g2 = g.Galaxy(redshift=2.0)
 
             tracer = ray_tracing.Tracer.from_galaxies(
                 galaxies=[g0, g1, g2], cosmology=cosmo.Planck15
@@ -1415,12 +1414,12 @@ class TestAbstractTracerLensing(object):
             plane_1 = pl.Plane(galaxies=[g1])
 
             plane_0_image = plane_0.profile_image_from_grid(
-                        grid=sub_grid_7x7, return_in_2d=True, return_binned=True
-                    )
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+            )
 
             plane_1_image = plane_1.profile_image_from_grid(
-                        grid=sub_grid_7x7, return_in_2d=True, return_binned=True
-                    )
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+            )
 
             tracer_profile_image_of_planes = tracer.profile_images_of_planes_from_grid(
                 grid=sub_grid_7x7, return_in_2d=True, return_binned=True
@@ -1428,14 +1427,18 @@ class TestAbstractTracerLensing(object):
 
             assert len(tracer_profile_image_of_planes) == 3
 
-            assert tracer_profile_image_of_planes[0].shape == (7,7)
-            assert tracer_profile_image_of_planes[0] == pytest.approx(plane_0_image, 1.0e-4)
+            assert tracer_profile_image_of_planes[0].shape == (7, 7)
+            assert tracer_profile_image_of_planes[0] == pytest.approx(
+                plane_0_image, 1.0e-4
+            )
 
-            assert tracer_profile_image_of_planes[1].shape == (7,7)
-            assert tracer_profile_image_of_planes[1] == pytest.approx(plane_1_image, 1.0e-4)
+            assert tracer_profile_image_of_planes[1].shape == (7, 7)
+            assert tracer_profile_image_of_planes[1] == pytest.approx(
+                plane_1_image, 1.0e-4
+            )
 
-            assert tracer_profile_image_of_planes[2].shape == (7,7)
-            assert (tracer_profile_image_of_planes[2] == np.zeros((7,7))).all()
+            assert tracer_profile_image_of_planes[2].shape == (7, 7)
+            assert (tracer_profile_image_of_planes[2] == np.zeros((7, 7))).all()
 
         def test__x1_plane__padded_image__compare_to_galaxy_images_using_padded_grid_stack(
             self, sub_grid_7x7

@@ -87,7 +87,12 @@ class AbstractTracer(object):
 
     @property
     def upper_plane_index_with_light_profile(self):
-        return max([plane_index if plane.has_light_profile else 0 for (plane_index, plane) in enumerate(self.planes)])
+        return max(
+            [
+                plane_index if plane.has_light_profile else 0
+                for (plane_index, plane) in enumerate(self.planes)
+            ]
+        )
 
     @property
     def plane_indexes_with_pixelizations(self):
@@ -192,7 +197,9 @@ class AbstractTracerLensing(AbstractTracerCosmology):
     def __init__(self, planes, cosmology):
         super(AbstractTracerLensing, self).__init__(planes=planes, cosmology=cosmology)
 
-    def traced_grids_of_planes_from_grid(self, grid, return_in_2d=True, plane_index_limit=None):
+    def traced_grids_of_planes_from_grid(
+        self, grid, return_in_2d=True, plane_index_limit=None
+    ):
 
         grid_calc = grid.copy()
 
@@ -249,7 +256,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
     ):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
-            grid=grid, return_in_2d=return_in_2d,
+            grid=grid, return_in_2d=return_in_2d
         )
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
@@ -258,7 +265,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
     def profile_image_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return sum(
             self.profile_images_of_planes_from_grid(
-                grid=grid, return_in_2d=False, return_binned=False,
+                grid=grid, return_in_2d=False, return_binned=False
             )
         )
 
@@ -266,19 +273,25 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         self, grid, return_in_2d=True, return_binned=True
     ):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
-            grid=grid,
-            plane_index_limit=self.upper_plane_index_with_light_profile)
+            grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
+        )
 
         profile_images_of_planes = [
             self.planes[plane_index].profile_image_from_grid(
-                grid=traced_grids_of_planes[plane_index], return_in_2d=return_in_2d, return_binned=return_binned
+                grid=traced_grids_of_planes[plane_index],
+                return_in_2d=return_in_2d,
+                return_binned=return_binned,
             )
             for plane_index in range(len(traced_grids_of_planes))
         ]
 
-        if self.upper_plane_index_with_light_profile < self.total_planes-1:
-            for plane_index in range(self.upper_plane_index_with_light_profile, self.total_planes-1):
-                profile_images_of_planes.append(np.zeros(shape=profile_images_of_planes[0].shape))
+        if self.upper_plane_index_with_light_profile < self.total_planes - 1:
+            for plane_index in range(
+                self.upper_plane_index_with_light_profile, self.total_planes - 1
+            ):
+                profile_images_of_planes.append(
+                    np.zeros(shape=profile_images_of_planes[0].shape)
+                )
 
         return profile_images_of_planes
 

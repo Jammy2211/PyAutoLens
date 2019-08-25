@@ -63,6 +63,9 @@ class HyperPhase(object):
         phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
             "MultiNest", "extension_combined_n_live_points", int
         )
+        phase.optimizer.multimodal = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_combined_multimodal", bool
+        )
 
         phase.is_hyper_phase = True
         phase.optimizer.phase_tag = ""
