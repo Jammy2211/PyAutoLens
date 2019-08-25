@@ -1,4 +1,3 @@
-import inspect
 from scipy import special
 from pyquad import quad_grid
 
@@ -7,12 +6,12 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens import dimensions as dim
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.data.array.grids import reshape_returned_array, reshape_returned_grid
+from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
 
 
 class PointMass(geometry_profiles.SphericalProfile, mp.MassProfile):
@@ -91,7 +90,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
             self.slope - 1
         )
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -103,11 +102,11 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         Parameters
         ----------
         grid : grids.Grid
-            The grid of (y,x) arc-second coordinates the surface density is computed on.
+            The grid of (y,x) arc-second coordinates the convergence is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -121,7 +120,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         return covnergence_grid
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -135,7 +134,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -166,7 +165,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -309,7 +308,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -381,7 +380,7 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
     ​
         Parameters
         ----------
-        grid : grids.RegularGrid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
@@ -605,7 +604,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -654,7 +653,7 @@ class SphericalIsothermal(EllipticalIsothermal):
             centre=centre, axis_ratio=1.0, phi=0.0, einstein_radius=einstein_radius
         )
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -668,7 +667,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -689,7 +688,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -731,7 +730,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         )
         self.einstein_radius = einstein_radius
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -743,11 +742,11 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         Parameters
         ----------
         grid : grids.Grid
-            The grid of (y,x) arc-second coordinates the surface density is computed on.
+            The grid of (y,x) arc-second coordinates the convergence is computed on.
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -761,7 +760,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
 
         return covnergence_grid
 
-    @reshape_returned_array
+    @reshape_array_from_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
@@ -775,7 +774,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -808,7 +807,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         return_in_2d : bool
             If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
         return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the regular grid dimensions \
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
             by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
             sub-grid.
         """
@@ -817,6 +816,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 0])
             / (np.sqrt((grid[:, 1] ** 2) * (self.axis_ratio ** 2) + grid[:, 0] ** 2))
         )
+
         deflection_x = np.arcsinh(
             (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 1])
             / (

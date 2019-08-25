@@ -5,7 +5,8 @@ import pytest
 
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
-from autolens.data.array import grids, mask as msk, scaled_array
+from autolens.array import scaled_array
+from autolens.array import grids, mask as msk
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion.plotters import mapper_plotters
@@ -43,16 +44,11 @@ def make_galaxy_mass():
     return g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
-@pytest.fixture(name="grid_stack")
-def make_grid_stack():
-    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+@pytest.fixture(name="grid")
+def make_grid():
+    return grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
     )
-
-
-@pytest.fixture(name="border")
-def make_border(mask):
-    return grids.GridBorder.from_mask(mask=mask)
 
 
 @pytest.fixture(name="rectangular_pixelization")
@@ -61,9 +57,9 @@ def make_rectangular_pixelization():
 
 
 @pytest.fixture(name="rectangular_mapper")
-def make_rectangular_mapper(rectangular_pixelization, grid_stack, border):
-    return rectangular_pixelization.mapper_from_grid_stack_and_border(
-        grid_stack=grid_stack, border=border
+def make_rectangular_mapper(rectangular_pixelization, grid):
+    return rectangular_pixelization.mapper_from_grid_and_pixelization_grid(
+        grid=grid, pixelization_grid=None, inversion_uses_border=False
     )
 
 

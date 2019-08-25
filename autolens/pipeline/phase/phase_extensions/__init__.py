@@ -43,7 +43,7 @@ class CombinedHyperPhase(HyperPhase):
         **kwargs
     ) -> af.Result:
         """
-        Run the regular phase followed by the hyper_galaxy phases. Each result of a hyper_galaxy phase is attached to the
+        Run the phase followed by the hyper_galaxy phases. Each result of a hyper_galaxy phase is attached to the
         overall result object by the hyper_name of that phase.
 
         Finally, a phase in run with all of the variable results from all the individual hyper_galaxy phases.
@@ -53,7 +53,7 @@ class CombinedHyperPhase(HyperPhase):
         positions
         mask
         data
-            The instrument
+            the data
         results
             Results from previous phases
         kwargs
@@ -61,7 +61,7 @@ class CombinedHyperPhase(HyperPhase):
         Returns
         -------
         result
-            The result of the regular phase, with hyper_galaxy results attached by associated hyper_galaxy names
+            The result of the phase, with hyper_galaxy results attached by associated hyper_galaxy names
         """
 
         results = results.copy() if results is not None else af.ResultsCollection()

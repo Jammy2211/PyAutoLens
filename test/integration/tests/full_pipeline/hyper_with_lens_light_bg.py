@@ -10,7 +10,7 @@ from test.integration.tests import runner
 
 test_type = "full_pipeline"
 test_name = "hyper_with_lens_light_bg"
-data_type = "no_lens_light__source_smooth"
+data_type = "lens_mass__source_smooth"
 data_resolution = "LSST"
 
 
@@ -154,9 +154,17 @@ def make_pipeline(
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
 
-            self.galaxies.lens = results.from_phase(
+            self.galaxies.lens.light = results.from_phase(
                 "phase_3__lens_sersic_sie__source_sersic"
-            ).constant.galaxies.lens
+            ).constant.galaxies.lens.light
+
+            self.galaxies.lens.mass = results.from_phase(
+                "phase_3__lens_sersic_sie__source_sersic"
+            ).constant.galaxies.lens.mass
+
+            self.galaxies.lens.shear = results.from_phase(
+                "phase_3__lens_sersic_sie__source_sersic"
+            ).constant.galaxies.lens.shear
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
@@ -211,9 +219,13 @@ def make_pipeline(
 
             ### Source Inversion, Inv -> Inv ###
 
-            self.galaxies.source = results.from_phase(
+            self.galaxies.source.pixelization = results.from_phase(
                 "phase_4__initialize_magnification_inversion"
-            ).constant.galaxies.source
+            ).constant.galaxies.source.pixelization
+
+            self.galaxies.source.regularization = results.from_phase(
+                "phase_4__initialize_magnification_inversion"
+            ).constant.galaxies.source.regularization
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
@@ -239,8 +251,8 @@ def make_pipeline(
             ),
             source=gm.GalaxyModel(
                 redshift=1.0,
-                pixelization=pipeline_pixelization,
-                regularization=pipeline_regularization,
+                pixelization=pix.VoronoiMagnification,
+                regularization=reg.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -262,9 +274,17 @@ def make_pipeline(
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
 
-            self.galaxies.lens = results.from_phase(
+            self.galaxies.lens.light = results.from_phase(
                 "phase_5__lens_sersic_sie__source_magnification_inversion"
-            ).constant.galaxies.lens
+            ).constant.galaxies.lens.light
+
+            self.galaxies.lens.mass = results.from_phase(
+                "phase_5__lens_sersic_sie__source_magnification_inversion"
+            ).constant.galaxies.lens.mass
+
+            self.galaxies.lens.shear = results.from_phase(
+                "phase_5__lens_sersic_sie__source_magnification_inversion"
+            ).constant.galaxies.lens.shear
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
 
@@ -314,14 +334,18 @@ def make_pipeline(
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
 
             self.galaxies.lens = results.from_phase(
-                "phase_7__lens_sersic_sie__source_inversion"
+                "phase_5__lens_sersic_sie__source_magnification_inversion"
             ).variable.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
 
-            self.galaxies.source = results.from_phase(
+            self.galaxies.source.pixelization = results.from_phase(
                 "phase_6_initialize_inversion"
-            ).hyper_combined.constant.galaxies.source
+            ).hyper_combined.constant.galaxies.source.pixelization
+
+            self.galaxies.source.regularization = results.from_phase(
+                "phase_6_initialize_inversion"
+            ).hyper_combined.constant.galaxies.source.regularization
 
             ## Set all hyper_galaxy-galaxies if feature is turned on ##
 

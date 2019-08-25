@@ -1,7 +1,7 @@
 import autofit as af
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
-from autolens.data.array import grids
+from autolens.array import grids
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp
@@ -34,21 +34,19 @@ def simulate_image_from_galaxies_and_output_to_fits(
         shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale
     )
 
-    # Setup the image-plane grid stack of the CCD array which will be used for generating the image-plane image of the
+    # Setup the image-plane grid stack of the CCD array which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
-    image_plane_grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(
+    image_plane_grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=shape, pixel_scale=pixel_scale, sub_grid_size=sub_grid_size
     )
 
-    # Use the input galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD instrument.
-    tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
-        galaxies=galaxies, image_plane_grid_stack=image_plane_grid_stack
-    )
+    # Use the input galaxies to setup a tracer, which will generate the image for the simulated CCD instrument.
+    tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
 
-    # Simulate the CCD instrument, remembering that we use a special image-plane image which ensures edge-effects don't
+    # Simulate the CCD instrument, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.g. the PSF convolution).
-    ccd_data = ccd.SimulatedCCDData.from_tracer_and_exposure_arrays(
+    ccd_data = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         psf=psf,
@@ -57,7 +55,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         add_noise=True,
     )
 
-    # Now, lets output this simulated ccd-instrument to the test/data folder.
+    # Now, lets output this simulated ccd-data to the test/data folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
@@ -98,7 +96,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
 
     ray_tracing_plotters.plot_ray_tracing_individual(
         tracer=tracer,
-        should_plot_image_plane_image=True,
+        should_plot_profile_image=True,
         should_plot_source_plane=True,
         should_plot_convergence=True,
         should_plot_potential=True,
@@ -108,9 +106,9 @@ def simulate_image_from_galaxies_and_output_to_fits(
     )
 
 
-def make_lens_only_dev_vaucouleurs(data_resolutions, sub_grid_size):
+def make_lens_light_dev_vaucouleurs(data_resolutions, sub_grid_size):
 
-    data_type = "lens_only_dev_vaucouleurs"
+    data_type = "lens_light_dev_vaucouleurs"
 
     # This lens-only system has a Dev Vaucouleurs spheroid / bulge.
 
@@ -135,9 +133,9 @@ def make_lens_only_dev_vaucouleurs(data_resolutions, sub_grid_size):
         )
 
 
-def make_lens_only_bulge_disk(data_resolutions, sub_grid_size):
+def make_lens_bulge_disk(data_resolutions, sub_grid_size):
 
-    data_type = "lens_only_bulge_disk"
+    data_type = "lens_bulge_disk"
 
     # This source-only system has a Dev Vaucouleurs spheroid / bulge and surrounding Exponential envelope
 
@@ -169,9 +167,9 @@ def make_lens_only_bulge_disk(data_resolutions, sub_grid_size):
         )
 
 
-def make_lens_only_x2_galaxies(data_resolutions, sub_grid_size):
+def make_lens_x2_light(data_resolutions, sub_grid_size):
 
-    data_type = "lens_only_x2_galaxies"
+    data_type = "lens_x2_light"
 
     # This source-only system has two Sersic bulges separated by 2.0"
 
@@ -209,9 +207,9 @@ def make_lens_only_x2_galaxies(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light__source_smooth(data_resolutions, sub_grid_size):
+def make_lens_mass__source_smooth(data_resolutions, sub_grid_size):
 
-    data_type = "no_lens_light__source_smooth"
+    data_type = "lens_mass__source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -244,9 +242,9 @@ def make_no_lens_light__source_smooth(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light__source_cuspy(data_resolutions, sub_grid_size):
+def make_lens_mass__source_cuspy(data_resolutions, sub_grid_size):
 
-    data_type = "no_lens_light__source_cuspy"
+    data_type = "lens_mass__source_cuspy"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -279,9 +277,9 @@ def make_no_lens_light__source_cuspy(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light_sis__source_smooth(data_resolutions, sub_grid_size):
+def make_lens_sis__source_smooth(data_resolutions, sub_grid_size):
 
-    data_type = "no_lens_light_sis__source_smooth"
+    data_type = "lens_sis__source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -312,11 +310,9 @@ def make_no_lens_light_sis__source_smooth(data_resolutions, sub_grid_size):
         )
 
 
-def make_no_lens_light_sis__source_smooth_offset_centre(
-    data_resolutions, sub_grid_size
-):
+def make_lens_sis__source_smooth__offset_centre(data_resolutions, sub_grid_size):
 
-    data_type = "no_lens_light_sis__source_smooth_offset_centre"
+    data_type = "lens_sis__source_smooth__offset_centre"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 

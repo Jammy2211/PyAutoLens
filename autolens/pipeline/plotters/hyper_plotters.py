@@ -266,7 +266,7 @@ def plot_hyper_galaxy_subplot(
     plt.close()
 
 
-def plot_hyper_galaxy_cluster_images_subplot(
+def plot_binned_hyper_galaxy_images_subplot(
     hyper_galaxy_cluster_image_path_dict,
     mask,
     should_plot_mask=True,

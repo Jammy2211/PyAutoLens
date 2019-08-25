@@ -7,7 +7,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens import exc
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
 from autolens.lens import ray_tracing
@@ -156,7 +156,7 @@ class TestPhase(object):
     def test_make_analysis__positions_are_input__are_used_in_analysis(
         self, phase_7x7, ccd_data_7x7
     ):
-        # If position threshold is input (not None) and positions are input, make the positions part of the lens instrument.
+        # If position threshold is input (not None) and positions are input, make the positions part of the lens data.
 
         phase_7x7.positions_threshold = 0.2
 
@@ -172,15 +172,6 @@ class TestPhase(object):
         with pytest.raises(exc.PhaseException):
             phase_7x7.make_analysis(data=ccd_data_7x7, positions=None)
             phase_7x7.make_analysis(data=ccd_data_7x7)
-
-        # If positions threshold is None, positions should always be None.
-
-        phase_7x7.positions_threshold = None
-        analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
-        )
-
-        assert analysis.lens_data.positions is None
 
     def test_make_analysis__inversion_resolution_error_raised_if_above_inversion_pixel_limit(
         self, phase_7x7, ccd_data_7x7, mask_function_7x7
@@ -269,21 +260,20 @@ class TestPhase(object):
             analysis.check_inversion_pixels_are_below_limit(instance=instance)
             analysis.fit(instance=instance)
 
-    def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(
+    def test_make_analysis__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(
         self, phase_7x7, ccd_data_7x7
     ):
-        # If use positions is true and positions are input, make the positions part of the lens instrument.
+        # If use positions is true and positions are input, make the positions part of the lens data.
 
-        phase_7x7.interp_pixel_scale = 0.1
+        phase_7x7.pixel_scale_interpolation_grid = 0.1
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
-        assert analysis.lens_data.interp_pixel_scale == 0.1
-        assert hasattr(analysis.lens_data.grid_stack.regular, "interpolator")
-        assert hasattr(analysis.lens_data.grid_stack.sub, "interpolator")
-        assert hasattr(analysis.lens_data.grid_stack.blurring, "interpolator")
+        assert analysis.lens_data.pixel_scale_interpolation_grid == 0.1
+        assert hasattr(analysis.lens_data.grid, "interpolator")
+        assert hasattr(analysis.lens_data.preload_blurring_grid, "interpolator")
 
-    def test_make_analysis__cluster_pixel_limit__is_input__used_in_analysis(
-        self, phase_7x7, ccd_data_7x7
+    def test_make_analysis__inversion_pixel_limit__is_input__used_in_analysis(
+        self, phase_7x7, ccd_data_7x7, mask_7x7
     ):
         phase_7x7.galaxies.lens = gm.GalaxyModel(
             redshift=0.5,
@@ -291,13 +281,27 @@ class TestPhase(object):
             regularization=reg.Constant,
         )
 
-        phase_7x7.cluster_pixel_limit = 5
+        phase_7x7.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale
+        phase_7x7.inversion_pixel_limit = 5
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
 
-        assert analysis.lens_data.cluster_pixel_limit == 5
+        assert analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scale
 
-        phase_7x7.cluster_pixel_limit = 10
+        # There are 9 pixels in the mask, so to meet the inversoin pixel limit the pixel scale will be rescaled to the
+        # masks's pixel scale
+
+        phase_7x7.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale * 2.0
+        phase_7x7.inversion_pixel_limit = 5
+
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+
+        assert analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scale
+
+        # This image cannot meet the requirement, so will raise an error.
+
+        phase_7x7.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale * 2.0
+        phase_7x7.inversion_pixel_limit = 10
 
         with pytest.raises(exc.DataException):
             phase_7x7.make_analysis(data=ccd_data_7x7)
@@ -313,8 +317,7 @@ class TestPhase(object):
 
         optimizer = phase_info.readline()
         sub_grid_size = phase_info.readline()
-        image_psf_shape = phase_info.readline()
-        pixelization_psf_shape = phase_info.readline()
+        psf_shape = phase_info.readline()
         positions_threshold = phase_info.readline()
         cosmology = phase_info.readline()
         auto_link_priors = phase_info.readline()
@@ -323,8 +326,7 @@ class TestPhase(object):
 
         assert optimizer == "Optimizer = MockNLO \n"
         assert sub_grid_size == "Sub-grid size = 2 \n"
-        assert image_psf_shape == "Image PSF shape = None \n"
-        assert pixelization_psf_shape == "Pixelization PSF shape = None \n"
+        assert psf_shape == "PSF shape = None \n"
         assert positions_threshold == "Positions Threshold = None \n"
         assert (
             cosmology
@@ -333,42 +335,46 @@ class TestPhase(object):
         )
         assert auto_link_priors == "Auto Link Priors = False \n"
 
-    def test_analysis__pixelization_property_extracts_pixelization(
+    def test_pixelization_property_extracts_pixelization(
         self, mask_function_7x7, ccd_data_7x7
     ):
 
-        lens_galaxy = g.Galaxy(redshift=0.5)
         source_galaxy = g.Galaxy(redshift=0.5)
 
         phase_7x7 = phase_imaging.PhaseImaging(
             mask_function=mask_function_7x7,
-            galaxies=[lens_galaxy, source_galaxy],
+            galaxies=[source_galaxy],
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
 
-        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
-        instance = phase_7x7.variable.instance_from_unit_vector([])
-        assert analysis.pixelization_for_galaxies(galaxies=instance.galaxies) == None
+        assert phase_7x7.pixelization == None
 
-        lens_galaxy = g.Galaxy(redshift=0.5)
         source_galaxy = g.Galaxy(
             redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant()
         )
 
         phase_7x7 = phase_imaging.PhaseImaging(
             mask_function=mask_function_7x7,
-            galaxies=[lens_galaxy, source_galaxy],
+            galaxies=[source_galaxy],
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
 
-        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
-        instance = phase_7x7.variable.instance_from_unit_vector([])
-        assert isinstance(
-            analysis.pixelization_for_galaxies(galaxies=instance.galaxies),
-            pix.Rectangular,
+        assert isinstance(phase_7x7.pixelization, pix.Rectangular)
+
+        source_galaxy = gm.GalaxyModel(
+            redshift=0.5, pixelization=pix.Rectangular, regularization=reg.Constant
         )
+
+        phase_7x7 = phase_imaging.PhaseImaging(
+            mask_function=mask_function_7x7,
+            galaxies=[source_galaxy],
+            cosmology=cosmo.FLRW,
+            phase_name="test_phase",
+        )
+
+        assert type(phase_7x7.pixelization) == type(pix.Rectangular)
 
     def test_fit(self, ccd_data_7x7, mask_function_7x7):
         clean_images()
@@ -464,70 +470,8 @@ class TestPhase(object):
         assert (analysis.lens_data.unmasked_image == 20.0 * np.ones(shape=(5, 5))).all()
         assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=9)).all()
 
-    def test__check_if_phase_uses_inversion(self, mask_function_7x7):
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
-        )
-
-        assert phase_7x7.uses_inversion is False
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=pix.Rectangular,
-                    regularization=reg.Constant,
-                )
-            ),
-        )
-
-        assert phase_7x7.uses_inversion is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5), source=gm.GalaxyModel(redshift=1.0)
-            ),
-        )
-
-        assert phase_7x7.uses_inversion is False
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=pix.Rectangular,
-                    regularization=reg.Constant,
-                ),
-                source=gm.GalaxyModel(redshift=1.0),
-            ),
-        )
-
-        assert phase_7x7.uses_inversion is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5),
-                source=gm.GalaxyModel(
-                    redshift=1.0,
-                    pixelization=pix.Rectangular,
-                    regularization=reg.Constant,
-                ),
-            ),
-        )
-
-        assert phase_7x7.uses_inversion is True
-
     def test__check_if_phase_uses_cluster_inversion(self, mask_function_7x7):
+
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="test_phase",
             mask_function=mask_function_7x7,
@@ -538,7 +482,6 @@ class TestPhase(object):
 
         assert phase_7x7.uses_cluster_inversion is False
 
-    def test__check_if_phase_uses_cluster_inversion_2(self, mask_function_7x7):
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="test_phase",
             mask_function=mask_function_7x7,
@@ -553,7 +496,6 @@ class TestPhase(object):
         )
         assert phase_7x7.uses_cluster_inversion is False
 
-    def test__check_if_phase_uses_cluster_inversion_3(self, mask_function_7x7):
         source = gm.GalaxyModel(
             redshift=1.0,
             pixelization=pix.VoronoiBrightnessImage,
@@ -568,7 +510,6 @@ class TestPhase(object):
 
         assert phase_7x7.uses_cluster_inversion is True
 
-    def test__check_if_phase_uses_cluster_inversion_4(self, mask_function_7x7):
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="test_phase",
             mask_function=mask_function_7x7,
@@ -579,7 +520,6 @@ class TestPhase(object):
 
         assert phase_7x7.uses_cluster_inversion is False
 
-    def test__check_if_phase_uses_cluster_inversion_5(self, mask_function_7x7):
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="test_phase",
             mask_function=mask_function_7x7,
@@ -595,7 +535,6 @@ class TestPhase(object):
 
         assert phase_7x7.uses_cluster_inversion is False
 
-    def test__check_if_phase_uses_cluster_inversion_6(self, mask_function_7x7):
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="test_phase",
             mask_function=mask_function_7x7,
@@ -611,228 +550,62 @@ class TestPhase(object):
 
         assert phase_7x7.uses_cluster_inversion is True
 
-    def test__check_if_phase_uses_hyper_images(self, mask_function_7x7):
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
-        )
-
-        assert phase_7x7.uses_hyper_images is False
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=pix.Rectangular,
-                    regularization=reg.AdaptiveBrightness,
-                )
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=pix.Rectangular,
-                    regularization=reg.Constant,
-                ),
-                source=gm.GalaxyModel(redshift=1.0),
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is False
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=pix.Rectangular,
-                    regularization=reg.AdaptiveBrightness,
-                ),
-                source=gm.GalaxyModel(redshift=1.0),
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5),
-                source=gm.GalaxyModel(
-                    redshift=1.0,
-                    pixelization=pix.Rectangular,
-                    regularization=reg.AdaptiveBrightness,
-                ),
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5),
-                source=gm.GalaxyModel(redshift=1.0, hyper_galaxy=g.HyperGalaxy),
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5), source=gm.GalaxyModel(redshift=1.0)
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is False
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5),
-                source=gm.GalaxyModel(redshift=1.0, hyper_galaxy=g.HyperGalaxy),
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy),
-                source=gm.GalaxyModel(redshift=1.0),
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5),
-                source=gm.GalaxyModel(
-                    redshift=1.0,
-                    pixelization=pix.Rectangular,
-                    regularization=reg.AdaptiveBrightness,
-                ),
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is True
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            phase_name="test_phase",
-            mask_function=mask_function_7x7,
-            galaxies=dict(
-                lens=gm.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=pix.Rectangular,
-                    regularization=reg.AdaptiveBrightness,
-                ),
-                source=gm.GalaxyModel(redshift=1.0),
-            ),
-        )
-
-        assert phase_7x7.uses_hyper_images is True
-
     def test__use_border__determines_if_border_pixel_relocation_is_used(
         self, ccd_data_7x7, mask_function_7x7, lens_data_7x7
     ):
-        lens_data_7x7.grid_stack.regular[4] = np.array([100.0, 100.0])
 
         # noinspection PyTypeChecker
 
         lens_galaxy = g.Galaxy(
-            redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+            redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=100.0)
         )
         source_galaxy = g.Galaxy(
             redshift=1.0,
-            pixelization=pix.Rectangular(shape=(5, 5)),
+            pixelization=pix.Rectangular(shape=(3, 3)),
             regularization=reg.Constant(coefficient=1.0),
         )
 
-        tracer_no_border = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
+        phase_7x7 = phase_imaging.PhaseImaging(
             galaxies=[lens_galaxy, source_galaxy],
-            image_plane_grid_stack=lens_data_7x7.grid_stack,
-            border=None,
+            mask_function=mask_function_7x7,
+            cosmology=cosmo.Planck15,
+            phase_name="test_phase",
+            inversion_uses_border=True,
         )
 
-        mapper_no_border = tracer_no_border.mappers_of_planes[0]
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        analysis.lens_data.grid[4] = np.array([[500.0, 0.0]])
 
-        tracer_with_border = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
-            galaxies=[lens_galaxy, source_galaxy],
-            image_plane_grid_stack=lens_data_7x7.grid_stack,
-            border=lens_data_7x7.border,
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = analysis.fit_for_tracer(
+            tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        mapper_with_border = tracer_with_border.mappers_of_planes[0]
+        assert fit.inversion.mapper.grid[4][0] == pytest.approx(97.19584, 1.0e-2)
+        assert fit.inversion.mapper.grid[4][1] == pytest.approx(8.434953, 1.0e-2)
 
         phase_7x7 = phase_imaging.PhaseImaging(
             galaxies=[lens_galaxy, source_galaxy],
             mask_function=mask_function_7x7,
             cosmology=cosmo.Planck15,
             phase_name="test_phase",
-            use_inversion_border=True,
+            inversion_uses_border=False,
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
 
-        analysis.lens_data.grid_stack.regular[4] = np.array([100.0, 100.0])
+        analysis.lens_data.grid[4] = np.array([300.0, 0.0])
 
         instance = phase_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
-        mapper = tracer.mappers_of_planes[0]
-
-        assert (
-            mapper_with_border.grid_stack.regular == mapper.grid_stack.regular
-        ).all()
-
-        phase_7x7 = phase_imaging.PhaseImaging(
-            galaxies=[lens_galaxy, source_galaxy],
-            mask_function=mask_function_7x7,
-            cosmology=cosmo.Planck15,
-            phase_name="test_phase",
-            use_inversion_border=False,
+        fit = analysis.fit_for_tracer(
+            tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        assert fit.inversion.mapper.grid[4][0] == pytest.approx(200.0, 1.0e-4)
 
-        analysis.lens_data.grid_stack.regular[4] = np.array([100.0, 100.0])
-
-        instance = phase_7x7.variable.instance_from_unit_vector([])
-        tracer = analysis.tracer_for_instance(instance=instance)
-        mapper = tracer.mappers_of_planes[0]
-
-        assert (mapper_no_border.grid_stack.regular == mapper.grid_stack.regular).all()
-
-    def test__inversion_and_cluster_pixel_limit_computed_via_input_of_max_inversion_pixel_limit_and_prior_config(
+    def test__inversion_pixel_limit_computed_via_config_or_input(
         self, mask_function_7x7
     ):
         phase_7x7 = phase_imaging.PhaseImaging(
@@ -841,8 +614,7 @@ class TestPhase(object):
             inversion_pixel_limit=None,
         )
 
-        assert phase_7x7.inversion_pixel_limit == 1500
-        assert phase_7x7.cluster_pixel_limit == 1500
+        assert phase_7x7.inversion_pixel_limit == 3000
 
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="phase_7x7",
@@ -851,7 +623,6 @@ class TestPhase(object):
         )
 
         assert phase_7x7.inversion_pixel_limit == 10
-        assert phase_7x7.cluster_pixel_limit == 10
 
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="phase_7x7",
@@ -860,123 +631,182 @@ class TestPhase(object):
         )
 
         assert phase_7x7.inversion_pixel_limit == 2000
-        assert phase_7x7.cluster_pixel_limit == 1500
 
-    def test__adds_pixelization_grid_to_grid_stack_if_required(
-        self, ccd_data_7x7, mask_function_7x7
+    def test__make_analysis_determines_if_pixelization_is_same_as_previous_phas(
+        self, ccd_data_7x7, mask_function_7x7, results_collection_7x7
     ):
+
+        results_collection_7x7.last.hyper_combined.preload_pixelization_grids_of_planes = (
+            1
+        )
+
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="test_phase", mask_function=mask_function_7x7
         )
 
-        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        results_collection_7x7.last.pixelization = None
 
-        galaxy = g.Galaxy(redshift=0.5)
-
-        grid_stack = analysis.add_grids_to_grid_stack(
-            galaxies=[galaxy, galaxy], grid_stack=analysis.lens_data.grid_stack
+        analysis = phase_7x7.make_analysis(
+            data=ccd_data_7x7, results=results_collection_7x7
         )
 
-        assert (grid_stack.pixelization == np.array([[0.0, 0.0]])).all()
+        assert analysis.lens_data.preload_pixelization_grids_of_planes is None
 
-        galaxy_pix_which_doesnt_use_pix_grid = g.Galaxy(
-            redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant()
+        phase_7x7 = phase_imaging.PhaseImaging(
+            phase_name="test_phase", mask_function=mask_function_7x7
         )
 
-        grid_stack = analysis.add_grids_to_grid_stack(
-            galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
-            grid_stack=analysis.lens_data.grid_stack,
+        results_collection_7x7.last.pixelization = pix.Rectangular
+
+        analysis = phase_7x7.make_analysis(
+            data=ccd_data_7x7, results=results_collection_7x7
         )
 
-        assert (grid_stack.pixelization == np.array([[0.0, 0.0]])).all()
-
-        galaxy_pix_which_uses_pix_grid = g.Galaxy(
-            redshift=0.5,
-            pixelization=pix.VoronoiMagnification(),
-            regularization=reg.Constant(),
-        )
-
-        grid_stack = analysis.add_grids_to_grid_stack(
-            galaxies=[galaxy_pix_which_uses_pix_grid],
-            grid_stack=analysis.lens_data.grid_stack,
-        )
-
-        assert (
-            grid_stack.pixelization
-            == np.array(
-                [
-                    [1.0, -1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                    [0.0, -1.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [-1.0, -1.0],
-                    [-1.0, 0.0],
-                    [-1.0, 1.0],
-                ]
-            )
-        ).all()
-
-        galaxy_pix_which_uses_brightness = g.Galaxy(
-            redshift=0.5,
-            pixelization=pix.VoronoiBrightnessImage(pixels=9),
-            regularization=reg.Constant(),
-        )
-
-        galaxy_pix_which_uses_brightness.hyper_galaxy_cluster_image_1d = np.array(
-            [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
-        )
+        assert analysis.lens_data.preload_pixelization_grids_of_planes is None
 
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="test_phase",
-            galaxies=dict(
-                lens=gm.GalaxyModel(
+            mask_function=mask_function_7x7,
+            galaxies=[
+                g.Galaxy(
                     redshift=0.5,
-                    pixelization=pix.VoronoiBrightnessImage,
+                    pixelization=pix.Rectangular,
                     regularization=reg.Constant,
                 )
-            ),
-            inversion_pixel_limit=5,
-            mask_function=mask_function_7x7,
+            ],
         )
 
-        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        results_collection_7x7.last.pixelization = None
 
-        grid_stack = analysis.add_grids_to_grid_stack(
-            galaxies=[galaxy_pix_which_uses_brightness],
-            grid_stack=analysis.lens_data.grid_stack,
+        analysis = phase_7x7.make_analysis(
+            data=ccd_data_7x7, results=results_collection_7x7
         )
 
-        assert (
-            grid_stack.pixelization
-            == np.array(
-                [
-                    [0.0, 1.0],
-                    [1.0, -1.0],
-                    [-1.0, -1.0],
-                    [-1.0, 1.0],
-                    [0.0, -1.0],
-                    [1.0, 1.0],
-                    [-1.0, 0.0],
-                    [0.0, 0.0],
-                    [1.0, 0.0],
-                ]
-            )
-        ).all()
+        assert analysis.lens_data.preload_pixelization_grids_of_planes is None
 
-    def test__phase_with_no_inversion__convolver_mapping_matrix_of_lens_data_is_none(
-        self, ccd_data_7x7, mask_function_7x7
-    ):
         phase_7x7 = phase_imaging.PhaseImaging(
             phase_name="test_phase",
             mask_function=mask_function_7x7,
-            galaxies=dict(lens=gm.GalaxyModel(redshift=0.5)),
+            galaxies=[
+                g.Galaxy(
+                    redshift=0.5,
+                    pixelization=pix.Rectangular,
+                    regularization=reg.Constant,
+                )
+            ],
         )
 
-        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        results_collection_7x7.last.pixelization = pix.Rectangular
 
-        assert analysis.lens_data.convolver_mapping_matrix is None
+        analysis = phase_7x7.make_analysis(
+            data=ccd_data_7x7, results=results_collection_7x7
+        )
+
+        assert analysis.lens_data.preload_pixelization_grids_of_planes == 1
+
+    #
+    # def test__uses_pixelization_preload_grids_if_possible(
+    #     self, ccd_data_7x7, mask_function_7x7
+    # ):
+    #     phase_7x7 = phase_imaging.PhaseImaging(
+    #         phase_name="test_phase", mask_function=mask_function_7x7
+    #     )
+    #
+    #     analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+    #
+    #     galaxy = g.Galaxy(redshift=0.5)
+    #
+    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
+    #         galaxies=[galaxy, galaxy], grid=analysis.lens_data.grid
+    #     )
+    #
+    #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
+    #
+    #     galaxy_pix_which_doesnt_use_pix_grid = g.Galaxy(
+    #         redshift=0.5, pixelization=pix.Rectangular(), regularization=reg.Constant()
+    #     )
+    #
+    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
+    #         galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
+    #         grid=analysis.lens_data.grid,
+    #     )
+    #
+    #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
+    #
+    #     galaxy_pix_which_uses_pix_grid = g.Galaxy(
+    #         redshift=0.5,
+    #         pixelization=pix.VoronoiMagnification(),
+    #         regularization=reg.Constant(),
+    #     )
+    #
+    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
+    #         galaxies=[galaxy_pix_which_uses_pix_grid],
+    #         grid=analysis.lens_data.grid,
+    #     )
+    #
+    #     assert (
+    #         preload_pixelization_grid.pixelization
+    #         == np.array(
+    #             [
+    #                 [1.0, -1.0],
+    #                 [1.0, 0.0],
+    #                 [1.0, 1.0],
+    #                 [0.0, -1.0],
+    #                 [0.0, 0.0],
+    #                 [0.0, 1.0],
+    #                 [-1.0, -1.0],
+    #                 [-1.0, 0.0],
+    #                 [-1.0, 1.0],
+    #             ]
+    #         )
+    #     ).all()
+    #
+    #     galaxy_pix_which_uses_brightness = g.Galaxy(
+    #         redshift=0.5,
+    #         pixelization=pix.VoronoiBrightnessImage(pixels=9),
+    #         regularization=reg.Constant(),
+    #     )
+    #
+    #     galaxy_pix_which_uses_brightness.hyper_galaxy_cluster_image_1d = np.array(
+    #         [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+    #     )
+    #
+    #     phase_7x7 = phase_imaging.PhaseImaging(
+    #         phase_name="test_phase",
+    #         galaxies=dict(
+    #             lens=gm.GalaxyModel(
+    #                 redshift=0.5,
+    #                 pixelization=pix.VoronoiBrightnessImage,
+    #                 regularization=reg.Constant,
+    #             )
+    #         ),
+    #         inversion_pixel_limit=5,
+    #         mask_function=mask_function_7x7,
+    #     )
+    #
+    #     analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+    #
+    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
+    #         galaxies=[galaxy_pix_which_uses_brightness],
+    #         grid=analysis.lens_data.grid,
+    #     )
+    #
+    #     assert (
+    #         preload_pixelization_grid.pixelization
+    #         == np.array(
+    #             [
+    #                 [0.0, 1.0],
+    #                 [1.0, -1.0],
+    #                 [-1.0, -1.0],
+    #                 [-1.0, 1.0],
+    #                 [0.0, -1.0],
+    #                 [1.0, 1.0],
+    #                 [-1.0, 0.0],
+    #                 [0.0, 0.0],
+    #                 [1.0, 0.0],
+    #             ]
+    #         )
+    #     ).all()
 
     def test__lens_data_signal_to_noise_limit(
         self, ccd_data_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
@@ -997,8 +827,6 @@ class TestPhase(object):
         assert (
             analysis.lens_data.unmasked_noise_map == ccd_data_snr_limit.noise_map
         ).all()
-
-        lens_data = ld.LensData(ccd_data=ccd_data_7x7, mask=mask_7x7_1_pix)
 
         ccd_data_snr_limit = ccd_data_7x7.new_ccd_data_with_signal_to_noise_limit(
             signal_to_noise_limit=0.1
@@ -1363,7 +1191,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_7x7.run(data=ccd_data_7x7, positions=[[1.0, 1.0]])
+        result = phase_7x7.run(data=ccd_data_7x7, positions=[[[1.0, 1.0]]])
 
         assert (result.positions[0] == np.array([1.0, 1.0])).all()
 
@@ -1389,8 +1217,8 @@ class TestResult(object):
 
         result = phase_7x7.run(data=ccd_data_7x7)
 
-        assert isinstance(result.most_likely_pixelization, pix.VoronoiMagnification)
-        assert result.most_likely_pixelization.shape == (2, 3)
+        assert isinstance(result.pixelization, pix.VoronoiMagnification)
+        assert result.pixelization.shape == (2, 3)
 
         phase_7x7 = phase_imaging.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
@@ -1407,12 +1235,12 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        phase_7x7.galaxies.source.hyper_galaxy_cluster_image_1d = np.ones(9)
+        phase_7x7.galaxies.source.binned_hyper_galaxy_image_1d = np.ones(9)
 
         result = phase_7x7.run(data=ccd_data_7x7)
 
-        assert isinstance(result.most_likely_pixelization, pix.VoronoiBrightnessImage)
-        assert result.most_likely_pixelization.pixels == 6
+        assert isinstance(result.pixelization, pix.VoronoiBrightnessImage)
+        assert result.pixelization.pixels == 6
 
     def test__results_of_phase_include_pixelization_grid__available_as_property(
         self, ccd_data_7x7, mask_function_7x7
@@ -1428,7 +1256,7 @@ class TestResult(object):
 
         result = phase_7x7.run(data=ccd_data_7x7)
 
-        assert result.most_likely_image_plane_pixelization_grid == None
+        assert result.most_likely_pixelization_grids_of_planes == None
 
         phase_7x7 = phase_imaging.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
@@ -1445,11 +1273,11 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        phase_7x7.galaxies.source.hyper_galaxy_cluster_image_1d = np.ones(9)
+        phase_7x7.galaxies.source.binned_hyper_galaxy_image_1d = np.ones(9)
 
         result = phase_7x7.run(data=ccd_data_7x7)
 
-        assert result.most_likely_image_plane_pixelization_grid.shape == (6, 2)
+        assert result.most_likely_pixelization_grids_of_planes.shape == (6, 2)
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, ccd_data_7x7, mask_function_7x7

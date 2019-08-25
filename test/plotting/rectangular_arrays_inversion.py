@@ -1,6 +1,6 @@
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import ccd
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
@@ -13,12 +13,12 @@ from autolens.lens.plotters import lens_fit_plotters
 from test.simulation import simulation_util
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
-# uniform grid of rectangular pixels, but instead uses irregular 'Voronoi' pixels. So, why would we want to do that?
+# uniform grid of rectangular pixels, but instead uses ir'Voronoi' pixels. So, why would we want to do that?
 # Lets take another look at the rectangular grid, and think about its weakness.
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
 ccd_data = simulation_util.load_test_ccd_data(
-    data_type="lens_only_dev_vaucouleurs", data_resolution="LSST"
+    data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 mask = msk.Mask.elliptical(
     shape=ccd_data.shape,
@@ -49,9 +49,7 @@ source_galaxy = g.Galaxy(
 
 lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
 
-tracer = ray_tracing.Tracer.from_galaxies_and_image_plane_grid_stack(
-    galaxies=[lens_galaxy, source_galaxy], image_plane_grid_stack=lens_data.grid_stack
-)
+tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
 lens_fit_plotters.plot_fit_subplot(

@@ -2,7 +2,7 @@ import time
 
 from autolens.model.profiles import mass_profiles as mp
 from autolens.lens import lens_data as ld
-from autolens.data.array import mask as msk
+from autolens.array import mask as msk
 
 from test.simulation import simulation_util
 
@@ -19,7 +19,7 @@ print("circular mask radius = " + str(radius_arcsec) + "\n")
 for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ccd_data = simulation_util.load_test_ccd_data(
-        data_type="no_lens_light__source_smooth",
+        data_type="lens_mass__source_smooth",
         data_resolution=data_resolution,
         psf_shape=(3, 3),
     )
@@ -32,16 +32,20 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
         ccd_data=ccd_data,
         mask=mask,
         sub_grid_size=sub_grid_size,
-        interp_pixel_scale=0.05,
+        pixel_scale_interpolation_grid=0.05,
     )
 
     print("Deflection angle run times for image type " + data_resolution + "\n")
-    print("Number of points = " + str(lens_data.grid_stack.sub.shape[0]) + "\n")
+    print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")
 
-    print("Interpolation Pixel Scale = " + str(lens_data.interp_pixel_scale) + "\n")
+    print(
+        "Interpolation Pixel Scale = "
+        + str(lens_data.pixel_scale_interpolation_grid)
+        + "\n"
+    )
     print(
         "Number of Interpolation Points "
-        + str(lens_data.grid_stack.sub.interpolator.interp_grid.shape[0])
+        + str(lens_data.grid.interpolator.interp_grid.shape[0])
         + "\n"
     )
 
@@ -52,7 +56,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalIsothermal time = {}".format(diff))
 
@@ -61,7 +65,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     mass_profile = mp.SphericalIsothermal(centre=(0.001, 0.001), einstein_radius=1.0)
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalIsothermal time = {}".format(diff))
 
@@ -72,7 +76,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalPowerLaw (slope = 1.5) time = {}".format(diff))
 
@@ -83,7 +87,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalPowerLaw (slope = 1.5) time = {}".format(diff))
 
@@ -94,7 +98,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalPowerLaw (slope = 2.5) time = {}".format(diff))
 
@@ -105,7 +109,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalPowerLaw (slope = 2.5) time = {}".format(diff))
 
@@ -121,7 +125,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalCoredPowerLaw time = {}".format(diff))
 
@@ -132,7 +136,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalCoredPowerLaw time = {}".format(diff))
 
@@ -142,7 +146,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     #                                            scale_radius=10.0, inner_slope=0.5)
     #
     # start = time.time()
-    # mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    # mass_profile.deflections_from_grid(grid=lens_data.grid)
     # diff = time.time() - start
     # print("EllipticalGeneralizedNFW (inner_slope = 1.0) time = {}".format(diff))
 
@@ -153,7 +157,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalGeneralizedNFW (inner_slope = 1.0) time = {}".format(diff))
 
@@ -164,7 +168,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalNFW time = {}".format(diff))
 
@@ -175,7 +179,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalNFW time = {}".format(diff))
 
@@ -191,7 +195,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalExponential time = {}".format(diff))
 
@@ -205,7 +209,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalExponential time = {}".format(diff))
 
@@ -221,7 +225,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalDevVaucouleurs time = {}".format(diff))
 
@@ -235,7 +239,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalDevVaucouleurs time = {}".format(diff))
 
@@ -252,7 +256,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalSersic time = {}".format(diff))
 
@@ -267,7 +271,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalSersic time = {}".format(diff))
 
@@ -285,7 +289,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalSersicRadialGradient (gradient = -1.0) time = {}".format(diff))
 
@@ -301,7 +305,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalSersicRadialGradient (gradient = -1.0) time = {}".format(diff))
 
@@ -319,7 +323,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("EllipticalSersicRadialGradient (gradient = 1.0) time = {}".format(diff))
 
@@ -335,7 +339,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
 
     start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    mass_profile.deflections_from_grid(grid=lens_data.grid)
     diff = time.time() - start
     print("SphericalSersicRadialGradient (gradient = 1.0) time = {}".format(diff))
 

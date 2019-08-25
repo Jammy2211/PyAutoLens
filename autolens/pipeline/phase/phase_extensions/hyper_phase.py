@@ -7,13 +7,13 @@ from autolens.pipeline.phase import phase_imaging as ph
 class HyperPhase(object):
     def __init__(self, phase: ph.PhaseImaging, hyper_name: str):
         """
-        Abstract HyperPhase. Wraps a regular phase, performing that phase before performing the action
+        Abstract HyperPhase. Wraps a phase, performing that phase before performing the action
         specified by the run_hyper.
 
         Parameters
         ----------
         phase
-            A regular phase
+            A phase
         """
         self.phase = phase
         self.hyper_name = hyper_name
@@ -63,11 +63,14 @@ class HyperPhase(object):
         phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
             "MultiNest", "extension_combined_n_live_points", int
         )
+        phase.optimizer.multimodal = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_combined_multimodal", bool
+        )
 
+        phase.is_hyper_phase = True
         phase.optimizer.phase_tag = ""
         phase.phase_tag = ""
         phase.pass_priors = self.pass_priors
-        phase.preload_pixelization_grid = None
 
         return phase
 
