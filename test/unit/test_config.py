@@ -1,9 +1,9 @@
+import autolens as al
 from os import path
 
 import pytest
 import autofit as af
 
-from autolens.model.profiles import light_profiles
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -27,10 +27,10 @@ class TestLabel(object):
         assert label_config.label("contribution_factor") == r"\omega0"
 
     def test_subscript(self, label_config):
-        assert label_config.subscript(light_profiles.EllipticalLightProfile) == "l"
+        assert label_config.subscript(al.light_profiles.EllipticalLightProfile) == "l"
 
     def test_inheritance(self, label_config):
-        assert label_config.subscript(light_profiles.EllipticalGaussian) == "l"
+        assert label_config.subscript(al.light_profiles.EllipticalGaussian) == "l"
 
     def test_exception(self, label_config):
         with pytest.raises(af.exc.PriorException):
