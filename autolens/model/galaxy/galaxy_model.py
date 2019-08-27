@@ -54,7 +54,7 @@ class GalaxyModel(af.PriorModel):
         **kwargs
     ):
         """Class to produce Galaxy instances from sets of profile classes and other model-fitting attributes (e.g. \
-         pixelizations, regularization schemes, hyper_galaxy-galaxyes) using the model mapper.
+         pixelizations, regularization schemes, hyper_galaxies-galaxyes) using the model mapper.
 
         Parameters
         ----------
@@ -82,7 +82,7 @@ class GalaxyModel(af.PriorModel):
             The regularization-scheme used to regularization reconstruct the galaxy light when fitting the observed \
             if using an inversion.
         hyper_galaxy : HyperGalaxy
-            A model hyper_galaxy-galaxy used for scaling the observed grid's noise_map.
+            A model hyper_galaxies-galaxy used for scaling the observed grid's noise_map.
         """
 
         super().__init__(

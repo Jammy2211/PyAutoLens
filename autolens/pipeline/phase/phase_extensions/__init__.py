@@ -14,15 +14,15 @@ class CombinedHyperPhase(HyperPhase):
         self, phase: phase_imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()
     ):
         """
-        A hyper_combined hyper_galaxy phase that can run zero or more other hyper_galaxy phases after the initial phase is
+        A hyper_combined hyper_galaxies phase that can run zero or more other hyper_galaxies phases after the initial phase is
         run.
 
         Parameters
         ----------
         phase : phase_imaging.PhaseImaging
-            The phase wrapped by this hyper_galaxy phase
+            The phase wrapped by this hyper_galaxies phase
         hyper_phase_classes
-            The classes of hyper_galaxy phases to be run following the initial phase
+            The classes of hyper_galaxies phases to be run following the initial phase
         """
         super().__init__(phase, "hyper_combined")
         self.hyper_phases = list(map(lambda cls: cls(phase), hyper_phase_classes))
@@ -43,10 +43,10 @@ class CombinedHyperPhase(HyperPhase):
         **kwargs
     ) -> af.Result:
         """
-        Run the phase followed by the hyper_galaxy phases. Each result of a hyper_galaxy phase is attached to the
+        Run the phase followed by the hyper_galaxies phases. Each result of a hyper_galaxies phase is attached to the
         overall result object by the hyper_name of that phase.
 
-        Finally, a phase in run with all of the variable results from all the individual hyper_galaxy phases.
+        Finally, a phase in run with all of the variable results from all the individual hyper_galaxies phases.
 
         Parameters
         ----------
@@ -61,7 +61,7 @@ class CombinedHyperPhase(HyperPhase):
         Returns
         -------
         result
-            The result of the phase, with hyper_galaxy results attached by associated hyper_galaxy names
+            The result of the phase, with hyper_galaxies results attached by associated hyper_galaxies names
         """
 
         results = results.copy() if results is not None else af.ResultsCollection()
@@ -79,9 +79,9 @@ class CombinedHyperPhase(HyperPhase):
 
     def combine_variables(self, result) -> af.ModelMapper:
         """
-        Combine the variable objects from all previous results in this hyper_combined hyper_galaxy phase.
+        Combine the variable objects from all previous results in this hyper_combined hyper_galaxies phase.
 
-        Iterates through the hyper_galaxy names of the included hyper_galaxy phases, extracting a result
+        Iterates through the hyper_galaxies names of the included hyper_galaxies phases, extracting a result
         for each name and adding the variable of that result to a new variable.
 
         Parameters
