@@ -86,7 +86,7 @@ class MockResults(object):
     @property
     def hyper_galaxy_image_1d_path_dict(self):
         """
-        A dictionary associating 1D hyper_galaxy galaxy images with their names.
+        A dictionary associating 1D hyper_galaxies galaxy images with their names.
         """
 
         hyper_minimum_percent = af.conf.instance.general.get(
@@ -110,7 +110,7 @@ class MockResults(object):
     @property
     def hyper_galaxy_image_2d_path_dict(self):
         """
-        A dictionary associating 2D hyper_galaxy galaxy images with their names.
+        A dictionary associating 2D hyper_galaxies galaxy images with their names.
         """
 
         hyper_galaxy_image_2d_path_dict = {}
@@ -146,7 +146,7 @@ class MockResults(object):
 
     def binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(self, binned_grid):
         """
-        A dictionary associating 1D hyper_galaxy galaxy cluster images with their names.
+        A dictionary associating 1D hyper_galaxies galaxy cluster images with their names.
         """
 
         if binned_grid is not None:
@@ -177,7 +177,7 @@ class MockResults(object):
 
     def binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(self, binned_grid):
         """
-        A dictionary associating "D hyper_galaxy galaxy images cluster images with their names.
+        A dictionary associating "D hyper_galaxies galaxy images cluster images with their names.
         """
 
         if binned_grid is not None:

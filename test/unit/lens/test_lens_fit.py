@@ -304,7 +304,7 @@ class TestLensProfileFit:
 
             # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
-            # The hyper_galaxy galaxy increases the noise in both pixels by 1.0, to 2.0.
+            # The hyper_galaxies galaxy increases the noise in both pixels by 1.0, to 2.0.
 
             # This reduces the chi squared to 2.0 instead of 4.0
 

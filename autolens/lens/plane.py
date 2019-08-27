@@ -804,7 +804,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
         )
 
     def mapper_from_grid_and_pixelization_grid(
-        self, grid, pixelization_grid, inversion_uses_border=True
+        self, grid, pixelization_grid, inversion_uses_border=False
     ):
 
         galaxies_with_pixelization = list(

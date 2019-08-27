@@ -188,12 +188,14 @@ def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
         visualize_path=phase_plotter_path,
     )
 
-    assert phase_plotter_path + "hyper_galaxy/hyper_model_image.png" in plot_patch.paths
     assert (
-        phase_plotter_path + "hyper_galaxy/hyper_galaxy_images.png"
+        phase_plotter_path + "hyper_galaxies/hyper_model_image.png" in plot_patch.paths
+    )
+    assert (
+        phase_plotter_path + "hyper_galaxies/hyper_galaxy_images.png"
         not in plot_patch.paths
     )
     assert (
-        phase_plotter_path + "hyper_galaxy/hyper_galaxy_cluster_images.png"
+        phase_plotter_path + "hyper_galaxies/hyper_galaxy_cluster_images.png"
         not in plot_patch.paths
     )
