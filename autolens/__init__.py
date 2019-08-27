@@ -1,5 +1,6 @@
 from autolens import text_util
 from autolens.array import grids, mask
+from autolens.array.grids import Grid
 from autolens.array.mapping_util import grid_mapping_util
 from autolens.array.mapping_util import mask_mapping_util
 from autolens.array.mapping_util import mask_mapping_util, sparse_mapping_util
@@ -33,8 +34,17 @@ from autolens.model.inversion.plotters import mapper_plotters
 from autolens.model.inversion.util import inversion_util
 from autolens.model.inversion.util import mapper_util
 from autolens.model.profiles import geometry_profiles as gp
-from autolens.model.profiles import light_profiles
-from autolens.model.profiles import light_profiles, mass_profiles
+from autolens.model.profiles.light_profiles import LightProfile, EllipticalLightProfile, EllipticalGaussian, \
+    SphericalGaussian, AbstractEllipticalSersic, EllipticalSersic, SphericalSersic as SphericalSersicLight, EllipticalExponential, \
+    SphericalExponential, EllipticalDevVaucouleurs, SphericalDevVaucouleurs, EllipticalCoreSersic, \
+    SphericalCoreSersic
+from autolens.model.profiles.mass_profiles import PointMass, EllipticalCoredPowerLaw, SphericalCoredPowerLaw, \
+    EllipticalCoredIsothermal, SphericalCoredIsothermal, EllipticalPowerLaw, SphericalPowerLaw, \
+    EllipticalIsothermal, SphericalIsothermal, EllipticalIsothermalKormann, EllipticalGeneralizedNFW, \
+    SphericalGeneralizedNFW, SphericalTruncatedNFW, SphericalTruncatedNFWChallenge, EllipticalNFW, SphericalNFW, \
+    EllipticalSersic, SphericalSersic as SphericalSersicMass, EllipticalExponential, SphericalExponential, EllipticalDevVaucouleurs, \
+    SphericalDevVaucouleurs, EllipticalSersicRadialGradient, SphericalSersicRadialGradient, MassProfile, \
+    EllipticalMassProfile, ExternalShear, MassSheet
 from autolens.model.profiles.plotters import profile_plotters
 from autolens.pipeline import phase_tagging
 from autolens.pipeline import pipeline as pl
