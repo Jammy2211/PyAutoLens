@@ -27,6 +27,11 @@ from autolens.data.instrument.interferometer import InterferometerData, PrimaryB
 from autolens.data.plotters import ccd_plotters
 from autolens.data.plotters import data_plotters
 from autolens.data.plotters import interferometer_plotters
+from autolens.model.hyper.hyper_data import HyperImageSky, HyperBackgroundNoise
+from autolens.model.inversion.inversions import Inversion
+from autolens.lens.util import lens_fit_util
+from autolens.model import cosmology_util
+from autolens.lens.util import lens_util
 from autolens.dimensions import DimensionsProfile, Length, Luminosity, Mass, MassOverLuminosity, \
     MassOverLength2, MassOverLength3, Position, convert_units_to_input_units
 from autolens.lens import ray_tracing, lens_fit
