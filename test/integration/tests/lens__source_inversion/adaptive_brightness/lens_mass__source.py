@@ -19,8 +19,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
+            lens=gm.GalaxyModel(redshift=0.5, mass=al.EllipticalIsothermal),
+            source=gm.GalaxyModel(redshift=1.0, light=al.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -37,11 +37,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
-                redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
+                redshift=0.5, mass=al.EllipticalIsothermal, shear=al.ExternalShear
             ),
             source=gm.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
+                pixelization=pix.VoronoiMagnificationPixelization,
                 regularization=reg.AdaptiveBrightness,
             ),
         ),
@@ -68,11 +68,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
-                redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
+                redshift=0.5, mass=al.EllipticalIsothermal, shear=al.ExternalShear
             ),
             source=gm.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
+                pixelization=pix.VoronoiMagnificationPixelization,
                 regularization=reg.AdaptiveBrightness,
             ),
         ),
@@ -99,11 +99,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=gm.GalaxyModel(
-                redshift=0.5, mass=mp.EllipticalIsothermal, shear=mp.ExternalShear
+                redshift=0.5, mass=al.EllipticalIsothermal, shear=al.ExternalShear
             ),
             source=gm.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
+                pixelization=pix.VoronoiMagnificationPixelization,
                 regularization=reg.AdaptiveBrightness,
             ),
         ),

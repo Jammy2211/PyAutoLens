@@ -22,7 +22,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             self.galaxies.lens_1.light.centre_1 = 1.0
 
     def mask_function(image):
-        return msk.Mask.circular(
+        return al.Mask.circular(
             shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.0
         )
 
@@ -30,8 +30,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=gm.GalaxyModel(light=lp.EllipticalSersic),
-            lens_1=gm.GalaxyModel(light=lp.EllipticalSersic),
+            lens_0=gm.GalaxyModel(light=al.EllipticalSersic),
+            lens_1=gm.GalaxyModel(light=al.EllipticalSersic),
         ),
         mask_function=mask_function,
         optimizer_class=optimizer_class,

@@ -40,7 +40,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = QuickPhase(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=al.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -73,7 +73,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2 = GridPhase(
         phase_name="phase_2",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=al.EllipticalSersic)),
         optimizer_class=af.GridSearch,
     )
 

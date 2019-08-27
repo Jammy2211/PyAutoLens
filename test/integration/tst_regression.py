@@ -77,7 +77,7 @@ class TestAdvancedModelMapper(object):
     def test_fully_qualified_paramnames(self):
         mapper = af.ModelMapper()
         galaxy_model = gm.GalaxyModel(
-            redshift=0.5, light_profile=al.EllipticalLightProfile
+            redshift=0.5, light_profile=al.light_profiles.EllipticalLightProfile
         )
         light_profile = galaxy_model.light_profile
         mapper.galaxy_model = galaxy_model
