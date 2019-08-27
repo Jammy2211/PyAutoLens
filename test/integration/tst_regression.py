@@ -1,14 +1,11 @@
-import shutil
 import os
 
+import shutil
+
 import autofit as af
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd as ccd
-from autolens.array import grids
+import autolens as al
 from autolens.array.util import array_util
-from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy, galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp
 from autolens.pipeline.phase import phase_imaging
 from test.integration import integration_util
 
@@ -16,7 +13,6 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 af.conf.instance = af.conf.Config(
     "{}/config".format(dirpath), "{}/output/".format(dirpath)
 )
-
 
 dirpath = os.path.dirname(dirpath)
 output_path = "{}/output".format(dirpath)
@@ -26,26 +22,26 @@ test_name = "test"
 
 def simulate_integration_image(test_name, pixel_scale, galaxies):
     output_path = (
-        "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
-        + test_name
-        + "/"
+            "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
+            + test_name
+            + "/"
     )
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
-    psf = abstract_data.PSF.from_gaussian(
+    psf = al.PSF.from_gaussian(
         shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale
     )
 
-    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=1
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
+    tracer = al.Tracer.from_galaxies(galaxies=galaxies)
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    ccd_simulated = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
+    ccd_simulated = al.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         exposure_time=100.0,
@@ -81,7 +77,7 @@ class TestAdvancedModelMapper(object):
     def test_fully_qualified_paramnames(self):
         mapper = af.ModelMapper()
         galaxy_model = gm.GalaxyModel(
-            redshift=0.5, light_profile=lp.EllipticalLightProfile
+            redshift=0.5, light_profile=al.EllipticalLightProfile
         )
         light_profile = galaxy_model.light_profile
         mapper.galaxy_model = galaxy_model
@@ -90,8 +86,8 @@ class TestAdvancedModelMapper(object):
         assert light_profile.name_for_prior(light_profile.centre.centre_0) == "centre_0"
 
         assert (
-            galaxy_model.name_for_prior(light_profile.axis_ratio)
-            == "light_profile_axis_ratio"
+                galaxy_model.name_for_prior(light_profile.axis_ratio)
+                == "light_profile_axis_ratio"
         )
 
         assert mapper.param_names[0] == "galaxy_model_light_profile_centre_0"
@@ -104,7 +100,7 @@ class TestPhaseModelMapper(object):
 
         integration_util.reset_paths(test_name, output_path)
 
-        sersic = lp.EllipticalSersic(
+        sersic = al.EllipticalSersic(
             centre=(0.0, 0.0),
             axis_ratio=0.8,
             phi=90.0,
@@ -123,7 +119,7 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        ccd_data = ccd.load_ccd_data_from_fits(
+        ccd_data = al.load_ccd_data_from_fits(
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
@@ -138,7 +134,7 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)
+                lens=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(test_name),
@@ -162,12 +158,12 @@ class TestPhaseModelMapper(object):
 
         assert len(lines) == 2
         assert (
-            "galaxies_lens_sersic_axis_ratio                                                  UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
-            in lines
+                "galaxies_lens_sersic_axis_ratio                                                  UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
+                in lines
         )
         assert (
-            "galaxies_lens_sersic_intensity                                                   UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
-            in lines
+                "galaxies_lens_sersic_intensity                                                   UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
+                in lines
         )
 
     if os.path.exists(output_path):
@@ -179,7 +175,7 @@ class TestPhaseModelMapper(object):
 
         integration_util.reset_paths(test_name, output_path)
 
-        sersic = lp.EllipticalSersic(
+        sersic = al.EllipticalSersic(
             centre=(0.0, 0.0),
             axis_ratio=0.8,
             phi=90.0,
@@ -197,7 +193,7 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        ccd_data = ccd.load_ccd_data_from_fits(
+        ccd_data = al.load_ccd_data_from_fits(
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
@@ -214,7 +210,7 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)
+                lens=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(name),
