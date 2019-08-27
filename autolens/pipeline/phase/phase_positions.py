@@ -46,7 +46,7 @@ class PhasePositions(AbstractPhase):
         Returns
         -------
         result: AbstractPhase.Result
-            A result object comprising the best fit model and other hyper_galaxy.
+            A result object comprising the best fit model and other hyper_galaxies.
         """
         analysis = self.make_analysis(
             positions=positions, pixel_scale=pixel_scale, results=results

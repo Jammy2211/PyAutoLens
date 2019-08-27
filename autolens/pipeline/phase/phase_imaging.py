@@ -51,7 +51,7 @@ class PhaseImaging(Phase):
 
         """
 
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper_galaxy
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper_galaxies
         passed to it.
 
         Parameters
@@ -61,7 +61,7 @@ class PhaseImaging(Phase):
         sub_grid_size: int
             The side length of the subgrid
         pixel_scale_binned_cluster_grid : float or None
-            If *True*, the hyper_galaxy image used to generate the cluster'grids weight map will be binned up to this \
+            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned up to this \
             higher pixel scale to speed up the KMeans clustering algorithm.
         """
 
@@ -167,7 +167,7 @@ class PhaseImaging(Phase):
         Returns
         -------
         result: AbstractPhase.Result
-            A result object comprising the best fit model and other hyper_galaxy.
+            A result object comprising the best fit model and other hyper_galaxies.
         """
         analysis = self.make_analysis(
             data=data, results=results, mask=mask, positions=positions

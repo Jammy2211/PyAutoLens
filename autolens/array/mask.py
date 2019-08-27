@@ -22,7 +22,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     # noinspection PyUnusedLocal
     def __init__(self, array, pixel_scale, origin=(0.0, 0.0)):
-        """ A mask, which is applied to a 2D array of hyper_galaxy to extract a set of unmasked image pixels (i.e. mask entry \
+        """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
         
         The mask retains the pixel scale of the array and has a centre and origin.
