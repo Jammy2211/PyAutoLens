@@ -404,7 +404,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         Parameters
         ----------
-        convolver : hyper_galaxy.ccd.convolution.ConvolverImage
+        convolver : hyper_galaxies.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -431,7 +431,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         Parameters
         ----------
-        convolver : hyper_galaxy.ccd.convolution.ConvolverImage
+        convolver : hyper_galaxies.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -469,7 +469,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         Parameters
         ----------
-        convolver : hyper_galaxy.ccd.convolution.ConvolverImage
+        convolver : hyper_galaxies.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -607,7 +607,7 @@ class AbstractTracerData(AbstractTracerLensing):
     def mappers_of_planes_from_grid(
         self,
         grid,
-        inversion_uses_border=True,
+        inversion_uses_border=False,
         preload_pixelization_grids_of_planes=None,
     ):
 
@@ -640,7 +640,7 @@ class AbstractTracerData(AbstractTracerLensing):
         image_1d,
         noise_map_1d,
         convolver,
-        inversion_uses_border=True,
+        inversion_uses_border=False,
         preload_pixelization_grids_of_planes=None,
     ):
 
