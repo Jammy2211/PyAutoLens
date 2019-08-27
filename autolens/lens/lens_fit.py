@@ -119,14 +119,14 @@ class LensTracerFit(LensDataFit):
         self, lens_data, image_1d, noise_map_1d, mask_1d, model_image_1d, tracer
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens data's hyper_galaxy.
+        the lens data's hyper_galaxies.
 
         Parameters
         -----------
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         scaled_array_2d_from_array_1d : func
-            A function which maps the 1D lens hyper_galaxy to its unmasked 2D array.
+            A function which maps the 1D lens hyper_galaxies to its unmasked 2D array.
         """
 
         self.tracer = tracer

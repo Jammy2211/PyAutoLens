@@ -8,7 +8,7 @@ import numpy as np
 class Mapper(object):
     def __init__(self, pixels, grid, pixelization_grid, hyper_image=None):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *hyper_galaxy.array.grid* module) to discretized pixels in a pixelization.
+        a grid, see the *hyper_galaxies.array.grid* module) to discretized pixels in a pixelization.
 
         1D arrays are used to represent these mappings, for example between the different grid in a grid \
         (e.g. the / sub grid). This follows the syntax grid_to_grid, whereby the index of a value on one grid \
@@ -28,7 +28,7 @@ class Mapper(object):
         border : grid.GridBorder
             The border of the grid's grid.
         hyper_image : ndarray
-            A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
+            A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         self.pixels = pixels
         self.grid = grid
@@ -119,7 +119,7 @@ class RectangularMapper(Mapper):
         self, pixels, grid, pixelization_grid, shape, geometry, hyper_image=None
     ):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *hyper_galaxy.array.grid* module) to pixels discretized on a rectangular grid.
+        a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a rectangular grid.
 
         The and uniform geometry of the rectangular grid is used to perform efficient pixel pairings.
 
@@ -176,7 +176,7 @@ class VoronoiMapper(Mapper):
         self, pixels, grid, pixelization_grid, voronoi, geometry, hyper_image=None
     ):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *hyper_galaxy.array.grid* module) to pixels discretized on a Voronoi grid.
+        a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a Voronoi grid.
 
         The irand non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge \
         of how different grid map to one another.
@@ -194,7 +194,7 @@ class VoronoiMapper(Mapper):
         geometry : pixelization.Voronoi.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the Vornoi pixelization.
         hyper_image : ndarray
-            A pre-computed hyper_galaxy-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
+            A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         self.voronoi = voronoi
         self.geometry = geometry

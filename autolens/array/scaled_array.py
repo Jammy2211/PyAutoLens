@@ -531,7 +531,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the hyper_galaxy.
+            The HDU number in the fits file containing the hyper_galaxies.
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
