@@ -36,7 +36,7 @@ class MockCosmology(object):
 
     def angular_diameter_distance_z1z2(self, z1, z2):
         const = constants.c.to("kpc / s") ** 2.0 / (
-            4 * math.pi * constants.G.to("kpc3 / (solMass s2)")
+            4 * math.pi * constants.al.to("kpc3 / (solMass s2)")
         )
         return Value(value=self.critical_surface_density * const.value)
 
