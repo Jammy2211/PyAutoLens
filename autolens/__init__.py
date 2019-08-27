@@ -37,23 +37,18 @@ from autolens.model.inversion import mappers
 from autolens.model.inversion import mappers as m
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
+from autolens.model.inversion.pixelizations import Pixelization, Rectangular as RectangularPixelization, \
+    Voronoi as VoronoiPixelization, VoronoiMagnification as VoronoiMagnificationPixelization, \
+    VoronoiBrightnessImage as VoronoiBrightnessImagePixelization
 from autolens.model.inversion.plotters import mapper_plotters
+from autolens.model.inversion.regularization import Regularization, Constant as ConstantRegularization, \
+    AdaptiveBrightness as AdaptiveBrightnessRegularization
 from autolens.model.inversion.util import inversion_util
 from autolens.model.inversion.util import mapper_util
 from autolens.model.profiles import geometry_profiles as gp
-from autolens.model.profiles.light_profiles import LightProfile, EllipticalLightProfile, EllipticalGaussian, \
-    SphericalGaussian, AbstractEllipticalSersic, EllipticalSersic, SphericalSersic as SphericalSersicLight, \
-    EllipticalExponential, \
-    SphericalExponential, EllipticalDevVaucouleurs, SphericalDevVaucouleurs, EllipticalCoreSersic, \
-    SphericalCoreSersic
-from autolens.model.profiles.mass_profiles import PointMass, EllipticalCoredPowerLaw, SphericalCoredPowerLaw, \
-    EllipticalCoredIsothermal, SphericalCoredIsothermal, EllipticalPowerLaw, SphericalPowerLaw, \
-    EllipticalIsothermal, SphericalIsothermal, EllipticalIsothermalKormann, EllipticalGeneralizedNFW, \
-    SphericalGeneralizedNFW, SphericalTruncatedNFW, SphericalTruncatedNFWChallenge, EllipticalNFW, SphericalNFW, \
-    EllipticalSersic, SphericalSersic as SphericalSersicMass, EllipticalExponential, SphericalExponential, \
-    EllipticalDevVaucouleurs, \
-    SphericalDevVaucouleurs, EllipticalSersicRadialGradient, SphericalSersicRadialGradient, MassProfile, \
-    EllipticalMassProfile, ExternalShear, MassSheet
+from autolens.model.profiles import light_and_mass_profiles
+from autolens.model.profiles import light_profiles
+from autolens.model.profiles import mass_profiles
 from autolens.model.profiles.plotters import profile_plotters
 from autolens.pipeline import phase_tagging
 from autolens.pipeline import pipeline as pl
