@@ -15,7 +15,7 @@ from .hyper_phase import HyperPhase
 class HyperGalaxyPhase(HyperPhase):
     def __init__(self, phase):
 
-        super().__init__(phase=phase, hyper_name="hyper_galaxies")
+        super().__init__(phase=phase, hyper_name="hyper_galaxy")
         self.include_sky_background = False
         self.include_noise_background = False
 
@@ -286,7 +286,7 @@ class HyperGalaxyPhase(HyperPhase):
                             getattr(result.variable, name),
                         )
 
-                transfer_field("hyper_galaxies")
+                transfer_field("hyper_galaxy")
 
                 hyper_result.constant.hyper_image_sky = getattr(
                     result.constant, "hyper_image_sky"
@@ -330,7 +330,7 @@ class HyperGalaxyAllPhase(HyperPhase):
     def __init__(
         self, phase, include_sky_background=False, include_noise_background=False
     ):
-        super().__init__(phase=phase, hyper_name="hyper_galaxies")
+        super().__init__(phase=phase, hyper_name="hyper_galaxy")
         self.include_sky_background = include_sky_background
         self.include_noise_background = include_noise_background
 
@@ -444,7 +444,7 @@ class HyperGalaxyAllPhase(HyperPhase):
                             getattr(result.variable, name),
                         )
 
-                transfer_field("hyper_galaxies")
+                transfer_field("hyper_galaxy")
                 transfer_field("hyper_image_sky")
                 transfer_field("hyper_background_noise")
 
