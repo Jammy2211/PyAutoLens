@@ -7,7 +7,7 @@ from autolens.pipeline.plotters import hyper_plotters
 
 @pytest.fixture(name="hyper_plotter_path")
 def make_hyper_plotter_setup():
-    return "{}/../../test_files/plotting/hyper_galaxy/".format(
+    return "{}/../../test_files/plotting/hyper_galaxies/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
@@ -124,7 +124,7 @@ def test__plot_hyper_galaxy(
         output_format="png",
     )
 
-    assert hyper_plotter_path + "hyper_galaxy.png" in plot_patch.paths
+    assert hyper_plotter_path + "hyper_galaxies.png" in plot_patch.paths
 
 
 def test__plot_hyper_galaxy_images(
