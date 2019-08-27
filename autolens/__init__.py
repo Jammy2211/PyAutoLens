@@ -8,6 +8,8 @@ from autolens.array.mapping_util import mask_mapping_util, sparse_mapping_util
 from autolens.array.mapping_util import sparse_mapping_util
 from autolens.array.mask import Mask
 from autolens.array.mask import load_mask_from_fits, output_mask_to_fits
+from autolens.array.scaled_array import ArrayGeometry, RectangularArrayGeometry, Array, ScaledArray, \
+    ScaledSquarePixelArray, ScaledRectangularPixelArray
 from autolens.array.util import array_util, grid_util, binning_util
 from autolens.array.util import binning_util, grid_util, mask_util
 from autolens.array.util import grid_util, mask_util
@@ -32,11 +34,11 @@ from autolens.lens.plotters import lens_plotter_util
 from autolens.lens.plotters import plane_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.ray_tracing import Tracer
-from autolens.model.galaxy.galaxy_data import GalaxyData, GalaxyFitData
 from autolens.model.galaxy.galaxy import Galaxy
-from autolens.model.galaxy.galaxy_fit import GalaxyFit
 from autolens.model.galaxy.galaxy import HyperGalaxy
 from autolens.model.galaxy.galaxy import Redshift
+from autolens.model.galaxy.galaxy_data import GalaxyData, GalaxyFitData
+from autolens.model.galaxy.galaxy_fit import GalaxyFit
 from autolens.model.galaxy.galaxy_model import GalaxyModel
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.model.galaxy.plotters import galaxy_plotters
