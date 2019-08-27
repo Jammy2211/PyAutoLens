@@ -67,22 +67,6 @@ class AbstractPhase(af.AbstractPhase):
         self.cosmology = cosmology
 
     @property
-    def variable(self):
-        """
-        Convenience method
-
-        Returns
-        -------
-        ModelMapper
-            A model mapper comprising all the variable (prior) objects in this lens
-        """
-        return self.optimizer.variable
-
-    @variable.setter
-    def variable(self, variable):
-        self.optimizer.variable = variable
-
-    @property
     def phase_property_collections(self):
         """
         Returns
