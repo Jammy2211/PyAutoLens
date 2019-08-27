@@ -34,13 +34,13 @@ def setup_phase_mask(data, mask, mask_function, inner_mask_radii):
 
 class AbstractPhase(af.AbstractPhase):
     def __init__(
-        self,
-        phase_name,
-        phase_tag=None,
-        phase_folders=tuple(),
-        optimizer_class=af.MultiNest,
-        cosmology=cosmo.Planck15,
-        auto_link_priors=False,
+            self,
+            phase_name,
+            phase_tag=None,
+            phase_folders=tuple(),
+            optimizer_class=af.MultiNest,
+            cosmology=cosmo.Planck15,
+            auto_link_priors=False,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
@@ -77,6 +77,10 @@ class AbstractPhase(af.AbstractPhase):
             A model mapper comprising all the variable (prior) objects in this lens
         """
         return self.optimizer.variable
+
+    @variable.setter
+    def variable(self, variable):
+        self.optimizer.variable = variable
 
     @property
     def phase_property_collections(self):
@@ -160,13 +164,13 @@ class AbstractPhase(af.AbstractPhase):
 
     class Result(af.Result):
         def __init__(
-            self,
-            constant,
-            figure_of_merit,
-            previous_variable,
-            gaussian_tuples,
-            analysis,
-            optimizer,
+                self,
+                constant,
+                figure_of_merit,
+                previous_variable,
+                gaussian_tuples,
+                analysis,
+                optimizer,
         ):
             """
             The result of a phase
@@ -301,7 +305,7 @@ class AbstractPhase(af.AbstractPhase):
                     minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
                     galaxy_image_1d[
                         galaxy_image_1d < minimum_galaxy_value
-                    ] = minimum_galaxy_value
+                        ] = minimum_galaxy_value
 
                 hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
 
@@ -367,7 +371,7 @@ class AbstractPhase(af.AbstractPhase):
                     )
                     binned_galaxy_image_1d[
                         binned_galaxy_image_1d < minimum_hyper_value
-                    ] = minimum_hyper_value
+                        ] = minimum_hyper_value
 
                     binned_hyper_galaxy_image_path_dict[path] = binned_galaxy_image_1d
 
@@ -465,19 +469,19 @@ class GalaxyFitPhase(AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
-        self,
-        phase_name,
-        phase_folders=tuple(),
-        galaxies=None,
-        use_image=False,
-        use_convergence=False,
-        use_potential=False,
-        use_deflections=False,
-        optimizer_class=af.MultiNest,
-        sub_grid_size=2,
-        pixel_scale_interpolation_grid=None,
-        mask_function=None,
-        cosmology=cosmo.Planck15,
+            self,
+            phase_name,
+            phase_folders=tuple(),
+            galaxies=None,
+            use_image=False,
+            use_convergence=False,
+            use_potential=False,
+            use_deflections=False,
+            optimizer_class=af.MultiNest,
+            sub_grid_size=2,
+            pixel_scale_interpolation_grid=None,
+            mask_function=None,
+            cosmology=cosmo.Planck15,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
@@ -528,6 +532,7 @@ class GalaxyFitPhase(AbstractPhase):
             galaxy_data=galaxy_data, results=results, mask=mask
         )
 
+        self.variable = self.variable.populate(results)
         self.pass_priors(results)
         self.assert_and_save_pickle()
 
