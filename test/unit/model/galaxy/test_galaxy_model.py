@@ -3,14 +3,7 @@ import os
 import pytest
 
 import autofit as af
-from autolens.model.galaxy import galaxy as g, galaxy_model as gp
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
-from autolens.model.profiles import (
-    mass_profiles,
-    light_profiles,
-    light_and_mass_profiles,
-)
+import autolens as al
 
 
 class MockPriorModel:
@@ -36,7 +29,7 @@ class MockModelInstance:
 
 @pytest.fixture(name="mass_and_light")
 def make_profile():
-    return light_and_mass_profiles.EllipticalSersicRadialGradient()
+    return al.light_and_mass_profiles.EllipticalSersicRadialGradient()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -54,22 +47,22 @@ def make_mapper():
 
 
 @pytest.fixture(name="galaxy_model_2")
-def make_galaxy_model_2(mapper,):
-    galaxy_model_2 = gp.GalaxyModel(
-        redshift=g.Redshift,
-        light_profile=light_profiles.EllipticalDevVaucouleurs,
-        mass_profile=mass_profiles.EllipticalCoredIsothermal,
+def make_galaxy_model_2(mapper, ):
+    galaxy_model_2 = al.GalaxyModel(
+        redshift=al.Redshift,
+        light_profile=al.light_profiles.EllipticalDevVaucouleurs,
+        mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
     )
     mapper.galaxy_2 = galaxy_model_2
     return galaxy_model_2
 
 
 @pytest.fixture(name="galaxy_model")
-def make_galaxy_model(mapper,):
-    galaxy_model_1 = gp.GalaxyModel(
-        redshift=g.Redshift,
-        light_profile=light_profiles.EllipticalDevVaucouleurs,
-        mass_profile=mass_profiles.EllipticalCoredIsothermal,
+def make_galaxy_model(mapper, ):
+    galaxy_model_1 = al.GalaxyModel(
+        redshift=al.Redshift,
+        light_profile=al.light_profiles.EllipticalDevVaucouleurs,
+        mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
     )
     mapper.galaxy_1 = galaxy_model_1
     return galaxy_model_1
@@ -77,7 +70,7 @@ def make_galaxy_model(mapper,):
 
 class TestMassAndLightProfiles(object):
     def test_make_galaxy_from_constant_profile(self, mass_and_light):
-        prior = gp.GalaxyModel(redshift=0.5, profile=mass_and_light)
+        prior = al.GalaxyModel(redshift=0.5, profile=mass_and_light)
 
         galaxy = prior.instance_for_arguments({})
 
@@ -85,8 +78,8 @@ class TestMassAndLightProfiles(object):
         assert galaxy.mass_profiles[0] == mass_and_light
 
     def test_make_galaxy_from_variable_profile(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=0.5, profile=light_and_mass_profiles.EllipticalSersic
+        galaxy_model = al.GalaxyModel(
+            redshift=0.5, profile=al.light_and_mass_profiles.EllipticalSersic
         )
 
         arguments = {
@@ -104,7 +97,7 @@ class TestMassAndLightProfiles(object):
 
         assert galaxy.light_profiles[0] == galaxy.mass_profiles[0]
         assert isinstance(
-            galaxy.light_profiles[0], light_and_mass_profiles.EllipticalSersic
+            galaxy.light_profiles[0], al.light_and_mass_profiles.EllipticalSersic
         )
 
         assert galaxy.mass_profiles[0].centre == (1.0, 0.2)
@@ -118,24 +111,24 @@ class TestMassAndLightProfiles(object):
 
 class TestGalaxyModel:
     def test_init_to_model_mapper(self, mapper):
-        mapper.galaxy_1 = gp.GalaxyModel(
-            redshift=g.Redshift,
-            light_profile=light_profiles.EllipticalDevVaucouleurs,
-            mass_profile=mass_profiles.EllipticalCoredIsothermal,
+        mapper.galaxy_1 = al.GalaxyModel(
+            redshift=al.Redshift,
+            light_profile=al.light_profiles.EllipticalDevVaucouleurs,
+            mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
         )
         print(mapper.galaxy_1.redshift)
         assert len(mapper.prior_tuples_ordered_by_id) == 13
 
     def test_multiple_galaxies(self, mapper):
-        mapper.galaxy_1 = gp.GalaxyModel(
-            redshift=g.Redshift,
-            light_profile=light_profiles.EllipticalDevVaucouleurs,
-            mass_profile=mass_profiles.EllipticalCoredIsothermal,
+        mapper.galaxy_1 = al.GalaxyModel(
+            redshift=al.Redshift,
+            light_profile=al.light_profiles.EllipticalDevVaucouleurs,
+            mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
         )
-        mapper.galaxy_2 = gp.GalaxyModel(
-            redshift=g.Redshift,
-            light_profile=light_profiles.EllipticalDevVaucouleurs,
-            mass_profile=mass_profiles.EllipticalCoredIsothermal,
+        mapper.galaxy_2 = al.GalaxyModel(
+            redshift=al.Redshift,
+            light_profile=al.light_profiles.EllipticalDevVaucouleurs,
+            mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
         )
         assert len(mapper.prior_model_tuples) == 2
 
@@ -144,10 +137,10 @@ class TestGalaxyModel:
 
         assert prior_models[1].centre != prior_models[2].centre
 
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            light_profile=light_profiles.EllipticalDevVaucouleurs,
-            mass_profile=mass_profiles.EllipticalCoredIsothermal,
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
+            light_profile=al.light_profiles.EllipticalDevVaucouleurs,
+            mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
             align_centres=True,
         )
 
@@ -160,10 +153,10 @@ class TestGalaxyModel:
 
         assert prior_models[1].axis_ratio != prior_models[2].axis_ratio
 
-        prior_models = gp.GalaxyModel(
-            redshift=g.Redshift,
-            light_profile=light_profiles.EllipticalDevVaucouleurs,
-            mass_profile=mass_profiles.EllipticalCoredIsothermal,
+        prior_models = al.GalaxyModel(
+            redshift=al.Redshift,
+            light_profile=al.light_profiles.EllipticalDevVaucouleurs,
+            mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
             align_axis_ratios=True,
         ).prior_models
         assert prior_models[1].axis_ratio == prior_models[2].axis_ratio
@@ -173,10 +166,10 @@ class TestGalaxyModel:
 
         assert prior_models[1].phi != prior_models[2].phi
 
-        prior_models = gp.GalaxyModel(
-            redshift=g.Redshift,
-            light_profile=light_profiles.EllipticalDevVaucouleurs,
-            mass_profile=mass_profiles.EllipticalCoredIsothermal,
+        prior_models = al.GalaxyModel(
+            redshift=al.Redshift,
+            light_profile=al.light_profiles.EllipticalDevVaucouleurs,
+            mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
             align_orientations=True,
         ).prior_models
         assert prior_models[1].phi == prior_models[2].phi
@@ -184,10 +177,10 @@ class TestGalaxyModel:
 
 class TestNamedProfiles:
     def test_get_prior_model(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            light_profile=light_profiles.EllipticalSersic,
-            mass_profile=mass_profiles.EllipticalSersic,
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
+            light_profile=al.light_profiles.EllipticalSersic,
+            mass_profile=al.mass_profiles.EllipticalSersic,
         )
 
         assert isinstance(galaxy_model.light_profile, af.PriorModel)
@@ -195,35 +188,35 @@ class TestNamedProfiles:
 
     def test_set_prior_model(self):
         mapper = af.ModelMapper()
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            light_profile=light_profiles.EllipticalSersic,
-            mass_profile=mass_profiles.EllipticalSersic,
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
+            light_profile=al.light_profiles.EllipticalSersic,
+            mass_profile=al.mass_profiles.EllipticalSersic,
         )
 
         mapper.galaxy = galaxy_model
 
         assert 16 == len(mapper.prior_tuples_ordered_by_id)
 
-        galaxy_model.light_profile = af.PriorModel(light_profiles.LightProfile)
+        galaxy_model.light_profile = af.PriorModel(al.light_profiles.LightProfile)
 
         assert 9 == len(mapper.prior_tuples_ordered_by_id)
 
 
 class TestResultForArguments:
     def test_simple_instance_for_arguments(self):
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift)
+        galaxy_model = al.GalaxyModel(redshift=al.Redshift)
         arguments = {galaxy_model.redshift.redshift: 0.5}
         galaxy = galaxy_model.instance_for_arguments(arguments)
 
         assert galaxy.redshift == 0.5
 
     def test_complicated_instance_for_arguments(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
             align_centres=True,
-            light_profile=light_profiles.EllipticalSersic,
-            mass_profile=mass_profiles.SphericalIsothermal,
+            light_profile=al.light_profiles.EllipticalSersic,
+            mass_profile=al.mass_profiles.SphericalIsothermal,
         )
 
         arguments = {
@@ -244,11 +237,11 @@ class TestResultForArguments:
         assert galaxy.light_profiles[0].centre[1] == 0.2
 
     def test_gaussian_prior_model_for_arguments(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
             align_centres=True,
-            light_profile=light_profiles.EllipticalSersic,
-            mass_profile=mass_profiles.SphericalIsothermal,
+            light_profile=al.light_profiles.EllipticalSersic,
+            mass_profile=al.mass_profiles.SphericalIsothermal,
         )
 
         redshift_prior = af.GaussianPrior(1, 1)
@@ -273,20 +266,20 @@ class TestResultForArguments:
 
         assert gaussian_galaxy_model_model.redshift.redshift == redshift_prior
         assert (
-            gaussian_galaxy_model_model.mass_profile.einstein_radius.value
-            == einstein_radius_prior
+                gaussian_galaxy_model_model.mass_profile.einstein_radius.value
+                == einstein_radius_prior
         )
         assert (
-            gaussian_galaxy_model_model.light_profile.intensity.value == intensity_prior
+                gaussian_galaxy_model_model.light_profile.intensity.value == intensity_prior
         )
 
 
 class TestPixelization(object):
     def test_pixelization(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.Rectangular,
-            regularization=reg.Constant,
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
+            pixelization=al.RectangularPixelization,
+            regularization=al.ConstantRegularization,
         )
 
         arguments = {
@@ -302,10 +295,10 @@ class TestPixelization(object):
         assert galaxy.pixelization.shape[1] == 23
 
     def test_fixed_pixelization(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.Rectangular(),
-            regularization=reg.Constant(),
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
+            pixelization=al.RectangularPixelization(),
+            regularization=al.ConstantRegularization(),
         )
 
         arguments = {galaxy_model.redshift.redshift: 2.0}
@@ -317,15 +310,15 @@ class TestPixelization(object):
 
     def test__if_no_pixelization_raises_error(self):
         with pytest.raises(af.exc.PriorException):
-            gp.GalaxyModel(redshift=g.Redshift, pixelization=pix.Voronoi)
+            al.GalaxyModel(redshift=al.Redshift, pixelization=al.VoronoiPixelization)
 
 
 class TestRegularization(object):
     def test_regularization(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.Rectangular,
-            regularization=reg.Constant,
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
+            pixelization=al.RectangularPixelization,
+            regularization=al.ConstantRegularization,
         )
 
         arguments = {
@@ -340,10 +333,10 @@ class TestRegularization(object):
         assert galaxy.regularization.coefficient == 0.5
 
     def test_fixed_regularization(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            pixelization=pix.Voronoi(),
-            regularization=reg.Constant(),
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
+            pixelization=al.VoronoiPixelization(),
+            regularization=al.ConstantRegularization(),
         )
 
         arguments = {galaxy_model.redshift.redshift: 2.0}
@@ -354,12 +347,12 @@ class TestRegularization(object):
 
     def test__if_no_pixelization_raises_error(self):
         with pytest.raises(af.exc.PriorException):
-            gp.GalaxyModel(redshift=g.Redshift, regularization=reg.Constant)
+            al.GalaxyModel(redshift=al.Redshift, regularization=al.ConstantRegularization)
 
 
 class TestHyperGalaxy(object):
-    def test_hyper_galaxy(self,):
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift, hyper_galaxy=g.HyperGalaxy)
+    def test_hyper_galaxy(self, ):
+        galaxy_model = al.GalaxyModel(redshift=al.Redshift, hyper_galaxy=al.HyperGalaxy)
 
         arguments = {
             galaxy_model.redshift.redshift: 0.2,
@@ -376,8 +369,8 @@ class TestHyperGalaxy(object):
 
         assert galaxy.hyper_galaxy_image_1d is None
 
-    def test_fixed_hyper_galaxy(self,):
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift, hyper_galaxy=g.HyperGalaxy())
+    def test_fixed_hyper_galaxy(self, ):
+        galaxy_model = al.GalaxyModel(redshift=al.Redshift, hyper_galaxy=al.HyperGalaxy())
 
         arguments = {galaxy_model.redshift.redshift: 2.0}
 
@@ -392,8 +385,8 @@ class TestHyperGalaxy(object):
 
 class TestFixedProfiles(object):
     def test_fixed_light(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift, light_profile=light_profiles.EllipticalSersic()
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift, light_profile=al.light_profiles.EllipticalSersic()
         )
 
         arguments = {galaxy_model.redshift.redshift: 2.0}
@@ -403,8 +396,8 @@ class TestFixedProfiles(object):
         assert len(galaxy.light_profiles) == 1
 
     def test_fixed_mass(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift, nass_profile=mass_profiles.SphericalNFW()
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift, nass_profile=al.mass_profiles.SphericalNFW()
         )
 
         arguments = {galaxy_model.redshift.redshift: 2.0}
@@ -414,11 +407,11 @@ class TestFixedProfiles(object):
         assert len(galaxy.mass_profiles) == 1
 
     def test_fixed_and_variable(self):
-        galaxy_model = gp.GalaxyModel(
-            redshift=g.Redshift,
-            mass_profile=mass_profiles.SphericalNFW(),
-            light_profile=light_profiles.EllipticalSersic(),
-            variable_light=light_profiles.EllipticalSersic,
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift,
+            mass_profile=al.mass_profiles.SphericalNFW(),
+            light_profile=al.light_profiles.EllipticalSersic(),
+            variable_light=al.light_profiles.EllipticalSersic,
         )
 
         arguments = {
@@ -440,18 +433,18 @@ class TestFixedProfiles(object):
 
 class TestRedshift(object):
     def test_set_redshift_class(self):
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift)
-        galaxy_model.redshift = g.Redshift(3)
+        galaxy_model = al.GalaxyModel(redshift=al.Redshift)
+        galaxy_model.redshift = al.Redshift(3)
         assert galaxy_model.redshift == 3
 
     def test_set_redshift_float(self):
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift)
+        galaxy_model = al.GalaxyModel(redshift=al.Redshift)
         galaxy_model.redshift = 3
         # noinspection PyUnresolvedReferences
         assert galaxy_model.redshift == 3
 
     def test_set_redshift_constant(self):
-        galaxy_model = gp.GalaxyModel(redshift=g.Redshift)
+        galaxy_model = al.GalaxyModel(redshift=al.Redshift)
         galaxy_model.redshift = 3
         # noinspection PyUnresolvedReferences
         assert galaxy_model.redshift == 3
@@ -459,9 +452,9 @@ class TestRedshift(object):
 
 @pytest.fixture(name="galaxy")
 def make_galaxy():
-    return g.Galaxy(
+    return al.Galaxy(
         redshift=3,
-        sersic=light_profiles.EllipticalSersic(),
-        exponential=light_profiles.EllipticalExponential(),
-        spherical=mass_profiles.SphericalIsothermal(),
+        sersic=al.light_profiles.EllipticalSersic(),
+        exponential=al.light_profiles.EllipticalExponential(),
+        spherical=al.mass_profiles.SphericalIsothermal(),
     )
