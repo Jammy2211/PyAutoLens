@@ -31,7 +31,7 @@ class MockMask(al.Mask):
         if psf_shape[0] % 2 == 0 or psf_shape[1] % 2 == 0:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
-        blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(self, psf_shape)
+        blurring_mask = al.mask_util.blurring_mask_from_mask_and_psf_shape(self, psf_shape)
 
         return MockMask(array=blurring_mask, pixel_scale=self.pixel_scale)
 
