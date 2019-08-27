@@ -48,7 +48,7 @@ class Inversion(object):
         curvature_reg_matrix : ndarray
             The curvature_matrix + regularization matrix.
         solution_vector : ndarray
-            The vector containing the reconstructed fit to the hyper_galaxy.
+            The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
         self.noise_map_1d = noise_map_1d

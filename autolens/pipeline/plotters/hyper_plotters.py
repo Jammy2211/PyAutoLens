@@ -44,7 +44,7 @@ def plot_hyper_galaxy_subplot(
     position_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="hyper_galaxy",
+    output_filename="hyper_galaxies",
 ):
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
@@ -460,14 +460,14 @@ def plot_hyper_model_image(
     output_format="show",
     output_filename="hyper_model_image",
 ):
-    """Plot the image of a hyper_galaxy model image.
+    """Plot the image of a hyper_galaxies model image.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     hyper_model_image : datas.ccd.datas.CCD
-        The hyper_galaxy model image.
+        The hyper_galaxies model image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -544,14 +544,14 @@ def plot_hyper_galaxy_image(
     output_format="show",
     output_filename="hyper_galaxy_image",
 ):
-    """Plot the image of a hyper_galaxy galaxy image.
+    """Plot the image of a hyper_galaxies galaxy image.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     hyper_galaxy_image : datas.ccd.datas.CCD
-        The hyper_galaxy galaxy image.
+        The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -628,14 +628,14 @@ def plot_contribution_map(
     output_format="show",
     output_filename="contribution_map",
 ):
-    """Plot the image of a hyper_galaxy galaxy image.
+    """Plot the image of a hyper_galaxies galaxy image.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     contribution_map : datas.ccd.datas.CCD
-        The hyper_galaxy galaxy image.
+        The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -712,14 +712,14 @@ def plot_hyper_noise_map(
     output_format="show",
     output_filename="hyper_noise_map",
 ):
-    """Plot the image of a hyper_galaxy galaxy image.
+    """Plot the image of a hyper_galaxies galaxy image.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     hyper_noise_map : datas.ccd.datas.CCD
-        The hyper_galaxy galaxy image.
+        The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -796,14 +796,14 @@ def plot_chi_squared_map(
     output_format="show",
     output_filename="chi_squared_map",
 ):
-    """Plot the image of a hyper_galaxy galaxy image.
+    """Plot the image of a hyper_galaxies galaxy image.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     chi_squared_map : datas.ccd.datas.CCD
-        The hyper_galaxy galaxy image.
+        The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -880,14 +880,14 @@ def plot_hyper_chi_squared_map(
     output_format="show",
     output_filename="hyper_chi_squared_map",
 ):
-    """Plot the image of a hyper_galaxy galaxy image.
+    """Plot the image of a hyper_galaxies galaxy image.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     hyper_chi_squared_map : datas.ccd.datas.CCD
-        The hyper_galaxy galaxy image.
+        The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """

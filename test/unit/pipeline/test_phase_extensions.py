@@ -536,7 +536,7 @@ class TestHyperAPI(object):
     def test_combined_result(self, hyper_combined):
         result = hyper_combined.run(None)
 
-        assert hasattr(result, "hyper_galaxy")
+        assert hasattr(result, "hyper_galaxies")
         assert isinstance(result.hyper_galaxy, MockResult)
 
         assert hasattr(result, "inversion")
@@ -575,7 +575,7 @@ class TestHyperAPI(object):
         galaxy_phase = hyper_combined.hyper_phases[0]
         pixelization_phase = hyper_combined.hyper_phases[1]
 
-        assert galaxy_phase.hyper_name == "hyper_galaxy"
+        assert galaxy_phase.hyper_name == "hyper_galaxies"
         assert isinstance(galaxy_phase, phase_extensions.HyperGalaxyPhase)
 
         assert pixelization_phase.hyper_name == "inversion"
@@ -595,5 +595,5 @@ class TestHyperAPI(object):
 
         result = phase.run(ccd_data_7x7)
 
-        assert hasattr(result, "hyper_galaxy")
+        assert hasattr(result, "hyper_galaxies")
         assert isinstance(result.hyper_galaxy, MockResult)
