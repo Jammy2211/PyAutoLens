@@ -16,6 +16,8 @@ from autolens.data.instrument.ccd import CCDData, NoiseMap, PoissonNoiseMap, Sim
 from autolens.data.plotters import ccd_plotters
 from autolens.data.plotters import data_plotters
 from autolens.data.plotters import interferometer_plotters
+from autolens.dimensions import DimensionsProfile, Length, Luminosity, Mass, MassOverLuminosity, \
+    MassOverLength2, MassOverLength3, Position, convert_units_to_input_units
 from autolens.lens import ray_tracing, lens_fit
 from autolens.lens import ray_tracing as rt
 from autolens.lens.lens_data import LensData
