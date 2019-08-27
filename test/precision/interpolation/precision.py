@@ -8,7 +8,7 @@ from test.simulation import simulation_util
 
 import numpy as np
 
-# Although we could test the deflection angles without using an image (e.g. by just making a grid), we have chosen to
+# Although we could test the deflection angles without using an image (e.al. by just making a grid), we have chosen to
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
 # analysis
 
@@ -29,18 +29,18 @@ for data_resolution in ["HST_Up"]:
         data_resolution=data_resolution,
         psf_shape=(3, 3),
     )
-    mask = msk.Mask.circular_annular(
+    mask = al.Mask.circular_annular(
         shape=ccd_data.shape,
         pixel_scale=ccd_data.pixel_scale,
         inner_radius_arcsec=inner_radius_arcsec,
         outer_radius_arcsec=outer_radius_arcsec,
     )
-    lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
+    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
     print("Deflection angle run times for image type " + data_resolution + "\n")
     print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")
 
-    interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+    interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
         mask=lens_data.mask_2d, grid=lens_data.grid, pixel_scale_interpolation_grid=0.05
     )
 
@@ -52,7 +52,7 @@ for data_resolution in ["HST_Up"]:
 
     ### EllipticalIsothermal ###
 
-    mass_profile = mp.EllipticalIsothermal(
+    mass_profile = al.EllipticalIsothermal(
         centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, einstein_radius=1.0
     )
 

@@ -22,9 +22,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5,
-                light_0=lp.EllipticalSersic,
-                light_1=lp.EllipticalSersic,
-                mass=mp.EllipticalIsothermal,
+                light_0=al.EllipticalSersic,
+                light_1=al.EllipticalSersic,
+                mass=al.EllipticalIsothermal,
                 align_phi=True,
             )
         ),

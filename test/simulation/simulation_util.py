@@ -79,7 +79,7 @@ def load_test_ccd_data(data_type, data_resolution, psf_shape=(11, 11), lens_name
         path=test_path, folder_names=["data", data_type, data_resolution]
     )
 
-    return ccd.load_ccd_data_from_fits(
+    return al.load_ccd_data_from_fits(
         image_path=data_path + "/image.fits",
         psf_path=data_path + "/psf.fits",
         noise_map_path=data_path + "/noise_map.fits",
