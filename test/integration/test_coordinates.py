@@ -125,9 +125,9 @@ def test__deflection_angles():
 #     print(source_image.argmax())
 #
 #     grid = masks.GridStack.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
-#     lens_galaxy = g.Galaxy(mass=sis)
-#     source_galaxy = g.Galaxy(light=sersic)
-#     tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy], galaxies=[source_galaxy],
+#     lens_galaxy = al.Galaxy(mass=sis)
+#     source_galaxy = al.Galaxy(light=sersic)
+#     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy], galaxies=[source_galaxy],
 #                                                  image_plane_grids=grid)
 #
 #     print(source_grid)
