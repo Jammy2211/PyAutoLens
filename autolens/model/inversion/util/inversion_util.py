@@ -6,7 +6,7 @@ import numpy as np
 def data_vector_from_blurred_mapping_matrix_and_data(
     blurred_mapping_matrix, image_1d, noise_map_1d
 ):
-    """Compute the hyper_galaxy vector *D* from a blurred mapping_util matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
+    """Compute the hyper_galaxies vector *D* from a blurred mapping_util matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
     
     Parameters
@@ -104,7 +104,7 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(
 def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
     blurred_mapping_matrix, solution_vector
 ):
-    """ Compute the reconstructed hyper_galaxy vector from the blurrred mapping_util matrix *f* and solution vector *S*.
+    """ Compute the reconstructed hyper_galaxies vector from the blurrred mapping_util matrix *f* and solution vector *S*.
 
     Parameters
     -----------
