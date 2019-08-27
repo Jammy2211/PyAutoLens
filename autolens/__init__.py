@@ -10,6 +10,7 @@ from autolens.array.mask import Mask
 from autolens.array.mask import load_mask_from_fits, output_mask_to_fits
 from autolens.array.scaled_array import ArrayGeometry, RectangularArrayGeometry, Array, ScaledArray, \
     ScaledSquarePixelArray, ScaledRectangularPixelArray
+from autolens.model.inversion.util import regularization_util
 from autolens.array.util import array_util, grid_util, binning_util
 from autolens.array.util import binning_util, grid_util, mask_util
 from autolens.array.util import grid_util, mask_util
@@ -32,6 +33,8 @@ from autolens.model.inversion.inversions import Inversion
 from autolens.lens.util import lens_fit_util
 from autolens.model import cosmology_util
 from autolens.lens.util import lens_util
+from autolens.model.inversion.util import pixelization_util
+from autolens.model.inversion.mappers import Mapper, RectangularMapper, VoronoiMapper
 from autolens.dimensions import DimensionsProfile, Length, Luminosity, Mass, MassOverLuminosity, \
     MassOverLength2, MassOverLength3, Position, convert_units_to_input_units
 from autolens.lens import ray_tracing, lens_fit

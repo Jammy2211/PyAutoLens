@@ -1,29 +1,25 @@
+import autolens as al
 import numpy as np
 import pytest
 
 import autofit as af
-from autolens.array import scaled_array as sca
-from autolens.array import mask as msk
-from autolens.model.galaxy import galaxy as g, galaxy_fit
-from autolens.model.galaxy import galaxy_data as gd
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.unit.mock.model.mock_galaxy import MockGalaxy
 
 
 class TestGalaxyFit:
     class TestLikelihood:
         def test__1x1_image__light_profile_fits_data_perfectly__lh_is_noise(self):
-            image = sca.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
+            image = al.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
 
-            noise_map = sca.ScaledSquarePixelArray(
+            noise_map = al.ScaledSquarePixelArray(
                 array=np.ones((3, 3)), pixel_scale=1.0
             )
 
-            galaxy_data = gd.GalaxyData(
+            galaxy_data = al.GalaxyData(
                 image=image, noise_map=noise_map, pixel_scale=3.0
             )
 
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [[True, True, True], [True, False, True], [True, True, True]]
                 ),
@@ -31,65 +27,65 @@ class TestGalaxyFit:
             )
             g0 = MockGalaxy(value=1.0)
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data, mask=mask, sub_grid_size=1, use_image=True
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data,
                 mask=mask,
                 sub_grid_size=1,
                 use_convergence=True,
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data, mask=mask, sub_grid_size=1, use_potential=True
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data,
                 mask=mask,
                 sub_grid_size=1,
                 use_deflections_y=True,
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data,
                 mask=mask,
                 sub_grid_size=1,
                 use_deflections_x=True,
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
         def test__1x2_image__noise_not_1__alls_correct(self):
-            image = sca.ScaledSquarePixelArray(
+            image = al.ScaledSquarePixelArray(
                 array=5.0 * np.ones((3, 4)), pixel_scale=1.0
             )
             image[1, 2] = 4.0
 
-            noise_map = sca.ScaledSquarePixelArray(
+            noise_map = al.ScaledSquarePixelArray(
                 array=2.0 * np.ones((3, 4)), pixel_scale=1.0
             )
 
-            galaxy_data = gd.GalaxyData(
+            galaxy_data = al.GalaxyData(
                 image=image, noise_map=noise_map, pixel_scale=3.0
             )
 
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, True, True],
@@ -102,10 +98,10 @@ class TestGalaxyFit:
 
             g0 = MockGalaxy(value=1.0, shape=2)
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data, mask=mask, sub_grid_size=1, use_image=True
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
 
             assert fit.model_galaxies == [g0]
             assert fit.chi_squared == (25.0 / 4.0)
@@ -114,13 +110,13 @@ class TestGalaxyFit:
                 (25.0 / 4.0) + 2.0 * np.log(2 * np.pi * 2.0 ** 2)
             )
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data,
                 mask=mask,
                 sub_grid_size=1,
                 use_convergence=True,
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
             assert fit.chi_squared == (25.0 / 4.0)
             assert fit.reduced_chi_squared == (25.0 / 4.0) / 2.0
@@ -128,10 +124,10 @@ class TestGalaxyFit:
                 (25.0 / 4.0) + 2.0 * np.log(2 * np.pi * 2.0 ** 2)
             )
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data, mask=mask, sub_grid_size=1, use_potential=True
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.model_galaxies == [g0]
             assert fit.chi_squared == (25.0 / 4.0)
             assert fit.reduced_chi_squared == (25.0 / 4.0) / 2.0
@@ -139,26 +135,26 @@ class TestGalaxyFit:
                 (25.0 / 4.0) + 2.0 * np.log(2 * np.pi * 2.0 ** 2)
             )
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data,
                 mask=mask,
                 sub_grid_size=1,
                 use_deflections_y=True,
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.chi_squared == (25.0 / 4.0)
             assert fit.reduced_chi_squared == (25.0 / 4.0) / 2.0
             assert fit.likelihood == -0.5 * (
                 (25.0 / 4.0) + 2.0 * np.log(2 * np.pi * 2.0 ** 2)
             )
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=galaxy_data,
                 mask=mask,
                 sub_grid_size=1,
                 use_deflections_x=True,
             )
-            fit = galaxy_fit.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[g0])
             assert fit.chi_squared == (25.0 / 4.0)
             assert fit.reduced_chi_squared == (25.0 / 4.0) / 2.0
             assert fit.likelihood == -0.5 * (
@@ -167,14 +163,14 @@ class TestGalaxyFit:
 
     class TestCompareToManual:
         def test__image(self, gal_data_7x7, mask_7x7):
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_image=True
             )
 
-            galaxy = g.Galaxy(
-                redshift=0.5, light=lp.SphericalSersic(centre=(1.0, 2.0), intensity=1.0)
+            galaxy = al.Galaxy(
+                redshift=0.5, light=al.light_profiles.SphericalSersic(centre=(1.0, 2.0), intensity=1.0)
             )
-            fit = galaxy_fit.GalaxyFit(
+            fit = al.GalaxyFit(
                 galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
             )
 
@@ -220,18 +216,18 @@ class TestGalaxyFit:
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
         def test__convergence(self, gal_data_7x7, mask_7x7):
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
                 use_convergence=True,
             )
 
-            galaxy = g.Galaxy(
+            galaxy = al.Galaxy(
                 redshift=0.5,
-                mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
+                mass=al.mass_profiles.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
             )
-            fit = galaxy_fit.GalaxyFit(
+            fit = al.GalaxyFit(
                 galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
             )
 
@@ -275,19 +271,19 @@ class TestGalaxyFit:
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
         def test__potential(self, gal_data_7x7, mask_7x7):
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
                 use_potential=True,
             )
 
-            galaxy = g.Galaxy(
+            galaxy = al.Galaxy(
                 redshift=0.5,
-                mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
+                mass=al.mass_profiles.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
             )
 
-            fit = galaxy_fit.GalaxyFit(
+            fit = al.GalaxyFit(
                 galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
             )
 
@@ -334,19 +330,19 @@ class TestGalaxyFit:
 
         def test__deflections_y(self, gal_data_7x7, mask_7x7):
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
                 use_deflections_y=True,
             )
 
-            galaxy = g.Galaxy(
+            galaxy = al.Galaxy(
                 redshift=0.5,
-                mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
+                mass=al.mass_profiles.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
             )
 
-            fit = galaxy_fit.GalaxyFit(
+            fit = al.GalaxyFit(
                 galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
             )
 
@@ -393,18 +389,18 @@ class TestGalaxyFit:
 
         def test__deflections_x(self, gal_data_7x7, mask_7x7):
 
-            galaxy_fit_data = gd.GalaxyFitData(
+            galaxy_fit_data = al.GalaxyFitData(
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
                 use_deflections_x=True,
             )
 
-            galaxy = g.Galaxy(
+            galaxy = al.Galaxy(
                 redshift=0.5,
-                mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
+                mass=al.mass_profiles.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
             )
-            fit = galaxy_fit.GalaxyFit(
+            fit = al.GalaxyFit(
                 galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
             )
 

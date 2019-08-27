@@ -1,7 +1,6 @@
+import autolens as al
 import numpy as np
 
-from autolens.model.inversion import regularization
-from autolens.model.inversion.util import regularization_util as reg_util
 
 
 class TestRegularizationConstant:
@@ -23,12 +22,12 @@ class TestRegularizationConstant:
 
         pixel_neighbors_size = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
 
-        reg = regularization.Constant(coefficient=1.0)
+        reg = al.ConstantRegularization(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             pixel_neighbors, pixel_neighbors_size
         )
 
-        regularization_matrix_util = reg_util.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix_util = al.regularization_util.constant_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -40,7 +39,7 @@ class TestRegularizationConstant:
 class TestRegularizationWeighted:
     def test__pixel_signals__compare_to_regularization_util(self):
 
-        reg = regularization.AdaptiveBrightness(signal_scale=2.0)
+        reg = al.AdaptiveBrightnessRegularization(signal_scale=2.0)
 
         sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2, 3, 3, 4, 5])
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 3, 4, 5])
@@ -53,7 +52,7 @@ class TestRegularizationWeighted:
             hyper_image=galaxy_image,
         )
 
-        pixel_signals_util = reg_util.adaptive_pixel_signals_from_images(
+        pixel_signals_util = al.regularization_util.adaptive_pixel_signals_from_images(
             pixels=6,
             signal_scale=2.0,
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
@@ -65,7 +64,7 @@ class TestRegularizationWeighted:
 
     def test__weights__compare_to_regularization_util(self):
 
-        reg = regularization.AdaptiveBrightness(
+        reg = al.AdaptiveBrightnessRegularization(
             inner_coefficient=10.0, outer_coefficient=15.0
         )
 
@@ -73,7 +72,7 @@ class TestRegularizationWeighted:
 
         weights = reg.regularization_weights_from_pixel_signals(pixel_signals)
 
-        weights_util = reg_util.adaptive_regularization_weights_from_pixel_signals(
+        weights_util = al.regularization_util.adaptive_regularization_weights_from_pixel_signals(
             inner_coefficient=10.0, outer_coefficient=15.0, pixel_signals=pixel_signals
         )
 
@@ -81,7 +80,7 @@ class TestRegularizationWeighted:
 
     def test__regularization_matrix__compare_to_regularization_util(self):
 
-        reg = regularization.AdaptiveBrightness()
+        reg = al.AdaptiveBrightnessRegularization()
 
         pixel_neighbors = np.array(
             [
@@ -103,7 +102,7 @@ class TestRegularizationWeighted:
             pixel_neighbors_size=pixel_neighbors_size,
         )
 
-        regularization_matrix_util = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix_util = al.regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
