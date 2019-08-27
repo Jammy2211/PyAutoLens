@@ -1,7 +1,7 @@
+import autolens as al
 import numpy as np
 import pytest
 
-from autolens.model.inversion.util import mapper_util
 from test.unit.mock.data.mock_grids import MockPixelizationGrid
 
 
@@ -21,7 +21,7 @@ class TestMappingMatrix:
         sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2])
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=6,
             total_mask_pixels=3,
@@ -45,7 +45,7 @@ class TestMappingMatrix:
         sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2, 7, 6])
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
             total_mask_pixels=5,
@@ -94,7 +94,7 @@ class TestMappingMatrix:
         sub_mask_1d_index_to_mask_1d_index = np.array(
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
             total_mask_pixels=5,
@@ -126,7 +126,7 @@ class TestMappingMatrix:
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=8,
             total_mask_pixels=5,
@@ -255,7 +255,7 @@ class TestMappingMatrix:
             ]
         )
 
-        mapping_matrix = mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
+        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
             pixels=6,
             total_mask_pixels=3,

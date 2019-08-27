@@ -1,20 +1,15 @@
+import autolens as al
 import numpy as np
 import pytest
 
-from autolens import exc
-from autolens.array import grids
-from autolens.array import scaled_array as sca
-from autolens.model.galaxy import galaxy as g, galaxy_data as gd
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.profiles import mass_profiles as mp
 
 from test.unit.mock.model import mock_galaxy
-
+from autolens import exc
 
 class TestGalaxyFitData(object):
     def test__image_noise_map_and_mask(self, gal_data_7x7, mask_7x7):
 
-        galaxy_fit_data = gd.GalaxyFitData(
+        galaxy_fit_data = al.GalaxyFitData(
             galaxy_data=gal_data_7x7, mask=mask_7x7, use_image=True
         )
 
@@ -73,7 +68,7 @@ class TestGalaxyFitData(object):
 
     def test__grid(self, gal_data_7x7, mask_7x7, sub_grid_7x7):
 
-        galaxy_fit_data = gd.GalaxyFitData(
+        galaxy_fit_data = al.GalaxyFitData(
             galaxy_data=gal_data_7x7, mask=mask_7x7, use_image=True
         )
 
@@ -81,20 +76,20 @@ class TestGalaxyFitData(object):
 
     def test__pixel_scale_interpolation_grid(self, image_7x7, mask_7x7):
 
-        noise_map = sca.ScaledSquarePixelArray(
+        noise_map = al.ScaledSquarePixelArray(
             array=2.0 * np.ones((7, 7)), pixel_scale=3.0
         )
-        gal_data_7x7 = gd.GalaxyData(
+        gal_data_7x7 = al.GalaxyData(
             image=image_7x7, noise_map=noise_map, pixel_scale=3.0
         )
-        gal_data_7x7 = gd.GalaxyFitData(
+        gal_data_7x7 = al.GalaxyFitData(
             galaxy_data=gal_data_7x7,
             mask=mask_7x7,
             pixel_scale_interpolation_grid=1.0,
             use_image=True,
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=2)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
         assert (gal_data_7x7.grid == new_grid).all()
         assert (gal_data_7x7.grid.interpolator.vtx == new_grid.interpolator.vtx).all()
@@ -102,7 +97,7 @@ class TestGalaxyFitData(object):
 
     def test__gal_data_7x7_image(self, gal_data_7x7, mask_7x7):
 
-        galaxy_fit_data = gd.GalaxyFitData(
+        galaxy_fit_data = al.GalaxyFitData(
             galaxy_data=gal_data_7x7, mask=mask_7x7, use_image=True
         )
 
@@ -165,7 +160,7 @@ class TestGalaxyFitData(object):
 
         assert (image == np.ones(9)).all()
 
-        galaxy = g.Galaxy(redshift=0.5, light=lp.SphericalSersic(intensity=1.0))
+        galaxy = al.Galaxy(redshift=0.5, light=al.light_profiles.SphericalSersic(intensity=1.0))
 
         image_gal = galaxy.profile_image_from_grid(
             grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=True
@@ -177,7 +172,7 @@ class TestGalaxyFitData(object):
 
     def test__gal_data_7x7_convergence(self, gal_data_7x7, mask_7x7):
 
-        galaxy_fit_data = gd.GalaxyFitData(
+        galaxy_fit_data = al.GalaxyFitData(
             galaxy_data=gal_data_7x7,
             mask=mask_7x7,
             sub_grid_size=2,
@@ -243,8 +238,8 @@ class TestGalaxyFitData(object):
 
         assert (convergence == np.ones(9)).all()
 
-        galaxy = g.Galaxy(
-            redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+        galaxy = al.Galaxy(
+            redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
         convergence_gal = galaxy.convergence_from_grid(
@@ -259,7 +254,7 @@ class TestGalaxyFitData(object):
 
     def test__gal_data_7x7_potential(self, gal_data_7x7, mask_7x7):
 
-        galaxy_fit_data = gd.GalaxyFitData(
+        galaxy_fit_data = al.GalaxyFitData(
             galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_potential=True
         )
 
@@ -322,8 +317,8 @@ class TestGalaxyFitData(object):
 
         assert (potential == np.ones(9)).all()
 
-        galaxy = g.Galaxy(
-            redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+        galaxy = al.Galaxy(
+            redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
         potential_gal = galaxy.potential_from_grid(
@@ -336,7 +331,7 @@ class TestGalaxyFitData(object):
 
     def test__gal_data_7x7_deflections_y(self, gal_data_7x7, mask_7x7):
 
-        galaxy_fit_data = gd.GalaxyFitData(
+        galaxy_fit_data = al.GalaxyFitData(
             galaxy_data=gal_data_7x7,
             mask=mask_7x7,
             sub_grid_size=2,
@@ -403,8 +398,8 @@ class TestGalaxyFitData(object):
 
         assert (deflections_y == np.ones(9)).all()
 
-        galaxy = g.Galaxy(
-            redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+        galaxy = al.Galaxy(
+            redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)
@@ -427,7 +422,7 @@ class TestGalaxyFitData(object):
 
     def test__gal_data_7x7_deflections_x(self, gal_data_7x7, mask_7x7):
 
-        galaxy_fit_data = gd.GalaxyFitData(
+        galaxy_fit_data = al.GalaxyFitData(
             galaxy_data=gal_data_7x7,
             mask=mask_7x7,
             sub_grid_size=2,
@@ -495,8 +490,8 @@ class TestGalaxyFitData(object):
 
         assert (deflections_x == np.ones(9)).all()
 
-        galaxy = g.Galaxy(
-            redshift=0.5, mass=mp.SphericalIsothermal(einstein_radius=1.0)
+        galaxy = al.Galaxy(
+            redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)
@@ -519,21 +514,21 @@ class TestGalaxyFitData(object):
 
     def test__no_use_method__raises_exception(self, image_7x7, mask_7x7):
 
-        gal_data_7x7 = gd.GalaxyData(
+        gal_data_7x7 = al.GalaxyData(
             image=image_7x7, noise_map=2.0 * np.ones((7, 7)), pixel_scale=3.0
         )
 
         with pytest.raises(exc.GalaxyException):
-            gd.GalaxyFitData(galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2)
+            al.GalaxyFitData(galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2)
 
     def test__multiple_use_methods__raises_exception(self, image_7x7, mask_7x7):
 
-        gal_data_7x7 = gd.GalaxyData(
+        gal_data_7x7 = al.GalaxyData(
             image=image_7x7, noise_map=2.0 * np.ones((7, 7)), pixel_scale=3.0
         )
 
         with pytest.raises(exc.GalaxyException):
-            gd.GalaxyFitData(
+            al.GalaxyFitData(
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
@@ -542,7 +537,7 @@ class TestGalaxyFitData(object):
             )
 
         with pytest.raises(exc.GalaxyException):
-            gd.GalaxyFitData(
+            al.GalaxyFitData(
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
@@ -551,7 +546,7 @@ class TestGalaxyFitData(object):
             )
 
         with pytest.raises(exc.GalaxyException):
-            gd.GalaxyFitData(
+            al.GalaxyFitData(
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
@@ -560,7 +555,7 @@ class TestGalaxyFitData(object):
             )
 
         with pytest.raises(exc.GalaxyException):
-            gd.GalaxyFitData(
+            al.GalaxyFitData(
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
@@ -570,7 +565,7 @@ class TestGalaxyFitData(object):
             )
 
         with pytest.raises(exc.GalaxyException):
-            gd.GalaxyFitData(
+            al.GalaxyFitData(
                 galaxy_data=gal_data_7x7,
                 mask=mask_7x7,
                 sub_grid_size=2,
