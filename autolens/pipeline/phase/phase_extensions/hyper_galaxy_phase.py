@@ -98,11 +98,11 @@ class HyperGalaxyPhase(HyperPhase):
 
         def fit(self, instance):
             """
-            Fit the model image to the real image by scaling the hyper_galaxy noise.
+            Fit the model image to the real image by scaling the hyper_galaxies noise.
             Parameters
             ----------
             instance: ModelInstance
-                A model instance with a hyper_galaxy galaxy property
+                A model instance with a hyper_galaxies galaxy property
             Returns
             -------
             fit: float
@@ -169,7 +169,7 @@ class HyperGalaxyPhase(HyperPhase):
 
         @classmethod
         def describe(cls, instance):
-            return "Running hyper_galaxy galaxy fit for HyperGalaxy:\n{}".format(
+            return "Running hyper_galaxies galaxy fit for HyperGalaxy:\n{}".format(
                 instance.hyper_galaxy
             )
 

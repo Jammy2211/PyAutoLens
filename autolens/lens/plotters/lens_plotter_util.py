@@ -811,14 +811,14 @@ def plot_contribution_maps(
     output_format="show",
     output_filename="fit_contribution_maps",
 ):
-    """Plot the summed contribution maps of a hyper_galaxy-fit.
+    """Plot the summed contribution maps of a hyper_galaxies-fit.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractLensHyperFit
-        The hyper_galaxy-fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
+        The hyper_galaxies-fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
     image_index : int
         The index of the datas in the datas-set of which the contribution_maps are plotted.
     """

@@ -44,7 +44,7 @@ class AbstractPhase(af.AbstractPhase):
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
-        models and hyper_galaxy passed to it.
+        models and hyper_galaxies passed to it.
 
         Parameters
         ----------
@@ -284,7 +284,7 @@ class AbstractPhase(af.AbstractPhase):
         @property
         def hyper_galaxy_image_1d_path_dict(self):
             """
-            A dictionary associating 1D hyper_galaxy galaxy images with their names.
+            A dictionary associating 1D hyper_galaxies galaxy images with their names.
             """
 
             hyper_minimum_percent = af.conf.instance.general.get(
@@ -310,7 +310,7 @@ class AbstractPhase(af.AbstractPhase):
         @property
         def hyper_galaxy_image_2d_path_dict(self):
             """
-            A dictionary associating 2D hyper_galaxy galaxy images with their names.
+            A dictionary associating 2D hyper_galaxies galaxy images with their names.
             """
 
             hyper_galaxy_image_2d_path_dict = {}
@@ -344,7 +344,7 @@ class AbstractPhase(af.AbstractPhase):
 
         def binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(self, binned_grid):
             """
-            A dictionary associating 1D hyper_galaxy galaxy binned images with their names.
+            A dictionary associating 1D hyper_galaxies galaxy binned images with their names.
             """
 
             if binned_grid is not None:
@@ -375,7 +375,7 @@ class AbstractPhase(af.AbstractPhase):
 
         def binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(self, binned_grid):
             """
-            A dictionary associating "D hyper_galaxy galaxy images binned images with their names.
+            A dictionary associating "D hyper_galaxies galaxy images binned images with their names.
             """
 
             if binned_grid is not None:
@@ -481,7 +481,7 @@ class GalaxyFitPhase(AbstractPhase):
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
-        models and hyper_galaxy passed to it.
+        models and hyper_galaxies passed to it.
 
         Parameters
         ----------
@@ -522,7 +522,7 @@ class GalaxyFitPhase(AbstractPhase):
         Returns
         -------
         result: AbstractPhase.Result
-            A result object comprising the best fit model and other hyper_galaxy.
+            A result object comprising the best fit model and other hyper_galaxies.
         """
         analysis = self.make_analysis(
             galaxy_data=galaxy_data, results=results, mask=mask
