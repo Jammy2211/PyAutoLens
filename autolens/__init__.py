@@ -10,7 +10,6 @@ from autolens.array.mask import Mask
 from autolens.array.mask import load_mask_from_fits, output_mask_to_fits
 from autolens.array.scaled_array import ArrayGeometry, RectangularArrayGeometry, Array, ScaledArray, \
     ScaledSquarePixelArray, ScaledRectangularPixelArray
-from autolens.model.inversion.util import regularization_util
 from autolens.array.util import array_util, grid_util, binning_util
 from autolens.array.util import binning_util, grid_util, mask_util
 from autolens.array.util import grid_util, mask_util
@@ -28,13 +27,6 @@ from autolens.data.instrument.interferometer import InterferometerData, PrimaryB
 from autolens.data.plotters import ccd_plotters
 from autolens.data.plotters import data_plotters
 from autolens.data.plotters import interferometer_plotters
-from autolens.model.hyper.hyper_data import HyperImageSky, HyperBackgroundNoise
-from autolens.model.inversion.inversions import Inversion
-from autolens.lens.util import lens_fit_util
-from autolens.model import cosmology_util
-from autolens.lens.util import lens_util
-from autolens.model.inversion.util import pixelization_util
-from autolens.model.inversion.mappers import Mapper, RectangularMapper, VoronoiMapper
 from autolens.dimensions import DimensionsProfile, Length, Luminosity, Mass, MassOverLuminosity, \
     MassOverLength2, MassOverLength3, Position, convert_units_to_input_units
 from autolens.lens import ray_tracing, lens_fit
@@ -48,6 +40,9 @@ from autolens.lens.plotters import lens_plotter_util
 from autolens.lens.plotters import plane_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.ray_tracing import Tracer
+from autolens.lens.util import lens_fit_util
+from autolens.lens.util import lens_util
+from autolens.model import cosmology_util
 from autolens.model.galaxy.galaxy import Galaxy
 from autolens.model.galaxy.galaxy import HyperGalaxy
 from autolens.model.galaxy.galaxy import Redshift
@@ -56,10 +51,13 @@ from autolens.model.galaxy.galaxy_fit import GalaxyFit
 from autolens.model.galaxy.galaxy_model import GalaxyModel
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.model.galaxy.plotters import galaxy_plotters
+from autolens.model.hyper.hyper_data import HyperImageSky, HyperBackgroundNoise
 from autolens.model.inversion import mappers
 from autolens.model.inversion import mappers as m
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
+from autolens.model.inversion.inversions import Inversion
+from autolens.model.inversion.mappers import Mapper, RectangularMapper, VoronoiMapper
 from autolens.model.inversion.pixelizations import Pixelization, Rectangular as RectangularPixelization, \
     Voronoi as VoronoiPixelization, VoronoiMagnification as VoronoiMagnificationPixelization, \
     VoronoiBrightnessImage as VoronoiBrightnessImagePixelization
@@ -68,6 +66,8 @@ from autolens.model.inversion.regularization import Regularization, Constant as 
     AdaptiveBrightness as AdaptiveBrightnessRegularization
 from autolens.model.inversion.util import inversion_util
 from autolens.model.inversion.util import mapper_util
+from autolens.model.inversion.util import pixelization_util
+from autolens.model.inversion.util import regularization_util
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import light_and_mass_profiles
 from autolens.model.profiles import light_profiles
@@ -76,9 +76,24 @@ from autolens.model.profiles.plotters import profile_plotters
 from autolens.pipeline import phase_tagging
 from autolens.pipeline import pipeline as pl
 from autolens.pipeline import pipeline_tagging
+from autolens.pipeline.phase import GalaxyFitPhase, Phase
+from autolens.pipeline.phase.phase import AbstractPhase
 from autolens.pipeline.phase import phase
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase import phase_extensions
+from autolens.pipeline.phase.phase_extensions import HyperGalaxyPhase
+from autolens.pipeline.phase.phase_extensions.hyper_galaxy_phase import HyperGalaxyPhase
+from autolens.pipeline.phase.phase_extensions.hyper_phase import HyperPhase
+from autolens.pipeline.phase.phase_extensions import CombinedHyperPhase
+from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionBackgroundBothPhase
+from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionBackgroundNoisePhase
+from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionBackgroundSkyPhase
+from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionPhase
+from autolens.pipeline.phase.phase_extensions.inversion_phase import VariableFixingHyperPhase
+from autolens.pipeline.phase.phase_imaging import PhaseImaging, PhaseImaging, PhaseImaging, PhaseImaging
+from autolens.pipeline.phase.phase_positions import PhasePositions
+from autolens.pipeline.pipeline import PipelineSettings, PipelineSettingsHyper, PipelineImaging, \
+    PipelinePositions
 from autolens.pipeline.plotters import hyper_plotters
 from autolens.pipeline.plotters import phase_plotters
 from autolens.plotters import plotter_util
