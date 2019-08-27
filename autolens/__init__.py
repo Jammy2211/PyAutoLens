@@ -13,7 +13,6 @@ from autolens.array.scaled_array import ArrayGeometry, RectangularArrayGeometry,
 from autolens.array.util import array_util, grid_util, binning_util
 from autolens.array.util import binning_util, grid_util, mask_util
 from autolens.array.util import grid_util, mask_util
-from autolens.data import fourier_transform as ft
 from autolens.data.convolution import Convolver
 from autolens.data.fourier_transform import Transformer
 from autolens.data.instrument import abstract_data
@@ -30,7 +29,6 @@ from autolens.data.plotters import interferometer_plotters
 from autolens.dimensions import DimensionsProfile, Length, Luminosity, Mass, MassOverLuminosity, \
     MassOverLength2, MassOverLength3, Position, convert_units_to_input_units
 from autolens.lens import ray_tracing, lens_fit
-from autolens.lens import ray_tracing as rt
 from autolens.lens.lens_data import LensData
 from autolens.lens.lens_fit import LensDataFit, LensTracerFit, InversionFit, LensInversionFit, \
     LensProfileInversionFit, LensPositionFit, LensProfileFit
@@ -52,10 +50,6 @@ from autolens.model.galaxy.galaxy_model import GalaxyModel
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.model.galaxy.plotters import galaxy_plotters
 from autolens.model.hyper.hyper_data import HyperImageSky, HyperBackgroundNoise
-from autolens.model.inversion import mappers
-from autolens.model.inversion import mappers as m
-from autolens.model.inversion import pixelizations as px
-from autolens.model.inversion import regularization as rg
 from autolens.model.inversion.inversions import Inversion
 from autolens.model.inversion.mappers import Mapper, RectangularMapper, VoronoiMapper
 from autolens.model.inversion.pixelizations import Pixelization, Rectangular as RectangularPixelization, \
@@ -74,17 +68,14 @@ from autolens.model.profiles import light_profiles
 from autolens.model.profiles import mass_profiles
 from autolens.model.profiles.plotters import profile_plotters
 from autolens.pipeline import phase_tagging
-from autolens.pipeline import pipeline as pl
 from autolens.pipeline import pipeline_tagging
 from autolens.pipeline.phase import GalaxyFitPhase, Phase
-from autolens.pipeline.phase.phase import AbstractPhase
 from autolens.pipeline.phase import phase
-from autolens.pipeline.phase import phase_extensions
-from autolens.pipeline.phase import phase_extensions
+from autolens.pipeline.phase.phase import AbstractPhase
+from autolens.pipeline.phase.phase_extensions import CombinedHyperPhase
 from autolens.pipeline.phase.phase_extensions import HyperGalaxyPhase
 from autolens.pipeline.phase.phase_extensions.hyper_galaxy_phase import HyperGalaxyPhase
 from autolens.pipeline.phase.phase_extensions.hyper_phase import HyperPhase
-from autolens.pipeline.phase.phase_extensions import CombinedHyperPhase
 from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionBackgroundBothPhase
 from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionBackgroundNoisePhase
 from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionBackgroundSkyPhase
