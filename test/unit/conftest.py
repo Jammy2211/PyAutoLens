@@ -368,7 +368,7 @@ def make_gal_x1_lp_x1_mp(lp_0, mp_0):
     return g.Galaxy(redshift=0.5, light_profile_0=lp_0, mass_profile_0=mp_0)
 
 
-@pytest.fixture(name="hyper_galaxy")
+@pytest.fixture(name="hyper_galaxies")
 def make_hyper_galaxy():
     return g.HyperGalaxy(noise_factor=1.0, noise_power=1.0, contribution_factor=1.0)
 

@@ -70,7 +70,7 @@ def pipeline_tag_from_pipeline_settings(
 
 
 def hyper_galaxies_tag_from_hyper_galaxies(hyper_galaxies):
-    """Generate a tag for if hyper_galaxy-galaxies are used in a hyper_galaxy pipeline to customize phase names.
+    """Generate a tag for if hyper_galaxies-galaxies are used in a hyper_galaxies pipeline to customize phase names.
 
     This changes the phase name 'pipeline_name__' as follows:
 
@@ -84,7 +84,7 @@ def hyper_galaxies_tag_from_hyper_galaxies(hyper_galaxies):
 
 
 def hyper_image_sky_tag_from_hyper_image_sky(hyper_image_sky):
-    """Generate a tag for if the sky-background is hyper as a hyper_galaxy-parameter in a hyper_galaxy pipeline to
+    """Generate a tag for if the sky-background is hyper as a hyper_galaxies-parameter in a hyper_galaxies pipeline to
     customize phase names.
 
     This changes the phase name 'pipeline_name__' as follows:
@@ -99,7 +99,7 @@ def hyper_image_sky_tag_from_hyper_image_sky(hyper_image_sky):
 
 
 def hyper_background_noise_tag_from_hyper_background_noise(hyper_background_noise):
-    """Generate a tag for if the background noise is hyper as a hyper_galaxy-parameter in a hyper_galaxy pipeline to
+    """Generate a tag for if the background noise is hyper as a hyper_galaxies-parameter in a hyper_galaxies pipeline to
     customize phase names.
 
     This changes the phase name 'pipeline_name__' as follows:
