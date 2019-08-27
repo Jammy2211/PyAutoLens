@@ -115,7 +115,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalSersic ###
 
-    mass_profile = al.SphericalSersicLight(
+    mass_profile = al.light_profiles.SphericalSersic(
         centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=2.5
     )
 

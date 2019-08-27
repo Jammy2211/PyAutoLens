@@ -18,28 +18,28 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
         shape=(5, 5), pixel_scale=1.0
     )
 
-    sersic = al.SphericalSersicLight(centre=(2.0, -2.0))
+    sersic = al.light_profiles.SphericalSersic(centre=(2.0, -2.0))
     image_1d = sersic.profile_image_from_grid(grid=grid, return_in_2d=False)
     image_2d = sersic.profile_image_from_grid(grid=grid, return_in_2d=True)
 
     assert image_1d.argmax() == 0
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 0)
 
-    sersic = al.SphericalSersicLight(centre=(2.0, 2.0))
+    sersic = al.light_profiles.SphericalSersic(centre=(2.0, 2.0))
     image_1d = sersic.profile_image_from_grid(grid=grid, return_in_2d=False)
     image_2d = sersic.profile_image_from_grid(grid=grid, return_in_2d=True)
 
     assert image_1d.argmax() == 4
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 4)
 
-    sersic = al.SphericalSersicLight(centre=(-2.0, -2.0))
+    sersic = al.light_profiles.SphericalSersic(centre=(-2.0, -2.0))
     image_1d = sersic.profile_image_from_grid(grid=grid, return_in_2d=False)
     image_2d = sersic.profile_image_from_grid(grid=grid, return_in_2d=True)
 
     assert image_1d.argmax() == 20
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 0)
 
-    sersic = al.SphericalSersicLight(centre=(-2.0, 2.0))
+    sersic = al.light_profiles.SphericalSersic(centre=(-2.0, 2.0))
     image_1d = sersic.profile_image_from_grid(grid=grid, return_in_2d=False)
     image_2d = sersic.profile_image_from_grid(grid=grid, return_in_2d=True)
 
@@ -113,7 +113,7 @@ def test__deflection_angles():
 #
 #     = masks.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(5, 5), pixel_scales=1.0)
 #     sis = al.mass_profiles.SphericalIsothermal(origin=(0.0, 0.0), einstein_radius=1.0)
-#     sersic = al.SphericalSersicLight(origin=(1.0, 0.0))
+#     sersic = al.light_profiles.SphericalSersic(origin=(1.0, 0.0))
 #
 #     deflections = sis.deflections_from_grid(grid=grid)
 #     source_grid = np.subtract(grid, deflections)

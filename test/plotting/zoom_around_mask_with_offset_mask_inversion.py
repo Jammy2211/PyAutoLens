@@ -30,7 +30,7 @@ def fit_with_offset_centre(centre):
     # via a tracer, setup the rectangular mapper, etc.
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.EllipticalIsothermal(
+        mass=al.mass_profiles.EllipticalIsothermal(
             centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
         ),
     )

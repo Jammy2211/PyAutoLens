@@ -20,9 +20,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens=gm.GalaxyModel(
                 redshift=0.5,
                 light=al.SphericalDevVaucouleurs,
-                mass=al.EllipticalIsothermal,
+                mass=al.mass_profiles.EllipticalIsothermal,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=al.EllipticalSersic),
+            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )

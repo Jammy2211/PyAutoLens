@@ -20,12 +20,12 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+        light=al.light_profiles.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mass_profiles.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
     )
 
     source_galaxy = al.Galaxy(
-        redshift=1.0, light=al.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
+        redshift=1.0, light=al.light_profiles.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -98,11 +98,11 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+        light=al.light_profiles.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mass_profiles.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
     )
     source_galaxy = al.Galaxy(
-        redshift=1.0, light=al.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
+        redshift=1.0, light=al.light_profiles.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
     )
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
