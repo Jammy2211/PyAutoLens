@@ -8,42 +8,42 @@ from autolens.data.instrument import interferometer
 
 class MockImage(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockBackgroundNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockPoissonNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockExposureTimeMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockBackgrondSkyMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
@@ -156,7 +156,7 @@ class MockUVWavelengths(np.ndarray):
         return obj
 
 
-class MockInterferometerData(interferometer.InterferometerData):
+class MockInterferometerData(al.InterferometerData):
     def __init__(
             self,
             image,

@@ -54,7 +54,7 @@ phase = phase_imaging.PhaseImaging(
     phase_name="phase_interp",
     phase_folders=[data_type, data_resolution + "_" + str(pixel_scale_interpolation_grid)],
     galaxies=dict(lens=gm.GalaxyModel(mass=al.EllipticalPowerLaw)),
-    galaxies=dict(source=gm.GalaxyModel(light=al.EllipticalSersic)),
+    galaxies=dict(source=gm.GalaxyModel(light=al.light_profiles.EllipticalSersic)),
     optimizer_class=af.MultiNest,
     pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
 )

@@ -25,7 +25,7 @@ print("circular mask radius = " + str(radius_arcsec) + "\n")
 print("psf shape = " + str(psf_shape) + "\n")
 
 lens_galaxy = al.Galaxy(
-    light=al.EllipticalSersic(
+    light=al.light_profiles.EllipticalSersic(
         centre=(0.0, 0.0),
         axis_ratio=0.9,
         phi=45.0,
@@ -33,13 +33,13 @@ lens_galaxy = al.Galaxy(
         effective_radius=0.8,
         sersic_index=4.0,
     ),
-    mass=al.EllipticalIsothermal(
+    mass=al.mass_profiles.EllipticalIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
     ),
 )
 
 source_galaxy = al.Galaxy(
-    light=al.EllipticalSersic(
+    light=al.light_profiles.EllipticalSersic(
         centre=(0.0, 0.0),
         axis_ratio=0.8,
         phi=60.0,

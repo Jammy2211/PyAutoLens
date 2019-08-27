@@ -56,7 +56,7 @@ def make_pipeline(
     phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=al.EllipticalSersic)),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -99,11 +99,11 @@ def make_pipeline(
         galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5,
-                light=al.EllipticalSersic,
-                mass=al.EllipticalIsothermal,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
                 shear=al.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=al.EllipticalSersic),
+            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -150,11 +150,11 @@ def make_pipeline(
         galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5,
-                light=al.EllipticalSersic,
-                mass=al.EllipticalIsothermal,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
                 shear=al.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=al.EllipticalSersic),
+            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -238,7 +238,7 @@ def make_pipeline(
                 dark=al.SphericalNFW,
                 shear=al.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=al.EllipticalSersic),
+            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )

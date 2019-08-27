@@ -1,8 +1,7 @@
 import os
 
 import autofit as af
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd
+import autolens as al
 
 test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 

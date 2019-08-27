@@ -38,7 +38,7 @@ mask = al.Mask.elliptical(
 # The lines of code below do everything we're used to, that is, setup an image and its grid stack, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
 lens_galaxy = al.Galaxy(
-    mass=al.EllipticalIsothermal(
+    mass=al.mass_profiles.EllipticalIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
     )
 )

@@ -40,13 +40,13 @@ mask = al.Mask.elliptical(
 # via a tracer, setup the rectangular mapper, etc.
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.EllipticalIsothermal(
+    mass=al.mass_profiles.EllipticalIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
     ),
 )
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    light=al.EllipticalSersic(
+    light=al.light_profiles.EllipticalSersic(
         centre=(1.0, 1.0),
         axis_ratio=0.8,
         phi=60.0,
