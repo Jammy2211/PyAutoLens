@@ -173,6 +173,7 @@ class PhaseImaging(Phase):
             data=data, results=results, mask=mask, positions=positions
         )
 
+        self.variable = self.variable.populate(results)
         self.pass_priors(results)
         self.assert_and_save_pickle()
 

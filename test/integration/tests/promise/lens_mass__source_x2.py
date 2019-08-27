@@ -1,8 +1,8 @@
 import autofit as af
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline.phase import phase_imaging
-from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.pipeline import pipeline as pl
+from autolens.pipeline.phase import phase_imaging
 from test.integration.tests import runner
 
 test_type = "lens__source"
@@ -12,7 +12,6 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-
     phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
@@ -27,18 +26,12 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.7
 
-    class AddSourceGalaxyPhase(phase_imaging.PhaseImaging):
-        def pass_priors(self, results):
-
-            self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
-            self.galaxies.source_0 = results.from_phase("phase_1").variable.galaxies.source_0
-
-    phase2 = AddSourceGalaxyPhase(
+    phase2 = phase_imaging.PhaseImaging(
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
-            source_0=gm.GalaxyModel(redshift=1.0, sersic=lp.EllipticalSersic),
+            lens=phase1.result.variable.galaxies.lens,
+            source_0=phase1.result.variable.galaxies.source_0,
             source_1=gm.GalaxyModel(redshift=1.0, sersic=lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
