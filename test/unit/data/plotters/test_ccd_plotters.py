@@ -1,8 +1,7 @@
+import autolens as al
 import os
 
 import pytest
-
-from autolens.data.plotters import ccd_plotters
 
 
 @pytest.fixture(name="ccd_plotter_path")
@@ -17,7 +16,7 @@ def make_ccd_plotter_setup():
 def test__individual_attributes_are_output(
     ccd_data_7x7, positions_7x7, mask_7x7, ccd_plotter_path, plot_patch
 ):
-    ccd_plotters.plot_image(
+    al.ccd_plotters.plot_image(
         ccd_data=ccd_data_7x7,
         positions=positions_7x7,
         mask=mask_7x7,
@@ -31,7 +30,7 @@ def test__individual_attributes_are_output(
 
     assert ccd_plotter_path + "ccd_image.png" in plot_patch.paths
 
-    ccd_plotters.plot_noise_map(
+    al.ccd_plotters.plot_noise_map(
         ccd_data=ccd_data_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
@@ -44,7 +43,7 @@ def test__individual_attributes_are_output(
 
     assert ccd_plotter_path + "ccd_noise_map.png" in plot_patch.paths
 
-    ccd_plotters.plot_psf(
+    al.ccd_plotters.plot_psf(
         ccd_data=ccd_data_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -54,7 +53,7 @@ def test__individual_attributes_are_output(
 
     assert ccd_plotter_path + "ccd_psf.png" in plot_patch.paths
 
-    ccd_plotters.plot_signal_to_noise_map(
+    al.ccd_plotters.plot_signal_to_noise_map(
         ccd_data=ccd_data_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
@@ -67,7 +66,7 @@ def test__individual_attributes_are_output(
 
     assert ccd_plotter_path + "ccd_signal_to_noise_map.png" in plot_patch.paths
 
-    ccd_plotters.plot_ccd_subplot(
+    al.ccd_plotters.plot_ccd_subplot(
         ccd_data=ccd_data_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -81,7 +80,7 @@ def test__individual_attributes_are_output(
 def test__ccd_individuals__output_dependent_on_input(
     ccd_data_7x7, general_config, ccd_plotter_path, plot_patch
 ):
-    ccd_plotters.plot_ccd_individual(
+    al.ccd_plotters.plot_ccd_individual(
         ccd_data=ccd_data_7x7,
         should_plot_image=True,
         should_plot_psf=True,

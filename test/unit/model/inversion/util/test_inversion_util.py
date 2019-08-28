@@ -1,6 +1,5 @@
+import autolens as al
 import numpy as np
-
-from autolens.model.inversion.util import inversion_util
 
 
 class TestDataVectorFromData(object):
@@ -20,7 +19,7 @@ class TestDataVectorFromData(object):
         image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
+        data_vector = al.inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image_1d=image,
             noise_map_1d=noise_map,
@@ -46,7 +45,7 @@ class TestDataVectorFromData(object):
         image = np.array([3.0, 1.0, 1.0, 10.0, 1.0, 1.0])
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
+        data_vector = al.inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image_1d=image,
             noise_map_1d=noise_map,
@@ -72,7 +71,7 @@ class TestDataVectorFromData(object):
         image = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
+        data_vector = al.inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image_1d=image,
             noise_map_1d=noise_map,
@@ -97,7 +96,7 @@ class TestCurvatureMatrixFromBlurred(object):
 
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
+        curvature_matrix = al.inversion_util.curvature_matrix_from_blurred_mapping_matrix(
             blurred_mapping_matrix=blurred_mapping_matrix, noise_map_1d=noise_map
         )
 
@@ -121,7 +120,7 @@ class TestCurvatureMatrixFromBlurred(object):
 
         noise_map = np.array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
+        curvature_matrix = al.inversion_util.curvature_matrix_from_blurred_mapping_matrix(
             blurred_mapping_matrix=blurred_mapping_matrix, noise_map_1d=noise_map
         )
 
@@ -145,7 +144,7 @@ class TestPixelizationResiduals(object):
             [2, 2, 2],
         ]
 
-        pixelization_residuals = inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_residuals = al.inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
@@ -165,7 +164,7 @@ class TestPixelizationResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_residuals = inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_residuals = al.inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
@@ -183,7 +182,7 @@ class TestPixelizationResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_residuals = inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_residuals = al.inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
@@ -208,7 +207,7 @@ class TestPixelizationNormalizedResiduals(object):
             [2, 2, 2],
         ]
 
-        pixelization_normalized_residuals = inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_normalized_residuals = al.inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
@@ -230,7 +229,7 @@ class TestPixelizationNormalizedResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_normalized_residuals = inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_normalized_residuals = al.inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
@@ -250,7 +249,7 @@ class TestPixelizationNormalizedResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_normalized_residuals = inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_normalized_residuals = al.inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
@@ -276,7 +275,7 @@ class TestPixelizationChiSquareds(object):
             [2, 2, 2],
         ]
 
-        pixelization_chi_squareds = inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_chi_squareds = al.inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
@@ -298,7 +297,7 @@ class TestPixelizationChiSquareds(object):
             [6, 7, 8],
         ]
 
-        pixelization_chi_squareds = inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_chi_squareds = al.inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
@@ -318,7 +317,7 @@ class TestPixelizationChiSquareds(object):
             [6, 7, 8],
         ]
 
-        pixelization_chi_squareds = inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_chi_squareds = al.inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
             reconstructed_data_1d=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,

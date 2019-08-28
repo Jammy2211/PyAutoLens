@@ -1,32 +1,24 @@
+import autolens as al
 import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.lens import lens_fit
-from autolens.lens import ray_tracing as rt
-from autolens.model.galaxy import galaxy as g
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.model.hyper import hyper_data as hd
-from autolens.model.inversion import pixelizations as px
-from autolens.model.inversion import regularization as rg
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.profiles import mass_profiles as mp
-from autolens.pipeline.phase import phase_extensions
-from autolens.pipeline.phase import phase_imaging
 from test.unit.mock.pipeline import mock_pipeline
 
 
 @pytest.fixture(name="lens_galaxy")
 def make_lens_galaxy():
-    return g.Galaxy(
-        redshift=1.0, light=lp.SphericalSersic(), mass=mp.SphericalIsothermal()
+    return al.Galaxy(
+        redshift=1.0,
+        light=al.light_profiles.SphericalSersic(),
+        mass=al.mass_profiles.SphericalIsothermal(),
     )
 
 
 @pytest.fixture(name="source_galaxy")
 def make_source_galaxy():
-    return g.Galaxy(redshift=2.0, light=lp.SphericalSersic())
+    return al.Galaxy(redshift=2.0, light=al.light_profiles.SphericalSersic())
 
 
 @pytest.fixture(name="all_galaxies")
@@ -46,12 +38,12 @@ def make_instance(all_galaxies):
 
 @pytest.fixture(name="result")
 def make_result(lens_data_7x7, instance):
-    return phase_imaging.PhaseImaging.Result(
+    return al.PhaseImaging.Result(
         constant=instance,
         figure_of_merit=1.0,
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
-        analysis=phase_imaging.PhaseImaging.Analysis(
+        analysis=al.PhaseImaging.Analysis(
             lens_data=lens_data_7x7, cosmology=cosmo.Planck15, image_path=""
         ),
         optimizer=None,
@@ -114,69 +106,76 @@ class MockPhase(object):
 class TestVariableFixing(object):
     def test_defaults_both(self):
         # noinspection PyTypeChecker
-        phase = phase_extensions.InversionBackgroundBothPhase(MockPhase())
+        phase = al.InversionBackgroundBothPhase(MockPhase())
 
         constant = af.ModelInstance()
-        constant.hyper_image_sky = hd.HyperImageSky()
-        constant.hyper_background_noise = hd.HyperBackgroundNoise()
+        constant.hyper_image_sky = al.HyperImageSky()
+        constant.hyper_background_noise = al.HyperBackgroundNoise()
 
         mapper = phase.make_variable(constant)
 
         assert isinstance(mapper.hyper_image_sky, af.PriorModel)
         assert isinstance(mapper.hyper_background_noise, af.PriorModel)
 
-        assert mapper.hyper_image_sky.cls == hd.HyperImageSky
-        assert mapper.hyper_background_noise.cls == hd.HyperBackgroundNoise
+        assert mapper.hyper_image_sky.cls == al.HyperImageSky
+        assert mapper.hyper_background_noise.cls == al.HyperBackgroundNoise
 
     def test_defaults_hyper_image_sky(self):
         # noinspection PyTypeChecker
-        phase = phase_extensions.InversionBackgroundSkyPhase(MockPhase())
+        phase = al.InversionBackgroundSkyPhase(MockPhase())
 
         constant = af.ModelInstance()
-        constant.hyper_image_sky = hd.HyperImageSky()
+        constant.hyper_image_sky = al.HyperImageSky()
 
         mapper = phase.make_variable(constant)
 
         assert isinstance(mapper.hyper_image_sky, af.PriorModel)
-        assert mapper.hyper_image_sky.cls == hd.HyperImageSky
+        assert mapper.hyper_image_sky.cls == al.HyperImageSky
 
     def test_defaults_background_noise(self):
         # noinspection PyTypeChecker
-        phase = phase_extensions.InversionBackgroundNoisePhase(MockPhase())
+        phase = al.InversionBackgroundNoisePhase(MockPhase())
 
         constant = af.ModelInstance()
-        constant.hyper_background_noise = hd.HyperBackgroundNoise()
+        constant.hyper_background_noise = al.HyperBackgroundNoise()
 
         mapper = phase.make_variable(constant)
 
         assert isinstance(mapper.hyper_background_noise, af.PriorModel)
-        assert mapper.hyper_background_noise.cls == hd.HyperBackgroundNoise
+        assert mapper.hyper_background_noise.cls == al.HyperBackgroundNoise
 
     def test_make_pixelization_variable(self):
         instance = af.ModelInstance()
         mapper = af.ModelMapper()
 
-        mapper.lens_galaxy = gm.GalaxyModel(
-            redshift=g.Redshift, pixelization=px.Rectangular, regularization=rg.Constant
+        mapper.lens_galaxy = al.GalaxyModel(
+            redshift=al.Redshift,
+            pixelization=al.pixelizations.Rectangular,
+            regularization=al.regularization.Constant,
         )
-        mapper.source_galaxy = gm.GalaxyModel(
-            redshift=g.Redshift, light=lp.EllipticalLightProfile
+        mapper.source_galaxy = al.GalaxyModel(
+            redshift=al.Redshift, light=al.light_profiles.EllipticalLightProfile
         )
 
         assert mapper.prior_count == 9
 
-        instance.lens_galaxy = g.Galaxy(
-            pixelization=px.Rectangular(), regularization=rg.Constant(), redshift=1.0
+        instance.lens_galaxy = al.Galaxy(
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
+            redshift=1.0,
         )
-        instance.source_galaxy = g.Galaxy(
-            redshift=1.0, light=lp.EllipticalLightProfile()
+        instance.source_galaxy = al.Galaxy(
+            redshift=1.0, light=al.light_profiles.EllipticalLightProfile()
         )
 
         # noinspection PyTypeChecker
-        phase = phase_extensions.VariableFixingHyperPhase(
+        phase = al.VariableFixingHyperPhase(
             MockPhase(),
             "mock_phase",
-            variable_classes=(px.Pixelization, rg.Regularization),
+            variable_classes=(
+                al.pixelizations.Pixelization,
+                al.regularization.Regularization,
+            ),
         )
 
         mapper = mapper.copy_with_fixed_priors(instance, phase.variable_classes)
@@ -192,7 +191,7 @@ class TestImagePassing(object):
         assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
-        result.constant.galaxies.lens = g.Galaxy(redshift=0.5)
+        result.constant.galaxies.lens = al.Galaxy(redshift=0.5)
 
         image_dict = result.image_galaxy_2d_dict
         assert (image_dict[("galaxies", "lens")] == np.zeros((7, 7))).all()
@@ -201,7 +200,7 @@ class TestImagePassing(object):
     def test_galaxy_image_dict(
         self, lens_galaxy, source_galaxy, sub_grid_7x7, convolver_7x7
     ):
-        tracer = rt.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         assert (
             len(
@@ -228,9 +227,9 @@ class TestImagePassing(object):
         results_collection_7x7[0].galaxy_images[0][3, 2] = -1.0
         results_collection_7x7[0].galaxy_images[1][3, 4] = -1.0
 
-        phase_7x7 = phase_imaging.PhaseImaging(
+        phase_7x7 = al.PhaseImaging(
             galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)
+                lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
@@ -259,9 +258,9 @@ class TestImagePassing(object):
     def test__results_are_passed_to_new_analysis__hyper_images_values_below_minimum_are_scaled_up_using_config(
         self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
     ):
-        phase_7x7 = phase_imaging.PhaseImaging(
+        phase_7x7 = al.PhaseImaging(
             galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, hyper_galaxy=g.HyperGalaxy)
+                lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
@@ -284,14 +283,14 @@ class TestImagePassing(object):
     def test__results_are_passed_to_new_analysis__sets_up_hyper_cluster_images__includes_hyper_minimum(
         self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
     ):
-        phase_7x7 = phase_imaging.PhaseImaging(
+        phase_7x7 = al.PhaseImaging(
             phase_name="test_phase",
             galaxies=dict(
-                lens=gm.GalaxyModel(
+                lens=al.GalaxyModel(
                     redshift=0.5,
-                    hyper_galaxy=g.HyperGalaxy,
-                    pixelization=px.VoronoiBrightnessImage,
-                    regularization=rg.Constant,
+                    hyper_galaxy=al.HyperGalaxy,
+                    pixelization=al.pixelizations.VoronoiBrightnessImage,
+                    regularization=al.regularization.Constant,
                 )
             ),
             mask_function=mask_function_7x7,
@@ -311,13 +310,13 @@ class TestImagePassing(object):
             analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)] == 3.0 * np.ones(9)
         ).all()
 
-        phase_7x7 = phase_imaging.PhaseImaging(
+        phase_7x7 = al.PhaseImaging(
             galaxies=dict(
-                lens=gm.GalaxyModel(
+                lens=al.GalaxyModel(
                     redshift=0.5,
-                    hyper_galaxy=g.HyperGalaxy,
-                    pixelization=px.VoronoiBrightnessImage,
-                    regularization=rg.Constant,
+                    hyper_galaxy=al.HyperGalaxy,
+                    pixelization=al.pixelizations.VoronoiBrightnessImage,
+                    regularization=al.regularization.Constant,
                 )
             ),
             inversion_pixel_limit=1,
@@ -346,13 +345,13 @@ class TestImagePassing(object):
             == analysis.lens_data.grid.binned.shape[0]
         )
 
-        phase_7x7 = phase_imaging.PhaseImaging(
+        phase_7x7 = al.PhaseImaging(
             galaxies=dict(
-                lens=gm.GalaxyModel(
+                lens=al.GalaxyModel(
                     redshift=0.5,
-                    hyper_galaxy=g.HyperGalaxy,
-                    pixelization=px.VoronoiBrightnessImage,
-                    regularization=rg.Constant,
+                    hyper_galaxy=al.HyperGalaxy,
+                    pixelization=al.pixelizations.VoronoiBrightnessImage,
+                    regularization=al.regularization.Constant,
                 )
             ),
             inversion_pixel_limit=1,
@@ -390,13 +389,13 @@ class TestImagePassing(object):
         results_collection_7x7[0].galaxy_images[0][3, 2] = -1.0
         results_collection_7x7[0].galaxy_images[1][3, 4] = -1.0
 
-        phase_7x7 = phase_imaging.PhaseImaging(
+        phase_7x7 = al.PhaseImaging(
             galaxies=dict(
-                lens=gm.GalaxyModel(
+                lens=al.GalaxyModel(
                     redshift=0.5,
-                    hyper_galaxy=g.HyperGalaxy,
-                    pixelization=px.VoronoiBrightnessImage,
-                    regularization=rg.Constant,
+                    hyper_galaxy=al.HyperGalaxy,
+                    pixelization=al.pixelizations.VoronoiBrightnessImage,
+                    regularization=al.regularization.Constant,
                 )
             ),
             inversion_pixel_limit=1,
@@ -430,7 +429,7 @@ class TestImagePassing(object):
     def test_associate_images_(self, instance, result, lens_data_7x7):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
-        analysis = phase_imaging.PhaseImaging.Analysis(
+        analysis = al.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=None,
             results=results_collection,
@@ -465,14 +464,14 @@ class TestImagePassing(object):
     def test_fit_uses_hyper_fit_correctly_(self, instance, result, lens_data_7x7):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
-        analysis = phase_imaging.PhaseImaging.Analysis(
+        analysis = al.PhaseImaging.Analysis(
             lens_data=lens_data_7x7,
             cosmology=cosmo.Planck15,
             results=results_collection,
             image_path="",
         )
 
-        hyper_galaxy = g.HyperGalaxy(
+        hyper_galaxy = al.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
         )
 
@@ -489,7 +488,7 @@ class TestImagePassing(object):
 
         hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
 
-        g0 = g.Galaxy(
+        g0 = al.Galaxy(
             redshift=0.5,
             light_profile=instance.galaxies.lens.light,
             mass_profile=instance.galaxies.lens.mass,
@@ -498,13 +497,11 @@ class TestImagePassing(object):
             hyper_galaxy_image_1d=hyper_lens_image_1d,
             hyper_minimum_value=0.0,
         )
-        g1 = g.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
+        g1 = al.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
 
-        tracer = rt.Tracer.from_galaxies(galaxies=[g0, g1])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = lens_fit.LensDataFit.for_data_and_tracer(
-            lens_data=lens_data_7x7, tracer=tracer
-        )
+        fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
@@ -518,12 +515,8 @@ def make_combined():
         return MockResult()
 
     # noinspection PyTypeChecker
-    hyper_combined = phase_extensions.CombinedHyperPhase(
-        normal_phase,
-        hyper_phase_classes=(
-            phase_extensions.HyperGalaxyPhase,
-            phase_extensions.InversionPhase,
-        ),
+    hyper_combined = al.CombinedHyperPhase(
+        normal_phase, hyper_phase_classes=(al.HyperGalaxyPhase, al.InversionPhase)
     )
 
     for phase in hyper_combined.hyper_phases:
@@ -553,10 +546,10 @@ class TestHyperAPI(object):
         hyper_galaxy_result.variable = af.ModelMapper()
         inversion_result.variable = af.ModelMapper()
 
-        hyper_galaxy_result.variable.hyper_galaxy = g.HyperGalaxy
-        hyper_galaxy_result.variable.pixelization = px.Pixelization()
-        inversion_result.variable.pixelization = px.Pixelization
-        inversion_result.variable.hyper_galaxy = g.HyperGalaxy()
+        hyper_galaxy_result.variable.hyper_galaxy = al.HyperGalaxy
+        hyper_galaxy_result.variable.pixelization = al.pixelizations.Pixelization()
+        inversion_result.variable.pixelization = al.pixelizations.Pixelization
+        inversion_result.variable.hyper_galaxy = al.HyperGalaxy()
 
         result.hyper_galaxy = hyper_galaxy_result
         result.inversion = inversion_result
@@ -566,8 +559,8 @@ class TestHyperAPI(object):
         assert isinstance(variable.hyper_galaxy, af.PriorModel)
         assert isinstance(variable.pixelization, af.PriorModel)
 
-        assert variable.hyper_galaxy.cls == g.HyperGalaxy
-        assert variable.pixelization.cls == px.Pixelization
+        assert variable.hyper_galaxy.cls == al.HyperGalaxy
+        assert variable.pixelization.cls == al.pixelizations.Pixelization
 
     def test_instantiation(self, hyper_combined):
         assert len(hyper_combined.hyper_phases) == 2
@@ -576,16 +569,16 @@ class TestHyperAPI(object):
         pixelization_phase = hyper_combined.hyper_phases[1]
 
         assert galaxy_phase.hyper_name == "hyper_galaxy"
-        assert isinstance(galaxy_phase, phase_extensions.HyperGalaxyPhase)
+        assert isinstance(galaxy_phase, al.HyperGalaxyPhase)
 
         assert pixelization_phase.hyper_name == "inversion"
-        assert isinstance(pixelization_phase, phase_extensions.InversionPhase)
+        assert isinstance(pixelization_phase, al.InversionPhase)
 
     def test_hyper_result(self, ccd_data_7x7):
         normal_phase = MockPhase()
 
         # noinspection PyTypeChecker
-        phase = phase_extensions.HyperGalaxyPhase(normal_phase)
+        phase = al.HyperGalaxyPhase(normal_phase)
 
         # noinspection PyUnusedLocal
         def run_hyper(*args, **kwargs):

@@ -11,6 +11,7 @@ Big Picture:
 
 Small Picture:
 
+- Border pixel, better choice of 'centre' and filter out.
 - Simulated lensed image from discrete image grid.
 - Iterator grids.
 - Unmasked bool.

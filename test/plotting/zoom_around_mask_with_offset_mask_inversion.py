@@ -17,7 +17,7 @@ ccd_data = simulation_util.load_test_ccd_data(
 
 def fit_with_offset_centre(centre):
 
-    mask = msk.Mask.elliptical(
+    mask = al.Mask.elliptical(
         shape=ccd_data.shape,
         pixel_scale=ccd_data.pixel_scale,
         major_axis_radius_arcsec=3.0,
@@ -28,19 +28,19 @@ def fit_with_offset_centre(centre):
 
     # The lines of code below do everything we're used to, that is, setup an image and its grid stack, mask it, trace it
     # via a tracer, setup the rectangular mapper, etc.
-    lens_galaxy = g.Galaxy(
+    lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=mp.EllipticalIsothermal(
+        mass=al.mass_profiles.EllipticalIsothermal(
             centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
         ),
     )
-    source_galaxy = g.Galaxy(
+    source_galaxy = al.Galaxy(
         redshift=1.0,
-        pixelization=pix.VoronoiMagnification(shape=(20, 20)),
-        regularization=reg.Constant(coefficient=1.0),
+        pixelization=al.pixelizations.VoronoiMagnification(shape=(20, 20)),
+        regularization=al.regularization.Constant(coefficient=1.0),
     )
 
-    lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
+    lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
 
     pixelization_grid = source_galaxy.pixelization.traced_pixelization_grids_of_planes_from_grid(
         grid=lens_data.grid
@@ -50,11 +50,11 @@ def fit_with_offset_centre(centre):
         pixelization=pixelization_grid
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies(
+    tracer = al.Tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid=grid_stack_with_pixelization_grid,
     )
-    fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
+    fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
     return fit
 

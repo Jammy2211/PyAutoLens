@@ -1,9 +1,8 @@
+import autolens as al
 import os
 
 import numpy as np
 import pytest
-
-from autolens.array.util import grid_util
 
 
 test_data_dir = "{}/../test_files/array/".format(
@@ -16,7 +15,7 @@ class TestGrid1DFromMask(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 6.0), sub_grid_size=1
         )
 
@@ -26,7 +25,7 @@ class TestGrid1DFromMask(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(6.0, 3.0), sub_grid_size=1
         )
 
@@ -46,7 +45,7 @@ class TestGrid1DFromMask(object):
             ]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(1.0, 1.0), sub_grid_size=1
         )
 
@@ -76,7 +75,7 @@ class TestGrid1DFromMask(object):
             ]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=1
         )
 
@@ -99,7 +98,7 @@ class TestGrid1DFromMask(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(6.0, 3.0), sub_grid_size=1, origin=(1.0, 1.0)
         )
 
@@ -116,7 +115,7 @@ class TestGrid1DFromMask(object):
             ]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=1, origin=(1.0, 2.0)
         )
 
@@ -138,7 +137,7 @@ class TestGrid1DFromMask(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 6.0), sub_grid_size=2
         )
 
@@ -149,7 +148,7 @@ class TestGrid1DFromMask(object):
 
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2
         )
 
@@ -172,7 +171,7 @@ class TestGrid1DFromMask(object):
             [[True, True, False], [False, False, False], [True, True, False]]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2
         )
 
@@ -208,7 +207,7 @@ class TestGrid1DFromMask(object):
             [[True, True, False], [False, False, False], [True, True, False]]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(0.3, 0.3), sub_grid_size=2
         )
 
@@ -245,7 +244,7 @@ class TestGrid1DFromMask(object):
     def test__3x3_mask_with_one_pixel__3x3_and_4x4_sub_grids(self):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=3
         )
 
@@ -277,7 +276,7 @@ class TestGrid1DFromMask(object):
             ]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(2.0, 2.0), sub_grid_size=4
         )
 
@@ -381,7 +380,7 @@ class TestGrid1DFromMask(object):
             ]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2
         )
 
@@ -417,7 +416,7 @@ class TestGrid1DFromMask(object):
             ]
         )
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2
         )
 
@@ -455,7 +454,7 @@ class TestGrid1DFromMask(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 6.0), sub_grid_size=2, origin=(1.0, 1.0)
         )
 
@@ -465,7 +464,7 @@ class TestGrid1DFromMask(object):
 
         mask = np.array([[True, True, False], [True, False, True], [True, True, False]])
 
-        grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=3, origin=(1.0, -1.0)
         )
 
@@ -510,7 +509,7 @@ class TestGrid2DFromMask(object):
 
         mask = np.array([[False, True, True], [True, True, False], [True, True, True]])
 
-        grid_2d = grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 6.0), sub_grid_size=1
         )
 
@@ -527,7 +526,7 @@ class TestGrid2DFromMask(object):
 
         mask = np.array([[False, True], [True, False]])
 
-        grid_2d = grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 6.0), sub_grid_size=2
         )
 
@@ -547,7 +546,7 @@ class TestGrid2DFromMask(object):
 class TestGrid1dFromShape:
     def test__array_3x3__sub_grid_1__sets_up_arcsecond_grid(self):
 
-        grid_2d = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 3), pixel_scales=(2.0, 1.0), sub_grid_size=1
         )
 
@@ -568,7 +567,7 @@ class TestGrid1dFromShape:
             )
         ).all()
 
-        grid_2d = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(4, 4), pixel_scales=(0.5, 0.5), sub_grid_size=1
         )
 
@@ -596,7 +595,7 @@ class TestGrid1dFromShape:
             )
         ).all()
 
-        grid_2d = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(2, 3), pixel_scales=(1.0, 1.0), sub_grid_size=1
         )
 
@@ -614,7 +613,7 @@ class TestGrid1dFromShape:
             )
         ).all()
 
-        grid_2d = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 2), pixel_scales=(1.0, 1.0), sub_grid_size=1
         )
 
@@ -634,7 +633,7 @@ class TestGrid1dFromShape:
 
     def test__array_3x3__input_origin__shifts_grid_by_origin(self):
 
-        grid_2d = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 3), pixel_scales=(2.0, 1.0), sub_grid_size=1, origin=(1.0, 1.0)
         )
 
@@ -655,7 +654,7 @@ class TestGrid1dFromShape:
             )
         ).all()
 
-        grid_2d = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 2), pixel_scales=(1.0, 1.0), sub_grid_size=1, origin=(3.0, -2.0)
         )
 
@@ -675,7 +674,7 @@ class TestGrid1dFromShape:
 
     def test__from_shape_3x3_ask_with_one_pixel__2x2_sub_grid(self):
 
-        grid = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 3), pixel_scales=(1.0, 1.0), sub_grid_size=2
         )
 
@@ -725,11 +724,11 @@ class TestGrid1dFromShape:
 
     def test__compare_to_mask_manually(self):
 
-        sub_grid_shape = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        sub_grid_shape = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(2, 4), pixel_scales=(2.0, 1.0), sub_grid_size=3, origin=(0.5, 0.6)
         )
 
-        sub_grid_mask = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        sub_grid_mask = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full(fill_value=False, shape=(2, 4)),
             pixel_scales=(2.0, 1.0),
             sub_grid_size=3,
@@ -742,7 +741,7 @@ class TestGrid1dFromShape:
 class TestGrid2DFromShape:
     def test__sets_up_arcsecond_grid__sub_grid_size_1(self):
 
-        grid_2d = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 3), pixel_scales=(2.0, 1.0), sub_grid_size=1
         )
 
@@ -757,7 +756,7 @@ class TestGrid2DFromShape:
             )
         ).all()
 
-        grid_2d = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(4, 4), pixel_scales=(0.5, 0.5), sub_grid_size=1
         )
 
@@ -773,7 +772,7 @@ class TestGrid2DFromShape:
             )
         ).all()
 
-        grid_2d = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(2, 3), pixel_scales=(1.0, 1.0), sub_grid_size=1
         )
 
@@ -787,7 +786,7 @@ class TestGrid2DFromShape:
             )
         ).all()
 
-        grid_2d = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 2), pixel_scales=(1.0, 1.0), sub_grid_size=1
         )
 
@@ -804,7 +803,7 @@ class TestGrid2DFromShape:
 
     def test__array_3x3___input_origin__shifts_grid_by_origin(self):
 
-        grid_2d = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 3), pixel_scales=(2.0, 1.0), sub_grid_size=1, origin=(1.0, 1.0)
         )
 
@@ -819,7 +818,7 @@ class TestGrid2DFromShape:
             )
         ).all()
 
-        grid_2d = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_2d = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 2), pixel_scales=(1.0, 1.0), sub_grid_size=1, origin=(3.0, -2.0)
         )
 
@@ -842,7 +841,7 @@ class TestGridConversions(object):
 
         grid_arcsec = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixels_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixels_1d(
             grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -864,7 +863,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixels_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixels_1d(
             grid_arcsec_1d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -889,7 +888,7 @@ class TestGridConversions(object):
 
         grid_arcsec = np.array([[2.0, -4], [2.0, 0.0], [0.0, -4], [0.0, 0.0]])
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixels_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixels_1d(
             grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -909,7 +908,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixels_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixels_1d(
             grid_arcsec_1d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -926,7 +925,7 @@ class TestGridConversions(object):
 
         grid_arcsec = np.array([[0.0, 0.0], [0.0, 4.0], [-2.0, 0.0], [-2.0, 4.0]])
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixels_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixels_1d(
             grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -946,7 +945,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixels_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixels_1d(
             grid_arcsec_1d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -962,7 +961,7 @@ class TestGridConversions(object):
         # -1.0 from all entries for a origin of (-1.0, -1.0)
         grid_arcsec = np.array([[-1.0, -1.0], [-1.0, 3.0], [-3.0, -1.0], [-3.0, 3.0]])
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixels_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixels_1d(
             grid_arcsec_1d=grid_arcsec,
             shape=(2, 2),
             pixel_scales=(2.0, 4.0),
@@ -986,7 +985,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixels_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixels_1d(
             grid_arcsec_1d=grid_arcsec,
             shape=(3, 3),
             pixel_scales=(3.0, 6.0),
@@ -1006,7 +1005,7 @@ class TestGridConversions(object):
 
         grid_arcsec = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
             grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1026,7 +1025,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
             grid_arcsec_1d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1043,7 +1042,7 @@ class TestGridConversions(object):
             [[1.99, -3.99], [1.99, 0.01], [-0.01, -3.99], [-0.01, 0.01]]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
             grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1063,7 +1062,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
             grid_arcsec_1d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1080,7 +1079,7 @@ class TestGridConversions(object):
             [[0.01, -0.01], [0.01, 3.99], [-1.99, -0.01], [-1.99, 3.99]]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
             grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1100,7 +1099,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
             grid_arcsec_1d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1116,7 +1115,7 @@ class TestGridConversions(object):
         # +1.0 for all entries for a origin of (1.0, 1.0)
         grid_arcsec = np.array([[2.0, -1.0], [2.0, 3.0], [0.0, -1.0], [0.0, 3.0]])
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
             grid_arcsec_1d=grid_arcsec,
             shape=(2, 2),
             pixel_scales=(2.0, 4.0),
@@ -1140,7 +1139,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_centres_1d(
             grid_arcsec_1d=grid_arcsec,
             shape=(3, 3),
             pixel_scales=(3.0, 6.0),
@@ -1160,7 +1159,7 @@ class TestGridConversions(object):
 
         grid_arcsec = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
             grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1180,7 +1179,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
             grid_arcsec_1d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1192,7 +1191,7 @@ class TestGridConversions(object):
             [[1.99, -3.99], [1.99, 0.01], [-0.01, -3.99], [-0.01, 0.01]]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
             grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1212,7 +1211,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
             grid_arcsec_1d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1226,7 +1225,7 @@ class TestGridConversions(object):
             [[0.01, -0.01], [0.01, 3.99], [-1.99, -0.01], [-1.99, 3.99]]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
             grid_arcsec_1d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1246,7 +1245,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
             grid_arcsec_1d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1257,7 +1256,7 @@ class TestGridConversions(object):
         # +1.0 for all entries for a origin of (1.0, 1.0)
         grid_arcsec = np.array([[2.0, -1.0], [2.0, 3.0], [0.0, -1.0], [0.0, 3.0]])
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
             grid_arcsec_1d=grid_arcsec,
             shape=(2, 2),
             pixel_scales=(2.0, 4.0),
@@ -1281,7 +1280,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+        grid_pixels = al.grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
             grid_arcsec_1d=grid_arcsec,
             shape=(3, 3),
             pixel_scales=(3.0, 6.0),
@@ -1296,7 +1295,7 @@ class TestGridConversions(object):
 
         grid_pixels = np.array([[0.5, 0.5], [0.5, 1.5], [1.5, 0.5], [1.5, 1.5]])
 
-        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+        grid_arcsec = al.grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=grid_pixels, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1319,7 +1318,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+        grid_arcsec = al.grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=grid_pixels, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1346,7 +1345,7 @@ class TestGridConversions(object):
 
         grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
-        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+        grid_arcsec = al.grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=grid_pixels, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1358,7 +1357,7 @@ class TestGridConversions(object):
             [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
         )
 
-        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+        grid_arcsec = al.grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=grid_pixels, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1385,7 +1384,7 @@ class TestGridConversions(object):
 
         grid_pixels = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+        grid_arcsec = al.grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=grid_pixels, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1397,7 +1396,7 @@ class TestGridConversions(object):
             [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
         )
 
-        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+        grid_arcsec = al.grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=grid_pixels, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1422,7 +1421,7 @@ class TestGridConversions(object):
 
         grid_pixels = np.array([[0.5, 0.5], [0.5, 1.5], [1.5, 0.5], [1.5, 1.5]])
 
-        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+        grid_arcsec = al.grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=grid_pixels,
             shape=(2, 2),
             pixel_scales=(2.0, 4.0),
@@ -1449,7 +1448,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+        grid_arcsec = al.grid_util.grid_pixels_1d_to_grid_arcsec_1d(
             grid_pixels_1d=grid_pixels,
             shape=(3, 3),
             pixel_scales=(3.0, 6.0),
@@ -1480,7 +1479,7 @@ class TestGridConversions(object):
 
         grid_arcsec = np.array([[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]])
 
-        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
+        grid_pixels = al.grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
             grid_arcsec_2d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1494,7 +1493,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
+        grid_pixels = al.grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
             grid_arcsec_2d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1515,7 +1514,7 @@ class TestGridConversions(object):
             [[[1.99, -3.99], [1.99, 0.01]], [[-0.01, -3.99], [-0.01, 0.01]]]
         )
 
-        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
+        grid_pixels = al.grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
             grid_arcsec_2d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1529,7 +1528,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
+        grid_pixels = al.grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
             grid_arcsec_2d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1550,7 +1549,7 @@ class TestGridConversions(object):
             [[[0.01, -0.01], [0.01, 3.99]], [[-1.99, -0.01], [-1.99, 3.99]]]
         )
 
-        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
+        grid_pixels = al.grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
             grid_arcsec_2d=grid_arcsec, shape=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
@@ -1564,7 +1563,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
+        grid_pixels = al.grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
             grid_arcsec_2d=grid_arcsec, shape=(3, 3), pixel_scales=(3.0, 6.0)
         )
 
@@ -1584,7 +1583,7 @@ class TestGridConversions(object):
         # +1.0 for all entries for a origin of (1.0, 1.0)
         grid_arcsec = np.array([[[2.0, -1.0], [2.0, 3.0]], [[0.0, -1.0], [0.0, 3.0]]])
 
-        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
+        grid_pixels = al.grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
             grid_arcsec_2d=grid_arcsec,
             shape=(2, 2),
             pixel_scales=(2.0, 4.0),
@@ -1602,7 +1601,7 @@ class TestGridConversions(object):
             ]
         )
 
-        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
+        grid_pixels = al.grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(
             grid_arcsec_2d=grid_arcsec,
             shape=(3, 3),
             pixel_scales=(3.0, 6.0),

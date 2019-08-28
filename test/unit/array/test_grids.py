@@ -1,27 +1,22 @@
 import numpy as np
 import pytest
 
+import autolens as al
 from autolens import exc
-from autolens.array import grids, mask as msk
-from autolens.array.util import grid_util, mask_util
-from autolens.array.mapping_util import mask_mapping_util, sparse_mapping_util
-from autolens.model.profiles import mass_profiles as mp
 
 
 @pytest.fixture(name="grid")
 def make_grid():
-
-    mask = msk.Mask(
+    mask = al.Mask(
         np.array([[True, False, True], [False, False, False], [True, False, True]]),
         pixel_scale=1.0,
     )
 
-    return grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+    return al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
 
 class TestGrid:
     def test__from_mask__compare_to_array_util(self):
-
         mask = np.array(
             [
                 [True, True, False, False],
@@ -29,15 +24,15 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        grid_via_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, sub_grid_size=1, pixel_scales=(2.0, 2.0)
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
-        assert type(grid) == grids.Grid
+        assert type(grid) == al.Grid
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scale == 2.0
         assert (
@@ -52,18 +47,17 @@ class TestGrid:
 
         mask = np.array([[True, True, True], [True, False, False], [True, True, False]])
 
-        mask = msk.Mask(mask, pixel_scale=3.0)
+        mask = al.Mask(mask, pixel_scale=3.0)
 
-        grid_via_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
 
         assert grid == pytest.approx(grid_via_util, 1e-4)
 
     def test__unlensed_unsubbed_grid_property_is_grid_with_sub_grid_size_1(self):
-
         mask = np.array(
             [
                 [True, True, False, False],
@@ -71,9 +65,9 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         assert (
             grid.unlensed_unsubbed_1d
@@ -81,7 +75,6 @@ class TestGrid:
         ).all()
 
     def test__grid_unlensed_1d_property__compare_to_grid_util(self):
-
         mask = np.array(
             [
                 [True, True, False, False],
@@ -90,51 +83,50 @@ class TestGrid:
             ]
         )
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        grid = grids.Grid(
+        grid = al.Grid(
             arr=np.array([[1.0, 1.0], [1.0, 1.0]]), mask=mask, sub_grid_size=1
         )
 
-        grid_via_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, sub_grid_size=1, pixel_scales=(2.0, 2.0)
         )
 
         assert grid.unlensed_1d == pytest.approx(grid_via_util, 1e-4)
 
-        grid_via_util = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 4), sub_grid_size=1, pixel_scales=(2.0, 2.0)
         )
 
         assert grid.unlensed_unmasked_1d == pytest.approx(grid_via_util, 1e-4)
 
-        mask = msk.Mask(
+        mask = al.Mask(
             np.array([[True, False, True], [False, False, False], [True, False, True]]),
             pixel_scale=1.0,
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=1)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=1)
 
         assert grid.unlensed_1d == pytest.approx(
             np.array([[1, 0], [0, -1], [0, 0], [0, 1], [-1, 0]]), 1e-4
         )
 
-        grid_via_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1
         )
 
         assert grid.unlensed_unmasked_1d == pytest.approx(grid_via_util, 1e-4)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
 
-        grid_via_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=2
         )
 
         assert grid.unlensed_unmasked_1d == pytest.approx(grid_via_util, 1e-4)
 
     def test__grid_unlensed_2d_property__compare_to_grid_util(self):
-
         mask = np.array(
             [
                 [True, True, False, False],
@@ -143,30 +135,30 @@ class TestGrid:
             ]
         )
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        grid = grids.Grid(
+        grid = al.Grid(
             arr=np.array([[1.0, 1.0], [1.0, 1.0]]), mask=mask, sub_grid_size=1
         )
 
-        grid_via_util = grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, sub_grid_size=1, pixel_scales=(2.0, 2.0)
         )
 
         assert grid.unlensed_2d == pytest.approx(grid_via_util, 1e-4)
 
-        grid_via_util = grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
             shape=(3, 4), sub_grid_size=1, pixel_scales=(2.0, 2.0)
         )
 
         assert grid.unlensed_unmasked_2d == pytest.approx(grid_via_util, 1e-4)
 
-        mask = msk.Mask(
+        mask = al.Mask(
             np.array([[True, False, True], [False, False, False], [True, False, True]]),
             pixel_scale=1.0,
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
         assert grid.unlensed_2d == pytest.approx(
             np.array(
@@ -179,22 +171,21 @@ class TestGrid:
             1e-4,
         )
 
-        grid_via_util = grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1
         )
 
         assert grid.unlensed_unmasked_2d == pytest.approx(grid_via_util, 1e-4)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
 
-        grid_via_util = grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=2
         )
 
         assert grid.unlensed_unmasked_2d == pytest.approx(grid_via_util, 1e-4)
 
     def test__from_shape_and_pixel_scale__compare_to_grid_util(self):
-
         mask = np.array(
             [
                 [False, False, False, False],
@@ -202,17 +193,17 @@ class TestGrid:
                 [False, False, False, False],
             ]
         )
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        grid_via_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(2.0, 2.0), sub_grid_size=1
         )
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(3, 4), pixel_scale=2.0, sub_grid_size=1
         )
 
-        assert type(grid) == grids.Grid
+        assert type(grid) == al.Grid
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scale == 2.0
         assert (
@@ -224,18 +215,17 @@ class TestGrid:
             [[False, False, False], [False, False, False], [False, False, False]]
         )
 
-        grid_via_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        grid_via_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_grid_size=2
         )
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(3, 3), pixel_scale=3.0, sub_grid_size=2
         )
 
         assert grid == pytest.approx(grid_via_util, 1e-4)
 
     def test__blurring_grid_from_mask__compare_to_array_util(self):
-
         mask = np.array(
             [
                 [True, True, True, True, True, True, True, True, True],
@@ -250,17 +240,17 @@ class TestGrid:
             ]
         )
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        blurring_mask_util = mask_util.blurring_mask_from_mask_and_psf_shape(
+        blurring_mask_util = al.mask_util.blurring_mask_from_mask_and_psf_shape(
             mask=mask, psf_shape=(3, 5)
         )
 
-        blurring_grid_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        blurring_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_grid_size=1
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         blurring_grid = grid.blurring_grid_from_psf_shape(psf_shape=(3, 5))
 
@@ -275,7 +265,6 @@ class TestGrid:
         assert blurring_grid.sub_grid_size == 1
 
     def test__blurring_grid_from_psf_shape__compare_to_array_util(self):
-
         mask = np.array(
             [
                 [True, True, True, True, True, True, True, True, True],
@@ -290,18 +279,18 @@ class TestGrid:
             ]
         )
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        blurring_mask_util = mask_util.blurring_mask_from_mask_and_psf_shape(
+        blurring_mask_util = al.mask_util.blurring_mask_from_mask_and_psf_shape(
             mask=mask, psf_shape=(3, 5)
         )
 
-        blurring_grid_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        blurring_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_grid_size=1
         )
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
-        blurring_grid = grids.Grid.blurring_grid_from_mask_and_psf_shape(
+        mask = al.Mask(array=mask, pixel_scale=2.0)
+        blurring_grid = al.Grid.blurring_grid_from_mask_and_psf_shape(
             mask=mask, psf_shape=(3, 5)
         )
 
@@ -316,14 +305,13 @@ class TestGrid:
         assert blurring_grid.sub_grid_size == 1
 
     def test__padded_grid_from_psf_shape__matches_grid_2d_after_padding(self):
-
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(4, 4), pixel_scale=3.0, sub_grid_size=1
         )
 
         padded_grid = grid.padded_grid_from_psf_shape(psf_shape=(3, 3))
 
-        padded_grid_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        padded_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_grid_size=1
         )
 
@@ -332,52 +320,52 @@ class TestGrid:
         assert (padded_grid == padded_grid_util).all()
         assert padded_grid.interpolator is None
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(4, 5), pixel_scale=2.0
         )
 
         padded_grid = grid.padded_grid_from_psf_shape(psf_shape=(3, 3))
 
-        padded_grid_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        padded_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_grid_size=1
         )
 
         assert padded_grid.shape == (42, 2)
         assert (padded_grid == padded_grid_util).all()
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(5, 4), pixel_scale=1.0
         )
 
         padded_grid = grid.padded_grid_from_psf_shape(psf_shape=(3, 3))
 
-        padded_grid_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        padded_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((7, 6), False), pixel_scales=(1.0, 1.0), sub_grid_size=1
         )
 
         assert padded_grid.shape == (42, 2)
         assert (padded_grid == padded_grid_util).all()
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(5, 5), pixel_scale=8.0
         )
 
         padded_grid = grid.padded_grid_from_psf_shape(psf_shape=(2, 5))
 
-        padded_grid_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        padded_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_grid_size=1
         )
 
         assert padded_grid.shape == (54, 2)
         assert (padded_grid == padded_grid_util).all()
 
-        mask = msk.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
+        mask = al.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         padded_grid = grid.padded_grid_from_psf_shape(psf_shape=(3, 3))
 
-        padded_grid_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        padded_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_grid_size=2
         )
 
@@ -386,13 +374,13 @@ class TestGrid:
         assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
         assert padded_grid.interpolator is None
 
-        mask = msk.Mask(array=np.full((2, 5), False), pixel_scale=8.0)
+        mask = al.Mask(array=np.full((2, 5), False), pixel_scale=8.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=4)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=4)
 
         padded_grid = grid.padded_grid_from_psf_shape(psf_shape=(5, 5))
 
-        padded_grid_util = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        padded_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
             mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_grid_size=4
         )
 
@@ -401,8 +389,7 @@ class TestGrid:
         assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
 
     def test__padded_grid_from_psf_shape__has_interpolator_grid_if_had_one_before(self):
-
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(4, 4), pixel_scale=3.0
         )
 
@@ -413,20 +400,18 @@ class TestGrid:
         assert padded_grid.interpolator is not None
         assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1
 
-        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(
-            shape=(6, 6), pixel_scale=3.0
-        )
+        mask = al.Mask.unmasked_for_shape_and_pixel_scale(shape=(6, 6), pixel_scale=3.0)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=padded_grid, pixel_scale_interpolation_grid=0.1
         )
 
         assert (padded_grid.interpolator.vtx == interpolator.vtx).all()
         assert (padded_grid.interpolator.wts == interpolator.wts).all()
 
-        mask = msk.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
+        mask = al.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.1)
 
@@ -435,11 +420,9 @@ class TestGrid:
         assert padded_grid.interpolator is not None
         assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1
 
-        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(
-            shape=(7, 6), pixel_scale=2.0
-        )
+        mask = al.Mask.unmasked_for_shape_and_pixel_scale(shape=(7, 6), pixel_scale=2.0)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=padded_grid, pixel_scale_interpolation_grid=0.1
         )
 
@@ -447,10 +430,9 @@ class TestGrid:
         assert (padded_grid.interpolator.wts == interpolator.wts).all()
 
     def test__trimmed_array_2d_from_padded_array_1d_and_image_shape(self):
+        mask = al.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
 
-        mask = msk.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
-
-        grid = grids.Grid(arr=np.empty((0)), mask=mask)
+        grid = al.Grid(arr=np.empty((0)), mask=mask)
 
         array_1d = np.array(
             [
@@ -479,9 +461,9 @@ class TestGrid:
 
         assert (array_2d == np.array([[6.0, 7.0], [1.0, 2.0]])).all()
 
-        mask = msk.Mask(array=np.full((5, 3), False), pixel_scale=1.0)
+        mask = al.Mask(array=np.full((5, 3), False), pixel_scale=1.0)
 
-        grid = grids.Grid(arr=np.empty((0)), mask=mask)
+        grid = al.Grid(arr=np.empty((0)), mask=mask)
 
         array_1d = np.array(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
@@ -493,9 +475,9 @@ class TestGrid:
 
         assert (array_2d == np.array([[5.0], [8.0], [2.0]])).all()
 
-        mask = msk.Mask(array=np.full((3, 5), False), pixel_scale=1.0)
+        mask = al.Mask(array=np.full((3, 5), False), pixel_scale=1.0)
 
-        grid = grids.Grid(arr=np.empty((0)), mask=mask)
+        grid = al.Grid(arr=np.empty((0)), mask=mask)
 
         array_1d = np.array(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
@@ -523,23 +505,22 @@ class TestGrid:
             ]
         )
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        sub_border_pixels_util = mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels_util = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         assert grid.sub_border_pixels == pytest.approx(sub_border_pixels_util, 1e-4)
 
     def test__sub_mask__is_mask_at_sub_grid_resolution(self):
-
         mask = np.array([[False, True], [False, False]])
 
-        mask = msk.Mask(array=mask, pixel_scale=3.0)
+        mask = al.Mask(array=mask, pixel_scale=3.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         assert (
             grid.sub_mask
@@ -555,9 +536,9 @@ class TestGrid:
 
         mask = np.array([[False, False, True], [False, True, False]])
 
-        mask = msk.Mask(mask, pixel_scale=3.0)
+        mask = al.Mask(mask, pixel_scale=3.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         assert (
             grid.sub_mask
@@ -572,29 +553,23 @@ class TestGrid:
         ).all()
 
     def test__masked_shape_arcsec(self):
+        mask = al.Mask.circular(shape=(3, 3), radius_arcsec=1.0, pixel_scale=1.0)
 
-        mask = msk.Mask.circular(shape=(3, 3), radius_arcsec=1.0, pixel_scale=1.0)
-
-        grid = grids.Grid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
+        grid = al.Grid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
         assert grid.masked_shape_arcsec == (3.0, 2.0)
 
-        grid = grids.Grid(
-            arr=np.array([[1.5, 1.0], [-1.5, -1.0], [0.1, 0.1]]), mask=mask
-        )
+        grid = al.Grid(arr=np.array([[1.5, 1.0], [-1.5, -1.0], [0.1, 0.1]]), mask=mask)
         assert grid.masked_shape_arcsec == (3.0, 2.0)
 
-        grid = grids.Grid(
-            arr=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0]]), mask=mask
-        )
+        grid = al.Grid(arr=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0]]), mask=mask)
         assert grid.masked_shape_arcsec == (4.5, 4.0)
 
-        grid = grids.Grid(
+        grid = al.Grid(
             arr=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0], [7.0, -5.0]]), mask=mask
         )
         assert grid.masked_shape_arcsec == (8.5, 8.0)
 
     def test__in_radians(self):
-
         mask = np.array(
             [
                 [True, True, False, False],
@@ -602,9 +577,9 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
         assert grid.in_radians[0, 0] == pytest.approx(0.00000969627362, 1.0e-8)
         assert grid.in_radians[0, 1] == pytest.approx(0.00000484813681, 1.0e-8)
@@ -617,33 +592,30 @@ class TestGrid:
         )
 
     def test__yticks(self):
+        mask = al.Mask.circular(shape=(3, 3), radius_arcsec=1.0, pixel_scale=1.0)
 
-        mask = msk.Mask.circular(shape=(3, 3), radius_arcsec=1.0, pixel_scale=1.0)
-
-        grid = grids.Grid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
+        grid = al.Grid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
         assert grid.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
-        grid = grids.Grid(arr=np.array([[3.0, 1.0], [-3.0, -1.0]]), mask=mask)
+        grid = al.Grid(arr=np.array([[3.0, 1.0], [-3.0, -1.0]]), mask=mask)
         assert grid.yticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
 
-        grid = grids.Grid(arr=np.array([[5.0, 3.5], [2.0, -1.0]]), mask=mask)
+        grid = al.Grid(arr=np.array([[5.0, 3.5], [2.0, -1.0]]), mask=mask)
         assert grid.yticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
 
     def test__xticks(self):
+        mask = al.Mask.circular(shape=(3, 3), radius_arcsec=1.0, pixel_scale=1.0)
 
-        mask = msk.Mask.circular(shape=(3, 3), radius_arcsec=1.0, pixel_scale=1.0)
-
-        grid = grids.Grid(arr=np.array([[1.0, 1.5], [-1.0, -1.5]]), mask=mask)
+        grid = al.Grid(arr=np.array([[1.0, 1.5], [-1.0, -1.5]]), mask=mask)
         assert grid.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
-        grid = grids.Grid(arr=np.array([[1.0, 3.0], [-1.0, -3.0]]), mask=mask)
+        grid = al.Grid(arr=np.array([[1.0, 3.0], [-1.0, -3.0]]), mask=mask)
         assert grid.xticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
 
-        grid = grids.Grid(arr=np.array([[3.5, 2.0], [-1.0, 5.0]]), mask=mask)
+        grid = al.Grid(arr=np.array([[3.5, 2.0], [-1.0, 5.0]]), mask=mask)
         assert grid.xticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
 
     def test__new_grid__with_interpolator__returns_grid_with_interpolator(self):
-
         mask = np.array(
             [
                 [True, True, False, False],
@@ -651,9 +623,9 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         grid_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=1.0
@@ -662,7 +634,7 @@ class TestGrid:
         assert (grid[:, :] == grid_with_interp[:, :]).all()
         assert grid.mask == grid_with_interp.mask
 
-        interpolator_manual = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        interpolator_manual = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=1.0
         )
 
@@ -670,7 +642,6 @@ class TestGrid:
         assert (grid.interpolator.wts == interpolator_manual.wts).all()
 
     def test__new_grid__with_binned__returns_grid_with_binned(self):
-
         mask = np.array(
             [
                 [True, True, False, False],
@@ -678,9 +649,9 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         grid_with_interp = grid.new_grid_with_binned_grid(binned_grid=1)
 
@@ -689,10 +660,9 @@ class TestGrid:
 
 class TestMappings:
     def test__scaled_array_from_array_1d__compare_to_mask(self):
-
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
 
-        mask = msk.Mask(
+        mask = al.Mask(
             array=np.array(
                 [
                     [True, True, False, False],
@@ -703,7 +673,7 @@ class TestMappings:
             pixel_scale=3.0,
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
         array_2d = grid.array_2d_from_array_1d(array_1d=array_1d)
 
@@ -723,7 +693,7 @@ class TestMappings:
     def test__array_1d_from_array_2d__compare_to_mask(self):
         array_2d = np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
 
-        mask = msk.Mask(
+        mask = al.Mask(
             array=np.array(
                 [
                     [True, False, True, True],
@@ -736,7 +706,7 @@ class TestMappings:
 
         array_1d_mask = mask.array_1d_from_array_2d(array_2d=array_2d)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
         array_1d = grid.array_1d_from_array_2d(array_2d=array_2d)
 
         assert (array_1d_mask == array_1d).all()
@@ -752,11 +722,11 @@ class TestMappings:
 
         grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
         grid_2d_mask = mask.grid_2d_from_grid_1d(grid_1d=grid_1d)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
         grid_2d = grid.grid_2d_from_grid_1d(grid_1d=grid_1d)
 
         assert (grid_2d_mask == grid_2d).all()
@@ -770,7 +740,7 @@ class TestMappings:
             ]
         )
 
-        mask = msk.Mask(
+        mask = al.Mask(
             array=np.array(
                 [
                     [True, False, True, True],
@@ -783,15 +753,13 @@ class TestMappings:
 
         grid_1d_mask = mask.grid_1d_from_grid_2d(grid_2d=grid_2d)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
         grid_1d = grid.grid_1d_from_grid_2d(grid_2d=grid_2d)
 
         assert (grid_1d_mask == grid_1d).all()
 
     def test__sub_array_2d_from_sub_array_1d__compare_to_mask(self):
-        mask = msk.Mask(
-            array=np.array([[False, True], [False, False]]), pixel_scale=3.0
-        )
+        mask = al.Mask(array=np.array([[False, True], [False, False]]), pixel_scale=3.0)
 
         sub_array_1d = np.array(
             [1.0, 2.0, 3.0, 4.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]
@@ -801,7 +769,7 @@ class TestMappings:
             sub_array_1d=sub_array_1d, sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         sub_array_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
 
@@ -810,7 +778,7 @@ class TestMappings:
     def test__scaled_sub_array_2d_with_sub_dimensions_from_sub_array_1d__compare_to_mask(
         self
     ):
-        mask = msk.Mask(
+        mask = al.Mask(
             array=np.array([[False, False, True], [False, True, False]]),
             pixel_scale=3.0,
         )
@@ -840,7 +808,7 @@ class TestMappings:
             sub_array_1d=sub_array_1d, sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         scaled_sub_array_2d = grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
             sub_array_1d=sub_array_1d
@@ -857,7 +825,7 @@ class TestMappings:
     def test__scaled_array_2d_from_sub_array_1d_by_binning_up__compare_to_mask(self):
         mask = np.array([[False, False, True], [False, True, False]])
 
-        mask = msk.Mask(mask, pixel_scale=3.0)
+        mask = al.Mask(mask, pixel_scale=3.0)
 
         sub_array_1d = np.array(
             [
@@ -884,7 +852,7 @@ class TestMappings:
             sub_array_1d=sub_array_1d, sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         scaled_array_2d_binned = grid.scaled_array_2d_binned_from_sub_array_1d(
             sub_array_1d=sub_array_1d
@@ -911,7 +879,7 @@ class TestMappings:
             ]
         )
 
-        mask = msk.Mask(
+        mask = al.Mask(
             array=np.array([[False, False, False], [True, True, False]]),
             pixel_scale=2.0,
         )
@@ -920,16 +888,14 @@ class TestMappings:
             sub_array_2d=sub_array_2d, sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         sub_array_1d = grid.sub_array_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
         assert (sub_array_1d == sub_array_1d_mask).all()
 
     def test__sub_grid_1d_with_sub_dimensions_from_sub_grid_2d__compare_to_mask(self):
-        mask = msk.Mask(
-            array=np.array([[False, True], [False, False]]), pixel_scale=3.0
-        )
+        mask = al.Mask(array=np.array([[False, True], [False, False]]), pixel_scale=3.0)
 
         sub_grid_2d = np.array(
             [
@@ -944,7 +910,7 @@ class TestMappings:
             sub_grid_2d=sub_grid_2d, sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         sub_grid_1d = grid.sub_grid_1d_with_sub_dimensions_from_sub_grid_2d(
             sub_grid_2d=sub_grid_2d
@@ -953,9 +919,7 @@ class TestMappings:
         assert (sub_grid_1d_mask == sub_grid_1d).all()
 
     def test__sub_grid_2d_with_sub_dimensions_from_sub_grid_1d__compare_to_mask(self):
-        mask = msk.Mask(
-            array=np.array([[False, True], [False, False]]), pixel_scale=3.0
-        )
+        mask = al.Mask(array=np.array([[False, True], [False, False]]), pixel_scale=3.0)
 
         sub_grid_1d = np.array(
             [
@@ -978,7 +942,7 @@ class TestMappings:
             sub_grid_1d=sub_grid_1d, sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         sub_grid_2d = grid.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(
             sub_grid_1d=sub_grid_1d
@@ -987,9 +951,7 @@ class TestMappings:
         assert (sub_grid_2d_mask == sub_grid_2d).all()
 
     def test__grid_1d_binned_from_sub_grid_1d__compare_to_mask(self):
-        mask = msk.Mask(
-            array=np.array([[False, True], [False, False]]), pixel_scale=3.0
-        )
+        mask = al.Mask(array=np.array([[False, True], [False, False]]), pixel_scale=3.0)
 
         sub_grid_1d = np.array(
             [
@@ -1012,16 +974,14 @@ class TestMappings:
             sub_grid_1d=sub_grid_1d, sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         grid_1d_binned = grid.grid_1d_binned_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
         assert (grid_1d_binned_mask == grid_1d_binned).all()
 
     def test__grid_2d_binned_from_sub_grid_1d__compare_to_mask(self):
-        mask = msk.Mask(
-            array=np.array([[False, True], [False, False]]), pixel_scale=3.0
-        )
+        mask = al.Mask(array=np.array([[False, True], [False, False]]), pixel_scale=3.0)
 
         sub_grid_1d = np.array(
             [
@@ -1044,7 +1004,7 @@ class TestMappings:
             sub_grid_1d=sub_grid_1d, sub_grid_size=2
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         grid_2d_binned = grid.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
@@ -1053,7 +1013,7 @@ class TestMappings:
     def test__map_sub_array_to_1d_and_2d_and_back__returns_original_array(self):
         mask = np.array([[False, False, True], [False, True, False]])
 
-        mask = msk.Mask(mask, pixel_scale=3.0)
+        mask = al.Mask(mask, pixel_scale=3.0)
 
         sub_array_1d = np.array(
             [
@@ -1076,7 +1036,7 @@ class TestMappings:
             ]
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
 
         sub_array_2d = grid.sub_array_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
         sub_array_1d_new = grid.sub_array_1d_from_sub_array_2d(
@@ -1096,13 +1056,13 @@ class TestMappings:
             [[True, False, True], [False, False, False], [True, False, False]]
         )
 
-        sub_to_image_util = mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
+        sub_to_image_util = al.mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
             mask, sub_grid_size=2
         )
 
-        mask = msk.Mask(mask, pixel_scale=3.0)
+        mask = al.Mask(mask, pixel_scale=3.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
         assert grid.sub_grid_size == 2
         assert grid.sub_grid_fraction == (1.0 / 4.0)
         assert (grid.sub_mask_1d_index_to_mask_1d_index == sub_to_image_util).all()
@@ -1110,7 +1070,6 @@ class TestMappings:
 
 class TestGridBorder(object):
     def test__border_grid_for_simple_mask(self):
-
         mask = np.array(
             [
                 [False, False, False, False, False, False, False, True],
@@ -1123,9 +1082,9 @@ class TestGridBorder(object):
             ]
         )
 
-        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
         assert (
             grid.border_grid
@@ -1146,12 +1105,11 @@ class TestGridBorder(object):
         ).all()
 
     def test__inside_border_no_relocations(self):
+        mask = al.Mask.circular(shape=(30, 30), radius_arcsec=1.0, pixel_scale=0.1)
 
-        mask = msk.Mask.circular(shape=(30, 30), radius_arcsec=1.0, pixel_scale=0.1)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
-
-        grid_to_relocate = grids.Grid(
+        grid_to_relocate = al.Grid(
             arr=np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]),
             sub_grid_size=1,
             mask=mask,
@@ -1165,9 +1123,9 @@ class TestGridBorder(object):
         assert relocated_grid.mask == mask
         assert relocated_grid.sub_grid_size == 1
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
-        grid_to_relocate = grids.Grid(
+        grid_to_relocate = al.Grid(
             arr=np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]),
             sub_grid_size=2,
             mask=mask,
@@ -1182,12 +1140,11 @@ class TestGridBorder(object):
         assert relocated_grid.sub_grid_size == 2
 
     def test__outside_border_are_relocations(self):
+        mask = al.Mask.circular(shape=(30, 30), radius_arcsec=1.0, pixel_scale=0.1)
 
-        mask = msk.Mask.circular(shape=(30, 30), radius_arcsec=1.0, pixel_scale=0.1)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
-
-        grid_to_relocate = grids.Grid(
+        grid_to_relocate = al.Grid(
             arr=np.array([[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]),
             sub_grid_size=1,
             mask=mask,
@@ -1201,9 +1158,9 @@ class TestGridBorder(object):
         assert relocated_grid.mask == mask
         assert relocated_grid.sub_grid_size == 1
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
-        grid_to_relocate = grids.Grid(
+        grid_to_relocate = al.Grid(
             arr=np.array([[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]),
             sub_grid_size=2,
             mask=mask,
@@ -1220,14 +1177,13 @@ class TestGridBorder(object):
     def test__outside_border_are_relocations__positive_origin_included_in_relocate(
         self
     ):
-
-        mask = msk.Mask.circular(
+        mask = al.Mask.circular(
             shape=(60, 60), radius_arcsec=1.0, pixel_scale=0.1, centre=(1.0, 1.0)
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
-        grid_to_relocate = grids.Grid(
+        grid_to_relocate = al.Grid(
             arr=np.array([[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]),
             sub_grid_size=1,
             mask=mask,
@@ -1244,9 +1200,9 @@ class TestGridBorder(object):
         assert relocated_grid.mask == mask
         assert relocated_grid.sub_grid_size == 1
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
 
-        grid_to_relocate = grids.Grid(
+        grid_to_relocate = al.Grid(
             arr=np.array([[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]),
             sub_grid_size=2,
             mask=mask,
@@ -1272,9 +1228,8 @@ class TestBinnedGrid:
     def test__from_mask_and_pixel_scale_binned_grid__correct_binned_bin_up_calculated(
         self, mask_7x7, grid_7x7
     ):
-
         mask_7x7.pixel_scale = 1.0
-        binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+        binned_grid = al.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
             mask=mask_7x7, pixel_scale_binned_grid=1.0
         )
 
@@ -1287,7 +1242,7 @@ class TestBinnedGrid:
         ).all()
 
         mask_7x7.pixel_scale = 1.0
-        binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+        binned_grid = al.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
             mask=mask_7x7, pixel_scale_binned_grid=1.9
         )
 
@@ -1299,7 +1254,7 @@ class TestBinnedGrid:
         ).all()
 
         mask_7x7.pixel_scale = 1.0
-        binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+        binned_grid = al.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
             mask=mask_7x7, pixel_scale_binned_grid=2.0
         )
 
@@ -1326,7 +1281,7 @@ class TestBinnedGrid:
         ).all()
 
         mask_7x7.pixel_scale = 2.0
-        binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+        binned_grid = al.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
             mask=mask_7x7, pixel_scale_binned_grid=1.0
         )
 
@@ -1335,34 +1290,32 @@ class TestBinnedGrid:
 
 class TestPixelizationGrid:
     def test_pix_grid__attributes(self):
-
-        pix_grid = grids.PixelizationGrid(
+        pix_grid = al.PixelizationGrid(
             arr=np.array([[1.0, 1.0], [2.0, 2.0]]),
             mask_1d_index_to_nearest_pixelization_1d_index=np.array([0, 1]),
         )
 
-        assert type(pix_grid) == grids.PixelizationGrid
+        assert type(pix_grid) == al.PixelizationGrid
         assert (pix_grid == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
         assert (
             pix_grid.mask_1d_index_to_nearest_pixelization_1d_index == np.array([0, 1])
         ).all()
 
     def test__from_unmasked_sparse_shape_and_grid(self):
-
-        mask = msk.Mask(
+        mask = al.Mask(
             array=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
             pixel_scale=0.5,
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
-        pixelization_grid = grids.PixelizationGrid.from_grid_and_unmasked_2d_grid_shape(
+        pixelization_grid = al.PixelizationGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
@@ -1376,21 +1329,20 @@ class TestPixelizationGrid:
 class TestSparseToGrid:
     class TestUnmaskedShape:
         def test__properties_consistent_with_mapping_util(self):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
                 pixel_scale=0.5,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(10, 10), grid=grid
             )
 
-            unmasked_sparse_grid_util = grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+            unmasked_sparse_grid_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
                 shape=(10, 10),
                 pixel_scales=(0.15, 0.15),
                 sub_grid_size=1,
@@ -1401,12 +1353,12 @@ class TestSparseToGrid:
                 grid_arcsec=unmasked_sparse_grid_util
             )
 
-            total_sparse_pixels = mask_util.total_sparse_pixels_from_mask(
+            total_sparse_pixels = al.mask_util.total_sparse_pixels_from_mask(
                 mask=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             )
 
-            regular_to_unmasked_sparse_util = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+            regular_to_unmasked_sparse_util = al.grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
                 grid_arcsec_1d=grid,
                 shape=(10, 10),
                 pixel_scales=(0.15, 0.15),
@@ -1415,7 +1367,7 @@ class TestSparseToGrid:
                 "int"
             )
 
-            sparse_to_unmasked_sparse_util = sparse_mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
+            sparse_to_unmasked_sparse_util = al.sparse_mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
                 total_sparse_pixels=total_sparse_pixels,
                 mask=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
@@ -1423,7 +1375,7 @@ class TestSparseToGrid:
                 "int"
             )
 
-            unmasked_sparse_to_sparse_util = sparse_mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
+            unmasked_sparse_to_sparse_util = al.sparse_mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
                 mask=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
                 total_sparse_pixels=total_sparse_pixels,
@@ -1431,12 +1383,12 @@ class TestSparseToGrid:
                 "int"
             )
 
-            mask_1d_index_to_sparse_1d_index_util = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
+            mask_1d_index_to_sparse_1d_index_util = al.sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
                 regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
                 unmasked_sparse_to_sparse=unmasked_sparse_to_sparse_util,
             )
 
-            sparse_grid_util = sparse_mapping_util.sparse_grid_from_unmasked_sparse_grid(
+            sparse_grid_util = al.sparse_mapping_util.sparse_grid_from_unmasked_sparse_grid(
                 unmasked_sparse_grid=unmasked_sparse_grid_util,
                 sparse_to_unmasked_sparse=sparse_to_unmasked_sparse_util,
             )
@@ -1450,17 +1402,16 @@ class TestSparseToGrid:
         def test__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_masked_sparse_grid(
             self
         ):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
                 pixel_scale=1.0,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
@@ -1476,8 +1427,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above_but_4x3_grid_and_mask(self):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, False, True],
@@ -1489,9 +1439,9 @@ class TestSparseToGrid:
                 pixel_scale=1.0,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(4, 3), grid=grid
             )
 
@@ -1516,8 +1466,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above_but_3x4_grid_and_mask(self):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, False, True, True],
@@ -1528,9 +1477,9 @@ class TestSparseToGrid:
                 pixel_scale=1.0,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 4), grid=grid
             )
 
@@ -1555,8 +1504,7 @@ class TestSparseToGrid:
         def test__mask_with_offset_centre__origin_of_sparse_to_grid_moves_to_give_same_pairings(
             self
         ):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, True, False, True],
@@ -1569,12 +1517,12 @@ class TestSparseToGrid:
                 pixel_scale=1.0,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
             # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
             # the central (3x3) pixels only.
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
@@ -1590,8 +1538,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above_but_different_offset(self):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, True, True, True],
@@ -1604,12 +1551,12 @@ class TestSparseToGrid:
                 pixel_scale=2.0,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
             # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
             # the central (3x3) pixels only.
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
@@ -1627,10 +1574,9 @@ class TestSparseToGrid:
         def test__from_grid_and_unmasked_shape__sets_up_with_correct_shape_and_pixel_scales(
             self, mask_7x7
         ):
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask_7x7)
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask_7x7)
-
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 grid=grid, unmasked_sparse_shape=(3, 3)
             )
 
@@ -1656,8 +1602,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above__but_4x3_image(self):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, False, True],
@@ -1669,9 +1614,9 @@ class TestSparseToGrid:
                 pixel_scale=1.0,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(4, 3), grid=grid
             )
 
@@ -1696,8 +1641,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above__but_3x4_image(self):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, False, True, True],
@@ -1708,9 +1652,9 @@ class TestSparseToGrid:
                 pixel_scale=1.0,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 4), grid=grid
             )
 
@@ -1733,8 +1677,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__from_grid_and_shape__offset_mask__origin_shift_corrects(self):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, False, False, False],
@@ -1747,9 +1690,9 @@ class TestSparseToGrid:
                 pixel_scale=1.0,
             )
 
-            grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
@@ -1778,8 +1721,7 @@ class TestSparseToGrid:
         def test__binned_weight_map_all_ones__kmenas_grid_is_grid_overlapping_image(
             self
         ):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [False, False, False, False],
@@ -1791,13 +1733,13 @@ class TestSparseToGrid:
                 pixel_scale=0.5,
             )
 
-            binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            binned_grid = al.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
                 mask=mask, pixel_scale_binned_grid=mask.pixel_scale
             )
 
             binned_weight_map = np.ones(mask.pixels_in_mask)
 
-            sparse_to_grid_weight = grids.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
+            sparse_to_grid_weight = al.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
                 total_pixels=8,
                 binned_grid=binned_grid,
                 binned_weight_map=binned_weight_map,
@@ -1828,8 +1770,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__binned_weight_map_changes_grid_from_above(self):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [False, False, False, False],
@@ -1841,14 +1782,14 @@ class TestSparseToGrid:
                 pixel_scale=0.5,
             )
 
-            binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            binned_grid = al.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
                 mask=mask, pixel_scale_binned_grid=mask.pixel_scale
             )
 
             binned_weight_map = np.ones(mask.pixels_in_mask)
             binned_weight_map[0:15] = 0.00000001
 
-            sparse_to_grid_weight = grids.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
+            sparse_to_grid_weight = al.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
                 total_pixels=8,
                 binned_grid=binned_grid,
                 binned_weight_map=binned_weight_map,
@@ -1869,18 +1810,17 @@ class TestSparseToGrid:
         def test__binned_weight_map_all_ones__pixel_scale_binned_grid_leads_to_binning_up_by_factor_2(
             self
         ):
-
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.full(fill_value=False, shape=(8, 8)), pixel_scale=0.5
             )
 
-            binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            binned_grid = al.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
                 mask=mask, pixel_scale_binned_grid=2.0 * mask.pixel_scale
             )
 
             binned_weight_map = np.ones(binned_grid.shape[0])
 
-            sparse_to_grid_weight = grids.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
+            sparse_to_grid_weight = al.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
                 total_pixels=8,
                 binned_grid=binned_grid,
                 binned_weight_map=binned_weight_map,
@@ -1982,9 +1922,8 @@ class TestInterpolator:
     def test_decorated_function__values_from_function_has_1_dimensions__returns_1d_result(
         self
     ):
-
         # noinspection PyUnusedLocal
-        @grids.grid_interpolate
+        @al.grids.grid_interpolate
         def func(
             profile,
             grid,
@@ -1996,8 +1935,8 @@ class TestInterpolator:
             result[0] = 1
             return result
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(
-            mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
+        grid = al.Grid.from_mask_and_sub_grid_size(
+            mask=al.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
 
         values = func(None, grid)
@@ -2006,10 +1945,10 @@ class TestInterpolator:
         assert values.shape == (9,)
         assert (values == np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0]])).all()
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(
-            mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
+        grid = al.Grid.from_mask_and_sub_grid_size(
+            mask=al.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
-        grid.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        grid.interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             grid.mask, grid, pixel_scale_interpolation_grid=0.5
         )
         interp_values = func(None, grid)
@@ -2020,9 +1959,8 @@ class TestInterpolator:
     def test_decorated_function__values_from_function_has_2_dimensions__returns_2d_result(
         self
     ):
-
         # noinspection PyUnusedLocal
-        @grids.grid_interpolate
+        @al.grids.grid_interpolate
         def func(
             profile,
             grid,
@@ -2034,8 +1972,8 @@ class TestInterpolator:
             result[0, :] = 1
             return result
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(
-            mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
+        grid = al.Grid.from_mask_and_sub_grid_size(
+            mask=al.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
 
         values = func(None, grid)
@@ -2049,10 +1987,10 @@ class TestInterpolator:
             )
         ).all()
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(
-            mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
+        grid = al.Grid.from_mask_and_sub_grid_size(
+            mask=al.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1)
         )
-        grid.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        grid.interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             grid.mask, grid, pixel_scale_interpolation_grid=0.5
         )
 
@@ -2079,24 +2017,25 @@ class TestInterpolator:
         ).any()
 
     def test__20x20_deflection_angles_no_central_pixels__interpolated_accurately(self):
-
         shape = (20, 20)
         pixel_scale = 1.0
 
-        mask = msk.Mask.circular_annular(
+        mask = al.Mask.circular_annular(
             shape=shape,
             pixel_scale=pixel_scale,
             inner_radius_arcsec=3.0,
             outer_radius_arcsec=8.0,
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        isothermal = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=1.0
+        )
 
         true_deflections = isothermal.deflections_from_grid(grid=grid)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=1.0
         )
 
@@ -2118,7 +2057,7 @@ class TestInterpolator:
         shape = (24, 24)
         pixel_scale = 1.0
 
-        mask = msk.Mask.circular_annular(
+        mask = al.Mask.circular_annular(
             shape=shape,
             pixel_scale=pixel_scale,
             inner_radius_arcsec=3.0,
@@ -2126,13 +2065,15 @@ class TestInterpolator:
             centre=(3.0, 3.0),
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        isothermal = mp.SphericalIsothermal(centre=(3.0, 3.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(3.0, 3.0), einstein_radius=1.0
+        )
 
         true_deflections = isothermal.deflections_from_grid(grid=grid)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=1.0
         )
 
@@ -2154,7 +2095,7 @@ class TestInterpolator:
         shape = (28, 28)
         pixel_scale = 1.0
 
-        mask = msk.Mask.circular_annular(
+        mask = al.Mask.circular_annular(
             shape=shape,
             pixel_scale=pixel_scale,
             inner_radius_arcsec=3.0,
@@ -2162,13 +2103,15 @@ class TestInterpolator:
             centre=(3.0, 3.0),
         )
 
-        grid = grids.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
 
-        isothermal = mp.SphericalIsothermal(centre=(3.0, 3.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(3.0, 3.0), einstein_radius=1.0
+        )
 
         true_deflections = isothermal.deflections_from_grid(grid=grid)
 
-        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.2
         )
 
@@ -2186,7 +2129,7 @@ class TestInterpolator:
         assert np.max(true_deflections[:, 0] - interpolated_deflections_y) < 0.001
         assert np.max(true_deflections[:, 1] - interpolated_deflections_x) < 0.001
 
-        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
 
@@ -2204,7 +2147,7 @@ class TestInterpolator:
         assert np.max(true_deflections[:, 0] - interpolated_deflections_y) < 0.01
         assert np.max(true_deflections[:, 1] - interpolated_deflections_x) < 0.01
 
-        interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=1.1
         )
 
@@ -2225,14 +2168,13 @@ class TestInterpolator:
 
 class MockProfile(object):
     def __init__(self, values):
-
         self.values = values
 
-    @grids.reshape_array_from_grid
+    @al.grids.reshape_array_from_grid
     def array_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return self.values
 
-    @grids.reshape_returned_grid
+    @al.grids.reshape_returned_grid
     def grid_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return self.values
 
@@ -2241,10 +2183,9 @@ class TestReturnArrayFormat(object):
     def test__array_1d_from_function__decorator_changes_array_dimensions_depending_on_inputs(
         self
     ):
-
         profile = MockProfile(values=np.ones(4))
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=0.1, sub_grid_size=1
         )
 
@@ -2262,7 +2203,7 @@ class TestReturnArrayFormat(object):
 
         profile = MockProfile(values=np.ones(16))
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=0.1, sub_grid_size=2
         )
 
@@ -2281,7 +2222,6 @@ class TestReturnArrayFormat(object):
     def test__array_1d_from_function__array_is_binned_if_used__maintains_correct_dimensions(
         self
     ):
-
         sub_array = np.array(
             [
                 1.0,
@@ -2305,7 +2245,7 @@ class TestReturnArrayFormat(object):
 
         profile = MockProfile(values=sub_array)
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=0.1, sub_grid_size=2
         )
 
@@ -2346,7 +2286,6 @@ class TestReturnArrayFormat(object):
     def test__only_needs_input_grid_as_type_grid_if_there_is_a_mapping_to_2d_or_bin_up(
         self
     ):
-
         profile = MockProfile(values=np.ones(4))
 
         grid = np.ones(shape=(4, 2))
@@ -2358,7 +2297,6 @@ class TestReturnArrayFormat(object):
         assert (array_from_grid == np.array(np.ones(4))).all()
 
         with pytest.raises(exc.GridException):
-
             profile.array_from_grid(grid=grid, return_in_2d=True, return_binned=False)
 
             profile.array_from_grid(grid=grid, return_in_2d=False, return_binned=True)
@@ -2368,10 +2306,9 @@ class TestReturnArrayFormat(object):
     def test__returned_array_from_function_is_2d__grid_in__decorator_convert_dimensions_to_1d_first(
         self
     ):
-
         profile = MockProfile(values=np.ones((4, 4)))
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(4, 4), pixel_scale=0.1
         )
 
@@ -2390,10 +2327,9 @@ class TestReturnArrayFormat(object):
     def test__returned_array_from_function_is_2d__sub_grid_in__decorator_converts_dimensions_to_1_first(
         self
     ):
-
         profile = MockProfile(values=np.ones((8, 8)))
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(4, 4), pixel_scale=0.1, sub_grid_size=2
         )
 
@@ -2424,10 +2360,9 @@ class TestReturnArrayFormat(object):
 
 class TestReturnGridFormat(object):
     def test__grid_1d_from_function__decorator_changes_grid_dimensions_to_2d(self):
-
         profile = MockProfile(values=np.ones(shape=(4, 2)))
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=0.1, sub_grid_size=1
         )
 
@@ -2445,7 +2380,7 @@ class TestReturnGridFormat(object):
 
         profile = MockProfile(values=np.ones(shape=(16, 2)))
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=0.1, sub_grid_size=2
         )
 
@@ -2464,7 +2399,6 @@ class TestReturnGridFormat(object):
     def test__grid_1d_from_function__binned_up_function_is_used_if_true__maintains_correct_dimensions(
         self
     ):
-
         sub_grid_values = np.array(
             [
                 [1.0, 1.0],
@@ -2488,7 +2422,7 @@ class TestReturnGridFormat(object):
 
         profile = MockProfile(values=sub_grid_values)
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(2, 2), pixel_scale=0.1, sub_grid_size=2
         )
 
@@ -2534,7 +2468,6 @@ class TestReturnGridFormat(object):
     def test__only_needs_input_grid_as_type_grid_if_there_is_a_mapping_to_2d_or_bin_up(
         self
     ):
-
         profile = MockProfile(values=np.ones(shape=(4, 2)))
 
         grid = np.ones(shape=(4, 2))
@@ -2546,7 +2479,6 @@ class TestReturnGridFormat(object):
         assert (grid_from_grid == np.ones(shape=(4, 2))).all()
 
         with pytest.raises(exc.GridException):
-
             profile.grid_from_grid(grid=grid, return_in_2d=True, return_binned=False)
 
             profile.grid_from_grid(grid=grid, return_in_2d=False, return_binned=True)
@@ -2554,10 +2486,9 @@ class TestReturnGridFormat(object):
             profile.grid_from_grid(grid=grid, return_in_2d=True, return_binned=True)
 
     def test__grid_of_function_output_in_2d__decorator_converts_to_1d_first(self):
-
         profile = MockProfile(values=np.ones(shape=(4, 4, 2)))
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(4, 4), pixel_scale=0.1
         )
 
@@ -2576,10 +2507,9 @@ class TestReturnGridFormat(object):
     def test__sub_grid_of_function_returned_in_2d__decorator_changes_grid_dimensions_to_2d(
         self
     ):
-
         profile = MockProfile(values=np.ones(shape=(8, 8, 2)))
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(4, 4), pixel_scale=0.1, sub_grid_size=2
         )
 

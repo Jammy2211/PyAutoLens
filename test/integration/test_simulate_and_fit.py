@@ -1,44 +1,39 @@
 import os
-import shutil
 
 import numpy as np
 import pytest
+import shutil
 
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd
-from autolens.array.util import array_util
-from autolens.array import grids, mask as msk
-from autolens.model.galaxy import galaxy as g
-from autolens.lens import lens_data as ld
-from autolens.lens import lens_fit
-from autolens.lens import ray_tracing
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+import autolens as al
+from autolens import array_util
 
 
 def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
-
-    psf = abstract_data.PSF(
+    psf = al.PSF(
         array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         pixel_scale=0.2,
     )
 
-    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=(11, 11), pixel_scale=0.2, sub_grid_size=2
     )
 
-    lens_galaxy = g.Galaxy(
+    lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+        light=al.light_profiles.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mass_profiles.EllipticalIsothermal(
+            centre=(0.1, 0.1), einstein_radius=1.8
+        ),
     )
 
-    source_galaxy = g.Galaxy(
-        redshift=1.0, light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
+    source_galaxy = al.Galaxy(
+        redshift=1.0,
+        light=al.light_profiles.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5),
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    ccd_simulated = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
+    ccd_simulated = al.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         pixel_scale=0.2,
@@ -59,7 +54,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     except FileNotFoundError:
         pass
 
-    if os.path.exists(path) == False:
+    if os.path.exists(path) is False:
         os.makedirs(path)
 
     array_util.numpy_array_2d_to_fits(
@@ -70,22 +65,22 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     )
     array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
 
-    ccd_data = ccd.load_ccd_data_from_fits(
+    ccd_data = al.load_ccd_data_from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
         pixel_scale=0.2,
     )
 
-    mask = msk.Mask.circular(
+    mask = al.Mask.circular(
         shape=ccd_data.image.shape, pixel_scale=0.2, radius_arcsec=0.8
     )
 
-    lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=2)
+    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=2)
 
-    tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
+    fit = al.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
     assert fit.chi_squared == 0.0
 
@@ -98,24 +93,26 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
 
 def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
+    psf = al.PSF.from_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
 
-    psf = abstract_data.PSF.from_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
-
-    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=(11, 11), pixel_scale=0.2, sub_grid_size=1
     )
 
-    lens_galaxy = g.Galaxy(
+    lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+        light=al.light_profiles.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mass_profiles.EllipticalIsothermal(
+            centre=(0.1, 0.1), einstein_radius=1.8
+        ),
     )
-    source_galaxy = g.Galaxy(
-        redshift=1.0, light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5)
+    source_galaxy = al.Galaxy(
+        redshift=1.0,
+        light=al.light_profiles.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5),
     )
-    tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    ccd_simulated = ccd.SimulatedCCDData.from_image_and_exposure_arrays(
+    ccd_simulated = al.SimulatedCCDData.from_image_and_exposure_arrays(
         image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
             grid=grid, psf_shape=psf.shape
         ),
@@ -136,7 +133,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     except FileNotFoundError:
         pass
 
-    if os.path.exists(path) == False:
+    if os.path.exists(path) is False:
         os.makedirs(path)
 
     array_util.numpy_array_2d_to_fits(
@@ -147,22 +144,22 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     )
     array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
 
-    ccd_data = ccd.load_ccd_data_from_fits(
+    ccd_data = al.load_ccd_data_from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
         pixel_scale=0.2,
     )
 
-    mask = msk.Mask.circular(
+    mask = al.Mask.circular(
         shape=ccd_data.image.shape, pixel_scale=0.2, radius_arcsec=0.8
     )
 
-    lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
-    tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fitter = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
+    fitter = al.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
     assert fitter.chi_squared == pytest.approx(0.0, 1e-4)
 

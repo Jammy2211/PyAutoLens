@@ -52,6 +52,7 @@ class PhasePositions(AbstractPhase):
             positions=positions, pixel_scale=pixel_scale, results=results
         )
 
+        self.variable = self.variable.populate(results)
         self.pass_priors(results)
         self.assert_and_save_pickle()
 

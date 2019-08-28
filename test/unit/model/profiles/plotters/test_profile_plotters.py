@@ -1,4 +1,4 @@
-from autolens.model.profiles.plotters import profile_plotters
+import autolens as al
 import pytest
 import os
 
@@ -14,7 +14,7 @@ def test__all_quantities_are_output(
     lp_0, mp_0, sub_grid_7x7, mask_7x7, positions_7x7, profile_plotter_path, plot_patch
 ):
 
-    profile_plotters.plot_image(
+    al.profile_plotters.plot_image(
         light_profile=lp_0,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -29,7 +29,7 @@ def test__all_quantities_are_output(
 
     assert profile_plotter_path + "image.png" in plot_patch.paths
 
-    profile_plotters.plot_convergence(
+    al.profile_plotters.plot_convergence(
         mass_profile=mp_0,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -46,7 +46,7 @@ def test__all_quantities_are_output(
 
     assert profile_plotter_path + "convergence.png" in plot_patch.paths
 
-    profile_plotters.plot_potential(
+    al.profile_plotters.plot_potential(
         mass_profile=mp_0,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -63,7 +63,7 @@ def test__all_quantities_are_output(
 
     assert profile_plotter_path + "potential.png" in plot_patch.paths
 
-    profile_plotters.plot_deflections_y(
+    al.profile_plotters.plot_deflections_y(
         mass_profile=mp_0,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -80,7 +80,7 @@ def test__all_quantities_are_output(
 
     assert profile_plotter_path + "deflections_y.png" in plot_patch.paths
 
-    profile_plotters.plot_deflections_x(
+    al.profile_plotters.plot_deflections_x(
         mass_profile=mp_0,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -97,7 +97,7 @@ def test__all_quantities_are_output(
 
     assert profile_plotter_path + "deflections_x.png" in plot_patch.paths
 
-    profile_plotters.plot_magnification(
+    al.profile_plotters.plot_magnification(
         mass_profile=mp_0,
         grid=sub_grid_7x7,
         mask=mask_7x7,

@@ -38,7 +38,7 @@ ccd_data = simulation_util.load_test_ccd_data(
 )
 
 # The phase is passed the mask we setup below using the radii specified above.
-mask = msk.Mask.circular_annular(
+mask = al.Mask.circular_annular(
     shape=ccd_data.shape,
     pixel_scale=ccd_data.pixel_scale,
     inner_radius_arcsec=inner_radius_arcsec,
@@ -50,11 +50,11 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
-phase = phase_imaging.PhaseImaging(
+phase = al.PhaseImaging(
     phase_name="phase_interp",
     phase_folders=[data_type, data_resolution + "_" + str(pixel_scale_interpolation_grid)],
-    galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
-    galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
+    galaxies=dict(lens=al.GalaxyModel(mass=al.EllipticalPowerLaw)),
+    galaxies=dict(source=al.GalaxyModel(light=al.light_profiles.EllipticalSersic)),
     optimizer_class=af.MultiNest,
     pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
 )

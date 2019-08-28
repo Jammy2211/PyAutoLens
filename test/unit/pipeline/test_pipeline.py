@@ -3,8 +3,8 @@ import numpy as np
 import pytest
 
 import autofit as af
+import autolens as al
 from autolens import exc
-from autolens.pipeline import pipeline as pl
 
 
 class MockAnalysis(object):
@@ -89,7 +89,7 @@ def make_mock_file(monkeypatch):
 
 class TestMetaData(object):
     def test_files(self, mock_files):
-        pipeline = pl.PipelineImaging(
+        pipeline = al.PipelineImaging(
             "pipeline_name",
             DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"),
         )
@@ -108,7 +108,7 @@ class TestPassMask(object):
         mask = MockMask()
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
-        pipeline = pl.PipelineImaging("", phase_1, phase_2)
+        pipeline = al.PipelineImaging("", phase_1, phase_2)
         pipeline.run(data=MockCCDData(), mask=mask)
 
         assert phase_1.mask is mask
@@ -120,7 +120,7 @@ class TestPassPositions(object):
         positions = [[[1.0, 1.0], [2.0, 2.0]]]
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
-        pipeline = pl.PipelineImaging("", phase_1, phase_2)
+        pipeline = al.PipelineImaging("", phase_1, phase_2)
         pipeline.run(data=MockCCDData(), positions=positions)
 
         assert phase_1.positions == positions
@@ -132,7 +132,7 @@ class TestPipelineImaging(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
 
-        pipeline = pl.PipelineImaging("", phase_1, phase_2)
+        pipeline = al.PipelineImaging("", phase_1, phase_2)
 
         pipeline.run(MockCCDData())
 
@@ -143,21 +143,20 @@ class TestPipelineImaging(object):
         phase_2 = DummyPhaseImaging("two")
         phase_3 = DummyPhaseImaging("three")
 
-        pipeline1 = pl.PipelineImaging("", phase_1, phase_2)
-        pipeline2 = pl.PipelineImaging("", phase_3)
+        pipeline1 = al.PipelineImaging("", phase_1, phase_2)
+        pipeline2 = al.PipelineImaging("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
 
     def test__hyper_mode_on__must_receive_mask(self):
-
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
 
-        pipeline = pl.PipelineImaging("", phase_1, phase_2, hyper_mode=False)
+        pipeline = al.PipelineImaging("", phase_1, phase_2, hyper_mode=False)
 
         pipeline.run(MockCCDData())
 
-        pipeline = pl.PipelineImaging("", phase_1, phase_2, hyper_mode=True)
+        pipeline = al.PipelineImaging("", phase_1, phase_2, hyper_mode=True)
 
         with pytest.raises(exc.PhaseException):
             pipeline.run(MockCCDData())
@@ -190,7 +189,7 @@ class TestPipelinePositions(object):
     def test_run_pipeline(self):
         phase_1 = DummyPhasePositions(phase_name="one")
         phase_2 = DummyPhasePositions(phase_name="two")
-        pipeline = pl.PipelinePositions("", phase_1, phase_2)
+        pipeline = al.PipelinePositions("", phase_1, phase_2)
 
         pipeline.run(None, None)
 
@@ -201,7 +200,7 @@ class TestPipelinePositions(object):
         phase_2 = DummyPhasePositions("two")
         phase_3 = DummyPhasePositions("three")
 
-        pipeline1 = pl.PipelinePositions("", phase_1, phase_2)
-        pipeline2 = pl.PipelinePositions("", phase_3)
+        pipeline1 = al.PipelinePositions("", phase_1, phase_2)
+        pipeline2 = al.PipelinePositions("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases

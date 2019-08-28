@@ -1,10 +1,5 @@
 import autofit as af
-from autolens.model.galaxy import galaxy as g
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.model.profiles import mass_profiles as mp
-from autolens.pipeline import pipeline as pl
-from autolens.pipeline.phase import phase_imaging
+import autolens as al
 from test.integration.tests import runner
 
 test_type = "lens__source_inversion"
@@ -14,7 +9,7 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class SourcePix(phase_imaging.PhaseImaging):
+    class SourcePix(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.mass.centre.centre_0 = 0.0
@@ -27,11 +22,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=mp.EllipticalIsothermal),
-            source=gm.GalaxyModel(
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal
+            ),
+            source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
-                regularization=reg.Constant,
+                pixelization=al.pixelizations.VoronoiMagnification,
+                regularization=al.regularization.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -43,7 +40,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    class HyperLensSourcePlanePhase(phase_imaging.PhaseImaging):
+    class HyperLensSourcePlanePhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.hyper_galaxy = results.from_phase(
@@ -70,14 +67,16 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
-                redshift=0.5, mass=mp.EllipticalIsothermal, hyper_galaxy=g.HyperGalaxy
+            lens=al.GalaxyModel(
+                redshift=0.5,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                hyper_galaxy=al.HyperGalaxy,
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
-                regularization=reg.Constant,
-                hyper_galaxy=g.HyperGalaxy,
+                pixelization=al.pixelizations.VoronoiMagnification,
+                regularization=al.regularization.Constant,
+                hyper_galaxy=al.HyperGalaxy,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -87,7 +86,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(name, phase1, phase2)
+    return al.PipelineImaging(name, phase1, phase2)
 
 
 if __name__ == "__main__":
