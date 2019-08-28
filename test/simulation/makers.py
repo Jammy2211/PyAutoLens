@@ -53,6 +53,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         exposure_time=exposure_time,
         background_sky_level=background_sky_level,
         add_noise=True,
+        grid=image_plane_grid
     )
 
     # Now, lets output this simulated ccd-data to the test/data folder.
@@ -92,6 +93,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         output_filename="tracer",
         output_path=data_path,
         output_format="png",
+        grid=image_plane_grid
     )
 
     ray_tracing_plotters.plot_ray_tracing_individual(
@@ -103,6 +105,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         should_plot_deflections=True,
         output_path=data_path,
         output_format="png",
+        grid=image_plane_grid
     )
 
 
