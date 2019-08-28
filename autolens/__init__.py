@@ -149,4 +149,4 @@ from autolens.pipeline.plotters import hyper_plotters
 from autolens.pipeline.plotters import phase_plotters
 from autolens.plotters import plotter_util
 
-__version__ = "0.28.1"
+__version__ = '0.29.0'
