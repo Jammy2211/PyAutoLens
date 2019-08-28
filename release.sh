@@ -28,7 +28,7 @@ git flow release finish $VERSION
 
 git checkout master
 git push
-git checkout develop
+git checkout development
 git push
 
 rm -rf $p/dist
