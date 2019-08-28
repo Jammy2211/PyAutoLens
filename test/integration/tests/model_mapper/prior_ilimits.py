@@ -12,7 +12,7 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class MMPhase(phase_imaging.PhaseImaging):
+    class MMPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.sersic.centre_0 = 0.0
@@ -30,7 +30,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = MMPhase(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)),
+        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -38,7 +38,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class MMPhase(phase_imaging.PhaseImaging):
+    class MMPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.sersic.intensity = results.from_phase(
@@ -49,7 +49,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2 = MMPhase(
         phase_name="phase_2",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)),
+        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -57,7 +57,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 20
     phase2.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(name, phase1, phase2)
+    return al.PipelineImaging(name, phase1, phase2)
 
 
 if __name__ == "__main__":

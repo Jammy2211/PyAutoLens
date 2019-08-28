@@ -18,7 +18,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.0
         )
 
-    class LensPlaneGalaxyX2Phase(phase_imaging.PhaseImaging):
+    class LensPlaneGalaxyX2Phase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens_0.light.centre_0 = -1.0
@@ -31,8 +31,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=gm.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
-            lens_1=gm.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
+            lens_0=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
+            lens_1=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,
@@ -44,7 +44,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    class LensPlaneGalaxyX2Phase(phase_imaging.PhaseImaging):
+    class LensPlaneGalaxyX2Phase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies = results.from_phase("phase_1").variable.galaxies
@@ -61,8 +61,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=gm.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
-            lens_1=gm.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
+            lens_0=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
+            lens_1=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,
@@ -72,7 +72,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(name, phase1, phase2)
+    return al.PipelineImaging(name, phase1, phase2)
 
 
 if __name__ == "__main__":

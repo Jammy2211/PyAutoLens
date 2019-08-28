@@ -43,8 +43,8 @@ lens_galaxy = al.Galaxy(
     )
 )
 source_galaxy = al.Galaxy(
-    pixelization=pix.VoronoiMagnification(shape=(20, 20)),
-    regularization=reg.Constant(coefficient=1.0),
+    pixelization=al.pixelizations.VoronoiMagnification(shape=(20, 20)),
+    regularization=al.regularization.Constant(coefficient=1.0),
 )
 
 lens_data = al.LensData(ccd_data=ccd_data, mask=mask)

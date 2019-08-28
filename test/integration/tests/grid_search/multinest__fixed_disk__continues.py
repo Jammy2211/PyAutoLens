@@ -12,7 +12,7 @@ data_resolution = "Euclid"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class QuickPhase(phase_imaging.PhaseImaging):
+    class QuickPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.bulge.centre_0 = af.UniformPrior(
@@ -60,7 +60,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5, bulge=al.EllipticalSersic, disk=al.EllipticalExponential
             )
         ),
@@ -71,7 +71,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(af.as_grid_search(phase_imaging.PhaseImaging)):
+    class GridPhase(af.as_grid_search(al.PhaseImaging)):
         @property
         def grid_priors(self):
             return [self.variable.lens.bulge.sersic_index]
@@ -103,7 +103,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 bulge=al.EllipticalSersic, disk=al.EllipticalExponential
             )
         ),
@@ -115,7 +115,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 10
     phase2.optimizer.sampling_efficiency = 0.5
 
-    class BestResultPhase(phase_imaging.PhaseImaging):
+    class BestResultPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.disk = results.from_phase("phase_1").variable.lens.disk
@@ -127,7 +127,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_3",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5, bulge=al.EllipticalSersic, disk=al.EllipticalExponential
             )
         ),
@@ -138,7 +138,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(name, phase1, phase2, phase3)
+    return al.PipelineImaging(name, phase1, phase2, phase3)
 
 
 if __name__ == "__main__":

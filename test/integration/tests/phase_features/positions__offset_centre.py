@@ -21,7 +21,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             centre=(4.0, 4.0),
         )
 
-    class LensPhase(phase_imaging.PhaseImaging):
+    class LensPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.mass.centre_0 = af.GaussianPrior(mean=4.0, sigma=0.1)
@@ -33,8 +33,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=al.mass_profiles.SphericalIsothermal),
-            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
+            lens=al.GalaxyModel(redshift=0.5, mass=al.mass_profiles.SphericalIsothermal),
+            source=al.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         mask_function=mask_function,
         positions_threshold=0.5,
@@ -45,7 +45,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 30
     phase1.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(name, phase1)
+    return al.PipelineImaging(name, phase1)
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.0
         )
 
-    class LensPlaneGalaxy0Phase(phase_imaging.PhaseImaging):
+    class LensPlaneGalaxy0Phase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens_0.sersic.centre_0 = -1.0
@@ -27,7 +27,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = LensPlaneGalaxy0Phase(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        galaxies=dict(lens_0=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)),
+        galaxies=dict(lens_0=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,
     )
@@ -36,7 +36,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class LensPlaneGalaxy1Phase(phase_imaging.PhaseImaging):
+    class LensPlaneGalaxy1Phase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens_0 = results.from_phase(
@@ -50,8 +50,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
-            lens_1=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
+            lens_0=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
+            lens_1=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,
@@ -61,7 +61,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    class LensPlaneBothGalaxyPhase(phase_imaging.PhaseImaging):
+    class LensPlaneBothGalaxyPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens_0 = results.from_phase(
@@ -81,8 +81,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_3",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
-            lens_1=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
+            lens_0=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
+            lens_1=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,
@@ -92,7 +92,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase3.optimizer.n_live_points = 60
     phase3.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(name, phase1, phase2, phase3)
+    return al.PipelineImaging(name, phase1, phase2, phase3)
 
 
 if __name__ == "__main__":

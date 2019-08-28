@@ -15,7 +15,7 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class Phase1(phase_imaging.PhaseImaging):
+    class Phase1(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.source.light.sersic_index = af.UniformPrior(3.9, 4.1)
@@ -24,8 +24,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal),
-            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
+            lens=al.GalaxyModel(redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal),
+            source=al.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -38,7 +38,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
     )
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
@@ -63,13 +63,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.ExternalShear
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiBrightnessImage,
-                regularization=reg.AdaptiveBrightness,
+                pixelization=al.pixelizations.VoronoiBrightnessImage,
+                regularization=al.regularization.AdaptiveBrightness,
             ),
         ),
         hyper_image_sky=hd.HyperImageSky,
@@ -89,7 +89,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         include_background_noise=True,
     )
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
@@ -114,13 +114,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_3",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.ExternalShear
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiBrightnessImage,
-                regularization=reg.AdaptiveBrightness,
+                pixelization=al.pixelizations.VoronoiBrightnessImage,
+                regularization=al.regularization.AdaptiveBrightness,
             ),
         ),
         inversion_pixel_limit=710,
@@ -138,7 +138,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         include_background_noise=True,
     )
 
-    return pl.PipelineImaging(name, phase1, phase2, phase3)
+    return al.PipelineImaging(name, phase1, phase2, phase3)
 
 
 if __name__ == "__main__":
