@@ -36,7 +36,7 @@ def fit_with_offset_centre(centre):
     )
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        pixelization=pix.VoronoiMagnificationPixelization(shape=(20, 20)),
+        pixelization=pix.VoronoiMagnification(shape=(20, 20)),
         regularization=reg.Constant(coefficient=1.0),
     )
 

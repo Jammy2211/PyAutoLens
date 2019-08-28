@@ -68,7 +68,7 @@ def make_pipeline(
             ),
             source=gm.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnificationPixelization,
+                pixelization=pix.VoronoiMagnification,
                 regularization=reg.Constant,
             ),
         ),
@@ -118,7 +118,7 @@ def make_pipeline(
             ),
             source=gm.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnificationPixelization,
+                pixelization=pix.VoronoiMagnification,
                 regularization=reg.Constant,
             ),
         ),

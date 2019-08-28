@@ -170,8 +170,8 @@ class TestPhase(object):
             galaxies=dict(
                 source=al.Galaxy(
                     redshift=0.5,
-                    pixelization=al.RectangularPixelization(shape=(3, 3)),
-                    regularization=al.ConstantRegularization(),
+                    pixelization=al.pixelizations.Rectangular(shape=(3, 3)),
+                    regularization=al.regularization.Constant(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -190,8 +190,8 @@ class TestPhase(object):
             galaxies=dict(
                 source=al.Galaxy(
                     redshift=0.5,
-                    pixelization=al.RectangularPixelization(shape=(4, 4)),
-                    regularization=al.ConstantRegularization(),
+                    pixelization=al.pixelizations.Rectangular(shape=(4, 4)),
+                    regularization=al.regularization.Constant(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -212,8 +212,8 @@ class TestPhase(object):
             galaxies=dict(
                 source=al.Galaxy(
                     redshift=0.5,
-                    pixelization=al.RectangularPixelization(shape=(3, 3)),
-                    regularization=al.ConstantRegularization(),
+                    pixelization=al.pixelizations.Rectangular(shape=(3, 3)),
+                    regularization=al.regularization.Constant(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -232,8 +232,8 @@ class TestPhase(object):
             galaxies=dict(
                 source=al.Galaxy(
                     redshift=0.5,
-                    pixelization=al.RectangularPixelization(shape=(4, 4)),
-                    regularization=al.ConstantRegularization(),
+                    pixelization=al.pixelizations.Rectangular(shape=(4, 4)),
+                    regularization=al.regularization.Constant(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -267,8 +267,8 @@ class TestPhase(object):
     ):
         phase_7x7.galaxies.lens = al.GalaxyModel(
             redshift=0.5,
-            pixelization=al.VoronoiBrightnessImagePixelization,
-            regularization=al.ConstantRegularization,
+            pixelization=al.pixelizations.VoronoiBrightnessImage,
+            regularization=al.regularization.Constant,
         )
 
         phase_7x7.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale
@@ -340,7 +340,7 @@ class TestPhase(object):
         assert phase_7x7.pixelization == None
 
         source_galaxy = al.Galaxy(
-            redshift=0.5, pixelization=al.RectangularPixelization(), regularization=al.ConstantRegularization()
+            redshift=0.5, pixelization=al.pixelizations.Rectangular(), regularization=al.regularization.Constant()
         )
 
         phase_7x7 = al.PhaseImaging(
@@ -350,10 +350,10 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        assert isinstance(phase_7x7.pixelization, al.RectangularPixelization)
+        assert isinstance(phase_7x7.pixelization, al.pixelizations.Rectangular)
 
         source_galaxy = al.GalaxyModel(
-            redshift=0.5, pixelization=al.RectangularPixelization, regularization=al.ConstantRegularization
+            redshift=0.5, pixelization=al.pixelizations.Rectangular, regularization=al.regularization.Constant
         )
 
         phase_7x7 = al.PhaseImaging(
@@ -363,7 +363,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        assert type(phase_7x7.pixelization) == type(al.RectangularPixelization)
+        assert type(phase_7x7.pixelization) == type(al.pixelizations.Rectangular)
 
     def test_fit(self, ccd_data_7x7, mask_function_7x7):
         clean_images()
@@ -476,8 +476,8 @@ class TestPhase(object):
             galaxies=dict(
                 lens=al.GalaxyModel(
                     redshift=0.5,
-                    pixelization=al.RectangularPixelization,
-                    regularization=al.ConstantRegularization,
+                    pixelization=al.pixelizations.Rectangular,
+                    regularization=al.regularization.Constant,
                 ),
                 source=al.GalaxyModel(redshift=1.0),
             ),
@@ -486,8 +486,8 @@ class TestPhase(object):
 
         source = al.GalaxyModel(
             redshift=1.0,
-            pixelization=al.VoronoiBrightnessImagePixelization,
-            regularization=al.ConstantRegularization,
+            pixelization=al.pixelizations.VoronoiBrightnessImage,
+            regularization=al.regularization.Constant,
         )
 
         phase_7x7 = al.PhaseImaging(
@@ -514,8 +514,8 @@ class TestPhase(object):
             galaxies=dict(
                 lens=al.GalaxyModel(
                     redshift=0.5,
-                    pixelization=al.RectangularPixelization,
-                    regularization=al.ConstantRegularization,
+                    pixelization=al.pixelizations.Rectangular,
+                    regularization=al.regularization.Constant,
                 ),
                 source=al.GalaxyModel(redshift=1.0),
             ),
@@ -530,8 +530,8 @@ class TestPhase(object):
                 lens=al.GalaxyModel(redshift=0.5),
                 source=al.GalaxyModel(
                     redshift=1.0,
-                    pixelization=al.VoronoiBrightnessImagePixelization,
-                    regularization=al.ConstantRegularization,
+                    pixelization=al.pixelizations.VoronoiBrightnessImage,
+                    regularization=al.regularization.Constant,
                 ),
             ),
         )
@@ -548,8 +548,8 @@ class TestPhase(object):
         )
         source_galaxy = al.Galaxy(
             redshift=1.0,
-            pixelization=al.RectangularPixelization(shape=(3, 3)),
-            regularization=al.ConstantRegularization(coefficient=1.0),
+            pixelization=al.pixelizations.Rectangular(shape=(3, 3)),
+            regularization=al.regularization.Constant(coefficient=1.0),
         )
 
         phase_7x7 = al.PhaseImaging(
@@ -642,7 +642,7 @@ class TestPhase(object):
             phase_name="test_phase", mask_function=mask_function_7x7
         )
 
-        results_collection_7x7.last.pixelization = al.RectangularPixelization
+        results_collection_7x7.last.pixelization = al.pixelizations.Rectangular
 
         analysis = phase_7x7.make_analysis(
             data=ccd_data_7x7, results=results_collection_7x7
@@ -656,8 +656,8 @@ class TestPhase(object):
             galaxies=[
                 al.Galaxy(
                     redshift=0.5,
-                    pixelization=al.RectangularPixelization,
-                    regularization=al.ConstantRegularization,
+                    pixelization=al.pixelizations.Rectangular,
+                    regularization=al.regularization.Constant,
                 )
             ],
         )
@@ -676,13 +676,13 @@ class TestPhase(object):
             galaxies=[
                 al.Galaxy(
                     redshift=0.5,
-                    pixelization=al.RectangularPixelization,
-                    regularization=al.ConstantRegularization,
+                    pixelization=al.pixelizations.Rectangular,
+                    regularization=al.regularization.Constant,
                 )
             ],
         )
 
-        results_collection_7x7.last.pixelization = al.RectangularPixelization
+        results_collection_7x7.last.pixelization = al.pixelizations.Rectangular
 
         analysis = phase_7x7.make_analysis(
             data=ccd_data_7x7, results=results_collection_7x7
@@ -709,7 +709,7 @@ class TestPhase(object):
     #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
     #
     #     galaxy_pix_which_doesnt_use_pix_grid = al.Galaxy(
-    #         redshift=0.5, pixelization=al.RectangularPixelization(), regularization=al.ConstantRegularization()
+    #         redshift=0.5, pixelization=al.pixelizations.Rectangular(), regularization=al.regularization.Constant()
     #     )
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
@@ -721,8 +721,8 @@ class TestPhase(object):
     #
     #     galaxy_pix_which_uses_pix_grid = al.Galaxy(
     #         redshift=0.5,
-    #         pixelization=al.VoronoiMagnificationPixelization(),
-    #         regularization=al.ConstantRegularization(),
+    #         pixelization=al.pixelizations.VoronoiMagnification(),
+    #         regularization=al.regularization.Constant(),
     #     )
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
@@ -749,8 +749,8 @@ class TestPhase(object):
     #
     #     galaxy_pix_which_uses_brightness = al.Galaxy(
     #         redshift=0.5,
-    #         pixelization=al.VoronoiBrightnessImagePixelization(pixels=9),
-    #         regularization=al.ConstantRegularization(),
+    #         pixelization=al.pixelizations.VoronoiBrightnessImage(pixels=9),
+    #         regularization=al.regularization.Constant(),
     #     )
     #
     #     galaxy_pix_which_uses_brightness.hyper_galaxy_cluster_image_1d = np.array(
@@ -762,8 +762,8 @@ class TestPhase(object):
     #         galaxies=dict(
     #             lens=al.GalaxyModel(
     #                 redshift=0.5,
-    #                 pixelization=al.VoronoiBrightnessImagePixelization,
-    #                 regularization=al.ConstantRegularization,
+    #                 pixelization=al.pixelizations.VoronoiBrightnessImage,
+    #                 regularization=al.regularization.Constant,
     #             )
     #         ),
     #         inversion_pixel_limit=5,
@@ -1190,8 +1190,8 @@ class TestResult(object):
                 lens=al.Galaxy(redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)),
                 source=al.Galaxy(
                     redshift=1.0,
-                    pixelization=al.VoronoiMagnificationPixelization(shape=(2, 3)),
-                    regularization=al.ConstantRegularization(),
+                    pixelization=al.pixelizations.VoronoiMagnification(shape=(2, 3)),
+                    regularization=al.regularization.Constant(),
                 ),
             ),
             inversion_pixel_limit=6,
@@ -1200,7 +1200,7 @@ class TestResult(object):
 
         result = phase_7x7.run(data=ccd_data_7x7)
 
-        assert isinstance(result.pixelization, al.VoronoiMagnificationPixelization)
+        assert isinstance(result.pixelization, al.pixelizations.VoronoiMagnification)
         assert result.pixelization.shape == (2, 3)
 
         phase_7x7 = al.PhaseImaging(
@@ -1210,8 +1210,8 @@ class TestResult(object):
                 lens=al.Galaxy(redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)),
                 source=al.Galaxy(
                     redshift=1.0,
-                    pixelization=al.VoronoiBrightnessImagePixelization(pixels=6),
-                    regularization=al.ConstantRegularization(),
+                    pixelization=al.pixelizations.VoronoiBrightnessImage(pixels=6),
+                    regularization=al.regularization.Constant(),
                 ),
             ),
             inversion_pixel_limit=6,
@@ -1222,7 +1222,7 @@ class TestResult(object):
 
         result = phase_7x7.run(data=ccd_data_7x7)
 
-        assert isinstance(result.pixelization, al.VoronoiBrightnessImagePixelization)
+        assert isinstance(result.pixelization, al.pixelizations.VoronoiBrightnessImage)
         assert result.pixelization.pixels == 6
 
     def test__results_of_phase_include_pixelization_grid__available_as_property(
@@ -1248,8 +1248,8 @@ class TestResult(object):
                 lens=al.Galaxy(redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)),
                 source=al.Galaxy(
                     redshift=1.0,
-                    pixelization=al.VoronoiBrightnessImagePixelization(pixels=6),
-                    regularization=al.ConstantRegularization(),
+                    pixelization=al.pixelizations.VoronoiBrightnessImage(pixels=6),
+                    regularization=al.regularization.Constant(),
                 ),
             ),
             inversion_pixel_limit=6,

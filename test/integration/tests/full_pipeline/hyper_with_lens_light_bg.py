@@ -1,12 +1,5 @@
 import autofit as af
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.profiles import mass_profiles as mp
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
-from autolens.pipeline import pipeline as pl
-from autolens.pipeline.phase import phase_imaging
-from test.integration.tests import runner
+import autolens as al
 
 test_type = "full_pipeline"
 test_name = "hyper_with_lens_light_bg"
@@ -190,7 +183,7 @@ def make_pipeline(
             ),
             source=gm.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnificationPixelization,
+                pixelization=pix.VoronoiMagnification,
                 regularization=reg.Constant,
             ),
         ),
@@ -251,7 +244,7 @@ def make_pipeline(
             ),
             source=gm.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnificationPixelization,
+                pixelization=pix.VoronoiMagnification,
                 regularization=reg.Constant,
             ),
         ),

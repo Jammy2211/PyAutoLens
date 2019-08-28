@@ -52,12 +52,9 @@ from autolens.model.galaxy.plotters import galaxy_plotters
 from autolens.model.hyper.hyper_data import HyperImageSky, HyperBackgroundNoise
 from autolens.model.inversion.inversions import Inversion
 from autolens.model.inversion.mappers import Mapper, RectangularMapper, VoronoiMapper
-from autolens.model.inversion.pixelizations import Pixelization, Rectangular as RectangularPixelization, \
-    Voronoi as VoronoiPixelization, VoronoiMagnification as VoronoiMagnificationPixelization, \
-    VoronoiBrightnessImage as VoronoiBrightnessImagePixelization
+from autolens.model.inversion import pixelizations
 from autolens.model.inversion.plotters import mapper_plotters
-from autolens.model.inversion.regularization import Regularization, Constant as ConstantRegularization, \
-    AdaptiveBrightness as AdaptiveBrightnessRegularization
+from autolens.model.inversion import regularization
 from autolens.model.inversion.util import inversion_util
 from autolens.model.inversion.util import mapper_util
 from autolens.model.inversion.util import pixelization_util

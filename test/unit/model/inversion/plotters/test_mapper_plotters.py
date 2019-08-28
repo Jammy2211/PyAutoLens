@@ -46,7 +46,7 @@ def make_grid():
 
 @pytest.fixture(name="rectangular_pixelization")
 def make_rectangular_pixelization():
-    return al.RectangularPixelization(shape=(25, 25))
+    return al.pixelizations.Rectangular(shape=(25, 25))
 
 
 @pytest.fixture(name="rectangular_mapper")

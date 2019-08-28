@@ -147,7 +147,7 @@ class TestVariableFixing(object):
         mapper = af.ModelMapper()
 
         mapper.lens_galaxy = al.GalaxyModel(
-            redshift=al.Redshift, pixelization=al.RectangularPixelization, regularization=al.ConstantRegularization
+            redshift=al.Redshift, pixelization=al.pixelizations.Rectangular, regularization=al.regularization.Constant
         )
         mapper.source_galaxy = al.GalaxyModel(
             redshift=al.Redshift, light=al.light_profiles.EllipticalLightProfile
@@ -156,7 +156,7 @@ class TestVariableFixing(object):
         assert mapper.prior_count == 9
 
         instance.lens_galaxy = al.Galaxy(
-            pixelization=al.RectangularPixelization(), regularization=al.ConstantRegularization(), redshift=1.0
+            pixelization=al.pixelizations.Rectangular(), regularization=al.regularization.Constant(), redshift=1.0
         )
         instance.source_galaxy = al.Galaxy(
             redshift=1.0, light=al.light_profiles.EllipticalLightProfile()
@@ -166,7 +166,7 @@ class TestVariableFixing(object):
         phase = al.VariableFixingHyperPhase(
             MockPhase(),
             "mock_phase",
-            variable_classes=(al.Pixelization, al.Regularization),
+            variable_classes=(al.pixelizations.Pixelization, al.regularization.Regularization),
         )
 
         mapper = mapper.copy_with_fixed_priors(instance, phase.variable_classes)
@@ -280,8 +280,8 @@ class TestImagePassing(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=al.HyperGalaxy,
-                    pixelization=al.VoronoiBrightnessImagePixelization,
-                    regularization=al.ConstantRegularization,
+                    pixelization=al.pixelizations.VoronoiBrightnessImage,
+                    regularization=al.regularization.Constant,
                 )
             ),
             mask_function=mask_function_7x7,
@@ -306,8 +306,8 @@ class TestImagePassing(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=al.HyperGalaxy,
-                    pixelization=al.VoronoiBrightnessImagePixelization,
-                    regularization=al.ConstantRegularization,
+                    pixelization=al.pixelizations.VoronoiBrightnessImage,
+                    regularization=al.regularization.Constant,
                 )
             ),
             inversion_pixel_limit=1,
@@ -341,8 +341,8 @@ class TestImagePassing(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=al.HyperGalaxy,
-                    pixelization=al.VoronoiBrightnessImagePixelization,
-                    regularization=al.ConstantRegularization,
+                    pixelization=al.pixelizations.VoronoiBrightnessImage,
+                    regularization=al.regularization.Constant,
                 )
             ),
             inversion_pixel_limit=1,
@@ -385,8 +385,8 @@ class TestImagePassing(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=al.HyperGalaxy,
-                    pixelization=al.VoronoiBrightnessImagePixelization,
-                    regularization=al.ConstantRegularization,
+                    pixelization=al.pixelizations.VoronoiBrightnessImage,
+                    regularization=al.regularization.Constant,
                 )
             ),
             inversion_pixel_limit=1,
@@ -544,8 +544,8 @@ class TestHyperAPI(object):
         inversion_result.variable = af.ModelMapper()
 
         hyper_galaxy_result.variable.hyper_galaxy = al.HyperGalaxy
-        hyper_galaxy_result.variable.pixelization = al.Pixelization()
-        inversion_result.variable.pixelization = al.Pixelization
+        hyper_galaxy_result.variable.pixelization = al.pixelizations.Pixelization()
+        inversion_result.variable.pixelization = al.pixelizations.Pixelization
         inversion_result.variable.hyper_galaxy = al.HyperGalaxy()
 
         result.hyper_galaxy = hyper_galaxy_result
@@ -557,7 +557,7 @@ class TestHyperAPI(object):
         assert isinstance(variable.pixelization, af.PriorModel)
 
         assert variable.hyper_galaxy.cls == al.HyperGalaxy
-        assert variable.pixelization.cls == al.Pixelization
+        assert variable.pixelization.cls == al.pixelizations.Pixelization
 
     def test_instantiation(self, hyper_combined):
         assert len(hyper_combined.hyper_phases) == 2
