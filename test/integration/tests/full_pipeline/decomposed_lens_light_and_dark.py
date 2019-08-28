@@ -53,10 +53,10 @@ def make_pipeline(
     optimizer_class=af.MultiNest,
 ):
 
-    phase1 = phase_imaging.PhaseImaging(
+    phase1 = al.PhaseImaging(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)),
+        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -76,7 +76,7 @@ def make_pipeline(
     #    its light profile in phase 1.
     # 3) Have the option to use an annular mask removing the central light, if the inner_mask_radii parametr is input.
 
-    class LensSubtractedPhase(phase_imaging.PhaseImaging):
+    class LensSubtractedPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Light Sersic -> Sersic ##
@@ -97,13 +97,13 @@ def make_pipeline(
         phase_name="phase_2__lens_sie__source_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5,
                 light=al.light_profiles.EllipticalSersic,
                 mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.ExternalShear,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -119,7 +119,7 @@ def make_pipeline(
     # 1) Initialize the lens's light, mass, shear and source's light using the results of phases 1 and 2.
     # 2) Use a circular mask, to fully capture the lens and source light.
 
-    class LensSourcePhase(phase_imaging.PhaseImaging):
+    class LensSourcePhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Light, Sersic -> Sersic ###
@@ -148,13 +148,13 @@ def make_pipeline(
         phase_name="phase_3__lens_sersic_sie__source_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5,
                 light=al.light_profiles.EllipticalSersic,
                 mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.ExternalShear,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -173,7 +173,7 @@ def make_pipeline(
     # 3) Pass priors on the lens galaxy's shear using the ExternalShear fit of the previous pipeline.
     # 4) Pass priors on the source galaxy's light using the EllipticalSersic of the previous pipeline.
 
-    class LensSourcePhase(phase_imaging.PhaseImaging):
+    class LensSourcePhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ### Lens Light, Sersic -> Sersic ###
@@ -232,13 +232,13 @@ def make_pipeline(
         phase_name="phase_4",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5,
                 light_mass=lmp.EllipticalSersic,
                 dark=al.SphericalNFW,
-                shear=al.ExternalShear,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )

@@ -13,7 +13,7 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class SourcePix(phase_imaging.PhaseImaging):
+    class SourcePix(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.mass.centre.centre_0 = 0.0
@@ -24,11 +24,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal),
-            source=gm.GalaxyModel(
+            lens=al.GalaxyModel(redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal),
+            source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
-                regularization=reg.Constant,
+                pixelization=al.pixelizations.VoronoiMagnification,
+                regularization=al.regularization.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -40,7 +40,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1 = phase1.extend_with_inversion_phase()
 
-    class SourcePix(phase_imaging.PhaseImaging):
+    class SourcePix(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
@@ -51,11 +51,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal),
-            source=gm.GalaxyModel(
+            lens=al.GalaxyModel(redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal),
+            source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
-                regularization=reg.Constant,
+                pixelization=al.pixelizations.VoronoiMagnification,
+                regularization=al.regularization.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -67,7 +67,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase2 = phase2.extend_with_inversion_phase()
 
-    return pl.PipelineImaging(name, phase1, phase2)
+    return al.PipelineImaging(name, phase1, phase2)
 
 
 if __name__ == "__main__":

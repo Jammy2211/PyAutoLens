@@ -47,7 +47,7 @@ def galaxy_fit_phase():
 
     phase1 = phase.GalaxyFitPhase(
         phase_name=test_name + "/",
-        galaxies=dict(gal=gm.GalaxyModel(redshift=0.5, light=al.SphericalExponential)),
+        galaxies=dict(gal=al.GalaxyModel(redshift=0.5, light=al.SphericalExponential)),
         use_image=True,
         sub_grid_size=4,
         optimizer_class=af.MultiNest,

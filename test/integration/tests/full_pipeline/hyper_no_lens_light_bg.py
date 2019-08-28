@@ -17,19 +17,19 @@ data_resolution = "LSST"
 def make_pipeline(
     name,
     phase_folders,
-    pipeline_pixelization=pix.VoronoiBrightnessImage,
-    pipeline_regularization=reg.AdaptiveBrightness,
+    pipeline_pixelization=al.pixelizations.VoronoiBrightnessImage,
+    pipeline_regularization=al.regularization.AdaptiveBrightness,
     optimizer_class=af.MultiNest,
 ):
 
-    phase1 = phase_imaging.PhaseImaging(
+    phase1 = al.PhaseImaging(
         phase_name="phase_1__lens_sie__source_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.ExternalShear
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -42,7 +42,7 @@ def make_pipeline(
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
     )
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
@@ -63,13 +63,13 @@ def make_pipeline(
         phase_name="phase_1_initialize_magnification_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.ExternalShear
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
-                regularization=reg.Constant,
+                pixelization=al.pixelizations.VoronoiMagnification,
+                regularization=al.regularization.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -86,7 +86,7 @@ def make_pipeline(
         inversion=False,
     )
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ### Lens Mass, SIE -> SIE, Shear -> Shear ###
@@ -113,13 +113,13 @@ def make_pipeline(
         phase_name="phase_3__lens_sie__source_magnification_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.ExternalShear
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
-                regularization=reg.Constant,
+                pixelization=al.pixelizations.VoronoiMagnification,
+                regularization=al.regularization.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -136,7 +136,7 @@ def make_pipeline(
         inversion=False,
     )
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
@@ -157,10 +157,10 @@ def make_pipeline(
         phase_name="phase_4__initialize_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.ExternalShear
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=pipeline_pixelization,
                 regularization=pipeline_regularization,
@@ -180,7 +180,7 @@ def make_pipeline(
         inversion=True,
     )
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ### Lens Mass, SIE -> SIE, Shear -> Shear ###
@@ -211,10 +211,10 @@ def make_pipeline(
         phase_name="phase_5__lens_sie__source_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.ExternalShear
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=pipeline_pixelization,
                 regularization=pipeline_regularization,
@@ -234,7 +234,7 @@ def make_pipeline(
         inversion=True,
     )
 
-    return pl.PipelineImaging(
+    return al.PipelineImaging(
         name, phase1, phase2, phase3, phase4, phase5, hyper_mode=False
     )
 

@@ -76,7 +76,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
 class TestAdvancedModelMapper(object):
     def test_fully_qualified_paramnames(self):
         mapper = af.ModelMapper()
-        galaxy_model = gm.GalaxyModel(
+        galaxy_model = al.GalaxyModel(
             redshift=0.5, light_profile=al.light_profiles.EllipticalLightProfile
         )
         light_profile = galaxy_model.light_profile
@@ -126,7 +126,7 @@ class TestPhaseModelMapper(object):
             pixel_scale=0.1,
         )
 
-        class MMPhase(phase_imaging.PhaseImaging):
+        class MMPhase(al.PhaseImaging):
             def pass_priors(self, results):
                 self.galaxies.lens.sersic.intensity = (
                     self.galaxies.lens.sersic.axis_ratio
@@ -134,7 +134,7 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)
+                lens=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(test_name),
@@ -200,7 +200,7 @@ class TestPhaseModelMapper(object):
             pixel_scale=0.1,
         )
 
-        class MMPhase(phase_imaging.PhaseImaging):
+        class MMPhase(al.PhaseImaging):
             def pass_priors(self, results):
                 self.galaxies.lens.sersic.axis_ratio = 0.2
                 self.galaxies.lens.sersic.phi = 90.0
@@ -210,7 +210,7 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)
+                lens=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(name),

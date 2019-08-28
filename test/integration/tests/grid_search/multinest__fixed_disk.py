@@ -12,7 +12,7 @@ data_resolution = "Euclid"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class QuickPhase(phase_imaging.PhaseImaging):
+    class QuickPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.bulge.centre_0 = af.UniformPrior(
@@ -60,7 +60,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5, bulge=al.EllipticalSersic, disk=al.EllipticalSersic
             )
         ),
@@ -71,7 +71,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(af.as_grid_search(phase_imaging.PhaseImaging)):
+    class GridPhase(af.as_grid_search(al.PhaseImaging)):
         @property
         def grid_priors(self):
             return [self.variable.galaxies.lens.bulge.sersic_index]
@@ -105,7 +105,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5, bulge=al.EllipticalSersic, disk=al.EllipticalSersic
             )
         ),
@@ -115,7 +115,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase2.optimizer.const_efficiency_mode = True
 
-    return pl.PipelineImaging(name, phase1, phase2)
+    return al.PipelineImaging(name, phase1, phase2)
 
 
 if __name__ == "__main__":

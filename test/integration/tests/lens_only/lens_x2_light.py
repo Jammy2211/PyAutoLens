@@ -13,7 +13,7 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class LensPlanex2GalPhase(phase_imaging.PhaseImaging):
+    class LensPlanex2GalPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens_0.light.centre_0 = -1.0
@@ -30,8 +30,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=gm.GalaxyModel(light=al.light_profiles.EllipticalSersic),
-            lens_1=gm.GalaxyModel(light=al.light_profiles.EllipticalSersic),
+            lens_0=al.GalaxyModel(light=al.light_profiles.EllipticalSersic),
+            lens_1=al.GalaxyModel(light=al.light_profiles.EllipticalSersic),
         ),
         mask_function=mask_function,
         optimizer_class=optimizer_class,
@@ -41,7 +41,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    return pl.PipelineImaging(name, phase1)
+    return al.PipelineImaging(name, phase1)
 
 
 if __name__ == "__main__":

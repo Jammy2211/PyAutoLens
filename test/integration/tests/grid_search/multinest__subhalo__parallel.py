@@ -13,7 +13,7 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class GridPhase(af.as_grid_search(phase_imaging.PhaseImaging, parallel=True)):
+    class GridPhase(af.as_grid_search(al.PhaseImaging, parallel=True)):
         @property
         def grid_priors(self):
             return [
@@ -42,11 +42,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal),
-            subhalo=gm.GalaxyModel(
+            lens=al.GalaxyModel(redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal),
+            subhalo=al.GalaxyModel(
                 redshift=0.5, mass=al.SphericalTruncatedNFWChallenge
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
         number_of_steps=2,
@@ -54,7 +54,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1.optimizer.const_efficiency_mode = True
 
-    return pl.PipelineImaging(name, phase1)
+    return al.PipelineImaging(name, phase1)
 
 
 if __name__ == "__main__":
