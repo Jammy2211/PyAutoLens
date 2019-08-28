@@ -592,7 +592,7 @@ def plot_border(
 
     if should_plot_border:
 
-        border_arcsec = mapper.grid[mapper.border]
+        border_arcsec = mapper.grid[mapper.grid.sub_border_pixels]
         border_units = convert_grid(
             grid=border_arcsec, units=units, kpc_per_arcsec=kpc_per_arcsec
         )

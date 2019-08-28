@@ -473,6 +473,8 @@ class AbstractTracerData(AbstractTracerLensing):
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
+        # TODO : Need u unit test on this.
+
         if preload_blurring_grid is None:
             preload_blurring_grid = grid.blurring_grid_from_psf_shape(
                 psf_shape=convolver.psf.shape
@@ -490,7 +492,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         return [
             plane.blurred_profile_image_from_grid_and_convolver(
-                grid=grid,
+                grid=traced_grid,
                 convolver=convolver,
                 preload_blurring_grid=preload_blurring_grid,
             )
