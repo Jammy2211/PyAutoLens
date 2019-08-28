@@ -812,7 +812,11 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             sub-grid.
         """
 
-        factor = self.einstein_radius * np.sqrt(self.axis_ratio) / np.sqrt(1 - self.axis_ratio ** 2)
+        factor = (
+            self.einstein_radius
+            * np.sqrt(self.axis_ratio)
+            / np.sqrt(1 - self.axis_ratio ** 2)
+        )
 
         deflection_y = factor * np.arcsin(
             (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 0])
