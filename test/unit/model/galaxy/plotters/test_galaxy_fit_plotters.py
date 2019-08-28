@@ -1,8 +1,7 @@
+import autolens as al
 import os
 
 import pytest
-
-from autolens.model.galaxy.plotters import galaxy_fit_plotters
 
 
 @pytest.fixture(name="galaxy_fitting_plotter_path")
@@ -22,7 +21,7 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
     plot_patch,
     galaxy_fitting_plotter_path,
 ):
-    galaxy_fit_plotters.plot_fit_subplot(
+    al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_image,
         should_plot_mask=True,
         extract_array_from_mask=True,
@@ -36,7 +35,7 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
 
     assert galaxy_fitting_plotter_path + "galaxy_fit.png" in plot_patch.paths
 
-    galaxy_fit_plotters.plot_fit_subplot(
+    al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_convergence,
         should_plot_mask=True,
         extract_array_from_mask=True,
@@ -50,7 +49,7 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
 
     assert galaxy_fitting_plotter_path + "galaxy_fit.png" in plot_patch.paths
 
-    galaxy_fit_plotters.plot_fit_subplot(
+    al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_potential,
         should_plot_mask=True,
         extract_array_from_mask=True,
@@ -64,7 +63,7 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
 
     assert galaxy_fitting_plotter_path + "galaxy_fit.png" in plot_patch.paths
 
-    galaxy_fit_plotters.plot_fit_subplot(
+    al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_deflections_y,
         should_plot_mask=True,
         extract_array_from_mask=True,
@@ -78,7 +77,7 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
 
     assert galaxy_fitting_plotter_path + "galaxy_fit.png" in plot_patch.paths
 
-    galaxy_fit_plotters.plot_fit_subplot(
+    al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_deflections_x,
         should_plot_mask=True,
         extract_array_from_mask=True,

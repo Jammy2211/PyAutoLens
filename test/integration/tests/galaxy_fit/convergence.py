@@ -2,12 +2,7 @@ import os
 import numpy as np
 
 import autofit as af
-from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.model.galaxy import galaxy_data as gd
-from autolens.array import scaled_array
-from autolens.array import grids
-from autolens.pipeline.phase import phase
-from autolens.model.profiles import mass_profiles as mp
+import autolens as al
 from test.integration import integration_util
 
 test_type = "galaxy_fit"
@@ -24,30 +19,34 @@ def galaxy_fit_phase():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=4
     )
 
-    galaxy = g.Galaxy(
+    galaxy = al.Galaxy(
         redshift=0.5,
-        mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+        mass=al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=1.0
+        ),
     )
 
     convergence = galaxy.convergence_from_grid(
         galaxies=[galaxy], grid=grid, return_in_2d=True
     )
 
-    noise_map = scaled_array.ScaledSquarePixelArray(
+    noise_map = al.ScaledSquarePixelArray(
         array=np.ones(convergence.shape), pixel_scale=pixel_scale
     )
 
-    data = gd.GalaxyData(
+    data = al.GalaxyData(
         image=convergence, noise_map=noise_map, pixel_scale=pixel_scale
     )
 
-    phase1 = phase.GalaxyFitPhase(
+    phase1 = al.GalaxyFitPhase(
         phase_name=test_name + "/",
-        galaxies=dict(gal=gm.GalaxyModel(redshift=0.5, light=mp.SphericalIsothermal)),
+        galaxies=dict(
+            gal=al.GalaxyModel(redshift=0.5, light=al.mass_profiles.SphericalIsothermal)
+        ),
         use_convergence=True,
         sub_grid_size=4,
         optimizer_class=af.MultiNest,

@@ -6,7 +6,7 @@ from autolens.array import mask as msk
 
 from test.simulation import simulation_util
 
-# Although we could test the deflection angles without using an image (e.g. by just making a grid), we have chosen to
+# Although we could test the deflection angles without using an image (e.al. by just making a grid), we have chosen to
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
 # analysis
 
@@ -23,12 +23,12 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
         data_resolution=data_resolution,
         psf_shape=(3, 3),
     )
-    mask = msk.Mask.circular(
+    mask = al.Mask.circular(
         shape=ccd_data.shape,
         pixel_scale=ccd_data.pixel_scale,
         radius_arcsec=radius_arcsec,
     )
-    lens_data = ld.LensData(
+    lens_data = al.LensData(
         ccd_data=ccd_data,
         mask=mask,
         sub_grid_size=sub_grid_size,
@@ -51,7 +51,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalIsothermal ###
 
-    mass_profile = mp.EllipticalIsothermal(
+    mass_profile = al.EllipticalIsothermal(
         centre=(0.001, 0.001), axis_ratio=0.8, phi=45.0, einstein_radius=1.0
     )
 
@@ -62,7 +62,9 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalIsothermal ###
 
-    mass_profile = mp.SphericalIsothermal(centre=(0.001, 0.001), einstein_radius=1.0)
+    mass_profile = al.mass_profiles.SphericalIsothermal(
+        centre=(0.001, 0.001), einstein_radius=1.0
+    )
 
     start = time.time()
     mass_profile.deflections_from_grid(grid=lens_data.grid)
@@ -71,7 +73,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalPowerLaw (slope = 1.5) ###
 
-    mass_profile = mp.EllipticalPowerLaw(
+    mass_profile = al.EllipticalPowerLaw(
         centre=(0.001, 0.001), axis_ratio=0.8, phi=45.0, einstein_radius=1.0, slope=1.5
     )
 
@@ -82,7 +84,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalPowerLaw (slope = 1.5) ###
 
-    mass_profile = mp.SphericalPowerLaw(
+    mass_profile = al.SphericalPowerLaw(
         centre=(0.001, 0.001), einstein_radius=1.0, slope=1.5
     )
 
@@ -93,7 +95,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalPowerLaw (slope = 2.5) ###
 
-    mass_profile = mp.EllipticalPowerLaw(
+    mass_profile = al.EllipticalPowerLaw(
         centre=(0.001, 0.001), axis_ratio=0.8, phi=45.0, einstein_radius=1.0, slope=2.5
     )
 
@@ -104,7 +106,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalPowerLaw (slope = 2.5) ###
 
-    mass_profile = mp.SphericalPowerLaw(
+    mass_profile = al.SphericalPowerLaw(
         centre=(0.001, 0.001), einstein_radius=1.0, slope=2.5
     )
 
@@ -115,7 +117,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalCoredPowerLaw ###
 
-    mass_profile = mp.EllipticalCoredPowerLaw(
+    mass_profile = al.EllipticalCoredPowerLaw(
         centre=(0.001, 0.001),
         axis_ratio=0.8,
         phi=45.0,
@@ -131,7 +133,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalCoredPowerLaw ###
 
-    mass_profile = mp.SphericalCoredPowerLaw(
+    mass_profile = al.SphericalCoredPowerLaw(
         centre=(0.001, 0.001), einstein_radius=1.0, slope=2.0, core_radius=0.1
     )
 
@@ -142,7 +144,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalGeneralizedNFW (inner_slope = 0.5) ###
 
-    # mass_profile = mp.EllipticalGeneralizedNFW(centre=(0.001, 0.001), axis_ratio=0.8, phi=45.0, kappa_s=0.1,
+    # mass_profile = al.EllipticalGeneralizedNFW(centre=(0.001, 0.001), axis_ratio=0.8, phi=45.0, kappa_s=0.1,
     #                                            scale_radius=10.0, inner_slope=0.5)
     #
     # start = time.time()
@@ -152,7 +154,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalGeneralizedNFW (inner_slope = 0.5) ###
 
-    mass_profile = mp.SphericalGeneralizedNFW(
+    mass_profile = al.SphericalGeneralizedNFW(
         centre=(0.001, 0.001), kappa_s=0.1, scale_radius=10.0, inner_slope=0.5
     )
 
@@ -163,7 +165,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalNFW ###
 
-    mass_profile = mp.EllipticalNFW(
+    mass_profile = al.EllipticalNFW(
         centre=(0.001, 0.001), axis_ratio=0.8, phi=45.0, kappa_s=0.1, scale_radius=10.0
     )
 
@@ -174,7 +176,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalNFW ###
 
-    mass_profile = mp.SphericalNFW(
+    mass_profile = al.SphericalNFW(
         centre=(0.001, 0.001), kappa_s=0.1, scale_radius=10.0
     )
 
@@ -185,7 +187,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalExponential ###
 
-    profile = mp.EllipticalExponential(
+    profile = al.EllipticalExponential(
         centre=(0.001, 0.001),
         axis_ratio=0.8,
         phi=45.0,
@@ -201,7 +203,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalExponential ###
 
-    profile = mp.SphericalExponential(
+    profile = al.SphericalExponential(
         centre=(0.001, 0.001),
         intensity=1.0,
         effective_radius=1.0,
@@ -215,7 +217,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalDevVaucouleurs ###
 
-    profile = mp.EllipticalDevVaucouleurs(
+    profile = al.EllipticalDevVaucouleurs(
         centre=(0.001, 0.001),
         axis_ratio=0.8,
         phi=45.0,
@@ -231,7 +233,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalDevVaucouleurs ###
 
-    profile = mp.SphericalDevVaucouleurs(
+    profile = al.SphericalDevVaucouleurs(
         centre=(0.001, 0.001),
         intensity=1.0,
         effective_radius=1.0,
@@ -245,7 +247,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalSersic ###
 
-    mass_profile = mp.EllipticalSersic(
+    mass_profile = al.EllipticalSersic(
         centre=(0.001, 0.001),
         axis_ratio=0.8,
         phi=45.0,
@@ -262,7 +264,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalSersic ###
 
-    mass_profile = mp.SphericalSersic(
+    mass_profile = al.SphericalSersic(
         centre=(0.001, 0.001),
         intensity=1.0,
         effective_radius=1.0,
@@ -277,7 +279,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalSersicRadialGradient (gradient = -1.0) ###
 
-    mass_profile = mp.EllipticalSersicRadialGradient(
+    mass_profile = al.EllipticalSersicRadialGradient(
         centre=(0.001, 0.001),
         axis_ratio=0.8,
         phi=45.0,
@@ -295,7 +297,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalersicRadialGradient (gradient = -1.0) ###
 
-    mass_profile = mp.SphericalSersicRadialGradient(
+    mass_profile = al.SphericalSersicRadialGradient(
         centre=(0.001, 0.001),
         intensity=1.0,
         effective_radius=1.0,
@@ -311,7 +313,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalSersicRadialGradient (gradient = 1.0) ###
 
-    mass_profile = mp.EllipticalSersicRadialGradient(
+    mass_profile = al.EllipticalSersicRadialGradient(
         centre=(0.001, 0.001),
         axis_ratio=0.8,
         phi=45.0,
@@ -329,7 +331,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalersicRadialGradient (gradient = 1.0) ###
 
-    mass_profile = mp.SphericalSersicRadialGradient(
+    mass_profile = al.SphericalSersicRadialGradient(
         centre=(0.001, 0.001),
         intensity=1.0,
         effective_radius=1.0,

@@ -1,14 +1,11 @@
-import shutil
 import os
 
+import shutil
+
 import autofit as af
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd as ccd
-from autolens.array import grids
+import autolens as al
 from autolens.array.util import array_util
-from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy, galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp
 from autolens.pipeline.phase import phase_imaging
 from test.integration import integration_util
 
@@ -16,7 +13,6 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 af.conf.instance = af.conf.Config(
     "{}/config".format(dirpath), "{}/output/".format(dirpath)
 )
-
 
 dirpath = os.path.dirname(dirpath)
 output_path = "{}/output".format(dirpath)
@@ -33,19 +29,19 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
-    psf = abstract_data.PSF.from_gaussian(
+    psf = al.PSF.from_gaussian(
         shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale
     )
 
-    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=1
     )
 
-    tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
+    tracer = al.Tracer.from_galaxies(galaxies=galaxies)
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    ccd_simulated = ccd.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
+    ccd_simulated = al.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         exposure_time=100.0,
@@ -80,8 +76,8 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
 class TestAdvancedModelMapper(object):
     def test_fully_qualified_paramnames(self):
         mapper = af.ModelMapper()
-        galaxy_model = gm.GalaxyModel(
-            redshift=0.5, light_profile=lp.EllipticalLightProfile
+        galaxy_model = al.GalaxyModel(
+            redshift=0.5, light_profile=al.light_profiles.EllipticalLightProfile
         )
         light_profile = galaxy_model.light_profile
         mapper.galaxy_model = galaxy_model
@@ -104,7 +100,7 @@ class TestPhaseModelMapper(object):
 
         integration_util.reset_paths(test_name, output_path)
 
-        sersic = lp.EllipticalSersic(
+        sersic = al.EllipticalSersic(
             centre=(0.0, 0.0),
             axis_ratio=0.8,
             phi=90.0,
@@ -123,14 +119,14 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        ccd_data = ccd.load_ccd_data_from_fits(
+        ccd_data = al.load_ccd_data_from_fits(
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
             pixel_scale=0.1,
         )
 
-        class MMPhase(phase_imaging.PhaseImaging):
+        class MMPhase(al.PhaseImaging):
             def pass_priors(self, results):
                 self.galaxies.lens.sersic.intensity = (
                     self.galaxies.lens.sersic.axis_ratio
@@ -138,7 +134,9 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)
+                lens=al.GalaxyModel(
+                    redshift=0.5, sersic=al.light_profiles.EllipticalSersic
+                )
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(test_name),
@@ -147,7 +145,7 @@ class TestPhaseModelMapper(object):
         initial_total_priors = phase.variable.prior_count
         phase.make_analysis(data=ccd_data)
 
-        assert phase.galaxies[0].sersic.intensity == phase.galaxies[0].sersic.axis_ratio
+        assert phase.galaxies[0].sersic.intensity == al.Galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
         assert len(phase.variable.flat_prior_model_tuples) == 1
 
@@ -179,7 +177,7 @@ class TestPhaseModelMapper(object):
 
         integration_util.reset_paths(test_name, output_path)
 
-        sersic = lp.EllipticalSersic(
+        sersic = al.EllipticalSersic(
             centre=(0.0, 0.0),
             axis_ratio=0.8,
             phi=90.0,
@@ -197,14 +195,14 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        ccd_data = ccd.load_ccd_data_from_fits(
+        ccd_data = al.load_ccd_data_from_fits(
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
             pixel_scale=0.1,
         )
 
-        class MMPhase(phase_imaging.PhaseImaging):
+        class MMPhase(al.PhaseImaging):
             def pass_priors(self, results):
                 self.galaxies.lens.sersic.axis_ratio = 0.2
                 self.galaxies.lens.sersic.phi = 90.0
@@ -214,7 +212,9 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)
+                lens=al.GalaxyModel(
+                    redshift=0.5, sersic=al.light_profiles.EllipticalSersic
+                )
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(name),

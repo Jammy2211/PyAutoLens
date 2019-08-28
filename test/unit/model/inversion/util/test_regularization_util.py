@@ -1,6 +1,5 @@
+import autolens as al
 import numpy as np
-
-from autolens.model.inversion.util import regularization_util as reg_util
 
 
 class TestRegularizationConstantMatrix:
@@ -25,7 +24,7 @@ class TestRegularizationConstantMatrix:
             test_b_matrix.T, test_b_matrix
         ) + 1e-8 * np.identity(3)
 
-        regularization_matrix = reg_util.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.constant_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -52,7 +51,7 @@ class TestRegularizationConstantMatrix:
 
         pixel_neighbors_size = np.array([2, 2, 2, 2])
 
-        regularization_matrix = reg_util.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.constant_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -79,7 +78,7 @@ class TestRegularizationConstantMatrix:
             test_b_matrix.T, test_b_matrix
         ) + 1e-8 * np.identity(4)
 
-        regularization_matrix = reg_util.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.constant_regularization_matrix_from_pixel_neighbors(
             coefficient=2.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -145,7 +144,7 @@ class TestRegularizationConstantMatrix:
             + 1e-8 * np.identity(9)
         )
 
-        regularization_matrix = reg_util.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.constant_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -162,7 +161,7 @@ class TestRegularizationWeightedPixelSignals:
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
         galaxy_image = np.array([1.0, 1.0, 1.0])
 
-        pixel_signals = reg_util.adaptive_pixel_signals_from_images(
+        pixel_signals = al.regularization_util.adaptive_pixel_signals_from_images(
             pixels=3,
             signal_scale=1.0,
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
@@ -178,7 +177,7 @@ class TestRegularizationWeightedPixelSignals:
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 0])
         galaxy_image = np.array([1.0, 1.0, 1.0, 1.0])
 
-        pixel_signals = reg_util.adaptive_pixel_signals_from_images(
+        pixel_signals = al.regularization_util.adaptive_pixel_signals_from_images(
             pixels=3,
             signal_scale=1.0,
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
@@ -196,7 +195,7 @@ class TestRegularizationWeightedPixelSignals:
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
         galaxy_image = np.array([2.0, 1.0, 1.0])
 
-        pixel_signals = reg_util.adaptive_pixel_signals_from_images(
+        pixel_signals = al.regularization_util.adaptive_pixel_signals_from_images(
             pixels=3,
             signal_scale=1.0,
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
@@ -212,7 +211,7 @@ class TestRegularizationWeightedPixelSignals:
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
         galaxy_image = np.array([2.0, 1.0, 1.0])
 
-        pixel_signals = reg_util.adaptive_pixel_signals_from_images(
+        pixel_signals = al.regularization_util.adaptive_pixel_signals_from_images(
             pixels=3,
             signal_scale=2.0,
             sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
@@ -228,7 +227,7 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([1.0, 1.0, 1.0])
 
-        weights = reg_util.adaptive_regularization_weights_from_pixel_signals(
+        weights = al.regularization_util.adaptive_regularization_weights_from_pixel_signals(
             inner_coefficient=1.0, outer_coefficient=1.0, pixel_signals=pixel_signals
         )
 
@@ -238,7 +237,7 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = reg_util.adaptive_regularization_weights_from_pixel_signals(
+        weights = al.regularization_util.adaptive_regularization_weights_from_pixel_signals(
             inner_coefficient=1.0, outer_coefficient=1.0, pixel_signals=pixel_signals
         )
 
@@ -250,7 +249,7 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = reg_util.adaptive_regularization_weights_from_pixel_signals(
+        weights = al.regularization_util.adaptive_regularization_weights_from_pixel_signals(
             inner_coefficient=1.0, outer_coefficient=0.0, pixel_signals=pixel_signals
         )
 
@@ -262,7 +261,7 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = reg_util.adaptive_regularization_weights_from_pixel_signals(
+        weights = al.regularization_util.adaptive_regularization_weights_from_pixel_signals(
             inner_coefficient=0.0, outer_coefficient=1.0, pixel_signals=pixel_signals
         )
 
@@ -286,7 +285,7 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((4,))
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -323,7 +322,7 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((3))
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -357,7 +356,7 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((4,))
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -445,7 +444,7 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((6))
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -489,7 +488,7 @@ class TestRegularizationWeightedMatrix:
 
         pixel_neighbors_size = np.array([2, 3, 2, 1])
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -576,7 +575,7 @@ class TestRegularizationWeightedMatrix:
             + test_regularization_matrix_4
         )
 
-        regularization_matrix = reg_util.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = al.regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,

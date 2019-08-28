@@ -1,11 +1,5 @@
 import autofit as af
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.profiles import mass_profiles as mp
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
-from autolens.pipeline import pipeline as pl
-from autolens.pipeline.phase import phase_imaging
+import autolens as al
 from test.integration.tests import runner
 
 test_type = "full_pipeline"
@@ -17,15 +11,17 @@ data_resolution = "LSST"
 def make_pipeline(
     name,
     phase_folders,
-    pipeline_pixelization=pix.VoronoiBrightnessImage,
-    pipeline_regularization=reg.AdaptiveBrightness,
+    pipeline_pixelization=al.pixelizations.VoronoiBrightnessImage,
+    pipeline_regularization=al.regularization.AdaptiveBrightness,
     optimizer_class=af.MultiNest,
 ):
 
-    phase1 = phase_imaging.PhaseImaging(
+    phase1 = al.PhaseImaging(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+        galaxies=dict(
+            lens=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)
+        ),
         optimizer_class=optimizer_class,
     )
 
@@ -35,7 +31,7 @@ def make_pipeline(
 
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    class LensSubtractedPhase(phase_imaging.PhaseImaging):
+    class LensSubtractedPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Light Sersic -> Sersic ##
@@ -62,13 +58,15 @@ def make_pipeline(
         phase_name="phase_2__lens_sie__source_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5,
-                light=lp.EllipticalSersic,
-                mass=mp.EllipticalIsothermal,
-                shear=mp.ExternalShear,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
+            source=al.GalaxyModel(
+                redshift=1.0, light=al.light_profiles.EllipticalSersic
+            ),
         ),
         optimizer_class=optimizer_class,
     )
@@ -81,7 +79,7 @@ def make_pipeline(
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
     )
 
-    class LensSourcePhase(phase_imaging.PhaseImaging):
+    class LensSourcePhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Light, Sersic -> Sersic ###
@@ -116,13 +114,15 @@ def make_pipeline(
         phase_name="phase_3__lens_sersic_sie__source_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5,
-                light=lp.EllipticalSersic,
-                mass=mp.EllipticalIsothermal,
-                shear=mp.ExternalShear,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
+            source=al.GalaxyModel(
+                redshift=1.0, light=al.light_profiles.EllipticalSersic
+            ),
         ),
         optimizer_class=optimizer_class,
     )
@@ -133,7 +133,7 @@ def make_pipeline(
 
     phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
@@ -160,16 +160,16 @@ def make_pipeline(
         phase_name="phase_4__initialize_magnification_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5,
-                light=lp.EllipticalSersic,
-                mass=mp.EllipticalIsothermal,
-                shear=mp.ExternalShear,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pix.VoronoiMagnification,
-                regularization=reg.Constant,
+                pixelization=al.pixelizations.VoronoiMagnification,
+                regularization=al.regularization.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -183,7 +183,7 @@ def make_pipeline(
         hyper_galaxy=True, inversion=False
     )
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
@@ -212,13 +212,13 @@ def make_pipeline(
         phase_name="phase_5__lens_sersic_sie__source_magnification_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5,
-                light=lp.EllipticalSersic,
-                mass=mp.EllipticalIsothermal,
-                shear=mp.ExternalShear,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=pipeline_pixelization,
                 regularization=pipeline_regularization,
@@ -238,7 +238,7 @@ def make_pipeline(
         inversion=False,
     )
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
@@ -265,13 +265,13 @@ def make_pipeline(
         phase_name="phase_6_initialize_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5,
-                light=lp.EllipticalSersic,
-                mass=mp.EllipticalIsothermal,
-                shear=mp.ExternalShear,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=pipeline_pixelization,
                 regularization=pipeline_regularization,
@@ -291,7 +291,7 @@ def make_pipeline(
         inversion=True,
     )
 
-    class InversionPhase(phase_imaging.PhaseImaging):
+    class InversionPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
@@ -324,13 +324,13 @@ def make_pipeline(
         phase_name="phase_7__lens_sersic_sie__source_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=gm.GalaxyModel(
+            lens=al.GalaxyModel(
                 redshift=0.5,
-                light=lp.EllipticalSersic,
-                mass=mp.EllipticalIsothermal,
-                shear=mp.ExternalShear,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=gm.GalaxyModel(
+            source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=pipeline_pixelization,
                 regularization=pipeline_regularization,
@@ -350,7 +350,7 @@ def make_pipeline(
         inversion=True,
     )
 
-    return pl.PipelineImaging(
+    return al.PipelineImaging(
         name, phase1, phase2, phase3, phase4, phase5, phase6, phase7, hyper_mode=False
     )
 

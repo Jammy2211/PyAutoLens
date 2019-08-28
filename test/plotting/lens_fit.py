@@ -18,22 +18,22 @@ from test.simulation import simulation_util
 ccd_data = simulation_util.load_test_ccd_data(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
-mask = msk.Mask.circular(
+mask = al.Mask.circular(
     shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0
 )
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid stack, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
-lens_galaxy = g.Galaxy(
-    bulge=lp.EllipticalDevVaucouleurs(
+lens_galaxy = al.Galaxy(
+    bulge=al.EllipticalDevVaucouleurs(
         centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.1, effective_radius=1.0
     )
 )
 
-lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
+lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
 
-tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy])
-fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
+tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
+fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 lens_fit_plotters.plot_fit_subplot(
     fit=fit, should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True
 )

@@ -67,18 +67,6 @@ class AbstractPhase(af.AbstractPhase):
         self.cosmology = cosmology
 
     @property
-    def variable(self):
-        """
-        Convenience method
-
-        Returns
-        -------
-        ModelMapper
-            A model mapper comprising all the variable (prior) objects in this lens
-        """
-        return self.optimizer.variable
-
-    @property
     def phase_property_collections(self):
         """
         Returns
@@ -528,6 +516,7 @@ class GalaxyFitPhase(AbstractPhase):
             galaxy_data=galaxy_data, results=results, mask=mask
         )
 
+        self.variable = self.variable.populate(results)
         self.pass_priors(results)
         self.assert_and_save_pickle()
 

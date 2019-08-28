@@ -1,8 +1,7 @@
+import autolens as al
 import os
 
 import pytest
-
-from autolens.data.plotters import data_plotters
 
 
 @pytest.fixture(name="data_plotter_path")
@@ -22,7 +21,7 @@ def test__all_ccd_data_types_are_output(
     data_plotter_path,
     plot_patch,
 ):
-    data_plotters.plot_image(
+    al.data_plotters.plot_image(
         image=image_7x7,
         positions=positions_7x7,
         mask=mask_7x7,
@@ -36,7 +35,7 @@ def test__all_ccd_data_types_are_output(
 
     assert data_plotter_path + "image.png" in plot_patch.paths
 
-    data_plotters.plot_noise_map(
+    al.data_plotters.plot_noise_map(
         noise_map=noise_map_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
@@ -49,7 +48,7 @@ def test__all_ccd_data_types_are_output(
 
     assert data_plotter_path + "noise_map.png" in plot_patch.paths
 
-    data_plotters.plot_psf(
+    al.data_plotters.plot_psf(
         psf=psf_3x3,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -59,7 +58,7 @@ def test__all_ccd_data_types_are_output(
 
     assert data_plotter_path + "psf.png" in plot_patch.paths
 
-    data_plotters.plot_signal_to_noise_map(
+    al.data_plotters.plot_signal_to_noise_map(
         signal_to_noise_map=image_7x7 / noise_map_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
@@ -72,7 +71,7 @@ def test__all_ccd_data_types_are_output(
 
     assert data_plotter_path + "signal_to_noise_map.png" in plot_patch.paths
 
-    data_plotters.plot_absolute_signal_to_noise_map(
+    al.data_plotters.plot_absolute_signal_to_noise_map(
         absolute_signal_to_noise_map=image_7x7 / noise_map_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
@@ -85,7 +84,7 @@ def test__all_ccd_data_types_are_output(
 
     assert data_plotter_path + "absolute_signal_to_noise_map.png" in plot_patch.paths
 
-    data_plotters.plot_potential_chi_squared_map(
+    al.data_plotters.plot_potential_chi_squared_map(
         potential_chi_squared_map=image_7x7 / noise_map_7x7,
         mask=mask_7x7,
         extract_array_from_mask=True,
@@ -107,7 +106,7 @@ def test__all_interferometer_data_types_are_output(
     data_plotter_path,
     plot_patch,
 ):
-    data_plotters.plot_visibilities(
+    al.data_plotters.plot_visibilities(
         visibilities=visibilities_7,
         visibilities_noise_map=visibilities_noise_map_7,
         cb_tick_values=[1.0],
@@ -118,7 +117,7 @@ def test__all_interferometer_data_types_are_output(
 
     assert data_plotter_path + "visibilities.png" in plot_patch.paths
 
-    data_plotters.plot_u_wavelengths(
+    al.data_plotters.plot_u_wavelengths(
         uv_wavelengths=uv_wavelengths_7,
         output_path=data_plotter_path,
         output_format="png",
@@ -126,7 +125,7 @@ def test__all_interferometer_data_types_are_output(
 
     assert data_plotter_path + "u_wavelengths.png" in plot_patch.paths
 
-    data_plotters.plot_v_wavelengths(
+    al.data_plotters.plot_v_wavelengths(
         uv_wavelengths=uv_wavelengths_7,
         output_path=data_plotter_path,
         output_format="png",
@@ -134,7 +133,7 @@ def test__all_interferometer_data_types_are_output(
 
     assert data_plotter_path + "v_wavelengths.png" in plot_patch.paths
 
-    data_plotters.plot_primary_beam(
+    al.data_plotters.plot_primary_beam(
         primary_beam=primary_beam_3x3,
         output_path=data_plotter_path,
         output_format="png",

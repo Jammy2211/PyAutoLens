@@ -1,8 +1,7 @@
+import autolens as al
 import os
 
 import pytest
-
-from autolens.pipeline.plotters import phase_plotters
 
 
 @pytest.fixture(name="phase_plotter_path")
@@ -15,7 +14,7 @@ def make_phase_plotter_setup():
 def test__plot_ccd_for_phase(
     ccd_data_7x7, mask_7x7, general_config, phase_plotter_path, plot_patch
 ):
-    phase_plotters.plot_ccd_for_phase(
+    al.phase_plotters.plot_ccd_for_phase(
         ccd_data=ccd_data_7x7,
         mask=mask_7x7,
         positions=None,
@@ -52,7 +51,7 @@ def test__plot_ccd_for_phase(
 def test__plot_ray_tracing_for_phase__dependent_on_input(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, phase_plotter_path, plot_patch
 ):
-    phase_plotters.plot_ray_tracing_for_phase(
+    al.phase_plotters.plot_ray_tracing_for_phase(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         during_analysis=False,
@@ -98,7 +97,7 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
 def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
     lens_fit_x2_plane_7x7, phase_plotter_path, plot_patch
 ):
-    phase_plotters.plot_lens_fit_for_phase(
+    al.phase_plotters.plot_lens_fit_for_phase(
         fit=lens_fit_x2_plane_7x7,
         during_analysis=False,
         should_plot_mask=True,
@@ -173,7 +172,7 @@ def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
 def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     hyper_model_image_7x7, binned_grid_7x7, mask_7x7, phase_plotter_path, plot_patch
 ):
-    phase_plotters.plot_hyper_images_for_phase(
+    al.phase_plotters.plot_hyper_images_for_phase(
         hyper_model_image_2d=hyper_model_image_7x7,
         hyper_galaxy_image_2d_path_dict=None,
         binned_hyper_galaxy_image_2d_path_dict=None,

@@ -1,35 +1,23 @@
+import autolens as al
 import numpy as np
 import pytest
 
 import autofit as af
-from autolens.lens.util import lens_fit_util as util
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd
-from autolens.array import mask as msk
-from autolens.lens import lens_data as ld
-from autolens.lens import ray_tracing, lens_fit
-from autolens.model.hyper import hyper_data as hi
-from autolens.model.galaxy import galaxy as g
-from autolens.model.inversion import inversions
-from autolens.model.inversion import pixelizations
-from autolens.model.inversion import regularization
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.profiles import mass_profiles as mp
 from test.unit.mock.model.mock_profiles import MockLightProfile
 
 
 class TestFitProperties:
     def test__total_inversions(self, lens_data_7x7):
 
-        g0 = g.Galaxy(redshift=0.5)
+        g0 = al.Galaxy(redshift=0.5)
 
-        g1 = g.Galaxy(redshift=1.0)
+        g1 = al.Galaxy(redshift=1.0)
 
-        g2 = g.Galaxy(redshift=2.0)
+        g2 = al.Galaxy(redshift=2.0)
 
-        tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = lens_fit.LensTracerFit(
+        fit = al.LensTracerFit(
             lens_data=lens_data_7x7,
             tracer=tracer,
             image_1d=lens_data_7x7.image_1d,
@@ -40,15 +28,15 @@ class TestFitProperties:
 
         assert fit.total_inversions == 0
 
-        g2 = g.Galaxy(
+        g2 = al.Galaxy(
             redshift=2.0,
-            pixelization=pixelizations.Rectangular(),
-            regularization=regularization.Constant(),
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
         )
 
-        tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = lens_fit.LensTracerFit(
+        fit = al.LensTracerFit(
             lens_data=lens_data_7x7,
             tracer=tracer,
             image_1d=lens_data_7x7.image_1d,
@@ -59,27 +47,27 @@ class TestFitProperties:
 
         assert fit.total_inversions == 1
 
-        g0 = g.Galaxy(
+        g0 = al.Galaxy(
             redshift=0.5,
-            pixelization=pixelizations.Rectangular(),
-            regularization=regularization.Constant(),
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
         )
 
-        g1 = g.Galaxy(
+        g1 = al.Galaxy(
             redshift=1.0,
-            pixelization=pixelizations.Rectangular(),
-            regularization=regularization.Constant(),
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
         )
 
-        g2 = g.Galaxy(
+        g2 = al.Galaxy(
             redshift=2.0,
-            pixelization=pixelizations.Rectangular(),
-            regularization=regularization.Constant(),
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
         )
 
-        tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = lens_fit.LensTracerFit(
+        fit = al.LensTracerFit(
             lens_data=lens_data_7x7,
             tracer=tracer,
             image_1d=lens_data_7x7.image_1d,
@@ -98,12 +86,12 @@ class TestLensProfileFit:
 
             # Thus the chi squared is 4.0**2.0 + 3.0**2.0 = 25.0
 
-            psf = abstract_data.PSF(
+            psf = al.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
 
-            ccd_data = ccd.CCDData(
+            ccd_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
@@ -111,7 +99,7 @@ class TestLensProfileFit:
             )
             ccd_data.image[1, 2] = 4.0
 
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, True, True],
@@ -122,16 +110,16 @@ class TestLensProfileFit:
                 pixel_scale=1.0,
             )
 
-            lens_data_7x7 = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-            fit = lens_fit.LensProfileFit(lens_data=lens_data_7x7, tracer=tracer)
+            fit = al.LensProfileFit(lens_data=lens_data_7x7, tracer=tracer)
 
             assert (fit.mask_1d == np.array([False, False])).all()
             assert (
@@ -207,12 +195,12 @@ class TestLensProfileFit:
 
             # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
-            psf = abstract_data.PSF(
+            psf = al.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
 
-            ccd_data = ccd.CCDData(
+            ccd_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
@@ -220,7 +208,7 @@ class TestLensProfileFit:
             )
             ccd_data.image[1, 2] = 4.0
 
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, True, True],
@@ -231,16 +219,16 @@ class TestLensProfileFit:
                 pixel_scale=1.0,
             )
 
-            lens_data_7x7 = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-            fit = lens_fit.LensProfileFit(lens_data=lens_data_7x7, tracer=tracer)
+            fit = al.LensProfileFit(lens_data=lens_data_7x7, tracer=tracer)
 
             assert (fit.mask_1d == np.array([False, False])).all()
             assert (
@@ -320,12 +308,12 @@ class TestLensProfileFit:
 
             # This reduces the chi squared to 2.0 instead of 4.0
 
-            psf = abstract_data.PSF(
+            psf = al.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
 
-            ccd_data = ccd.CCDData(
+            ccd_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
@@ -333,7 +321,7 @@ class TestLensProfileFit:
             )
             ccd_data.image[1, 2] = 4.0
 
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, True, True],
@@ -344,14 +332,14 @@ class TestLensProfileFit:
                 pixel_scale=1.0,
             )
 
-            lens_data_7x7 = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=MockLightProfile(value=1.0, size=2),
-                hyper_galaxy=g.HyperGalaxy(
+                hyper_galaxy=al.HyperGalaxy(
                     contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
                 ),
                 hyper_model_image_1d=np.ones(2),
@@ -359,9 +347,9 @@ class TestLensProfileFit:
                 hyper_minimum_value=0.0,
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-            fit = lens_fit.LensProfileFit(lens_data=lens_data_7x7, tracer=tracer)
+            fit = al.LensProfileFit(lens_data=lens_data_7x7, tracer=tracer)
 
             assert (fit.mask_1d == np.array([False, False])).all()
             assert (
@@ -430,12 +418,12 @@ class TestLensProfileFit:
 
         def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
-            psf = abstract_data.PSF(
+            psf = al.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
 
-            ccd_data = ccd.CCDData(
+            ccd_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
@@ -443,7 +431,7 @@ class TestLensProfileFit:
             )
             ccd_data.image[1, 2] = 4.0
 
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, True, True],
@@ -454,18 +442,18 @@ class TestLensProfileFit:
                 pixel_scale=1.0,
             )
 
-            lens_data_7x7 = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-            hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
+            hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
-            fit = lens_fit.LensProfileFit(
+            fit = al.LensProfileFit(
                 lens_data=lens_data_7x7, tracer=tracer, hyper_image_sky=hyper_image_sky
             )
 
@@ -540,12 +528,12 @@ class TestLensProfileFit:
             self
         ):
 
-            psf = abstract_data.PSF(
+            psf = al.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
 
-            ccd_data = ccd.CCDData(
+            ccd_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
@@ -553,7 +541,7 @@ class TestLensProfileFit:
             )
             ccd_data.image[1, 2] = 4.0
 
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, True, True],
@@ -564,18 +552,18 @@ class TestLensProfileFit:
                 pixel_scale=1.0,
             )
 
-            lens_data_7x7 = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
+            hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
-            fit = lens_fit.LensProfileFit(
+            fit = al.LensProfileFit(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_background_noise=hyper_background_noise,
@@ -650,12 +638,12 @@ class TestLensProfileFit:
 
         def test__hyper_noise_map_max_changes_noise_map__reflected_in_likelihood(self):
 
-            psf = abstract_data.PSF(
+            psf = al.PSF(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scale=1.0,
             )
 
-            ccd_data = ccd.CCDData(
+            ccd_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
@@ -663,7 +651,7 @@ class TestLensProfileFit:
             )
             ccd_data.image[1, 2] = 4.0
 
-            mask = msk.Mask(
+            mask = al.Mask(
                 array=np.array(
                     [
                         [True, True, True, True],
@@ -674,20 +662,20 @@ class TestLensProfileFit:
                 pixel_scale=1.0,
             )
 
-            lens_data_7x7 = ld.LensData(
+            lens_data_7x7 = al.LensData(
                 ccd_data=ccd_data, mask=mask, sub_grid_size=1, hyper_noise_map_max=1.0
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
+            hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
-            fit = lens_fit.LensProfileFit(
+            fit = al.LensProfileFit(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_background_noise=hyper_background_noise,
@@ -763,19 +751,20 @@ class TestLensProfileFit:
     class TestCompareToManual:
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_7x7):
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=lp.EllipticalSersic(intensity=1.0),
-                mass_profile=mp.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
             )
 
-            g1 = g.Galaxy(
-                redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0)
+            g1 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -856,19 +845,20 @@ class TestLensProfileFit:
         def test___lens_fit_galaxy_image_dict__corresponds_to_blurred_galaxy_images(
             self, lens_data_7x7
         ):
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=lp.EllipticalSersic(intensity=1.0),
-                mass_profile=mp.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
             )
-            g1 = g.Galaxy(
-                redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0)
+            g1 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
-            g2 = g.Galaxy(redshift=1.0)
+            g2 = al.Galaxy(redshift=1.0)
 
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -944,9 +934,9 @@ class TestLensProfileFit:
             hyper_noise_map_max = 0.2
             lens_data_7x7.hyper_noise_map_max = hyper_noise_map_max
 
-            hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
+            hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
-            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
+            hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
             image_1d = hyper_image_sky.image_scaled_sky_from_image(
                 image=lens_data_7x7.image_1d
@@ -956,24 +946,25 @@ class TestLensProfileFit:
                 noise_map=lens_data_7x7.noise_map_1d
             )
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=lp.EllipticalSersic(intensity=1.0),
-                mass_profile=mp.SphericalIsothermal(einstein_radius=1.0),
-                hyper_galaxy=g.HyperGalaxy(
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                hyper_galaxy=al.HyperGalaxy(
                     contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
                 ),
                 hyper_model_image_1d=np.ones(9),
                 hyper_galaxy_image_1d=np.ones(9),
                 hyper_minimum_value=0.0,
             )
-            g1 = g.Galaxy(
-                redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0)
+            g1 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1069,19 +1060,20 @@ class TestLensProfileFit:
             self, lens_data_7x7
         ):
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=lp.EllipticalSersic(intensity=1.0),
-                mass_profile=mp.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
             )
 
-            g1 = g.Galaxy(
-                redshift=1.0, light_profile=lp.EllipticalSersic(intensity=1.0)
+            g1 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1135,23 +1127,21 @@ class TestLensInversionFit:
     class TestCompareToManual:
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_7x7):
 
-            pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
 
-            g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+            g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g.Galaxy(redshift=0.5), g0]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
             mapper = pix.mapper_from_grid_and_pixelization_grid(
                 grid=lens_data_7x7.grid, pixelization_grid=None
             )
-            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+            inversion = al.Inversion.from_data_1d_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 image_1d=lens_data_7x7.image_1d,
@@ -1222,7 +1212,7 @@ class TestLensInversionFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            likelihood_with_regularization = al.lens_fit_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1232,7 +1222,7 @@ class TestLensInversionFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = util.evidence_from_inversion_terms(
+            evidence = al.lens_fit_util.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1246,15 +1236,15 @@ class TestLensInversionFit:
         def test___lens_fit_galaxy_image_dict__has_inversion_reconstructed_data(
             self, lens_data_7x7
         ):
-            pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
 
-            g0 = g.Galaxy(redshift=0.5)
-            g1 = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            g0 = al.Galaxy(redshift=0.5)
+            g1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1262,7 +1252,7 @@ class TestLensInversionFit:
                 grid=lens_data_7x7.grid, pixelization_grid=None
             )
 
-            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+            inversion = al.Inversion.from_data_1d_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 image_1d=lens_data_7x7.image_1d,
@@ -1293,9 +1283,9 @@ class TestLensInversionFit:
             hyper_noise_map_max = 0.2
             lens_data_7x7.hyper_noise_map_max = hyper_noise_map_max
 
-            hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
+            hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
-            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
+            hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
             image_1d = hyper_image_sky.image_scaled_sky_from_image(
                 image=lens_data_7x7.image_1d
@@ -1305,14 +1295,14 @@ class TestLensInversionFit:
                 noise_map=lens_data_7x7.noise_map_1d
             )
 
-            pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
 
-            g0 = g.Galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 pixelization=pix,
                 regularization=reg,
-                hyper_galaxy=g.HyperGalaxy(
+                hyper_galaxy=al.HyperGalaxy(
                     contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
                 ),
                 hyper_model_image_1d=np.ones(9),
@@ -1320,11 +1310,9 @@ class TestLensInversionFit:
                 hyper_minimum_value=0.0,
             )
 
-            tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g.Galaxy(redshift=0.5), g0]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1348,7 +1336,7 @@ class TestLensInversionFit:
             mapper = pix.mapper_from_grid_and_pixelization_grid(
                 grid=lens_data_7x7.grid, inversion_uses_border=False
             )
-            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+            inversion = al.Inversion.from_data_1d_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 image_1d=image_1d,
@@ -1418,7 +1406,7 @@ class TestLensInversionFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            likelihood_with_regularization = al.lens_fit_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1428,7 +1416,7 @@ class TestLensInversionFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = util.evidence_from_inversion_terms(
+            evidence = al.lens_fit_util.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1443,16 +1431,14 @@ class TestLensInversionFit:
             self, lens_data_7x7
         ):
 
-            pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
 
-            g0 = g.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+            g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[g.Galaxy(redshift=0.5), g0]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1460,7 +1446,7 @@ class TestLensInversionFit:
                 grid=lens_data_7x7.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+            inversion = al.Inversion.from_data_1d_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 image_1d=lens_data_7x7.image_1d,
@@ -1477,19 +1463,18 @@ class TestLensInversionFit:
 class TestLensProfileInversionFit:
     class TestCompareToManual:
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_7x7):
-            galaxy_light = g.Galaxy(
-                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
+            galaxy_light = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
-            pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficient=1.0)
-            galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[galaxy_light, galaxy_pix]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1526,7 +1511,7 @@ class TestLensProfileInversionFit:
                 grid=lens_data_7x7.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+            inversion = al.Inversion.from_data_1d_mapper_and_regularization(
                 image_1d=profile_subtracted_image_1d,
                 noise_map_1d=lens_data_7x7.noise_map_1d,
                 convolver=lens_data_7x7.convolver,
@@ -1600,7 +1585,7 @@ class TestLensProfileInversionFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            likelihood_with_regularization = al.lens_fit_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1610,7 +1595,7 @@ class TestLensProfileInversionFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = util.evidence_from_inversion_terms(
+            evidence = al.lens_fit_util.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1625,21 +1610,23 @@ class TestLensProfileInversionFit:
             self, lens_data_7x7
         ):
 
-            g0 = g.Galaxy(
-                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
+            g0 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
-            g1 = g.Galaxy(
-                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=2.0)
+            g1 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
             )
-            g2 = g.Galaxy(redshift=0.5)
+            g2 = al.Galaxy(redshift=0.5)
 
-            pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficient=1.0)
-            galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1685,7 +1672,7 @@ class TestLensProfileInversionFit:
                 grid=lens_data_7x7.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+            inversion = al.Inversion.from_data_1d_mapper_and_regularization(
                 image_1d=profile_subtracted_image_1d,
                 noise_map_1d=lens_data_7x7.noise_map_1d,
                 convolver=lens_data_7x7.convolver,
@@ -1740,9 +1727,9 @@ class TestLensProfileInversionFit:
             hyper_noise_map_max = 0.2
             lens_data_7x7.hyper_noise_map_max = hyper_noise_map_max
 
-            hyper_image_sky = hi.HyperImageSky(sky_scale=1.0)
+            hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
-            hyper_background_noise = hi.HyperBackgroundNoise(noise_scale=1.0)
+            hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
             image_1d = hyper_image_sky.image_scaled_sky_from_image(
                 image=lens_data_7x7.image_1d
@@ -1752,10 +1739,10 @@ class TestLensProfileInversionFit:
                 noise_map=lens_data_7x7.noise_map_1d
             )
 
-            galaxy_light = g.Galaxy(
+            galaxy_light = al.Galaxy(
                 redshift=0.5,
-                light_profile=lp.EllipticalSersic(intensity=1.0),
-                hyper_galaxy=g.HyperGalaxy(
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                hyper_galaxy=al.HyperGalaxy(
                     contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
                 ),
                 hyper_model_image_1d=np.ones(9),
@@ -1763,15 +1750,13 @@ class TestLensProfileInversionFit:
                 hyper_minimum_value=0.0,
             )
 
-            pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficient=1.0)
-            galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[galaxy_light, galaxy_pix]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1824,7 +1809,7 @@ class TestLensProfileInversionFit:
                 grid=lens_data_7x7.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+            inversion = al.Inversion.from_data_1d_mapper_and_regularization(
                 image_1d=profile_subtracted_image_1d,
                 noise_map_1d=hyper_noise_map_1d,
                 convolver=lens_data_7x7.convolver,
@@ -1897,7 +1882,7 @@ class TestLensProfileInversionFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            likelihood_with_regularization = al.lens_fit_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1907,7 +1892,7 @@ class TestLensProfileInversionFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = util.evidence_from_inversion_terms(
+            evidence = al.lens_fit_util.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1921,19 +1906,18 @@ class TestLensProfileInversionFit:
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
             self, lens_data_7x7
         ):
-            galaxy_light = g.Galaxy(
-                redshift=0.5, light_profile=lp.EllipticalSersic(intensity=1.0)
+            galaxy_light = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
-            pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficient=1.0)
-            galaxy_pix = g.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.Tracer.from_galaxies(
-                galaxies=[galaxy_light, galaxy_pix]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = lens_fit.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1953,7 +1937,7 @@ class TestLensProfileInversionFit:
                 grid=lens_data_7x7.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.Inversion.from_data_1d_mapper_and_regularization(
+            inversion = al.Inversion.from_data_1d_mapper_and_regularization(
                 image_1d=profile_subtracted_image_1d,
                 noise_map_1d=lens_data_7x7.noise_map_1d,
                 convolver=lens_data_7x7.convolver,
@@ -1978,23 +1962,23 @@ class MockTracerPositions:
 class TestPositionFit:
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0]])])
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(2)
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 3.0]])])
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
 
         tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0]])])
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [-9.0, -4.0]])])
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_positions__mock_position_tracer__maximum_separation_is_correct(
@@ -2003,19 +1987,19 @@ class TestPositionFit:
         tracer = MockTracerPositions(
             positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])]
         )
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(
             positions=[np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])]
         )
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(
             positions=[np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])]
         )
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(
@@ -2032,13 +2016,13 @@ class TestPositionFit:
                 )
             ]
         )
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(
             positions=[np.array([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])]
         )
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
@@ -2050,7 +2034,7 @@ class TestPositionFit:
             ]
         )
 
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
 
         assert fit.maximum_separations[0] == 1.0
         assert fit.maximum_separations[1] == np.sqrt(18)
@@ -2065,13 +2049,13 @@ class TestPositionFit:
             ]
         )
 
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
         assert fit.chi_squared_map[0] == 1.0
         assert fit.chi_squared_map[1] == pytest.approx(18.0, 1e-4)
         assert fit.chi_squared_map[2] == pytest.approx(18.0, 1e-4)
         assert fit.figure_of_merit == pytest.approx(-0.5 * (1.0 + 18 + 18), 1e-4)
 
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=2.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=2.0)
         assert fit.chi_squared_map[0] == (1.0 / 2.0) ** 2.0
         assert fit.chi_squared_map[1] == pytest.approx(
             (np.sqrt(18.0) / 2.0) ** 2.0, 1e-4
@@ -2091,7 +2075,7 @@ class TestPositionFit:
 
     def test__threshold__if_not_met_returns_ray_tracing_exception(self):
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
-        fit = lens_fit.LensPositionFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.LensPositionFit(positions=tracer.positions, noise_map=1.0)
 
         assert fit.maximum_separation_within_threshold(threshold=100.0)
         assert not fit.maximum_separation_within_threshold(threshold=0.1)

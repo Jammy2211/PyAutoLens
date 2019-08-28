@@ -115,7 +115,11 @@ class Rectangular(Pixelization):
         return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
 
     def mapper_from_grid_and_pixelization_grid(
-        self, grid, pixelization_grid=None, inversion_uses_border=False, hyper_image=None
+        self,
+        grid,
+        pixelization_grid=None,
+        inversion_uses_border=False,
+        hyper_image=None,
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
@@ -265,7 +269,11 @@ class Voronoi(Pixelization):
         )
 
     def mapper_from_grid_and_pixelization_grid(
-        self, grid, pixelization_grid=None, inversion_uses_border=False, hyper_image=None
+        self,
+        grid,
+        pixelization_grid=None,
+        inversion_uses_border=False,
+        hyper_image=None,
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 

@@ -1,8 +1,5 @@
 import autofit as af
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp
-from autolens.pipeline.phase import phase_imaging
-from autolens.pipeline import pipeline as pl
+import autolens as al
 from test.integration.tests import runner
 
 test_type = "grid_search"
@@ -12,7 +9,7 @@ data_resolution = "Euclid"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class QuickPhase(phase_imaging.PhaseImaging):
+    class QuickPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.light.centre_0 = af.UniformPrior(
@@ -40,7 +37,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = QuickPhase(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+        galaxies=dict(
+            lens=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)
+        ),
         optimizer_class=optimizer_class,
     )
 
@@ -48,7 +47,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(phase_imaging.PhaseImaging):
+    class GridPhase(al.PhaseImaging):
         def pass_priors(self, results):
 
             self.galaxies.lens.light.centre_0 = 0.0
@@ -73,13 +72,15 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2 = GridPhase(
         phase_name="phase_2",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+        galaxies=dict(
+            lens=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)
+        ),
         optimizer_class=af.GridSearch,
     )
 
     phase2.optimizer.const_efficiency_mode = True
 
-    return pl.PipelineImaging(name, phase1, phase2)
+    return al.PipelineImaging(name, phase1, phase2)
 
 
 if __name__ == "__main__":

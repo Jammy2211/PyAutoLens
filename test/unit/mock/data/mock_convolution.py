@@ -1,9 +1,8 @@
-from autolens.data import convolution
+import autolens as al
 
 
-class MockConvolver(convolution.Convolver):
+class MockConvolver(al.Convolver):
     def __init__(self, mask, psf, blurring_mask=None):
-
         super(MockConvolver, self).__init__(
             mask=mask, blurring_mask=blurring_mask, psf=psf
         )
