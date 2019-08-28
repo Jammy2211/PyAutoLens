@@ -34,6 +34,7 @@ from autolens.data.instrument.abstract_data import (
     AbstractData,
     AbstractNoiseMap,
     ExposureTimeMap,
+    load_positions,
 )
 from autolens.data.instrument.ccd import (
     CCDData,
