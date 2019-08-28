@@ -2,7 +2,6 @@ import autolens as al
 import numpy as np
 
 
-
 class TestHyperImageSky(object):
     def test__scale_sky_in_image__increases_all_image_values(self):
 

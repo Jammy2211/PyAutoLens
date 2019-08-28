@@ -1,9 +1,5 @@
 import autofit as af
-from autolens.array import mask as msk
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.pipeline.phase import phase_imaging
-from autolens.pipeline import pipeline as pl
-from autolens.model.profiles import light_profiles as lp
+import autolens as al
 from test.integration.tests import runner
 
 test_type = "lens_only"
@@ -31,8 +27,12 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
-            lens_1=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
+            lens_0=al.GalaxyModel(
+                redshift=0.5, light=al.light_profiles.EllipticalSersic
+            ),
+            lens_1=al.GalaxyModel(
+                redshift=0.5, light=al.light_profiles.EllipticalSersic
+            ),
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,
@@ -61,8 +61,12 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
-            lens_1=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic),
+            lens_0=al.GalaxyModel(
+                redshift=0.5, light=al.light_profiles.EllipticalSersic
+            ),
+            lens_1=al.GalaxyModel(
+                redshift=0.5, light=al.light_profiles.EllipticalSersic
+            ),
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,

@@ -1,11 +1,5 @@
 import autofit as af
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.profiles import mass_profiles as mp
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
-from autolens.pipeline import pipeline as pl
-from autolens.pipeline.phase import phase_imaging
+import autolens as al
 from test.integration.tests import runner
 
 test_type = "full_pipeline"
@@ -27,9 +21,13 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
+                redshift=0.5,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
-            source=al.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
+            source=al.GalaxyModel(
+                redshift=1.0, light=al.light_profiles.EllipticalSersic
+            ),
         ),
         optimizer_class=optimizer_class,
     )
@@ -64,7 +62,9 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
+                redshift=0.5,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -114,7 +114,9 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
+                redshift=0.5,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -158,7 +160,9 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
+                redshift=0.5,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -212,7 +216,9 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal, shear=al.mass_profiles.ExternalShear
+                redshift=0.5,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.mass_profiles.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,

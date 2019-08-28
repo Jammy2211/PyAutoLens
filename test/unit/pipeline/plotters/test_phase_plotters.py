@@ -4,7 +4,6 @@ import os
 import pytest
 
 
-
 @pytest.fixture(name="phase_plotter_path")
 def make_phase_plotter_setup():
     return "{}/../../test_files/plotting/phase/".format(

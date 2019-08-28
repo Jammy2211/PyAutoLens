@@ -2,7 +2,6 @@ import autolens as al
 import numpy as np
 
 
-
 class TestRegularizationConstantMatrix:
     def test__1_b_matrix_size_3x3__weights_all_1s__makes_correct_regularization_matrix(
         self

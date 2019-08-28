@@ -47,7 +47,7 @@ def make_mapper():
 
 
 @pytest.fixture(name="galaxy_model_2")
-def make_galaxy_model_2(mapper, ):
+def make_galaxy_model_2(mapper,):
     galaxy_model_2 = al.GalaxyModel(
         redshift=al.Redshift,
         light_profile=al.light_profiles.EllipticalDevVaucouleurs,
@@ -58,7 +58,7 @@ def make_galaxy_model_2(mapper, ):
 
 
 @pytest.fixture(name="galaxy_model")
-def make_galaxy_model(mapper, ):
+def make_galaxy_model(mapper,):
     galaxy_model_1 = al.GalaxyModel(
         redshift=al.Redshift,
         light_profile=al.light_profiles.EllipticalDevVaucouleurs,
@@ -266,11 +266,11 @@ class TestResultForArguments:
 
         assert gaussian_galaxy_model_model.redshift.redshift == redshift_prior
         assert (
-                gaussian_galaxy_model_model.mass_profile.einstein_radius.value
-                == einstein_radius_prior
+            gaussian_galaxy_model_model.mass_profile.einstein_radius.value
+            == einstein_radius_prior
         )
         assert (
-                gaussian_galaxy_model_model.light_profile.intensity.value == intensity_prior
+            gaussian_galaxy_model_model.light_profile.intensity.value == intensity_prior
         )
 
 
@@ -347,11 +347,13 @@ class TestRegularization(object):
 
     def test__if_no_pixelization_raises_error(self):
         with pytest.raises(af.exc.PriorException):
-            al.GalaxyModel(redshift=al.Redshift, regularization=al.regularization.Constant)
+            al.GalaxyModel(
+                redshift=al.Redshift, regularization=al.regularization.Constant
+            )
 
 
 class TestHyperGalaxy(object):
-    def test_hyper_galaxy(self, ):
+    def test_hyper_galaxy(self,):
         galaxy_model = al.GalaxyModel(redshift=al.Redshift, hyper_galaxy=al.HyperGalaxy)
 
         arguments = {
@@ -369,8 +371,10 @@ class TestHyperGalaxy(object):
 
         assert galaxy.hyper_galaxy_image_1d is None
 
-    def test_fixed_hyper_galaxy(self, ):
-        galaxy_model = al.GalaxyModel(redshift=al.Redshift, hyper_galaxy=al.HyperGalaxy())
+    def test_fixed_hyper_galaxy(self,):
+        galaxy_model = al.GalaxyModel(
+            redshift=al.Redshift, hyper_galaxy=al.HyperGalaxy()
+        )
 
         arguments = {galaxy_model.redshift.redshift: 2.0}
 

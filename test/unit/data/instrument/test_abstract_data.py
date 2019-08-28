@@ -28,9 +28,7 @@ class TestSignalToNoise:
 
         noise = np.array([[10.0, 10.0], [30.0, 4.0]])
 
-        data = al.AbstractData(
-            image=array, pixel_scale=1.0, psf=None, noise_map=noise
-        )
+        data = al.AbstractData(image=array, pixel_scale=1.0, psf=None, noise_map=noise)
 
         assert (data.signal_to_noise_map == np.array([[0.1, 0.2], [0.1, 1.0]])).all()
         assert data.signal_to_noise_max == 1.0
@@ -40,9 +38,7 @@ class TestSignalToNoise:
 
         noise = np.array([[10.0, 10.0], [30.0, 4.0]])
 
-        data = al.AbstractData(
-            image=array, pixel_scale=1.0, psf=None, noise_map=noise
-        )
+        data = al.AbstractData(image=array, pixel_scale=1.0, psf=None, noise_map=noise)
 
         assert (data.signal_to_noise_map == np.array([[0.0, 0.2], [0.1, 0.0]])).all()
         assert data.signal_to_noise_max == 0.2
@@ -50,37 +46,33 @@ class TestSignalToNoise:
 
 class TestAbsoluteSignalToNoise:
     def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(
-            self
+        self
     ):
         array = np.array([[-1.0, 2.0], [3.0, -4.0]])
 
         noise = np.array([[10.0, 10.0], [30.0, 4.0]])
 
-        data = al.AbstractData(
-            image=array, pixel_scale=1.0, psf=None, noise_map=noise
-        )
+        data = al.AbstractData(image=array, pixel_scale=1.0, psf=None, noise_map=noise)
 
         assert (
-                data.absolute_signal_to_noise_map == np.array([[0.1, 0.2], [0.1, 1.0]])
+            data.absolute_signal_to_noise_map == np.array([[0.1, 0.2], [0.1, 1.0]])
         ).all()
         assert data.absolute_signal_to_noise_max == 1.0
 
 
 class TestPotentialChiSquaredMap:
     def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(
-            self
+        self
     ):
         array = np.array([[-1.0, 2.0], [3.0, -4.0]])
 
         noise = np.array([[10.0, 10.0], [30.0, 4.0]])
 
-        data = al.AbstractData(
-            image=array, pixel_scale=1.0, psf=None, noise_map=noise
-        )
+        data = al.AbstractData(image=array, pixel_scale=1.0, psf=None, noise_map=noise)
 
         assert (
-                data.potential_chi_squared_map
-                == np.array([[0.1 ** 2.0, 0.2 ** 2.0], [0.1 ** 2.0, 1.0 ** 2.0]])
+            data.potential_chi_squared_map
+            == np.array([[0.1 ** 2.0, 0.2 ** 2.0], [0.1 ** 2.0, 1.0 ** 2.0]])
         ).all()
         assert data.potential_chi_squared_max == 1.0
 
@@ -116,7 +108,7 @@ class TestAbstractNoiseMap(object):
             )
 
             assert (
-                    noise_map == np.array([[1.0, 0.25, 0.0625], [1.0, 0.25, 0.0625]])
+                noise_map == np.array([[1.0, 0.25, 0.0625], [1.0, 0.25, 0.0625]])
             ).all()
             assert noise_map.origin == (0.0, 0.0)
 
@@ -124,20 +116,16 @@ class TestAbstractNoiseMap(object):
 class TestPSF(object):
     class TestConstructors(object):
         def test__init__input_psf__all_attributes_correct_including_data_inheritance(
-                self
+            self
         ):
-            psf = al.PSF(
-                array=np.ones((3, 3)), pixel_scale=1.0, renormalize=False
-            )
+            psf = al.PSF(array=np.ones((3, 3)), pixel_scale=1.0, renormalize=False)
 
             assert psf.shape == (3, 3)
             assert psf.pixel_scale == 1.0
             assert (psf == np.ones((3, 3))).all()
             assert psf.origin == (0.0, 0.0)
 
-            psf = al.PSF(
-                array=np.ones((4, 3)), pixel_scale=1.0, renormalize=False
-            )
+            psf = al.PSF(array=np.ones((4, 3)), pixel_scale=1.0, renormalize=False)
 
             assert (psf == np.ones((4, 3))).all()
             assert psf.pixel_scale == 1.0
@@ -145,7 +133,7 @@ class TestPSF(object):
             assert psf.origin == (0.0, 0.0)
 
         def test__from_fits__input_psf_3x3__all_attributes_correct_including_data_inheritance(
-                self
+            self
         ):
             psf = al.PSF.from_fits_with_scale(
                 file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scale=1.0
@@ -187,7 +175,7 @@ class TestPSF(object):
 
     class TestBinnedUp(object):
         def test__psf_is_even_x_even__rescaled_to_odd_x_odd__no_use_of_dimension_trimming(
-                self
+            self
         ):
             array_2d = np.ones((6, 6))
             psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
@@ -222,7 +210,7 @@ class TestPSF(object):
             assert psf == (1.0 / 27.0) * np.ones((3, 9))
 
         def test__psf_is_even_x_even_after_binning_up__resized_to_odd_x_odd_with_shape_plus_one(
-                self
+            self
         ):
             array_2d = np.ones((2, 2))
             psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
@@ -257,7 +245,7 @@ class TestPSF(object):
             assert psf == (1.0 / 45.0) * np.ones((9, 5))
 
         def test__psf_is_odd_and_even_after_binning_up__resized_to_odd_and_odd_with_shape_plus_one(
-                self
+            self
         ):
             array_2d = np.ones((6, 4))
             psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
@@ -320,7 +308,7 @@ class TestPSF(object):
                 psf.convolve(np.ones((5, 5)))
 
         def test__image_is_3x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
-                self
+            self
         ):
             image = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
@@ -333,7 +321,7 @@ class TestPSF(object):
             assert (blurred_image == kernel).all()
 
         def test__image_is_4x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
-                self
+            self
         ):
             image = np.array(
                 [
@@ -351,19 +339,19 @@ class TestPSF(object):
             blurred_image = psf.convolve(image)
 
             assert (
-                    blurred_image
-                    == np.array(
-                [
-                    [0.0, 1.0, 0.0, 0.0],
-                    [1.0, 2.0, 1.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0],
-                ]
-            )
+                blurred_image
+                == np.array(
+                    [
+                        [0.0, 1.0, 0.0, 0.0],
+                        [1.0, 2.0, 1.0, 0.0],
+                        [0.0, 1.0, 0.0, 0.0],
+                        [0.0, 0.0, 0.0, 0.0],
+                    ]
+                )
             ).all()
 
         def test__image_is_4x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
-                self
+            self
         ):
             image = np.array(
                 [[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
@@ -376,14 +364,14 @@ class TestPSF(object):
             blurred_image = psf.convolve(image)
 
             assert (
-                    blurred_image
-                    == np.array(
-                [[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
-            )
+                blurred_image
+                == np.array(
+                    [[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
+                )
             ).all()
 
         def test__image_is_3x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
-                self
+            self
         ):
             image = np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
@@ -396,14 +384,14 @@ class TestPSF(object):
             blurred_image = psf.convolve(image)
 
             assert (
-                    blurred_image
-                    == np.array(
-                [[0.0, 1.0, 0.0, 0.0], [1.0, 2.0, 1.0, 0.0], [0.0, 1.0, 0.0, 0.0]]
-            )
+                blurred_image
+                == np.array(
+                    [[0.0, 1.0, 0.0, 0.0], [1.0, 2.0, 1.0, 0.0], [0.0, 1.0, 0.0, 0.0]]
+                )
             ).all()
 
         def test__image_is_4x4_has_two_central_values__kernel_is_asymmetric__blurred_image_follows_convolution(
-                self
+            self
         ):
             image = np.array(
                 [
@@ -421,19 +409,19 @@ class TestPSF(object):
             blurred_image = psf.convolve(image)
 
             assert (
-                    blurred_image
-                    == np.array(
-                [
-                    [1.0, 1.0, 1.0, 0.0],
-                    [2.0, 3.0, 2.0, 1.0],
-                    [1.0, 5.0, 5.0, 1.0],
-                    [0.0, 1.0, 3.0, 3.0],
-                ]
-            )
+                blurred_image
+                == np.array(
+                    [
+                        [1.0, 1.0, 1.0, 0.0],
+                        [2.0, 3.0, 2.0, 1.0],
+                        [1.0, 5.0, 5.0, 1.0],
+                        [0.0, 1.0, 3.0, 3.0],
+                    ]
+                )
             ).all()
 
         def test__image_is_4x4_values_are_on_edge__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
-                self
+            self
         ):
             image = np.array(
                 [
@@ -451,19 +439,19 @@ class TestPSF(object):
             blurred_image = psf.convolve(image)
 
             assert (
-                    blurred_image
-                    == np.array(
-                [
-                    [1.0, 1.0, 0.0, 0.0],
-                    [2.0, 1.0, 1.0, 1.0],
-                    [3.0, 3.0, 2.0, 2.0],
-                    [0.0, 0.0, 1.0, 3.0],
-                ]
-            )
+                blurred_image
+                == np.array(
+                    [
+                        [1.0, 1.0, 0.0, 0.0],
+                        [2.0, 1.0, 1.0, 1.0],
+                        [3.0, 3.0, 2.0, 2.0],
+                        [0.0, 0.0, 1.0, 3.0],
+                    ]
+                )
             ).all()
 
         def test__image_is_4x4_values_are_on_corner__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
-                self
+            self
         ):
             image = np.array(
                 [
@@ -481,15 +469,15 @@ class TestPSF(object):
             blurred_image = psf.convolve(image)
 
             assert (
-                    blurred_image
-                    == np.array(
-                [
-                    [2.0, 1.0, 0.0, 0.0],
-                    [3.0, 3.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 1.0],
-                    [0.0, 0.0, 2.0, 2.0],
-                ]
-            )
+                blurred_image
+                == np.array(
+                    [
+                        [2.0, 1.0, 0.0, 0.0],
+                        [3.0, 3.0, 0.0, 0.0],
+                        [0.0, 0.0, 1.0, 1.0],
+                        [0.0, 0.0, 2.0, 2.0],
+                    ]
+                )
             ).all()
 
     class TestFromKernelNoBlurring(object):
@@ -497,14 +485,14 @@ class TestPSF(object):
             psf = al.PSF.from_no_blurring_kernel(pixel_scale=1.0)
 
             assert (
-                    psf == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+                psf == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
             ).all()
             assert psf.pixel_scale == 1.0
 
             psf = al.PSF.from_no_blurring_kernel(pixel_scale=2.0)
 
             assert (
-                    psf == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+                psf == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
             ).all()
             assert psf.pixel_scale == 2.0
 
@@ -541,16 +529,16 @@ class TestPSF(object):
             pixel_scale = 0.1
 
             x_stddev = (
-                    2.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                2.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
             y_stddev = (
-                    2.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                2.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
 
             gaussian_astropy = functional_models.Gaussian2D(
@@ -563,7 +551,7 @@ class TestPSF(object):
             )
 
             shape = (5, 5)
-            y, x = np.mgrid[0: shape[1], 0: shape[0]]
+            y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
             psf_astropy = gaussian_astropy(x, y)
             psf_astropy /= np.sum(psf_astropy)
 
@@ -578,21 +566,21 @@ class TestPSF(object):
             assert psf_astropy == pytest.approx(psf, 1e-4)
 
         def test__identical_to_astropy_gaussian_model__circular_no_rotation_different_pixel_scale(
-                self
+            self
         ):
             pixel_scale = 0.02
 
             x_stddev = (
-                    2.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                2.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
             y_stddev = (
-                    2.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                2.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
 
             gaussian_astropy = functional_models.Gaussian2D(
@@ -605,7 +593,7 @@ class TestPSF(object):
             )
 
             shape = (5, 5)
-            y, x = np.mgrid[0: shape[1], 0: shape[0]]
+            y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
             psf_astropy = gaussian_astropy(x, y)
             psf_astropy /= np.sum(psf_astropy)
 
@@ -620,21 +608,21 @@ class TestPSF(object):
             assert psf_astropy == pytest.approx(psf, 1e-4)
 
         def test__identical_to_astropy_gaussian_model__include_ellipticity_from_x_and_y_stddev(
-                self
+            self
         ):
             pixel_scale = 0.1
 
             x_stddev = (
-                    1.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                1.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
             y_stddev = (
-                    2.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                2.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
 
             theta_deg = 0.0
@@ -650,7 +638,7 @@ class TestPSF(object):
             )
 
             shape = (5, 5)
-            y, x = np.mgrid[0: shape[1], 0: shape[0]]
+            y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
             psf_astropy = gaussian_astropy(x, y)
             psf_astropy /= np.sum(psf_astropy)
 
@@ -665,21 +653,21 @@ class TestPSF(object):
             assert psf_astropy == pytest.approx(psf, 1e-4)
 
         def test__identical_to_astropy_gaussian_model__include_different_ellipticity_from_x_and_y_stddev(
-                self
+            self
         ):
             pixel_scale = 0.1
 
             x_stddev = (
-                    3.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                3.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
             y_stddev = (
-                    2.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                2.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
 
             theta_deg = 0.0
@@ -695,7 +683,7 @@ class TestPSF(object):
             )
 
             shape = (5, 5)
-            y, x = np.mgrid[0: shape[1], 0: shape[0]]
+            y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
             psf_astropy = gaussian_astropy(x, y)
             psf_astropy /= np.sum(psf_astropy)
 
@@ -713,16 +701,16 @@ class TestPSF(object):
             pixel_scale = 0.1
 
             x_stddev = (
-                    1.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                1.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
             y_stddev = (
-                    2.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                2.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
 
             theta_deg = 30.0
@@ -738,7 +726,7 @@ class TestPSF(object):
             )
 
             shape = (3, 3)
-            y, x = np.mgrid[0: shape[1], 0: shape[0]]
+            y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
             psf_astropy = gaussian_astropy(x, y)
             psf_astropy /= np.sum(psf_astropy)
 
@@ -756,16 +744,16 @@ class TestPSF(object):
             pixel_scale = 0.1
 
             x_stddev = (
-                    1.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                1.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
             y_stddev = (
-                    2.0e-5
-                    * (units.deg).to(units.arcsec)
-                    / pixel_scale
-                    / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+                2.0e-5
+                * (units.deg).to(units.arcsec)
+                / pixel_scale
+                / (2.0 * np.sqrt(2.0 * np.log(2.0)))
             )
 
             theta_deg = 230.0
@@ -781,7 +769,7 @@ class TestPSF(object):
             )
 
             shape = (3, 3)
-            y, x = np.mgrid[0: shape[1], 0: shape[0]]
+            y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
             psf_astropy = gaussian_astropy(x, y)
             psf_astropy /= np.sum(psf_astropy)
 
@@ -808,7 +796,7 @@ class TestExposureTimeMap(object):
             )
 
             assert (
-                    exposure_time_map == np.array([[0.125, 0.5, 1.0], [0.125, 0.5, 1.0]])
+                exposure_time_map == np.array([[0.125, 0.5, 1.0], [0.125, 0.5, 1.0]])
             ).all()
             assert exposure_time_map.origin == (0.0, 0.0)
 
@@ -819,7 +807,7 @@ class TestExposureTimeMap(object):
             )
 
             assert (
-                    exposure_time_map == np.array([[0.375, 1.5, 3.0], [0.375, 1.5, 3.0]])
+                exposure_time_map == np.array([[0.375, 1.5, 3.0], [0.375, 1.5, 3.0]])
             ).all()
             assert exposure_time_map.origin == (0.0, 0.0)
 

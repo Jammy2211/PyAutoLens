@@ -714,10 +714,12 @@ def plot_border(
     if should_plot_border and mask is not None:
 
         plt.gca()
-        border_pixels = mask.mask_1d_index_to_mask_2d_index[mask.border_pixels].astype('int')
+        border_pixels = mask.mask_1d_index_to_mask_2d_index[mask.border_pixels].astype(
+            "int"
+        )
 
         if zoom_offset_pixels is not None:
-            border_pixels -= zoom_offset_pixels.astype('int')
+            border_pixels -= zoom_offset_pixels.astype("int")
 
         border_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=border_pixels)
         border_units = convert_grid_units(

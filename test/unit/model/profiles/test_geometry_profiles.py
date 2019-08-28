@@ -24,11 +24,11 @@ class TestMemoize(object):
             # noinspection PyMethodMayBeStatic
             @al.geometry_profiles.cache
             def my_method(
-                    self,
-                    grid,
-                    return_in_2d=False,
-                    return_binned=False,
-                    grid_radial_minimum=None,
+                self,
+                grid,
+                return_in_2d=False,
+                return_binned=False,
+                grid_radial_minimum=None,
             ):
                 return grid
 
@@ -54,11 +54,11 @@ class TestMemoize(object):
 
             @al.geometry_profiles.cache
             def my_method(
-                    self,
-                    grid,
-                    return_in_2d=False,
-                    return_binned=False,
-                    grid_radial_minimum=None,
+                self,
+                grid,
+                return_in_2d=False,
+                return_binned=False,
+                grid_radial_minimum=None,
             ):
                 self.count += 1
                 return self.count
@@ -75,21 +75,21 @@ class TestMemoize(object):
         class MultiMethodProfile(object):
             @al.geometry_profiles.cache
             def method_one(
-                    self,
-                    grid,
-                    return_in_2d=False,
-                    return_binned=False,
-                    grid_radial_minimum=None,
+                self,
+                grid,
+                return_in_2d=False,
+                return_binned=False,
+                grid_radial_minimum=None,
             ):
                 return grid
 
             @al.geometry_profiles.cache
             def method_two(
-                    self,
-                    grid,
-                    return_in_2d=False,
-                    return_binned=False,
-                    grid_radial_minimum=None,
+                self,
+                grid,
+                return_in_2d=False,
+                return_binned=False,
+                grid_radial_minimum=None,
             ):
                 return grid
 
@@ -115,7 +115,9 @@ class TestGeometryProfile(object):
 class TestEllipticalProfile(object):
     class TestConstuctorUnits(object):
         def test__constructor_and_units(self):
-            profile = al.geometry_profiles.EllipticalProfile(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0)
+            profile = al.geometry_profiles.EllipticalProfile(
+                centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0
+            )
 
             assert profile.centre == (1.0, 2.0)
             assert isinstance(profile.centre[0], al.Length)
@@ -141,7 +143,7 @@ class TestEllipticalProfile(object):
             assert sin_phi == 0.0
 
         def test__profile_angle_phi_is_45__cosine_and_sin_of_phi_follow_trig__therefore_half_root_2(
-                self
+            self
         ):
             elliptical_profile = al.geometry_profiles.EllipticalProfile(
                 centre=(1, 1), axis_ratio=1.0, phi=45.0
@@ -163,7 +165,7 @@ class TestEllipticalProfile(object):
             assert sin_phi == pytest.approx(0.866, 1e-3)
 
         def test__profile_angle_phi_is_225__cosine_and_sin_of_phi_follow_trig__therefore_negative_half_root_2(
-                self
+            self
         ):
             elliptical_profile = al.geometry_profiles.EllipticalProfile(
                 centre=(1, 1), axis_ratio=1.0, phi=225.0
@@ -176,9 +178,11 @@ class TestEllipticalProfile(object):
 
     class TestTransformGrid(object):
         def test__profile_angle_phi_is_0__grid_x_1_y_1__returns_same_grid_so_x_1_y_1(
-                self
+            self
         ):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=0.0
+            )
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(
                 grid=np.array([[1.0, 1.0]])
@@ -195,9 +199,11 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test___profile_angle_phi_45__grid_y_1_x_1__rotated_counter_clockwise_to_y_0_x_root_2(
-                self
+            self
         ):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=315.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=315.0
+            )
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(
                 grid=np.array([[1.0, 1.0]])
@@ -214,9 +220,11 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_90__grid_y_1_x_1__rotated_grid_clockwise_so_y_1_x_negative_1(
-                self
+            self
         ):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=90.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=90.0
+            )
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(
                 grid=np.array([[1.0, 1.0]])
@@ -233,9 +241,11 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_90__grid_y_0_x_1__rotated_grid_clockwise_so_y_1_x_0(
-                self
+            self
         ):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=90.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=90.0
+            )
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(
                 grid=np.array([[0.0, 1.0]])
@@ -252,9 +262,11 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_180__grid_y_1_x_1__rotated_grid_clockwise_so_y_and_x_negative_1(
-                self
+            self
         ):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=180.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=180.0
+            )
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(
                 grid=np.array([[1.0, 1.0]])
@@ -271,9 +283,11 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_270__grid_y_1_x_1__rotated_grid_clockwise_so_y_negative_1_x_1(
-                self
+            self
         ):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=270.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=270.0
+            )
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(
                 grid=np.array([[1.0, 1.0]])
@@ -290,7 +304,9 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_360__rotated_grid_are_original_grid_x_1_y_(self):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=360.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=360.0
+            )
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(
                 grid=np.array([[1.0, 1.0]])
@@ -307,9 +323,11 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_315__grid_y_1_x_1__rotated_grid_clockwise_so_y_0_x_root_2(
-                self
+            self
         ):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=315.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=315.0
+            )
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(
                 grid=np.array([[1.0, 1.0]])
@@ -326,7 +344,7 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test__include_profile_centre_offset__is_used_before_rotation_is_performed(
-                self
+            self
         ):
             elliptical_profile = al.geometry_profiles.EllipticalProfile(
                 axis_ratio=1.0, phi=90.0, centre=(2.0, 3.0)
@@ -347,9 +365,11 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(4.0, 1e-3)
 
         def test__random_values__grid_are_transformed_to_and_from_reference_frame__equal_to_original_values(
-                self
+            self
         ):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=45.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=45.0
+            )
 
             grid_original = np.array([[5.2221, 2.6565]])
 
@@ -366,7 +386,7 @@ class TestEllipticalProfile(object):
 
     class TestCoordinateMovements(object):
         def test__grid_and_centres_of_two_lenses_are_equivalent__grid_are_equivalent(
-                self
+            self
         ):
             elliptical_profile1 = al.geometry_profiles.EllipticalProfile(
                 axis_ratio=1.0, phi=0.0, centre=(0, 0)
@@ -423,9 +443,11 @@ class TestEllipticalProfile(object):
 
     class TestTransformedGridToEccentricRadius(object):
         def test__profile_axis_ratio_1__r_is_root_2__therefore_ecccentric_radius_is_elliptical_radius_is_root_2(
-                self
+            self
         ):
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=1.0, phi=0.0
+            )
 
             eccentric_radius = elliptical_profile.grid_to_eccentric_radii(
                 np.array([[1.0, 1.0]])
@@ -434,13 +456,15 @@ class TestEllipticalProfile(object):
             assert eccentric_radius == pytest.approx(2.0 ** 0.5, 1e-3)
 
         def test__same_as_above_but_axis_ratio_is_05__r_follows_elliptical_coordinate_equation(
-                self
+            self
         ):
             # eccentric_radius = sqrt(axis_ratio) * sqrt(  x**2 +   (y**2 / axis_ratio**2))
             # eccentric_radius =        sqrt(0.5) * sqrt(1.0**2 + (1.0**2 /        0.5**2))
             # eccentric radius =        sqrt(0.5) * sqrt( 5 ) = 1.58113
 
-            elliptical_profile = al.geometry_profiles.EllipticalProfile(axis_ratio=0.5, phi=0.0)
+            elliptical_profile = al.geometry_profiles.EllipticalProfile(
+                axis_ratio=0.5, phi=0.0
+            )
 
             eccentric_radius = elliptical_profile.grid_to_eccentric_radii(
                 np.array([[1.0, 1.0]])
@@ -462,7 +486,7 @@ class TestSphericalProfile(object):
 
     class TestCoordinatesMovement(object):
         def test__profile_cenre_y_0_x_0__grid_y_1_x_1__no_coordinate_movement_so_y_1_x_1(
-                self
+            self
         ):
             spherical_profile = al.geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
@@ -474,7 +498,7 @@ class TestSphericalProfile(object):
             assert transformed_grid[0, 1] == 1.0
 
         def test__grid_and_centres_of_two_lenses_are_equivalent__grid_are_equivalent(
-                self
+            self
         ):
             spherical_profile1 = al.geometry_profiles.SphericalProfile(centre=(0, 0))
 
@@ -506,7 +530,7 @@ class TestSphericalProfile(object):
 
     class TestTransformCoordinates(object):
         def test__profile_centre_y_0_x_0__grid_y_1_x_1__returns_y_1_x_1_so_same_grid(
-                self
+            self
         ):
             spherical_profile = al.geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
@@ -518,7 +542,7 @@ class TestSphericalProfile(object):
             assert transformed_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test__grid_are_transformed_to_and_from_reference_frame__equal_to_original_values(
-                self
+            self
         ):
             spherical_profile = al.geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
@@ -546,6 +570,7 @@ class MockGridRadialMinimum(object):
     @al.geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
         return grid
+
 
 # class TestGridRadialMinimum(object):
 #

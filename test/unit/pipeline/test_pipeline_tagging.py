@@ -36,8 +36,8 @@ class TestPipelineNameTag:
         )
 
         assert (
-                pipeline_tag
-                == "pipeline_tag__disk_sersic__light_dark_align_centre__bulge_dark_align_centre"
+            pipeline_tag
+            == "pipeline_tag__disk_sersic__light_dark_align_centre__bulge_dark_align_centre"
         )
 
 
@@ -94,9 +94,13 @@ class TestHyperPipelineTaggers:
 
 class TestPipelineTaggers:
     def test__include_shear_tagger(self):
-        tag = al.pipeline_tagging.include_shear_tag_from_include_shear(include_shear=False)
+        tag = al.pipeline_tagging.include_shear_tag_from_include_shear(
+            include_shear=False
+        )
         assert tag == ""
-        tag = al.pipeline_tagging.include_shear_tag_from_include_shear(include_shear=True)
+        tag = al.pipeline_tagging.include_shear_tag_from_include_shear(
+            include_shear=True
+        )
         assert tag == "__with_shear"
 
     def test__fix_lens_light_tagger(self):

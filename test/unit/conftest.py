@@ -71,13 +71,13 @@ def make_positions_7x7():
 
 @pytest.fixture(name="ccd_data_7x7")
 def make_ccd_data_7x7(
-        image_7x7,
-        psf_3x3,
-        noise_map_7x7,
-        background_noise_map_7x7,
-        poisson_noise_map_7x7,
-        exposure_time_map_7x7,
-        background_sky_map_7x7,
+    image_7x7,
+    psf_3x3,
+    noise_map_7x7,
+    background_noise_map_7x7,
+    poisson_noise_map_7x7,
+    exposure_time_map_7x7,
+    background_sky_map_7x7,
 ):
     return mock_data.MockCCDData(
         image=image_7x7,
@@ -137,13 +137,13 @@ def make_uv_wavelengths_7():
 
 @pytest.fixture(name="interferometer_data_7")
 def make_interferometer_data_7x7(
-        image_7x7,
-        psf_3x3,
-        noise_map_7x7,
-        visibilities_7,
-        visibilities_noise_map_7,
-        primary_beam_3x3,
-        uv_wavelengths_7,
+    image_7x7,
+    psf_3x3,
+    noise_map_7x7,
+    visibilities_7,
+    visibilities_noise_map_7,
+    primary_beam_3x3,
+    uv_wavelengths_7,
 ):
     return mock_data.MockInterferometerData(
         image=image_7x7,
@@ -272,9 +272,7 @@ def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
-    return al.Grid.from_mask_and_sub_grid_size(
-        mask=blurring_mask_7x7, sub_grid_size=1
-    )
+    return al.Grid.from_mask_and_sub_grid_size(mask=blurring_mask_7x7, sub_grid_size=1)
 
 
 @pytest.fixture(name="binned_grid_7x7")
@@ -304,13 +302,17 @@ def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
 @pytest.fixture(name="lp_0")
 def make_lp_0():
     # noinspection PyTypeChecker
-    return al.light_profiles.SphericalSersic(intensity=1.0, effective_radius=2.0, sersic_index=2.0)
+    return al.light_profiles.SphericalSersic(
+        intensity=1.0, effective_radius=2.0, sersic_index=2.0
+    )
 
 
 @pytest.fixture(name="lp_1")
 def make_lp_1():
     # noinspection PyTypeChecker
-    return al.light_profiles.SphericalSersic(intensity=2.0, effective_radius=2.0, sersic_index=2.0)
+    return al.light_profiles.SphericalSersic(
+        intensity=2.0, effective_radius=2.0, sersic_index=2.0
+    )
 
 
 @pytest.fixture(name="mp_0")
@@ -413,9 +415,7 @@ def make_gal_fit_data_7x7_deflections_x(gal_data_7x7, mask_7x7):
 
 @pytest.fixture(name="gal_fit_7x7_image")
 def make_gal_fit_7x7_image(gal_fit_data_7x7_image, gal_x1_lp):
-    return al.GalaxyFit(
-        galaxy_data=gal_fit_data_7x7_image, model_galaxies=[gal_x1_lp]
-    )
+    return al.GalaxyFit(galaxy_data=gal_fit_data_7x7_image, model_galaxies=[gal_x1_lp])
 
 
 @pytest.fixture(name="gal_fit_7x7_convergence")
@@ -455,12 +455,12 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 
 @pytest.fixture(name="lens_data_7x7")
 def make_lens_data_7x7(
-        ccd_data_7x7,
-        mask_7x7,
-        sub_grid_7x7,
-        blurring_grid_7x7,
-        convolver_7x7,
-        binned_grid_7x7,
+    ccd_data_7x7,
+    mask_7x7,
+    sub_grid_7x7,
+    blurring_grid_7x7,
+    convolver_7x7,
+    binned_grid_7x7,
 ):
     return mock_lens_data.MockLensData(
         ccd_data=ccd_data_7x7,
@@ -492,9 +492,7 @@ def make_tracer_x1_plane_7x7(gal_x1_lp):
 def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
     source_gal_x1_lp = al.Galaxy(redshift=1.0, light_profile_0=lp_0)
 
-    return al.Tracer.from_galaxies(
-        galaxies=[gal_x1_mp, gal_x1_lp, source_gal_x1_lp]
-    )
+    return al.Tracer.from_galaxies(galaxies=[gal_x1_mp, gal_x1_lp, source_gal_x1_lp])
 
 
 # Lens Fit #
@@ -582,7 +580,7 @@ def make_hyper_galaxy_image_1_7x7(grid_7x7):
 
 @pytest.fixture(name="contribution_map_7x7")
 def make_contribution_map_7x7(
-        hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
+    hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
 ):
     return hyper_galaxy.contribution_map_from_hyper_images(
         hyper_model_image=hyper_model_image_7x7,
@@ -600,7 +598,7 @@ def make_hyper_noise_map_7x7(noise_map_7x7, contribution_map_7x7, hyper_galaxy):
 
 @pytest.fixture(name="results_7x7")
 def make_results(
-        mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
+    mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
 ):
     return mock_pipeline.MockResults(
         model_image=hyper_model_image_7x7,

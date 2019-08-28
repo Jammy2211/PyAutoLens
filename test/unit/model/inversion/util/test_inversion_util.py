@@ -2,7 +2,6 @@ import autolens as al
 import numpy as np
 
 
-
 class TestDataVectorFromData(object):
     def test__simple_blurred_mapping_matrix__correct_data_vector(self):
 

@@ -14,13 +14,13 @@ class PhasePositions(AbstractPhase):
         return [self.galaxies]
 
     def __init__(
-            self,
-            phase_name,
-            phase_folders=tuple(),
-            galaxies=None,
-            optimizer_class=af.MultiNest,
-            cosmology=cosmo.Planck15,
-            auto_link_priors=False,
+        self,
+        phase_name,
+        phase_folders=tuple(),
+        galaxies=None,
+        optimizer_class=af.MultiNest,
+        cosmology=cosmo.Planck15,
+        auto_link_priors=False,
     ):
         super().__init__(
             phase_name=phase_name,

@@ -5,6 +5,7 @@ import pytest
 from test.unit.mock.model import mock_inversion
 from autolens import exc
 
+
 class TestRegularizationTerm:
     def test__solution_all_1s__regularization_matrix_simple(self):
 

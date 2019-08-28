@@ -4,7 +4,6 @@ import os
 import pytest
 
 
-
 @pytest.fixture(name="hyper_plotter_path")
 def make_hyper_plotter_setup():
     return "{}/../../test_files/plotting/hyper_galaxies/".format(

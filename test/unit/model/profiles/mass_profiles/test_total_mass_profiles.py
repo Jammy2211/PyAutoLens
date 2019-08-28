@@ -1677,7 +1677,9 @@ class TestIsothermal(object):
             0.6666666666, 1.0e-4
         )
 
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(1.0, 2.0), einstein_radius=1.0
+        )
 
         assert isothermal.centre == (1.0, 2.0)
         assert isinstance(isothermal.centre[0], al.Length)
@@ -1707,7 +1709,9 @@ class TestIsothermal(object):
     def test__convergence__correct_values(self):
         # eta = 1.0
         # kappa = 0.5 * 1.0 ** 1.0
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
         assert isothermal.convergence_from_grid(
             grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(0.5 * 2.0, 1e-3)
@@ -1734,7 +1738,9 @@ class TestIsothermal(object):
         ) == pytest.approx(0.66666, 1e-3)
 
     def test__potential__correct_values(self):
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(-0.7, 0.5), einstein_radius=1.3)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(-0.7, 0.5), einstein_radius=1.3
+        )
         assert isothermal.potential_from_grid(
             grid=np.array([[0.1875, 0.1625]]), return_in_2d=False, return_binned=False
         ) == pytest.approx(1.23435, 1e-3)
@@ -1747,14 +1753,18 @@ class TestIsothermal(object):
         ) == pytest.approx(1.19268, 1e-3)
 
     def test__deflections__correct_values(self):
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(-0.7, 0.5), einstein_radius=1.3)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(-0.7, 0.5), einstein_radius=1.3
+        )
         deflections = isothermal.deflections_from_grid(
             grid=np.array([[0.1875, 0.1625]]), return_in_2d=False, return_binned=False
         )
         assert deflections[0, 0] == pytest.approx(1.21510, 1e-4)
         assert deflections[0, 1] == pytest.approx(-0.46208, 1e-4)
 
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(-0.1, 0.1), einstein_radius=5.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(-0.1, 0.1), einstein_radius=5.0
+        )
         deflections = isothermal.deflections_from_grid(
             grid=np.array([[0.1875, 0.1625]]), return_in_2d=False, return_binned=False
         )
@@ -1828,7 +1838,9 @@ class TestIsothermal(object):
         elliptical = al.mass_profiles.EllipticalIsothermal(
             centre=(1.1, 1.1), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0
         )
-        spherical = al.mass_profiles.SphericalIsothermal(centre=(1.1, 1.1), einstein_radius=3.0)
+        spherical = al.mass_profiles.SphericalIsothermal(
+            centre=(1.1, 1.1), einstein_radius=3.0
+        )
 
         assert elliptical.convergence_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -1856,7 +1868,9 @@ class TestIsothermal(object):
         )
 
     def test__radius_of_critical_curve(self):
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
         assert sis.average_convergence_of_1_radius_in_units(
             unit_length="arcsec"
         ) == pytest.approx(2.0, 1e-4)
@@ -1928,7 +1942,9 @@ class TestIsothermal(object):
     def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(
         self
     ):
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(-0.7, 0.5), einstein_radius=1.3)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(-0.7, 0.5), einstein_radius=1.3
+        )
 
         mask = np.array(
             [

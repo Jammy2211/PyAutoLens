@@ -4,7 +4,6 @@ import os
 import pytest
 
 
-
 @pytest.fixture(name="ray_tracing_plotter_path")
 def make_ray_tracing_plotter_setup():
     return "{}/../../test_files/plotting/ray_tracing/".format(

@@ -2,7 +2,6 @@ import autolens as al
 import numpy as np
 
 
-
 class TestRegularizationConstant:
     def test__regularization_matrix__compare_to_regularization_util(self):
 

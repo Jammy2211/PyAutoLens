@@ -81,16 +81,16 @@ class MockNoiseMap1D(np.ndarray):
 
 class MockCCDData(al.CCDData):
     def __init__(
-            self,
-            image,
-            pixel_scale,
-            psf,
-            noise_map,
-            background_noise_map,
-            poisson_noise_map,
-            exposure_time_map,
-            background_sky_map,
-            name,
+        self,
+        image,
+        pixel_scale,
+        psf,
+        noise_map,
+        background_noise_map,
+        poisson_noise_map,
+        exposure_time_map,
+        background_sky_map,
+        name,
     ):
         super(MockCCDData, self).__init__(
             image=image,
@@ -158,15 +158,15 @@ class MockUVWavelengths(np.ndarray):
 
 class MockInterferometerData(al.InterferometerData):
     def __init__(
-            self,
-            image,
-            pixel_scale,
-            psf,
-            primary_beam,
-            noise_map,
-            visibilities,
-            visibilities_noise_map,
-            uv_wavelengths,
+        self,
+        image,
+        pixel_scale,
+        psf,
+        primary_beam,
+        noise_map,
+        visibilities,
+        visibilities_noise_map,
+        uv_wavelengths,
     ):
         super(MockInterferometerData, self).__init__(
             image=image,

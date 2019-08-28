@@ -3,7 +3,6 @@ import numpy as np
 import scipy.spatial
 
 
-
 class TestRectangular:
     class TestNeighbors:
         def test__3x3_grid(self):

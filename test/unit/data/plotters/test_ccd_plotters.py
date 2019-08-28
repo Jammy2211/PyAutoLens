@@ -4,7 +4,6 @@ import os
 import pytest
 
 
-
 @pytest.fixture(name="ccd_plotter_path")
 def make_ccd_plotter_setup():
     ccd_plotter_path = "{}/../../test_files/plotting/ccd/".format(

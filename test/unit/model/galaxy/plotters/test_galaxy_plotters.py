@@ -4,7 +4,6 @@ import os
 import pytest
 
 
-
 @pytest.fixture(name="galaxy_plotter_path")
 def make_galaxy_plotter_setup():
     return "{}/../../../test_files/plotting/model_galaxy/".format(

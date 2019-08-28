@@ -1,8 +1,5 @@
 import autofit as af
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp
-from autolens.pipeline.phase import phase_imaging
-from autolens.pipeline import pipeline as pl
+import autolens as al
 from test.integration.tests import runner
 
 test_type = "grid_search"
@@ -61,7 +58,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, bulge=al.EllipticalSersic, disk=al.EllipticalSersic
+                redshift=0.5,
+                bulge=al.light_profiles.EllipticalSersic,
+                disk=al.light_profiles.EllipticalSersic,
             )
         ),
         optimizer_class=optimizer_class,
@@ -106,7 +105,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, bulge=al.EllipticalSersic, disk=al.EllipticalSersic
+                redshift=0.5,
+                bulge=al.light_profiles.EllipticalSersic,
+                disk=al.light_profiles.EllipticalSersic,
             )
         ),
         number_of_steps=2,

@@ -168,11 +168,12 @@ class TestGalaxyFit:
             )
 
             galaxy = al.Galaxy(
-                redshift=0.5, light=al.light_profiles.SphericalSersic(centre=(1.0, 2.0), intensity=1.0)
+                redshift=0.5,
+                light=al.light_profiles.SphericalSersic(
+                    centre=(1.0, 2.0), intensity=1.0
+                ),
             )
-            fit = al.GalaxyFit(
-                galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
-            )
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 
             assert fit.model_galaxies == [galaxy]
 
@@ -225,11 +226,11 @@ class TestGalaxyFit:
 
             galaxy = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
+                mass=al.mass_profiles.SphericalIsothermal(
+                    centre=(1.0, 2.0), einstein_radius=1.0
+                ),
             )
-            fit = al.GalaxyFit(
-                galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
-            )
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 
             assert fit.model_galaxies == [galaxy]
 
@@ -280,12 +281,12 @@ class TestGalaxyFit:
 
             galaxy = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
+                mass=al.mass_profiles.SphericalIsothermal(
+                    centre=(1.0, 2.0), einstein_radius=1.0
+                ),
             )
 
-            fit = al.GalaxyFit(
-                galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
-            )
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 
             assert fit.model_galaxies == [galaxy]
 
@@ -339,12 +340,12 @@ class TestGalaxyFit:
 
             galaxy = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
+                mass=al.mass_profiles.SphericalIsothermal(
+                    centre=(1.0, 2.0), einstein_radius=1.0
+                ),
             )
 
-            fit = al.GalaxyFit(
-                galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
-            )
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 
             assert fit.model_galaxies == [galaxy]
 
@@ -398,11 +399,11 @@ class TestGalaxyFit:
 
             galaxy = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0),
+                mass=al.mass_profiles.SphericalIsothermal(
+                    centre=(1.0, 2.0), einstein_radius=1.0
+                ),
             )
-            fit = al.GalaxyFit(
-                galaxy_data=galaxy_fit_data, model_galaxies=[galaxy]
-            )
+            fit = al.GalaxyFit(galaxy_data=galaxy_fit_data, model_galaxies=[galaxy])
 
             assert fit.model_galaxies == [galaxy]
 

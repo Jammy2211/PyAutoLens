@@ -1,8 +1,5 @@
 import autofit as af
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.pipeline.phase import phase_imaging
-from autolens.pipeline import pipeline as pl
+import autolens as al
 from test.integration.tests import runner
 
 test_type = "lens__source"
@@ -19,10 +16,12 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.SphericalDevVaucouleurs,
+                light=al.light_profiles.SphericalDevVaucouleurs,
                 mass=al.mass_profiles.EllipticalIsothermal,
             ),
-            source=al.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
+            source=al.GalaxyModel(
+                redshift=1.0, light=al.light_profiles.EllipticalSersic
+            ),
         ),
         optimizer_class=optimizer_class,
     )

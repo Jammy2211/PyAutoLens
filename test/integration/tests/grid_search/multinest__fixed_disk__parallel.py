@@ -1,8 +1,5 @@
 import autofit as af
-from autolens.model.galaxy import galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp
-from autolens.pipeline.phase import phase_imaging
-from autolens.pipeline import pipeline as pl
+import autolens as al
 
 test_type = "grid_search"
 test_name = "multinest__fixed_disk__parallel"
@@ -60,7 +57,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, bulge=al.EllipticalSersic, disk=al.EllipticalExponential
+                redshift=0.5,
+                bulge=al.light_profiles.EllipticalSersic,
+                disk=al.light_profiles.EllipticalExponential,
             )
         ),
         optimizer_class=optimizer_class,
@@ -70,9 +69,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(
-        af.as_grid_search(phase_class=al.PhaseImaging, parallel=True)
-    ):
+    class GridPhase(af.as_grid_search(phase_class=al.PhaseImaging, parallel=True)):
         @property
         def grid_priors(self):
             return [self.variable.galaxies.lens.bulge.sersic_index]
@@ -107,7 +104,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, bulge=al.EllipticalSersic, disk=al.EllipticalExponential
+                redshift=0.5,
+                bulge=al.light_profiles.EllipticalSersic,
+                disk=al.light_profiles.EllipticalExponential,
             )
         ),
         number_of_steps=6,

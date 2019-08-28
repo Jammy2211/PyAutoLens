@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 
 
-
 class TestBinnedPaddingArray:
     def test__bin_up_factor_is_1__array_2d_does_not_change_shape(self):
 

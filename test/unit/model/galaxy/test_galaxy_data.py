@@ -6,6 +6,7 @@ import pytest
 from test.unit.mock.model import mock_galaxy
 from autolens import exc
 
+
 class TestGalaxyFitData(object):
     def test__image_noise_map_and_mask(self, gal_data_7x7, mask_7x7):
 
@@ -160,7 +161,9 @@ class TestGalaxyFitData(object):
 
         assert (image == np.ones(9)).all()
 
-        galaxy = al.Galaxy(redshift=0.5, light=al.light_profiles.SphericalSersic(intensity=1.0))
+        galaxy = al.Galaxy(
+            redshift=0.5, light=al.light_profiles.SphericalSersic(intensity=1.0)
+        )
 
         image_gal = galaxy.profile_image_from_grid(
             grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=True
