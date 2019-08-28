@@ -1,6 +1,7 @@
+import autolens as al
+from autolens import exc
 import pytest
 
-from autolens import exc, dimensions as dim
 
 from test.unit.mock.model.mock_cosmology import MockCosmology
 
@@ -9,7 +10,7 @@ class TestLength(object):
     def test__conversions_from_arcsec_to_kpc_and_back__errors_raised_if_no_kpc_per_arcsec(
         self
     ):
-        unit_arcsec = dim.Length(value=2.0)
+        unit_arcsec = al.Length(value=2.0)
 
         assert unit_arcsec == 2.0
         assert unit_arcsec.unit_length == "arcsec"
@@ -45,7 +46,7 @@ class TestLuminosity(object):
         self
     ):
 
-        unit_eps = dim.Luminosity(value=2.0)
+        unit_eps = al.Luminosity(value=2.0)
 
         assert unit_eps == 2.0
         assert unit_eps.unit_luminosity == "eps"
@@ -81,7 +82,7 @@ class TestMass(object):
         self
     ):
 
-        mass_angular = dim.Mass(value=2.0)
+        mass_angular = al.Mass(value=2.0)
 
         assert mass_angular == 2.0
         assert mass_angular.unit_mass == "angular"
@@ -129,7 +130,7 @@ class TestMassOverLuminosity(object):
         self
     ):
 
-        unit_angular = dim.MassOverLuminosity(value=2.0)
+        unit_angular = al.MassOverLuminosity(value=2.0)
 
         assert unit_angular == 2.0
         assert unit_angular.unit == "angular / eps"
@@ -169,7 +170,7 @@ class TestMassOverLuminosity(object):
         self
     ):
 
-        unit_eps = dim.MassOverLuminosity(value=2.0)
+        unit_eps = al.MassOverLuminosity(value=2.0)
 
         assert unit_eps == 2.0
         assert unit_eps.unit == "angular / eps"
@@ -209,7 +210,7 @@ class TestMassOverLength2(object):
         self
     ):
 
-        unit_angular = dim.MassOverLength2(value=2.0)
+        unit_angular = al.MassOverLength2(value=2.0)
 
         assert unit_angular == 2.0
         assert unit_angular.unit == "angular / arcsec^2"
@@ -247,7 +248,7 @@ class TestMassOverLength2(object):
         self
     ):
 
-        unit_arcsec = dim.MassOverLength2(value=2.0, unit_mass="solMass")
+        unit_arcsec = al.MassOverLength2(value=2.0, unit_mass="solMass")
 
         assert unit_arcsec == 2.0
         assert unit_arcsec.unit == "solMass / arcsec^2"
@@ -287,7 +288,7 @@ class TestMassOverLength3(object):
         self
     ):
 
-        unit_angular = dim.MassOverLength3(value=2.0)
+        unit_angular = al.MassOverLength3(value=2.0)
 
         assert unit_angular == 2.0
         assert unit_angular.unit == "angular / arcsec^3"
@@ -325,7 +326,7 @@ class TestMassOverLength3(object):
         self
     ):
 
-        unit_arcsec = dim.MassOverLength3(value=2.0, unit_mass="solMass")
+        unit_arcsec = al.MassOverLength3(value=2.0, unit_mass="solMass")
 
         assert unit_arcsec == 2.0
         assert unit_arcsec.unit == "solMass / arcsec^3"
@@ -360,15 +361,15 @@ class TestMassOverLength3(object):
             unit_arcsec.convert(unit_length="lol", unit_mass="solMass")
 
 
-class MockDimensionsProfile(dim.DimensionsProfile):
+class MockDimensionsProfile(al.DimensionsProfile):
     def __init__(
         self,
-        position: dim.Position = None,
+        position: al.Position = None,
         param_float: float = None,
-        length: dim.Length = None,
-        luminosity: dim.Luminosity = None,
-        mass: dim.Mass = None,
-        mass_over_luminosity: dim.MassOverLuminosity = None,
+        length: al.Length = None,
+        luminosity: al.Luminosity = None,
+        mass: al.Mass = None,
+        mass_over_luminosity: al.MassOverLuminosity = None,
     ):
 
         super(MockDimensionsProfile, self).__init__()
@@ -380,22 +381,22 @@ class MockDimensionsProfile(dim.DimensionsProfile):
         self.mass = mass
         self.mass_over_luminosity = mass_over_luminosity
 
-    @dim.convert_units_to_input_units
+    @al.convert_units_to_input_units
     def unit_length_calc(
         self,
-        length_input: dim.Length,
+        length_input: al.Length,
         redshift_profile=None,
         cosmology=MockCosmology(),
         unit_length="arcsec",
         **kwargs
     ):
 
-        return dim.Length(self.length + length_input, self.unit_length)
+        return al.Length(self.length + length_input, self.unit_length)
 
-    @dim.convert_units_to_input_units
+    @al.convert_units_to_input_units
     def unit_luminosity_calc(
         self,
-        luminosity_input: dim.Luminosity = None,
+        luminosity_input: al.Luminosity = None,
         redshift_profile=None,
         cosmology=MockCosmology(),
         unit_luminosity="eps",
@@ -403,12 +404,12 @@ class MockDimensionsProfile(dim.DimensionsProfile):
         **kwargs
     ):
 
-        return dim.Luminosity(self.luminosity + luminosity_input, self.unit_luminosity)
+        return al.Luminosity(self.luminosity + luminosity_input, self.unit_luminosity)
 
-    @dim.convert_units_to_input_units
+    @al.convert_units_to_input_units
     def unit_mass_calc(
         self,
-        mass_input: dim.Mass = None,
+        mass_input: al.Mass = None,
         redshift_profile=None,
         redshift_source=1.0,
         cosmology=MockCosmology(),
@@ -416,7 +417,7 @@ class MockDimensionsProfile(dim.DimensionsProfile):
         **kwargs
     ):
 
-        return dim.Mass(self.mass + mass_input, self.unit_mass)
+        return al.Mass(self.mass + mass_input, self.unit_mass)
 
 
 class TestDimensionsProfile(object):
@@ -424,13 +425,13 @@ class TestDimensionsProfile(object):
         def test__unit_length__extracted_from_profile(self):
 
             profile = MockDimensionsProfile(
-                length=dim.Length(value=3.0, unit_length="arcsec")
+                length=al.Length(value=3.0, unit_length="arcsec")
             )
 
             assert profile.unit_length == "arcsec"
 
             profile = MockDimensionsProfile(
-                length=dim.Length(value=3.0, unit_length="kpc")
+                length=al.Length(value=3.0, unit_length="kpc")
             )
 
             assert profile.unit_length == "kpc"
@@ -442,8 +443,8 @@ class TestDimensionsProfile(object):
         def test__unit_luminosity__extracted_from_profile(self):
 
             profile = MockDimensionsProfile(
-                luminosity=dim.Luminosity(value=3.0, unit_luminosity="eps"),
-                mass_over_luminosity=dim.MassOverLuminosity(
+                luminosity=al.Luminosity(value=3.0, unit_luminosity="eps"),
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=3.0, unit_luminosity="eps"
                 ),
             )
@@ -452,7 +453,7 @@ class TestDimensionsProfile(object):
 
             profile = MockDimensionsProfile(
                 luminosity=1.0,
-                mass_over_luminosity=dim.MassOverLuminosity(
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=3.0, unit_luminosity="eps"
                 ),
             )
@@ -460,15 +461,15 @@ class TestDimensionsProfile(object):
             assert profile.unit_luminosity == "eps"
 
             profile = MockDimensionsProfile(
-                luminosity=dim.Luminosity(value=3.0, unit_luminosity="eps"),
+                luminosity=al.Luminosity(value=3.0, unit_luminosity="eps"),
                 mass_over_luminosity=1.0,
             )
 
             assert profile.unit_luminosity == "eps"
 
             profile = MockDimensionsProfile(
-                luminosity=dim.Luminosity(value=3.0, unit_luminosity="counts"),
-                mass_over_luminosity=dim.MassOverLuminosity(
+                luminosity=al.Luminosity(value=3.0, unit_luminosity="counts"),
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=3.0, unit_luminosity="counts"
                 ),
             )
@@ -477,7 +478,7 @@ class TestDimensionsProfile(object):
 
             profile = MockDimensionsProfile(
                 luminosity=1.0,
-                mass_over_luminosity=dim.MassOverLuminosity(
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=3.0, unit_luminosity="counts"
                 ),
             )
@@ -485,7 +486,7 @@ class TestDimensionsProfile(object):
             assert profile.unit_luminosity == "counts"
 
             profile = MockDimensionsProfile(
-                luminosity=dim.Luminosity(value=3.0, unit_luminosity="counts"),
+                luminosity=al.Luminosity(value=3.0, unit_luminosity="counts"),
                 mass_over_luminosity=1.0,
             )
 
@@ -498,8 +499,8 @@ class TestDimensionsProfile(object):
         def test__unit_mass__extracted_from_profile(self):
 
             profile = MockDimensionsProfile(
-                mass=dim.Mass(value=3.0, unit_mass="angular"),
-                mass_over_luminosity=dim.MassOverLuminosity(
+                mass=al.Mass(value=3.0, unit_mass="angular"),
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=3.0, unit_mass="angular"
                 ),
             )
@@ -508,7 +509,7 @@ class TestDimensionsProfile(object):
 
             profile = MockDimensionsProfile(
                 mass=1.0,
-                mass_over_luminosity=dim.MassOverLuminosity(
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=3.0, unit_mass="angular"
                 ),
             )
@@ -516,14 +517,14 @@ class TestDimensionsProfile(object):
             assert profile.unit_mass == "angular"
 
             profile = MockDimensionsProfile(
-                mass=dim.Mass(value=3.0, unit_mass="angular"), mass_over_luminosity=1.0
+                mass=al.Mass(value=3.0, unit_mass="angular"), mass_over_luminosity=1.0
             )
 
             assert profile.unit_mass == "angular"
 
             profile = MockDimensionsProfile(
-                mass=dim.Mass(value=3.0, unit_mass="solMass"),
-                mass_over_luminosity=dim.MassOverLuminosity(
+                mass=al.Mass(value=3.0, unit_mass="solMass"),
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=3.0, unit_mass="solMass"
                 ),
             )
@@ -532,7 +533,7 @@ class TestDimensionsProfile(object):
 
             profile = MockDimensionsProfile(
                 mass=1.0,
-                mass_over_luminosity=dim.MassOverLuminosity(
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=3.0, unit_mass="solMass"
                 ),
             )
@@ -540,7 +541,7 @@ class TestDimensionsProfile(object):
             assert profile.unit_mass == "solMass"
 
             profile = MockDimensionsProfile(
-                mass=dim.Mass(value=3.0, unit_mass="solMass"), mass_over_luminosity=1.0
+                mass=al.Mass(value=3.0, unit_mass="solMass"), mass_over_luminosity=1.0
             )
 
             assert profile.unit_mass == "solMass"
@@ -555,12 +556,12 @@ class TestDimensionsProfile(object):
         ):
 
             profile_arcsec = MockDimensionsProfile(
-                position=(dim.Length(1.0, "arcsec"), dim.Length(2.0, "arcsec")),
+                position=(al.Length(1.0, "arcsec"), al.Length(2.0, "arcsec")),
                 param_float=2.0,
-                length=dim.Length(value=3.0, unit_length="arcsec"),
-                luminosity=dim.Luminosity(value=4.0, unit_luminosity="eps"),
-                mass=dim.Mass(value=5.0, unit_mass="angular"),
-                mass_over_luminosity=dim.MassOverLuminosity(
+                length=al.Length(value=3.0, unit_length="arcsec"),
+                luminosity=al.Luminosity(value=4.0, unit_luminosity="eps"),
+                mass=al.Mass(value=5.0, unit_mass="angular"),
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=6.0, unit_luminosity="eps", unit_mass="angular"
                 ),
             )
@@ -651,7 +652,7 @@ class TestDimensionsProfile(object):
         ):
 
             profile_arcsec = MockDimensionsProfile(
-                position=(dim.Length(1.0, "arcsec"), dim.Length(2.0, "arcsec"))
+                position=(al.Length(1.0, "arcsec"), al.Length(2.0, "arcsec"))
             )
 
             with pytest.raises(exc.UnitsException):
@@ -669,12 +670,12 @@ class TestDimensionsProfile(object):
         ):
 
             profile_eps = MockDimensionsProfile(
-                position=(dim.Length(1.0, "arcsec"), dim.Length(2.0, "arcsec")),
+                position=(al.Length(1.0, "arcsec"), al.Length(2.0, "arcsec")),
                 param_float=2.0,
-                length=dim.Length(value=3.0, unit_length="arcsec"),
-                luminosity=dim.Luminosity(value=4.0, unit_luminosity="eps"),
-                mass=dim.Mass(value=5.0, unit_mass="angular"),
-                mass_over_luminosity=dim.MassOverLuminosity(
+                length=al.Length(value=3.0, unit_length="arcsec"),
+                luminosity=al.Luminosity(value=4.0, unit_luminosity="eps"),
+                mass=al.Mass(value=5.0, unit_mass="angular"),
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=6.0, unit_luminosity="eps", unit_mass="angular"
                 ),
             )
@@ -765,12 +766,12 @@ class TestDimensionsProfile(object):
         ):
 
             profile_eps = MockDimensionsProfile(
-                position=(dim.Length(1.0, "arcsec"), dim.Length(2.0, "arcsec")),
+                position=(al.Length(1.0, "arcsec"), al.Length(2.0, "arcsec")),
                 param_float=2.0,
-                length=dim.Length(value=3.0, unit_length="arcsec"),
-                luminosity=dim.Luminosity(value=4.0, unit_luminosity="eps"),
-                mass=dim.Mass(value=5.0, unit_mass="angular"),
-                mass_over_luminosity=dim.MassOverLuminosity(
+                length=al.Length(value=3.0, unit_length="arcsec"),
+                luminosity=al.Luminosity(value=4.0, unit_luminosity="eps"),
+                mass=al.Mass(value=5.0, unit_mass="angular"),
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=6.0, unit_luminosity="eps", unit_mass="angular"
                 ),
             )
@@ -790,12 +791,12 @@ class TestDimensionsProfile(object):
         ):
 
             profile_angular = MockDimensionsProfile(
-                position=(dim.Length(1.0, "arcsec"), dim.Length(2.0, "arcsec")),
+                position=(al.Length(1.0, "arcsec"), al.Length(2.0, "arcsec")),
                 param_float=2.0,
-                length=dim.Length(value=3.0, unit_length="arcsec"),
-                luminosity=dim.Luminosity(value=4.0, unit_luminosity="eps"),
-                mass=dim.Mass(value=5.0, unit_mass="angular"),
-                mass_over_luminosity=dim.MassOverLuminosity(
+                length=al.Length(value=3.0, unit_length="arcsec"),
+                luminosity=al.Luminosity(value=4.0, unit_luminosity="eps"),
+                mass=al.Mass(value=5.0, unit_mass="angular"),
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=6.0, unit_luminosity="eps", unit_mass="angular"
                 ),
             )
@@ -886,12 +887,12 @@ class TestDimensionsProfile(object):
         ):
 
             profile_angular = MockDimensionsProfile(
-                position=(dim.Length(1.0, "arcsec"), dim.Length(2.0, "arcsec")),
+                position=(al.Length(1.0, "arcsec"), al.Length(2.0, "arcsec")),
                 param_float=2.0,
-                length=dim.Length(value=3.0, unit_length="arcsec"),
-                luminosity=dim.Luminosity(value=4.0, unit_luminosity="eps"),
-                mass=dim.Mass(value=5.0, unit_mass="angular"),
-                mass_over_luminosity=dim.MassOverLuminosity(
+                length=al.Length(value=3.0, unit_length="arcsec"),
+                luminosity=al.Luminosity(value=4.0, unit_luminosity="eps"),
+                mass=al.Mass(value=5.0, unit_mass="angular"),
+                mass_over_luminosity=al.MassOverLuminosity(
                     value=6.0, unit_luminosity="eps", unit_mass="angular"
                 ),
             )
@@ -912,13 +913,13 @@ class TestUnitCheckConversionWrapper(object):
         self
     ):
 
-        profile = MockDimensionsProfile(length=dim.Length(3.0, "arcsec"))
+        profile = MockDimensionsProfile(length=al.Length(3.0, "arcsec"))
 
         cosmo = MockCosmology(kpc_per_arcsec=2.0)
 
         # length: arcsec -> arcsec, stays 3.0,  length_input: arcsec -> arcsec, stays 1.0
 
-        length_input = dim.Length(1.0, "arcsec")
+        length_input = al.Length(1.0, "arcsec")
         length = profile.unit_length_calc(
             length_input=length_input, unit_length="arcsec"
         )
@@ -927,7 +928,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # length: arcsec -> arcsec, stays 3.0,  length_input  kpc -> arcsec, converts to 1.0 / 2.0 = 0.5
 
-        length_input = dim.Length(1.0, "kpc")
+        length_input = al.Length(1.0, "kpc")
         length = profile.unit_length_calc(
             length_input=length_input,
             unit_length="arcsec",
@@ -939,7 +940,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # length: arcsec -> kpc, converts to 3.0 * 2.0 = 6.0,  length_input  kpc -> kpc, stays 1.0
 
-        length_input = dim.Length(1.0, "kpc")
+        length_input = al.Length(1.0, "kpc")
         length = profile.unit_length_calc(
             length_input=length_input,
             unit_length="kpc",
@@ -949,11 +950,11 @@ class TestUnitCheckConversionWrapper(object):
         assert length.unit_length == "kpc"
         assert length == 7.0
 
-        profile = MockDimensionsProfile(length=dim.Length(3.0, "kpc"))
+        profile = MockDimensionsProfile(length=al.Length(3.0, "kpc"))
 
         # length: kpc -> kpc, stays 3.0,  length_input: kpc -> kpc, stays 1.0
 
-        length_input = dim.Length(1.0, "kpc")
+        length_input = al.Length(1.0, "kpc")
         length = profile.unit_length_calc(
             length_input=length_input,
             unit_length="kpc",
@@ -965,7 +966,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # length: kpc -> kpc, stays 3.0,  length_input: arcsec -> kpc, convert to 1.0 * 2.0 = 2.0
 
-        length_input = dim.Length(1.0, "arcsec")
+        length_input = al.Length(1.0, "arcsec")
         length = profile.unit_length_calc(
             length_input=length_input,
             unit_length="kpc",
@@ -977,7 +978,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # length: kpc -> arcsec, converts to 3.0 / 2.0 = 1.5,  length_input: kpc -> kpc, stays 1.0
 
-        length_input = dim.Length(1.0, "arcsec")
+        length_input = al.Length(1.0, "arcsec")
         length = profile.unit_length_calc(
             length_input=length_input,
             unit_length="arcsec",
@@ -991,13 +992,13 @@ class TestUnitCheckConversionWrapper(object):
         self
     ):
 
-        profile = MockDimensionsProfile(luminosity=dim.Luminosity(3.0, "eps"))
+        profile = MockDimensionsProfile(luminosity=al.Luminosity(3.0, "eps"))
 
         cosmo = MockCosmology()
 
         # luminosity: eps -> eps, stays 3.0,  luminosity_input: eps -> eps, stays 1.0
 
-        luminosity_input = dim.Luminosity(1.0, "eps")
+        luminosity_input = al.Luminosity(1.0, "eps")
         luminosity = profile.unit_luminosity_calc(
             luminosity_input=luminosity_input, unit_luminosity="eps"
         )
@@ -1006,7 +1007,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # luminosity: eps -> eps, stays 3.0,  luminosity_input  counts -> eps, converts to 1.0 / 2.0 = 0.5
 
-        luminosity_input = dim.Luminosity(1.0, "counts")
+        luminosity_input = al.Luminosity(1.0, "counts")
         luminosity = profile.unit_luminosity_calc(
             luminosity_input=luminosity_input,
             unit_luminosity="eps",
@@ -1019,7 +1020,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # luminosity: eps -> counts, converts to 3.0 * 2.0 = 6.0,  luminosity_input  counts -> counts, stays 1.0
 
-        luminosity_input = dim.Luminosity(1.0, "counts")
+        luminosity_input = al.Luminosity(1.0, "counts")
         luminosity = profile.unit_luminosity_calc(
             luminosity_input=luminosity_input,
             unit_luminosity="counts",
@@ -1030,11 +1031,11 @@ class TestUnitCheckConversionWrapper(object):
         assert luminosity.unit_luminosity == "counts"
         assert luminosity == 7.0
 
-        profile = MockDimensionsProfile(luminosity=dim.Luminosity(3.0, "counts"))
+        profile = MockDimensionsProfile(luminosity=al.Luminosity(3.0, "counts"))
 
         # luminosity: counts -> counts, stays 3.0,  luminosity_input: counts -> counts, stays 1.0
 
-        luminosity_input = dim.Luminosity(1.0, "counts")
+        luminosity_input = al.Luminosity(1.0, "counts")
         luminosity = profile.unit_luminosity_calc(
             luminosity_input=luminosity_input,
             unit_luminosity="counts",
@@ -1047,7 +1048,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # luminosity: counts -> counts, stays 3.0,  luminosity_input: eps -> counts, convert to 1.0 * 2.0 = 2.0
 
-        luminosity_input = dim.Luminosity(1.0, "eps")
+        luminosity_input = al.Luminosity(1.0, "eps")
         luminosity = profile.unit_luminosity_calc(
             luminosity_input=luminosity_input,
             unit_luminosity="counts",
@@ -1060,7 +1061,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # luminosity: counts -> eps, converts to 3.0 / 2.0 = 1.5,  luminosity_input: counts -> counts, stays 1.0
 
-        luminosity_input = dim.Luminosity(1.0, "eps")
+        luminosity_input = al.Luminosity(1.0, "eps")
         luminosity = profile.unit_luminosity_calc(
             luminosity_input=luminosity_input,
             unit_luminosity="eps",
@@ -1076,14 +1077,14 @@ class TestUnitCheckConversionWrapper(object):
     ):
 
         profile = MockDimensionsProfile(
-            length=dim.Length(1.0, "arcsec"), mass=dim.Mass(3.0, "angular")
+            length=al.Length(1.0, "arcsec"), mass=al.Mass(3.0, "angular")
         )
 
         cosmo = MockCosmology(critical_surface_density=2.0)
 
         # mass: angular -> angular, stays 3.0,  mass_input: angular -> angular, stays 1.0
 
-        mass_input = dim.Mass(1.0, "angular")
+        mass_input = al.Mass(1.0, "angular")
         mass = profile.unit_mass_calc(
             mass_input=mass_input,
             unit_mass="angular",
@@ -1096,7 +1097,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # mass: angular -> angular, stays 3.0,  mass_input  solMass -> angular, stays as 1.0
 
-        mass_input = dim.Mass(1.0, "solMass")
+        mass_input = al.Mass(1.0, "solMass")
         mass = profile.unit_mass_calc(
             mass_input=mass_input,
             unit_mass="angular",
@@ -1109,7 +1110,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # mass: angular -> solMass, converts to 3.0 * 2.0 = 6.0,  mass_input  solMass -> solMass, stays 1.0
 
-        mass_input = dim.Mass(1.0, "solMass")
+        mass_input = al.Mass(1.0, "solMass")
         mass = profile.unit_mass_calc(
             mass_input=mass_input,
             unit_mass="solMass",
@@ -1121,12 +1122,12 @@ class TestUnitCheckConversionWrapper(object):
         assert mass == 7.0
 
         profile = MockDimensionsProfile(
-            length=dim.Length(1.0, "arcsec"), mass=dim.Mass(3.0, "solMass")
+            length=al.Length(1.0, "arcsec"), mass=al.Mass(3.0, "solMass")
         )
 
         # mass: solMass -> solMass, stays 3.0,  mass_input: solMass -> solMass, stays 1.0
 
-        mass_input = dim.Mass(1.0, "solMass")
+        mass_input = al.Mass(1.0, "solMass")
         mass = profile.unit_mass_calc(
             mass_input=mass_input,
             unit_mass="solMass",
@@ -1139,7 +1140,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # mass: solMass -> solMass, stays 3.0,  mass_input: angular -> solMass, convert to 1.0 * 2.0 = 2.0
 
-        mass_input = dim.Mass(1.0, "angular")
+        mass_input = al.Mass(1.0, "angular")
         mass = profile.unit_mass_calc(
             mass_input=mass_input,
             unit_mass="solMass",
@@ -1152,7 +1153,7 @@ class TestUnitCheckConversionWrapper(object):
 
         # mass: solMass -> angular, stays 3.0,  mass_input: solMass -> solMass, stays 1.0
 
-        mass_input = dim.Mass(1.0, "angular")
+        mass_input = al.Mass(1.0, "angular")
         mass = profile.unit_mass_calc(
             mass_input=mass_input,
             unit_mass="angular",

@@ -1,8 +1,8 @@
+import autolens as al
 import os
 
 import numpy as np
 
-from autolens.array.mapping_util import array_mapping_util
 
 test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
@@ -14,7 +14,7 @@ class TestMap1dIndexesTo2dIndex(object):
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
-        indexes_2d = array_mapping_util.map_1d_indexes_to_2d_indexes_for_shape(
+        indexes_2d = al.array_mapping_util.map_1d_indexes_to_2d_indexes_for_shape(
             indexes_1d=indexes_1d, shape=(3, 3)
         )
 
@@ -29,7 +29,7 @@ class TestMap1dIndexesTo2dIndex(object):
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5])
 
-        indexes_2d = array_mapping_util.map_1d_indexes_to_2d_indexes_for_shape(
+        indexes_2d = al.array_mapping_util.map_1d_indexes_to_2d_indexes_for_shape(
             indexes_1d=indexes_1d, shape=(2, 3)
         )
 
@@ -41,7 +41,7 @@ class TestMap1dIndexesTo2dIndex(object):
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5])
 
-        indexes_2d = array_mapping_util.map_1d_indexes_to_2d_indexes_for_shape(
+        indexes_2d = al.array_mapping_util.map_1d_indexes_to_2d_indexes_for_shape(
             indexes_1d=indexes_1d, shape=(3, 2)
         )
 
@@ -53,7 +53,7 @@ class TestMap1dIndexesTo2dIndex(object):
 
         indexes_1d = np.array([1, 4, 7, 8, 0, 2, 3, 5, 6])
 
-        indexes_2d = array_mapping_util.map_1d_indexes_to_2d_indexes_for_shape(
+        indexes_2d = al.array_mapping_util.map_1d_indexes_to_2d_indexes_for_shape(
             indexes_1d=indexes_1d, shape=(3, 3)
         )
 
@@ -72,7 +72,7 @@ class TestMap2dIndexesTo1dIndex(object):
             [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
         )
 
-        indexes_1d = array_mapping_util.map_2d_indexes_to_1d_indexes_for_shape(
+        indexes_1d = al.array_mapping_util.map_2d_indexes_to_1d_indexes_for_shape(
             indexes_2d=indexes_2d, shape=(3, 3)
         )
 
@@ -82,7 +82,7 @@ class TestMap2dIndexesTo1dIndex(object):
 
         indexes_2d = np.array([[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2]])
 
-        indexes_1d = array_mapping_util.map_2d_indexes_to_1d_indexes_for_shape(
+        indexes_1d = al.array_mapping_util.map_2d_indexes_to_1d_indexes_for_shape(
             indexes_2d=indexes_2d, shape=(2, 3)
         )
 
@@ -92,7 +92,7 @@ class TestMap2dIndexesTo1dIndex(object):
 
         indexes_2d = np.array([[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]])
 
-        indexes_1d = array_mapping_util.map_2d_indexes_to_1d_indexes_for_shape(
+        indexes_1d = al.array_mapping_util.map_2d_indexes_to_1d_indexes_for_shape(
             indexes_2d=indexes_2d, shape=(3, 2)
         )
 
@@ -104,7 +104,7 @@ class TestMap2dIndexesTo1dIndex(object):
             [[0, 1], [1, 1], [2, 1], [2, 2], [0, 0], [0, 2], [1, 0], [1, 2], [2, 0]]
         )
 
-        indexes_1d = array_mapping_util.map_2d_indexes_to_1d_indexes_for_shape(
+        indexes_1d = al.array_mapping_util.map_2d_indexes_to_1d_indexes_for_shape(
             indexes_2d=indexes_2d, shape=(3, 3)
         )
 
@@ -118,7 +118,7 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        array_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             mask=mask, sub_array_2d=array_2d, sub_grid_size=1
         )
 
@@ -130,7 +130,7 @@ class TestSubArray1DFromSubArray2d(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        array_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             mask=mask, sub_array_2d=array_2d, sub_grid_size=1
         )
 
@@ -146,7 +146,7 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        array_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             mask=mask, sub_array_2d=array_2d, sub_grid_size=1
         )
 
@@ -163,7 +163,7 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        array_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             mask=mask, sub_array_2d=array_2d, sub_grid_size=1
         )
 
@@ -184,7 +184,7 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_array_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2
         )
 
@@ -192,7 +192,7 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
-        sub_array_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2
         )
 
@@ -219,7 +219,7 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        sub_array_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2
         )
 
@@ -277,7 +277,7 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        sub_array_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2
         )
 
@@ -303,7 +303,7 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[False, True], [True, False]])
 
-        sub_array_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=3
         )
 
@@ -320,7 +320,7 @@ class TestSubArray2dFromSubArray1d(object):
 
         mask = np.full(fill_value=False, shape=(2, 2))
 
-        array_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=array_1d, mask=mask, sub_grid_size=1
         )
 
@@ -330,7 +330,7 @@ class TestSubArray2dFromSubArray1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=array_1d, mask=mask, sub_grid_size=1
         )
 
@@ -346,7 +346,7 @@ class TestSubArray2dFromSubArray1d(object):
             ]
         )
 
-        array_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=array_1d, mask=mask, sub_grid_size=1
         )
 
@@ -365,7 +365,7 @@ class TestSubArray2dFromSubArray1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
             sub_array_1d=array_1d, mask=mask, sub_grid_size=2
         )
 

@@ -24,8 +24,8 @@ print("sub grid size = " + str(sub_grid_size))
 print("circular mask radius = " + str(radius_arcsec) + "\n")
 print("psf shape = " + str(psf_shape) + "\n")
 
-lens_galaxy = g.Galaxy(
-    light=lp.EllipticalSersic(
+lens_galaxy = al.Galaxy(
+    light=al.light_profiles.EllipticalSersic(
         centre=(0.0, 0.0),
         axis_ratio=0.9,
         phi=45.0,
@@ -33,13 +33,13 @@ lens_galaxy = g.Galaxy(
         effective_radius=0.8,
         sersic_index=4.0,
     ),
-    mass=mp.EllipticalIsothermal(
+    mass=al.mass_profiles.EllipticalIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
     ),
 )
 
-source_galaxy = g.Galaxy(
-    light=lp.EllipticalSersic(
+source_galaxy = al.Galaxy(
+    light=al.light_profiles.EllipticalSersic(
         centre=(0.0, 0.0),
         axis_ratio=0.8,
         phi=60.0,
@@ -56,12 +56,12 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
         data_resolution=data_resolution,
         psf_shape=psf_shape,
     )
-    mask = msk.Mask.circular(
+    mask = al.Mask.circular(
         shape=ccd_data.shape,
         pixel_scale=ccd_data.pixel_scale,
         radius_arcsec=radius_arcsec,
     )
-    lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
+    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
     print("Light profile fit run times for image type " + data_resolution + "\n")
     print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")
@@ -70,7 +70,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     start = time.time()
     for i in range(repeats):
-        tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
     diff = time.time() - start
     print("Time to Setup Tracer = {}".format(diff / repeats))
 
@@ -89,7 +89,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     start = time.time()
     for i in range(repeats):
-        lens_fit.LensDataFit(
+        al.LensDataFit(
             image_1d=lens_data.image_1d,
             noise_map_1d=lens_data.noise_map_1d,
             mask_1d=lens_data.mask_1d,
@@ -100,7 +100,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     start = time.time()
     for i in range(repeats):
-        lens_fit.LensDataFit(
+        al.LensDataFit(
             image_1d=lens_data.unmasked_image,
             noise_map_1d=lens_data.unmasked_noise_map,
             mask_1d=lens_data.mask_2d,
@@ -111,7 +111,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     start = time.time()
     for i in range(repeats):
-        lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
+        al.LensProfileFit(lens_data=lens_data, tracer=tracer)
     diff = time.time() - start
     print("Time to perform complete fit = {}".format(diff / repeats))
 

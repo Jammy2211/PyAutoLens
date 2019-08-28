@@ -12,7 +12,7 @@ ccd_data = simulation_util.load_test_ccd_data(
 )
 array = ccd_data.image
 
-mask = msk.Mask.elliptical(
+mask = al.Mask.elliptical(
     shape=ccd_data.shape,
     pixel_scale=ccd_data.pixel_scale,
     major_axis_radius_arcsec=6.0,
@@ -34,7 +34,7 @@ ccd_data = simulation_util.load_test_ccd_data(
 )
 array = ccd_data.image
 
-mask = msk.Mask.elliptical(
+mask = al.Mask.elliptical(
     shape=ccd_data.shape,
     pixel_scale=ccd_data.pixel_scale,
     major_axis_radius_arcsec=6.0,
