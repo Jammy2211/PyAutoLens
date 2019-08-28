@@ -38,7 +38,7 @@ ccd_data = simulation_util.load_test_ccd_data(
 )
 
 # The phase is passed the mask we setup below using the radii specified above.
-mask = msk.Mask.circular_annular(
+mask = al.Mask.circular_annular(
     shape=ccd_data.shape,
     pixel_scale=ccd_data.pixel_scale,
     inner_radius_arcsec=inner_radius_arcsec,
@@ -53,8 +53,8 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask)
 phase = phase_imaging.PhaseImaging(
     phase_name="phase_interp",
     phase_folders=[data_type, data_resolution + "_" + str(pixel_scale_interpolation_grid)],
-    galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
-    galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
+    galaxies=dict(lens=gm.GalaxyModel(mass=al.EllipticalPowerLaw)),
+    galaxies=dict(source=gm.GalaxyModel(light=al.light_profiles.EllipticalSersic)),
     optimizer_class=af.MultiNest,
     pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
 )

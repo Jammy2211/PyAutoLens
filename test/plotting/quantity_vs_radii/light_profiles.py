@@ -2,7 +2,7 @@ from autolens.model.profiles import light_profiles as lp
 
 from autolens.model.profiles.plotters import profile_plotters
 
-sersic = lp.EllipticalSersic(
+sersic = al.EllipticalSersic(
     centre=(0.0, 0.0),
     axis_ratio=0.9,
     phi=0.0,
