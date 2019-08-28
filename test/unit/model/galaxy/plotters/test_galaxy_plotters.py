@@ -1,8 +1,8 @@
+import autolens as al
 import os
 
 import pytest
 
-from autolens.model.galaxy.plotters import galaxy_plotters
 
 
 @pytest.fixture(name="galaxy_plotter_path")
@@ -20,7 +20,7 @@ def test__individual_images_are_output(
     galaxy_plotter_path,
     plot_patch,
 ):
-    galaxy_plotters.plot_profile_image(
+    al.galaxy_plotters.plot_profile_image(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -37,7 +37,7 @@ def test__individual_images_are_output(
 
     assert galaxy_plotter_path + "galaxy_profile_image.png" in plot_patch.paths
 
-    galaxy_plotters.plot_convergence(
+    al.galaxy_plotters.plot_convergence(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -54,7 +54,7 @@ def test__individual_images_are_output(
 
     assert galaxy_plotter_path + "galaxy_convergence.png" in plot_patch.paths
 
-    galaxy_plotters.plot_potential(
+    al.galaxy_plotters.plot_potential(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -71,7 +71,7 @@ def test__individual_images_are_output(
 
     assert galaxy_plotter_path + "galaxy_potential.png" in plot_patch.paths
 
-    galaxy_plotters.plot_deflections_y(
+    al.galaxy_plotters.plot_deflections_y(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -88,7 +88,7 @@ def test__individual_images_are_output(
 
     assert galaxy_plotter_path + "galaxy_deflections_y.png" in plot_patch.paths
 
-    galaxy_plotters.plot_deflections_x(
+    al.galaxy_plotters.plot_deflections_x(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -105,7 +105,7 @@ def test__individual_images_are_output(
 
     assert galaxy_plotter_path + "galaxy_deflections_x.png" in plot_patch.paths
 
-    galaxy_plotters.plot_magnification(
+    al.galaxy_plotters.plot_magnification(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -131,7 +131,7 @@ def test__individual_galaxy_quantities__all_are_output(
     galaxy_plotter_path,
     plot_patch,
 ):
-    galaxy_plotters.plot_image_subplot(
+    al.galaxy_plotters.plot_image_subplot(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -146,7 +146,7 @@ def test__individual_galaxy_quantities__all_are_output(
 
     assert galaxy_plotter_path + "galaxy_individual_image.png" in plot_patch.paths
 
-    galaxy_plotters.plot_convergence_subplot(
+    al.galaxy_plotters.plot_convergence_subplot(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -161,7 +161,7 @@ def test__individual_galaxy_quantities__all_are_output(
 
     assert galaxy_plotter_path + "galaxy_individual_convergence.png" in plot_patch.paths
 
-    galaxy_plotters.plot_potential_subplot(
+    al.galaxy_plotters.plot_potential_subplot(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -176,7 +176,7 @@ def test__individual_galaxy_quantities__all_are_output(
 
     assert galaxy_plotter_path + "galaxy_individual_potential.png" in plot_patch.paths
 
-    galaxy_plotters.plot_deflections_y_subplot(
+    al.galaxy_plotters.plot_deflections_y_subplot(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -193,7 +193,7 @@ def test__individual_galaxy_quantities__all_are_output(
         galaxy_plotter_path + "galaxy_individual_deflections_y.png" in plot_patch.paths
     )
 
-    galaxy_plotters.plot_image_subplot(
+    al.galaxy_plotters.plot_image_subplot(
         galaxy=gal_x1_lp_x1_mp,
         grid=sub_grid_7x7,
         mask=mask_7x7,

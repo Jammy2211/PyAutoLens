@@ -56,7 +56,7 @@ def make_pipeline(
     phase1 = phase_imaging.PhaseImaging(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
-        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=lp.EllipticalSersic)),
+        galaxies=dict(lens=gm.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -99,11 +99,11 @@ def make_pipeline(
         galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5,
-                light=lp.EllipticalSersic,
-                mass=mp.EllipticalIsothermal,
-                shear=mp.ExternalShear,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
+            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -150,11 +150,11 @@ def make_pipeline(
         galaxies=dict(
             lens=gm.GalaxyModel(
                 redshift=0.5,
-                light=lp.EllipticalSersic,
-                mass=mp.EllipticalIsothermal,
-                shear=mp.ExternalShear,
+                light=al.light_profiles.EllipticalSersic,
+                mass=al.mass_profiles.EllipticalIsothermal,
+                shear=al.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
+            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -235,10 +235,10 @@ def make_pipeline(
             lens=gm.GalaxyModel(
                 redshift=0.5,
                 light_mass=lmp.EllipticalSersic,
-                dark=mp.SphericalNFW,
-                shear=mp.ExternalShear,
+                dark=al.SphericalNFW,
+                shear=al.ExternalShear,
             ),
-            source=gm.GalaxyModel(redshift=1.0, light=lp.EllipticalSersic),
+            source=gm.GalaxyModel(redshift=1.0, light=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
