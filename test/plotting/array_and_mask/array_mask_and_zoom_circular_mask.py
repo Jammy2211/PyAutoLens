@@ -12,7 +12,7 @@ ccd_data = simulation_util.load_test_ccd_data(
 )
 array = ccd_data.image
 
-mask = msk.Mask.circular(
+mask = al.Mask.circular(
     shape=ccd_data.shape,
     pixel_scale=ccd_data.pixel_scale,
     radius_arcsec=5.0,
@@ -32,7 +32,7 @@ ccd_data = simulation_util.load_test_ccd_data(
 )
 array = ccd_data.image
 
-mask = msk.Mask.circular(
+mask = al.Mask.circular(
     shape=ccd_data.shape,
     pixel_scale=ccd_data.pixel_scale,
     radius_arcsec=5.0,

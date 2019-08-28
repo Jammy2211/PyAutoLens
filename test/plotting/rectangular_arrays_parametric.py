@@ -21,7 +21,7 @@ from test.simulation import simulation_util
 ccd_data = simulation_util.load_test_ccd_data(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
-mask = msk.Mask.elliptical(
+mask = al.Mask.elliptical(
     shape=ccd_data.shape,
     pixel_scale=ccd_data.pixel_scale,
     major_axis_radius_arcsec=3.0,
@@ -38,15 +38,15 @@ mask = msk.Mask.elliptical(
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid stack, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
-lens_galaxy = g.Galaxy(
+lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=mp.EllipticalIsothermal(
+    mass=al.mass_profiles.EllipticalIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
     ),
 )
-source_galaxy = g.Galaxy(
+source_galaxy = al.Galaxy(
     redshift=1.0,
-    light=lp.EllipticalSersic(
+    light=al.light_profiles.EllipticalSersic(
         centre=(1.0, 1.0),
         axis_ratio=0.8,
         phi=60.0,
@@ -56,10 +56,10 @@ source_galaxy = g.Galaxy(
     ),
 )
 
-lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
+lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
 
-tracer = ray_tracing.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
-fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
+tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
 lens_fit_plotters.plot_fit_subplot(
     fit=fit,

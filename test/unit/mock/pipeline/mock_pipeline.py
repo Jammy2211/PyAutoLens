@@ -1,7 +1,7 @@
 import numpy as np
 
 import autofit as af
-from autolens.model.galaxy import galaxy as g
+import autolens as al
 from autolens.array.util import binning_util
 
 
@@ -41,24 +41,24 @@ class MockResults(object):
         self.hyper_combined = MockHyperCombinedPhase()
 
     @property
-    def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
+    def path_galaxy_tuples(self) -> [(str, al.Galaxy)]:
         """
         Tuples associating the names of galaxies with instances from the best fit
         """
-        return [(("g0",), g.Galaxy(redshift=0.5)), (("g1",), g.Galaxy(redshift=1.0))]
+        return [(("g0",), al.Galaxy(redshift=0.5)), (("g1",), al.Galaxy(redshift=1.0))]
 
     @property
-    def path_galaxy_tuples_with_index(self) -> [(str, g.Galaxy)]:
+    def path_galaxy_tuples_with_index(self) -> [(str, al.Galaxy)]:
         """
         Tuples associating the names of galaxies with instances from the best fit
         """
         return [
-            (0, ("g0",), g.Galaxy(redshift=0.5)),
-            (1, ("g1",), g.Galaxy(redshift=1.0)),
+            (0, ("g0",), al.Galaxy(redshift=0.5)),
+            (1, ("g1",), al.Galaxy(redshift=1.0)),
         ]
 
     @property
-    def image_2d_dict(self) -> {str: g.Galaxy}:
+    def image_2d_dict(self) -> {str: al.Galaxy}:
         """
         A dictionary associating galaxy names with model images of those galaxies
         """
@@ -68,7 +68,7 @@ class MockResults(object):
         }
 
     @property
-    def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
+    def image_galaxy_1d_dict(self) -> {str: al.Galaxy}:
         """
         A dictionary associating galaxy names with model images of those galaxies
         """
@@ -125,7 +125,7 @@ class MockResults(object):
 
         return hyper_galaxy_image_2d_path_dict
 
-    def binned_image_1d_dict_from_binned_grid(self, binned_grid) -> {str: g.Galaxy}:
+    def binned_image_1d_dict_from_binned_grid(self, binned_grid) -> {str: al.Galaxy}:
         """
         A dictionary associating 1D cluster images with their names.
         """
@@ -134,7 +134,7 @@ class MockResults(object):
 
         for galaxy, galaxy_image_2d in self.image_2d_dict.items():
 
-            binned_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+            binned_image_2d = al.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
             )
 

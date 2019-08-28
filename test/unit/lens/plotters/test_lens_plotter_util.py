@@ -1,4 +1,4 @@
-from autolens.lens.plotters import lens_plotter_util
+import autolens as al
 import pytest
 import os
 
@@ -14,7 +14,7 @@ def test__fit_quantities_are_output(
     lens_fit_x2_plane_7x7, lens_plotter_util_path, plot_patch
 ):
 
-    lens_plotter_util.plot_image(
+    al.lens_plotter_util.plot_image(
         fit=lens_fit_x2_plane_7x7,
         mask=lens_fit_x2_plane_7x7.mask_2d,
         extract_array_from_mask=True,
@@ -27,7 +27,7 @@ def test__fit_quantities_are_output(
 
     assert lens_plotter_util_path + "fit_image.png" in plot_patch.paths
 
-    lens_plotter_util.plot_noise_map(
+    al.lens_plotter_util.plot_noise_map(
         fit=lens_fit_x2_plane_7x7,
         mask=lens_fit_x2_plane_7x7.mask_2d,
         extract_array_from_mask=True,
@@ -40,7 +40,7 @@ def test__fit_quantities_are_output(
 
     assert lens_plotter_util_path + "fit_noise_map.png" in plot_patch.paths
 
-    lens_plotter_util.plot_signal_to_noise_map(
+    al.lens_plotter_util.plot_signal_to_noise_map(
         fit=lens_fit_x2_plane_7x7,
         mask=lens_fit_x2_plane_7x7.mask_2d,
         extract_array_from_mask=True,
@@ -53,7 +53,7 @@ def test__fit_quantities_are_output(
 
     assert lens_plotter_util_path + "fit_signal_to_noise_map.png" in plot_patch.paths
 
-    lens_plotter_util.plot_model_data(
+    al.lens_plotter_util.plot_model_data(
         fit=lens_fit_x2_plane_7x7,
         mask=lens_fit_x2_plane_7x7.mask_2d,
         extract_array_from_mask=True,
@@ -66,7 +66,7 @@ def test__fit_quantities_are_output(
 
     assert lens_plotter_util_path + "fit_model_image.png" in plot_patch.paths
 
-    lens_plotter_util.plot_residual_map(
+    al.lens_plotter_util.plot_residual_map(
         fit=lens_fit_x2_plane_7x7,
         mask=lens_fit_x2_plane_7x7.mask_2d,
         extract_array_from_mask=True,
@@ -79,7 +79,7 @@ def test__fit_quantities_are_output(
 
     assert lens_plotter_util_path + "fit_residual_map.png" in plot_patch.paths
 
-    lens_plotter_util.plot_normalized_residual_map(
+    al.lens_plotter_util.plot_normalized_residual_map(
         fit=lens_fit_x2_plane_7x7,
         mask=lens_fit_x2_plane_7x7.mask_2d,
         extract_array_from_mask=True,
@@ -94,7 +94,7 @@ def test__fit_quantities_are_output(
         lens_plotter_util_path + "fit_normalized_residual_map.png" in plot_patch.paths
     )
 
-    lens_plotter_util.plot_chi_squared_map(
+    al.lens_plotter_util.plot_chi_squared_map(
         fit=lens_fit_x2_plane_7x7,
         mask=lens_fit_x2_plane_7x7.mask_2d,
         extract_array_from_mask=True,
@@ -112,7 +112,7 @@ def test__subtracted_image_of_plane_is_output(
     lens_fit_x1_plane_7x7, lens_fit_x2_plane_7x7, lens_plotter_util_path, plot_patch
 ):
 
-    lens_plotter_util.plot_subtracted_image_of_plane(
+    al.lens_plotter_util.plot_subtracted_image_of_plane(
         fit=lens_fit_x1_plane_7x7,
         plane_index=0,
         mask=lens_fit_x2_plane_7x7.mask_2d,
@@ -129,7 +129,7 @@ def test__subtracted_image_of_plane_is_output(
         in plot_patch.paths
     )
 
-    lens_plotter_util.plot_subtracted_image_of_plane(
+    al.lens_plotter_util.plot_subtracted_image_of_plane(
         fit=lens_fit_x2_plane_7x7,
         plane_index=0,
         mask=lens_fit_x2_plane_7x7.mask_2d,
@@ -146,7 +146,7 @@ def test__subtracted_image_of_plane_is_output(
         in plot_patch.paths
     )
 
-    lens_plotter_util.plot_subtracted_image_of_plane(
+    al.lens_plotter_util.plot_subtracted_image_of_plane(
         fit=lens_fit_x2_plane_7x7,
         plane_index=1,
         mask=lens_fit_x2_plane_7x7.mask_2d,
@@ -168,7 +168,7 @@ def test__model_image_of_plane_is_output(
     lens_fit_x1_plane_7x7, lens_fit_x2_plane_7x7, lens_plotter_util_path, plot_patch
 ):
 
-    lens_plotter_util.plot_model_image_of_plane(
+    al.lens_plotter_util.plot_model_image_of_plane(
         fit=lens_fit_x1_plane_7x7,
         plane_index=0,
         mask=lens_fit_x2_plane_7x7.mask_2d,
@@ -182,7 +182,7 @@ def test__model_image_of_plane_is_output(
 
     assert lens_plotter_util_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
 
-    lens_plotter_util.plot_model_image_of_plane(
+    al.lens_plotter_util.plot_model_image_of_plane(
         fit=lens_fit_x2_plane_7x7,
         plane_index=0,
         mask=lens_fit_x2_plane_7x7.mask_2d,
@@ -196,7 +196,7 @@ def test__model_image_of_plane_is_output(
 
     assert lens_plotter_util_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
 
-    lens_plotter_util.plot_model_image_of_plane(
+    al.lens_plotter_util.plot_model_image_of_plane(
         fit=lens_fit_x2_plane_7x7,
         plane_index=1,
         mask=lens_fit_x2_plane_7x7.mask_2d,

@@ -1,65 +1,56 @@
 import numpy as np
-import scipy.signal
 
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd
-from autolens.data.instrument import interferometer
-from autolens.data import fourier_transform
+import autolens as al
 from autolens.array import scaled_array
+from autolens.data import fourier_transform
+from autolens.data.instrument import interferometer
 
 
 class MockImage(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockBackgroundNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockPoissonNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockExposureTimeMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockBackgrondSkyMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
-        return scaled_array.ScaledSquarePixelArray(
+        return al.ScaledSquarePixelArray(
             array=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockPSF(object):
     def __new__(cls, shape, value, pixel_scale=1.0, *args, **kwargs):
-
-        return abstract_data.PSF(
+        return al.PSF(
             array=value * np.ones(shape=shape),
             pixel_scale=pixel_scale,
             origin=(0.0, 0.0),
@@ -68,7 +59,6 @@ class MockPSF(object):
 
 class MockImage1D(np.ndarray):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
         array = value * np.ones(shape=shape)
 
         obj = np.array(array, dtype="float64").view(cls)
@@ -80,7 +70,6 @@ class MockImage1D(np.ndarray):
 
 class MockNoiseMap1D(np.ndarray):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
         array = value * np.ones(shape=shape)
 
         obj = np.array(array, dtype="float64").view(cls)
@@ -90,20 +79,19 @@ class MockNoiseMap1D(np.ndarray):
         return obj
 
 
-class MockCCDData(ccd.CCDData):
+class MockCCDData(al.CCDData):
     def __init__(
-        self,
-        image,
-        pixel_scale,
-        psf,
-        noise_map,
-        background_noise_map,
-        poisson_noise_map,
-        exposure_time_map,
-        background_sky_map,
-        name,
+            self,
+            image,
+            pixel_scale,
+            psf,
+            noise_map,
+            background_noise_map,
+            poisson_noise_map,
+            exposure_time_map,
+            background_sky_map,
+            name,
     ):
-
         super(MockCCDData, self).__init__(
             image=image,
             pixel_scale=pixel_scale,
@@ -119,8 +107,7 @@ class MockCCDData(ccd.CCDData):
 
 class MockPrimaryBeam(object):
     def __new__(cls, shape, value, pixel_scale=1.0, *args, **kwargs):
-
-        return abstract_data.PSF(
+        return al.PSF(
             array=value * np.ones(shape=shape),
             pixel_scale=pixel_scale,
             origin=(0.0, 0.0),
@@ -129,7 +116,6 @@ class MockPrimaryBeam(object):
 
 class MockVisibilities(np.ndarray):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
         array = value * np.ones(shape=(shape, 2))
 
         obj = np.array(array, dtype="float64").view(cls)
@@ -141,7 +127,6 @@ class MockVisibilities(np.ndarray):
 
 class MockVisibilitiesNoiseMap(np.ndarray):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
         array = value * np.ones(shape=shape)
 
         obj = np.array(array, dtype="float64").view(cls)
@@ -153,7 +138,6 @@ class MockVisibilitiesNoiseMap(np.ndarray):
 
 class MockUVWavelengths(np.ndarray):
     def __new__(cls, shape, value, pixel_scale=1.0):
-
         array = np.array(
             [
                 [-55636.4609375, 171376.90625],
@@ -172,19 +156,18 @@ class MockUVWavelengths(np.ndarray):
         return obj
 
 
-class MockInterferometerData(interferometer.InterferometerData):
+class MockInterferometerData(al.InterferometerData):
     def __init__(
-        self,
-        image,
-        pixel_scale,
-        psf,
-        primary_beam,
-        noise_map,
-        visibilities,
-        visibilities_noise_map,
-        uv_wavelengths,
+            self,
+            image,
+            pixel_scale,
+            psf,
+            primary_beam,
+            noise_map,
+            visibilities,
+            visibilities_noise_map,
+            uv_wavelengths,
     ):
-
         super(MockInterferometerData, self).__init__(
             image=image,
             pixel_scale=pixel_scale,
@@ -199,7 +182,6 @@ class MockInterferometerData(interferometer.InterferometerData):
 
 class MockTransformer(fourier_transform.Transformer):
     def __init__(self, uv_wavelengths, grid_radians):
-
         super(MockTransformer, self).__init__(
             uv_wavelengths=uv_wavelengths, grid_radians=grid_radians
         )
