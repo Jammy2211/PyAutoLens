@@ -34,6 +34,7 @@ from autolens.data.instrument.abstract_data import (
     AbstractData,
     AbstractNoiseMap,
     ExposureTimeMap,
+    load_positions,
 )
 from autolens.data.instrument.ccd import (
     CCDData,
@@ -149,4 +150,4 @@ from autolens.pipeline.plotters import hyper_plotters
 from autolens.pipeline.plotters import phase_plotters
 from autolens.plotters import plotter_util
 
-__version__ = '0.29.0'
+__version__ = '0.29.1'
