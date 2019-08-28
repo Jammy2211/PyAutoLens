@@ -26,7 +26,7 @@ class VariableFixingHyperPhase(HyperPhase):
         phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
             "MultiNest", "extension_inversion_n_live_points", int
         )
-        optimizer.multimodal = af.conf.instance.non_linear.get(
+        phase.optimizer.multimodal = af.conf.instance.non_linear.get(
             "MultiNest", "extension_inversion_multimodal", bool
         )
 
