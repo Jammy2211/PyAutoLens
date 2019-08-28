@@ -6,7 +6,7 @@ from autolens.lens import lens_data as ld
 
 from test.simulation import simulation_util
 
-# Although we could test the image without using an image (e.g. by just making a grid), we have chosen to
+# Although we could test the image without using an image (e.al. by just making a grid), we have chosen to
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
 # analysis
 
@@ -23,19 +23,19 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
         data_resolution=data_resolution,
         psf_shape=(3, 3),
     )
-    mask = msk.Mask.circular(
+    mask = al.Mask.circular(
         shape=ccd_data.shape,
         pixel_scale=ccd_data.pixel_scale,
         radius_arcsec=radius_arcsec,
     )
-    lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
+    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
     print("Deflection angle run times for image type " + data_resolution + "\n")
     print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")
 
     ### EllipticalGaussian ###
 
-    mass_profile = lp.EllipticalGaussian(
+    mass_profile = al.EllipticalGaussian(
         centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, sigma=1.0
     )
 
@@ -46,7 +46,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalGaussian ###
 
-    mass_profile = lp.SphericalGaussian(centre=(0.0, 0.0), sigma=1.0)
+    mass_profile = al.SphericalGaussian(centre=(0.0, 0.0), sigma=1.0)
 
     start = time.time()
     mass_profile.profile_image_from_grid(grid=lens_data.grid)
@@ -55,7 +55,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalExponential ###
 
-    profile = lp.EllipticalExponential(
+    profile = al.EllipticalExponential(
         centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, intensity=1.0, effective_radius=1.0
     )
 
@@ -66,7 +66,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalExponential ###
 
-    profile = lp.SphericalExponential(
+    profile = al.SphericalExponential(
         centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0
     )
 
@@ -77,7 +77,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalDevVaucouleurs ###
 
-    profile = lp.EllipticalDevVaucouleurs(
+    profile = al.EllipticalDevVaucouleurs(
         centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, intensity=1.0, effective_radius=1.0
     )
 
@@ -88,7 +88,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalDevVaucouleurs ###
 
-    profile = lp.SphericalDevVaucouleurs(
+    profile = al.SphericalDevVaucouleurs(
         centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0
     )
 
@@ -99,7 +99,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalSersic ###
 
-    mass_profile = lp.EllipticalSersic(
+    mass_profile = al.EllipticalSersic(
         centre=(0.0, 0.0),
         axis_ratio=0.8,
         phi=45.0,
@@ -115,7 +115,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalSersic ###
 
-    mass_profile = lp.SphericalSersic(
+    mass_profile = al.light_profiles.SphericalSersic(
         centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=2.5
     )
 
@@ -126,7 +126,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### EllipticalCoreSersic ###
 
-    mass_profile = lp.EllipticalCoreSersic(
+    mass_profile = al.EllipticalCoreSersic(
         centre=(0.0, 0.0),
         axis_ratio=0.8,
         phi=45.0,
@@ -146,7 +146,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalCoreSersic ###
 
-    mass_profile = lp.SphericalCoreSersic(
+    mass_profile = al.SphericalCoreSersic(
         centre=(0.0, 0.0),
         intensity=1.0,
         effective_radius=1.0,

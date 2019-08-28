@@ -1,9 +1,9 @@
-from autolens.model.profiles import light_profiles as lp
+import autolens as al
 
 import numpy as np
 
 # noinspection PyUnusedLocal
-class MockLightProfile(lp.LightProfile):
+class MockLightProfile(al.light_profiles.LightProfile):
     def __init__(self, value, size=1):
         self.value = value
         self.size = size

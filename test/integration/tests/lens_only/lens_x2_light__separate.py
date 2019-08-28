@@ -14,7 +14,7 @@ data_resolution = "LSST"
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     def modify_mask_function(image):
-        return msk.Mask.circular(
+        return al.Mask.circular(
             shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.0
         )
 
@@ -27,7 +27,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = LensPlaneGalaxy0Phase(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        galaxies=dict(lens_0=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic)),
+        galaxies=dict(lens_0=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,
     )
@@ -50,8 +50,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic),
-            lens_1=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic),
+            lens_0=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
+            lens_1=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,
@@ -81,8 +81,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_3",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic),
-            lens_1=gm.GalaxyModel(redshift=0.5, sersic=lp.EllipticalSersic),
+            lens_0=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
+            lens_1=gm.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic),
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,
