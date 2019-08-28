@@ -415,7 +415,9 @@ class TestMassWithinEllipse(object):
         )
         assert mass_circle == mass_ellipse
 
-        sie = al.mass_profiles.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
+        sie = al.mass_profiles.EllipticalIsothermal(
+            einstein_radius=2.0, axis_ratio=0.5, phi=0.0
+        )
         radius = al.Length(2.0)
         mass_circle = sie.mass_within_circle_in_units(
             radius=radius,
@@ -435,7 +437,9 @@ class TestMassWithinEllipse(object):
         self
     ):
 
-        sie = al.mass_profiles.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
+        sie = al.mass_profiles.EllipticalIsothermal(
+            einstein_radius=2.0, axis_ratio=0.5, phi=0.0
+        )
 
         radius = al.Length(0.5)
 
@@ -565,7 +569,9 @@ class TestMassWithinEllipse(object):
 
         cosmology = mock_cosmology.MockCosmology(critical_surface_density=2.0)
 
-        sie = al.mass_profiles.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
+        sie = al.mass_profiles.EllipticalIsothermal(
+            einstein_radius=2.0, axis_ratio=0.5, phi=0.0
+        )
 
         radius = al.Length(2.0, "arcsec")
 
@@ -677,7 +683,9 @@ class TestDensityBetweenAnnuli(object):
             kpc_per_arcsec=2.0, critical_surface_density=2.0
         )
 
-        nfw = al.mass_profiles.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
+        nfw = al.mass_profiles.EllipticalNFW(
+            centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0
+        )
 
         inner_mass = nfw.mass_within_circle_in_units(
             radius=al.Length(1.0),
@@ -713,7 +721,9 @@ class TestDensityBetweenAnnuli(object):
 class TestDeflectionsViaPotential(object):
     def test__compare_sis_deflections_via_potential_and_calculation(self):
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.05
@@ -1185,7 +1195,9 @@ def caustics_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
 class TestConvergenceViajacobian(object):
     def test__compare_sis_convergence_via_jacobian_and_calculation(self):
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.05
@@ -1329,7 +1341,9 @@ class TestCriticalCurvesandCaustics(object):
 
     def test__tangential_critical_curve_radii__spherical_isothermal(self):
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.25, sub_grid_size=2
@@ -1348,7 +1362,9 @@ class TestCriticalCurvesandCaustics(object):
             x_critical_tangential ** 2 + y_critical_tangential ** 2
         ) == pytest.approx(sis.einstein_radius ** 2, 5e-1)
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.5, sub_grid_size=4
@@ -1369,7 +1385,9 @@ class TestCriticalCurvesandCaustics(object):
 
     def test__tangential_critical_curve_centres__spherical_isothermal(self):
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.25, sub_grid_size=1
@@ -1399,7 +1417,9 @@ class TestCriticalCurvesandCaustics(object):
         assert -0.01 < y_centre < 0.01
         assert -0.01 < x_centre < 0.01
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.5, 1.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.5, 1.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(60, 60), pixel_scale=0.25, sub_grid_size=1
@@ -1417,7 +1437,9 @@ class TestCriticalCurvesandCaustics(object):
 
     def test__radial_critical_curve_centres__spherical_isothermal(self):
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.25, sub_grid_size=1
@@ -1447,7 +1469,9 @@ class TestCriticalCurvesandCaustics(object):
         assert -0.01 < y_centre < 0.01
         assert -0.01 < x_centre < 0.01
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.5, 1.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.5, 1.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(60, 60), pixel_scale=0.25, sub_grid_size=1
@@ -1465,7 +1489,9 @@ class TestCriticalCurvesandCaustics(object):
 
     def test__tangential_caustic_centres__spherical_isothermal(self):
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.25, sub_grid_size=1
@@ -1495,7 +1521,9 @@ class TestCriticalCurvesandCaustics(object):
         assert -0.01 < y_centre < 0.01
         assert -0.01 < x_centre < 0.01
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.5, 1.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.5, 1.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(60, 60), pixel_scale=0.25, sub_grid_size=1
@@ -1513,7 +1541,9 @@ class TestCriticalCurvesandCaustics(object):
 
     def test__radial_caustics_radii__spherical_isothermal(self):
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(10, 10), pixel_scale=0.5, sub_grid_size=4
@@ -1534,7 +1564,9 @@ class TestCriticalCurvesandCaustics(object):
 
     def test__radial_caustic_centres__spherical_isothermal(self):
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(20, 20), pixel_scale=0.25, sub_grid_size=1
@@ -1564,7 +1596,9 @@ class TestCriticalCurvesandCaustics(object):
         assert -0.09 < y_centre < 0.09
         assert -0.09 < x_centre < 0.09
 
-        sis = al.mass_profiles.SphericalIsothermal(centre=(0.5, 1.0), einstein_radius=2.0)
+        sis = al.mass_profiles.SphericalIsothermal(
+            centre=(0.5, 1.0), einstein_radius=2.0
+        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
             shape=(60, 60), pixel_scale=0.25, sub_grid_size=1

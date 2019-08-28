@@ -22,9 +22,9 @@ test_name = "test"
 
 def simulate_integration_image(test_name, pixel_scale, galaxies):
     output_path = (
-            "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
-            + test_name
-            + "/"
+        "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
+        + test_name
+        + "/"
     )
     psf_shape = (11, 11)
     image_shape = (150, 150)
@@ -86,8 +86,8 @@ class TestAdvancedModelMapper(object):
         assert light_profile.name_for_prior(light_profile.centre.centre_0) == "centre_0"
 
         assert (
-                galaxy_model.name_for_prior(light_profile.axis_ratio)
-                == "light_profile_axis_ratio"
+            galaxy_model.name_for_prior(light_profile.axis_ratio)
+            == "light_profile_axis_ratio"
         )
 
         assert mapper.param_names[0] == "galaxy_model_light_profile_centre_0"
@@ -134,7 +134,9 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)
+                lens=al.GalaxyModel(
+                    redshift=0.5, sersic=al.light_profiles.EllipticalSersic
+                )
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(test_name),
@@ -143,7 +145,7 @@ class TestPhaseModelMapper(object):
         initial_total_priors = phase.variable.prior_count
         phase.make_analysis(data=ccd_data)
 
-        assert phase.galaxies[0].sersic.intensity == phase.galaxies[0].sersic.axis_ratio
+        assert phase.galaxies[0].sersic.intensity == al.Galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
         assert len(phase.variable.flat_prior_model_tuples) == 1
 
@@ -158,12 +160,12 @@ class TestPhaseModelMapper(object):
 
         assert len(lines) == 2
         assert (
-                "galaxies_lens_sersic_axis_ratio                                                  UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
-                in lines
+            "galaxies_lens_sersic_axis_ratio                                                  UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
+            in lines
         )
         assert (
-                "galaxies_lens_sersic_intensity                                                   UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
-                in lines
+            "galaxies_lens_sersic_intensity                                                   UniformPrior, lower_limit = 0.2, upper_limit = 1.0"
+            in lines
         )
 
     if os.path.exists(output_path):
@@ -210,7 +212,9 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=al.GalaxyModel(redshift=0.5, sersic=al.EllipticalSersic)
+                lens=al.GalaxyModel(
+                    redshift=0.5, sersic=al.light_profiles.EllipticalSersic
+                )
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(name),

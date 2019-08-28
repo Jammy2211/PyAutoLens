@@ -10,7 +10,9 @@ from test.unit.mock.pipeline import mock_pipeline
 @pytest.fixture(name="lens_galaxy")
 def make_lens_galaxy():
     return al.Galaxy(
-        redshift=1.0, light=al.light_profiles.SphericalSersic(), mass=al.mass_profiles.SphericalIsothermal()
+        redshift=1.0,
+        light=al.light_profiles.SphericalSersic(),
+        mass=al.mass_profiles.SphericalIsothermal(),
     )
 
 
@@ -147,7 +149,9 @@ class TestVariableFixing(object):
         mapper = af.ModelMapper()
 
         mapper.lens_galaxy = al.GalaxyModel(
-            redshift=al.Redshift, pixelization=al.pixelizations.Rectangular, regularization=al.regularization.Constant
+            redshift=al.Redshift,
+            pixelization=al.pixelizations.Rectangular,
+            regularization=al.regularization.Constant,
         )
         mapper.source_galaxy = al.GalaxyModel(
             redshift=al.Redshift, light=al.light_profiles.EllipticalLightProfile
@@ -156,7 +160,9 @@ class TestVariableFixing(object):
         assert mapper.prior_count == 9
 
         instance.lens_galaxy = al.Galaxy(
-            pixelization=al.pixelizations.Rectangular(), regularization=al.regularization.Constant(), redshift=1.0
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
+            redshift=1.0,
         )
         instance.source_galaxy = al.Galaxy(
             redshift=1.0, light=al.light_profiles.EllipticalLightProfile()
@@ -166,7 +172,10 @@ class TestVariableFixing(object):
         phase = al.VariableFixingHyperPhase(
             MockPhase(),
             "mock_phase",
-            variable_classes=(al.pixelizations.Pixelization, al.regularization.Regularization),
+            variable_classes=(
+                al.pixelizations.Pixelization,
+                al.regularization.Regularization,
+            ),
         )
 
         mapper = mapper.copy_with_fixed_priors(instance, phase.variable_classes)
@@ -492,9 +501,7 @@ class TestImagePassing(object):
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensDataFit.for_data_and_tracer(
-            lens_data=lens_data_7x7, tracer=tracer
-        )
+        fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
@@ -509,11 +516,7 @@ def make_combined():
 
     # noinspection PyTypeChecker
     hyper_combined = al.CombinedHyperPhase(
-        normal_phase,
-        hyper_phase_classes=(
-            al.HyperGalaxyPhase,
-            al.InversionPhase,
-        ),
+        normal_phase, hyper_phase_classes=(al.HyperGalaxyPhase, al.InversionPhase)
     )
 
     for phase in hyper_combined.hyper_phases:

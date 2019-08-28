@@ -30,13 +30,13 @@ class MockBinnedGrid(al.BinnedGrid):
 
 class MockPixelizationGrid(np.ndarray):
     def __new__(
-            cls,
-            arr,
-            mask_1d_index_to_nearest_pixelization_1d_index=None,
-            sub_mask_1d_index_to_mask_1d_index=None,
-            sub_grid_size=1,
-            *args,
-            **kwargs
+        cls,
+        arr,
+        mask_1d_index_to_nearest_pixelization_1d_index=None,
+        sub_mask_1d_index_to_mask_1d_index=None,
+        sub_grid_size=1,
+        *args,
+        **kwargs
     ):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.

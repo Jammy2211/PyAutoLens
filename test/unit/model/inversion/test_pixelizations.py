@@ -4,7 +4,6 @@ import pytest
 import scipy.spatial
 
 
-
 class TestRectangular:
     class TestGeometry:
         def test__3x3_grid__buffer_is_small__grid_give_min_minus_1_max_1__sets_up_geometry_correctly(

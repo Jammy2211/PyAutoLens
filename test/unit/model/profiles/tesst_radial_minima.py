@@ -408,7 +408,9 @@ class TestCoredIsothermal(object):
 
 class TestIsothermal(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
-        isothermal = al.mass_profiles.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.EllipticalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=1.0
+        )
 
         convergence_1 = isothermal.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
         convergence_0 = isothermal.convergence_from_grid(
@@ -416,7 +418,9 @@ class TestIsothermal(object):
         )
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.EllipticalIsothermal(centre=(1.0, 1.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.EllipticalIsothermal(
+            centre=(1.0, 1.0), einstein_radius=1.0
+        )
 
         convergence_1 = isothermal.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
         convergence_0 = isothermal.convergence_from_grid(
@@ -424,7 +428,9 @@ class TestIsothermal(object):
         )
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=1.0
+        )
 
         convergence_1 = isothermal.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
         convergence_0 = isothermal.convergence_from_grid(
@@ -432,7 +438,9 @@ class TestIsothermal(object):
         )
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(1.0, 1.0), einstein_radius=1.0
+        )
 
         convergence_1 = isothermal.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
         convergence_0 = isothermal.convergence_from_grid(
@@ -440,7 +448,9 @@ class TestIsothermal(object):
         )
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.EllipticalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=1.0
+        )
 
         potential_1 = isothermal.potential_from_grid(grid=np.array([[1.0, 0.0]]))
         potential_0 = isothermal.potential_from_grid(
@@ -448,7 +458,9 @@ class TestIsothermal(object):
         )
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.EllipticalIsothermal(centre=(1.0, 1.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.EllipticalIsothermal(
+            centre=(1.0, 1.0), einstein_radius=1.0
+        )
 
         potential_1 = isothermal.potential_from_grid(grid=np.array([[2.0, 1.0]]))
         potential_0 = isothermal.potential_from_grid(
@@ -456,7 +468,9 @@ class TestIsothermal(object):
         )
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=1.0
+        )
 
         potential_1 = isothermal.potential_from_grid(grid=np.array([[1.0, 0.0]]))
         potential_0 = isothermal.potential_from_grid(
@@ -464,7 +478,9 @@ class TestIsothermal(object):
         )
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(1.0, 1.0), einstein_radius=1.0
+        )
 
         potential_1 = isothermal.potential_from_grid(grid=np.array([[2.0, 1.0]]))
         potential_0 = isothermal.potential_from_grid(
@@ -472,7 +488,9 @@ class TestIsothermal(object):
         )
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.EllipticalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=1.0
+        )
 
         deflections_1 = isothermal.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
         deflections_0 = isothermal.deflections_from_grid(
@@ -480,7 +498,9 @@ class TestIsothermal(object):
         )
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.EllipticalIsothermal(centre=(1.0, 1.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.EllipticalIsothermal(
+            centre=(1.0, 1.0), einstein_radius=1.0
+        )
 
         deflections_1 = isothermal.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
         deflections_0 = isothermal.deflections_from_grid(
@@ -488,7 +508,9 @@ class TestIsothermal(object):
         )
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(0.0, 0.0), einstein_radius=1.0
+        )
 
         deflections_1 = isothermal.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
         deflections_0 = isothermal.deflections_from_grid(
@@ -496,7 +518,9 @@ class TestIsothermal(object):
         )
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
-        isothermal = al.mass_profiles.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=1.0)
+        isothermal = al.mass_profiles.SphericalIsothermal(
+            centre=(1.0, 1.0), einstein_radius=1.0
+        )
 
         deflections_1 = isothermal.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
         deflections_0 = isothermal.deflections_from_grid(

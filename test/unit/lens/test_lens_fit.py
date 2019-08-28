@@ -758,7 +758,8 @@ class TestLensProfileFit:
             )
 
             g1 = al.Galaxy(
-                redshift=1.0, light_profile=al.light_profiles.EllipticalSersic(intensity=1.0)
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
@@ -850,7 +851,8 @@ class TestLensProfileFit:
                 mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
-                redshift=1.0, light_profile=al.light_profiles.EllipticalSersic(intensity=1.0)
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
             g2 = al.Galaxy(redshift=1.0)
 
@@ -956,7 +958,8 @@ class TestLensProfileFit:
                 hyper_minimum_value=0.0,
             )
             g1 = al.Galaxy(
-                redshift=1.0, light_profile=al.light_profiles.EllipticalSersic(intensity=1.0)
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
@@ -1064,7 +1067,8 @@ class TestLensProfileFit:
             )
 
             g1 = al.Galaxy(
-                redshift=1.0, light_profile=al.light_profiles.EllipticalSersic(intensity=1.0)
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
@@ -1128,9 +1132,7 @@ class TestLensInversionFit:
 
             g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(
-                galaxies=[al.Galaxy(redshift=0.5), g0]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
@@ -1308,9 +1310,7 @@ class TestLensInversionFit:
                 hyper_minimum_value=0.0,
             )
 
-            tracer = al.Tracer.from_galaxies(
-                galaxies=[al.Galaxy(redshift=0.5), g0]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7,
@@ -1436,9 +1436,7 @@ class TestLensInversionFit:
 
             g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(
-                galaxies=[al.Galaxy(redshift=0.5), g0]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
@@ -1466,16 +1464,15 @@ class TestLensProfileInversionFit:
     class TestCompareToManual:
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_7x7):
             galaxy_light = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.EllipticalSersic(intensity=1.0)
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
             pix = al.pixelizations.Rectangular(shape=(3, 3))
             reg = al.regularization.Constant(coefficient=1.0)
             galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(
-                galaxies=[galaxy_light, galaxy_pix]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
             fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
@@ -1614,10 +1611,12 @@ class TestLensProfileInversionFit:
         ):
 
             g0 = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.EllipticalSersic(intensity=1.0)
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.EllipticalSersic(intensity=2.0)
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
             )
             g2 = al.Galaxy(redshift=0.5)
 
@@ -1755,9 +1754,7 @@ class TestLensProfileInversionFit:
             reg = al.regularization.Constant(coefficient=1.0)
             galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(
-                galaxies=[galaxy_light, galaxy_pix]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
             fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7,
@@ -1910,16 +1907,15 @@ class TestLensProfileInversionFit:
             self, lens_data_7x7
         ):
             galaxy_light = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.EllipticalSersic(intensity=1.0)
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
             pix = al.pixelizations.Rectangular(shape=(3, 3))
             reg = al.regularization.Constant(coefficient=1.0)
             galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(
-                galaxies=[galaxy_light, galaxy_pix]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
             fit = al.LensDataFit.for_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer

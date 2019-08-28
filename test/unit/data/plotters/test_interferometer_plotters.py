@@ -4,7 +4,6 @@ import os
 import pytest
 
 
-
 @pytest.fixture(name="interferometer_plotter_path")
 def make_interferometer_plotter_setup():
     interferometer_plotter_path = "{}/../../test_files/plotting/interferometer/".format(

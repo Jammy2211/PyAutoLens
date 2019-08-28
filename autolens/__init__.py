@@ -1,6 +1,12 @@
 from autolens import text_util
 from autolens.array import grids
-from autolens.array.grids import Grid, BinnedGrid, PixelizationGrid, SparseToGrid, Interpolator
+from autolens.array.grids import (
+    Grid,
+    BinnedGrid,
+    PixelizationGrid,
+    SparseToGrid,
+    Interpolator,
+)
 from autolens.array.mapping_util import array_mapping_util
 from autolens.array.mapping_util import grid_mapping_util
 from autolens.array.mapping_util import mask_mapping_util
@@ -8,8 +14,14 @@ from autolens.array.mapping_util import mask_mapping_util, sparse_mapping_util
 from autolens.array.mapping_util import sparse_mapping_util
 from autolens.array.mask import Mask
 from autolens.array.mask import load_mask_from_fits, output_mask_to_fits
-from autolens.array.scaled_array import ArrayGeometry, RectangularArrayGeometry, Array, ScaledArray, \
-    ScaledSquarePixelArray, ScaledRectangularPixelArray
+from autolens.array.scaled_array import (
+    ArrayGeometry,
+    RectangularArrayGeometry,
+    Array,
+    ScaledArray,
+    ScaledSquarePixelArray,
+    ScaledRectangularPixelArray,
+)
 from autolens.array.util import array_util, grid_util, binning_util
 from autolens.array.util import binning_util, grid_util, mask_util
 from autolens.array.util import grid_util, mask_util
@@ -17,21 +29,55 @@ from autolens.data.convolution import Convolver
 from autolens.data.fourier_transform import Transformer
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import interferometer
-from autolens.data.instrument.abstract_data import PSF, AbstractData, AbstractNoiseMap, ExposureTimeMap
-from autolens.data.instrument.ccd import CCDData, NoiseMap, PoissonNoiseMap, SimulatedCCDData, \
-    generate_poisson_noise, load_ccd_data_from_fits
-from autolens.data.instrument.ccd import load_ccd_data_from_fits, output_ccd_data_to_fits
-from autolens.data.instrument.interferometer import InterferometerData, PrimaryBeam, \
-    load_interferometer_data_from_fits, output_interferometer_data_to_fits
+from autolens.data.instrument.abstract_data import (
+    PSF,
+    AbstractData,
+    AbstractNoiseMap,
+    ExposureTimeMap,
+)
+from autolens.data.instrument.ccd import (
+    CCDData,
+    NoiseMap,
+    PoissonNoiseMap,
+    SimulatedCCDData,
+    generate_poisson_noise,
+    load_ccd_data_from_fits,
+)
+from autolens.data.instrument.ccd import (
+    load_ccd_data_from_fits,
+    output_ccd_data_to_fits,
+)
+from autolens.data.instrument.interferometer import (
+    InterferometerData,
+    PrimaryBeam,
+    load_interferometer_data_from_fits,
+    output_interferometer_data_to_fits,
+)
 from autolens.data.plotters import ccd_plotters
 from autolens.data.plotters import data_plotters
 from autolens.data.plotters import interferometer_plotters
-from autolens.dimensions import DimensionsProfile, Length, Luminosity, Mass, MassOverLuminosity, \
-    MassOverLength2, MassOverLength3, Position, convert_units_to_input_units
+from autolens.dimensions import (
+    DimensionsProfile,
+    Length,
+    Luminosity,
+    Mass,
+    MassOverLuminosity,
+    MassOverLength2,
+    MassOverLength3,
+    Position,
+    convert_units_to_input_units,
+)
 from autolens.lens import ray_tracing, lens_fit
 from autolens.lens.lens_data import LensData
-from autolens.lens.lens_fit import LensDataFit, LensTracerFit, InversionFit, LensInversionFit, \
-    LensProfileInversionFit, LensPositionFit, LensProfileFit
+from autolens.lens.lens_fit import (
+    LensDataFit,
+    LensTracerFit,
+    InversionFit,
+    LensInversionFit,
+    LensProfileInversionFit,
+    LensPositionFit,
+    LensProfileFit,
+)
 from autolens.lens.plane import Plane, PlanePositions, PlaneImage
 from autolens.lens.plotters import lens_fit_plotters
 from autolens.lens.plotters import lens_plotter_util
@@ -73,18 +119,34 @@ from autolens.pipeline.phase.phase_extensions import CombinedHyperPhase
 from autolens.pipeline.phase.phase_extensions import HyperGalaxyPhase
 from autolens.pipeline.phase.phase_extensions.hyper_galaxy_phase import HyperGalaxyPhase
 from autolens.pipeline.phase.phase_extensions.hyper_phase import HyperPhase
-from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionBackgroundBothPhase
-from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionBackgroundNoisePhase
-from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionBackgroundSkyPhase
+from autolens.pipeline.phase.phase_extensions.inversion_phase import (
+    InversionBackgroundBothPhase,
+)
+from autolens.pipeline.phase.phase_extensions.inversion_phase import (
+    InversionBackgroundNoisePhase,
+)
+from autolens.pipeline.phase.phase_extensions.inversion_phase import (
+    InversionBackgroundSkyPhase,
+)
 from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionPhase
-from autolens.pipeline.phase.phase_extensions.inversion_phase import VariableFixingHyperPhase
-from autolens.pipeline.phase.phase_imaging import PhaseImaging, PhaseImaging, PhaseImaging, PhaseImaging
+from autolens.pipeline.phase.phase_extensions.inversion_phase import (
+    VariableFixingHyperPhase,
+)
+from autolens.pipeline.phase.phase_imaging import (
+    PhaseImaging,
+    PhaseImaging,
+    PhaseImaging,
+    PhaseImaging,
+)
 from autolens.pipeline.phase.phase_positions import PhasePositions
-from autolens.pipeline.pipeline import PipelineSettings, PipelineSettingsHyper, PipelineImaging, \
-    PipelinePositions
+from autolens.pipeline.pipeline import (
+    PipelineSettings,
+    PipelineSettingsHyper,
+    PipelineImaging,
+    PipelinePositions,
+)
 from autolens.pipeline.plotters import hyper_plotters
 from autolens.pipeline.plotters import phase_plotters
 from autolens.plotters import plotter_util
 
-__version__ = '0.28.1'
-
+__version__ = "0.28.1"

@@ -46,7 +46,9 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     ### SphericalIsothermal ###
 
-    mass_profile = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+    mass_profile = al.mass_profiles.SphericalIsothermal(
+        centre=(0.0, 0.0), einstein_radius=1.0
+    )
 
     start = time.time()
     mass_profile.deflections_from_grid(grid=lens_data.grid)

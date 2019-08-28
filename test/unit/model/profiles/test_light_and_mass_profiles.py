@@ -112,29 +112,29 @@ class TestSersic(object):
         )
 
         assert (
-                sersic_lp.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_lp.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         assert (
-                sersic_mp.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_mp.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         #    assert (sersic_mp.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False) == sersic_lmp.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False)).all()
         assert (
-                sersic_mp.deflections_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.deflections_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_mp.deflections_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.deflections_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__spherical_and_elliptical_identical(self):
@@ -156,20 +156,20 @@ class TestSersic(object):
         )
 
         assert (
-                elliptical.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         assert (
-                elliptical.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         # assert (elliptical.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False) == spherical.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False)).all()
         np.testing.assert_almost_equal(
@@ -280,29 +280,29 @@ class TestExponential(object):
         )
 
         assert (
-                sersic_lp.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_lp.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         assert (
-                sersic_mp.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_mp.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         #    assert (sersic_mp.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False) == sersic_lmp.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False)).all()
         assert (
-                sersic_mp.deflections_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.deflections_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_mp.deflections_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.deflections_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__spherical_and_elliptical_identical(self):
@@ -318,20 +318,20 @@ class TestExponential(object):
         )
 
         assert (
-                elliptical.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         assert (
-                elliptical.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         # assert elliptical.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False) == spherical.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False)
         np.testing.assert_almost_equal(
@@ -442,29 +442,29 @@ class TestDevVaucouleurs(object):
         )
 
         assert (
-                sersic_lp.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_lp.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         assert (
-                sersic_mp.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_mp.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         #    assert (sersic_mp.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False) == sersic_lmp.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False)).all()
         assert (
-                sersic_mp.deflections_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.deflections_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_mp.deflections_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.deflections_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__spherical_and_elliptical_identical(self):
@@ -480,20 +480,20 @@ class TestDevVaucouleurs(object):
         )
 
         assert (
-                elliptical.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         assert (
-                elliptical.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         # assert elliptical.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False) == spherical.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False)
         np.testing.assert_almost_equal(
@@ -622,29 +622,29 @@ class TestSersicRadialGradient(object):
         )
 
         assert (
-                sersic_lp.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_lp.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         assert (
-                sersic_mp.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_mp.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         #    assert (sersic_mp.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False) == sersic_lmp.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False)).all()
         assert (
-                sersic_mp.deflections_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == sersic_lmp.deflections_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            sersic_mp.deflections_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == sersic_lmp.deflections_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__spherical_and_elliptical_identical(self):
@@ -660,20 +660,20 @@ class TestSersicRadialGradient(object):
         )
 
         assert (
-                elliptical.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         assert (
-                elliptical.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.convergence_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
         # assert elliptical.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False) == spherical.potential_from_grid(grid=grid, return_in_2d=False, return_binned=False)
         np.testing.assert_almost_equal(

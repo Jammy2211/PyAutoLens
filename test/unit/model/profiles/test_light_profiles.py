@@ -47,7 +47,9 @@ class TestGaussian:
         assert isinstance(gaussian.sigma, al.Length)
         assert gaussian.sigma.unit_length == "arcsec"
 
-        gaussian = al.light_profiles.SphericalGaussian(centre=(1.0, 2.0), intensity=1.0, sigma=0.1)
+        gaussian = al.light_profiles.SphericalGaussian(
+            centre=(1.0, 2.0), intensity=1.0, sigma=0.1
+        )
 
         assert gaussian.centre == (1.0, 2.0)
         assert isinstance(gaussian.centre[0], al.Length)
@@ -194,12 +196,12 @@ class TestGaussian:
         spherical = al.light_profiles.SphericalGaussian(intensity=3.0, sigma=2.0)
 
         assert (
-                elliptical.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__reshape_decorators(self):
@@ -364,12 +366,12 @@ class TestSersic:
         )
 
         assert (
-                elliptical.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__summarize_in_units(self):
@@ -390,13 +392,13 @@ class TestSersic:
         assert summary_text[i] == "Light Profile = SphericalSersic\n"
         i += 1
         assert (
-                summary_text[i]
-                == "sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps"
+            summary_text[i]
+            == "sersic_luminosity_within_10.00_arcsec             1.8854e+02 eps"
         )
         i += 1
         assert (
-                summary_text[i]
-                == "sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps"
+            summary_text[i]
+            == "sersic_luminosity_within_500.00_arcsec            1.9573e+02 eps"
         )
         i += 1
 
@@ -545,15 +547,17 @@ class TestExponential:
             axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0
         )
 
-        spherical = al.light_profiles.SphericalExponential(intensity=3.0, effective_radius=2.0)
+        spherical = al.light_profiles.SphericalExponential(
+            intensity=3.0, effective_radius=2.0
+        )
 
         assert (
-                elliptical.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__reshape_decorators(self):
@@ -702,15 +706,17 @@ class TestDevVaucouleurs:
             axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0
         )
 
-        spherical = al.light_profiles.SphericalDevVaucouleurs(intensity=3.0, effective_radius=2.0)
+        spherical = al.light_profiles.SphericalDevVaucouleurs(
+            intensity=3.0, effective_radius=2.0
+        )
 
         assert (
-                elliptical.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__reshape_decorators(self):
@@ -879,12 +885,12 @@ class TestCoreSersic(object):
         )
 
         assert (
-                elliptical.profile_image_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
-                )
-                == spherical.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
-        )
+            elliptical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
+            == spherical.profile_image_from_grid(
+                grid=grid, return_in_2d=False, return_binned=False
+            )
         ).all()
 
     def test__reshape_decorators(self):
@@ -911,21 +917,21 @@ class TestCoreSersic(object):
 
 def luminosity_from_radius_and_profile(radius, profile):
     x = profile.sersic_constant * (
-            (radius / profile.effective_radius) ** (1.0 / profile.sersic_index)
+        (radius / profile.effective_radius) ** (1.0 / profile.sersic_index)
     )
 
     return (
-            profile.intensity
-            * profile.effective_radius ** 2
-            * 2
-            * math.pi
-            * profile.sersic_index
-            * (
-                    (math.e ** profile.sersic_constant)
-                    / (profile.sersic_constant ** (2 * profile.sersic_index))
-            )
-            * scipy.special.gamma(2 * profile.sersic_index)
-            * scipy.special.gammainc(2 * profile.sersic_index, x)
+        profile.intensity
+        * profile.effective_radius ** 2
+        * 2
+        * math.pi
+        * profile.sersic_index
+        * (
+            (math.e ** profile.sersic_constant)
+            / (profile.sersic_constant ** (2 * profile.sersic_index))
+        )
+        * scipy.special.gamma(2 * profile.sersic_index)
+        * scipy.special.gammainc(2 * profile.sersic_index, x)
     )
 
 
@@ -1019,7 +1025,7 @@ class TestLuminosityWithinCircle(object):
         assert luminosity_analytic == pytest.approx(luminosity_integral, 1e-3)
 
     def test__radius_units_conversions__light_profile_updates_units_and_computes_correct_luminosity(
-            self
+        self
     ):
         cosmology = mock_cosmology.MockCosmology(arcsec_per_kpc=0.5, kpc_per_arcsec=2.0)
 

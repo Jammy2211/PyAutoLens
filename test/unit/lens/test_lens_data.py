@@ -3,7 +3,6 @@ import numpy as np
 import pytest
 
 
-
 @pytest.fixture(name="lens_data_7x7")
 def make_lens_data_7x7(ccd_data_7x7, mask_7x7):
     return al.LensData(ccd_data=ccd_data_7x7, mask=mask_7x7)

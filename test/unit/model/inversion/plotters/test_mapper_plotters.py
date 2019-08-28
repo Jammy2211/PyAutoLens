@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 
 
-
 @pytest.fixture(name="mapper_plotter_path")
 def make_mapper_plotter_setup():
     return "{}/../../../test_files/plotting/mapper/".format(
@@ -29,12 +28,16 @@ def make_mask():
 
 @pytest.fixture(name="galaxy_light")
 def make_galaxy_light():
-    return al.Galaxy(redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0))
+    return al.Galaxy(
+        redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)
+    )
 
 
 @pytest.fixture(name="galaxy_mass")
 def make_galaxy_mass():
-    return al.Galaxy(redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0))
+    return al.Galaxy(
+        redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+    )
 
 
 @pytest.fixture(name="grid")

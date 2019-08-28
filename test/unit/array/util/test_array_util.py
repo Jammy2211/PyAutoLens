@@ -401,7 +401,9 @@ class TestFits:
 
         arr = np.array([10.0, 30.0, 40.0, 92.0, 19.0, 20.0])
 
-        al.array_util.numpy_array_1d_to_fits(arr, file_path=test_data_path + "test.fits")
+        al.array_util.numpy_array_1d_to_fits(
+            arr, file_path=test_data_path + "test.fits"
+        )
 
         array_load = al.array_util.numpy_array_1d_from_fits(
             file_path=test_data_path + "test.fits", hdu=0
@@ -429,7 +431,9 @@ class TestFits:
 
         arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
 
-        al.array_util.numpy_array_2d_to_fits(arr, file_path=test_data_path + "test.fits")
+        al.array_util.numpy_array_2d_to_fits(
+            arr, file_path=test_data_path + "test.fits"
+        )
 
         array_load = al.array_util.numpy_array_2d_from_fits(
             file_path=test_data_path + "test.fits", hdu=0

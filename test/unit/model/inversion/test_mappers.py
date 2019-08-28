@@ -10,7 +10,7 @@ def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
     def compute_squared_separation(coordinate1, coordinate2):
         """Computes the squared separation of two grid (no square root for efficiency)"""
         return (coordinate1[0] - coordinate2[0]) ** 2 + (
-                coordinate1[1] - coordinate2[1]
+            coordinate1[1] - coordinate2[1]
         ) ** 2
 
     image_pixels = grid.shape[0]
@@ -43,7 +43,7 @@ def make_five_pixels():
 class TestRectangularMapper:
     class TestImageAndSubToPixelization:
         def test__3x3_grid_of_pixel_grid__1_coordinate_per_square_pixel__in_centre_of_pixels(
-                self
+            self
         ):
             #   _ _ _
             #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
@@ -83,8 +83,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -100,7 +100,7 @@ class TestRectangularMapper:
             ]
 
         def test__3x3_grid_of_pixel_grid__1_coordinate_per_square_pixel__near_edges_of_pixels(
-                self
+            self
         ):
             #   _ _ _
             #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
@@ -140,8 +140,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -195,8 +195,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -257,8 +257,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 2, 3, 8, 11])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 8, 11])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -321,8 +321,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 2, 6, 9, 11])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 6, 9, 11])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -341,7 +341,7 @@ class TestRectangularMapper:
             ]
 
         def test__3x3_grid__change_arcsecond_dimensions_size__grid_adapts_accordingly(
-                self
+            self
         ):
             #   _ _ _
             #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.5 to -0.5
@@ -371,8 +371,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 2, 7, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 7, 8])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -416,8 +416,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 3, 5, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 3, 5, 8])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -462,8 +462,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 3, 10, 11])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 3, 10, 11])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -510,8 +510,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 4, 10, 11])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 4, 10, 11])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -582,8 +582,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -599,7 +599,7 @@ class TestRectangularMapper:
             ]
 
         def test__3x3_grid_of_pixel_grid___shift_coordinates_to_new_centre__centre_adjusts_based_on_grid(
-                self
+            self
         ):
             #   _ _ _
             #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
@@ -639,8 +639,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
 
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
@@ -685,8 +685,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    pix.sub_mask_1d_index_to_pixelization_1d_index
-                    == np.array([0, 1, 3, 10, 11])
+                pix.sub_mask_1d_index_to_pixelization_1d_index
+                == np.array([0, 1, 3, 10, 11])
             ).all()
             assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
                 [0],
@@ -736,8 +736,8 @@ class TestRectangularMapper:
             )
 
             assert (
-                    recon_pix
-                    == np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+                recon_pix
+                == np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
             ).all()
             assert recon_pix.pixel_scales == pytest.approx((4.0 / 3.0, 2.0 / 3.0), 1e-2)
             assert recon_pix.origin == (0.0, 0.0)
@@ -790,7 +790,7 @@ class TestRectangularMapper:
 class TestVoronoiMapper:
     class TestSubToPixelizationViaNearestNeighborsForTesting:
         def test__grid_to_pixel_pixels_via_nearest_neighbour__case1__correct_pairs(
-                self
+            self
         ):
             pixel_centers = np.array(
                 [[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]]
@@ -805,7 +805,7 @@ class TestVoronoiMapper:
             assert sub_to_pix[3] == 3
 
         def test__grid_to_pixel_pixels_via_nearest_neighbour___case2__correct_pairs(
-                self
+            self
         ):
             pixel_centers = np.array(
                 [[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]]
@@ -835,7 +835,7 @@ class TestVoronoiMapper:
             assert sub_to_pix[7] == 0
 
         def test__grid_to_pixel_pixels_via_nearest_neighbour___case3__correct_pairs(
-                self
+            self
         ):
             pixel_centers = np.array(
                 [
@@ -943,6 +943,6 @@ class TestVoronoiMapper:
             )
 
             assert (
-                    mapper.sub_mask_1d_index_to_pixelization_1d_index
-                    == sub_to_pix_nearest_neighbour
+                mapper.sub_mask_1d_index_to_pixelization_1d_index
+                == sub_to_pix_nearest_neighbour
             ).all()
