@@ -1,6 +1,6 @@
 import autofit as af
-
 import autolens as al
+
 from test.integration.tests import runner
 
 test_type = "lens__source"
@@ -10,6 +10,7 @@ data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
@@ -30,6 +31,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=phase1.result.variable.galaxies.lens,
             source_0=phase1.result.variable.galaxies.source_0,
+            source_1=gm.GalaxyModel(redshift=1.0, sersic=lp.EllipticalSersic),
             source_1=al.GalaxyModel(redshift=1.0, sersic=al.light_profiles.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
