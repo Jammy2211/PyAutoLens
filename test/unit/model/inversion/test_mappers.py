@@ -64,7 +64,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -121,7 +121,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -176,7 +176,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -238,7 +238,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pix = al.RectangularPixelization(shape=(4, 3))
+            pix = al.pixelizations.Rectangular(shape=(4, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -302,7 +302,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 4))
+            pix = al.pixelizations.Rectangular(shape=(3, 4))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -352,7 +352,7 @@ class TestRectangularMapper:
                 [[1.5, -1.5], [1.0, 0.0], [1.0, 0.6], [-1.4, 0.0], [-1.5, 1.5]]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -397,7 +397,7 @@ class TestRectangularMapper:
                 [[1.0, -1.5], [1.0, -0.49], [0.32, -1.5], [0.32, 0.51], [-1.0, 1.5]]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -443,7 +443,7 @@ class TestRectangularMapper:
                 [[1.0, -1.5], [1.0, -0.49], [0.49, -1.5], [-0.6, 0.0], [-1.0, 1.5]]
             )
 
-            pix = al.RectangularPixelization(shape=(4, 3))
+            pix = al.pixelizations.Rectangular(shape=(4, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -491,7 +491,7 @@ class TestRectangularMapper:
                 [[1.0, -1.5], [1.0, -0.49], [0.32, -1.5], [-0.34, 0.49], [-1.0, 1.5]]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 4))
+            pix = al.pixelizations.Rectangular(shape=(3, 4))
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
@@ -563,7 +563,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -620,7 +620,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -666,7 +666,7 @@ class TestRectangularMapper:
                 [[3.0, -0.5], [3.0, 0.51], [2.49, -0.5], [1.4, 1.0], [1.0, 2.5]]
             )
 
-            pix = al.RectangularPixelization(shape=(4, 3))
+            pix = al.pixelizations.Rectangular(shape=(4, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -719,7 +719,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
@@ -924,7 +924,7 @@ class TestVoronoiMapper:
                 mask_1d_index_to_nearest_pixelization_1d_index=mask_1d_index_to_nearest_pixelization_1d_index,
             )
 
-            pix = al.VoronoiPixelization()
+            pix = al.pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
             pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixels_and_ridge_points(
                 pixels=6, ridge_points=voronoi.ridge_points

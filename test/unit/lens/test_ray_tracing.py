@@ -107,8 +107,8 @@ class TestAbstractTracer(object):
             gal = al.Galaxy(redshift=0.5)
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -121,8 +121,8 @@ class TestAbstractTracer(object):
 
             gal_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
@@ -131,14 +131,14 @@ class TestAbstractTracer(object):
 
             gal_pix_0 = al.Galaxy(
                 redshift=0.6,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
             )
 
             gal_pix_1 = al.Galaxy(
                 redshift=2.0,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
             )
 
             gal0 = al.Galaxy(redshift=0.25)
@@ -156,8 +156,8 @@ class TestAbstractTracer(object):
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.light_profiles.LightProfile())
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -185,8 +185,8 @@ class TestAbstractTracer(object):
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.light_profiles.LightProfile())
             gal_reg = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -286,8 +286,8 @@ class TestAbstractTracer(object):
             gal = al.Galaxy(redshift=0.5)
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -300,8 +300,8 @@ class TestAbstractTracer(object):
 
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
                 binned_hyper_galaxy_image_1d=1,
             )
 
@@ -315,15 +315,15 @@ class TestAbstractTracer(object):
 
             gal_pix0 = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
                 binned_hyper_galaxy_image_1d=1,
             )
 
             gal_pix1 = al.Galaxy(
                 redshift=2.0,
-                pixelization=al.Pixelization(),
-                regularization=al.ConstantRegularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Constant(),
                 binned_hyper_galaxy_image_1d=2,
             )
 
@@ -2530,8 +2530,8 @@ class TestAbstractTracerData(object):
             self, sub_grid_7x7, image_1d_7x7, noise_map_1d_7x7, convolver_7x7
         ):
 
-            pix = al.RectangularPixelization(shape=(3, 3))
-            reg = al.ConstantRegularization(coefficient=0.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=0.0)
 
             g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 

@@ -105,8 +105,8 @@ class TestAbstractPlane(object):
 
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.Regularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Regularization(),
             )
 
             plane = al.Plane(galaxies=[galaxy_pix], redshift=None)
@@ -123,8 +123,8 @@ class TestAbstractPlane(object):
 
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.Regularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Regularization(),
             )
 
             plane = al.Plane(galaxies=[galaxy_pix], redshift=None)
@@ -150,8 +150,8 @@ class TestAbstractPlane(object):
         def test__binned_hyper_image_of_galaxy_with_pixelization(self):
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.Regularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Regularization(),
             )
 
             plane = al.Plane(galaxies=[galaxy_pix], redshift=None)
@@ -161,8 +161,8 @@ class TestAbstractPlane(object):
 
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.Pixelization(),
-                regularization=al.Regularization(),
+                pixelization=al.pixelizations.Pixelization(),
+                regularization=al.regularization.Regularization(),
                 binned_hyper_galaxy_image_1d=1,
             )
 

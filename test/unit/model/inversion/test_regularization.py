@@ -22,7 +22,7 @@ class TestRegularizationConstant:
 
         pixel_neighbors_size = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
 
-        reg = al.ConstantRegularization(coefficient=1.0)
+        reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             pixel_neighbors, pixel_neighbors_size
         )
@@ -39,7 +39,7 @@ class TestRegularizationConstant:
 class TestRegularizationWeighted:
     def test__pixel_signals__compare_to_regularization_util(self):
 
-        reg = al.AdaptiveBrightnessRegularization(signal_scale=2.0)
+        reg = al.regularization.AdaptiveBrightness(signal_scale=2.0)
 
         sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2, 3, 3, 4, 5])
         sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 3, 4, 5])
@@ -64,7 +64,7 @@ class TestRegularizationWeighted:
 
     def test__weights__compare_to_regularization_util(self):
 
-        reg = al.AdaptiveBrightnessRegularization(
+        reg = al.regularization.AdaptiveBrightness(
             inner_coefficient=10.0, outer_coefficient=15.0
         )
 
@@ -80,7 +80,7 @@ class TestRegularizationWeighted:
 
     def test__regularization_matrix__compare_to_regularization_util(self):
 
-        reg = al.AdaptiveBrightnessRegularization()
+        reg = al.regularization.AdaptiveBrightness()
 
         pixel_neighbors = np.array(
             [

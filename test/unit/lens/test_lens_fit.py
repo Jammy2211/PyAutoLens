@@ -30,8 +30,8 @@ class TestFitProperties:
 
         g2 = al.Galaxy(
             redshift=2.0,
-            pixelization=al.RectangularPixelization(),
-            regularization=al.ConstantRegularization(),
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -49,20 +49,20 @@ class TestFitProperties:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            pixelization=al.RectangularPixelization(),
-            regularization=al.ConstantRegularization(),
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
         )
 
         g1 = al.Galaxy(
             redshift=1.0,
-            pixelization=al.RectangularPixelization(),
-            regularization=al.ConstantRegularization(),
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
         )
 
         g2 = al.Galaxy(
             redshift=2.0,
-            pixelization=al.RectangularPixelization(),
-            regularization=al.ConstantRegularization(),
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -1123,8 +1123,8 @@ class TestLensInversionFit:
     class TestCompareToManual:
         def test___all_lens_fit_quantities__no_hyper_methods(self, lens_data_7x7):
 
-            pix = al.RectangularPixelization(shape=(3, 3))
-            reg = al.ConstantRegularization(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
 
             g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
@@ -1234,8 +1234,8 @@ class TestLensInversionFit:
         def test___lens_fit_galaxy_image_dict__has_inversion_reconstructed_data(
             self, lens_data_7x7
         ):
-            pix = al.RectangularPixelization(shape=(3, 3))
-            reg = al.ConstantRegularization(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
 
             g0 = al.Galaxy(redshift=0.5)
             g1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
@@ -1293,8 +1293,8 @@ class TestLensInversionFit:
                 noise_map=lens_data_7x7.noise_map_1d
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
-            reg = al.ConstantRegularization(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
 
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1431,8 +1431,8 @@ class TestLensInversionFit:
             self, lens_data_7x7
         ):
 
-            pix = al.RectangularPixelization(shape=(3, 3))
-            reg = al.ConstantRegularization(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
 
             g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
@@ -1469,8 +1469,8 @@ class TestLensProfileInversionFit:
                 redshift=0.5, light_profile=al.light_profiles.EllipticalSersic(intensity=1.0)
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
-            reg = al.ConstantRegularization(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
             galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = al.Tracer.from_galaxies(
@@ -1621,8 +1621,8 @@ class TestLensProfileInversionFit:
             )
             g2 = al.Galaxy(redshift=0.5)
 
-            pix = al.RectangularPixelization(shape=(3, 3))
-            reg = al.ConstantRegularization(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
             galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
@@ -1751,8 +1751,8 @@ class TestLensProfileInversionFit:
                 hyper_minimum_value=0.0,
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
-            reg = al.ConstantRegularization(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
             galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = al.Tracer.from_galaxies(
@@ -1913,8 +1913,8 @@ class TestLensProfileInversionFit:
                 redshift=0.5, light_profile=al.light_profiles.EllipticalSersic(intensity=1.0)
             )
 
-            pix = al.RectangularPixelization(shape=(3, 3))
-            reg = al.ConstantRegularization(coefficient=1.0)
+            pix = al.pixelizations.Rectangular(shape=(3, 3))
+            reg = al.regularization.Constant(coefficient=1.0)
             galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
             tracer = al.Tracer.from_galaxies(

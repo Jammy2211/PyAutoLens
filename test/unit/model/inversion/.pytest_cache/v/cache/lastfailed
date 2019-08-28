@@ -33,13 +33,13 @@
   "test_pixelization.py::TestRectangularPixelization::()::TestSetupGeometry": true,
   "test_pixelization.py::TestRegularizationConstant": true,
   "test_pixelization.py::TestRegularizationWeighted": true,
-  "test_pixelization.py::TestVoronoiPixelization::()::TestComputeNeighbors": true,
-  "test_pixelization.py::TestVoronoiPixelization::()::TestComputeSubToSource": true,
-  "test_pixelization.py::TestVoronoiPixelization::()::TestComputeSubToSource::()::test__sub_grid_to_source_pixels_via_cluster_pairs__source_pixels_in_x_shape__correct_pairs": true,
-  "test_pixelization.py::TestVoronoiPixelization::()::TestComputeVoronoi": true,
-  "test_pixelization.py::TestVoronoiPixelization::()::TestImageToSource": true,
-  "test_pixelization.py::TestVoronoiPixelization::()::TestImageToSource::()::test__grid_to_source_pixels_via_cluster_pairs__source_pixels_in_x_shape__correct_pairs": true,
-  "test_pixelization.py::TestVoronoiPixelization::()::TestImageToSourceViaNearestNeighborsForTesting": true,
-  "test_pixelization.py::TestVoronoiPixelization::()::TestImageToSourceViaNearestNeighborsForTesting::()::test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs": true,
-  "test_pixelization.py::TestVoronoiPixelization::()::TestSubToSourceViaNearestNeighborsForTesting": true
+  "test_pixelization.py::TestVoronoi::()::TestComputeNeighbors": true,
+  "test_pixelization.py::TestVoronoi::()::TestComputeSubToSource": true,
+  "test_pixelization.py::TestVoronoi::()::TestComputeSubToSource::()::test__sub_grid_to_source_pixels_via_cluster_pairs__source_pixels_in_x_shape__correct_pairs": true,
+  "test_pixelization.py::TestVoronoi::()::TestComputeVoronoi": true,
+  "test_pixelization.py::TestVoronoi::()::TestImageToSource": true,
+  "test_pixelization.py::TestVoronoi::()::TestImageToSource::()::test__grid_to_source_pixels_via_cluster_pairs__source_pixels_in_x_shape__correct_pairs": true,
+  "test_pixelization.py::TestVoronoi::()::TestImageToSourceViaNearestNeighborsForTesting": true,
+  "test_pixelization.py::TestVoronoi::()::TestImageToSourceViaNearestNeighborsForTesting::()::test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs": true,
+  "test_pixelization.py::TestVoronoi::()::TestSubToSourceViaNearestNeighborsForTesting": true
 }

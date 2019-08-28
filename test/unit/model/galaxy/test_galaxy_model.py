@@ -278,8 +278,8 @@ class TestPixelization(object):
     def test_pixelization(self):
         galaxy_model = al.GalaxyModel(
             redshift=al.Redshift,
-            pixelization=al.RectangularPixelization,
-            regularization=al.ConstantRegularization,
+            pixelization=al.pixelizations.Rectangular,
+            regularization=al.regularization.Constant,
         )
 
         arguments = {
@@ -297,8 +297,8 @@ class TestPixelization(object):
     def test_fixed_pixelization(self):
         galaxy_model = al.GalaxyModel(
             redshift=al.Redshift,
-            pixelization=al.RectangularPixelization(),
-            regularization=al.ConstantRegularization(),
+            pixelization=al.pixelizations.Rectangular(),
+            regularization=al.regularization.Constant(),
         )
 
         arguments = {galaxy_model.redshift.redshift: 2.0}
@@ -310,15 +310,15 @@ class TestPixelization(object):
 
     def test__if_no_pixelization_raises_error(self):
         with pytest.raises(af.exc.PriorException):
-            al.GalaxyModel(redshift=al.Redshift, pixelization=al.VoronoiPixelization)
+            al.GalaxyModel(redshift=al.Redshift, pixelization=al.pixelizations.Voronoi)
 
 
 class TestRegularization(object):
     def test_regularization(self):
         galaxy_model = al.GalaxyModel(
             redshift=al.Redshift,
-            pixelization=al.RectangularPixelization,
-            regularization=al.ConstantRegularization,
+            pixelization=al.pixelizations.Rectangular,
+            regularization=al.regularization.Constant,
         )
 
         arguments = {
@@ -335,8 +335,8 @@ class TestRegularization(object):
     def test_fixed_regularization(self):
         galaxy_model = al.GalaxyModel(
             redshift=al.Redshift,
-            pixelization=al.VoronoiPixelization(),
-            regularization=al.ConstantRegularization(),
+            pixelization=al.pixelizations.Voronoi(),
+            regularization=al.regularization.Constant(),
         )
 
         arguments = {galaxy_model.redshift.redshift: 2.0}
@@ -347,7 +347,7 @@ class TestRegularization(object):
 
     def test__if_no_pixelization_raises_error(self):
         with pytest.raises(af.exc.PriorException):
-            al.GalaxyModel(redshift=al.Redshift, regularization=al.ConstantRegularization)
+            al.GalaxyModel(redshift=al.Redshift, regularization=al.regularization.Constant)
 
 
 class TestHyperGalaxy(object):

@@ -37,7 +37,7 @@ class TestRectangular:
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
 
-        pix = al.RectangularPixelization(shape=(3, 3))
+        pix = al.pixelizations.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid,
@@ -65,7 +65,7 @@ class TestRectangular:
         assert mapper.shape == (3, 3)
         assert (mapper.hyper_image == np.ones((2, 2))).all()
 
-        reg = al.ConstantRegularization(coefficient=1.0)
+        reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             pixel_neighbors=mapper.geometry.pixel_neighbors,
             pixel_neighbors_size=mapper.geometry.pixel_neighbors_size,
@@ -132,7 +132,7 @@ class TestRectangular:
 
         pixelization_grid = MockPixelizationGrid(arr=grid)
 
-        pix = al.RectangularPixelization(shape=(3, 3))
+        pix = al.pixelizations.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=False
@@ -166,7 +166,7 @@ class TestRectangular:
         ).all()
         assert mapper.shape == (3, 3)
 
-        reg = al.ConstantRegularization(coefficient=1.0)
+        reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -240,7 +240,7 @@ class TestRectangular:
 
         pixelization_grid = MockPixelizationGrid(arr=grid)
 
-        pix = al.RectangularPixelization(shape=(3, 3))
+        pix = al.pixelizations.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=False
@@ -264,7 +264,7 @@ class TestRectangular:
         ).all()
         assert mapper.shape == (3, 3)
 
-        reg = al.ConstantRegularization(coefficient=1.0)
+        reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -312,7 +312,7 @@ class TestRectangular:
 
         pixelization_grid = MockPixelizationGrid(grid)
 
-        pix = al.RectangularPixelization(shape=(3, 3))
+        pix = al.pixelizations.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=True
@@ -336,7 +336,7 @@ class TestRectangular:
         ).all()
         assert mapper.shape == (3, 3)
 
-        reg = al.ConstantRegularization(coefficient=1.0)
+        reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -385,7 +385,7 @@ class TestVoronoiMagnification:
 
         grid = al.Grid(arr=grid, mask=mask)
 
-        pix = al.VoronoiMagnificationPixelization(shape=(3, 3))
+        pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
@@ -427,7 +427,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = al.ConstantRegularization(coefficient=1.0)
+        reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -462,7 +462,7 @@ class TestVoronoiMagnification:
 
         grid = al.Grid(arr=grid, mask=mask)
 
-        pix = al.VoronoiMagnificationPixelization(shape=(3, 3))
+        pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
@@ -496,7 +496,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = al.ConstantRegularization(coefficient=1.0)
+        reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -550,7 +550,7 @@ class TestVoronoiMagnification:
 
         grid = al.Grid(arr=grid, mask=mask, sub_grid_size=2)
 
-        pix = al.VoronoiMagnificationPixelization(shape=(3, 3))
+        pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
@@ -584,7 +584,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = al.ConstantRegularization(coefficient=1.0)
+        reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
@@ -621,7 +621,7 @@ class TestVoronoiMagnification:
 
         grid = al.Grid(arr=grid, mask=mask, sub_grid_size=1)
 
-        pix = al.VoronoiMagnificationPixelization(shape=(3, 3))
+        pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
         )
@@ -655,7 +655,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = al.ConstantRegularization(coefficient=1.0)
+        reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
             mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
         )
