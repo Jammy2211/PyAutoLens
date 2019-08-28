@@ -24,13 +24,13 @@ def galaxy_fit_phase():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
         shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=4
     )
 
-    galaxy = g.Galaxy(
+    galaxy = al.Galaxy(
         redshift=0.5,
-        light=lp.SphericalExponential(
+        light=al.SphericalExponential(
             centre=(0.0, 0.0), intensity=1.0, effective_radius=0.5
         ),
     )
@@ -47,7 +47,7 @@ def galaxy_fit_phase():
 
     phase1 = phase.GalaxyFitPhase(
         phase_name=test_name + "/",
-        galaxies=dict(gal=gm.GalaxyModel(redshift=0.5, light=lp.SphericalExponential)),
+        galaxies=dict(gal=gm.GalaxyModel(redshift=0.5, light=al.SphericalExponential)),
         use_image=True,
         sub_grid_size=4,
         optimizer_class=af.MultiNest,

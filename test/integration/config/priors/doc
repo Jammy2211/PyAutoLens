@@ -1,7 +1,7 @@
 The priors config files are used for customizing different aspects of the priors assigned to parameters for non-linear
 sampling. The three categories of prior configs are:
 
-default - the default priors (e.g. Uniform, Gaussian) assigned to every parameter of every light-profile,
+default - the default priors (e.al. Uniform, Gaussian) assigned to every parameter of every light-profile,
           mass-profile, etc.
 
 limit - the hard lower and upper limits allowed for the value of every parameter of every light-profile, mass-profile,

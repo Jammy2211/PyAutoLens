@@ -1,8 +1,8 @@
-from autolens import text_util
+import autolens as al
 
 
 def test__within_radius_label_value_and_unit_string():
-    string0 = text_util.within_radius_label_value_and_unit_string(
+    string0 = al.text_util.within_radius_label_value_and_unit_string(
         prefix="mass",
         radius=1.0,
         unit_length="arcsec",
@@ -11,7 +11,7 @@ def test__within_radius_label_value_and_unit_string():
         whitespace=40,
     )
 
-    string1 = text_util.within_radius_label_value_and_unit_string(
+    string1 = al.text_util.within_radius_label_value_and_unit_string(
         prefix="mass",
         radius=1.0,
         unit_length="arcsec",
@@ -20,7 +20,7 @@ def test__within_radius_label_value_and_unit_string():
         whitespace=35,
     )
 
-    string2 = text_util.within_radius_label_value_and_unit_string(
+    string2 = al.text_util.within_radius_label_value_and_unit_string(
         prefix="mass",
         radius=1.0,
         unit_length="arcsec",
@@ -33,7 +33,7 @@ def test__within_radius_label_value_and_unit_string():
     assert string1 == "mass_within_1.00_arcsec            3.0000e+01 solMass"
     assert string2 == "mass_within_1.00_arcsec       3.0000e+01 solMass"
 
-    string = text_util.within_radius_label_value_and_unit_string(
+    string = al.text_util.within_radius_label_value_and_unit_string(
         prefix="mass",
         radius=1.0,
         unit_length="arcsec2",
