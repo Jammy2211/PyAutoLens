@@ -17,7 +17,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 self.variable.galaxies.subhalo.mass.centre_1,
             ]
 
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
 

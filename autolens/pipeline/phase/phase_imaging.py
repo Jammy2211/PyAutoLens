@@ -174,7 +174,7 @@ class PhaseImaging(Phase):
         )
 
         self.variable = self.variable.populate(results)
-        self.pass_priors(results)
+        self.customize_priors(results)
         self.assert_and_save_pickle()
 
         result = self.run_analysis(analysis)

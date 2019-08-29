@@ -299,13 +299,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     @property
     @array_util.Memoizer()
     def centre(self):
-        centre_y = (
-            np.max(self.masked_grid_1d[:, 0]) + np.min(self.masked_grid_1d[:, 0])
-        ) / 2.0
-        centre_x = (
-            np.max(self.masked_grid_1d[:, 1]) + np.min(self.masked_grid_1d[:, 1])
-        ) / 2.0
-        return (centre_y, centre_x)
+        return grid_util.grid_centre_from_grid_1d(grid_1d=self.masked_grid_1d)
 
     @property
     def pixels_in_mask(self):
@@ -594,28 +588,56 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return Mask(array=blurring_mask, pixel_scale=self.pixel_scale)
 
     @property
-    def edge_pixels(self):
+    def edge_1d_indexes(self):
         """The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge \
         (next to at least one pixel with a *True* value).
         """
-        return mask_util.edge_pixels_from_mask(mask=self).astype("int")
+        return mask_util.edge_1d_indexes_from_mask(mask=self).astype("int")
 
     @property
-    def border_pixels(self):
+    def border_1d_indexes(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        return mask_util.border_pixels_from_mask(mask=self).astype("int")
+        return mask_util.border_1d_indexes_from_mask(mask=self).astype("int")
 
-    def sub_border_pixels_from_sub_grid_size(self, sub_grid_size):
+    @property
+    def border_grid_1d(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        return mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        return self.masked_grid_1d[self.border_1d_indexes]
+
+    def sub_border_1d_indexes_from_sub_grid_size(self, sub_grid_size, filter_size=None):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        an annulus mask).
+        """
+        sub_border_1d_indexes = mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=self, sub_grid_size=sub_grid_size
         ).astype("int")
+
+        if filter_size is None:
+            return sub_border_1d_indexes
+        else:
+            sub_border_thetas_1d = self.sub_border_thetas_1d_from_sub_grid_size(sub_grid_size=sub_grid_size)
+            sub_border_ordered_indexes = np.argsort(sub_border_thetas_1d)
+            return np.sort(sub_border_1d_indexes[sub_border_ordered_indexes[1::filter_size]])
+
+    def sub_border_grid_1d_from_sub_grid_size(self, sub_grid_size, filter_size=None):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        an annulus mask).
+        """
+        masked_sub_grid_1d =  self.masked_sub_grid_1d_from_sub_grid_size(sub_grid_size=sub_grid_size)
+        sub_border_pixel_1d_indexes = self.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=sub_grid_size, filter_size=filter_size)
+        return masked_sub_grid_1d[sub_border_pixel_1d_indexes]
+
+    def sub_border_thetas_1d_from_sub_grid_size(self, sub_grid_size, filter_size=None):
+        sub_border_grid_1d = self.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=sub_grid_size, filter_size=filter_size)
+        return np.arctan2((sub_border_grid_1d[:,0] - self.centre[0]), sub_border_grid_1d[:,1] - self.centre[1])
 
     @property
     def masked_grid_1d(self):
@@ -623,6 +645,14 @@ class Mask(scaled_array.ScaledSquarePixelArray):
             mask=self,
             pixel_scales=self.pixel_scales,
             sub_grid_size=1,
+            origin=self.origin,
+        )
+
+    def masked_sub_grid_1d_from_sub_grid_size(self, sub_grid_size):
+        return grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=self,
+            pixel_scales=self.pixel_scales,
+            sub_grid_size=sub_grid_size,
             origin=self.origin,
         )
 

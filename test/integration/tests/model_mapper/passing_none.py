@@ -3,23 +3,20 @@ import autolens as al
 from test.integration.tests import runner
 
 test_type = "model_mapper"
-test_name = "link_constant_float_to_next_phase"
+test_name = "passing_none"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "LSST"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class MMPhase(al.PhaseImaging):
-        def customize_priors(self, results):
 
-            self.galaxies.lens.light.axis_ratio = 0.2
-            self.galaxies.lens.light.phi = 90.0
-
-    phase1 = MMPhase(
+    phase1 = al.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)
+            lens=al.GalaxyModel(
+                redshift=0.5, light=al.light_profiles.EllipticalSersic, light_1=None
+            )
         ),
         optimizer_class=optimizer_class,
     )
@@ -28,16 +25,15 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class MMPhase2(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            self.galaxies.lens = results.from_phase("phase_1").variable.lens
-
-    phase2 = MMPhase2(
+    phase2 = al.PhaseImaging(
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)
+            lens=al.GalaxyModel(
+                redshift=0.5,
+                light=al.light_profiles.EllipticalSersic,
+                light_1=phase1.result.variable.galaxies.lens.light_1,
+            )
         ),
         optimizer_class=optimizer_class,
     )

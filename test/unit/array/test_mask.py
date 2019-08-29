@@ -1040,11 +1040,11 @@ class TestMaskRegions:
             ]
         )
 
-        edge_pixels_util = al.mask_util.edge_pixels_from_mask(mask=mask)
+        edge_pixels_util = al.mask_util.edge_1d_indexes_from_mask(mask=mask)
 
         mask = al.Mask(mask, pixel_scale=3.0)
 
-        assert mask.edge_pixels == pytest.approx(edge_pixels_util, 1e-4)
+        assert mask.edge_1d_indexes == pytest.approx(edge_pixels_util, 1e-4)
 
     def test__border_image_pixels__compare_to_array_util(self):
         mask = np.array(
@@ -1059,13 +1059,13 @@ class TestMaskRegions:
             ]
         )
 
-        border_pixels_util = al.mask_util.border_pixels_from_mask(mask=mask)
+        border_pixels_util = al.mask_util.border_1d_indexes_from_mask(mask=mask)
 
         mask = al.Mask(mask, pixel_scale=3.0)
 
-        assert mask.border_pixels == pytest.approx(border_pixels_util, 1e-4)
+        assert mask.border_1d_indexes == pytest.approx(border_pixels_util, 1e-4)
 
-    def test__sub_border_image_pixels__compare_to_array_util(self):
+    def test__border_grid_1d(self):
         mask = np.array(
             [
                 [False, False, False, False, False, False, False, True],
@@ -1078,16 +1078,203 @@ class TestMaskRegions:
             ]
         )
 
-        sub_border_pixels_util = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        assert mask.border_grid_1d == pytest.approx(np.array([[3.0, -3.5], [3.0, -2.5], [3.0, -1.5], [3.0, -0.5], [3.0, 0.5], [3.0, 1.5], [3.0, 2.5],
+                                                              [2.0, -3.5], [2.0, 2.5], [1.0, -3.5]]), 1e-4)
+
+    def test__sub_border_1d_indexes__compare_to_array_util_and_numerics(self):
+        mask = np.array(
+            [
+                [False, False, False, False, False, False, False, True],
+                [False, True, True, True, True, True, False, True],
+                [False, True, False, False, False, True, False, True],
+                [False, True, False, True, False, True, False, True],
+                [False, True, False, False, False, True, False, True],
+                [False, True, True, True, True, True, False, True],
+                [False, False, False, False, False, False, False, True],
+            ]
+        )
+
+        sub_border_pixels_util = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=2
         )
 
         mask = al.Mask(mask, pixel_scale=3.0)
 
-        sub_border_pixels = mask.sub_border_pixels_from_sub_grid_size(sub_grid_size=2)
+        sub_border_pixels = mask.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=2)
 
         assert sub_border_pixels == pytest.approx(sub_border_pixels_util, 1e-4)
 
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        sub_border_pixels = mask.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=2)
+
+        assert (sub_border_pixels == np.array([0, 5, 9, 14, 23, 26, 31, 35])).all()
+
+    def test__sub_border_1d_grid__compare_numerical_values(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, False, False, True, True, True, True],
+                [True, True, True, True, False, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=2)
+
+        assert (sub_border_grid_1d == np.array([[1.25, -2.25], [1.25, -1.25], [-0.25, 1.25]])).all()
+
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=2)
+
+        assert (sub_border_grid_1d == np.array([[1.25, -1.25], [1.25, 0.25], [1.25, 1.25], [-0.25, -1.25], [-0.25, 1.25], [-1.25, -1.25], [-1.25, 0.25], [-1.25, 1.25]])).all()
+
+    def test__sub_border_1d_thetas__compare_numerical_values(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, False, False, True, True, True, True],
+                [True, True, True, True, False, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        sub_border_thetas_1d = mask.sub_border_thetas_1d_from_sub_grid_size(sub_grid_size=2)
+
+        assert sub_border_thetas_1d == pytest.approx(np.array([2.736700, 2.35618, -0.404891]), 1.0e-4)
+
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        sub_border_thetas_1d = mask.sub_border_thetas_1d_from_sub_grid_size(sub_grid_size=2)
+
+        assert sub_border_thetas_1d == pytest.approx(np.array([2.356194, 1.373400, 0.785398, -2.944197, -0.197395, -2.356194, -1.373400, -0.785398]), 1.0e-4)
+
+    def test__sub_border_1d_indexes_with_filter__compare_numerical_values(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        sub_border_1d_indexes = mask.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=2, filter_size=2)
+
+        assert (sub_border_1d_indexes == np.array([0, 9, 26, 35])).all()
+        
+        mask = np.array(
+            [   [True, True, True, True, True, True, True, True],
+                [True, False, False, False, False, False, False, True],
+                [True, False, False, False, False, False, False, True],
+                [True, False, False, False, False, False, False, True],
+                [True, False, False, False, False, False, False, True],
+                [True, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        sub_border_1d_indexes = mask.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=1, filter_size=3)
+
+        assert (sub_border_1d_indexes == np.array([2, 5, 6, 23, 24, 27])).all()
+
+    def test__sub_border_1d_grid_with_filter__compare_numerical_values(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=2, filter_size=2)
+
+        assert (sub_border_grid_1d == np.array([[1.25, -1.25], [1.25, 1.25], [-1.25, -1.25], [-1.25, 1.25]])).all()
+
+        mask = np.array(
+            [   [True, True, True, True, True, True, True, True],
+                [True, False, False, False, False, False, False, True],
+                [True, False, False, False, False, False, False, True],
+                [True, False, False, False, False, False, False, True],
+                [True, False, False, False, False, False, False, True],
+                [True, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = al.Mask(mask, pixel_scale=1.0)
+
+        sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=1, filter_size=3)
+
+        assert (sub_border_grid_1d == np.array([[2.5, -0.5], [2.5, 2.5], [1.5, -2.5], [-0.5, 2.5], [-1.5, -2.5], [-1.5, 0.5]])).all()
 
 class TestMaskedGrid1d:
     def test__simple_grids(self):
@@ -1138,6 +1325,88 @@ class TestMaskedGrid1d:
         assert (
             mask.masked_grid_1d == np.array([[4.0, -2.5], [3.0, -1.5], [2.0, -1.5]])
         ).all()
+
+    def test__simple_sub_grids(self):
+
+        mask = al.Mask.unmasked_for_shape_and_pixel_scale(shape=(3, 3), pixel_scale=1.0)
+
+        assert (
+            mask.masked_sub_grid_1d_from_sub_grid_size(sub_grid_size=1)
+            == np.array(
+                [
+                    [1.0, -1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                ]
+            )
+        ).all()
+
+        mask = al.Mask.unmasked_for_shape_and_pixel_scale(shape=(2, 2), pixel_scale=1.0)
+
+        assert (
+            mask.masked_sub_grid_1d_from_sub_grid_size(sub_grid_size=2)
+            == np.array(
+                [
+                    [0.75, -0.75],
+                    [0.75, -0.25],
+                    [0.25, -0.75],
+                    [0.25, -0.25],
+                    [0.75, 0.25],
+                    [0.75, 0.75],
+                    [0.25, 0.25],
+                    [0.25, 0.75],
+                    [-0.25, -0.75],
+                    [-0.25, -0.25],
+                    [-0.75, -0.75],
+                    [-0.75, -0.25],
+                    [-0.25, 0.25],
+                    [-0.25, 0.75],
+                    [-0.75, 0.25],
+                    [-0.75, 0.75],
+                ]
+            )
+        ).all()
+
+        mask = al.Mask.unmasked_for_shape_and_pixel_scale(shape=(3, 3), pixel_scale=1.0)
+        mask[1, 1] = True
+
+        assert (
+            mask.masked_sub_grid_1d_from_sub_grid_size(sub_grid_size=1)
+            == np.array(
+                [
+                    [1.0, -1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                ]
+            )
+        ).all()
+
+        mask = al.Mask(
+            array=np.array([[False, True], [True, False], [True, False]]),
+            pixel_scale=1.0,
+            origin=(3.0, -2.0),
+        )
+
+        masked_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+            mask=mask,
+            pixel_scales=(1.0, 1.0),
+            sub_grid_size=5,
+            origin=(3.0, -2.0),
+        )
+
+        assert (
+            mask.masked_sub_grid_1d_from_sub_grid_size(sub_grid_size=5) == masked_grid_util).all()
 
     def test__compare_to_grid_util(self):
         mask = al.Mask.circular(

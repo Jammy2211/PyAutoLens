@@ -10,7 +10,7 @@ data_resolution = "LSST"
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class QuickPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             self.galaxies.lens.mass.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
@@ -76,7 +76,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 self.variable.galaxies.subhalo.mass.centre_1,
             ]
 
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ### Lens Mass, PL -> PL, Shear -> Shear ###
 

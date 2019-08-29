@@ -205,7 +205,7 @@ def reshape_returned_grid(func):
 
 
 class Grid(np.ndarray):
-    def __new__(cls, arr, mask, sub_grid_size=1, binned=None, *args, **kwargs):
+    def __new__(cls, arr, mask, sub_grid_size=1, border_filter_size=None, binned=None, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right. 
         
@@ -322,8 +322,9 @@ class Grid(np.ndarray):
         obj.sub_grid_size = sub_grid_size
         obj.sub_grid_length = int(sub_grid_size ** 2.0)
         obj.sub_grid_fraction = 1.0 / obj.sub_grid_length
-        obj.sub_border_pixels = mask.sub_border_pixels_from_sub_grid_size(
-            sub_grid_size=sub_grid_size
+        obj.border_filter_size = border_filter_size
+        obj.sub_border_pixels = mask.sub_border_1d_indexes_from_sub_grid_size(
+            sub_grid_size=sub_grid_size, filter_size=border_filter_size,
         )
         obj.interpolator = None
         obj.binned = None
@@ -336,12 +337,13 @@ class Grid(np.ndarray):
             self.sub_grid_size = obj.sub_grid_size
             self.sub_grid_length = obj.sub_grid_length
             self.sub_grid_fraction = obj.sub_grid_fraction
+            self.border_filter_size = obj.border_filter_size
             self.sub_border_pixels = obj.sub_border_pixels
             self.interpolator = obj.interpolator
             self.binned = obj.binned
 
     @classmethod
-    def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1):
+    def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1, border_filter_size=None):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
 
@@ -357,11 +359,11 @@ class Grid(np.ndarray):
             mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size
         )
 
-        return Grid(arr=sub_grid_masked, mask=mask, sub_grid_size=sub_grid_size)
+        return Grid(arr=sub_grid_masked, mask=mask, sub_grid_size=sub_grid_size, border_filter_size=border_filter_size)
 
     @classmethod
     def from_shape_pixel_scale_and_sub_grid_size(
-        cls, shape, pixel_scale, sub_grid_size=1
+        cls, shape, pixel_scale, sub_grid_size=1, border_filter_size=None,
     ):
         """Setup a sub-grid from a 2D array shape and pixel scale. Here, the center of every pixel on the 2D \
         array gives the grid's (y,x) arc-second coordinates, where each pixel has sub-pixels specified by the \
@@ -384,10 +386,10 @@ class Grid(np.ndarray):
         )
 
         grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-            mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size
+            mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size,
         )
 
-        return Grid(arr=grid, mask=mask, sub_grid_size=sub_grid_size)
+        return Grid(arr=grid, mask=mask, sub_grid_size=sub_grid_size, border_filter_size=border_filter_size)
 
     @classmethod
     def blurring_grid_from_mask_and_psf_shape(cls, mask, psf_shape):
@@ -468,6 +470,7 @@ class Grid(np.ndarray):
             ),
             mask=self.mask,
             sub_grid_size=1,
+            border_filter_size=self.border_filter_size,
         )
 
     @property
@@ -480,6 +483,7 @@ class Grid(np.ndarray):
             ),
             mask=self.mask,
             sub_grid_size=self.sub_grid_size,
+            border_filter_size=self.border_filter_size,
         )
 
     @property
@@ -492,6 +496,7 @@ class Grid(np.ndarray):
             ),
             mask=self.mask,
             sub_grid_size=self.sub_grid_size,
+            border_filter_size=self.border_filter_size,
         )
 
     @property
@@ -504,6 +509,7 @@ class Grid(np.ndarray):
             ),
             mask=self.mask,
             sub_grid_size=self.sub_grid_size,
+            border_filter_size=self.border_filter_size,
         )
 
     @property
@@ -516,6 +522,7 @@ class Grid(np.ndarray):
             ),
             mask=self.mask,
             sub_grid_size=self.sub_grid_size,
+            border_filter_size=self.border_filter_size,
         )
 
     @property
@@ -858,7 +865,7 @@ class Grid(np.ndarray):
         )
 
     @property
-    def border_grid(self):
+    def sub_border_grid(self):
         return self[self.sub_border_pixels]
 
     def relocated_grid_from_grid(self, grid):
@@ -876,10 +883,11 @@ class Grid(np.ndarray):
 
         return Grid(
             arr=self.relocated_grid_from_grid_jit(
-                grid=grid, border_grid=self.border_grid
+                grid=grid, border_grid=self.sub_border_grid
             ),
             mask=grid.mask,
             sub_grid_size=grid.sub_grid_size,
+            border_filter_size=self.border_filter_size,
         )
 
     def relocated_pixelization_grid_from_pixelization_grid(self, pixelization_grid):
@@ -897,7 +905,7 @@ class Grid(np.ndarray):
 
         return PixelizationGrid(
             arr=self.relocated_grid_from_grid_jit(
-                grid=pixelization_grid, border_grid=self.border_grid
+                grid=pixelization_grid, border_grid=self.sub_border_grid
             ),
             mask_1d_index_to_nearest_pixelization_1d_index=pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index,
         )

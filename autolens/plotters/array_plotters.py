@@ -230,7 +230,7 @@ def plot_array(
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         pointsize=border_pointsize,
-        zoom_offset_pixels=zoom_offset_pixels,
+        zoom_offset_arcsec=zoom_offset_arcsec,
     )
     plot_points(
         points_arcsec=positions,
@@ -679,7 +679,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
     if mask is not None:
 
         plt.gca()
-        edge_pixels = mask.mask_1d_index_to_mask_2d_index[mask.edge_pixels] + 0.5
+        edge_pixels = mask.mask_1d_index_to_mask_2d_index[mask.edge_1d_indexes] + 0.5
         if zoom_offset_pixels is not None:
             edge_pixels -= zoom_offset_pixels
         edge_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=edge_pixels)
@@ -694,7 +694,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
 
 
 def plot_border(
-    mask, should_plot_border, units, kpc_per_arcsec, pointsize, zoom_offset_pixels
+    mask, should_plot_border, units, kpc_per_arcsec, pointsize, zoom_offset_arcsec
 ):
     """Plot the borders of the mask or the array on the figure.
 
@@ -714,17 +714,14 @@ def plot_border(
     if should_plot_border and mask is not None:
 
         plt.gca()
-        border_pixels = mask.mask_1d_index_to_mask_2d_index[mask.border_pixels].astype(
-            "int"
-        )
+        border_grid_1d = mask.border_grid_1d
 
-        if zoom_offset_pixels is not None:
-            border_pixels -= zoom_offset_pixels.astype("int")
+        if zoom_offset_arcsec is not None:
+            border_grid_1d -= zoom_offset_arcsec.astype("int")
 
-        border_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=border_pixels)
         border_units = convert_grid_units(
             array=mask,
-            grid_arcsec=border_arcsec,
+            grid_arcsec=border_grid_1d,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
         )

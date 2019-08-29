@@ -34,7 +34,7 @@ def make_pipeline(
     )
 
     class LensSubtractedPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ## Lens Light Sersic -> Sersic ##
 
@@ -88,7 +88,7 @@ def make_pipeline(
     )
 
     class LensSourcePhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ## Lens Light, Sersic -> Sersic ###
 
@@ -150,7 +150,7 @@ def make_pipeline(
     )
 
     class InversionPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
 
@@ -209,7 +209,7 @@ def make_pipeline(
     )
 
     class InversionPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
 
@@ -270,7 +270,7 @@ def make_pipeline(
     )
 
     class InversionPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
 
@@ -329,7 +329,7 @@ def make_pipeline(
     )
 
     class InversionPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ## Lens Light & Mass, Sersic -> Sersic, SIE -> SIE, Shear -> Shear ###
 

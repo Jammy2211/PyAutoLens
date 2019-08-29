@@ -37,6 +37,13 @@ def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
 
 
 @decorator_util.jit()
+def grid_centre_from_grid_1d(grid_1d):
+    centre_y = (np.max(grid_1d[:, 0]) + np.min(grid_1d[:, 0])) / 2.0
+    centre_x = (np.max(grid_1d[:, 1]) + np.min(grid_1d[:, 1])) / 2.0
+    return (centre_y, centre_x)
+
+
+@decorator_util.jit()
 def grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
     mask, pixel_scales, sub_grid_size, origin=(0.0, 0.0)
 ):
@@ -540,3 +547,21 @@ def grid_arcsec_2d_to_grid_pixel_centres_2d(
             )
 
     return grid_pixels_2d
+
+
+@decorator_util.jit()
+def furthest_grid_1d_index_from_grid_1d_indexes_and_centre(
+    grid_1d, grid_1d_indexes, coordinate
+):
+
+    distance_from_centre = 0.0
+
+    for grid_1d_index in grid_1d_indexes:
+        y = grid_1d[grid_1d_index, 0]
+        x = grid_1d[grid_1d_index, 1]
+        distance_from_centre_new = (x - coordinate[1]) ** 2 + (y - coordinate[0]) ** 2
+        if distance_from_centre_new >= distance_from_centre:
+            distance_from_centre = distance_from_centre_new
+            furthest_grid_1d_index = grid_1d_index
+
+    return furthest_grid_1d_index

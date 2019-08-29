@@ -127,7 +127,7 @@ class TestPhaseModelMapper(object):
         )
 
         class MMPhase(al.PhaseImaging):
-            def pass_priors(self, results):
+            def customize_priors(self, results):
                 self.galaxies.lens.sersic.intensity = (
                     self.galaxies.lens.sersic.axis_ratio
                 )
@@ -203,7 +203,7 @@ class TestPhaseModelMapper(object):
         )
 
         class MMPhase(al.PhaseImaging):
-            def pass_priors(self, results):
+            def customize_priors(self, results):
                 self.galaxies.lens.sersic.axis_ratio = 0.2
                 self.galaxies.lens.sersic.phi = 90.0
                 self.galaxies.lens.sersic.intensity = 1.0
