@@ -10,7 +10,7 @@ data_resolution = "LSST"
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class LensPlanex2GalPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             self.galaxies.lens_0.light.centre_0 = -1.0
             self.galaxies.lens_0.light.centre_1 = -1.0

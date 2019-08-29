@@ -228,7 +228,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
     @property
     def ellipticity_rescale(self):
-        return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
+        return (1.0 + self.axis_ratio) / 2.0
 
     @dim.convert_units_to_input_units
     def summarize_in_units(

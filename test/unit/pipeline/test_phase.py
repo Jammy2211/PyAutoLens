@@ -390,7 +390,7 @@ class TestPhase(object):
         self, mask_function_7x7, results_7x7, results_collection_7x7, ccd_data_7x7
     ):
         class MyPlanePhaseAnd(al.PhaseImaging):
-            def pass_priors(self, results):
+            def customize_priors(self, results):
                 self.galaxies = results.last.constant.galaxies
 
         galaxy = al.Galaxy(redshift=0.5)
@@ -406,12 +406,12 @@ class TestPhase(object):
         )
 
         phase_7x7.make_analysis(data=ccd_data_7x7, results=results_collection_7x7)
-        phase_7x7.pass_priors(results_collection_7x7)
+        phase_7x7.customize_priors(results_collection_7x7)
 
         assert phase_7x7.galaxies == [galaxy]
 
         class MyPlanePhaseAnd(al.PhaseImaging):
-            def pass_priors(self, results):
+            def customize_priors(self, results):
                 self.galaxies = results.last.variable.galaxies
 
         galaxy = al.Galaxy(redshift=0.5)
@@ -427,7 +427,7 @@ class TestPhase(object):
         )
 
         phase_7x7.make_analysis(data=ccd_data_7x7, results=results_collection_7x7)
-        phase_7x7.pass_priors(results_collection_7x7)
+        phase_7x7.customize_priors(results_collection_7x7)
 
         assert phase_7x7.galaxies == [galaxy_model]
 
@@ -575,7 +575,7 @@ class TestPhase(object):
         )
 
         assert fit.inversion.mapper.grid[4][0] == pytest.approx(97.19584, 1.0e-2)
-        assert fit.inversion.mapper.grid[4][1] == pytest.approx(8.434953, 1.0e-2)
+        assert fit.inversion.mapper.grid[4][1] == pytest.approx(-3.699999, 1.0e-2)
 
         phase_7x7 = al.PhaseImaging(
             galaxies=[lens_galaxy, source_galaxy],
@@ -1408,7 +1408,7 @@ class TestPhasePickle(object):
         assert result is not None
 
         class CustomPhase(al.PhaseImaging):
-            def pass_priors(self, results):
+            def customize_priors(self, results):
                 self.galaxies.lens.light = al.light_profiles.EllipticalLightProfile()
 
         phase_7x7 = CustomPhase(

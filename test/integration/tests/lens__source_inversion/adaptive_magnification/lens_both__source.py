@@ -10,7 +10,7 @@ data_resolution = "LSST"
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class SourcePix(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             self.galaxies.lens.mass.centre.centre_0 = 0.0
             self.galaxies.lens.mass.centre.centre_1 = 0.0

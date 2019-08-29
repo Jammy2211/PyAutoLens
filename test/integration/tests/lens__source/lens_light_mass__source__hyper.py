@@ -33,7 +33,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
     class HyperLensSourcePlanePhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             self.galaxies.lens.light = results.from_phase(
                 "phase_1"

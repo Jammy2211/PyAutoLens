@@ -18,7 +18,7 @@ from test.simulation import makers
 # Each image is generated at 5 resolutions, 0.2" (LSST), 0.1" (Euclid), 0.05" (HST), 0.03" (HST), 0.01" (Keck AO).
 
 sub_grid_size = 1
-data_resolutions = ["LSST", "Euclid"]  # , "HST", "HST_Up"]  # , 'AO']
+data_resolutions = ["LSST", "Euclid", "HST", "HST_Up", "AO"]
 
 # To simulate each lens, we pass it a name and call its maker. In the makers.py file, you'll see the
 makers.make_lens_light_dev_vaucouleurs(

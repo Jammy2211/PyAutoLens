@@ -9,7 +9,7 @@ data_resolution = "Euclid"
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class QuickPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             self.galaxies.lens.bulge.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
@@ -74,7 +74,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         def grid_priors(self):
             return [self.variable.galaxies.lens.bulge.sersic_index]
 
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             self.galaxies.lens.disk = results.from_phase(
                 "phase_1"

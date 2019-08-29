@@ -1726,7 +1726,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = al.mask_util.edge_pixels_from_mask(mask=mask)
+        edge_pixels = al.mask_util.edge_1d_indexes_from_mask(mask=mask)
 
         assert (edge_pixels == np.array([0])).all()
 
@@ -1743,7 +1743,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = al.mask_util.edge_pixels_from_mask(mask=mask)
+        edge_pixels = al.mask_util.edge_1d_indexes_from_mask(mask=mask)
 
         assert (edge_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -1760,7 +1760,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = al.mask_util.edge_pixels_from_mask(mask=mask)
+        edge_pixels = al.mask_util.edge_1d_indexes_from_mask(mask=mask)
 
         assert (edge_pixels == np.array([0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14])).all()
 
@@ -1778,7 +1778,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = al.mask_util.edge_pixels_from_mask(mask=mask)
+        edge_pixels = al.mask_util.edge_1d_indexes_from_mask(mask=mask)
 
         assert (
             edge_pixels
@@ -1799,7 +1799,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = al.mask_util.edge_pixels_from_mask(mask=mask)
+        edge_pixels = al.mask_util.edge_1d_indexes_from_mask(mask=mask)
 
         assert (
             edge_pixels
@@ -1821,7 +1821,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = al.mask_util.edge_pixels_from_mask(mask=mask)
+        edge_pixels = al.mask_util.edge_1d_indexes_from_mask(mask=mask)
 
         assert (
             edge_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 13, 14])
@@ -1840,7 +1840,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = al.mask_util.edge_pixels_from_mask(mask=mask)
+        edge_pixels = al.mask_util.edge_1d_indexes_from_mask(mask=mask)
 
         assert (
             edge_pixels
@@ -1863,7 +1863,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = al.mask_util.border_pixels_from_mask(mask=mask)
+        border_pixels = al.mask_util.border_1d_indexes_from_mask(mask=mask)
 
         assert (border_pixels == np.array([0])).all()
 
@@ -1879,7 +1879,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = al.mask_util.border_pixels_from_mask(mask=mask)
+        border_pixels = al.mask_util.border_1d_indexes_from_mask(mask=mask)
 
         assert (border_pixels == np.array([0, 1, 2])).all()
 
@@ -1895,7 +1895,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = al.mask_util.border_pixels_from_mask(mask=mask)
+        border_pixels = al.mask_util.border_1d_indexes_from_mask(mask=mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -1915,7 +1915,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = al.mask_util.border_pixels_from_mask(mask=mask)
+        border_pixels = al.mask_util.border_1d_indexes_from_mask(mask=mask)
 
         assert (
             border_pixels
@@ -1966,7 +1966,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = al.mask_util.border_pixels_from_mask(mask=mask)
+        border_pixels = al.mask_util.border_1d_indexes_from_mask(mask=mask)
 
         assert (
             border_pixels
@@ -2016,7 +2016,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = al.mask_util.border_pixels_from_mask(mask=mask)
+        border_pixels = al.mask_util.border_1d_indexes_from_mask(mask=mask)
 
         assert (
             border_pixels
@@ -2068,7 +2068,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=1
         )
 
@@ -2086,7 +2086,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=1
         )
 
@@ -2104,7 +2104,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=1
         )
 
@@ -2126,11 +2126,11 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=2
         )
 
-        assert (sub_border_pixels == np.array([2])).all()
+        assert (sub_border_pixels == np.array([3])).all()
 
         mask = np.array(
             [
@@ -2144,11 +2144,11 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=2
         )
 
-        assert (sub_border_pixels == np.array([2, 6, 10])).all()
+        assert (sub_border_pixels == np.array([0, 4, 11])).all()
 
         mask = np.array(
             [
@@ -2162,11 +2162,11 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=2
         )
 
-        assert (sub_border_pixels == np.array([2, 6, 10, 14, 22, 26, 30, 34])).all()
+        assert (sub_border_pixels == np.array([0, 5, 9, 14, 23, 26, 31, 35])).all()
 
     def test__7x7_mask_with_small_numbers_of_pixels__sub_grid_size_3__border_is_central_sub_pixel_indexes(
         self
@@ -2184,11 +2184,11 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=3
         )
 
-        assert (sub_border_pixels == np.array([4])).all()
+        assert (sub_border_pixels == np.array([6])).all()
 
         mask = np.array(
             [
@@ -2202,11 +2202,11 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=3
         )
 
-        assert (sub_border_pixels == np.array([4, 13, 22])).all()
+        assert (sub_border_pixels == np.array([0, 9, 26])).all()
 
         mask = np.array(
             [
@@ -2220,11 +2220,11 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=3
         )
 
-        assert (sub_border_pixels == np.array([4, 13, 22, 31, 49, 58, 67, 76])).all()
+        assert (sub_border_pixels == np.array([0, 11, 20, 33, 53, 60, 71, 80])).all()
 
     def test__9x9_annulus_mask__inner_pixels_excluded(self):
 
@@ -2242,7 +2242,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=2
         )
 
@@ -2250,30 +2250,30 @@ class TestSubBorderPixels(object):
             sub_border_pixels
             == np.array(
                 [
-                    2,
-                    6,
-                    10,
-                    14,
-                    18,
-                    22,
-                    26,
-                    30,
-                    34,
-                    38,
-                    54,
+                    0,
+                    4,
+                    8,
+                    13,
+                    17,
+                    21,
+                    25,
+                    28,
+                    33,
+                    36,
+                    53,
                     58,
-                    70,
+                    71,
                     74,
-                    90,
+                    91,
                     94,
-                    98,
+                    99,
                     102,
                     106,
                     110,
-                    114,
-                    118,
-                    122,
-                    126,
+                    115,
+                    119,
+                    123,
+                    127,
                 ]
             )
         ).all()
@@ -2295,7 +2295,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=2
         )
 
@@ -2303,30 +2303,30 @@ class TestSubBorderPixels(object):
             sub_border_pixels
             == np.array(
                 [
-                    2,
-                    6,
-                    10,
-                    14,
-                    18,
-                    22,
-                    26,
-                    30,
-                    34,
-                    38,
-                    54,
+                    0,
+                    4,
+                    8,
+                    13,
+                    17,
+                    21,
+                    25,
+                    28,
+                    33,
+                    36,
+                    53,
                     58,
-                    70,
+                    71,
                     74,
-                    90,
+                    91,
                     94,
-                    98,
+                    99,
                     102,
                     106,
                     110,
-                    114,
-                    118,
-                    122,
-                    126,
+                    115,
+                    119,
+                    123,
+                    127,
                 ]
             )
         ).all()
@@ -2347,7 +2347,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = al.mask_util.sub_border_pixels_from_mask_and_sub_grid_size(
+        sub_border_pixels = al.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=mask, sub_grid_size=2
         )
 
@@ -2355,30 +2355,30 @@ class TestSubBorderPixels(object):
             sub_border_pixels
             == np.array(
                 [
-                    2,
-                    6,
-                    10,
-                    14,
-                    18,
-                    22,
-                    26,
-                    30,
-                    34,
-                    38,
-                    54,
+                    0,
+                    4,
+                    8,
+                    13,
+                    17,
+                    21,
+                    25,
+                    28,
+                    33,
+                    36,
+                    53,
                     58,
-                    70,
+                    71,
                     74,
-                    90,
+                    91,
                     94,
-                    98,
+                    99,
                     102,
                     106,
                     110,
-                    114,
-                    118,
-                    122,
-                    126,
+                    115,
+                    119,
+                    123,
+                    127,
                 ]
             )
         ).all()

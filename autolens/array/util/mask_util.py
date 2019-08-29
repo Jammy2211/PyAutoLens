@@ -3,6 +3,7 @@ from skimage.transform import rescale
 
 from autolens import decorator_util
 from autolens import exc
+from autolens.array.util import grid_util
 from autolens.array.mapping_util import mask_mapping_util
 
 
@@ -542,7 +543,7 @@ def total_edge_pixels_from_mask(mask):
 
 
 @decorator_util.jit()
-def edge_pixels_from_mask(mask):
+def edge_1d_indexes_from_mask(mask):
     """Compute a 1D array listing all edge pixel indexes in the mask. An edge pixel is a pixel which is not fully \
     surrounding by False mask values i.e. it is on an edge."""
 
@@ -608,7 +609,7 @@ def total_border_pixels_from_mask_and_edge_pixels(
 
 
 @decorator_util.jit()
-def border_pixels_from_mask(mask):
+def border_1d_indexes_from_mask(mask):
     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
 
      1) is not fully surrounding by False mask values.
@@ -618,7 +619,7 @@ def border_pixels_from_mask(mask):
      The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge \
      pixels in an annular mask are edge pixels but not borders pixels."""
 
-    edge_pixels = edge_pixels_from_mask(mask=mask)
+    edge_pixels = edge_1d_indexes_from_mask(mask=mask)
     mask_1d_index_to_mask_2d_index = mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
         mask=mask, sub_grid_size=1
     )
@@ -647,7 +648,7 @@ def border_pixels_from_mask(mask):
     return border_pixels
 
 
-def sub_border_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
+def sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(mask, sub_grid_size):
     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
 
      1) is not fully surrounding by False mask values.
@@ -657,7 +658,7 @@ def sub_border_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
      The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge \
      pixels in an annular mask are edge pixels but not borders pixels."""
 
-    border_pixels = border_pixels_from_mask(mask=mask)
+    border_pixels = border_1d_indexes_from_mask(mask=mask)
 
     sub_border_pixels = np.zeros(shape=border_pixels.shape[0])
 
@@ -665,18 +666,26 @@ def sub_border_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
         mask=mask, sub_grid_size=sub_grid_size
     )
 
-    border_1d_index = 0
+    masked_sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+        mask=mask,
+        pixel_scales=(1.0, 1.0),
+        sub_grid_size=sub_grid_size,
+        origin=(0.0, 0.0),
+    )
+    mask_centre = grid_util.grid_centre_from_grid_1d(grid_1d=masked_sub_grid_1d)
 
-    central_sub_pixel = int(sub_grid_size ** 2.0 / 2)
-
-    for border_pixel in border_pixels:
+    for (border_1d_index, border_pixel) in enumerate(border_pixels):
         sub_border_pixels_of_border_pixel = mask_1d_index_to_sub_mask_2d_indexes[
             int(border_pixel)
         ]
-        sub_border_pixels[border_1d_index] = sub_border_pixels_of_border_pixel[
-            central_sub_pixel
-        ]
-        border_1d_index += 1
+
+        sub_border_pixels[
+            border_1d_index
+        ] = grid_util.furthest_grid_1d_index_from_grid_1d_indexes_and_centre(
+            grid_1d=masked_sub_grid_1d,
+            grid_1d_indexes=sub_border_pixels_of_border_pixel,
+            coordinate=mask_centre,
+        )
 
     return sub_border_pixels
 

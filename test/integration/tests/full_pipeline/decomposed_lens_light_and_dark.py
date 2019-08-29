@@ -73,7 +73,7 @@ def make_pipeline(
     # 3) Have the option to use an annular mask removing the central light, if the inner_mask_radii parametr is input.
 
     class LensSubtractedPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ## Lens Light Sersic -> Sersic ##
 
@@ -118,7 +118,7 @@ def make_pipeline(
     # 2) Use a circular mask, to fully capture the lens and source light.
 
     class LensSourcePhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ## Lens Light, Sersic -> Sersic ###
 
@@ -174,7 +174,7 @@ def make_pipeline(
     # 4) Pass priors on the source galaxy's light using the EllipticalSersic of the previous pipeline.
 
     class LensSourcePhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             ### Lens Light, Sersic -> Sersic ###
 

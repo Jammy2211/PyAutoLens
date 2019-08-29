@@ -18,7 +18,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         )
 
     class LensPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
 
             self.galaxies.lens.mass.centre_0 = af.GaussianPrior(mean=4.0, sigma=0.1)
             self.galaxies.lens.mass.centre_1 = af.GaussianPrior(mean=4.0, sigma=0.1)
