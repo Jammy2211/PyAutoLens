@@ -1,14 +1,5 @@
 import autofit as af
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd
-from autolens.array import grids
-from autolens.lens import ray_tracing
-from autolens.model.galaxy import galaxy as g
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.profiles import mass_profiles as mp
-from autolens.data.plotters import ccd_plotters
-from autolens.lens.plotters import ray_tracing_plotters
-
+import autolens as al
 from test.simulation import simulation_util
 
 import os
@@ -71,14 +62,14 @@ def simulate_image_from_galaxies_and_output_to_fits(
         overwrite=True,
     )
 
-    ccd_plotters.plot_ccd_subplot(
+    al.ccd_plotters.plot_ccd_subplot(
         ccd_data=ccd_data,
         output_filename="ccd_data",
         output_path=data_path,
         output_format="png",
     )
 
-    ccd_plotters.plot_ccd_individual(
+    al.ccd_plotters.plot_ccd_individual(
         ccd_data=ccd_data,
         should_plot_image=True,
         should_plot_noise_map=True,
@@ -88,7 +79,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         output_format="png",
     )
 
-    ray_tracing_plotters.plot_ray_tracing_subplot(
+    al.ray_tracing_plotters.plot_ray_tracing_subplot(
         tracer=tracer,
         output_filename="tracer",
         output_path=data_path,
@@ -96,7 +87,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         grid=image_plane_grid,
     )
 
-    ray_tracing_plotters.plot_ray_tracing_individual(
+    al.ray_tracing_plotters.plot_ray_tracing_individual(
         tracer=tracer,
         should_plot_profile_image=True,
         should_plot_source_plane=True,
@@ -117,7 +108,7 @@ def make_lens_light_dev_vaucouleurs(data_resolutions, sub_grid_size):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.EllipticalDevVaucouleurs(
+        bulge=al.light_profiles.EllipticalDevVaucouleurs(
             centre=(0.0, 0.0),
             axis_ratio=0.9,
             phi=45.0,
@@ -144,14 +135,14 @@ def make_lens_bulge_disk(data_resolutions, sub_grid_size):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.EllipticalDevVaucouleurs(
+        bulge=al.light_profiles.EllipticalDevVaucouleurs(
             centre=(0.0, 0.0),
             axis_ratio=0.9,
             phi=45.0,
             intensity=0.1,
             effective_radius=1.0,
         ),
-        envelope=al.EllipticalExponential(
+        envelope=al.light_profiles.EllipticalExponential(
             centre=(0.0, 0.0),
             axis_ratio=0.7,
             phi=60.0,
@@ -178,7 +169,7 @@ def make_lens_x2_light(data_resolutions, sub_grid_size):
 
     lens_galaxy_0 = al.Galaxy(
         redshift=0.5,
-        bulge=al.EllipticalSersic(
+        bulge=al.light_profiles.EllipticalSersic(
             centre=(-1.0, -1.0),
             axis_ratio=0.8,
             phi=0.0,
@@ -190,7 +181,7 @@ def make_lens_x2_light(data_resolutions, sub_grid_size):
 
     lens_galaxy_1 = al.Galaxy(
         redshift=0.5,
-        bulge=al.EllipticalSersic(
+        bulge=al.light_profiles.EllipticalSersic(
             centre=(1.0, 1.0),
             axis_ratio=0.8,
             phi=0.0,

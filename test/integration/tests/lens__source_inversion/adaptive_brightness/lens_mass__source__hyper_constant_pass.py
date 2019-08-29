@@ -30,7 +30,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
     class InversionPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
             # Lens Mass, SIE -> SIE, Shear -> Shear #
 
             self.galaxies.lens = results.last.constant.galaxies.lens
@@ -69,7 +69,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     )
 
     class InversionPhase(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
             # Lens Mass, SIE -> SIE, Shear -> Shear #
 
             self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens

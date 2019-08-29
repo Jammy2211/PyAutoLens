@@ -3,7 +3,7 @@ import autolens as al
 from test.integration.tests import runner
 
 test_type = "model_mapper"
-test_name = "passing_none"
+test_name = "passing_parameter_priors"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "LSST"
 
@@ -15,7 +15,10 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, light=al.light_profiles.EllipticalSersic, light_1=None
+                redshift=0.5,
+                light=al.light_profiles.EllipticalSersic(
+                    effective_radius=af.UniformPrior(lower_limit=0.0, upper_limit=4.0)
+                ),
             )
         ),
         optimizer_class=optimizer_class,
@@ -25,24 +28,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase2 = al.PhaseImaging(
-        phase_name="phase_2",
-        phase_folders=phase_folders,
-        galaxies=dict(
-            lens=al.GalaxyModel(
-                redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                light_1=phase1.result.variable.galaxies.lens.light_1,
-            )
-        ),
-        optimizer_class=optimizer_class,
-    )
-
-    phase2.optimizer.const_efficiency_mode = True
-    phase2.optimizer.n_live_points = 20
-    phase2.optimizer.sampling_efficiency = 0.8
-
-    return al.PipelineImaging(name, phase1, phase2)
+    return al.PipelineImaging(name, phase1)
 
 
 if __name__ == "__main__":

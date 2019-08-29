@@ -26,7 +26,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.importance_nested_sampling = False
 
     class MMPhase2(al.PhaseImaging):
-        def pass_priors(self, results):
+        def customize_priors(self, results):
             self.galaxies = results.from_phase("phase_1").variable.galaxies
 
     phase2 = MMPhase2(

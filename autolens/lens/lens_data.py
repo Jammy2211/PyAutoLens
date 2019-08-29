@@ -92,7 +92,7 @@ class LensData(object):
         ### GRIDS ###
 
         self.grid = grids.Grid.from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=sub_grid_size
+            mask=mask, sub_grid_size=sub_grid_size,
         )
 
         self.pixel_scale_binned_grid = pixel_scale_binned_grid

@@ -100,7 +100,7 @@ from autolens.model.hyper.hyper_data import HyperImageSky, HyperBackgroundNoise
 from autolens.model.inversion.inversions import Inversion
 from autolens.model.inversion.mappers import Mapper, RectangularMapper, VoronoiMapper
 from autolens.model.inversion import pixelizations
-from autolens.model.inversion.plotters import mapper_plotters
+from autolens.model.inversion.plotters import inversion_plotters, mapper_plotters
 from autolens.model.inversion import regularization
 from autolens.model.inversion.util import inversion_util
 from autolens.model.inversion.util import mapper_util
@@ -150,4 +150,4 @@ from autolens.pipeline.plotters import hyper_plotters
 from autolens.pipeline.plotters import phase_plotters
 from autolens.plotters import plotter_util
 
-__version__ = '0.29.1'
+__version__ = "0.29.1"
