@@ -2,8 +2,6 @@ import logging
 
 import numpy as np
 
-from autolens import decorator_util
-from autolens.array.util import mask_util
 from autolens.array.mapping_util import array_mapping_util
 
 logger = logging.getLogger(__name__)
