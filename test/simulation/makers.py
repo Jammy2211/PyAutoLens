@@ -25,7 +25,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale
     )
 
-    # Setup the image-plane grid stack of the CCD array which will be used for generating the image of the
+    # Setup the image-plane al.ogrid of the CCD array which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
     image_plane_grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(

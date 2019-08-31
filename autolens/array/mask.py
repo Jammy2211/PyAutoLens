@@ -617,27 +617,42 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         sub_border_1d_indexes = mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
             mask=self, sub_grid_size=sub_grid_size
-        ).astype("int")
+        ).astype(
+            "int"
+        )
 
         if filter_size is None:
             return sub_border_1d_indexes
         else:
-            sub_border_thetas_1d = self.sub_border_thetas_1d_from_sub_grid_size(sub_grid_size=sub_grid_size)
+            sub_border_thetas_1d = self.sub_border_thetas_1d_from_sub_grid_size(
+                sub_grid_size=sub_grid_size
+            )
             sub_border_ordered_indexes = np.argsort(sub_border_thetas_1d)
-            return np.sort(sub_border_1d_indexes[sub_border_ordered_indexes[1::filter_size]])
+            return np.sort(
+                sub_border_1d_indexes[sub_border_ordered_indexes[1::filter_size]]
+            )
 
     def sub_border_grid_1d_from_sub_grid_size(self, sub_grid_size, filter_size=None):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        masked_sub_grid_1d =  self.masked_sub_grid_1d_from_sub_grid_size(sub_grid_size=sub_grid_size)
-        sub_border_pixel_1d_indexes = self.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=sub_grid_size, filter_size=filter_size)
+        masked_sub_grid_1d = self.masked_sub_grid_1d_from_sub_grid_size(
+            sub_grid_size=sub_grid_size
+        )
+        sub_border_pixel_1d_indexes = self.sub_border_1d_indexes_from_sub_grid_size(
+            sub_grid_size=sub_grid_size, filter_size=filter_size
+        )
         return masked_sub_grid_1d[sub_border_pixel_1d_indexes]
 
     def sub_border_thetas_1d_from_sub_grid_size(self, sub_grid_size, filter_size=None):
-        sub_border_grid_1d = self.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=sub_grid_size, filter_size=filter_size)
-        return np.arctan2((sub_border_grid_1d[:,0] - self.centre[0]), sub_border_grid_1d[:,1] - self.centre[1])
+        sub_border_grid_1d = self.sub_border_grid_1d_from_sub_grid_size(
+            sub_grid_size=sub_grid_size, filter_size=filter_size
+        )
+        return np.arctan2(
+            (sub_border_grid_1d[:, 0] - self.centre[0]),
+            sub_border_grid_1d[:, 1] - self.centre[1],
+        )
 
     @property
     def masked_grid_1d(self):
