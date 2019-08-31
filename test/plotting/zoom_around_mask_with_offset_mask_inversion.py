@@ -26,7 +26,7 @@ def fit_with_offset_centre(centre):
         centre=centre,
     )
 
-    # The lines of code below do everything we're used to, that is, setup an image and its grid stack, mask it, trace it
+    # The lines of code below do everything we're used to, that is, setup an image and its al.ogrid, mask it, trace it
     # via a tracer, setup the rectangular mapper, etc.
     lens_galaxy = al.Galaxy(
         redshift=0.5,

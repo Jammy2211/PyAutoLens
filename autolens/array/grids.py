@@ -205,7 +205,16 @@ def reshape_returned_grid(func):
 
 
 class Grid(np.ndarray):
-    def __new__(cls, arr, mask, sub_grid_size=1, border_filter_size=None, binned=None, *args, **kwargs):
+    def __new__(
+        cls,
+        arr,
+        mask,
+        sub_grid_size=1,
+        border_filter_size=None,
+        binned=None,
+        *args,
+        **kwargs
+    ):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right. 
         
@@ -324,7 +333,7 @@ class Grid(np.ndarray):
         obj.sub_grid_fraction = 1.0 / obj.sub_grid_length
         obj.border_filter_size = border_filter_size
         obj.sub_border_pixels = mask.sub_border_1d_indexes_from_sub_grid_size(
-            sub_grid_size=sub_grid_size, filter_size=border_filter_size,
+            sub_grid_size=sub_grid_size, filter_size=border_filter_size
         )
         obj.interpolator = None
         obj.binned = None
@@ -343,7 +352,9 @@ class Grid(np.ndarray):
             self.binned = obj.binned
 
     @classmethod
-    def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1, border_filter_size=None):
+    def from_mask_and_sub_grid_size(
+        cls, mask, sub_grid_size=1, border_filter_size=None
+    ):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
 
@@ -359,11 +370,16 @@ class Grid(np.ndarray):
             mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size
         )
 
-        return Grid(arr=sub_grid_masked, mask=mask, sub_grid_size=sub_grid_size, border_filter_size=border_filter_size)
+        return Grid(
+            arr=sub_grid_masked,
+            mask=mask,
+            sub_grid_size=sub_grid_size,
+            border_filter_size=border_filter_size,
+        )
 
     @classmethod
     def from_shape_pixel_scale_and_sub_grid_size(
-        cls, shape, pixel_scale, sub_grid_size=1, border_filter_size=None,
+        cls, shape, pixel_scale, sub_grid_size=1, border_filter_size=None
     ):
         """Setup a sub-grid from a 2D array shape and pixel scale. Here, the center of every pixel on the 2D \
         array gives the grid's (y,x) arc-second coordinates, where each pixel has sub-pixels specified by the \
@@ -386,10 +402,15 @@ class Grid(np.ndarray):
         )
 
         grid = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-            mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size,
+            mask=mask, pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size
         )
 
-        return Grid(arr=grid, mask=mask, sub_grid_size=sub_grid_size, border_filter_size=border_filter_size)
+        return Grid(
+            arr=grid,
+            mask=mask,
+            sub_grid_size=sub_grid_size,
+            border_filter_size=border_filter_size,
+        )
 
     @classmethod
     def blurring_grid_from_mask_and_psf_shape(cls, mask, psf_shape):
