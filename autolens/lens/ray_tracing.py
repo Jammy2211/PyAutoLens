@@ -34,7 +34,7 @@ class AbstractTracer(object):
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         image_plane_grid : grid_stacks.GridStack
-            The image-plane grid stack which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
+            The image-plane al.ogrid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
         border : masks.GridBorder
             The border of the grid, which is used to relocate demagnified traced pixels to the \
             source-plane borders.
@@ -801,7 +801,7 @@ class Tracer(AbstractTracerData):
         lens_galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         image_plane_grid : grid_stacks.GridStack
-            The image-plane grid stack which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
+            The image-plane al.ogrid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
         planes_between_lenses : [int]
             The number of slices between each main plane. The first entry in this list determines the number of slices \
             between Earth (redshift 0.0) and main plane 0, the next between main planes 0 and 1, etc.

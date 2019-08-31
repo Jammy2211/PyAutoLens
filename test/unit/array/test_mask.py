@@ -1080,8 +1080,23 @@ class TestMaskRegions:
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        assert mask.border_grid_1d == pytest.approx(np.array([[3.0, -3.5], [3.0, -2.5], [3.0, -1.5], [3.0, -0.5], [3.0, 0.5], [3.0, 1.5], [3.0, 2.5],
-                                                              [2.0, -3.5], [2.0, 2.5], [1.0, -3.5]]), 1e-4)
+        assert mask.border_grid_1d == pytest.approx(
+            np.array(
+                [
+                    [3.0, -3.5],
+                    [3.0, -2.5],
+                    [3.0, -1.5],
+                    [3.0, -0.5],
+                    [3.0, 0.5],
+                    [3.0, 1.5],
+                    [3.0, 2.5],
+                    [2.0, -3.5],
+                    [2.0, 2.5],
+                    [1.0, -3.5],
+                ]
+            ),
+            1e-4,
+        )
 
     def test__sub_border_1d_indexes__compare_to_array_util_and_numerics(self):
         mask = np.array(
@@ -1102,7 +1117,9 @@ class TestMaskRegions:
 
         mask = al.Mask(mask, pixel_scale=3.0)
 
-        sub_border_pixels = mask.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=2)
+        sub_border_pixels = mask.sub_border_1d_indexes_from_sub_grid_size(
+            sub_grid_size=2
+        )
 
         assert sub_border_pixels == pytest.approx(sub_border_pixels_util, 1e-4)
 
@@ -1120,7 +1137,9 @@ class TestMaskRegions:
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        sub_border_pixels = mask.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=2)
+        sub_border_pixels = mask.sub_border_1d_indexes_from_sub_grid_size(
+            sub_grid_size=2
+        )
 
         assert (sub_border_pixels == np.array([0, 5, 9, 14, 23, 26, 31, 35])).all()
 
@@ -1142,7 +1161,10 @@ class TestMaskRegions:
 
         sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=2)
 
-        assert (sub_border_grid_1d == np.array([[1.25, -2.25], [1.25, -1.25], [-0.25, 1.25]])).all()
+        assert (
+            sub_border_grid_1d
+            == np.array([[1.25, -2.25], [1.25, -1.25], [-0.25, 1.25]])
+        ).all()
 
         mask = np.array(
             [
@@ -1160,7 +1182,21 @@ class TestMaskRegions:
 
         sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=2)
 
-        assert (sub_border_grid_1d == np.array([[1.25, -1.25], [1.25, 0.25], [1.25, 1.25], [-0.25, -1.25], [-0.25, 1.25], [-1.25, -1.25], [-1.25, 0.25], [-1.25, 1.25]])).all()
+        assert (
+            sub_border_grid_1d
+            == np.array(
+                [
+                    [1.25, -1.25],
+                    [1.25, 0.25],
+                    [1.25, 1.25],
+                    [-0.25, -1.25],
+                    [-0.25, 1.25],
+                    [-1.25, -1.25],
+                    [-1.25, 0.25],
+                    [-1.25, 1.25],
+                ]
+            )
+        ).all()
 
     def test__sub_border_1d_thetas__compare_numerical_values(self):
 
@@ -1178,9 +1214,13 @@ class TestMaskRegions:
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        sub_border_thetas_1d = mask.sub_border_thetas_1d_from_sub_grid_size(sub_grid_size=2)
+        sub_border_thetas_1d = mask.sub_border_thetas_1d_from_sub_grid_size(
+            sub_grid_size=2
+        )
 
-        assert sub_border_thetas_1d == pytest.approx(np.array([2.736700, 2.35618, -0.404891]), 1.0e-4)
+        assert sub_border_thetas_1d == pytest.approx(
+            np.array([2.736700, 2.35618, -0.404891]), 1.0e-4
+        )
 
         mask = np.array(
             [
@@ -1196,9 +1236,25 @@ class TestMaskRegions:
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        sub_border_thetas_1d = mask.sub_border_thetas_1d_from_sub_grid_size(sub_grid_size=2)
+        sub_border_thetas_1d = mask.sub_border_thetas_1d_from_sub_grid_size(
+            sub_grid_size=2
+        )
 
-        assert sub_border_thetas_1d == pytest.approx(np.array([2.356194, 1.373400, 0.785398, -2.944197, -0.197395, -2.356194, -1.373400, -0.785398]), 1.0e-4)
+        assert sub_border_thetas_1d == pytest.approx(
+            np.array(
+                [
+                    2.356194,
+                    1.373400,
+                    0.785398,
+                    -2.944197,
+                    -0.197395,
+                    -2.356194,
+                    -1.373400,
+                    -0.785398,
+                ]
+            ),
+            1.0e-4,
+        )
 
     def test__sub_border_1d_indexes_with_filter__compare_numerical_values(self):
 
@@ -1216,12 +1272,15 @@ class TestMaskRegions:
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        sub_border_1d_indexes = mask.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=2, filter_size=2)
+        sub_border_1d_indexes = mask.sub_border_1d_indexes_from_sub_grid_size(
+            sub_grid_size=2, filter_size=2
+        )
 
         assert (sub_border_1d_indexes == np.array([0, 9, 26, 35])).all()
-        
+
         mask = np.array(
-            [   [True, True, True, True, True, True, True, True],
+            [
+                [True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, True],
                 [True, False, False, False, False, False, False, True],
                 [True, False, False, False, False, False, False, True],
@@ -1234,7 +1293,9 @@ class TestMaskRegions:
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        sub_border_1d_indexes = mask.sub_border_1d_indexes_from_sub_grid_size(sub_grid_size=1, filter_size=3)
+        sub_border_1d_indexes = mask.sub_border_1d_indexes_from_sub_grid_size(
+            sub_grid_size=1, filter_size=3
+        )
 
         assert (sub_border_1d_indexes == np.array([2, 5, 6, 23, 24, 27])).all()
 
@@ -1254,12 +1315,18 @@ class TestMaskRegions:
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=2, filter_size=2)
+        sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(
+            sub_grid_size=2, filter_size=2
+        )
 
-        assert (sub_border_grid_1d == np.array([[1.25, -1.25], [1.25, 1.25], [-1.25, -1.25], [-1.25, 1.25]])).all()
+        assert (
+            sub_border_grid_1d
+            == np.array([[1.25, -1.25], [1.25, 1.25], [-1.25, -1.25], [-1.25, 1.25]])
+        ).all()
 
         mask = np.array(
-            [   [True, True, True, True, True, True, True, True],
+            [
+                [True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, True],
                 [True, False, False, False, False, False, False, True],
                 [True, False, False, False, False, False, False, True],
@@ -1272,9 +1339,24 @@ class TestMaskRegions:
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(sub_grid_size=1, filter_size=3)
+        sub_border_grid_1d = mask.sub_border_grid_1d_from_sub_grid_size(
+            sub_grid_size=1, filter_size=3
+        )
 
-        assert (sub_border_grid_1d == np.array([[2.5, -0.5], [2.5, 2.5], [1.5, -2.5], [-0.5, 2.5], [-1.5, -2.5], [-1.5, 0.5]])).all()
+        assert (
+            sub_border_grid_1d
+            == np.array(
+                [
+                    [2.5, -0.5],
+                    [2.5, 2.5],
+                    [1.5, -2.5],
+                    [-0.5, 2.5],
+                    [-1.5, -2.5],
+                    [-1.5, 0.5],
+                ]
+            )
+        ).all()
+
 
 class TestMaskedGrid1d:
     def test__simple_grids(self):
@@ -1399,14 +1481,13 @@ class TestMaskedGrid1d:
         )
 
         masked_grid_util = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-            mask=mask,
-            pixel_scales=(1.0, 1.0),
-            sub_grid_size=5,
-            origin=(3.0, -2.0),
+            mask=mask, pixel_scales=(1.0, 1.0), sub_grid_size=5, origin=(3.0, -2.0)
         )
 
         assert (
-            mask.masked_sub_grid_1d_from_sub_grid_size(sub_grid_size=5) == masked_grid_util).all()
+            mask.masked_sub_grid_1d_from_sub_grid_size(sub_grid_size=5)
+            == masked_grid_util
+        ).all()
 
     def test__compare_to_grid_util(self):
         mask = al.Mask.circular(
