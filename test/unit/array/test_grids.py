@@ -534,7 +534,9 @@ class TestGrid:
             sub_grid_size=2, filter_size=2
         )
 
-        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2, border_filter_size=2)
+        grid = al.Grid.from_mask_and_sub_grid_size(
+            mask=mask, sub_grid_size=2, border_filter_size=2
+        )
 
         assert grid.sub_border_pixels == pytest.approx(sub_border_pixels_mask, 1e-4)
 
@@ -1176,7 +1178,7 @@ class TestGridBorder(object):
         relocated_grid = grid.relocated_grid_from_grid(grid=grid_to_relocate)
 
         assert relocated_grid == pytest.approx(
-            np.array([[0.95, 0.0], [0.0, 0.95], [-.7017, -0.7017]]), 0.1
+            np.array([[0.95, 0.0], [0.0, 0.95], [-0.7017, -0.7017]]), 0.1
         )
         assert relocated_grid.mask == mask
         assert relocated_grid.sub_grid_size == 1

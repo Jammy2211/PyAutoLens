@@ -34,7 +34,11 @@ from autolens.data.instrument.abstract_data import (
     AbstractData,
     AbstractNoiseMap,
     ExposureTimeMap,
+    load_image,
+    load_psf,
+    load_exposure_time_map,
     load_positions,
+    output_positions,
 )
 from autolens.data.instrument.ccd import (
     CCDData,
@@ -43,6 +47,7 @@ from autolens.data.instrument.ccd import (
     SimulatedCCDData,
     generate_poisson_noise,
     load_ccd_data_from_fits,
+    load_noise_map,
 )
 from autolens.data.instrument.ccd import (
     load_ccd_data_from_fits,
@@ -148,6 +153,6 @@ from autolens.pipeline.pipeline import (
 )
 from autolens.pipeline.plotters import hyper_plotters
 from autolens.pipeline.plotters import phase_plotters
-from autolens.plotters import plotter_util
+from autolens.plotters import array_plotters, grid_plotters, plotter_util
 
-__version__ = '0.29.2'
+__version__ = "0.29.2"
