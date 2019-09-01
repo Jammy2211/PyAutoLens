@@ -680,9 +680,14 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
 
         plt.gca()
         edge_pixels = mask.mask_1d_index_to_mask_2d_index[mask.edge_1d_indexes] + 0.5
+
         if zoom_offset_pixels is not None:
-            edge_pixels -= zoom_offset_pixels
-        edge_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=edge_pixels)
+            edge_pixels_plot = edge_pixels - zoom_offset_pixels
+        else:
+            edge_pixels_plot = edge_pixels
+
+        edge_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=edge_pixels_plot
+                                                      )
         edge_units = convert_grid_units(
             array=mask,
             grid_arcsec=edge_arcsec,
@@ -717,11 +722,14 @@ def plot_border(
         border_grid_1d = mask.border_grid_1d
 
         if zoom_offset_arcsec is not None:
-            border_grid_1d -= zoom_offset_arcsec.astype("int")
+            border_grid_1d_plot = border_grid_1d - zoom_offset_arcsec.astype("int")
+        else:
+            border_grid_1d_plot = border_grid_1d
+
 
         border_units = convert_grid_units(
             array=mask,
-            grid_arcsec=border_grid_1d,
+            grid_arcsec=border_grid_1d_plot,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
         )
@@ -794,10 +802,13 @@ def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_
     if grid_arcsec is not None:
 
         if zoom_offset_arcsec is not None:
-            grid_arcsec -= zoom_offset_arcsec
+            grid_arcsec_plot = grid_arcsec - zoom_offset_arcsec
+            print('AAA')
+        else:
+            grid_arcsec_plot = grid_arcsec
 
         grid_units = convert_grid_units(
-            grid_arcsec=grid_arcsec,
+            grid_arcsec=grid_arcsec_plot,
             array=array,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
