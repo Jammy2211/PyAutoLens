@@ -1,6 +1,3 @@
-Make Unlensed grid 2d.
-Shifts into grid function.
-
 Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're working on.
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
@@ -11,6 +8,7 @@ Big Picture:
 
 Small Picture:
 
+- Acceptance ratio override on MultiNest run.
 - Simulated lensed image from discrete image grid.
 - Iterator grids.
 - Unmasked bool.
