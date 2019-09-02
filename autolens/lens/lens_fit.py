@@ -479,7 +479,7 @@ class LensPositionFit(object):
     def maximum_separations(self):
         return list(
             map(
-                lambda positions: self.max_separation_of_grid(positions), self.positions
+                lambda positions: self.max_separation_of_grid(grid=positions), self.positions
             )
         )
 

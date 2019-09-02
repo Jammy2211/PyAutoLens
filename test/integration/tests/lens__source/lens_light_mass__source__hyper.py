@@ -35,18 +35,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class HyperLensSourcePlanePhase(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens.light = results.from_phase(
-                "phase_1"
-            ).variable.galaxies.lens.light
-
-            self.galaxies.lens.mass = results.from_phase(
-                "phase_1"
-            ).variable.galaxies.lens.mass
-
-            self.galaxies.source.light = results.from_phase(
-                "phase_1"
-            ).variable.galaxies.source.light
-
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
@@ -61,13 +49,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.SphericalDevVaucouleurs,
-                mass=al.mass_profiles.EllipticalIsothermal,
+                light=phase1.result.variable.galaxies.lens.light,
+                mass=phase1.result.variable.galaxies.lens.mass,
                 hyper_galaxy=al.HyperGalaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                light=al.light_profiles.EllipticalSersic,
+                light=phase1.result.variable.galaxies.source.light,
                 hyper_galaxy=al.HyperGalaxy,
             ),
         ),

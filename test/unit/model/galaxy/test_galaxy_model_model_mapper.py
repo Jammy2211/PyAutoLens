@@ -1,28 +1,11 @@
+import autofit as af
 import autolens as al
-import os
-
-import autofit as af
-import autofit as af
 
 
 class TestCase:
     def test_integration(self):
-        directory = os.path.dirname(os.path.realpath(__file__))
-
-        config = af.conf.DefaultPriorConfig(
-            "{}/../../{}".format(
-                directory, "test_files/config/galaxy_model/priors/default"
-            )
-        )
-
-        limit_config = af.conf.LimitConfig(
-            "{}/../../{}".format(
-                directory, "test_files/config/galaxy_model/priors/limit"
-            )
-        )
-
         # Create a mapper. This can be used to convert values output by a non linear optimiser into class instances.
-        mapper = af.ModelMapper(config=config, limit_config=limit_config)
+        mapper = af.ModelMapper()
 
         # Create a model_galaxy prior for the source model_galaxy. Here we are describing only the light profile of
         # the source model_galaxy which comprises an elliptical exponential and elliptical sersic light profile.
@@ -30,8 +13,6 @@ class TestCase:
             redshift=al.Redshift,
             light_profile_one=al.light_profiles.EllipticalExponential,
             light_profile_2=al.light_profiles.EllipticalSersic,
-            config=config,
-            limit_config=limit_config,
         )
 
         # Create a model_galaxy prior for the source model_galaxy. Here we are describing both the light and mass
@@ -42,8 +23,6 @@ class TestCase:
             light_profile=al.light_profiles.EllipticalExponential,
             mass_profile=al.mass_profiles.EllipticalExponential,
             align_centres=True,
-            config=config,
-            limit_config=limit_config,
         )
 
         mapper.source_galaxy = source_galaxy_prior
@@ -61,8 +40,6 @@ class TestCase:
         # Let's just check that worked
         assert len(source_galaxy.light_profiles) == 2
         assert len(source_galaxy.mass_profiles) == 0
-
-        print(lens_galaxy.light_profiles)
 
         assert len(lens_galaxy.light_profiles) == 1
         assert len(lens_galaxy.mass_profiles) == 1
