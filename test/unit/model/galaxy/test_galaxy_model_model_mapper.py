@@ -1,13 +1,9 @@
-import os
-
 import autofit as af
 import autolens as al
 
 
 class TestCase:
     def test_integration(self):
-        directory = os.path.dirname(os.path.realpath(__file__))
-
         # Create a mapper. This can be used to convert values output by a non linear optimiser into class instances.
         mapper = af.ModelMapper()
 
@@ -44,8 +40,6 @@ class TestCase:
         # Let's just check that worked
         assert len(source_galaxy.light_profiles) == 2
         assert len(source_galaxy.mass_profiles) == 0
-
-        print(lens_galaxy.light_profiles)
 
         assert len(lens_galaxy.light_profiles) == 1
         assert len(lens_galaxy.mass_profiles) == 1
