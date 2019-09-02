@@ -20,7 +20,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 redshift=1.0, light=al.light_profiles.EllipticalSersic
             ),
         ),
-        positions_threshold=0.1,
+        positions_threshold=0.0,
         optimizer_class=optimizer_class,
     )
 
