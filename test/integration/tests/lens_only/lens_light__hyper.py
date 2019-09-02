@@ -3,7 +3,7 @@ import autolens as al
 from test.integration.tests import runner
 
 test_type = "lens_only"
-test_name = "lens__hyper"
+test_name = "lens_light__hyper"
 data_type = "lens_bulge_disk"
 data_resolution = "LSST"
 
@@ -26,7 +26,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     class HyperLensPlanePhase(al.PhaseImaging):
         def customize_priors(self, results):
-            self.galaxies = results.from_phase("phase_1").variable.galaxies
 
             self.galaxies.lens.hyper_galaxy = (
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
@@ -38,7 +37,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
+                light=phase1.result.variable.galaxies.lens.light,
                 hyper_galaxy=al.HyperGalaxy,
             )
         ),

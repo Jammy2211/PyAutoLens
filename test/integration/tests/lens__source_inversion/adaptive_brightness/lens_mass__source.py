@@ -24,25 +24,18 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         optimizer_class=optimizer_class,
     )
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens = results.from_phase("phase_1").constant.galaxies.lens
-
-    phase2 = InversionPhase(
+    phase2 = al.PhaseImaging(
         phase_name="phase_2_weighted_regularization",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                mass=phase1.constant.galaxies.lens.mass,
+                shear=phase1.constant.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pixelizations.VoronoiMagnification,
+                pixelization=al.pixelizations.VoronoiBrightnessImage,
                 regularization=al.regularization.AdaptiveBrightness,
             ),
         ),
@@ -53,30 +46,19 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
-
-            self.galaxies.source = results.from_phase(
-                "phase_2_weighted_regularization"
-            ).constant.galaxies.source
-
-    phase3 = InversionPhase(
+    phase3 = al.PhaseImaging(
         phase_name="phase_3",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                mass=phase1.variable.galaxies.lens.mass,
+                shear=phase1.variable.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pixelizations.VoronoiMagnification,
-                regularization=al.regularization.AdaptiveBrightness,
+                pixelization=phase2.constant.galaxies.source.pixelization,
+                regularization=phase2.constant.galaxies.source.regularization,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -86,30 +68,19 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens = results.from_phase("phase_3").constant.galaxies.lens
-
-            self.galaxies.source = results.from_phase(
-                "phase_2_weighted_regularization"
-            ).variable.galaxies.source
-
-    phase4 = InversionPhase(
+    phase4 = al.PhaseImaging(
         phase_name="phase_4_weighted_regularization",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                mass=phase3.constant.galaxies.lens.mass,
+                shear=phase3.constant.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pixelizations.VoronoiMagnification,
-                regularization=al.regularization.AdaptiveBrightness,
+                pixelization=phase2.variable.galaxies.source.pixelization,
+                regularization=phase2.variable.galaxies.source.pixelization,
             ),
         ),
         optimizer_class=optimizer_class,

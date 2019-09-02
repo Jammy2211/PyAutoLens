@@ -11,11 +11,9 @@ Small Picture:
 - Acceptance ratio override on MultiNest run.
 - Simulated lensed image from discrete image grid.
 - Iterator grids.
-- Unmasked bool.
+- Unmasked bool decorator.
 - PSF in light profiles, etc.
-- Sort out all bools in all functions.
 - Plot plane image as square, not rectangle
-- Make sure image plane pix grid also shifts for offset mask.
 - Use model image for norm range on subplots.
 - Unit Test HyperNoise Maps
 - Summarize output
@@ -33,10 +31,6 @@ Small Picture:
 - Expand intepolation tests and write tutorial.
 - Challenge mass errors.
 
-Rich:
-
-- Scale noise of all hyper galaxies simultaneously? -> inversion using this noise map
-
 Amy:
 
 - Magnification + Caustic + Critical curves
@@ -49,10 +43,6 @@ Mid term:
 
 - Include output of data for a simulation (galaxies, ccd settings, etc).
 - CCD loading sanity checks
-
-Long Term:
-
-- Multi-plane analysis.
 
 Future:
 
