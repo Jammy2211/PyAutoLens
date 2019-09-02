@@ -803,7 +803,6 @@ def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_
 
         if zoom_offset_arcsec is not None:
             grid_arcsec_plot = grid_arcsec - zoom_offset_arcsec
-            print('AAA')
         else:
             grid_arcsec_plot = grid_arcsec
 

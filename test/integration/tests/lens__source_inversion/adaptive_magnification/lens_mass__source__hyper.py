@@ -47,21 +47,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 "phase_1"
             ).hyper_combined.constant.galaxies.lens.hyper_galaxy
 
-            self.galaxies.lens.mass = results.from_phase(
-                "phase_1"
-            ).variable.galaxies.lens.mass
-
             self.galaxies.source.hyper_galaxy = results.from_phase(
                 "phase_1"
             ).hyper_combined.constant.galaxies.source.hyper_galaxy
-
-            self.galaxies.source.pixelization = results.from_phase(
-                "phase_1"
-            ).variable.galaxies.source.pixelization
-
-            self.galaxies.source.regularization = results.from_phase(
-                "phase_1"
-            ).variable.galaxies.source.regularization
 
     phase2 = HyperLensSourcePlanePhase(
         phase_name="phase_2",
@@ -69,13 +57,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=al.mass_profiles.EllipticalIsothermal,
+                mass=phase1.result.variable.galaxies.lens.mass,
                 hyper_galaxy=al.HyperGalaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pixelizations.VoronoiMagnification,
-                regularization=al.regularization.Constant,
+                pixelization=phase1.result.variable.galaxies.source.pixelization,
+                regularization=phase1.result.variable.galaxies.source.regularization,
                 hyper_galaxy=al.HyperGalaxy,
             ),
         ),
