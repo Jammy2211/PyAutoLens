@@ -147,9 +147,6 @@ class TestPhaseModelMapper(object):
 
         assert phase.galaxies[0].sersic.intensity == al.Galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
-        assert len(phase.variable.flat_prior_model_tuples) == 1
-
-        print(phase.variable.flat_prior_model_tuples)
 
         lines = list(
             filter(
