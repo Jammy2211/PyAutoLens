@@ -17,15 +17,15 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class LensPlaneGalaxy0Phase(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens_0.sersic.centre_0 = -1.0
-            self.galaxies.lens_0.sersic.centre_1 = -1.0
+            self.galaxies.lens_0.light.centre_0 = -1.0
+            self.galaxies.lens_0.light.centre_1 = -1.0
 
     phase1 = LensPlaneGalaxy0Phase(
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
             lens_0=al.GalaxyModel(
-                redshift=0.5, sersic=al.light_profiles.EllipticalSersic
+                redshift=0.5, light=al.light_profiles.EllipticalSersic
             )
         ),
         mask_function=modify_mask_function,
@@ -39,22 +39,16 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class LensPlaneGalaxy1Phase(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens_0 = results.from_phase(
-                "phase_1"
-            ).constant.galaxies.lens_0
-
-            self.galaxies.lens_1.sersic.centre_0 = 1.0
-            self.galaxies.lens_1.sersic.centre_1 = 1.0
+            self.galaxies.lens_1.light.centre_0 = 1.0
+            self.galaxies.lens_1.light.centre_1 = 1.0
 
     phase2 = LensPlaneGalaxy1Phase(
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=al.GalaxyModel(
-                redshift=0.5, sersic=al.light_profiles.EllipticalSersic
-            ),
+            lens_0=phase1.result.constant.galaxies.lens_0,
             lens_1=al.GalaxyModel(
-                redshift=0.5, sersic=al.light_profiles.EllipticalSersic
+                redshift=0.5, light=al.light_profiles.EllipticalSersic
             ),
         ),
         mask_function=modify_mask_function,
@@ -68,29 +62,17 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class LensPlaneBothGalaxyPhase(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens_0 = results.from_phase(
-                "phase_1"
-            ).variable.galaxies.lens_0
-
-            self.galaxies.lens_1 = results.from_phase(
-                "phase_2"
-            ).variable.galaxies.lens_0
-
-            self.galaxies.lens_0.sersic.centre_0 = -1.0
-            self.galaxies.lens_0.sersic.centre_1 = -1.0
-            self.galaxies.lens_1.sersic.centre_0 = 1.0
-            self.galaxies.lens_1.sersic.centre_1 = 1.0
+            self.galaxies.lens_0.light.centre_0 = -1.0
+            self.galaxies.lens_0.light.centre_1 = -1.0
+            self.galaxies.lens_1.light.centre_0 = 1.0
+            self.galaxies.lens_1.light.centre_1 = 1.0
 
     phase3 = LensPlaneBothGalaxyPhase(
         phase_name="phase_3",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=al.GalaxyModel(
-                redshift=0.5, sersic=al.light_profiles.EllipticalSersic
-            ),
-            lens_1=al.GalaxyModel(
-                redshift=0.5, sersic=al.light_profiles.EllipticalSersic
-            ),
+            lens_0=phase1.result.variable.galaxies.lens_0,
+            lens_1=phase2.result.variable.galaxies.lens_1,
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,

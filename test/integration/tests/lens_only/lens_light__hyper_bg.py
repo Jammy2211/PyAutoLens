@@ -3,7 +3,7 @@ import autolens as al
 from test.integration.tests import runner
 
 test_type = "lens_only"
-test_name = "lens__hyper_bg"
+test_name = "lens_light__hyper_bg"
 data_type = "lens_bulge_disk"
 data_resolution = "LSST"
 
@@ -36,9 +36,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
 
-            # self.hyper_image_sky = (
-            #     results.last.hyper_combined.constant.hyper_image_sky
-            # )
+            self.hyper_image_sky = (
+                results.last.hyper_combined.constant.hyper_image_sky
+            )
 
             self.hyper_background_noise = (
                 results.last.hyper_combined.constant.hyper_background_noise
@@ -50,7 +50,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
+                light=phase1.result.variable.galaxies.lens.light,
                 hyper_galaxy=al.HyperGalaxy,
             )
         ),

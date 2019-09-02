@@ -32,7 +32,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens=al.GalaxyModel(
                 redshift=0.5,
                 light=al.light_profiles.EllipticalSersic,
-                light_1=phase1.result.variable.galaxies.lens.light_1,
+                light_1=phase1.result.constant.galaxies.lens.light_1,
             )
         ),
         optimizer_class=optimizer_class,

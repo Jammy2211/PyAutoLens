@@ -41,8 +41,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class SourcePix(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
-
             self.galaxies.source = results.last.inversion.constant.galaxies.source
 
     phase2 = SourcePix(
@@ -50,7 +48,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal
+                redshift=0.5, mass=phase1.result.variable.galaxies.lens.mass
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
