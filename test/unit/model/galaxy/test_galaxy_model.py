@@ -133,9 +133,7 @@ class TestGalaxyModel:
         assert len(mapper.prior_model_tuples) == 2
 
     def test_align_centres(self, galaxy_model):
-        prior_models = galaxy_model.prior_models
-
-        assert prior_models[1].centre != prior_models[2].centre
+        assert galaxy_model.light_profile.centre != galaxy_model.mass_profile.centre
 
         galaxy_model = al.GalaxyModel(
             redshift=al.Redshift,
@@ -144,35 +142,29 @@ class TestGalaxyModel:
             align_centres=True,
         )
 
-        prior_models = galaxy_model.prior_models
-
-        assert prior_models[1].centre == prior_models[2].centre
+        assert galaxy_model.light_profile.centre == galaxy_model.mass_profile.centre
 
     def test_align_axis_ratios(self, galaxy_model):
-        prior_models = galaxy_model.prior_models
+        assert galaxy_model.light_profile.axis_ratio != galaxy_model.mass_profile.axis_ratio
 
-        assert prior_models[1].axis_ratio != prior_models[2].axis_ratio
-
-        prior_models = al.GalaxyModel(
+        galaxy_model = al.GalaxyModel(
             redshift=al.Redshift,
             light_profile=al.light_profiles.EllipticalDevVaucouleurs,
             mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
             align_axis_ratios=True,
-        ).prior_models
-        assert prior_models[1].axis_ratio == prior_models[2].axis_ratio
+        )
+        assert galaxy_model.light_profile.axis_ratio == galaxy_model.mass_profile.axis_ratio
 
     def test_align_phis(self, galaxy_model):
-        prior_models = galaxy_model.prior_models
+        assert galaxy_model.light_profile.phi != galaxy_model.mass_profile.phi
 
-        assert prior_models[1].phi != prior_models[2].phi
-
-        prior_models = al.GalaxyModel(
+        galaxy_model = al.GalaxyModel(
             redshift=al.Redshift,
             light_profile=al.light_profiles.EllipticalDevVaucouleurs,
             mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
             align_orientations=True,
-        ).prior_models
-        assert prior_models[1].phi == prior_models[2].phi
+        )
+        assert galaxy_model.light_profile.phi == galaxy_model.mass_profile.phi
 
 
 class TestNamedProfiles:
