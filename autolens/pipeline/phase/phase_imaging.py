@@ -276,6 +276,7 @@ class PhaseImaging(Phase):
             sub_grid_size=self.sub_grid_size,
             trimmed_psf_shape=self.psf_shape,
             positions=positions,
+            positions_threshold=self.positions_threshold,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             pixel_scale_binned_grid=pixel_scale_binned_grid,
             hyper_noise_map_max=self.hyper_noise_map_max,
@@ -690,7 +691,7 @@ class PhaseImaging(Phase):
                 )
 
                 fit = lens_fit.LensPositionFit(
-                    positions=traced_positions_of_planes[-1],
+                    positions=[traced_positions_of_planes[0][-1]],
                     noise_map=self.lens_data.pixel_scale,
                 )
 
