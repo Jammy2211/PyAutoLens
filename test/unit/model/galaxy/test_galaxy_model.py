@@ -145,7 +145,10 @@ class TestGalaxyModel:
         assert galaxy_model.light_profile.centre == galaxy_model.mass_profile.centre
 
     def test_align_axis_ratios(self, galaxy_model):
-        assert galaxy_model.light_profile.axis_ratio != galaxy_model.mass_profile.axis_ratio
+        assert (
+            galaxy_model.light_profile.axis_ratio
+            != galaxy_model.mass_profile.axis_ratio
+        )
 
         galaxy_model = al.GalaxyModel(
             redshift=al.Redshift,
@@ -153,7 +156,10 @@ class TestGalaxyModel:
             mass_profile=al.mass_profiles.EllipticalCoredIsothermal,
             align_axis_ratios=True,
         )
-        assert galaxy_model.light_profile.axis_ratio == galaxy_model.mass_profile.axis_ratio
+        assert (
+            galaxy_model.light_profile.axis_ratio
+            == galaxy_model.mass_profile.axis_ratio
+        )
 
     def test_align_phis(self, galaxy_model):
         assert galaxy_model.light_profile.phi != galaxy_model.mass_profile.phi

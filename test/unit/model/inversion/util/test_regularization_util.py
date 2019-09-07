@@ -1,6 +1,7 @@
 import autolens as al
 import numpy as np
 
+import pytest
 
 class TestRegularizationConstantMatrix:
     def test__1_b_matrix_size_3x3__weights_all_1s__makes_correct_regularization_matrix(
@@ -291,7 +292,7 @@ class TestRegularizationWeightedMatrix:
             pixel_neighbors_size=pixel_neighbors_size,
         )
 
-        assert (regularization_matrix == test_regularization_matrix).all()
+        assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
     def test__2_b_matrices_size_3x3__weights_all_1s__makes_correct_regularization_matrix(
         self
@@ -328,7 +329,7 @@ class TestRegularizationWeightedMatrix:
             pixel_neighbors_size=pixel_neighbors_size,
         )
 
-        assert (regularization_matrix == test_regularization_matrix).all()
+        assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
     def test__2_b_matrices_size_4x4__weights_all_1s__makes_correct_regularization_matrix(
         self
@@ -362,7 +363,7 @@ class TestRegularizationWeightedMatrix:
             pixel_neighbors_size=pixel_neighbors_size,
         )
 
-        assert (regularization_matrix == test_regularization_matrix).all()
+        assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
     def test__4_b_matrices_size_6x6__weights_all_1s__makes_correct_regularization_matrix(
         self
@@ -450,7 +451,7 @@ class TestRegularizationWeightedMatrix:
             pixel_neighbors_size=pixel_neighbors_size,
         )
 
-        assert (regularization_matrix == test_regularization_matrix).all()
+        assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
     def test__2_b_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(
         self
@@ -494,7 +495,7 @@ class TestRegularizationWeightedMatrix:
             pixel_neighbors_size=pixel_neighbors_size,
         )
 
-        assert (regularization_matrix == test_regularization_matrix).all()
+        assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
     def test__4_b_matrices_size_6x6_with_regularization_weights__makes_correct_regularization_matrix(
         self
@@ -581,4 +582,4 @@ class TestRegularizationWeightedMatrix:
             pixel_neighbors_size=pixel_neighbors_size,
         )
 
-        assert (regularization_matrix == test_regularization_matrix).all()
+        assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)

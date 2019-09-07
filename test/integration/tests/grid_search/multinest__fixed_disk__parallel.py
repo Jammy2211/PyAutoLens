@@ -1,5 +1,6 @@
 import autofit as af
 import autolens as al
+from test.integration.tests import runner
 
 test_type = "grid_search"
 test_name = "multinest__fixed_disk__parallel"
