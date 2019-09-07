@@ -8,8 +8,9 @@ Big Picture:
 
 Small Picture:
 
+-Zeroth order reg in adaptive?
 - Sort out psitions data structure in check function (UNIT TEST ON THIS FuncTION).
-- Acceptance ratio override on MultiNest run.
+- Acceptance ratio override on MultiNest run. This may require a new error estimator :(
 - Simulated lensed image from discrete image grid.
 - Iterator grids.
 - Unmasked bool decorator.

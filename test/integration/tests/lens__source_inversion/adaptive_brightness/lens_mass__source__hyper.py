@@ -51,10 +51,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2_weighted_regularization",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(
-                redshift=0.5,
-                mass=phase1.constant.galaxies.lens.mass,
-            ),
+            lens=al.GalaxyModel(redshift=0.5, mass=phase1.constant.galaxies.lens.mass),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pixelizations.VoronoiBrightnessImage,

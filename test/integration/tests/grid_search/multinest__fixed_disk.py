@@ -70,7 +70,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class GridPhase(af.as_grid_search(al.PhaseImaging)):
+    class GridPhase(af.as_grid_search(phase_class=al.PhaseImaging)):
         @property
         def grid_priors(self):
             return [self.variable.galaxies.lens.bulge.sersic_index]

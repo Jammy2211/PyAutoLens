@@ -138,6 +138,7 @@ def weighted_regularization_matrix_from_pixel_neighbors(
     regularization_weight = regularization_weights ** 2.0
 
     for i in range(pixels):
+        regularization_matrix[i, i] += 1e-8
         for j in range(pixel_neighbors_size[i]):
             neighbor_index = pixel_neighbors[i, j]
             regularization_matrix[i, i] += regularization_weight[neighbor_index]

@@ -36,9 +36,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
             )
 
-            self.hyper_image_sky = (
-                results.last.hyper_combined.constant.hyper_image_sky
-            )
+            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
 
             self.hyper_background_noise = (
                 results.last.hyper_combined.constant.hyper_background_noise

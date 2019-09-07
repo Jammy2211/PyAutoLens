@@ -31,7 +31,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 50
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True, include_background_sky=True, include_background_noise=True)
+    phase1 = phase1.extend_with_multiple_hyper_phases(
+        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+    )
 
     class InversionPhase(al.PhaseImaging):
         def customize_priors(self, results):
@@ -49,10 +51,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2_weighted_regularization",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(
-                redshift=0.5,
-                mass=phase1.constant.galaxies.lens.mass,
-            ),
+            lens=al.GalaxyModel(redshift=0.5, mass=phase1.constant.galaxies.lens.mass),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pixelizations.VoronoiBrightnessImage,
@@ -66,7 +65,12 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 30
     phase2.optimizer.sampling_efficiency = 0.8
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, include_background_sky=True, include_background_noise=True, inversion=True)
+    phase2 = phase2.extend_with_multiple_hyper_phases(
+        hyper_galaxy=True,
+        include_background_sky=True,
+        include_background_noise=True,
+        inversion=True,
+    )
 
     class InversionPhase(al.PhaseImaging):
         def customize_priors(self, results):
@@ -103,7 +107,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase3.optimizer.sampling_efficiency = 0.8
 
     phase3 = phase3.extend_with_multiple_hyper_phases(
-        hyper_galaxy=True, include_background_sky=True, include_background_noise=True, inversion=True)
+        hyper_galaxy=True,
+        include_background_sky=True,
+        include_background_noise=True,
+        inversion=True,
+    )
 
     return al.PipelineImaging(name, phase1, phase2, phase3)
 
