@@ -103,6 +103,16 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             centre=centre, axis_ratio=axis_ratio, phi=phi
         )
 
+    def visibilities_from_grid_and_transformer(self, grid, transformer):
+
+        profile_image_plane_image_1d = self.profile_image_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+
+        return transformer.visibilities_from_image_1d(
+            image_1d=profile_image_plane_image_1d
+        )
+
     @dim.convert_units_to_input_units
     def luminosity_within_circle_in_units(
         self,

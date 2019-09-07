@@ -312,6 +312,49 @@ class TestLightProfiles(object):
                 1e-5,
             )
 
+    class TestVisibilities(object):
+
+        def test__visibilities_from_grid_and_transformer(
+                self, sub_grid_7x7, transformer_7x7_7
+        ):
+            light_profile = al.light_profiles.EllipticalSersic(intensity=1.0)
+
+            galaxy = al.Galaxy(light_profile=light_profile, redshift=0.5)
+
+            image_1d = light_profile.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            visibilities = transformer_7x7_7.visibilities_from_image_1d(
+                image_1d=image_1d
+            )
+
+            galaxy_visibilities = galaxy.visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            assert (visibilities == galaxy_visibilities).all()
+
+            light_profile_0=al.light_profiles.EllipticalSersic(intensity=2.0)
+            light_profile_1=al.light_profiles.EllipticalSersic(intensity=3.0)
+
+            image_1d = light_profile_0.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            ) + light_profile_1.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            visibilities = transformer_7x7_7.visibilities_from_image_1d(
+                image_1d=image_1d
+            )
+
+            galaxy = al.Galaxy(light_profile_0=light_profile_0, light_profile_1=light_profile_1, redshift=0.5)
+
+            galaxy_visibilities = galaxy.visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            assert visibilities == pytest.approx(galaxy_visibilities, 1.0e-4)
 
 def critical_curve_via_magnification_from_galaxy_and_grid(galaxy, grid):
     magnification_2d = galaxy.magnification_from_grid(
