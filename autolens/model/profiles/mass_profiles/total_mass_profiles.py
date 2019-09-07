@@ -707,6 +707,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         phi: float = 0.0,
         einstein_radius: dim.Length = 1.0,
     ):
+
         """
         Represents a cored elliptical power-law density distribution
 
@@ -818,17 +819,17 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             / np.sqrt(1 - self.axis_ratio ** 2)
         )
 
-        deflection_y = factor * np.arcsin(
+        deflection_y = factor * np.arcsinh(
             (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 0])
-            / (np.sqrt((grid[:, 1] ** 2) * (self.axis_ratio ** 2) + grid[:, 0] ** 2))
-        )
-
-        deflection_x = factor * np.arcsinh(
-            (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 1])
             / (
                 self.axis_ratio
-                * np.sqrt((self.axis_ratio ** 2) * (grid[:, 1] ** 2) + grid[:, 0] ** 2)
+                * np.sqrt((self.axis_ratio ** 2) * (grid[:, 0] ** 2) + grid[:, 1] ** 2)
             )
+        )
+
+        deflection_x = factor * np.arcsin(
+            (np.sqrt(1 - self.axis_ratio ** 2) * grid[:, 1])
+            / (np.sqrt((grid[:, 0] ** 2) * (self.axis_ratio ** 2) + grid[:, 1] ** 2))
         )
 
         return self.rotate_grid_from_profile(

@@ -686,8 +686,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
         else:
             edge_pixels_plot = edge_pixels
 
-        edge_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=edge_pixels_plot
-                                                      )
+        edge_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=edge_pixels_plot)
         edge_units = convert_grid_units(
             array=mask,
             grid_arcsec=edge_arcsec,
@@ -725,7 +724,6 @@ def plot_border(
             border_grid_1d_plot = border_grid_1d - zoom_offset_arcsec.astype("int")
         else:
             border_grid_1d_plot = border_grid_1d
-
 
         border_units = convert_grid_units(
             array=mask,
