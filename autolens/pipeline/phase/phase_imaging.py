@@ -179,7 +179,7 @@ class PhaseImaging(Phase):
 
         result = self.run_analysis(analysis)
 
-        return self.make_result(result, analysis)
+        return self.make_result(result=result, analysis=analysis)
 
     def make_analysis(self, data, results=None, mask=None, positions=None):
         """
@@ -731,7 +731,7 @@ class PhaseImaging(Phase):
             mask = self.lens_data.mask_2d if self.should_plot_mask else None
             positions = self.lens_data.positions if self.should_plot_positions else None
 
-            tracer = self.tracer_for_instance(instance)
+            tracer = self.tracer_for_instance(instance=instance)
 
             phase_plotters.plot_ray_tracing_for_phase(
                 tracer=tracer,
