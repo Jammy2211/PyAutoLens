@@ -732,6 +732,250 @@ class TestPrimaryBeam(object):
             assert profile_psf == pytest.approx(imaging_psf, 1e-4)
 
 
+class TestSimulateInterferometerData(object):
+
+    def test__setup_with_all_features_off(self, transformer_7x7_7):
+        image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
+
+        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+            value=1.0, pixel_scale=0.1, shape=image.shape
+        )
+
+        interferometer_data_simulated = al.SimulatedInterferometerData.from_image_and_exposure_arrays(
+            image=image,
+            exposure_time=1.0,
+            exposure_time_map=exposure_time_map,
+            pixel_scale=0.1,
+            transformer=transformer_7x7_7,
+            noise_sigma=None
+        )
+
+        image_1d = np.array([2.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.0, 0.0, 0.0])
+        simulated_visibilities = transformer_7x7_7.visibilities_from_image_1d(image_1d=image_1d)
+
+        assert interferometer_data_simulated.visibilities == pytest.approx(simulated_visibilities, 1.0e-4)
+        assert interferometer_data_simulated.pixel_scale == 0.1
+        assert (
+                interferometer_data_simulated.image
+                == np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
+        ).all()
+
+    def test__setup_with_background_sky_on__noise_off__no_noise_in_image__noise_map_is_noise_value(
+            self, transformer_7x7_7
+    ):
+        image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
+
+        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+            value=1.0, pixel_scale=0.1, shape=image.shape
+        )
+
+        background_sky_map = al.ScaledSquarePixelArray.single_value(
+            value=2.0, pixel_scale=0.1, shape=image.shape
+        )
+
+        interferometer_data_simulated = al.SimulatedInterferometerData.from_image_and_exposure_arrays(
+            image=image,
+            pixel_scale=0.1,
+            exposure_time=1.0,
+            exposure_time_map=exposure_time_map,
+            background_sky_map=background_sky_map,
+            transformer=transformer_7x7_7,
+            noise_sigma=None,
+            noise_if_add_noise_false=0.2,
+            noise_seed=1,
+        )
+
+        image_1d = np.array([4.0, 2.0, 2.0, 2.0, 3.0, 2.0, 5.0, 2.0, 2.0])
+        simulated_visibilities = transformer_7x7_7.visibilities_from_image_1d(image_1d=image_1d)
+
+        assert interferometer_data_simulated.visibilities == pytest.approx(simulated_visibilities, 1.0e-4)
+        assert (interferometer_data_simulated.exposure_time_map == 1.0 * np.ones((3, 3))).all()
+        assert interferometer_data_simulated.pixel_scale == 0.1
+
+        assert (
+                interferometer_data_simulated.image
+                == np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
+        ).all()
+        assert interferometer_data_simulated.visibilities_noise_map == 0.2 * np.ones((6, 2))
+
+    def test__setup_with_noise(self, transformer_7x7_7):
+        image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
+
+        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+            value=20.0, pixel_scale=0.1, shape=image.shape
+        )
+
+        interferometer_data_simulated = al.SimulatedInterferometerData.from_image_and_exposure_arrays(
+            image=image,
+            pixel_scale=0.1,
+            exposure_time=20.0,
+            exposure_time_map=exposure_time_map,
+            transformer=transformer_7x7_7,
+            noise_sigma=0.1,
+            noise_seed=1,
+        )
+
+        image_1d = np.array([2.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.0, 0.0, 0.0])
+        simulated_visibilities = transformer_7x7_7.visibilities_from_image_1d(image_1d=image_1d)
+
+        assert (interferometer_data_simulated.exposure_time_map == 20.0 * np.ones((3, 3))).all()
+        assert interferometer_data_simulated.pixel_scale == 0.1
+
+        assert interferometer_data_simulated.image == pytest.approx(
+            np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]]), 1e-2
+        )
+
+        assert interferometer_data_simulated.visibilities[0,:] == pytest.approx([1.728611, -2.582958], 1.0e-4)
+        visibilities_noise_map_realization = interferometer_data_simulated.visibilities - simulated_visibilities
+
+        assert visibilities_noise_map_realization == pytest.approx(interferometer_data_simulated.visibilities_noise_map_realization, 1.0e-4)
+
+        assert interferometer_data_simulated.visibilities_noise_map == 0.1 * np.ones((6, 2))
+
+    def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer(
+            self, transformer_7x7_7
+    ):
+
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(10, 10), pixel_scale=1.0, sub_grid_size=1
+        )
+
+        g0 = al.Galaxy(
+            redshift=0.5,
+            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+        )
+
+        g1 = al.Galaxy(
+            redshift=1.0, light=al.light_profiles.SphericalSersic(intensity=1.0)
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+        deflections = tracer.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
+        )
+
+        interferometer_data_simulated_via_deflections = al.SimulatedInterferometerData.from_deflections_galaxies_and_exposure_arrays(
+            deflections=deflections,
+            pixel_scale=1.0,
+            galaxies=[g1],
+            exposure_time=10000.0,
+            background_sky_level=100.0,
+            transformer=transformer_7x7_7,
+            noise_sigma=0.1,
+            noise_seed=1,
+        )
+
+        tracer_profile_image_plane_image = tracer.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
+        )
+
+        interferometer_data_simulated = al.SimulatedInterferometerData.from_image_and_exposure_arrays(
+            image=tracer_profile_image_plane_image,
+            pixel_scale=1.0,
+            exposure_time=10000.0,
+            background_sky_level=100.0,
+            transformer=transformer_7x7_7,
+            noise_sigma=0.1,
+            noise_seed=1,
+        )
+
+        assert (
+                interferometer_data_simulated_via_deflections.image == interferometer_data_simulated.image
+        ).all()
+
+        assert (
+                interferometer_data_simulated_via_deflections.exposure_time_map
+                == interferometer_data_simulated.exposure_time_map
+        ).all()
+        assert (
+                interferometer_data_simulated_via_deflections.visibilities == interferometer_data_simulated.visibilities
+        ).all()
+
+        assert (
+                interferometer_data_simulated_via_deflections.visibilities_noise_map == interferometer_data_simulated.visibilities_noise_map
+        ).all()
+
+    def test__from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
+
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(20, 20), pixel_scale=0.05, sub_grid_size=1
+        )
+
+        lens_galaxy = al.Galaxy(
+            redshift=0.5,
+            light=al.light_profiles.EllipticalSersic(intensity=1.0),
+            mass=al.mass_profiles.EllipticalIsothermal(einstein_radius=1.6),
+        )
+
+        source_galaxy = al.Galaxy(
+            redshift=1.0, light=al.light_profiles.EllipticalSersic(intensity=0.3)
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+
+        interferometer_data_simulated_via_tracer = al.SimulatedInterferometerData.from_tracer_grid_and_exposure_arrays(
+            tracer=tracer,
+            grid=grid,
+            pixel_scale=0.1,
+            exposure_time=10000.0,
+            background_sky_level=100.0,
+            transformer=transformer_7x7_7,
+            noise_sigma=0.1,
+            noise_seed=1,
+        )
+
+        interferometer_data_simulated = al.SimulatedInterferometerData.from_image_and_exposure_arrays(
+            image=tracer.profile_image_from_grid(grid=grid, return_in_2d=True, return_binned=True),
+            pixel_scale=0.1,
+            exposure_time=10000.0,
+            background_sky_level=100.0,
+            transformer=transformer_7x7_7,
+            noise_sigma=0.1,
+            noise_seed=1,
+        )
+
+        assert (interferometer_data_simulated_via_tracer.image == interferometer_data_simulated.image).all()
+
+        assert (
+                interferometer_data_simulated_via_tracer.exposure_time_map
+                == interferometer_data_simulated.exposure_time_map
+        ).all()
+        assert (
+                interferometer_data_simulated_via_tracer.visibilities == interferometer_data_simulated.visibilities
+        ).all()
+
+        assert (
+                interferometer_data_simulated_via_tracer.visibilities_noise_map == interferometer_data_simulated.visibilities_noise_map
+        ).all()
+
+    class TestCreateGaussianNoiseMap(object):
+
+        def test__gaussian_noise_sigma_0__gaussian_noise_map_all_0__image_is_identical_to_input(
+                self
+        ):
+            simulate_gaussian_noise = al.gaussian_noise_map_from_shape_and_sigma(
+                shape=(9,), sigma=0.0, noise_seed=1
+            )
+
+            assert (simulate_gaussian_noise == np.zeros((9,))).all()
+
+        def test__gaussian_noise_sigma_1__gaussian_noise_map_all_non_0__image_has_noise_added(
+                self
+        ):
+            simulate_gaussian_noise = al.gaussian_noise_map_from_shape_and_sigma(
+                shape=(9,), sigma=1.0, noise_seed=1
+            )
+
+            # Use seed to give us a known gaussian noises map we'll test for
+
+            assert simulate_gaussian_noise == pytest.approx(
+                np.array(
+                    [1.62, -0.61, -0.53, -1.07, 0.87, -2.30, 1.74, -0.76, 0.32]
+                ),
+                1e-2,
+            )
+
 class TestInterferometerFromFits(object):
     def test__no_settings_just_pass_fits(self):
 
