@@ -1,13 +1,18 @@
+import logging
 import numpy as np
 import scipy.signal
 from skimage.transform import resize, rescale
 
 from autolens import exc
+from autolens.array import grids
+from autolens.data.instrument import abstract_data
+from autolens.array.mapping_util import grid_mapping_util
+
 from autolens.array.util import array_util, grid_util
 from autolens.array.mapping_util import array_mapping_util
-from autolens.data.instrument import abstract_data
 from autolens.array import scaled_array
 
+logger = logging.getLogger(__name__)
 
 class InterferometerData(abstract_data.AbstractData):
     def __init__(
@@ -324,6 +329,280 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
             raise exc.ConvolutionException("PrimaryBeam Kernel must be odd")
 
         return scipy.signal.convolve2d(array_2d, self, mode="same")
+
+
+class SimulatedInterferometerData(InterferometerData):
+    def __init__(
+        self,
+        image,
+        pixel_scale,
+        psf,
+        noise_map,
+        visibilities,
+        visibilities_noise_map,
+        uv_wavelengths,
+        primary_beam,
+        visibilities_noise_map_realization,
+        exposure_time_map=None,
+        **kwargs
+    ):
+
+        super(SimulatedInterferometerData, self).__init__(
+            image=image,
+            pixel_scale=pixel_scale,
+            psf=psf,
+            noise_map=noise_map,
+            visibilities=visibilities,
+            visibilities_noise_map=visibilities_noise_map,
+            uv_wavelengths=uv_wavelengths,
+            primary_beam=primary_beam,
+            exposure_time_map=exposure_time_map,
+        )
+
+        self.visibilities_noise_map_realization = visibilities_noise_map_realization
+
+    @classmethod
+    def from_deflections_galaxies_and_exposure_arrays(
+        cls,
+        deflections,
+        pixel_scale,
+        galaxies,
+        exposure_time,
+        transformer,
+        primary_beam=None,
+        exposure_time_map=None,
+        background_sky_level=0.0,
+        background_sky_map=None,
+        noise_sigma=None,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
+    ):
+
+        shape = (deflections.shape[0], deflections.shape[1])
+
+        grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=shape, pixel_scale=pixel_scale
+        )
+
+        deflections_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
+            sub_grid_2d=deflections,
+            mask=np.full(shape=shape, fill_value=False),
+            sub_grid_size=1,
+        )
+
+        deflected_grid_1d = grid_1d - deflections_1d
+
+        image_2d = sum(
+            map(
+                lambda g: g.profile_image_from_grid(
+                    grid=deflected_grid_1d, return_in_2d=True, return_binned=False
+                ),
+                galaxies,
+            )
+        )
+
+        return cls.from_image_and_exposure_arrays(
+            image=image_2d,
+            pixel_scale=pixel_scale,
+            exposure_time=exposure_time,
+            exposure_time_map=exposure_time_map,
+            background_sky_level=background_sky_level,
+            background_sky_map=background_sky_map,
+            transformer=transformer,
+            primary_beam=primary_beam,
+            noise_sigma=noise_sigma,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed,
+        )
+
+    @classmethod
+    def from_tracer_grid_and_exposure_arrays(
+        cls,
+        tracer,
+        grid,
+        pixel_scale,
+        exposure_time,
+        transformer,
+        primary_beam=None,
+        exposure_time_map=None,
+        background_sky_level=0.0,
+        background_sky_map=None,
+        noise_sigma=None,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
+    ):
+        """
+        Create a realistic simulated image by applying effects to a plain simulated image.
+
+        Parameters
+        ----------
+        name
+        image : ndarray
+            The image before simulating (e.g. the lens and source galaxies before optics blurring and Interferometer read-out).
+        pixel_scale: float
+            The scale of each pixel in arc seconds
+        exposure_time_map : ndarray
+            An array representing the effective exposure time of each pixel.
+        psf: PSF
+            An array describing the PSF the simulated image is blurred with.
+        background_sky_map : ndarray
+            The value of background sky in every image pixel (electrons per second).
+        add_noise: Bool
+            If True poisson noise_maps is simulated and added to the image, based on the total counts in each image
+            pixel
+        noise_seed: int
+            A seed for random noise_maps generation
+        """
+
+        image_plane_image_2d = tracer.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True)
+
+        return cls.from_image_and_exposure_arrays(
+            image=image_plane_image_2d,
+            pixel_scale=pixel_scale,
+            exposure_time=exposure_time,
+            exposure_time_map=exposure_time_map,
+            background_sky_level=background_sky_level,
+            background_sky_map=background_sky_map,
+            transformer=transformer,
+            primary_beam=primary_beam,
+            noise_sigma=noise_sigma,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed,
+        )
+
+    @classmethod
+    def from_image_and_exposure_arrays(
+        cls,
+        image,
+        pixel_scale,
+        exposure_time,
+        transformer,
+        primary_beam=None,
+        exposure_time_map=None,
+        background_sky_level=0.0,
+        background_sky_map=None,
+        noise_sigma=None,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
+    ):
+        """
+        Create a realistic simulated image by applying effects to a plain simulated image.
+
+        Parameters
+        ----------
+        name
+        image : ndarray
+            The image before simulating (e.g. the lens and source galaxies before optics blurring and Interferometer read-out).
+        pixel_scale: float
+            The scale of each pixel in arc seconds
+        exposure_time_map : ndarray
+            An array representing the effective exposure time of each pixel.
+        psf: PSF
+            An array describing the PSF the simulated image is blurred with.
+        background_sky_map : ndarray
+            The value of background sky in every image pixel (electrons per second).
+        add_noise: Bool
+            If True poisson noise_maps is simulated and added to the image, based on the total counts in each image
+            pixel
+        noise_seed: int
+            A seed for random noise_maps generation
+        """
+
+        if exposure_time_map is None:
+
+            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(
+                value=exposure_time, shape=image.shape, pixel_scale=pixel_scale
+            )
+
+        if background_sky_map is None:
+
+            background_sky_map = scaled_array.ScaledSquarePixelArray.single_value(
+                value=background_sky_level, shape=image.shape, pixel_scale=pixel_scale
+            )
+
+        image += background_sky_map
+        image_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
+            sub_array_2d=image, mask=np.full(fill_value=False, shape=image.shape), sub_grid_size=1)
+
+        visibilities = transformer.visibilities_from_image_1d(image_1d=image_1d)
+
+        if noise_sigma is not None:
+            visibilities_noise_map_realization = gaussian_noise_map_from_shape_and_sigma(
+                shape=visibilities.shape, sigma=noise_sigma, noise_seed=noise_seed,
+            )
+            visibilities = visibilities + visibilities_noise_map_realization
+            visibilities_noise_map = NoiseMap.single_value(value=noise_sigma,
+                                                           shape=visibilities.shape,
+                                                           pixel_scale=pixel_scale)
+        else:
+            visibilities_noise_map = NoiseMap.single_value(
+                value=noise_if_add_noise_false,
+                shape=visibilities.shape,
+                pixel_scale=pixel_scale,
+            )
+            visibilities_noise_map_realization = None
+
+        if np.isnan(visibilities_noise_map).any():
+            raise exc.DataException(
+                "The noise-map has NaN values in it. This suggests your exposure time and / or"
+                "background sky levels are too low, creating signal counts at or close to 0.0."
+            )
+
+        image -= background_sky_map
+
+        return SimulatedInterferometerData(
+            image=image,
+            pixel_scale=pixel_scale,
+            noise_map=None,
+            psf=None,
+            visibilities=visibilities,
+            visibilities_noise_map=visibilities_noise_map,
+            uv_wavelengths=transformer.uv_wavelengths,
+            primary_beam=primary_beam,
+            visibilities_noise_map_realization=visibilities_noise_map_realization,
+            exposure_time_map=exposure_time_map,
+            background_sky_map=background_sky_map,
+            noise_realization=visibilities_noise_map_realization,
+        )
+
+    def __array_finalize__(self, obj):
+        if isinstance(obj, SimulatedInterferometerData):
+            try:
+                self.image = obj.image
+                self.pixel_scale = obj.pixel_scale
+                self.psf = obj.psf
+                self.noise_map = obj.noise_map
+                self.background_noise_map = obj.background_noise_map
+                self.poisson_noise_map = obj.poisson_noise_map
+                self.exposure_time_map = obj.exposure_time_map
+                self.background_sky_map = obj.background_sky_map
+                self.background_noise_realization = obj.background_noise_realization
+                self.poisson_noise_realization = obj.poisson_noise_realization
+                self.origin = obj.origin
+            except AttributeError:
+                logger.debug(
+                    "Original object in Interferometer.__array_finalize__ missing one or more attributes"
+                )
+
+def gaussian_noise_map_from_shape_and_sigma(shape, sigma, noise_seed=-1):
+    """Generate a two-dimensional read noises-map, generating values from a Gaussian distribution with mean 0.0.
+
+    Params
+    ----------
+    shape : (int, int)
+        The (x,y) image_shape of the generated Gaussian noises map.
+    read_noise : float
+        Standard deviation of the 1D Gaussian that each noises value is drawn from
+    seed : int
+        The seed of the random number generator, used for the random noises maps.
+    """
+    if noise_seed == -1:
+        # Use one seed, so all regions have identical column non-uniformity.
+        noise_seed = np.random.randint(0, int(1e9))
+    np.random.seed(noise_seed)
+    read_noise_map = np.random.normal(loc=0.0, scale=sigma, size=shape)
+    return read_noise_map
 
 
 def load_interferometer_data_from_fits(
