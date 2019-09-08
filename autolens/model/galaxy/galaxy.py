@@ -9,11 +9,15 @@ import autofit as af
 from autolens import exc, dimensions as dim
 from autolens import text_util
 from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
+from autolens.array.grids import (
+    reshape_array_from_grid,
+    reshape_array_from_grid_and_convolver,
+    reshape_array_from_grid_and_psf,
+    reshape_returned_grid,
+)
 
 
 def is_light_profile(obj):
@@ -198,6 +202,56 @@ class Galaxy(af.ModelObject):
             )
         else:
             return np.zeros((grid.shape[0],))
+
+    @reshape_array_from_grid_and_psf
+    def blurred_profile_image_from_grid_and_psf(
+        self, grid, psf, preload_blurring_grid=None, return_in_2d=True
+    ):
+
+        profile_image = self.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
+        )
+
+        if preload_blurring_grid is None:
+            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
+                psf_shape=psf.shape
+            )
+
+        blurring_image = self.profile_image_from_grid(
+            grid=preload_blurring_grid, return_in_2d=True, return_binned=True
+        )
+
+        return psf.convolve(profile_image + blurring_image)
+
+    @reshape_array_from_grid_and_convolver
+    def blurred_profile_image_from_grid_and_convolver(
+        self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
+    ):
+
+        if convolver.blurring_mask is None:
+            blurring_mask = grid.mask.blurring_mask_from_psf_shape(
+                psf_shape=convolver.psf.shape
+            )
+            convolver = convolver.convolver_with_blurring_mask_added(
+                blurring_mask=blurring_mask
+            )
+
+        profile_image = self.profile_image_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+
+        if preload_blurring_grid is None:
+            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
+                psf_shape=convolver.psf.shape
+            )
+
+        blurring_image = self.profile_image_from_grid(
+            grid=preload_blurring_grid, return_in_2d=False, return_binned=True
+        )
+
+        return convolver.convolve_image(
+            image_array=profile_image, blurring_array=blurring_image
+        )
 
     def visibilities_from_grid_and_transformer(self, grid, transformer):
 

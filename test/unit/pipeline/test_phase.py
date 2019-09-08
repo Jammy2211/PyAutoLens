@@ -94,7 +94,7 @@ class TestPhase(object):
         with pytest.raises(exc.MaskException):
             phase_7x7.make_analysis(data=ccd_data_7x7, mask=None)
 
-    def test_make_analysis__mask_input_uses_mask__inner_mask_radius_included_which_masks_centre(
+    def test__make_analysis__mask_input_uses_mask__inner_mask_radius_included_which_masks_centre(
         self, phase_7x7, ccd_data_7x7
     ):
         # If an input mask is supplied and there is no mask function, we use mask input.
@@ -139,7 +139,7 @@ class TestPhase(object):
         with pytest.raises(exc.MaskException):
             phase_7x7.make_analysis(data=ccd_data_7x7, mask=None)
 
-    def test_make_analysis__positions_are_input__are_used_in_analysis(
+    def test__make_analysis__positions_are_input__are_used_in_analysis(
         self, phase_7x7, ccd_data_7x7
     ):
         # If position threshold is input (not None) and positions are input, make the positions part of the lens data.
@@ -160,7 +160,98 @@ class TestPhase(object):
             phase_7x7.make_analysis(data=ccd_data_7x7, positions=None)
             phase_7x7.make_analysis(data=ccd_data_7x7)
 
-    def test_make_analysis__inversion_resolution_error_raised_if_above_inversion_pixel_limit(
+    def test__make_analysis__positions_do_not_trace_within_threshold__raises_exception(
+        self, phase_7x7, ccd_data_7x7, mask_function_7x7
+    ):
+        phase_7x7 = al.PhaseImaging(
+            galaxies=dict(source=al.Galaxy(redshift=0.5)),
+            mask_function=mask_function_7x7,
+            positions_threshold=50.0,
+            cosmology=cosmo.FLRW,
+            phase_name="test_phase",
+        )
+
+        analysis = phase_7x7.make_analysis(
+            data=ccd_data_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+        )
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+
+        analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+
+        phase_7x7 = al.PhaseImaging(
+            galaxies=dict(source=al.Galaxy(redshift=0.5)),
+            mask_function=mask_function_7x7,
+            positions_threshold=0.0,
+            cosmology=cosmo.FLRW,
+            phase_name="test_phase",
+        )
+
+        analysis = phase_7x7.make_analysis(
+            data=ccd_data_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+        )
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+
+        with pytest.raises(exc.RayTracingException):
+            analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+
+        phase_7x7 = al.PhaseImaging(
+            galaxies=dict(source=al.Galaxy(redshift=0.5)),
+            mask_function=mask_function_7x7,
+            positions_threshold=0.5,
+            cosmology=cosmo.FLRW,
+            phase_name="test_phase",
+        )
+
+        analysis = phase_7x7.make_analysis(
+            data=ccd_data_7x7, positions=[[[1.0, 0.0], [-1.0, 0.0]]]
+        )
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
+                al.Galaxy(
+                    redshift=0.5,
+                    mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                ),
+                al.Galaxy(redshift=1.0),
+            ]
+        )
+
+        analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
+                al.Galaxy(
+                    redshift=0.5,
+                    mass=al.mass_profiles.SphericalIsothermal(einstein_radius=0.0),
+                ),
+                al.Galaxy(redshift=1.0),
+            ]
+        )
+
+        with pytest.raises(exc.RayTracingException):
+            analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+
+        analysis = phase_7x7.make_analysis(
+            data=ccd_data_7x7,
+            positions=[[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]],
+        )
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+
+        analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+
+        analysis = phase_7x7.make_analysis(
+            data=ccd_data_7x7,
+            positions=[[[0.0, 0.0], [0.0, 0.0]], [[100.0, 0.0], [0.0, 0.0]]],
+        )
+        instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+
+        with pytest.raises(exc.RayTracingException):
+            analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+
+    def test__make_analysis__inversion_resolution_error_raised_if_above_inversion_pixel_limit(
         self, phase_7x7, ccd_data_7x7, mask_function_7x7
     ):
         phase_7x7 = al.PhaseImaging(
@@ -180,8 +271,9 @@ class TestPhase(object):
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
 
         instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.check_inversion_pixels_are_below_limit(instance=instance)
+        analysis.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
 
         phase_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -198,11 +290,11 @@ class TestPhase(object):
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
-
         instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.check_inversion_pixels_are_below_limit(instance=instance)
+            analysis.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
             analysis.fit(instance=instance)
 
         phase_7x7 = al.PhaseImaging(
@@ -220,10 +312,10 @@ class TestPhase(object):
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
-
         instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.check_inversion_pixels_are_below_limit(instance=instance)
+        analysis.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
 
         phase_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -240,11 +332,11 @@ class TestPhase(object):
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
-
         instance = phase_7x7.variable.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.check_inversion_pixels_are_below_limit(instance=instance)
+            analysis.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
             analysis.fit(instance=instance)
 
     def test_make_analysis__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(

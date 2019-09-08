@@ -5,10 +5,14 @@ from skimage import measure
 import autofit as af
 from autolens import exc, dimensions as dim
 from autolens.array import scaled_array
-from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
+from autolens.array.grids import (
+    reshape_array_from_grid,
+    reshape_array_from_grid_and_convolver,
+    reshape_array_from_grid_and_psf,
+    reshape_returned_grid,
+)
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
-from autolens.array.util import grid_util
 
 
 class AbstractPlane(object):
@@ -717,8 +721,42 @@ class AbstractPlaneData(AbstractPlaneLensing):
             redshift=redshift, galaxies=galaxies, cosmology=cosmology
         )
 
+    @reshape_array_from_grid_and_psf
+    def blurred_profile_image_from_grid_and_psf(
+        self, grid, psf, preload_blurring_grid=None, return_in_2d=True
+    ):
+
+        profile_image = self.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
+        )
+
+        if preload_blurring_grid is None:
+            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
+                psf_shape=psf.shape
+            )
+
+        blurring_image = self.profile_image_from_grid(
+            grid=preload_blurring_grid, return_in_2d=True, return_binned=True
+        )
+
+        return psf.convolve(profile_image + blurring_image)
+
+    def blurred_profile_images_of_galaxies_from_grid_and_psf(
+        self, grid, psf, preload_blurring_grid=None, return_in_2d=True
+    ):
+        return [
+            galaxy.blurred_profile_image_from_grid_and_psf(
+                grid=grid,
+                psf=psf,
+                preload_blurring_grid=preload_blurring_grid,
+                return_in_2d=return_in_2d,
+            )
+            for galaxy in self.galaxies
+        ]
+
+    @reshape_array_from_grid_and_convolver
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None
+        self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
     ):
 
         if preload_blurring_grid is None:
@@ -746,37 +784,18 @@ class AbstractPlaneData(AbstractPlaneLensing):
             image_array=image_array, blurring_array=blurring_array
         )
 
-    def blurred_profile_1d_images_of_galaxies_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None
+    def blurred_profile_images_of_galaxies_from_grid_and_convolver(
+        self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
     ):
-
-        if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
-                psf_shape=convolver.psf.shape
+        return [
+            galaxy.blurred_profile_image_from_grid_and_convolver(
+                grid=grid,
+                convolver=convolver,
+                preload_blurring_grid=preload_blurring_grid,
+                return_in_2d=return_in_2d,
             )
-
-        if convolver.blurring_mask is None:
-            blurring_mask = grid.mask.blurring_mask_from_psf_shape(
-                psf_shape=convolver.psf.shape
-            )
-            convolver = convolver.convolver_with_blurring_mask_added(
-                blurring_mask=blurring_mask
-            )
-
-        return list(
-            map(
-                lambda profile_image_1d, profile_blurring_image_1d: convolver.convolve_image(
-                    image_array=profile_image_1d,
-                    blurring_array=profile_blurring_image_1d,
-                ),
-                self.profile_images_of_galaxies_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=True
-                ),
-                self.profile_images_of_galaxies_from_grid(
-                    grid=preload_blurring_grid, return_in_2d=False, return_binned=True
-                ),
-            )
-        )
+            for galaxy in self.galaxies
+        ]
 
     def visibilities_from_grid_and_transformer(self, grid, transformer):
 
