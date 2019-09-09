@@ -1461,11 +1461,6 @@ class TestTruncatedNFWMassToConcentration(object):
             centre=(1.0, 2.0), mass_at_200=1.0e9
         )
 
-        print(truncated_nfw_mass.kappa_s)
-        print(truncated_nfw_mass.scale_radius)
-
-        stop
-
         mass_at_200_via_mass = truncated_nfw_mass.mass_at_200_for_units(
             unit_mass="solMass",
             unit_length="arcsec",
