@@ -15,6 +15,7 @@ from .dark_mass_profiles import (
     EllipticalGeneralizedNFW,
     SphericalGeneralizedNFW,
     SphericalTruncatedNFW,
+    SphericalTruncatedNFWMassToConcentration,
     SphericalTruncatedNFWChallenge,
     EllipticalNFW,
     SphericalNFW,

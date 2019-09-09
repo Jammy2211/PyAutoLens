@@ -11,7 +11,8 @@ from autolens.model.galaxy import galaxy as g
 
 from autolens.array.grids import (
     reshape_array_from_grid,
-    reshape_array_from_grid,
+    reshape_array_from_grid_and_convolver,
+    reshape_array_from_grid_and_psf,
     reshape_returned_grid,
 )
 
@@ -242,14 +243,20 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     def traced_positions_of_planes_from_positions(self, positions):
 
-        traced_positions = []
+        traced_positions_of_planes = [[] for i in range(self.total_planes)]
 
         for position_grid in positions:
-            traced_positions.append(
-                self.traced_grids_of_planes_from_grid(grid=position_grid)
+            traced_position_grids_of_planes = self.traced_grids_of_planes_from_grid(
+                grid=position_grid
             )
+            for (plane_index, tracer_position_grid_of_plane) in enumerate(
+                traced_position_grids_of_planes
+            ):
+                traced_positions_of_planes[plane_index].append(
+                    traced_position_grids_of_planes[plane_index]
+                )
 
-        return traced_positions
+        return traced_positions_of_planes
 
     def deflections_between_planes_from_grid(
         self, grid, plane_i=0, plane_j=-1, return_in_2d=True
@@ -394,35 +401,70 @@ class AbstractTracerData(AbstractTracerLensing):
     def __init__(self, planes, cosmology):
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
 
-    def blurred_profile_image_2d_of_planes_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None
+    @reshape_array_from_grid_and_psf
+    def blurred_profile_image_from_grid_and_psf(
+        self, grid, psf, preload_blurring_grid=None, return_in_2d=True
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a convolver (see ccd.convolution) and then map them back to the 2D array of the original mask.
+        PSF using a psf (see ccd.convolution).
 
-        The blurred image of every plane is returned in 2D.
+        These are summed to give the tracer's overall blurred image in 1D.
 
         Parameters
         ----------
-        convolver : hyper_galaxies.ccd.convolution.ConvolverImage
+        psf : hyper_galaxies.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
-        blurred_profile_images_of_planes_1d = self.blurred_profile_image_1d_of_planes_from_grid_and_convolver(
-            grid=grid, convolver=convolver, preload_blurring_grid=preload_blurring_grid
+        profile_image = self.profile_image_from_grid(
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
-        return list(
-            map(
-                lambda blurred_profile_image_1d: grid.scaled_array_2d_from_array_1d(
-                    array_1d=blurred_profile_image_1d
-                ),
-                blurred_profile_images_of_planes_1d,
+        if preload_blurring_grid is None:
+            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
+                psf_shape=psf.shape
             )
+
+        blurring_image = self.profile_image_from_grid(
+            grid=preload_blurring_grid, return_in_2d=True, return_binned=True
         )
 
-    def blurred_profile_image_1d_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None
+        return psf.convolve(profile_image + blurring_image)
+
+    def blurred_profile_images_of_planes_from_grid_and_psf(
+        self, grid, psf, preload_blurring_grid=None, return_in_2d=False
+    ):
+        """Extract the 1D image and 1D blurring image of every plane and blur each with the \
+        PSF using a psf (see ccd.convolution).
+
+        The blurred image of every plane is returned in 1D.
+
+        Parameters
+        ----------
+        psf : hyper_galaxies.ccd.convolution.ConvolverImage
+            Class which performs the PSF convolution of a masked image in 1D.
+        """
+
+        if preload_blurring_grid is None:
+            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
+                psf_shape=psf.shape
+            )
+
+        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
+
+        return [
+            plane.blurred_profile_image_from_grid_and_psf(
+                grid=traced_grid,
+                psf=psf,
+                preload_blurring_grid=preload_blurring_grid,
+                return_in_2d=return_in_2d,
+            )
+            for (plane, traced_grid) in zip(self.planes, traced_grids_of_planes)
+        ]
+
+    @reshape_array_from_grid_and_convolver
+    def blurred_profile_image_from_grid_and_convolver(
+        self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a convolver (see ccd.convolution).
@@ -459,8 +501,8 @@ class AbstractTracerData(AbstractTracerLensing):
             image_array=image_array, blurring_array=blurring_array
         )
 
-    def blurred_profile_image_1d_of_planes_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None
+    def blurred_profile_images_of_planes_from_grid_and_convolver(
+        self, grid, convolver, preload_blurring_grid=None, return_in_2d=False
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a convolver (see ccd.convolution).
@@ -472,8 +514,6 @@ class AbstractTracerData(AbstractTracerLensing):
         convolver : hyper_galaxies.ccd.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
-
-        # TODO : Need u unit test on this.
 
         if preload_blurring_grid is None:
             preload_blurring_grid = grid.blurring_grid_from_psf_shape(
@@ -495,6 +535,7 @@ class AbstractTracerData(AbstractTracerLensing):
                 grid=traced_grid,
                 convolver=convolver,
                 preload_blurring_grid=preload_blurring_grid,
+                return_in_2d=return_in_2d,
             )
             for (plane, traced_grid) in zip(self.planes, traced_grids_of_planes)
         ]
