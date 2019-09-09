@@ -72,7 +72,7 @@ class LensDataFit(af.DataFit1D):
         return self.likelihood
 
     @classmethod
-    def from_lens_data_and_tracer(
+    def for_data_and_tracer(
         cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """Fit lens data with a model tracer, automatically determining the type of fit based on the \
@@ -87,21 +87,21 @@ class LensDataFit(af.DataFit1D):
         """
 
         if tracer.has_light_profile and not tracer.has_pixelization:
-            return LensProfileFit.from_lens_data_and_tracer(
+            return LensProfileFit(
                 lens_data=lens_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
                 hyper_background_noise=hyper_background_noise,
             )
         elif not tracer.has_light_profile and tracer.has_pixelization:
-            return LensInversionFit.from_lens_data_and_tracer(
+            return LensInversionFit(
                 lens_data=lens_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
                 hyper_background_noise=hyper_background_noise,
             )
         elif tracer.has_light_profile and tracer.has_pixelization:
-            return LensProfileInversionFit.from_lens_data_and_tracer(
+            return LensProfileInversionFit(
                 lens_data=lens_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -187,7 +187,7 @@ class LensTracerFit(LensDataFit):
 
 class LensProfileFit(LensTracerFit):
     def __init__(
-        self, lens_data, tracer, image_1d, noise_map_1d, model_image_1d,
+        self, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens profile fitter, which generates the image of all galaxies (with light \
         profiles) in the tracer and blurs it with the lens data's PSF.
@@ -202,18 +202,6 @@ class LensProfileFit(LensTracerFit):
         tracer : ray_tracing.AbstractTracerData
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
-
-        super(LensProfileFit, self).__init__(
-            lens_data=lens_data,
-            image_1d=image_1d,
-            noise_map_1d=noise_map_1d,
-            mask_1d=lens_data.mask_1d,
-            model_image_1d=model_image_1d,
-            tracer=tracer,
-        )
-
-    @classmethod
-    def from_lens_data_and_tracer(cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None):
 
         image_1d = image_1d_from_lens_data_and_hyper_image_sky(
             lens_data=lens_data, hyper_image_sky=hyper_image_sky
@@ -232,7 +220,14 @@ class LensProfileFit(LensTracerFit):
             return_in_2d=False,
         )
 
-        return LensProfileFit(lens_data=lens_data, tracer=tracer, image_1d=image_1d, noise_map_1d=noise_map_1d, model_image_1d=blurred_profile_image_1d)
+        super(LensProfileFit, self).__init__(
+            lens_data=lens_data,
+            image_1d=image_1d,
+            noise_map_1d=noise_map_1d,
+            mask_1d=lens_data.mask_1d,
+            model_image_1d=blurred_profile_image_1d,
+            tracer=tracer,
+        )
 
     @property
     def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
@@ -292,7 +287,7 @@ class InversionFit(LensTracerFit):
 
 class LensInversionFit(InversionFit):
     def __init__(
-        self, lens_data, tracer, image_1d, noise_map_1d, model_image_1d, inversion,
+        self, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens inversion fitter, which fits the lens data an inversion using the mapper(s) and \
         regularization(s) in the galaxies of the tracer.
@@ -306,18 +301,6 @@ class LensInversionFit(InversionFit):
         tracer : ray_tracing.AbstractTracerData
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
-
-        super().__init__(
-            lens_data=lens_data,
-            image_1d=image_1d,
-            noise_map_1d=noise_map_1d,
-            model_image_1d=model_image_1d,
-            tracer=tracer,
-            inversion=inversion,
-        )
-
-    @classmethod
-    def from_lens_data_and_tracer(cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None):
 
         image_1d = image_1d_from_lens_data_and_hyper_image_sky(
             lens_data=lens_data, hyper_image_sky=hyper_image_sky
@@ -338,8 +321,14 @@ class LensInversionFit(InversionFit):
             preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
         )
 
-        return LensInversionFit(lens_data=lens_data, tracer=tracer, image_1d=image_1d, noise_map_1d=noise_map_1d,
-                                model_image_1d=inversion.reconstructed_data_1d, inversion=inversion)
+        super().__init__(
+            lens_data=lens_data,
+            image_1d=image_1d,
+            noise_map_1d=noise_map_1d,
+            model_image_1d=inversion.reconstructed_data_1d,
+            tracer=tracer,
+            inversion=inversion,
+        )
 
     @property
     def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
@@ -368,7 +357,7 @@ class LensInversionFit(InversionFit):
 
 class LensProfileInversionFit(InversionFit):
     def __init__(
-        self, lens_data, tracer, image_1d, noise_map_1d, model_image_1d, inversion, blurred_profile_image_1d, profile_subtracted_image_1d,
+        self, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens profile and inversion fitter, which first generates and subtracts the image-plane \
         image of all galaxies (with light profiles) in the tracer, blurs it with the PSF and fits the residual image \
@@ -387,22 +376,6 @@ class LensProfileInversionFit(InversionFit):
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
 
-        super(LensProfileInversionFit, self).__init__(
-            tracer=tracer,
-            lens_data=lens_data,
-            image_1d=image_1d,
-            noise_map_1d=noise_map_1d,
-            model_image_1d=model_image_1d,
-            inversion=inversion,
-        )
-
-        self.blurred_profile_image_1d = blurred_profile_image_1d
-        self.profile_subtracted_image_1d = profile_subtracted_image_1d
-        self.convolver = lens_data.convolver
-
-    @classmethod
-    def from_lens_data_and_tracer(cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None):
-
         image_1d = image_1d_from_lens_data_and_hyper_image_sky(
             lens_data=lens_data, hyper_image_sky=hyper_image_sky
         )
@@ -413,29 +386,36 @@ class LensProfileInversionFit(InversionFit):
             hyper_background_noise=hyper_background_noise,
         )
 
-        blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
+        self.blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_data.grid,
             convolver=lens_data.convolver,
             preload_blurring_grid=lens_data.preload_blurring_grid,
             return_in_2d=False,
         )
 
-        profile_subtracted_image_1d = image_1d - blurred_profile_image_1d
+        self.profile_subtracted_image_1d = image_1d - self.blurred_profile_image_1d
 
         inversion = tracer.inversion_from_grid_image_1d_noise_map_1d_and_convolver(
             grid=lens_data.grid,
-            image_1d=profile_subtracted_image_1d,
+            image_1d=self.profile_subtracted_image_1d,
             noise_map_1d=noise_map_1d,
             convolver=lens_data.convolver,
             inversion_uses_border=lens_data.inversion_uses_border,
             preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
         )
 
-        model_image_1d = blurred_profile_image_1d + inversion.reconstructed_data_1d
+        model_image = self.blurred_profile_image_1d + inversion.reconstructed_data_1d
 
-        return LensProfileInversionFit(lens_data=lens_data, tracer=tracer, image_1d=image_1d, noise_map_1d=noise_map_1d,
-                                model_image_1d=model_image_1d, inversion=inversion, blurred_profile_image_1d=blurred_profile_image_1d,
-                                       profile_subtracted_image_1d=profile_subtracted_image_1d)
+        super(LensProfileInversionFit, self).__init__(
+            tracer=tracer,
+            lens_data=lens_data,
+            image_1d=image_1d,
+            noise_map_1d=noise_map_1d,
+            model_image_1d=model_image,
+            inversion=inversion,
+        )
+
+        self.convolver = lens_data.convolver
 
     @property
     def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:

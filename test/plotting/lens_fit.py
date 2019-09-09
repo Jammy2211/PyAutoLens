@@ -33,7 +33,7 @@ lens_galaxy = al.Galaxy(
 lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
-fit = al.LensDataFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
+fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 lens_fit_plotters.plot_fit_subplot(
     fit=fit, should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True
 )
