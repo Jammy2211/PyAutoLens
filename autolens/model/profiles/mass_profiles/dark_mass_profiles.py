@@ -1014,6 +1014,61 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         return summary
 
 
+class SphericalTruncatedNFWMassToConcentration(SphericalTruncatedNFW):
+    """
+    This function only applies for the lensing configuration as follows:
+    Cosmology: FlatLamdaCDM
+    H0 = 70.0 km/sec/Mpc
+    Omega_Lambda = 0.7
+    Omega_m = 0.3
+    Redshfit of Main Lens: 0.6
+    Redshift of Source: 2.5
+    A truncated NFW halo at z = 0.6 with tau = 2.0
+    """
+
+    @af.map_types
+    def __init__(self, centre: dim.Position = (0.0, 0.0), mass_at_200: float = 1e9):
+        """
+        Input m200: The m200 of the NFW part of the corresponding tNFW part. Unit: M_sun.
+        """
+
+        cosmic_average_density = (
+            262.30319684751
+        )  # Critical Density at z=0.6 M_sun/kpc^3
+        critical_surface_density = (
+            1940654909.413325
+        )  # Lensing Critical Surface Density for lens at z=0.6, source at z=2.5. M_sun/kpc^2
+        kpc_per_arcsec = 6.685491486088  # 1 arcsec = 6.685491486 kpc at z=0.6
+
+        concentration = 11.5 * (mass_at_200 / 1e10 + (mass_at_200 / 1e10) ** 2.0) ** (
+            -0.05
+        )  # This is the challenge setting.
+        radius_at_200 = (
+            mass_at_200 / (200.0 * cosmic_average_density * (4.0 * np.pi / 3.0))
+        ) ** (1.0 / 3.0)
+        de_c = (
+            200.0
+            / 3.0
+            * (
+                concentration
+                * concentration
+                * concentration
+                / (np.log(1.0 + concentration) - concentration / (1.0 + concentration))
+            )
+        )
+        scale_radius_kpc = radius_at_200 / concentration
+        rho_s = cosmic_average_density * de_c
+        kappa_s = rho_s * scale_radius_kpc / critical_surface_density
+        scale_radius = scale_radius_kpc / kpc_per_arcsec
+
+        super(SphericalTruncatedNFWMassToConcentration, self).__init__(
+            centre=centre,
+            kappa_s=kappa_s,
+            scale_radius=scale_radius,
+            truncation_radius=2.0 * radius_at_200,
+        )
+
+
 class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
     @af.map_types
     def __init__(
@@ -1068,61 +1123,6 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
         )
 
         return summary
-
-
-class SphericalTruncatedNFWMassToConcentration(SphericalTruncatedNFW):
-    """
-    This function only applies for the lensing configuration as follows:
-    Cosmology: FlatLamdaCDM
-    H0 = 70.0 km/sec/Mpc
-    Omega_Lambda = 0.7
-    Omega_m = 0.3
-    Redshfit of Main Lens: 0.6
-    Redshift of Source: 2.5
-    A truncated NFW halo at z = 0.6 with tau = 2.0
-    """
-
-    @af.map_types
-    def __init__(self, centre: dim.Position = (0.0, 0.0), mass_at_200: float = 1e9):
-        """
-        Input m200: The m200 of the NFW part of the corresponding tNFW part. Unit: M_sun.
-        """
-
-        cosmic_average_density = (
-            262.30319684751
-        )  # Critical Density at z=0.6 M_sun/kpc^3
-        critical_surface_density = (
-            1942853712.685
-        )  # Lensing Critical Surface Density for lens at z=0.6, source at z=2.5. M_sun/kpc^2
-        kpc_per_arcsec = 6.685491486088  # 1 arcsec = 6.685491486 kpc at z=0.6
-
-        concentration = 11.5 * (mass_at_200 / 1e10 + (mass_at_200 / 1e10) ** 2.0) ** (
-            -0.05
-        )  # This is the challenge setting.
-        radius_at_200 = (
-            mass_at_200 / (200.0 * cosmic_average_density * (4.0 * np.pi / 3.0))
-        ) ** (1.0 / 3.0)
-        de_c = (
-            200.0
-            / 3.0
-            * (
-                concentration
-                * concentration
-                * concentration
-                / (np.log(1.0 + concentration) - concentration / (1.0 + concentration))
-            )
-        )
-        scale_radius_kpc = radius_at_200 / concentration
-        rho_s = cosmic_average_density * de_c
-        kappa_s = rho_s * scale_radius_kpc / critical_surface_density
-        scale_radius = scale_radius_kpc / kpc_per_arcsec
-
-        super(SphericalTruncatedNFWMassToConcentration, self).__init__(
-            centre=centre,
-            kappa_s=kappa_s,
-            scale_radius=scale_radius,
-            truncation_radius=2.0 * radius_at_200,
-        )
 
 
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):

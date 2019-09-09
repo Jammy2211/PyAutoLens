@@ -501,7 +501,7 @@ class TestImagePassing(object):
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
+        fit = al.LensDataFit.from_lens_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
