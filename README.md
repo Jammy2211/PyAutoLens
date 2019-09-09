@@ -207,6 +207,8 @@ The following papers use **PyAutoLens**:
 
 [Xiaoyue Cao](https://github.com/caoxiaoyue) - Analytic Ellipitcal Power-Law Deflection Angle Calculations.
 
+[Qiuhan He] - NFW Profile Lensing Calculations.
+
 [Nan Li](https://github.com/linan7788626) - Docker integration & support.
 
 ### Code Donors

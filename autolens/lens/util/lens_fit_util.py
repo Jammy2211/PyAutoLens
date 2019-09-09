@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
     chi_squared, regularization_term, noise_normalization
 ):
