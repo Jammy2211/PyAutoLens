@@ -16,6 +16,7 @@ SLACS:
 
 UV Plane:
 
+- Reduce LensFit to one class.
 - Extend lens_data to have LensCCDData, LensInterferometerData.
 - Make lens_fit methods in __init__ part of class method, with view to multi image fits in the future.
 - Split lens_fit.py into a lens_fit module, completely separate lens_fit_ccd and lens_fit_interferometer.

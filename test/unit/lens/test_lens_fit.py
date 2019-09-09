@@ -764,7 +764,7 @@ class TestLensProfileFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -860,7 +860,7 @@ class TestLensProfileFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -966,7 +966,7 @@ class TestLensProfileFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1077,7 +1077,7 @@ class TestLensProfileFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1140,7 +1140,7 @@ class TestLensInversionFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1250,7 +1250,7 @@ class TestLensInversionFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1318,7 +1318,7 @@ class TestLensInversionFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1444,7 +1444,7 @@ class TestLensInversionFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1480,7 +1480,7 @@ class TestLensProfileInversionFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1634,7 +1634,7 @@ class TestLensProfileInversionFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1764,7 +1764,7 @@ class TestLensProfileInversionFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1927,7 +1927,7 @@ class TestLensProfileInversionFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.LensDataFit.for_data_and_tracer(
+            fit = al.LensDataFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
