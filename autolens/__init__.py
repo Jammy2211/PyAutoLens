@@ -48,16 +48,16 @@ from autolens.data.instrument.ccd import (
     generate_poisson_noise,
     load_ccd_data_from_fits,
     load_noise_map,
-)
-from autolens.data.instrument.ccd import (
     load_ccd_data_from_fits,
     output_ccd_data_to_fits,
 )
 from autolens.data.instrument.interferometer import (
     InterferometerData,
     PrimaryBeam,
+    SimulatedInterferometerData,
     load_interferometer_data_from_fits,
     output_interferometer_data_to_fits,
+    gaussian_noise_map_from_shape_and_sigma,
 )
 from autolens.data.plotters import ccd_plotters
 from autolens.data.plotters import data_plotters
@@ -138,12 +138,7 @@ from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionPh
 from autolens.pipeline.phase.phase_extensions.inversion_phase import (
     VariableFixingHyperPhase,
 )
-from autolens.pipeline.phase.phase_imaging import (
-    PhaseImaging,
-    PhaseImaging,
-    PhaseImaging,
-    PhaseImaging,
-)
+from autolens.pipeline.phase.phase_imaging import PhaseImaging
 from autolens.pipeline.phase.phase_positions import PhasePositions
 from autolens.pipeline.pipeline import (
     PipelineSettings,
@@ -155,4 +150,4 @@ from autolens.pipeline.plotters import hyper_plotters
 from autolens.pipeline.plotters import phase_plotters
 from autolens.plotters import array_plotters, grid_plotters, plotter_util
 
-__version__ = '0.30.3'
+__version__ = '0.30.4'

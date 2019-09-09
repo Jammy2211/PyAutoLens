@@ -213,10 +213,11 @@ class LensProfileFit(LensTracerFit):
             hyper_background_noise=hyper_background_noise,
         )
 
-        blurred_profile_image_1d = tracer.blurred_profile_image_1d_from_grid_and_convolver(
+        blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_data.grid,
             convolver=lens_data.convolver,
             preload_blurring_grid=lens_data.preload_blurring_grid,
+            return_in_2d=False,
         )
 
         super(LensProfileFit, self).__init__(
@@ -241,10 +242,11 @@ class LensProfileFit(LensTracerFit):
 
     @property
     def model_image_2d_of_planes(self):
-        return self.tracer.blurred_profile_image_2d_of_planes_from_grid_and_convolver(
+        return self.tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
             grid=self.grid,
             convolver=self.convolver,
             preload_blurring_grid=self.blurring_grid,
+            return_in_2d=True,
         )
 
     @property
@@ -384,10 +386,11 @@ class LensProfileInversionFit(InversionFit):
             hyper_background_noise=hyper_background_noise,
         )
 
-        self.blurred_profile_image_1d = tracer.blurred_profile_image_1d_from_grid_and_convolver(
+        self.blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_data.grid,
             convolver=lens_data.convolver,
             preload_blurring_grid=lens_data.preload_blurring_grid,
+            return_in_2d=False,
         )
 
         self.profile_subtracted_image_1d = image_1d - self.blurred_profile_image_1d

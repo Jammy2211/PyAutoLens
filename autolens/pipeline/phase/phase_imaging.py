@@ -586,9 +586,11 @@ class PhaseImaging(Phase):
             fit : Fit
                 A fractional value indicating how well this model fit and the model lens_data itself
             """
-            self.check_positions_trace_within_threshold(instance=instance)
-            self.check_inversion_pixels_are_below_limit(instance=instance)
+
             tracer = self.tracer_for_instance(instance=instance)
+
+            self.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            self.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
 
             hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 
@@ -677,21 +679,19 @@ class PhaseImaging(Phase):
                 hyper_background_noise=hyper_background_noise,
             )
 
-        def check_positions_trace_within_threshold(self, instance):
+        def check_positions_trace_within_threshold_via_tracer(self, tracer):
 
             if (
                 self.lens_data.positions is not None
                 and self.lens_data.positions_threshold is not None
             ):
 
-                tracer = ray_tracing.Tracer.from_galaxies(galaxies=instance.galaxies)
-
                 traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
                     positions=self.lens_data.positions
                 )
 
                 fit = lens_fit.LensPositionFit(
-                    positions=[traced_positions_of_planes[0][-1]],
+                    positions=traced_positions_of_planes[-1],
                     noise_map=self.lens_data.pixel_scale,
                 )
 
@@ -700,17 +700,14 @@ class PhaseImaging(Phase):
                 ):
                     raise exc.RayTracingException
 
-        def check_inversion_pixels_are_below_limit(self, instance):
+        def check_inversion_pixels_are_below_limit_via_tracer(self, tracer):
 
             if self.lens_data.inversion_pixel_limit is not None:
-                if instance.galaxies:
-                    for galaxy in instance.galaxies:
-                        if galaxy.pixelization is not None:
-                            if (
-                                galaxy.pixelization.pixels
-                                > self.lens_data.inversion_pixel_limit
-                            ):
-                                raise exc.PixelizationException
+                pixelizations = list(filter(None, tracer.pixelizations_of_planes))
+                if pixelizations:
+                    for pixelization in pixelizations:
+                        if pixelization.pixels > self.lens_data.inversion_pixel_limit:
+                            raise exc.PixelizationException
 
         def map_to_1d(self, data):
             """Convenience method"""
