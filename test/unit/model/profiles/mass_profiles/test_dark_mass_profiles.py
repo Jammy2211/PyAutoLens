@@ -1452,6 +1452,185 @@ class TestTruncatedNFWChallenge(object):
         assert truncated_nfw.truncation_radius.unit_length == "arcsec"
 
 
+class TestTruncatedNFWMassToConcentration(object):
+    def test__mass_and_concentration_consistent_with_normal_truncated_nfw(self):
+
+        cosmology = cosmo.FlatLambdaCDM(H0=70.0, Om0=0.3)
+
+        truncated_nfw_mass = al.mass_profiles.SphericalTruncatedNFWMassToConcentration(
+            centre=(1.0, 2.0), mass_at_200=1.0e9
+        )
+
+        mass_at_200_via_mass = truncated_nfw_mass.mass_at_200_for_units(
+            unit_mass="solMass",
+            unit_length="arcsec",
+            redshift_profile=0.6,
+            redshift_source=2.5,
+            cosmology=cosmology,
+        )
+        concentration_via_mass = truncated_nfw_mass.concentration_for_units(
+            unit_mass="solMass",
+            unit_length="arcsec",
+            redshift_profile=0.6,
+            redshift_source=2.5,
+            cosmology=cosmology,
+        )
+
+        truncated_nfw_kappa_s = al.mass_profiles.SphericalTruncatedNFW(
+            centre=(1.0, 2.0),
+            kappa_s=truncated_nfw_mass.kappa_s,
+            scale_radius=truncated_nfw_mass.scale_radius,
+            truncation_radius=truncated_nfw_mass.truncation_radius,
+        )
+
+        mass_at_200_via_kappa_s = truncated_nfw_kappa_s.mass_at_200_for_units(
+            unit_mass="solMass",
+            unit_length="arcsec",
+            redshift_profile=0.6,
+            redshift_source=2.5,
+            cosmology=cosmology,
+        )
+        concentration_via_kappa_s = truncated_nfw_kappa_s.concentration_for_units(
+            unit_mass="solMass",
+            unit_length="arcsec",
+            redshift_profile=0.6,
+            redshift_source=2.5,
+            cosmology=cosmology,
+        )
+
+        # We uare using the SphericalTruncatedNFW to check the mass gives a conosistnt kappa_s, given certain radii.
+
+        assert mass_at_200_via_kappa_s == mass_at_200_via_mass
+        assert concentration_via_kappa_s == concentration_via_mass
+
+        assert isinstance(truncated_nfw_mass.kappa_s, float)
+
+        assert truncated_nfw_mass.centre == (1.0, 2.0)
+        assert isinstance(truncated_nfw_mass.centre[0], al.Length)
+        assert isinstance(truncated_nfw_mass.centre[1], al.Length)
+        assert truncated_nfw_mass.centre[0].unit == "arcsec"
+        assert truncated_nfw_mass.centre[1].unit == "arcsec"
+
+        assert truncated_nfw_mass.axis_ratio == 1.0
+        assert isinstance(truncated_nfw_mass.axis_ratio, float)
+
+        assert truncated_nfw_mass.phi == 0.0
+        assert isinstance(truncated_nfw_mass.phi, float)
+
+        assert truncated_nfw_mass.inner_slope == 1.0
+        assert isinstance(truncated_nfw_mass.inner_slope, float)
+
+        assert truncated_nfw_mass.scale_radius == pytest.approx(0.193017, 1.0e-4)
+        assert isinstance(truncated_nfw_mass.scale_radius, al.Length)
+        assert truncated_nfw_mass.scale_radius.unit_length == "arcsec"
+
+        assert truncated_nfw_mass.truncation_radius == pytest.approx(
+            33.1428053449, 1.0e-4
+        )
+        assert isinstance(truncated_nfw_mass.truncation_radius, al.Length)
+        assert truncated_nfw_mass.truncation_radius.unit_length == "arcsec"
+
+    def test_summarize_in_units(self):
+
+        cosmology = cosmo.LambdaCDM(H0=70.0, Om0=0.3, Ode0=0.7)
+
+        nfw = al.mass_profiles.SphericalTruncatedNFW(
+            kappa_s=0.5, scale_radius=5.0, truncation_radius=10.0
+        )
+
+        summary_text = nfw.summarize_in_units(
+            radii=[al.Length(10.0), al.Length(500.0)],
+            prefix="nfw_",
+            unit_length="kpc",
+            unit_mass="solMass",
+            redshift_profile=0.6,
+            redshift_source=2.5,
+            redshift_of_cosmic_average_density="profile",
+            whitespace=50,
+            cosmology=cosmology,
+        )
+
+        i = 0
+
+        assert summary_text[i] == "Mass Profile = SphericalTruncatedNFW\n"
+        i += 1
+        assert (
+            summary_text[i]
+            == "nfw_einstein_radius                               15.38 kpc"
+        )
+        i += 1
+        assert (
+            summary_text[i]
+            == "nfw_einstein_mass                                 1.4418e+12 solMass"
+        )
+        i += 1
+        assert (
+            summary_text[i]
+            == "nfw_mass_within_10.00_kpc                         5.2061e+12 solMass"
+        )
+        i += 1
+        assert (
+            summary_text[i]
+            == "nfw_mass_within_500.00_kpc                        7.3287e+12 solMass"
+        )
+        i += 1
+        assert (
+            summary_text[i]
+            == "nfw_rho_at_scale_radius                           29027857.02 solMass/kpc3"
+        )
+        i += 1
+        assert (
+            summary_text[i]
+            == "nfw_delta_concentration                           110665.28"
+        )
+        i += 1
+        assert (
+            summary_text[i] == "nfw_concentration                                 14.40"
+        )
+        i += 1
+        assert (
+            summary_text[i]
+            == "nfw_radius_at_200x_cosmic_density                 481.41 kpc"
+        )
+        i += 1
+        assert (
+            summary_text[i]
+            == "nfw_mass_at_200x_cosmic_density                   2.4517e+13 solMass"
+        )
+        i += 1
+        assert (
+            summary_text[i]
+            == "nfw_mass_at_truncation_radius                     1.3190e+13 solMass"
+        )
+        i += 1
+
+    def test__reshape_decorators(self):
+
+        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
+            shape=(2, 2), pixel_scale=1.0
+        )
+
+        truncated_nfw = al.mass_profiles.SphericalTruncatedNFW()
+
+        convergence = truncated_nfw.convergence_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        assert convergence.shape == (2, 2)
+
+        potential = truncated_nfw.potential_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        assert potential.shape == (2, 2)
+
+        deflections = truncated_nfw.deflections_from_grid(
+            grid=grid, return_in_2d=True, return_binned=False
+        )
+
+        assert deflections.shape == (2, 2, 2)
+
+
 class TestNFW(object):
     def test__constructor_and_units(self):
 

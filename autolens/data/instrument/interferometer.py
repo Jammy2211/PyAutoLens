@@ -14,6 +14,7 @@ from autolens.array import scaled_array
 
 logger = logging.getLogger(__name__)
 
+
 class InterferometerData(abstract_data.AbstractData):
     def __init__(
         self,
@@ -455,7 +456,8 @@ class SimulatedInterferometerData(InterferometerData):
         """
 
         image_plane_image_2d = tracer.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True)
+            grid=grid, return_in_2d=True, return_binned=True
+        )
 
         return cls.from_image_and_exposure_arrays(
             image=image_plane_image_2d,
@@ -523,18 +525,21 @@ class SimulatedInterferometerData(InterferometerData):
 
         image += background_sky_map
         image_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=image, mask=np.full(fill_value=False, shape=image.shape), sub_grid_size=1)
+            sub_array_2d=image,
+            mask=np.full(fill_value=False, shape=image.shape),
+            sub_grid_size=1,
+        )
 
         visibilities = transformer.visibilities_from_image_1d(image_1d=image_1d)
 
         if noise_sigma is not None:
             visibilities_noise_map_realization = gaussian_noise_map_from_shape_and_sigma(
-                shape=visibilities.shape, sigma=noise_sigma, noise_seed=noise_seed,
+                shape=visibilities.shape, sigma=noise_sigma, noise_seed=noise_seed
             )
             visibilities = visibilities + visibilities_noise_map_realization
-            visibilities_noise_map = NoiseMap.single_value(value=noise_sigma,
-                                                           shape=visibilities.shape,
-                                                           pixel_scale=pixel_scale)
+            visibilities_noise_map = NoiseMap.single_value(
+                value=noise_sigma, shape=visibilities.shape, pixel_scale=pixel_scale
+            )
         else:
             visibilities_noise_map = NoiseMap.single_value(
                 value=noise_if_add_noise_false,
@@ -584,6 +589,7 @@ class SimulatedInterferometerData(InterferometerData):
                 logger.debug(
                     "Original object in Interferometer.__array_finalize__ missing one or more attributes"
                 )
+
 
 def gaussian_noise_map_from_shape_and_sigma(shape, sigma, noise_seed=-1):
     """Generate a two-dimensional read noises-map, generating values from a Gaussian distribution with mean 0.0.
