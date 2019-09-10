@@ -641,7 +641,7 @@ def plot_subtracted_image_of_plane(
 
         other_planes_model_images_2d = [
             model_image_2d
-            for i, model_image_2d in enumerate(fit.model_image_2d_of_planes)
+            for i, model_image_2d in enumerate(fit.model_images_of_planes(return_in_2d=True))
             if i != plane_index
         ]
 
@@ -743,7 +743,7 @@ def plot_model_image_of_plane(
     )
 
     array_plotters.plot_array(
-        array=fit.model_image_2d_of_planes[plane_index],
+        array=fit.model_images_of_planes(return_in_2d=True)[plane_index],
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,
@@ -865,7 +865,7 @@ def plot_contribution_maps(
 
 def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
 
-    if hasattr(fit, "inversion"):
+    if fit.inversion is not None:
         if (
             should_plot_image_plane_pix
             and fit.inversion.mapper.is_image_plane_pixelization

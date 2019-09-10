@@ -16,7 +16,7 @@ def test__fit_quantities_are_output(
 
     al.lens_plotter_util.plot_image(
         fit=lens_fit_x2_plane_7x7,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -29,7 +29,7 @@ def test__fit_quantities_are_output(
 
     al.lens_plotter_util.plot_noise_map(
         fit=lens_fit_x2_plane_7x7,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -42,7 +42,7 @@ def test__fit_quantities_are_output(
 
     al.lens_plotter_util.plot_signal_to_noise_map(
         fit=lens_fit_x2_plane_7x7,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -55,7 +55,7 @@ def test__fit_quantities_are_output(
 
     al.lens_plotter_util.plot_model_data(
         fit=lens_fit_x2_plane_7x7,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -68,7 +68,7 @@ def test__fit_quantities_are_output(
 
     al.lens_plotter_util.plot_residual_map(
         fit=lens_fit_x2_plane_7x7,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -81,7 +81,7 @@ def test__fit_quantities_are_output(
 
     al.lens_plotter_util.plot_normalized_residual_map(
         fit=lens_fit_x2_plane_7x7,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -96,7 +96,7 @@ def test__fit_quantities_are_output(
 
     al.lens_plotter_util.plot_chi_squared_map(
         fit=lens_fit_x2_plane_7x7,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -115,7 +115,7 @@ def test__subtracted_image_of_plane_is_output(
     al.lens_plotter_util.plot_subtracted_image_of_plane(
         fit=lens_fit_x1_plane_7x7,
         plane_index=0,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -132,7 +132,7 @@ def test__subtracted_image_of_plane_is_output(
     al.lens_plotter_util.plot_subtracted_image_of_plane(
         fit=lens_fit_x2_plane_7x7,
         plane_index=0,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -149,7 +149,7 @@ def test__subtracted_image_of_plane_is_output(
     al.lens_plotter_util.plot_subtracted_image_of_plane(
         fit=lens_fit_x2_plane_7x7,
         plane_index=1,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -171,7 +171,7 @@ def test__model_image_of_plane_is_output(
     al.lens_plotter_util.plot_model_image_of_plane(
         fit=lens_fit_x1_plane_7x7,
         plane_index=0,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -185,7 +185,7 @@ def test__model_image_of_plane_is_output(
     al.lens_plotter_util.plot_model_image_of_plane(
         fit=lens_fit_x2_plane_7x7,
         plane_index=0,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
@@ -199,7 +199,7 @@ def test__model_image_of_plane_is_output(
     al.lens_plotter_util.plot_model_image_of_plane(
         fit=lens_fit_x2_plane_7x7,
         plane_index=1,
-        mask=lens_fit_x2_plane_7x7.mask_2d,
+        mask=lens_fit_x2_plane_7x7.mask(return_in_2d=True),
         extract_array_from_mask=True,
         zoom_around_mask=True,
         cb_tick_values=[1.0],
