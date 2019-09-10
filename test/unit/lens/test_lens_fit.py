@@ -3,7 +3,31 @@ import numpy as np
 import pytest
 
 import autofit as af
+from autolens.lens.lens_fit import \
+    likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization
+from autolens.lens.lens_fit import evidence_from_inversion_terms
 from test.unit.mock.model.mock_profiles import MockLightProfile
+
+
+class TestInversionEvidence:
+    def test__simple_values(self):
+
+        likelihood_with_regularization_terms = likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
+        )
+
+        assert likelihood_with_regularization_terms == -0.5 * (3.0 + 6.0 + 2.0)
+
+        evidences = evidence_from_inversion_terms(
+            chi_squared=3.0,
+            regularization_term=6.0,
+            log_curvature_regularization_term=9.0,
+            log_regularization_term=10.0,
+            noise_normalization=30.0,
+        )
+
+        assert evidences == -0.5 * (3.0 + 6.0 + 9.0 - 10.0 + 30.0)
+
 
 
 class TestFitProperties:
@@ -1205,7 +1229,7 @@ class TestLensTracerFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = al.lens_fit_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            likelihood_with_regularization = likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1215,7 +1239,7 @@ class TestLensTracerFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.lens_fit_util.evidence_from_inversion_terms(
+            evidence = evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1399,7 +1423,7 @@ class TestLensTracerFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = al.lens_fit_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            likelihood_with_regularization = likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1409,7 +1433,7 @@ class TestLensTracerFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.lens_fit_util.evidence_from_inversion_terms(
+            evidence = evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1580,7 +1604,7 @@ class TestLensTracerFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = al.lens_fit_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            likelihood_with_regularization = likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1590,7 +1614,7 @@ class TestLensTracerFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.lens_fit_util.evidence_from_inversion_terms(
+            evidence = evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1879,7 +1903,7 @@ class TestLensTracerFit:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = al.lens_fit_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            likelihood_with_regularization = likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1889,7 +1913,7 @@ class TestLensTracerFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.lens_fit_util.evidence_from_inversion_terms(
+            evidence = evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
