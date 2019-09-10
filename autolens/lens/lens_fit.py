@@ -1,8 +1,6 @@
 import numpy as np
 
 import autofit as af
-from autolens import exc
-from autolens.lens.util import lens_fit_util as util
 from autolens.model.galaxy import galaxy as g
 
 from autolens.array.grids import reshape_array
@@ -169,7 +167,7 @@ class LensImageFit(af.DataFit1D):
     @property
     def likelihood_with_regularization(self):
         if self.inversion is not None:
-            return util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            return likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=self.chi_squared,
                 regularization_term=self.inversion.regularization_term,
                 noise_normalization=self.noise_normalization,
@@ -178,7 +176,7 @@ class LensImageFit(af.DataFit1D):
     @property
     def evidence(self):
         if self.inversion is not None:
-            return util.evidence_from_inversion_terms(
+            return evidence_from_inversion_terms(
                 chi_squared=self.chi_squared,
                 regularization_term=self.inversion.regularization_term,
                 log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
@@ -314,3 +312,60 @@ def noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
             ] = lens_data.hyper_noise_map_max
 
     return noise_map_1d
+
+
+def likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+    chi_squared, regularization_term, noise_normalization
+):
+    """Compute the likelihood of an inversion's fit to the datas, including a regularization term which \
+    comes from an inversion:
+
+    Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Noise_Term] (see functions above for these definitions)
+
+    Parameters
+    ----------
+    chi_squared : float
+        The chi-squared term of the inversion's fit to the observed datas.
+    regularization_term : float
+        The regularization term of the inversion, which is the sum of the difference between reconstructed \
+        flux of every pixel multiplied by the regularization coefficient.
+    noise_normalization : float
+        The normalization noise_map-term for the observed datas's noise-map.
+    """
+    return -0.5 * (chi_squared + regularization_term + noise_normalization)
+
+
+def evidence_from_inversion_terms(
+    chi_squared,
+    regularization_term,
+    log_curvature_regularization_term,
+    log_regularization_term,
+    noise_normalization,
+):
+    """Compute the evidence of an inversion's fit to the datas, where the evidence includes a number of \
+    terms which quantify the complexity of an inversion's reconstruction (see the *inversion* module):
+
+    Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
+                       Log(Regularization_Matrix_Term) + Noise_Term]
+
+    Parameters
+    ----------
+    chi_squared : float
+        The chi-squared term of the inversion's fit to the observed datas.
+    regularization_term : float
+        The regularization term of the inversion, which is the sum of the difference between reconstructed \
+        flux of every pixel multiplied by the regularization coefficient.
+    log_curvature_regularization_term : float
+        The log of the determinant of the sum of the curvature and regularization matrices.
+    log_regularization_term : float
+        The log of the determinant o the regularization matrix.
+    noise_normalization : float
+        The normalization noise_map-term for the observed datas's noise-map.
+    """
+    return -0.5 * (
+        chi_squared
+        + regularization_term
+        + log_curvature_regularization_term
+        - log_regularization_term
+        + noise_normalization
+    )

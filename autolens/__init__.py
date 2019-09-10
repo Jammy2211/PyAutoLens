@@ -85,7 +85,6 @@ from autolens.lens.plotters import lens_plotter_util
 from autolens.lens.plotters import plane_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.ray_tracing import Tracer
-from autolens.lens.util import lens_fit_util
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 from autolens.model.galaxy.galaxy import Galaxy
