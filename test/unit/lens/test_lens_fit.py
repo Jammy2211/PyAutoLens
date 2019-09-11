@@ -41,7 +41,7 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensImageFit.from_lens_data_and_tracer(
+        fit = al.LensTracerImageFit.from_lens_data_and_tracer(
             lens_data=lens_data_7x7,
             tracer=tracer,
         )
@@ -56,7 +56,7 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensImageFit.from_lens_data_and_tracer(
+        fit = al.LensTracerImageFit.from_lens_data_and_tracer(
             lens_data=lens_data_7x7,
             tracer=tracer,
         )
@@ -83,7 +83,7 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensImageFit.from_lens_data_and_tracer(
+        fit = al.LensTracerImageFit.from_lens_data_and_tracer(
             lens_data=lens_data_7x7,
             tracer=tracer,
         )
@@ -133,7 +133,7 @@ class TestLensTracerFit:
             )
             tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
 
             assert (fit.mask_1d == np.array([False, False])).all()
             assert (
@@ -242,7 +242,7 @@ class TestLensTracerFit:
             )
             tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
 
             assert (fit.mask_1d == np.array([False, False])).all()
             assert (
@@ -363,7 +363,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
 
             assert (fit.mask_1d == np.array([False, False])).all()
             assert (
@@ -467,7 +467,7 @@ class TestLensTracerFit:
 
             hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer, hyper_image_sky=hyper_image_sky
             )
 
@@ -577,7 +577,7 @@ class TestLensTracerFit:
 
             hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_background_noise=hyper_background_noise,
@@ -689,7 +689,7 @@ class TestLensTracerFit:
 
             hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_background_noise=hyper_background_noise,
@@ -779,7 +779,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -875,7 +875,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -981,7 +981,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1092,7 +1092,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1151,7 +1151,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1261,7 +1261,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1329,7 +1329,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1455,7 +1455,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1491,7 +1491,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1645,7 +1645,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
@@ -1775,7 +1775,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1938,7 +1938,7 @@ class TestLensTracerFit:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.LensImageFit.from_lens_data_and_tracer(
+            fit = al.LensTracerImageFit.from_lens_data_and_tracer(
                 lens_data=lens_data_7x7, tracer=tracer
             )
 
