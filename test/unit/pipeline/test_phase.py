@@ -1054,7 +1054,7 @@ class TestPhase(object):
         mask = phase_7x7.mask_function(image=ccd_data_7x7.image)
         lens_data = al.LensData(ccd_data=ccd_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
+        fit = al.LensTracerImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -1419,7 +1419,7 @@ class TestResult(object):
         mask = phase_7x7.mask_function(image=ccd_data_7x7.image)
         lens_data = al.LensData(ccd_data=ccd_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
+        fit = al.LensTracerImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -1449,7 +1449,7 @@ class TestResult(object):
         mask = phase_7x7.mask_function(image=ccd_data_7x7.image)
         lens_data = al.LensData(ccd_data=ccd_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImageFit.from_lens_data_and_tracer(
+        fit = al.LensTracerImageFit.from_lens_data_and_tracer(
             lens_data=lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,

@@ -7,20 +7,97 @@ from autolens.array.grids import reshape_array
 
 
 class LensImageFit(af.DataFit1D):
+
+    def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d, inversion):
+
+        super().__init__(
+            data_1d=image_1d,
+            noise_map_1d=noise_map_1d,
+            mask_1d=mask_1d,
+            model_data_1d=model_image_1d,
+        )
+
+        self.inversion = inversion
+
+    @property
+    def image_1d(self):
+        return self.data_1d
+
+    @property
+    def model_image_1d(self):
+        return self.model_data_1d
+
+    @reshape_array
+    def image(self, return_in_2d=True):
+        return self.image_1d
+
+    @reshape_array
+    def noise_map(self, return_in_2d=True):
+        return self.noise_map_1d
+
+    @reshape_array
+    def signal_to_noise_map(self, return_in_2d=True):
+        return self.signal_to_noise_map_1d
+
+    @reshape_array
+    def model_image(self, return_in_2d=True):
+        return self.model_image_1d
+
+    @reshape_array
+    def residual_map(self, return_in_2d=True):
+        return self.residual_map_1d
+
+    @reshape_array
+    def normalized_residual_map(self, return_in_2d=True):
+        return self.normalized_residual_map_1d
+
+    @reshape_array
+    def chi_squared_map(self, return_in_2d=True):
+        return self.chi_squared_map_1d
+
+    @property
+    def likelihood_with_regularization(self):
+        if self.inversion is not None:
+            return likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+                chi_squared=self.chi_squared,
+                regularization_term=self.inversion.regularization_term,
+                noise_normalization=self.noise_normalization,
+            )
+
+    @property
+    def evidence(self):
+        if self.inversion is not None:
+            return evidence_from_inversion_terms(
+                chi_squared=self.chi_squared,
+                regularization_term=self.inversion.regularization_term,
+                log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
+                log_regularization_term=self.inversion.log_det_regularization_matrix_term,
+                noise_normalization=self.noise_normalization,
+            )
+
+    @property
+    def figure_of_merit(self):
+        if self.inversion is None:
+            return self.likelihood
+        else:
+            return self.evidence
+
+class LensTracerImageFit(LensImageFit):
+
     def __init__(self, tracer, grid, image_1d, noise_map_1d, model_image_1d, convolver, inversion, positions=None):
 
         self.tracer = tracer
         self.grid = grid
         self.psf = convolver.psf
         self.convolver = convolver
-        self.inversion = inversion
         self.positions = positions
 
         super().__init__(
-            data_1d=image_1d,
+            image_1d=image_1d,
             noise_map_1d=noise_map_1d,
             mask_1d=np.full(fill_value=False, shape=(len(image_1d,))),
-            model_data_1d=model_image_1d,
+            model_image_1d=model_image_1d,
+            inversion=inversion,
         )
 
     @classmethod
@@ -76,6 +153,12 @@ class LensImageFit(af.DataFit1D):
         return cls(tracer=tracer, image_1d=image_1d, noise_map_1d=noise_map_1d, model_image_1d=model_image_1d,
                    grid=lens_data.grid, convolver=lens_data.convolver,
                    inversion=inversion, positions=lens_data.positions)
+
+    def mask(self, return_in_2d=True):
+        if return_in_2d:
+            return self.grid.mask
+        else:
+            return self.mask_1d
 
     @reshape_array
     def blurred_profile_image(self, return_in_2d=True):
@@ -163,77 +246,6 @@ class LensImageFit(af.DataFit1D):
         return self.tracer.unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
             grid=self.grid, psf=self.psf
         )
-
-    @property
-    def likelihood_with_regularization(self):
-        if self.inversion is not None:
-            return likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
-                chi_squared=self.chi_squared,
-                regularization_term=self.inversion.regularization_term,
-                noise_normalization=self.noise_normalization,
-            )
-
-    @property
-    def evidence(self):
-        if self.inversion is not None:
-            return evidence_from_inversion_terms(
-                chi_squared=self.chi_squared,
-                regularization_term=self.inversion.regularization_term,
-                log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
-                log_regularization_term=self.inversion.log_det_regularization_matrix_term,
-                noise_normalization=self.noise_normalization,
-            )
-
-    @property
-    def figure_of_merit(self):
-        if not self.tracer.has_pixelization:
-            return self.likelihood
-        else:
-            return self.evidence
-
-    @property
-    def image_1d(self):
-        return self.data_1d
-
-    @property
-    def model_image_1d(self):
-        return self.model_data_1d
-
-    def mask(self, return_in_2d=True):
-        if return_in_2d:
-            return self.grid.mask
-        else:
-            return self.mask_1d
-
-    @reshape_array
-    def image(self, return_in_2d=True):
-        return self.image_1d
-
-    @reshape_array
-    def noise_map(self, return_in_2d=True):
-        return self.noise_map_1d
-
-    @reshape_array
-    def signal_to_noise_map(self, return_in_2d=True):
-        return self.signal_to_noise_map_1d
-
-    @reshape_array
-    def model_image(self, return_in_2d=True):
-        return self.model_image_1d
-
-    @reshape_array
-    def residual_map(self, return_in_2d=True):
-        return self.residual_map_1d
-
-    @reshape_array
-    def normalized_residual_map(self, return_in_2d=True):
-        return self.normalized_residual_map_1d
-
-    @reshape_array
-    def chi_squared_map(self, return_in_2d=True):
-        return self.chi_squared_map_1d
-
-
 
 
 class LensPositionFit(object):
