@@ -71,7 +71,8 @@ class HyperGalaxyPhase(HyperPhase):
                     hyper_galaxy_image=hyper_galaxy_image_2d,
                 )
 
-                fit_normal = lens_fit.LensImageFit(
+                fit_normal = lens_fit.ImageFit(
+                    grid=self.lens_data.grid,
                     image_1d=self.lens_data.image_1d,
                     noise_map_1d=self.lens_data.noise_map_1d,
                     mask_1d=self.lens_data.mask_1d,
@@ -159,7 +160,8 @@ class HyperGalaxyPhase(HyperPhase):
                     noise_map_1d > self.lens_data.hyper_noise_map_max
                 ] = self.lens_data.hyper_noise_map_max
 
-            return lens_fit.LensImageFit(
+            return lens_fit.ImageFit(
+                grid=self.lens_data.grid,
                 image_1d=image_1d,
                 noise_map_1d=noise_map_1d,
                 mask_1d=self.lens_data.mask_1d,

@@ -672,7 +672,7 @@ class PhaseImaging(Phase):
 
         def fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
 
-            return lens_fit.LensTracerImageFit.from_lens_data_and_tracer(
+            return lens_fit.LensImageFit.from_lens_data_and_tracer(
                 lens_data=self.lens_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,

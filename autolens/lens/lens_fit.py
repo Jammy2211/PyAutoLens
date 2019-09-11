@@ -6,9 +6,9 @@ from autolens.model.galaxy import galaxy as g
 from autolens.array.grids import reshape_array
 
 
-class LensImageFit(af.DataFit1D):
+class ImageFit(af.DataFit1D):
 
-    def __init__(self, image_1d, noise_map_1d, mask_1d, model_image_1d, inversion):
+    def __init__(self, grid, image_1d, noise_map_1d, mask_1d, model_image_1d, inversion):
 
         super().__init__(
             data_1d=image_1d,
@@ -17,7 +17,14 @@ class LensImageFit(af.DataFit1D):
             model_data_1d=model_image_1d,
         )
 
+        self.grid = grid
         self.inversion = inversion
+
+    def mask(self, return_in_2d=True):
+        if return_in_2d:
+            return self.grid.mask
+        else:
+            return self.mask_1d
 
     @property
     def image_1d(self):
@@ -82,17 +89,17 @@ class LensImageFit(af.DataFit1D):
         else:
             return self.evidence
 
-class LensTracerImageFit(LensImageFit):
+class LensImageFit(ImageFit):
 
     def __init__(self, tracer, grid, image_1d, noise_map_1d, model_image_1d, convolver, inversion, positions=None):
 
         self.tracer = tracer
-        self.grid = grid
         self.psf = convolver.psf
         self.convolver = convolver
         self.positions = positions
 
         super().__init__(
+            grid=grid,
             image_1d=image_1d,
             noise_map_1d=noise_map_1d,
             mask_1d=np.full(fill_value=False, shape=(len(image_1d,))),
@@ -153,12 +160,6 @@ class LensTracerImageFit(LensImageFit):
         return cls(tracer=tracer, image_1d=image_1d, noise_map_1d=noise_map_1d, model_image_1d=model_image_1d,
                    grid=lens_data.grid, convolver=lens_data.convolver,
                    inversion=inversion, positions=lens_data.positions)
-
-    def mask(self, return_in_2d=True):
-        if return_in_2d:
-            return self.grid.mask
-        else:
-            return self.mask_1d
 
     @reshape_array
     def blurred_profile_image(self, return_in_2d=True):
