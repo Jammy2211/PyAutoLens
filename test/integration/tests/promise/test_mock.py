@@ -4,5 +4,5 @@ from test.integration.tests.runner import run_a_mock
 
 
 class TestCase:
-    def test_lens_mass__source_x2(self):
+    def _test_lens_mass__source_x2(self):
         run_a_mock(lens_mass__source_x2)
