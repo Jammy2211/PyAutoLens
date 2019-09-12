@@ -3,7 +3,7 @@ import numpy as np
 import autofit as af
 from autolens.model.galaxy import galaxy as g
 
-from autolens.array.mapping import array_reshaped_with_obj
+from autolens.array.mapping import reshape_returned_array
 
 
 class ImageFit(af.DataFit):
@@ -21,11 +21,11 @@ class ImageFit(af.DataFit):
         self.mapping = mapping
         self.inversion = inversion
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def image(self, return_in_2d=True):
         return self._data
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def noise_map(self, return_in_2d=True):
         return self._noise_map
 
@@ -35,23 +35,23 @@ class ImageFit(af.DataFit):
         else:
             return self.mapping.mask
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def signal_to_noise_map(self, return_in_2d=True):
         return self._signal_to_noise_map
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def model_image(self, return_in_2d=True):
         return self._model_data
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def residual_map(self, return_in_2d=True):
         return self._residual_map
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def normalized_residual_map(self, return_in_2d=True):
         return self._normalized_residual_map
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def chi_squared_map(self, return_in_2d=True):
         return self._chi_squared_map
 
@@ -176,13 +176,13 @@ class LensImageFit(ImageFit):
             positions=lens_data.positions,
         )
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def blurred_profile_image(self, return_in_2d=True):
         return self.tracer.blurred_profile_image_from_grid_and_psf(
             grid=self.grid, psf=self.psf, return_in_2d=False
         )
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def profile_subtracted_image(self, return_in_2d=True):
         return self.image(return_in_2d=False) - self.blurred_profile_image(return_in_2d=False)
 

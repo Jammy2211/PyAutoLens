@@ -1,4 +1,4 @@
-from autolens.array.mapping import array_reshaped_with_obj
+from autolens.array.mapping import reshape_returned_array
 
 
 class MockLensData(object):
@@ -42,15 +42,15 @@ class MockLensData(object):
     def mapping(self):
         return self.mask_2d.mapping
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def image(self, return_in_2d=True):
         return self.image_1d
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def noise_map(self, return_in_2d=True):
         return self.noise_map_1d
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def signal_to_noise_map(self, return_in_2d=True):
         return self.signal_to_noise_map_1d
 

@@ -8,9 +8,10 @@ from autolens import text_util
 from autolens.model.profiles import geometry_profiles
 
 from autolens.array.mapping import (
-    sub_array_with_grid,
-    array_reshaped_with_grid_and_convolver,
-    array_reshaped_with_grid_and_psf,
+    reshape_returned_sub_array,
+    reshape_returned_array,
+    reshape_returned_array,
+    reshape_returned_array,
 )
 
 
@@ -112,7 +113,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             centre=centre, axis_ratio=axis_ratio, phi=phi
         )
 
-    @array_reshaped_with_grid_and_psf
+    @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
         self,
         grid,
@@ -139,7 +140,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
         return psf.convolve(profile_image + blurring_image)
 
-    @array_reshaped_with_grid_and_convolver
+    @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
         self,
         grid,
@@ -352,7 +353,7 @@ class EllipticalGaussian(EllipticalLightProfile):
             np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))),
         )
 
-    @sub_array_with_grid
+    @reshape_returned_sub_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def profile_image_from_grid(
@@ -551,7 +552,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
             ),
         )
 
-    @sub_array_with_grid
+    @reshape_returned_sub_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def profile_image_from_grid(
