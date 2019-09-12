@@ -4,7 +4,8 @@ import numpy as np
 from typing import cast
 
 import autofit as af
-from autolens.lens import lens_data as ld, lens_fit
+from autolens.lens import lens_data as ld
+from autolens.lens.lens_fit import lens_image_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.model.hyper import hyper_data as hd
 from autolens.pipeline.phase import phase_imaging
@@ -69,7 +70,7 @@ class HyperGalaxyPhase(HyperPhase):
                     hyper_galaxy_image=hyper_galaxy_image_2d,
                 )
 
-                fit_normal = lens_fit.ImageFit(
+                fit_normal = lens_image_fit.ImageFit(
                     image=self.lens_data.image_1d,
                     noise_map=self.lens_data.noise_map_1d,
                     mask=self.lens_data.mask_1d,
@@ -135,7 +136,7 @@ class HyperGalaxyPhase(HyperPhase):
             self, hyper_galaxy, hyper_image_sky, hyper_background_noise
         ):
 
-            image_1d = lens_fit.image_1d_from_lens_data_and_hyper_image_sky(
+            image_1d = lens_image_fit.image_1d_from_lens_data_and_hyper_image_sky(
                 lens_data=self.lens_data, hyper_image_sky=hyper_image_sky
             )
 
@@ -158,7 +159,7 @@ class HyperGalaxyPhase(HyperPhase):
                     noise_map_1d > self.lens_data.hyper_noise_map_max
                 ] = self.lens_data.hyper_noise_map_max
 
-            return lens_fit.ImageFit(
+            return lens_image_fit.ImageFit(
                 image=image_1d,
                 noise_map=noise_map_1d,
                 mask=self.lens_data.mask_1d,

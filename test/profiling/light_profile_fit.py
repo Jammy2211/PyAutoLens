@@ -6,7 +6,7 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.lens import lens_data as ld
 from autolens.lens import ray_tracing
-from autolens.lens import lens_fit
+from autolens.lens.lens_fit import lens_image_fit
 from autolens.lens.util import lens_fit_util
 
 from test.simulation import simulation_util

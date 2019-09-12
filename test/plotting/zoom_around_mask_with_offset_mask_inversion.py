@@ -4,7 +4,7 @@ from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
-from autolens.lens import lens_fit
+from autolens.lens.lens_fit import lens_image_fit
 from autolens.lens import lens_data as ld
 from autolens.data.plotters import ccd_plotters
 from autolens.lens.plotters import lens_fit_plotters
@@ -54,7 +54,7 @@ def fit_with_offset_centre(centre):
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid=grid_stack_with_pixelization_grid,
     )
-    fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
+    fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
     return fit
 

@@ -2,7 +2,8 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.lens import ray_tracing, lens_fit
+from autolens.lens import ray_tracing
+from autolens.lens.lens_fit import lens_image_fit
 from autolens.pipeline.phase.phase import AbstractPhase, Phase
 
 
@@ -124,7 +125,7 @@ class PhasePositions(AbstractPhase):
             )
 
         def fit_for_tracer(self, tracer):
-            return lens_fit.LensPositionFit(
+            return lens_image_fit.LensPositionFit(
                 positions=tracer.source_plane.positions, noise_map=self.pixel_scale
             )
 
