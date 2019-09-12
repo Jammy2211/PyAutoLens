@@ -20,9 +20,7 @@ class HyperGalaxyPhase(HyperPhase):
         self.include_noise_background = False
 
     class Analysis(af.Analysis):
-        def __init__(
-            self, lens_data, hyper_model_image_1d, hyper_galaxy_image_1d
-        ):
+        def __init__(self, lens_data, hyper_model_image_1d, hyper_galaxy_image_1d):
             """
             An analysis to fit the noise for a single galaxy image.
             Parameters
@@ -58,11 +56,11 @@ class HyperGalaxyPhase(HyperPhase):
                     instance=instance
                 )
 
-                hyper_model_image_2d = self.lens_data.grid.scaled_array_2d_from_array_1d(
+                hyper_model_image_2d = self.lens_data.grid.mapping.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_model_image_1d
                 )
 
-                hyper_galaxy_image_2d = self.lens_data.grid.scaled_array_2d_from_array_1d(
+                hyper_galaxy_image_2d = self.lens_data.grid.mapping.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_galaxy_image_1d
                 )
 
@@ -72,11 +70,11 @@ class HyperGalaxyPhase(HyperPhase):
                 )
 
                 fit_normal = lens_fit.ImageFit(
-                    grid=self.lens_data.grid,
-                    image_1d=self.lens_data.image_1d,
-                    noise_map_1d=self.lens_data.noise_map_1d,
-                    mask_1d=self.lens_data.mask_1d,
-                    model_image_1d=self.hyper_model_image_1d,
+                    image=self.lens_data.image_1d,
+                    noise_map=self.lens_data.noise_map_1d,
+                    mask=self.lens_data.mask_1d,
+                    model_image=self.hyper_model_image_1d,
+                    mapping=self.lens_data.mapping,
                     inversion=None,
                 )
 
@@ -161,11 +159,11 @@ class HyperGalaxyPhase(HyperPhase):
                 ] = self.lens_data.hyper_noise_map_max
 
             return lens_fit.ImageFit(
-                grid=self.lens_data.grid,
-                image_1d=image_1d,
-                noise_map_1d=noise_map_1d,
-                mask_1d=self.lens_data.mask_1d,
-                model_image_1d=self.hyper_model_image_1d,
+                image=image_1d,
+                noise_map=noise_map_1d,
+                mask=self.lens_data.mask_1d,
+                model_image=self.hyper_model_image_1d,
+                mapping=self.lens_data.mapping,
                 inversion=None,
             )
 
@@ -193,7 +191,6 @@ class HyperGalaxyPhase(HyperPhase):
         lens_data = ld.LensData(
             ccd_data=data,
             mask=results.last.mask_2d,
-            sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
             trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,
             positions_threshold=cast(
@@ -268,9 +265,7 @@ class HyperGalaxyPhase(HyperPhase):
                 analysis = self.Analysis(
                     lens_data=lens_data,
                     hyper_model_image_1d=model_image_1d,
-                    hyper_galaxy_image_1d=hyper_galaxy_image_1d_path_dict[
-                        path
-                    ],
+                    hyper_galaxy_image_1d=hyper_galaxy_image_1d_path_dict[path],
                 )
 
                 result = optimizer.fit(analysis)
@@ -354,7 +349,6 @@ class HyperGalaxyAllPhase(HyperPhase):
         lens_data = ld.LensData(
             ccd_data=data,
             mask=results.last.mask_2d,
-            sub_grid_size=cast(phase_imaging.PhaseImaging, phase).sub_grid_size,
             trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,
             positions_threshold=cast(

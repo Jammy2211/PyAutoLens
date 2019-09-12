@@ -1,4 +1,3 @@
-import numpy as np
 from astropy import cosmology as cosmo
 
 import autofit as af
@@ -6,7 +5,6 @@ from autolens import exc
 from autolens.lens import ray_tracing, lens_data as ld, lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
 from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase.phase import Phase, setup_phase_mask
@@ -35,7 +33,7 @@ class PhaseImaging(Phase):
         hyper_background_noise=None,
         optimizer_class=af.MultiNest,
         cosmology=cosmo.Planck15,
-        sub_grid_size=2,
+        sub_size=2,
         signal_to_noise_limit=None,
         bin_up_factor=None,
         psf_shape=None,
@@ -58,7 +56,7 @@ class PhaseImaging(Phase):
         ----------
         optimizer_class: class
             The class of a non_linear optimizer
-        sub_grid_size: int
+        sub_size: int
             The side length of the subgrid
         pixel_scale_binned_cluster_grid : float or None
             If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned up to this \
@@ -66,7 +64,7 @@ class PhaseImaging(Phase):
         """
 
         phase_tag = phase_tagging.phase_tag_from_phase_settings(
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             signal_to_noise_limit=signal_to_noise_limit,
             bin_up_factor=bin_up_factor,
             psf_shape=psf_shape,
@@ -85,7 +83,7 @@ class PhaseImaging(Phase):
             auto_link_priors=auto_link_priors,
         )
 
-        self.sub_grid_size = sub_grid_size
+        self.sub_size = sub_size
         self.signal_to_noise_limit = signal_to_noise_limit
         self.bin_up_factor = bin_up_factor
         self.psf_shape = psf_shape
@@ -205,6 +203,7 @@ class PhaseImaging(Phase):
         mask = setup_phase_mask(
             data=data,
             mask=mask,
+            sub_size=self.sub_size,
             mask_function=self.mask_function,
             inner_mask_radii=self.inner_mask_radii,
         )
@@ -273,7 +272,6 @@ class PhaseImaging(Phase):
         lens_data = ld.LensData(
             ccd_data=data,
             mask=mask,
-            sub_grid_size=self.sub_grid_size,
             trimmed_psf_shape=self.psf_shape,
             positions=positions,
             positions_threshold=self.positions_threshold,
@@ -320,7 +318,7 @@ class PhaseImaging(Phase):
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))
-            phase_info.write("Sub-grid size = {} \n".format(self.sub_grid_size))
+            phase_info.write("Sub-grid size = {} \n".format(self.sub_size))
             phase_info.write("PSF shape = {} \n".format(self.psf_shape))
             phase_info.write(
                 "Positions Threshold = {} \n".format(self.positions_threshold)
@@ -554,7 +552,7 @@ class PhaseImaging(Phase):
 
                 if mask is not None:
                     phase_plotters.plot_hyper_images_for_phase(
-                        hyper_model_image_2d=mask.scaled_array_2d_from_array_1d(
+                        hyper_model_image_2d=mask.mapping.scaled_array_2d_from_array_1d(
                             array_1d=self.hyper_model_image_1d
                         ),
                         hyper_galaxy_image_2d_path_dict=self.last_results.hyper_galaxy_image_2d_path_dict,
@@ -711,7 +709,7 @@ class PhaseImaging(Phase):
 
         def map_to_1d(self, data):
             """Convenience method"""
-            return self.lens_data.mask.array_1d_from_array_2d(data)
+            return self.lens_data.mask.mapping.array_1d_from_array_2d(data)
 
         @classmethod
         def describe(cls, instance):

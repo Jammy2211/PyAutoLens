@@ -4,23 +4,21 @@ import autolens as al
 
 
 class MockGrid(al.Grid):
-    def __new__(cls, mask, pixel_scale=1.0, sub_grid_size=2, *args, **kwargs):
-        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-            mask=mask,
-            pixel_scales=(pixel_scale, pixel_scale),
-            sub_grid_size=sub_grid_size,
+    def __new__(cls, mask, pixel_scale=1.0, sub_size=2, *args, **kwargs):
+        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+            mask=mask, pixel_scales=(pixel_scale, pixel_scale), sub_size=sub_size
         )
 
         obj = grid.view(cls)
         obj.mask = mask
-        obj.sub_grid_size = sub_grid_size
-        obj.sub_grid_length = int(obj.sub_grid_size ** 2.0)
-        obj.sub_grid_fraction = 1.0 / obj.sub_grid_length
+        obj.sub_size = sub_size
+        obj.sub_length = int(obj.sub_size ** 2.0)
+        obj.sub_fraction = 1.0 / obj.sub_length
         obj.interpolator = None
 
         return obj
 
-    def __init__(self, mask, pixel_scale=1.0, sub_grid_size=2):
+    def __init__(self, mask, pixel_scale=1.0, sub_size=2):
         pass
 
 
@@ -34,7 +32,7 @@ class MockPixelizationGrid(np.ndarray):
         arr,
         mask_1d_index_to_nearest_pixelization_1d_index=None,
         sub_mask_1d_index_to_mask_1d_index=None,
-        sub_grid_size=1,
+        sub_size=1,
         *args,
         **kwargs
     ):
@@ -61,11 +59,15 @@ class MockPixelizationGrid(np.ndarray):
             mask_1d_index_to_nearest_pixelization_1d_index
         )
         obj.sub_mask_1d_index_to_mask_1d_index = sub_mask_1d_index_to_mask_1d_index
-        obj.sub_grid_size = sub_grid_size
-        obj.sub_grid_length = int(sub_grid_size ** 2.0)
-        obj.sub_grid_fraction = 1.0 / obj.sub_grid_length
+        obj.sub_size = sub_size
+        obj.sub_length = int(sub_size ** 2.0)
+        obj.sub_fraction = 1.0 / obj.sub_length
         obj.interpolator = None
         return obj
+
+    @property
+    def mapping(self):
+        return self
 
     def relocated_grid_from_grid(self, grid):
         return grid

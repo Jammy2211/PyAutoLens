@@ -44,18 +44,18 @@ def grid_centre_from_grid_1d(grid_1d):
 
 
 @decorator_util.jit()
-def grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-    mask, pixel_scales, sub_grid_size, origin=(0.0, 0.0)
+def grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+    mask, pixel_scales, sub_size, origin=(0.0, 0.0)
 ):
     """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
-    uniform grid of shape (sub_grid_size, sub_grid_size). This routine computes the (y,x) arc second coordinates at \
+    uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
 
     Coordinates are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0. \
     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
 
-    The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_grid_size**2, 2). y coordinates are \
+    The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are \
     stored in the 0 index of the second dimension, x coordinates in the 1 index.
 
     Parameters
@@ -65,7 +65,7 @@ def grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
         sub-grid.
     pixel_scales : (float, float)
         The (y,x) arc-second to pixel scales of the 2D mask array.
-    sub_grid_size : int
+    sub_size : int
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
@@ -74,7 +74,7 @@ def grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
     --------
     ndarray
         A sub grid of (y,x) arc-second coordinates at the centre of every pixel unmasked pixel on the 2D mask \
-        array. The sub grid array has dimensions (total_unmasked_pixels*sub_grid_size**2, 2).
+        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
 
     Examples
     --------
@@ -84,9 +84,7 @@ def grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
     grid_1d = sub_grid_1d_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_grid_size(
-        mask, sub_grid_size
-    )
+    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_size(mask, sub_size)
 
     grid_1d = np.zeros(shape=(total_sub_pixels, 2))
 
@@ -97,10 +95,10 @@ def grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
     sub_index = 0
 
     y_sub_half = pixel_scales[0] / 2
-    y_sub_step = pixel_scales[0] / (sub_grid_size)
+    y_sub_step = pixel_scales[0] / (sub_size)
 
     x_sub_half = pixel_scales[1] / 2
-    x_sub_step = pixel_scales[1] / (sub_grid_size)
+    x_sub_step = pixel_scales[1] / (sub_size)
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
@@ -110,8 +108,8 @@ def grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
                 y_arcsec = (y - centres_arcsec[0]) * pixel_scales[0]
                 x_arcsec = (x - centres_arcsec[1]) * pixel_scales[1]
 
-                for y1 in range(sub_grid_size):
-                    for x1 in range(sub_grid_size):
+                for y1 in range(sub_size):
+                    for x1 in range(sub_size):
 
                         grid_1d[sub_index, 0] = -(
                             y_arcsec - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
@@ -124,18 +122,18 @@ def grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
     return grid_1d
 
 
-def grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
-    mask, pixel_scales, sub_grid_size, origin=(0.0, 0.0)
+def grid_2d_from_mask_pixel_scales_sub_size_and_origin(
+    mask, pixel_scales, sub_size, origin=(0.0, 0.0)
 ):
     """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
-    uniform grid of shape (sub_grid_size, sub_grid_size). This routine computes the (y,x) arc second coordinates at \
+    uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
 
     Coordinates are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0. \
     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
 
-    The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_grid_size**2, 2). y coordinates are \
+    The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are \
     stored in the 0 index of the second dimension, x coordinates in the 1 index.
 
     Parameters
@@ -145,7 +143,7 @@ def grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
         sub-grid.
     pixel_scales : (float, float)
         The (y,x) arc-second to pixel scales of the 2D mask array.
-    sub_grid_size : int
+    sub_size : int
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
@@ -154,7 +152,7 @@ def grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
     --------
     ndarray
         A sub grid of (y,x) arc-second coordinates at the centre of every pixel unmasked pixel on the 2D mask \
-        array. The sub grid array has dimensions (total_unmasked_pixels*sub_grid_size**2, 2).
+        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
 
     Examples
     --------
@@ -164,27 +162,27 @@ def grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
     sub_grid_1d = sub_grid_1d_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    grid_1d = grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-        mask=mask, pixel_scales=pixel_scales, sub_grid_size=sub_grid_size, origin=origin
+    grid_1d = grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+        mask=mask, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
     )
 
-    return grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
-        sub_grid_1d=grid_1d, mask=mask, sub_grid_size=sub_grid_size
+    return grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+        sub_grid_1d=grid_1d, mask=mask, sub_size=sub_size
     )
 
 
-def grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
-    shape, pixel_scales, sub_grid_size, origin=(0.0, 0.0)
+def grid_1d_from_shape_pixel_scales_sub_size_and_origin(
+    shape, pixel_scales, sub_size, origin=(0.0, 0.0)
 ):
     """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
-    uniform grid of shape (sub_grid_size, sub_grid_size). This routine computes the (y,x) arc second coordinates at \
+    uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
 
     Coordinates are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0]. \
     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
 
-    The sub-grid is returned on an array of shape (total_pixels**2*sub_grid_size**2, 2). y coordinates are \
+    The sub-grid is returned on an array of shape (total_pixels**2*sub_size**2, 2). y coordinates are \
     stored in the 0 index of the second dimension, x coordinates in the 1 index.
 
     Parameters
@@ -193,7 +191,7 @@ def grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
         The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
     pixel_scales : (float, float)
         The (y,x) arc-second to pixel scales of the 2D mask array.
-    sub_grid_size : int
+    sub_size : int
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
@@ -202,7 +200,7 @@ def grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
     --------
     ndarray
         A sub grid of (y,x) arc-second coordinates at the centre of every pixel unmasked pixel on the 2D mask \
-        array. The sub grid array has dimensions (total_unmasked_pixels*sub_grid_size**2, 2).
+        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
 
     Examples
     --------
@@ -211,26 +209,26 @@ def grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
                      [True, False, True]])
     sub_grid_1d = sub_grid_1d_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
-    return grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+    return grid_1d_from_mask_pixel_scales_sub_size_and_origin(
         mask=np.full(fill_value=False, shape=shape),
         pixel_scales=pixel_scales,
-        sub_grid_size=sub_grid_size,
+        sub_size=sub_size,
         origin=origin,
     )
 
 
-def grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
-    shape, pixel_scales, sub_grid_size, origin=(0.0, 0.0)
+def grid_2d_from_shape_pixel_scales_sub_size_and_origin(
+    shape, pixel_scales, sub_size, origin=(0.0, 0.0)
 ):
     """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
-    uniform grid of shape (sub_grid_size, sub_grid_size). This routine computes the (y,x) arc second coordinates at \
+    uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
 
     Coordinates are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0]. \
     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
 
-    The sub-grid is returned on an array of shape (total_pixels**2*sub_grid_size**2, 2). y coordinates are \
+    The sub-grid is returned on an array of shape (total_pixels**2*sub_size**2, 2). y coordinates are \
     stored in the 0 index of the second dimension, x coordinates in the 1 index.
 
     Parameters
@@ -239,7 +237,7 @@ def grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
         The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
     pixel_scales : (float, float)
         The (y,x) arc-second to pixel scales of the 2D mask array.
-    sub_grid_size : int
+    sub_size : int
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
@@ -248,7 +246,7 @@ def grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
     --------
     ndarray
         A sub grid of (y,x) arc-second coordinates at the centre of every pixel unmasked pixel on the 2D mask \
-        array. The sub grid array has dimensions (total_unmasked_pixels*sub_grid_size**2, 2).
+        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
 
     Examples
     --------
@@ -257,10 +255,10 @@ def grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
                      [True, False, True]])
     sub_grid_1d = sub_grid_1d_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
-    return grid_2d_from_mask_pixel_scales_sub_grid_size_and_origin(
+    return grid_2d_from_mask_pixel_scales_sub_size_and_origin(
         mask=np.full(fill_value=False, shape=shape),
         pixel_scales=pixel_scales,
-        sub_grid_size=sub_grid_size,
+        sub_size=sub_size,
         origin=origin,
     )
 

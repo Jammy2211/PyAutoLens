@@ -1,4 +1,4 @@
-from autolens.array.grids import reshape_array
+from autolens.array.mapping import array_reshaped_with_obj
 
 
 class MockLensData(object):
@@ -12,17 +12,17 @@ class MockLensData(object):
         self.psf = ccd_data.psf
 
         self.mask_2d = mask
-        self.mask_1d = self.mask_2d.array_1d_from_array_2d(array_2d=self.mask_2d)
+        self.mask_1d = self.mask_2d.mapping.array_1d_from_array_2d(array_2d=self.mask_2d)
 
         self.grid = grid
         self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
-        self.sub_grid_size = self.grid.sub_grid_size
+        self.sub_size = self.grid.sub_size
         self.convolver = convolver
 
-        self.image_1d = self.mask_2d.array_1d_from_array_2d(
+        self.image_1d = self.mask_2d.mapping.array_1d_from_array_2d(
             array_2d=self.unmasked_image
         )
-        self.noise_map_1d = self.mask_2d.array_1d_from_array_2d(
+        self.noise_map_1d = self.mask_2d.mapping.array_1d_from_array_2d(
             array_2d=self.unmasked_noise_map
         )
         self.signal_to_noise_map_1d = self.image_1d / self.noise_map_1d
@@ -38,15 +38,19 @@ class MockLensData(object):
         self.preload_blurring_grid = blurring_grid
         self.preload_pixelization_grids_of_planes = None
 
-    @reshape_array
+    @property
+    def mapping(self):
+        return self.mask_2d.mapping
+
+    @array_reshaped_with_obj
     def image(self, return_in_2d=True):
         return self.image_1d
 
-    @reshape_array
+    @array_reshaped_with_obj
     def noise_map(self, return_in_2d=True):
         return self.noise_map_1d
 
-    @reshape_array
+    @array_reshaped_with_obj
     def signal_to_noise_map(self, return_in_2d=True):
         return self.signal_to_noise_map_1d
 
@@ -56,4 +60,4 @@ class MockLensData(object):
 
     @property
     def scaled_array_2d_from_array_1d(self):
-        return self.grid.scaled_array_2d_from_array_1d
+        return self.grid.mapping.scaled_array_2d_from_array_1d

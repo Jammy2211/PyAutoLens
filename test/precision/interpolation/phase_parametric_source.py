@@ -25,7 +25,7 @@ data_type = "no_lens_source_smooth"
 data_resolution = "Euclid"
 
 # Setup the size of the sub-grid and mask used for this precision analysis.
-sub_grid_size = 2
+sub_size = 2
 inner_radius_arcsec = 0.0
 outer_radius_arcsec = 3.0
 

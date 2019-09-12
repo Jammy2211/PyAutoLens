@@ -8,9 +8,7 @@ logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
 
-def sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-    sub_grid_2d, mask, sub_grid_size
-):
+def sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(sub_grid_2d, mask, sub_size):
     """For a 2D grid and mask, map the values of all unmasked pixels to a 1D grid.
 
     The pixel coordinate origin is at the top left corner of the 2D grid and goes right-wards and downwards, such \
@@ -45,20 +43,18 @@ def sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
     grid_1d = map_grid_2d_to_masked_grid_1d_from_grid_2d_and_mask(mask=mask, grid_2d=grid_2d)
     """
 
-    sub_grid_1d_y = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-        sub_array_2d=sub_grid_2d[:, :, 0], mask=mask, sub_grid_size=sub_grid_size
+    sub_grid_1d_y = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        sub_array_2d=sub_grid_2d[:, :, 0], mask=mask, sub_size=sub_size
     )
 
-    sub_grid_1d_x = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-        sub_array_2d=sub_grid_2d[:, :, 1], mask=mask, sub_grid_size=sub_grid_size
+    sub_grid_1d_x = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        sub_array_2d=sub_grid_2d[:, :, 1], mask=mask, sub_size=sub_size
     )
 
     return np.stack((sub_grid_1d_y, sub_grid_1d_x), axis=-1)
 
 
-def sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
-    sub_grid_1d, mask, sub_grid_size
-):
+def sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(sub_grid_1d, mask, sub_size):
     """For a 1D array that was computed by mapping_util unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -93,12 +89,12 @@ def sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
                                                                                   one_to_two=one_to_two)
     """
 
-    sub_grid_2d_y = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-        sub_array_1d=sub_grid_1d[:, 0], mask=mask, sub_grid_size=sub_grid_size
+    sub_grid_2d_y = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        sub_array_1d=sub_grid_1d[:, 0], mask=mask, sub_size=sub_size
     )
 
-    sub_grid_2d_x = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-        sub_array_1d=sub_grid_1d[:, 1], mask=mask, sub_grid_size=sub_grid_size
+    sub_grid_2d_x = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        sub_array_1d=sub_grid_1d[:, 1], mask=mask, sub_size=sub_size
     )
 
     return np.stack((sub_grid_2d_y, sub_grid_2d_x), axis=-1)

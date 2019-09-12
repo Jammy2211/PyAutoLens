@@ -256,7 +256,7 @@ class AdaptiveBrightness(Regularization):
         pixel_signals = self.pixel_signals_from_images(
             pixels=mapper.pixels,
             sub_mask_1d_index_to_pixelization_1d_index=mapper.sub_mask_1d_index_to_pixelization_1d_index,
-            sub_mask_1d_index_to_mask_1d_index=mapper.grid.sub_mask_1d_index_to_mask_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=mapper.grid.mapping.sub_mask_1d_index_to_mask_1d_index,
             hyper_image=mapper.hyper_image,
         )
 

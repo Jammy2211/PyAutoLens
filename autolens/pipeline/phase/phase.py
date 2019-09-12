@@ -8,23 +8,29 @@ from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 
 
-def default_mask_function(image):
+def default_mask_function(image, sub_size):
     return msk.Mask.circular(
-        shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0
+        shape=image.shape, pixel_scale=image.pixel_scale, sub_size=sub_size, radius_arcsec=3.0
     )
 
 
-def setup_phase_mask(data, mask, mask_function, inner_mask_radii):
+def setup_phase_mask(data, mask, sub_size, mask_function, inner_mask_radii):
+
+    if mask is not None:
+        if mask.sub_size != sub_size:
+            mask = mask.new_mask_with_new_sub_size(sub_size=sub_size)
+
     if mask_function is not None:
-        mask = mask_function(image=data.image)
+        mask = mask_function(image=data.image, sub_size=sub_size)
     elif mask is None and mask_function is None:
-        mask = default_mask_function(image=data.image)
+        mask = default_mask_function(image=data.image, sub_size=sub_size)
 
     if inner_mask_radii is not None:
         inner_mask = msk.Mask.circular(
             shape=mask.shape,
             pixel_scale=mask.pixel_scale,
             radius_arcsec=inner_mask_radii,
+            sub_size=sub_size,
             invert=True,
         )
         mask = mask + inner_mask
@@ -253,7 +259,7 @@ class AbstractPhase(af.AbstractPhase):
             image_1d_dict = {}
 
             for galaxy, galaxy_image_2d in self.image_galaxy_2d_dict.items():
-                image_1d_dict[galaxy] = self.mask_2d.array_1d_from_array_2d(
+                image_1d_dict[galaxy] = self.mask_2d.mapping.array_1d_from_array_2d(
                     array_2d=galaxy_image_2d
                 )
 
@@ -306,7 +312,7 @@ class AbstractPhase(af.AbstractPhase):
             for path, galaxy in self.path_galaxy_tuples:
                 hyper_galaxy_image_2d_path_dict[
                     path
-                ] = self.mask_2d.scaled_array_2d_from_array_1d(
+                ] = self.mask_2d.mapping.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_galaxy_image_1d_path_dict[path]
                 )
 
@@ -324,7 +330,7 @@ class AbstractPhase(af.AbstractPhase):
                     array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
                 )
 
-                binned_image_1d_dict[galaxy] = binned_grid.mask.array_1d_from_array_2d(
+                binned_image_1d_dict[galaxy] = binned_grid.mask.mapping.array_1d_from_array_2d(
                     array_2d=binned_image_2d
                 )
 
@@ -377,7 +383,7 @@ class AbstractPhase(af.AbstractPhase):
                 for path, galaxy in self.path_galaxy_tuples:
                     binned_hyper_galaxy_image_2d_path_dict[
                         path
-                    ] = binned_grid.mask.scaled_array_2d_from_array_1d(
+                    ] = binned_grid.mask.mapping.scaled_array_2d_from_array_1d(
                         array_1d=binned_hyper_galaxy_image_1d_path_dict[path]
                     )
 
@@ -462,7 +468,7 @@ class GalaxyFitPhase(AbstractPhase):
         use_potential=False,
         use_deflections=False,
         optimizer_class=af.MultiNest,
-        sub_grid_size=2,
+        sub_size=2,
         pixel_scale_interpolation_grid=None,
         mask_function=None,
         cosmology=cosmo.Planck15,
@@ -475,7 +481,7 @@ class GalaxyFitPhase(AbstractPhase):
         ----------
         optimizer_class: class
             The class of a non_linear optimizer
-        sub_grid_size: int
+        sub_size: int
             The side length of the subgrid
         """
 
@@ -490,7 +496,7 @@ class GalaxyFitPhase(AbstractPhase):
         self.use_potential = use_potential
         self.use_deflections = use_deflections
         self.galaxies = galaxies
-        self.sub_grid_size = sub_grid_size
+        self.sub_size = sub_size
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
         self.mask_function = mask_function
 
@@ -556,7 +562,7 @@ class GalaxyFitPhase(AbstractPhase):
             galaxy_data = gd.GalaxyFitData(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
-                sub_grid_size=self.sub_grid_size,
+                sub_size=self.sub_size,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
                 use_image=self.use_image,
                 use_convergence=self.use_convergence,
@@ -574,7 +580,7 @@ class GalaxyFitPhase(AbstractPhase):
             galaxy_data_y = gd.GalaxyFitData(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
-                sub_grid_size=self.sub_grid_size,
+                sub_size=self.sub_size,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
                 use_image=self.use_image,
                 use_convergence=self.use_convergence,
@@ -586,7 +592,7 @@ class GalaxyFitPhase(AbstractPhase):
             galaxy_data_x = gd.GalaxyFitData(
                 galaxy_data=galaxy_data[1],
                 mask=mask,
-                sub_grid_size=self.sub_grid_size,
+                sub_size=self.sub_size,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
                 use_image=self.use_image,
                 use_convergence=self.use_convergence,

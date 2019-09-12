@@ -20,7 +20,7 @@ class TestRectangular:
             ]
         )
 
-        mask = al.Mask(array=mask, pixel_scale=1.0)
+        mask = al.Mask(array=mask, pixel_scale=1.0, sub_size=1)
 
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
 
@@ -29,7 +29,7 @@ class TestRectangular:
                 [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
             ),
             mask=mask,
-            sub_grid_size=1,
+            sub_size=1,
         )
 
         pixelization_grid = MockPixelizationGrid(arr=grid)
@@ -102,7 +102,7 @@ class TestRectangular:
             ]
         )
 
-        mask = al.Mask(array=mask, pixel_scale=1.0)
+        mask = al.Mask(array=mask, pixel_scale=1.0, sub_size=1)
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
@@ -127,7 +127,7 @@ class TestRectangular:
                 ]
             ),
             mask=mask,
-            sub_grid_size=1,
+            sub_size=1,
         )
 
         pixelization_grid = MockPixelizationGrid(arr=grid)
@@ -202,7 +202,7 @@ class TestRectangular:
             ]
         )
 
-        mask = al.Mask(array=mask, pixel_scale=2.0)
+        mask = al.Mask(array=mask, pixel_scale=2.0, sub_size=2)
 
         # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
@@ -235,7 +235,7 @@ class TestRectangular:
                 ]
             ),
             mask=mask,
-            sub_grid_size=2,
+            sub_size=2,
         )
 
         pixelization_grid = MockPixelizationGrid(arr=grid)
@@ -300,14 +300,14 @@ class TestRectangular:
             ]
         )
 
-        mask = al.Mask(array=mask, pixel_scale=1.0)
+        mask = al.Mask(array=mask, pixel_scale=1.0, sub_size=1)
 
         grid = al.Grid(
             arr=np.array(
                 [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]]
             ),
             mask=mask,
-            sub_grid_size=1,
+            sub_size=1,
         )
 
         pixelization_grid = MockPixelizationGrid(grid)
@@ -366,7 +366,7 @@ class TestVoronoiMagnification:
             array=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0,
+            pixel_scale=1.0, sub_size=1,
         )
 
         grid = np.array(
@@ -455,7 +455,7 @@ class TestVoronoiMagnification:
             array=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scale=1.0, sub_size=1,
         )
 
         grid = np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
@@ -520,7 +520,7 @@ class TestVoronoiMagnification:
             array=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scale=1.0, sub_size=2,
         )
 
         grid = np.array(
@@ -548,7 +548,7 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = al.Grid(arr=grid, mask=mask, sub_grid_size=2)
+        grid = al.Grid(arr=grid, mask=mask)
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
@@ -614,12 +614,12 @@ class TestVoronoiMagnification:
                     [True, True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scale=1.0, sub_size=1,
         )
 
         grid = np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
 
-        grid = al.Grid(arr=grid, mask=mask, sub_grid_size=1)
+        grid = al.Grid(arr=grid, mask=mask, sub_size=1)
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(

@@ -1,6 +1,6 @@
 import numpy as np
 
-from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
+from autolens.array.mapping import sub_array_with_grid, grid_reshaped_with_grid
 
 
 class MockGalaxy(object):
@@ -8,20 +8,28 @@ class MockGalaxy(object):
         self.value = value
         self.shape = shape
 
-    @reshape_array_from_grid
-    def profile_image_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @sub_array_with_grid
+    def profile_image_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    @reshape_array_from_grid
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @sub_array_with_grid
+    def convergence_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    @reshape_array_from_grid
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @sub_array_with_grid
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    @reshape_returned_grid
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @grid_reshaped_with_grid
+    def deflections_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.full(shape=(self.shape, 2), fill_value=self.value)
 
 

@@ -1,9 +1,9 @@
 import autofit as af
 
-from autolens.array.grids import reshape_array
+from autolens.array.mapping import array_reshaped_with_obj
 
 
-class GalaxyFit(af.DataFit1D):
+class GalaxyFit(af.DataFit):
     def __init__(self, galaxy_data, model_galaxies):
         """Class which fits a set of galaxy-datas to a model galaxy, using either the galaxy's image, \
         surface-density or potential.
@@ -19,64 +19,56 @@ class GalaxyFit(af.DataFit1D):
         self.galaxy_data = galaxy_data
         self.mask_2d = galaxy_data.mask_2d
         self.model_galaxies = model_galaxies
-        self.map_to_scaled_array = galaxy_data.grid.scaled_array_2d_from_array_1d
+        self.mapping = galaxy_data.mapping
 
         model_data_1d = galaxy_data.profile_quantity_from_galaxies(
             galaxies=model_galaxies
         )
 
         super(GalaxyFit, self).__init__(
-            data_1d=galaxy_data.image_1d,
-            noise_map_1d=galaxy_data.noise_map_1d,
-            mask_1d=galaxy_data.mask_1d,
-            model_data_1d=model_data_1d,
+            data=galaxy_data.image_1d,
+            noise_map=galaxy_data.noise_map_1d,
+            mask=galaxy_data.mask_1d,
+            model_data=model_data_1d,
         )
 
     @property
     def grid(self):
         return self.galaxy_data.grid
 
-    @property
-    def image_1d(self):
-        return self.data_1d
+    @array_reshaped_with_obj
+    def image(self, return_in_2d=True):
+        return self._data
 
-    @property
-    def model_image_1d(self):
-        return self.model_data_1d
+    @array_reshaped_with_obj
+    def noise_map(self, return_in_2d=True):
+        return self._noise_map
 
     def mask(self, return_in_2d=True):
-        if return_in_2d:
-            return self.mask_2d
+        if not return_in_2d:
+            return self._mask
         else:
-            return self.mask_1d
+            return self.mapping.mask
 
-    @reshape_array
-    def image(self):
-        return self.image_1d
+    @array_reshaped_with_obj
+    def signal_to_noise_map(self, return_in_2d=True):
+        return self._signal_to_noise_map
 
-    @reshape_array
-    def noise_map(self):
-        return self.noise_map_1d
+    @array_reshaped_with_obj
+    def model_image(self, return_in_2d=True):
+        return self._model_data
 
-    @reshape_array
-    def signal_to_noise_map(self):
-        return self.signal_to_noise_map_1d
+    @array_reshaped_with_obj
+    def residual_map(self, return_in_2d=True):
+        return self._residual_map
 
-    @reshape_array
-    def model_image(self):
-        return self.model_image_1d
+    @array_reshaped_with_obj
+    def normalized_residual_map(self, return_in_2d=True):
+        return self._normalized_residual_map
 
-    @reshape_array
-    def residual_map(self):
-        return self.residual_map_1d
-
-    @reshape_array
-    def normalized_residual_map(self):
-        return self.normalized_residual_map_1d
-
-    @reshape_array
-    def chi_squared_map(self):
-        return self.chi_squared_map_1d
+    @array_reshaped_with_obj
+    def chi_squared_map(self, return_in_2d=True):
+        return self._chi_squared_map
 
     @property
     def figure_of_merit(self):

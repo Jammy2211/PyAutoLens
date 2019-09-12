@@ -12,6 +12,8 @@ from autolens.array.mapping_util import grid_mapping_util
 from autolens.array.mapping_util import mask_mapping_util
 from autolens.array.mapping_util import mask_mapping_util, sparse_mapping_util
 from autolens.array.mapping_util import sparse_mapping_util
+from autolens.array.mapping import Mapping
+from autolens.array import mapping
 from autolens.array.mask import Mask
 from autolens.array.mask import load_mask_from_fits, output_mask_to_fits
 from autolens.array.scaled_array import (
@@ -75,11 +77,7 @@ from autolens.dimensions import (
 )
 from autolens.lens import ray_tracing, lens_fit
 from autolens.lens.lens_data import LensData
-from autolens.lens.lens_fit import (
-    ImageFit,
-    LensImageFit,
-    LensPositionFit,
-)
+from autolens.lens.lens_fit import ImageFit, LensImageFit, LensPositionFit
 from autolens.lens.plane import Plane, PlanePositions, PlaneImage
 from autolens.lens.plotters import lens_fit_plotters
 from autolens.lens.plotters import lens_plotter_util
@@ -145,4 +143,4 @@ from autolens.pipeline.plotters import hyper_plotters
 from autolens.pipeline.plotters import phase_plotters
 from autolens.plotters import array_plotters, grid_plotters, plotter_util
 
-__version__ = '0.30.4'
+__version__ = "0.30.4"

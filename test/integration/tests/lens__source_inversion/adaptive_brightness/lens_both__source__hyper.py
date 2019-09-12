@@ -31,8 +31,12 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.galaxies.lens.light = results.from_phase("phase_1").constant.galaxies.lens.light
-            self.galaxies.lens.mass = results.from_phase("phase_1").constant.galaxies.lens.mass
+            self.galaxies.lens.light = results.from_phase(
+                "phase_1"
+            ).constant.galaxies.lens.light
+            self.galaxies.lens.mass = results.from_phase(
+                "phase_1"
+            ).constant.galaxies.lens.mass
 
     phase2 = InversionPhase(
         phase_name="phase_2_weighted_regularization",
@@ -67,8 +71,12 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
 
-            self.galaxies.source.pixelization = results.last.inversion.constant.galaxies.source.pixelization
-            self.galaxies.source.regularization = results.last.inversion.constant.galaxies.source.regularization
+            self.galaxies.source.pixelization = (
+                results.last.inversion.constant.galaxies.source.pixelization
+            )
+            self.galaxies.source.regularization = (
+                results.last.inversion.constant.galaxies.source.regularization
+            )
 
     phase3 = InversionPhase(
         phase_name="phase_3",

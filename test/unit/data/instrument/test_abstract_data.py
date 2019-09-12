@@ -498,15 +498,15 @@ class TestPSF(object):
 
     class TestFromGaussian(object):
         def test__identical_to_gaussian_light_profile(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(3, 3), pixel_scale=1.0, sub_grid_size=1
+            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+                shape=(3, 3), pixel_scale=1.0, sub_size=1
             )
 
             gaussian = al.light_profiles.EllipticalGaussian(
                 centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
             )
             profile_gaussian = gaussian.profile_image_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True
+                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
             )
 
             profile_psf = al.PSF(

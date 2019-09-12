@@ -3,64 +3,57 @@ import numpy as np
 import autofit as af
 from autolens.model.galaxy import galaxy as g
 
-from autolens.array.grids import reshape_array
+from autolens.array.mapping import array_reshaped_with_obj
 
 
-class ImageFit(af.DataFit1D):
-
-    def __init__(self, grid, image_1d, noise_map_1d, mask_1d, model_image_1d, inversion):
+class ImageFit(af.DataFit):
+    def __init__(
+        self, image, noise_map, mask, model_image, mapping, inversion
+    ):
 
         super().__init__(
-            data_1d=image_1d,
-            noise_map_1d=noise_map_1d,
-            mask_1d=mask_1d,
-            model_data_1d=model_image_1d,
+            data=image,
+            noise_map=noise_map,
+            mask=mask,
+            model_data=model_image,
         )
 
-        self.grid = grid
+        self.mapping = mapping
         self.inversion = inversion
 
-    def mask(self, return_in_2d=True):
-        if return_in_2d:
-            return self.grid.mask
-        else:
-            return self.mask_1d
-
-    @property
-    def image_1d(self):
-        return self.data_1d
-
-    @property
-    def model_image_1d(self):
-        return self.model_data_1d
-
-    @reshape_array
+    @array_reshaped_with_obj
     def image(self, return_in_2d=True):
-        return self.image_1d
+        return self._data
 
-    @reshape_array
+    @array_reshaped_with_obj
     def noise_map(self, return_in_2d=True):
-        return self.noise_map_1d
+        return self._noise_map
 
-    @reshape_array
+    def mask(self, return_in_2d=True):
+        if not return_in_2d:
+            return self._mask
+        else:
+            return self.mapping.mask
+
+    @array_reshaped_with_obj
     def signal_to_noise_map(self, return_in_2d=True):
-        return self.signal_to_noise_map_1d
+        return self._signal_to_noise_map
 
-    @reshape_array
+    @array_reshaped_with_obj
     def model_image(self, return_in_2d=True):
-        return self.model_image_1d
+        return self._model_data
 
-    @reshape_array
+    @array_reshaped_with_obj
     def residual_map(self, return_in_2d=True):
-        return self.residual_map_1d
+        return self._residual_map
 
-    @reshape_array
+    @array_reshaped_with_obj
     def normalized_residual_map(self, return_in_2d=True):
-        return self.normalized_residual_map_1d
+        return self._normalized_residual_map
 
-    @reshape_array
+    @array_reshaped_with_obj
     def chi_squared_map(self, return_in_2d=True):
-        return self.chi_squared_map_1d
+        return self._chi_squared_map
 
     @property
     def likelihood_with_regularization(self):
@@ -89,26 +82,40 @@ class ImageFit(af.DataFit1D):
         else:
             return self.evidence
 
-class LensImageFit(ImageFit):
 
-    def __init__(self, tracer, grid, image_1d, noise_map_1d, model_image_1d, convolver, inversion, positions=None):
+class LensImageFit(ImageFit):
+    def __init__(
+        self,
+        tracer,
+        grid,
+        image,
+        noise_map,
+        mask,
+        inversion,
+        model_image,
+        convolver,
+        positions=None,
+    ):
 
         self.tracer = tracer
+        self.grid = grid
         self.psf = convolver.psf
         self.convolver = convolver
         self.positions = positions
 
         super().__init__(
-            grid=grid,
-            image_1d=image_1d,
-            noise_map_1d=noise_map_1d,
-            mask_1d=np.full(fill_value=False, shape=(len(image_1d,))),
-            model_image_1d=model_image_1d,
+            image=image,
+            noise_map=noise_map,
+            mask=mask,
+            model_image=model_image,
+            mapping=grid.mapping,
             inversion=inversion,
         )
 
     @classmethod
-    def from_lens_data_and_tracer(cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None):
+    def from_lens_data_and_tracer(
+        cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
+    ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper_galaxies.
 
@@ -141,7 +148,7 @@ class LensImageFit(ImageFit):
 
         if not tracer.has_pixelization:
 
-            inversion=None
+            inversion = None
             model_image_1d = blurred_profile_image_1d
 
         else:
@@ -157,21 +164,27 @@ class LensImageFit(ImageFit):
 
             model_image_1d = blurred_profile_image_1d + inversion.reconstructed_data_1d
 
-        return cls(tracer=tracer, image_1d=image_1d, noise_map_1d=noise_map_1d, model_image_1d=model_image_1d,
-                   grid=lens_data.grid, convolver=lens_data.convolver,
-                   inversion=inversion, positions=lens_data.positions)
-
-    @reshape_array
-    def blurred_profile_image(self, return_in_2d=True):
-        return self.tracer.blurred_profile_image_from_grid_and_psf(
-            grid=self.grid,
-            psf=self.psf,
-            return_in_2d=False,
+        return cls(
+            tracer=tracer,
+            image=image_1d,
+            noise_map=noise_map_1d,
+            mask=lens_data.mask_1d,
+            model_image=model_image_1d,
+            grid=lens_data.grid,
+            convolver=lens_data.convolver,
+            inversion=inversion,
+            positions=lens_data.positions,
         )
 
-    @reshape_array
+    @array_reshaped_with_obj
+    def blurred_profile_image(self, return_in_2d=True):
+        return self.tracer.blurred_profile_image_from_grid_and_psf(
+            grid=self.grid, psf=self.psf, return_in_2d=False
+        )
+
+    @array_reshaped_with_obj
     def profile_subtracted_image(self, return_in_2d=True):
-        return self.image_1d - self.blurred_profile_image(return_in_2d=False)
+        return self.image(return_in_2d=False) - self.blurred_profile_image(return_in_2d=False)
 
     @property
     def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
@@ -179,8 +192,7 @@ class LensImageFit(ImageFit):
         A dictionary associating galaxies with their corresponding model images
         """
         galaxy_image_dict = self.tracer.galaxy_image_dict_from_grid_and_convolver(
-            grid=self.grid,
-            convolver=self.convolver,
+            grid=self.grid, convolver=self.convolver
         )
 
         # TODO : Extend to multiple inversioons across Planes
@@ -188,7 +200,11 @@ class LensImageFit(ImageFit):
         for plane_index in self.tracer.plane_indexes_with_pixelizations:
 
             galaxy_image_dict.update(
-                {self.tracer.planes[plane_index].galaxies[0]: self.inversion.reconstructed_data_1d}
+                {
+                    self.tracer.planes[plane_index].galaxies[
+                        0
+                    ]: self.inversion.reconstructed_data_1d
+                }
             )
 
         return galaxy_image_dict
@@ -203,7 +219,7 @@ class LensImageFit(ImageFit):
 
         for galalxy, galaxy_image in self.galaxy_image_1d_dict.items():
 
-            galaxy_image_2d_dict[galalxy] = self.grid.scaled_array_2d_from_array_1d(
+            galaxy_image_2d_dict[galalxy] = self.grid.mapping.scaled_array_2d_from_array_1d(
                 array_1d=galaxy_image
             )
 
@@ -212,17 +228,19 @@ class LensImageFit(ImageFit):
     def model_images_of_planes(self, return_in_2d=True):
 
         model_images_of_planes = self.tracer.blurred_profile_images_of_planes_from_grid_and_psf(
-            grid=self.grid,
-            psf=self.psf,
-            return_in_2d=return_in_2d,
+            grid=self.grid, psf=self.psf, return_in_2d=return_in_2d
         )
 
         for plane_index in self.tracer.plane_indexes_with_pixelizations:
 
             if return_in_2d:
-                model_images_of_planes[plane_index] += self.inversion.reconstructed_data_2d
+                model_images_of_planes[
+                    plane_index
+                ] += self.inversion.reconstructed_data_2d
             else:
-                model_images_of_planes[plane_index] += self.inversion.reconstructed_data_1d
+                model_images_of_planes[
+                    plane_index
+                ] += self.inversion.reconstructed_data_1d
 
         return model_images_of_planes
 

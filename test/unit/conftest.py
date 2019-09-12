@@ -182,7 +182,24 @@ def make_mask_7x7():
         ]
     )
 
-    return mock_mask.MockMask(array=array)
+    return mock_mask.MockMask(array=array, sub_size=1)
+
+
+@pytest.fixture(name="sub_mask_7x7")
+def make_sub_mask_7x7():
+    array = np.array(
+        [
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ]
+    )
+
+    return mock_mask.MockMask(array=array, sub_size=2)
 
 
 @pytest.fixture(name="mask_7x7_1_pix")
@@ -240,12 +257,12 @@ def make_mask_6x6():
 
 @pytest.fixture(name="image_1d_7x7")
 def make_image_1d_7x7(image_7x7, mask_7x7):
-    return mask_7x7.array_1d_from_array_2d(array_2d=image_7x7)
+    return mask_7x7.mapping.array_1d_from_array_2d(array_2d=image_7x7)
 
 
 @pytest.fixture(name="noise_map_1d_7x7")
 def make_noise_map_1d_7x7(noise_map_7x7, mask_7x7):
-    return mask_7x7.array_1d_from_array_2d(array_2d=noise_map_7x7)
+    return mask_7x7.mapping.array_1d_from_array_2d(array_2d=noise_map_7x7)
 
 
 # GRIDS #
@@ -253,12 +270,12 @@ def make_noise_map_1d_7x7(noise_map_7x7, mask_7x7):
 
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7(mask_7x7):
-    return al.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=1)
+    return al.Grid.from_mask(mask=mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7")
-def make_sub_grid_7x7(mask_7x7):
-    return al.Grid.from_mask_and_sub_grid_size(mask=mask_7x7, sub_grid_size=2)
+def make_sub_grid_7x7(sub_mask_7x7):
+    return al.Grid.from_mask(mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7_simple")
@@ -272,7 +289,7 @@ def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
-    return al.Grid.from_mask_and_sub_grid_size(mask=blurring_mask_7x7, sub_grid_size=1)
+    return al.Grid.from_mask(mask=blurring_mask_7x7)
 
 
 @pytest.fixture(name="binned_grid_7x7")
@@ -376,37 +393,37 @@ def make_gal_data_7x7(image_7x7, noise_map_7x7):
 
 
 @pytest.fixture(name="gal_fit_data_7x7_image")
-def make_gal_fit_data_7x7_image(gal_data_7x7, mask_7x7):
+def make_gal_fit_data_7x7_image(gal_data_7x7, sub_mask_7x7):
     return al.GalaxyFitData(
-        galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_image=True
+        galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_image=True
     )
 
 
 @pytest.fixture(name="gal_fit_data_7x7_convergence")
-def make_gal_fit_data_7x7_convergence(gal_data_7x7, mask_7x7):
+def make_gal_fit_data_7x7_convergence(gal_data_7x7, sub_mask_7x7):
     return al.GalaxyFitData(
-        galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_convergence=True
+        galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_convergence=True
     )
 
 
 @pytest.fixture(name="gal_fit_data_7x7_potential")
-def make_gal_fit_data_7x7_potential(gal_data_7x7, mask_7x7):
+def make_gal_fit_data_7x7_potential(gal_data_7x7, sub_mask_7x7):
     return al.GalaxyFitData(
-        galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_potential=True
+        galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_potential=True
     )
 
 
 @pytest.fixture(name="gal_fit_data_7x7_deflections_y")
-def make_gal_fit_data_7x7_deflections_y(gal_data_7x7, mask_7x7):
+def make_gal_fit_data_7x7_deflections_y(gal_data_7x7, sub_mask_7x7):
     return al.GalaxyFitData(
-        galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_deflections_y=True
+        galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_deflections_y=True
     )
 
 
 @pytest.fixture(name="gal_fit_data_7x7_deflections_x")
-def make_gal_fit_data_7x7_deflections_x(gal_data_7x7, mask_7x7):
+def make_gal_fit_data_7x7_deflections_x(gal_data_7x7, sub_mask_7x7):
     return al.GalaxyFitData(
-        galaxy_data=gal_data_7x7, mask=mask_7x7, sub_grid_size=2, use_deflections_x=True
+        galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_deflections_x=True
     )
 
 
@@ -515,7 +532,7 @@ def make_lens_fit_x2_plane_7x7(lens_data_7x7, tracer_x2_plane_7x7):
 @pytest.fixture(name="mask_function_7x7_1_pix")
 def make_mask_function_7x7_1_pix():
     # noinspection PyUnusedLocal
-    def mask_function_7x7_1_pix(image):
+    def mask_function_7x7_1_pix(image, sub_size):
         array = np.array(
             [
                 [True, True, True, True, True, True, True],
@@ -528,7 +545,7 @@ def make_mask_function_7x7_1_pix():
             ]
         )
 
-        return mock_mask.MockMask(array=array)
+        return mock_mask.MockMask(array=array, sub_size=sub_size)
 
     return mask_function_7x7_1_pix
 
@@ -536,7 +553,7 @@ def make_mask_function_7x7_1_pix():
 @pytest.fixture(name="mask_function_7x7")
 def make_mask_function_7x7():
     # noinspection PyUnusedLocal
-    def mask_function_7x7(image):
+    def mask_function_7x7(image, sub_size):
         array = np.array(
             [
                 [True, True, True, True, True, True, True],
@@ -549,7 +566,7 @@ def make_mask_function_7x7():
             ]
         )
 
-        return mock_mask.MockMask(array=array)
+        return mock_mask.MockMask(array=array, sub_size=sub_size)
 
     return mask_function_7x7
 
@@ -565,17 +582,17 @@ def make_phase_7x7(mask_function_7x7):
 
 @pytest.fixture(name="hyper_model_image_7x7")
 def make_hyper_model_image_7x7(grid_7x7):
-    return grid_7x7.scaled_array_2d_from_array_1d(array_1d=np.ones(9))
+    return grid_7x7.mapping.scaled_array_2d_from_array_1d(array_1d=np.ones(9))
 
 
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")
 def make_hyper_galaxy_image_0_7x7(grid_7x7):
-    return grid_7x7.scaled_array_2d_from_array_1d(array_1d=2.0 * np.ones(9))
+    return grid_7x7.mapping.scaled_array_2d_from_array_1d(array_1d=2.0 * np.ones(9))
 
 
 @pytest.fixture(name="hyper_galaxy_image_1_7x7")
 def make_hyper_galaxy_image_1_7x7(grid_7x7):
-    return grid_7x7.scaled_array_2d_from_array_1d(array_1d=3.0 * np.ones(9))
+    return grid_7x7.mapping.scaled_array_2d_from_array_1d(array_1d=3.0 * np.ones(9))
 
 
 @pytest.fixture(name="contribution_map_7x7")

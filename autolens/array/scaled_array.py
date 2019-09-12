@@ -171,10 +171,10 @@ class RectangularArrayGeometry(ArrayGeometry):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in arc seconds.
         """
-        return grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        return grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
             shape=self.shape,
             pixel_scales=self.pixel_scales,
-            sub_grid_size=1,
+            sub_size=1,
             origin=self.origin,
         )
 
@@ -185,10 +185,10 @@ class RectangularArrayGeometry(ArrayGeometry):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in arc seconds.
         """
-        return grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
+        return grid_util.grid_2d_from_shape_pixel_scales_sub_size_and_origin(
             shape=self.shape,
             pixel_scales=self.pixel_scales,
-            sub_grid_size=1,
+            sub_size=1,
             origin=self.origin,
         )
 

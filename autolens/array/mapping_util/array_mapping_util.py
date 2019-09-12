@@ -90,13 +90,11 @@ def map_2d_indexes_to_1d_indexes_for_shape(indexes_2d, shape):
 
 
 @decorator_util.jit()
-def sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-    sub_array_2d, mask, sub_grid_size
-):
+def sub_array_1d_from_sub_array_2d_mask_and_sub_size(sub_array_2d, mask, sub_size):
     """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
     A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the grid) \
-    multiplid by the sub_grid_size. E.g., it is an array that would be generated using the sub-grid and not binning \
+    multiplid by the sub_size. E.g., it is an array that would be generated using the sub-grid and not binning \
     up values in sub-pixels back to the grid.
 
     The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
@@ -134,12 +132,12 @@ def sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
     mask = np.array([[True, False],
                      [False, False]])
 
-    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size( \
+    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_size( \
         mask=mask, array_2d=array_2d)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_grid_size(
-        mask=mask, sub_grid_size=sub_grid_size
+    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_size(
+        mask=mask, sub_size=sub_size
     )
 
     sub_array_1d = np.zeros(shape=total_sub_pixels)
@@ -148,19 +146,17 @@ def sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
-                for y1 in range(sub_grid_size):
-                    for x1 in range(sub_grid_size):
+                for y1 in range(sub_size):
+                    for x1 in range(sub_size):
                         sub_array_1d[index] = sub_array_2d[
-                            y * sub_grid_size + y1, x * sub_grid_size + x1
+                            y * sub_size + y1, x * sub_size + x1
                         ]
                         index += 1
 
     return sub_array_1d
 
 
-def sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-    sub_array_1d, mask, sub_grid_size
-):
+def sub_array_2d_from_sub_array_1d_mask_and_sub_size(sub_array_1d, mask, sub_size):
     """For a 1D array that was computed by mapping_util unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -195,10 +191,10 @@ def sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
         array_1d=array_1d, shape=(3,3), one_to_two=one_to_two)
     """
 
-    sub_shape = (mask.shape[0] * sub_grid_size, mask.shape[1] * sub_grid_size)
+    sub_shape = (mask.shape[0] * sub_size, mask.shape[1] * sub_size)
 
-    sub_one_to_two = mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-        mask=mask, sub_grid_size=sub_grid_size
+    sub_one_to_two = mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_size(
+        mask=mask, sub_size=sub_size
     ).astype(
         "int"
     )
