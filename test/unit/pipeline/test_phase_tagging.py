@@ -5,7 +5,7 @@ class TestPhaseTag:
     def test__mixture_of_values(self):
 
         phase_tag = al.phase_tagging.phase_tag_from_phase_settings(
-            sub_grid_size=2,
+            sub_size=2,
             signal_to_noise_limit=2,
             bin_up_factor=None,
             psf_shape=None,
@@ -18,7 +18,7 @@ class TestPhaseTag:
         assert phase_tag == "phase_tag__sub_2__snr_2__pos_2.00__inner_mask_0.30"
 
         phase_tag = al.phase_tagging.phase_tag_from_phase_settings(
-            sub_grid_size=1,
+            sub_size=1,
             signal_to_noise_limit=None,
             bin_up_factor=3,
             psf_shape=(2, 2),
@@ -65,13 +65,13 @@ class TestPhaseTaggers:
         )
         assert tag == "__inner_mask_3.00"
 
-    def test__sub_grid_size_tagger(self):
+    def test__sub_size_tagger(self):
 
-        tag = al.phase_tagging.sub_grid_size_tag_from_sub_grid_size(sub_grid_size=1)
+        tag = al.phase_tagging.sub_size_tag_from_sub_size(sub_size=1)
         assert tag == "__sub_1"
-        tag = al.phase_tagging.sub_grid_size_tag_from_sub_grid_size(sub_grid_size=2)
+        tag = al.phase_tagging.sub_size_tag_from_sub_size(sub_size=2)
         assert tag == "__sub_2"
-        tag = al.phase_tagging.sub_grid_size_tag_from_sub_grid_size(sub_grid_size=4)
+        tag = al.phase_tagging.sub_size_tag_from_sub_size(sub_size=4)
         assert tag == "__sub_4"
 
     def test__signal_to_noise_limit_tagger(self):

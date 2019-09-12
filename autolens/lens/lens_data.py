@@ -3,7 +3,7 @@ import numpy as np
 from autolens.array import grids
 from autolens.array import mask as msk
 from autolens.data.convolution import Convolver
-from autolens.array.grids import reshape_array
+from autolens.array.mapping import array_reshaped_with_obj
 
 
 class LensData(object):
@@ -11,7 +11,6 @@ class LensData(object):
         self,
         ccd_data,
         mask,
-        sub_grid_size=2,
         positions=None,
         positions_threshold=None,
         trimmed_psf_shape=None,
@@ -35,7 +34,7 @@ class LensData(object):
             The ccd instrument all in 2D (the image, noise-map, PSF, etc.)
         mask: msk.Mask
             The 2D mask that is applied to the image.
-        sub_grid_size : int
+        sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
             sub-grid.
         trimmed_psf_shape : (int, int)
@@ -66,11 +65,11 @@ class LensData(object):
         self.unmasked_noise_map = ccd_data.noise_map
         self.pixel_scale = ccd_data.pixel_scale
         self.psf = ccd_data.psf
-        self.mask_1d = mask.array_1d_from_array_2d(array_2d=mask)
-        self.image_1d = mask.array_1d_from_array_2d(array_2d=ccd_data.image)
-        self.noise_map_1d = mask.array_1d_from_array_2d(array_2d=ccd_data.noise_map)
+        self.mask_1d = mask.mapping.array_1d_from_array_2d(array_2d=mask)
+        self.image_1d = mask.mapping.array_1d_from_array_2d(array_2d=ccd_data.image)
+        self.noise_map_1d = mask.mapping.array_1d_from_array_2d(array_2d=ccd_data.noise_map)
         self.mask_2d = mask
-        self.sub_grid_size = sub_grid_size
+        self.sub_size = mask.sub_size
 
         ### PSF TRIMMING + CONVOLVER ###
 
@@ -91,9 +90,7 @@ class LensData(object):
 
         ### GRIDS ###
 
-        self.grid = grids.Grid.from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=sub_grid_size
-        )
+        self.grid = grids.Grid.from_mask(mask=mask)
 
         self.pixel_scale_binned_grid = pixel_scale_binned_grid
 
@@ -139,6 +136,10 @@ class LensData(object):
 
         self.preload_pixelization_grids_of_planes = preload_pixelization_grids_of_planes
 
+    @property
+    def mapping(self):
+        return self.mask_2d.mapping
+
     def new_lens_data_with_modified_image(self, modified_image):
 
         ccd_data_with_modified_image = self.ccd_data.new_ccd_data_with_modified_image(
@@ -148,7 +149,6 @@ class LensData(object):
         return LensData(
             ccd_data=ccd_data_with_modified_image,
             mask=self.mask_2d,
-            sub_grid_size=self.sub_grid_size,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
             trimmed_psf_shape=self.trimmed_psf_shape,
@@ -172,7 +172,6 @@ class LensData(object):
         return LensData(
             ccd_data=binned_up_ccd_data,
             mask=binned_up_mask,
-            sub_grid_size=self.sub_grid_size,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
             trimmed_psf_shape=self.trimmed_psf_shape,
@@ -193,7 +192,6 @@ class LensData(object):
         return LensData(
             ccd_data=ccd_data_with_signal_to_noise_limit,
             mask=self.mask_2d,
-            sub_grid_size=self.sub_grid_size,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
             trimmed_psf_shape=self.trimmed_psf_shape,
@@ -211,11 +209,11 @@ class LensData(object):
         else:
             return self.mask_1d
 
-    @reshape_array
+    @array_reshaped_with_obj
     def image(self, return_in_2d=True):
         return self.image_1d
 
-    @reshape_array
+    @array_reshaped_with_obj
     def noise_map(self, return_in_2d=True):
         return self.noise_map_1d
 
@@ -223,7 +221,7 @@ class LensData(object):
     def signal_to_noise_map_1d(self):
         return self.image_1d / self.noise_map_1d
 
-    @reshape_array
+    @array_reshaped_with_obj
     def signal_to_noise_map(self, return_in_2d=True):
         return self.signal_to_noise_map_1d
 
@@ -239,7 +237,7 @@ class LensData(object):
             self.mask_1d = obj.mask_1d
             self.image_1d = obj.image_1d
             self.noise_map_1d = obj.noise_map_1d
-            self.sub_grid_size = obj.sub_grid_size
+            self.sub_size = obj.sub_size
             self.convolver = obj.convolver
             self.grid = obj.grid
             self.positions = obj.positions

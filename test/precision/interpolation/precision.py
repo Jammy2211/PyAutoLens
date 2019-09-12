@@ -12,11 +12,11 @@ import numpy as np
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
 # analysis
 
-sub_grid_size = 2
+sub_size = 2
 inner_radius_arcsec = 0.2
 outer_radius_arcsec = 4.0
 
-print("sub grid size = " + str(sub_grid_size))
+print("sub grid size = " + str(sub_size))
 print("annular inner mask radius = " + str(inner_radius_arcsec) + "\n")
 print("annular outer mask radius = " + str(outer_radius_arcsec) + "\n")
 
@@ -35,7 +35,7 @@ for data_resolution in ["HST_Up"]:
         inner_radius_arcsec=inner_radius_arcsec,
         outer_radius_arcsec=outer_radius_arcsec,
     )
-    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
+    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_size=sub_size)
 
     print("Deflection angle run times for image type " + data_resolution + "\n")
     print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")
@@ -69,10 +69,10 @@ for data_resolution in ["HST_Up"]:
 
     true_deflections = mass_profile.deflections_from_grid(grid=lens_data.grid)
 
-    true_deflections_y_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
+    true_deflections_y_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
         sub_array_1d=true_deflections[:, 0]
     )
-    true_deflections_x_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
+    true_deflections_x_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
         sub_array_1d=true_deflections[:, 1]
     )
 
@@ -86,10 +86,10 @@ for data_resolution in ["HST_Up"]:
     print("interpolation x uncertainty: ", np.std(difference_x))
     print("interpolation x max error: ", np.max(difference_x))
 
-    difference_y_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
+    difference_y_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
         sub_array_1d=difference_y
     )
-    difference_x_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
+    difference_x_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
         sub_array_1d=difference_x
     )
 

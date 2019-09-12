@@ -37,11 +37,11 @@ def clean_images():
 
 
 class TestPhase(object):
-    def test_set_constants(self, phase_7x7):
+    def test__set_constants(self, phase_7x7):
         phase_7x7.galaxies = [al.Galaxy(redshift=0.5)]
         assert phase_7x7.optimizer.variable.galaxies == [al.Galaxy(redshift=0.5)]
 
-    def test_set_variables(self, phase_7x7):
+    def test__set_variables(self, phase_7x7):
         phase_7x7.galaxies = [al.GalaxyModel(redshift=0.5)]
         assert phase_7x7.optimizer.variable.galaxies == [al.GalaxyModel(redshift=0.5)]
 
@@ -52,13 +52,13 @@ class TestPhase(object):
         assert analysis.lens_data.unmasked_image == ccd_data_7x7.image
         assert analysis.lens_data.unmasked_noise_map == ccd_data_7x7.noise_map
         assert analysis.lens_data.image(return_in_2d=True) == lens_data_7x7.image(
-            return_in_2d=True
+            return_in_2d=True, bypass_decorator=False
         )
         assert analysis.lens_data.noise_map(
-            return_in_2d=True
+            return_in_2d=True, bypass_decorator=False
         ) == lens_data_7x7.noise_map(return_in_2d=True)
 
-    def test_make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(
+    def test__make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(
         self, phase_7x7, ccd_data_7x7
     ):
         # If an input mask is supplied and there is no mask function, we use mask input.
@@ -66,7 +66,7 @@ class TestPhase(object):
         phase_7x7.mask_function = None
 
         mask_input = al.Mask.circular(
-            shape=ccd_data_7x7.shape, pixel_scale=1, radius_arcsec=1.5
+            shape=ccd_data_7x7.shape, pixel_scale=1, sub_size=1, radius_arcsec=1.5
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7, mask=mask_input)
@@ -75,10 +75,10 @@ class TestPhase(object):
 
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
-        def mask_function(image):
-            return al.Mask.circular(shape=image.shape, pixel_scale=1, radius_arcsec=0.3)
+        def mask_function(image, sub_size):
+            return al.Mask.circular(shape=image.shape, pixel_scale=1, sub_size=sub_size, radius_arcsec=0.3)
 
-        mask_from_function = mask_function(image=ccd_data_7x7.image)
+        mask_from_function = mask_function(image=ccd_data_7x7.image, sub_size=1)
         phase_7x7.mask_function = mask_function
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7, mask=None)
@@ -103,7 +103,7 @@ class TestPhase(object):
         phase_7x7.inner_mask_radii = 0.5
 
         mask_input = al.Mask.circular(
-            shape=ccd_data_7x7.shape, pixel_scale=1, radius_arcsec=1.5
+            shape=ccd_data_7x7.shape, pixel_scale=1, sub_size=1, radius_arcsec=1.5
         )
 
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7, mask=mask_input)
@@ -116,10 +116,10 @@ class TestPhase(object):
 
         # If a mask function is supplied, we should use this mask, regardless of whether an input mask is supplied.
 
-        def mask_function(image):
-            return al.Mask.circular(shape=image.shape, pixel_scale=1, radius_arcsec=1.4)
+        def mask_function(image, sub_size):
+            return al.Mask.circular(shape=image.shape, pixel_scale=1, sub_size=sub_size, radius_arcsec=1.4)
 
-        mask_from_function = mask_function(image=ccd_data_7x7.image)
+        mask_from_function = mask_function(image=ccd_data_7x7.image, sub_size=1)
 
         # The inner circulaar mask radii of 1.0" masks the centra pixels of the mask
         mask_from_function[3, 3] = True
@@ -138,6 +138,29 @@ class TestPhase(object):
 
         with pytest.raises(exc.MaskException):
             phase_7x7.make_analysis(data=ccd_data_7x7, mask=None)
+
+    def test__make_analysis__mask_changes_sub_size_depending_on_phase_attribute(
+        self, phase_7x7, ccd_data_7x7
+    ):
+        # If an input mask is supplied and there is no mask function, we use mask input.
+
+        phase_7x7.mask_function = None
+
+        mask_input = al.Mask.circular(
+            shape=ccd_data_7x7.shape, pixel_scale=1, sub_size=1, radius_arcsec=1.5
+        )
+
+        phase_7x7.sub_size = 1
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7, mask=mask_input)
+
+        assert (analysis.lens_data.mask_2d == mask_input).all()
+        assert (analysis.lens_data.sub_size == 1)
+
+        phase_7x7.sub_size = 2
+        analysis = phase_7x7.make_analysis(data=ccd_data_7x7, mask=mask_input)
+
+        assert (analysis.lens_data.mask_2d == mask_input).all()
+        assert (analysis.lens_data.sub_size == 2)
 
     def test__make_analysis__positions_are_input__are_used_in_analysis(
         self, phase_7x7, ccd_data_7x7
@@ -339,7 +362,7 @@ class TestPhase(object):
             analysis.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
             analysis.fit(instance=instance)
 
-    def test_make_analysis__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(
+    def test__make_analysis__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(
         self, phase_7x7, ccd_data_7x7
     ):
         # If use positions is true and positions are input, make the positions part of the lens data.
@@ -351,7 +374,7 @@ class TestPhase(object):
         assert hasattr(analysis.lens_data.grid, "interpolator")
         assert hasattr(analysis.lens_data.preload_blurring_grid, "interpolator")
 
-    def test_make_analysis__inversion_pixel_limit__is_input__used_in_analysis(
+    def test__make_analysis__inversion_pixel_limit__is_input__used_in_analysis(
         self, phase_7x7, ccd_data_7x7, mask_7x7
     ):
         phase_7x7.galaxies.lens = al.GalaxyModel(
@@ -395,7 +418,7 @@ class TestPhase(object):
         phase_info = open(file_phase_info, "r")
 
         optimizer = phase_info.readline()
-        sub_grid_size = phase_info.readline()
+        sub_size = phase_info.readline()
         psf_shape = phase_info.readline()
         positions_threshold = phase_info.readline()
         cosmology = phase_info.readline()
@@ -404,7 +427,7 @@ class TestPhase(object):
         phase_info.close()
 
         assert optimizer == "Optimizer = MockNLO \n"
-        assert sub_grid_size == "Sub-grid size = 2 \n"
+        assert sub_size == "Sub-grid size = 2 \n"
         assert psf_shape == "PSF shape = None \n"
         assert positions_threshold == "Positions Threshold = None \n"
         assert (
@@ -414,7 +437,7 @@ class TestPhase(object):
         )
         assert auto_link_priors == "Auto Link Priors = False \n"
 
-    def test_pixelization_property_extracts_pixelization(
+    def test__pixelization_property_extracts_pixelization(
         self, mask_function_7x7, ccd_data_7x7
     ):
         source_galaxy = al.Galaxy(redshift=0.5)
@@ -458,7 +481,7 @@ class TestPhase(object):
 
         assert type(phase_7x7.pixelization) == type(al.pixelizations.Rectangular)
 
-    def test_fit(self, ccd_data_7x7, mask_function_7x7):
+    def test__fit(self, ccd_data_7x7, mask_function_7x7):
         clean_images()
 
         phase_7x7 = al.PhaseImaging(
@@ -479,7 +502,7 @@ class TestPhase(object):
         assert isinstance(result.constant.galaxies[0], al.Galaxy)
         assert isinstance(result.constant.galaxies[0], al.Galaxy)
 
-    def test_customize(
+    def test__customize(
         self, mask_function_7x7, results_7x7, results_collection_7x7, ccd_data_7x7
     ):
         class MyPlanePhaseAnd(al.PhaseImaging):
@@ -524,14 +547,14 @@ class TestPhase(object):
 
         assert phase_7x7.galaxies == [galaxy_model]
 
-    def test_default_mask_function(self, phase_7x7, ccd_data_7x7):
+    def test__default_mask_function(self, phase_7x7, ccd_data_7x7):
         lens_data = al.LensData(
-            ccd_data=ccd_data_7x7, mask=phase_7x7.mask_function(ccd_data_7x7.image)
+            ccd_data=ccd_data_7x7, mask=phase_7x7.mask_function(image=ccd_data_7x7.image, sub_size=1)
         )
 
         assert len(lens_data.image_1d) == 9
 
-    def test_duplication(self):
+    def test__duplication(self):
         phase_7x7 = al.PhaseImaging(
             phase_name="test_phase",
             galaxies=dict(
@@ -1051,10 +1074,12 @@ class TestPhase(object):
 
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_7x7.mask_function(image=ccd_data_7x7.image)
+        mask = phase_7x7.mask_function(image=ccd_data_7x7.image, sub_size=2)
         lens_data = al.LensData(ccd_data=ccd_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
+        fit = al.LensImageFit.from_lens_data_and_tracer(
+            lens_data=lens_data, tracer=tracer
+        )
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -1252,12 +1277,13 @@ class TestResult(object):
                     light=al.light_profiles.EllipticalSersic(intensity=1.0),
                 )
             ],
+            sub_size=2,
             phase_name="test_phase_2",
         )
 
         result = phase_7x7.run(data=ccd_data_7x7)
 
-        mask = mask_function_7x7(image=ccd_data_7x7.image)
+        mask = mask_function_7x7(image=ccd_data_7x7.image, sub_size=2)
 
         assert (result.mask_2d == mask).all()
 
@@ -1416,10 +1442,12 @@ class TestResult(object):
         instance = phase_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_7x7.mask_function(image=ccd_data_7x7.image)
+        mask = phase_7x7.mask_function(image=ccd_data_7x7.image, sub_size=2)
         lens_data = al.LensData(ccd_data=ccd_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
+        fit = al.LensImageFit.from_lens_data_and_tracer(
+            lens_data=lens_data, tracer=tracer
+        )
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -1446,7 +1474,7 @@ class TestResult(object):
         instance = phase_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_7x7.mask_function(image=ccd_data_7x7.image)
+        mask = phase_7x7.mask_function(image=ccd_data_7x7.image, sub_size=2)
         lens_data = al.LensData(ccd_data=ccd_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImageFit.from_lens_data_and_tracer(

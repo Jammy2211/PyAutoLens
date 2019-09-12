@@ -16,11 +16,11 @@ repeats = 10
 print("Number of repeats = " + str(repeats))
 print()
 
-sub_grid_size = 4
+sub_size = 4
 radius_arcsec = 3.0
 psf_shape = (21, 21)
 
-print("sub grid size = " + str(sub_grid_size))
+print("sub grid size = " + str(sub_size))
 print("circular mask radius = " + str(radius_arcsec) + "\n")
 print("psf shape = " + str(psf_shape) + "\n")
 
@@ -61,7 +61,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
         pixel_scale=ccd_data.pixel_scale,
         radius_arcsec=radius_arcsec,
     )
-    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
+    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_size=sub_size)
 
     print("Light profile fit run times for image type " + data_resolution + "\n")
     print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")
@@ -81,7 +81,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
             blurring_image_1d=tracer.profile_image_plane_blurring_image,
             convolver=lens_data.convolver,
         )
-        blurred_profile_image = lens_data.grid.scaled_array_2d_from_array_1d(
+        blurred_profile_image = lens_data.grid.mapping.scaled_array_2d_from_array_1d(
             array_1d=blurred_profile_image_1d
         )
     diff = time.time() - start

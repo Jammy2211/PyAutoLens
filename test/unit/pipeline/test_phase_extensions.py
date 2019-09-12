@@ -438,10 +438,10 @@ class TestImagePassing(object):
 
         instance = analysis.associate_images(instance=instance)
 
-        hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
+        hyper_lens_image_1d = lens_data_7x7.mapping.array_1d_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
-        hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
+        hyper_source_image_1d = lens_data_7x7.mapping.array_1d_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
@@ -479,10 +479,10 @@ class TestImagePassing(object):
 
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
+        hyper_lens_image_1d = lens_data_7x7.mapping.array_1d_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
-        hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
+        hyper_source_image_1d = lens_data_7x7.mapping.array_1d_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
@@ -501,7 +501,9 @@ class TestImagePassing(object):
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
+        fit = al.LensImageFit.from_lens_data_and_tracer(
+            lens_data=lens_data_7x7, tracer=tracer
+        )
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
@@ -591,15 +593,17 @@ class TestHyperAPI(object):
         assert hasattr(result, "hyper_galaxy")
         assert isinstance(result.hyper_galaxy, MockResult)
 
-class TestHyperGalaxyPhase(object):
 
-    def test__likelihood_function_is_same_as_normal_phase_likelihood_function(self, ccd_data_7x7, mask_function_7x7):
+class TestHyperGalaxyPhase(object):
+    def test__likelihood_function_is_same_as_normal_phase_likelihood_function(
+        self, ccd_data_7x7, mask_function_7x7
+    ):
 
         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
         lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=0.1),
+            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=0.1)
         )
 
         phase_7x7 = al.PhaseImaging(
@@ -607,6 +611,7 @@ class TestHyperGalaxyPhase(object):
             galaxies=dict(lens=lens_galaxy),
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
+            sub_size=2,
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -614,7 +619,7 @@ class TestHyperGalaxyPhase(object):
         analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
         instance = phase_7x7.variable.instance_from_unit_vector([])
 
-        mask = phase_7x7.mask_function(image=ccd_data_7x7.image)
+        mask = phase_7x7.mask_function(image=ccd_data_7x7.image, sub_size=2)
         lens_data = al.LensData(ccd_data=ccd_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImageFit.from_lens_data_and_tracer(
@@ -631,22 +636,24 @@ class TestHyperGalaxyPhase(object):
         instance.hyper_galaxy = al.HyperGalaxy(noise_factor=0.0)
 
         analysis = phase_7x7_hyper.hyper_phases[0].Analysis(
-                    lens_data=lens_data,
-                    hyper_model_image_1d=fit.model_image_1d,
-                    hyper_galaxy_image_1d=fit.model_image_1d,
-                )
+            lens_data=lens_data,
+            hyper_model_image_1d=fit.model_image(return_in_2d=False),
+            hyper_galaxy_image_1d=fit.model_image(return_in_2d=False),
+        )
 
         fit_hyper = analysis.fit_for_hyper_galaxy(
             hyper_galaxy=al.HyperGalaxy(noise_factor=0.0),
             hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise)
+            hyper_background_noise=hyper_background_noise,
+        )
 
         assert fit_hyper.figure_of_merit == fit.figure_of_merit
 
         fit_hyper = analysis.fit_for_hyper_galaxy(
             hyper_galaxy=al.HyperGalaxy(noise_factor=1.0),
             hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise)
+            hyper_background_noise=hyper_background_noise,
+        )
 
         assert fit_hyper.figure_of_merit != fit.figure_of_merit
 

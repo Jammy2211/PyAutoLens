@@ -1,5 +1,5 @@
 def phase_tag_from_phase_settings(
-    sub_grid_size,
+    sub_size,
     signal_to_noise_limit,
     bin_up_factor,
     psf_shape,
@@ -9,9 +9,7 @@ def phase_tag_from_phase_settings(
     pixel_scale_binned_cluster_grid,
 ):
 
-    sub_grid_size_tag = sub_grid_size_tag_from_sub_grid_size(
-        sub_grid_size=sub_grid_size
-    )
+    sub_size_tag = sub_size_tag_from_sub_size(sub_size=sub_size)
     signal_to_noise_limit_tag = signal_to_noise_limit_tag_from_signal_to_noise_limit(
         signal_to_noise_limit=signal_to_noise_limit
     )
@@ -34,7 +32,7 @@ def phase_tag_from_phase_settings(
 
     return (
         "phase_tag"
-        + sub_grid_size_tag
+        + sub_size_tag
         + signal_to_noise_limit_tag
         + bin_up_factor_tag
         + psf_shape_tag
@@ -61,16 +59,16 @@ def positions_threshold_tag_from_positions_threshold(positions_threshold):
         return "__pos_{0:.2f}".format(positions_threshold)
 
 
-def sub_grid_size_tag_from_sub_grid_size(sub_grid_size):
+def sub_size_tag_from_sub_size(sub_size):
     """Generate a sub-grid tag, to customize phase names based on the sub-grid size used.
 
     This changes the phase name 'phase_name' as follows:
 
-    sub_grid_size = None -> phase_name
-    sub_grid_size = 1 -> phase_name_sub_grid_size_2
-    sub_grid_size = 4 -> phase_name_sub_grid_size_4
+    sub_size = None -> phase_name
+    sub_size = 1 -> phase_name_sub_size_2
+    sub_size = 4 -> phase_name_sub_size_4
     """
-    return "__sub_" + str(sub_grid_size)
+    return "__sub_" + str(sub_size)
 
 
 def signal_to_noise_limit_tag_from_signal_to_noise_limit(signal_to_noise_limit):

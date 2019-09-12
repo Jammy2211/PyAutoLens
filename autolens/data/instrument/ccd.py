@@ -485,14 +485,14 @@ class SimulatedCCDData(CCDData):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=shape, pixel_scale=pixel_scale
+        grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=shape, pixel_scale=pixel_scale, sub_size=1,
         )
 
-        deflections_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
+        deflections_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
             sub_grid_2d=deflections,
             mask=np.full(shape=shape, fill_value=False),
-            sub_grid_size=1,
+            sub_size=1,
         )
 
         deflected_grid_1d = grid_1d - deflections_1d
@@ -565,7 +565,7 @@ class SimulatedCCDData(CCDData):
             )
         else:
             image_plane_image_2d = tracer.profile_image_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True
+                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
             )
 
         return cls.from_image_and_exposure_arrays(

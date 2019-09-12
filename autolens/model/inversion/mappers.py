@@ -84,8 +84,8 @@ class Mapper(object):
             sub_mask_1d_index_to_pixelization_1d_index=self.sub_mask_1d_index_to_pixelization_1d_index,
             pixels=self.pixels,
             total_mask_pixels=self.grid.mask.pixels_in_mask,
-            sub_mask_1d_index_to_mask_1d_index=self.grid.sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_fraction=self.grid.sub_grid_fraction,
+            sub_mask_1d_index_to_mask_1d_index=self.grid.mapping.sub_mask_1d_index_to_mask_1d_index,
+            sub_fraction=self.grid.mask.sub_fraction,
         )
 
     @property
@@ -159,10 +159,10 @@ class RectangularMapper(Mapper):
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
-        recon = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+        recon = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
             sub_array_1d=solution_vector,
             mask=np.full(fill_value=False, shape=self.shape),
-            sub_grid_size=1,
+            sub_size=1,
         )
         return scaled_array.ScaledRectangularPixelArray(
             array=recon,
@@ -215,7 +215,7 @@ class VoronoiMapper(Mapper):
         return mapper_util.voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
             grid=self.grid,
             mask_1d_index_to_nearest_pixelization_1d_index=self.pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index,
-            sub_mask_1d_index_to_mask_1d_index=self.grid.sub_mask_1d_index_to_mask_1d_index,
+            sub_mask_1d_index_to_mask_1d_index=self.grid.mapping.sub_mask_1d_index_to_mask_1d_index,
             pixel_centres=self.geometry.pixel_centres,
             pixel_neighbors=self.geometry.pixel_neighbors,
             pixel_neighbors_size=self.geometry.pixel_neighbors_size,

@@ -705,15 +705,15 @@ class TestPrimaryBeam(object):
     class TestFromGaussian(object):
         def test__identical_to_gaussian_light_profile(self):
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-                shape=(3, 3), pixel_scale=1.0, sub_grid_size=1
+            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+                shape=(3, 3), pixel_scale=1.0, sub_size=1
             )
 
             gaussian = al.light_profiles.EllipticalGaussian(
                 centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
             )
             profile_gaussian = gaussian.profile_image_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True
+                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
             )
 
             profile_psf = al.PrimaryBeam(
@@ -859,8 +859,8 @@ class TestSimulateInterferometerData(object):
         self, transformer_7x7_7
     ):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=1.0, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=1.0, sub_size=1
         )
 
         g0 = al.Galaxy(
@@ -875,7 +875,7 @@ class TestSimulateInterferometerData(object):
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         deflections = tracer.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
         interferometer_data_simulated_via_deflections = al.SimulatedInterferometerData.from_deflections_galaxies_and_exposure_arrays(
@@ -890,7 +890,7 @@ class TestSimulateInterferometerData(object):
         )
 
         tracer_profile_image_plane_image = tracer.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
         interferometer_data_simulated = al.SimulatedInterferometerData.from_image_and_exposure_arrays(
@@ -924,8 +924,8 @@ class TestSimulateInterferometerData(object):
 
     def test__from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.05, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.05, sub_size=1
         )
 
         lens_galaxy = al.Galaxy(
@@ -953,7 +953,7 @@ class TestSimulateInterferometerData(object):
 
         interferometer_data_simulated = al.SimulatedInterferometerData.from_image_and_exposure_arrays(
             image=tracer.profile_image_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True
+                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
             ),
             pixel_scale=0.1,
             exposure_time=10000.0,

@@ -22,25 +22,25 @@ class TestGaussian:
 
         gaussian = al.EllipticalGaussian(centre=(0.0, 0.0))
 
-        image_1 = gaussian.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = gaussian.profile_image_from_grid(grid=grid_01)
         image_0 = gaussian.profile_image_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert image_0 == pytest.approx(image_1, 1.0e-4)
 
         gaussian = al.EllipticalGaussian(centre=(1.0, 1.0))
 
-        image_1 = gaussian.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = gaussian.profile_image_from_grid(grid=grid_22)
         image_0 = gaussian.profile_image_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert image_0 == pytest.approx(image_1, 1.0e-4)
 
         gaussian = al.SphericalGaussian(centre=(0.0, 0.0))
 
-        image_1 = gaussian.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = gaussian.profile_image_from_grid(grid=grid_01)
         image_0 = gaussian.profile_image_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert image_0 == pytest.approx(image_1, 1.0e-4)
 
         gaussian = al.SphericalGaussian(centre=(1.0, 1.0))
 
-        image_1 = gaussian.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = gaussian.profile_image_from_grid(grid=grid_22)
         image_0 = gaussian.profile_image_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert image_0 == pytest.approx(image_1, 1.0e-4)
 
@@ -50,25 +50,25 @@ class TestSersic:
 
         sersic = al.EllipticalSersic(centre=(0.0, 0.0))
 
-        image_1 = sersic.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = sersic.profile_image_from_grid(grid=grid_01)
         image_0 = sersic.profile_image_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert image_0 == pytest.approx(image_1, 1.0e-4)
 
         sersic = al.EllipticalSersic(centre=(1.0, 1.0))
 
-        image_1 = sersic.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = sersic.profile_image_from_grid(grid=grid_22)
         image_0 = sersic.profile_image_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert image_0 == pytest.approx(image_1, 1.0e-4)
 
         sersic = al.light_profiles.SphericalSersic(centre=(0.0, 0.0))
 
-        image_1 = sersic.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = sersic.profile_image_from_grid(grid=grid_01)
         image_0 = sersic.profile_image_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert image_0 == pytest.approx(image_1, 1.0e-4)
 
         sersic = al.light_profiles.SphericalSersic(centre=(1.0, 1.0))
 
-        image_1 = sersic.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = sersic.profile_image_from_grid(grid=grid_22)
         image_0 = sersic.profile_image_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert image_0 == pytest.approx(image_1, 1.0e-4)
 
@@ -78,7 +78,7 @@ class TestExponential:
 
         exponential = al.EllipticalExponential(centre=(0.0, 0.0))
 
-        image_1 = exponential.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = exponential.profile_image_from_grid(grid=grid_01)
         image_0 = exponential.profile_image_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -86,7 +86,7 @@ class TestExponential:
 
         exponential = al.EllipticalExponential(centre=(1.0, 1.0))
 
-        image_1 = exponential.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = exponential.profile_image_from_grid(grid=grid_22)
         image_0 = exponential.profile_image_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -94,7 +94,7 @@ class TestExponential:
 
         exponential = al.SphericalExponential(centre=(0.0, 0.0))
 
-        image_1 = exponential.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = exponential.profile_image_from_grid(grid=grid_01)
         image_0 = exponential.profile_image_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -102,7 +102,7 @@ class TestExponential:
 
         exponential = al.SphericalExponential(centre=(1.0, 1.0))
 
-        image_1 = exponential.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = exponential.profile_image_from_grid(grid=grid_22)
         image_0 = exponential.profile_image_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -113,7 +113,7 @@ class TestDevVaucouleurs:
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         dev_vaucouleurs = al.EllipticalDevVaucouleurs(centre=(0.0, 0.0))
 
-        image_1 = dev_vaucouleurs.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = dev_vaucouleurs.profile_image_from_grid(grid=grid_01)
         image_0 = dev_vaucouleurs.profile_image_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -121,7 +121,7 @@ class TestDevVaucouleurs:
 
         dev_vaucouleurs = al.EllipticalDevVaucouleurs(centre=(1.0, 1.0))
 
-        image_1 = dev_vaucouleurs.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = dev_vaucouleurs.profile_image_from_grid(grid=grid_22)
         image_0 = dev_vaucouleurs.profile_image_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -129,7 +129,7 @@ class TestDevVaucouleurs:
 
         dev_vaucouleurs = al.SphericalDevVaucouleurs(centre=(0.0, 0.0))
 
-        image_1 = dev_vaucouleurs.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = dev_vaucouleurs.profile_image_from_grid(grid=grid_01)
         image_0 = dev_vaucouleurs.profile_image_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -137,7 +137,7 @@ class TestDevVaucouleurs:
 
         dev_vaucouleurs = al.SphericalDevVaucouleurs(centre=(1.0, 1.0))
 
-        image_1 = dev_vaucouleurs.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = dev_vaucouleurs.profile_image_from_grid(grid=grid_22)
         image_0 = dev_vaucouleurs.profile_image_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -148,7 +148,7 @@ class TestCoreSersic(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         core_sersic = al.EllipticalCoreSersic(centre=(0.0, 0.0))
 
-        image_1 = core_sersic.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = core_sersic.profile_image_from_grid(grid=grid_01)
         image_0 = core_sersic.profile_image_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -156,7 +156,7 @@ class TestCoreSersic(object):
 
         core_sersic = al.EllipticalCoreSersic(centre=(1.0, 1.0))
 
-        image_1 = core_sersic.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = core_sersic.profile_image_from_grid(grid=grid_22)
         image_0 = core_sersic.profile_image_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -164,7 +164,7 @@ class TestCoreSersic(object):
 
         core_sersic = al.SphericalCoreSersic(centre=(0.0, 0.0))
 
-        image_1 = core_sersic.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
+        image_1 = core_sersic.profile_image_from_grid(grid=grid_01)
         image_0 = core_sersic.profile_image_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -172,7 +172,7 @@ class TestCoreSersic(object):
 
         core_sersic = al.SphericalCoreSersic(centre=(1.0, 1.0))
 
-        image_1 = core_sersic.profile_image_from_grid(grid=np.array([[2.0, 1.0]]))
+        image_1 = core_sersic.profile_image_from_grid(grid=grid_22)
         image_0 = core_sersic.profile_image_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -184,7 +184,7 @@ class TestPointMass(object):
 
         point_mass = al.PointMass(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        deflections_1 = point_mass.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = point_mass.deflections_from_grid(grid=grid_01)
         deflections_0 = point_mass.deflections_from_grid(
             grid=np.array([[0.00000001, 0.0]])
         )
@@ -192,7 +192,7 @@ class TestPointMass(object):
 
         point_mass = al.PointMass(centre=(1.0, 1.0), einstein_radius=1.0)
 
-        deflections_1 = point_mass.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = point_mass.deflections_from_grid(grid=grid_22)
         deflections_0 = point_mass.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -205,9 +205,7 @@ class TestCoredPowerLaw(object):
             centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0
         )
 
-        convergence_1 = cored_power_law.convergence_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
+        convergence_1 = cored_power_law.convergence_from_grid(grid=grid_01)
         convergence_0 = cored_power_law.convergence_from_grid(
             grid=np.array([[1e-8, 0.0]])
         )
@@ -221,7 +219,7 @@ class TestPowerLaw(object):
             centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0
         )
 
-        convergence_1 = power_law.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = power_law.convergence_from_grid(grid=grid_01)
         convergence_0 = power_law.convergence_from_grid(grid=np.array([[1.0e-9, 0.0]]))
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
@@ -241,7 +239,7 @@ class TestPowerLaw(object):
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -273,9 +271,7 @@ class TestCoredIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        convergence_1 = cored_isothermal.convergence_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
+        convergence_1 = cored_isothermal.convergence_from_grid(grid=grid_01)
         convergence_0 = cored_isothermal.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -285,9 +281,7 @@ class TestCoredIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        convergence_1 = cored_isothermal.convergence_from_grid(
-            grid=np.array([[2.0, 1.0]])
-        )
+        convergence_1 = cored_isothermal.convergence_from_grid(grid=grid_22)
         convergence_0 = cored_isothermal.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -297,9 +291,7 @@ class TestCoredIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        convergence_1 = cored_isothermal.convergence_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
+        convergence_1 = cored_isothermal.convergence_from_grid(grid=grid_01)
         convergence_0 = cored_isothermal.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -309,9 +301,7 @@ class TestCoredIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        convergence_1 = cored_isothermal.convergence_from_grid(
-            grid=np.array([[2.0, 1.0]])
-        )
+        convergence_1 = cored_isothermal.convergence_from_grid(grid=grid_22)
         convergence_0 = cored_isothermal.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -321,7 +311,7 @@ class TestCoredIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        potential_1 = cored_isothermal.potential_from_grid(grid=np.array([[1.0, 0.0]]))
+        potential_1 = cored_isothermal.potential_from_grid(grid=grid_01)
         potential_0 = cored_isothermal.potential_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -331,7 +321,7 @@ class TestCoredIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        potential_1 = cored_isothermal.potential_from_grid(grid=np.array([[2.0, 1.0]]))
+        potential_1 = cored_isothermal.potential_from_grid(grid=grid_22)
         potential_0 = cored_isothermal.potential_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -341,7 +331,7 @@ class TestCoredIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        potential_1 = cored_isothermal.potential_from_grid(grid=np.array([[1.0, 0.0]]))
+        potential_1 = cored_isothermal.potential_from_grid(grid=grid_01)
         potential_0 = cored_isothermal.potential_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -351,7 +341,7 @@ class TestCoredIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        potential_1 = cored_isothermal.potential_from_grid(grid=np.array([[2.0, 1.0]]))
+        potential_1 = cored_isothermal.potential_from_grid(grid=grid_22)
         potential_0 = cored_isothermal.potential_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -361,9 +351,7 @@ class TestCoredIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        deflections_1 = cored_isothermal.deflections_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
+        deflections_1 = cored_isothermal.deflections_from_grid(grid=grid_01)
         deflections_0 = cored_isothermal.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -373,9 +361,7 @@ class TestCoredIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        deflections_1 = cored_isothermal.deflections_from_grid(
-            grid=np.array([[2.0, 1.0]])
-        )
+        deflections_1 = cored_isothermal.deflections_from_grid(grid=grid_22)
         deflections_0 = cored_isothermal.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -385,9 +371,7 @@ class TestCoredIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        deflections_1 = cored_isothermal.deflections_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
+        deflections_1 = cored_isothermal.deflections_from_grid(grid=grid_01)
         deflections_0 = cored_isothermal.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -397,9 +381,7 @@ class TestCoredIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        deflections_1 = cored_isothermal.deflections_from_grid(
-            grid=np.array([[2.0, 1.0]])
-        )
+        deflections_1 = cored_isothermal.deflections_from_grid(grid=grid_22)
         deflections_0 = cored_isothermal.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -412,7 +394,7 @@ class TestIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        convergence_1 = isothermal.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = isothermal.convergence_from_grid(grid=grid_01)
         convergence_0 = isothermal.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -422,7 +404,7 @@ class TestIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        convergence_1 = isothermal.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = isothermal.convergence_from_grid(grid=grid_22)
         convergence_0 = isothermal.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -432,7 +414,7 @@ class TestIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        convergence_1 = isothermal.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = isothermal.convergence_from_grid(grid=grid_01)
         convergence_0 = isothermal.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -442,7 +424,7 @@ class TestIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        convergence_1 = isothermal.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = isothermal.convergence_from_grid(grid=grid_22)
         convergence_0 = isothermal.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -452,7 +434,7 @@ class TestIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        potential_1 = isothermal.potential_from_grid(grid=np.array([[1.0, 0.0]]))
+        potential_1 = isothermal.potential_from_grid(grid=grid_01)
         potential_0 = isothermal.potential_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -462,7 +444,7 @@ class TestIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        potential_1 = isothermal.potential_from_grid(grid=np.array([[2.0, 1.0]]))
+        potential_1 = isothermal.potential_from_grid(grid=grid_22)
         potential_0 = isothermal.potential_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -472,7 +454,7 @@ class TestIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        potential_1 = isothermal.potential_from_grid(grid=np.array([[1.0, 0.0]]))
+        potential_1 = isothermal.potential_from_grid(grid=grid_01)
         potential_0 = isothermal.potential_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -482,7 +464,7 @@ class TestIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        potential_1 = isothermal.potential_from_grid(grid=np.array([[2.0, 1.0]]))
+        potential_1 = isothermal.potential_from_grid(grid=grid_22)
         potential_0 = isothermal.potential_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -492,7 +474,7 @@ class TestIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        deflections_1 = isothermal.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = isothermal.deflections_from_grid(grid=grid_01)
         deflections_0 = isothermal.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -502,7 +484,7 @@ class TestIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        deflections_1 = isothermal.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = isothermal.deflections_from_grid(grid=grid_22)
         deflections_0 = isothermal.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -512,7 +494,7 @@ class TestIsothermal(object):
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        deflections_1 = isothermal.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = isothermal.deflections_from_grid(grid=grid_01)
         deflections_0 = isothermal.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -522,7 +504,7 @@ class TestIsothermal(object):
             centre=(1.0, 1.0), einstein_radius=1.0
         )
 
-        deflections_1 = isothermal.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = isothermal.deflections_from_grid(grid=grid_22)
         deflections_0 = isothermal.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -533,37 +515,37 @@ class TestGeneralizedNFW(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0))
 
-        convergence_1 = gnfw.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = gnfw.convergence_from_grid(grid=grid_01)
         convergence_0 = gnfw.convergence_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(centre=(1.0, 1.0))
 
-        convergence_1 = gnfw.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = gnfw.convergence_from_grid(grid=grid_22)
         convergence_0 = gnfw.convergence_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0))
 
-        potential_1 = gnfw.potential_from_grid(grid=np.array([[1.0, 0.0]]))
+        potential_1 = gnfw.potential_from_grid(grid=grid_01)
         potential_0 = gnfw.potential_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(centre=(1.0, 1.0))
 
-        potential_1 = gnfw.potential_from_grid(grid=np.array([[2.0, 1.0]]))
+        potential_1 = gnfw.potential_from_grid(grid=grid_22)
         potential_0 = gnfw.potential_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0))
 
-        deflections_1 = gnfw.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = gnfw.deflections_from_grid(grid=grid_01)
         deflections_0 = gnfw.deflections_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(centre=(1.0, 1.0))
 
-        deflections_1 = gnfw.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = gnfw.deflections_from_grid(grid=grid_22)
         deflections_0 = gnfw.deflections_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
@@ -572,7 +554,7 @@ class TestTruncatedNFW(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW(centre=(0.0, 0.0))
 
-        convergence_1 = truncated_nfw.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = truncated_nfw.convergence_from_grid(grid=grid_01)
         convergence_0 = truncated_nfw.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -580,7 +562,7 @@ class TestTruncatedNFW(object):
 
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW(centre=(1.0, 1.0))
 
-        convergence_1 = truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = truncated_nfw.convergence_from_grid(grid=grid_22)
         convergence_0 = truncated_nfw.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -588,7 +570,7 @@ class TestTruncatedNFW(object):
 
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW(centre=(0.0, 0.0))
 
-        potential_1 = truncated_nfw.potential_from_grid(grid=np.array([[1.0, 0.0]]))
+        potential_1 = truncated_nfw.potential_from_grid(grid=grid_01)
         potential_0 = truncated_nfw.potential_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -596,7 +578,7 @@ class TestTruncatedNFW(object):
 
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW(centre=(1.0, 1.0))
 
-        potential_1 = truncated_nfw.potential_from_grid(grid=np.array([[2.0, 1.0]]))
+        potential_1 = truncated_nfw.potential_from_grid(grid=grid_22)
         potential_0 = truncated_nfw.potential_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -604,7 +586,7 @@ class TestTruncatedNFW(object):
 
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW(centre=(0.0, 0.0))
 
-        deflections_1 = truncated_nfw.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = truncated_nfw.deflections_from_grid(grid=grid_01)
         deflections_0 = truncated_nfw.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -612,7 +594,7 @@ class TestTruncatedNFW(object):
 
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW(centre=(1.0, 1.0))
 
-        deflections_1 = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = truncated_nfw.deflections_from_grid(grid=grid_22)
         deflections_0 = truncated_nfw.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -623,73 +605,73 @@ class TestNFW(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         nfw = al.mass_profiles.EllipticalNFW(centre=(0.0, 0.0))
 
-        convergence_1 = nfw.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = nfw.convergence_from_grid(grid=grid_01)
         convergence_0 = nfw.convergence_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
         nfw = al.mass_profiles.EllipticalNFW(centre=(1.0, 1.0))
 
-        convergence_1 = nfw.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = nfw.convergence_from_grid(grid=grid_22)
         convergence_0 = nfw.convergence_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
         nfw = al.mass_profiles.SphericalNFW(centre=(0.0, 0.0))
 
-        convergence_1 = nfw.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = nfw.convergence_from_grid(grid=grid_01)
         convergence_0 = nfw.convergence_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
         nfw = al.mass_profiles.SphericalNFW(centre=(1.0, 1.0))
 
-        convergence_1 = nfw.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = nfw.convergence_from_grid(grid=grid_22)
         convergence_0 = nfw.convergence_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
 
         nfw = al.mass_profiles.EllipticalNFW(centre=(0.0, 0.0))
 
-        potential_1 = nfw.potential_from_grid(grid=np.array([[1.0, 0.0]]))
+        potential_1 = nfw.potential_from_grid(grid=grid_01)
         potential_0 = nfw.potential_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
         nfw = al.mass_profiles.EllipticalNFW(centre=(1.0, 1.0))
 
-        potential_1 = nfw.potential_from_grid(grid=np.array([[2.0, 1.0]]))
+        potential_1 = nfw.potential_from_grid(grid=grid_22)
         potential_0 = nfw.potential_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
         nfw = al.mass_profiles.SphericalNFW(centre=(0.0, 0.0))
 
-        potential_1 = nfw.potential_from_grid(grid=np.array([[1.0, 0.0]]))
+        potential_1 = nfw.potential_from_grid(grid=grid_01)
         potential_0 = nfw.potential_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
         nfw = al.mass_profiles.SphericalNFW(centre=(1.0, 1.0))
 
-        potential_1 = nfw.potential_from_grid(grid=np.array([[2.0, 1.0]]))
+        potential_1 = nfw.potential_from_grid(grid=grid_22)
         potential_0 = nfw.potential_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert potential_0 == pytest.approx(potential_1, 1.0e-4)
 
         nfw = al.mass_profiles.EllipticalNFW(centre=(0.0, 0.0))
 
-        deflections_1 = nfw.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = nfw.deflections_from_grid(grid=grid_01)
         deflections_0 = nfw.deflections_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
         nfw = al.mass_profiles.EllipticalNFW(centre=(1.0, 1.0))
 
-        deflections_1 = nfw.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = nfw.deflections_from_grid(grid=grid_22)
         deflections_0 = nfw.deflections_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
         nfw = al.mass_profiles.SphericalNFW(centre=(0.0, 0.0))
 
-        deflections_1 = nfw.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = nfw.deflections_from_grid(grid=grid_01)
         deflections_0 = nfw.deflections_from_grid(grid=np.array([[0.000000001, 0.0]]))
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
         nfw = al.mass_profiles.SphericalNFW(centre=(1.0, 1.0))
 
-        deflections_1 = nfw.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = nfw.deflections_from_grid(grid=grid_22)
         deflections_0 = nfw.deflections_from_grid(grid=np.array([[1.000000001, 1.0]]))
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
@@ -698,7 +680,7 @@ class TestSersic(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         sersic = al.EllipticalSersic(centre=(0.0, 0.0))
 
-        convergence_1 = sersic.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = sersic.convergence_from_grid(grid=grid_01)
         convergence_0 = sersic.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -706,7 +688,7 @@ class TestSersic(object):
 
         sersic = al.EllipticalSersic(centre=(1.0, 1.0))
 
-        convergence_1 = sersic.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = sersic.convergence_from_grid(grid=grid_22)
         convergence_0 = sersic.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -714,7 +696,7 @@ class TestSersic(object):
 
         sersic = al.SphericalSersic(centre=(0.0, 0.0))
 
-        convergence_1 = sersic.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = sersic.convergence_from_grid(grid=grid_01)
         convergence_0 = sersic.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -722,7 +704,7 @@ class TestSersic(object):
 
         sersic = al.SphericalSersic(centre=(1.0, 1.0))
 
-        convergence_1 = sersic.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = sersic.convergence_from_grid(grid=grid_22)
         convergence_0 = sersic.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -730,7 +712,7 @@ class TestSersic(object):
 
         sersic = al.EllipticalSersic(centre=(0.0, 0.0))
 
-        deflections_1 = sersic.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = sersic.deflections_from_grid(grid=grid_01)
         deflections_0 = sersic.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -738,7 +720,7 @@ class TestSersic(object):
 
         sersic = al.EllipticalSersic(centre=(1.0, 1.0))
 
-        deflections_1 = sersic.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = sersic.deflections_from_grid(grid=grid_22)
         deflections_0 = sersic.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -746,7 +728,7 @@ class TestSersic(object):
 
         sersic = al.SphericalSersic(centre=(0.0, 0.0))
 
-        deflections_1 = sersic.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = sersic.deflections_from_grid(grid=grid_01)
         deflections_0 = sersic.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -754,7 +736,7 @@ class TestSersic(object):
 
         sersic = al.SphericalSersic(centre=(1.0, 1.0))
 
-        deflections_1 = sersic.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = sersic.deflections_from_grid(grid=grid_22)
         deflections_0 = sersic.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -765,7 +747,7 @@ class TestExponential(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         exponential = al.EllipticalExponential(centre=(0.0, 0.0))
 
-        convergence_1 = exponential.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = exponential.convergence_from_grid(grid=grid_01)
         convergence_0 = exponential.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -773,7 +755,7 @@ class TestExponential(object):
 
         exponential = al.EllipticalExponential(centre=(1.0, 1.0))
 
-        convergence_1 = exponential.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = exponential.convergence_from_grid(grid=grid_22)
         convergence_0 = exponential.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -781,7 +763,7 @@ class TestExponential(object):
 
         exponential = al.SphericalExponential(centre=(0.0, 0.0))
 
-        convergence_1 = exponential.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = exponential.convergence_from_grid(grid=grid_01)
         convergence_0 = exponential.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -789,7 +771,7 @@ class TestExponential(object):
 
         exponential = al.SphericalExponential(centre=(1.0, 1.0))
 
-        convergence_1 = exponential.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = exponential.convergence_from_grid(grid=grid_22)
         convergence_0 = exponential.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -797,7 +779,7 @@ class TestExponential(object):
 
         exponential = al.EllipticalExponential(centre=(0.0, 0.0))
 
-        deflections_1 = exponential.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = exponential.deflections_from_grid(grid=grid_01)
         deflections_0 = exponential.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -805,7 +787,7 @@ class TestExponential(object):
 
         exponential = al.EllipticalExponential(centre=(1.0, 1.0))
 
-        deflections_1 = exponential.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = exponential.deflections_from_grid(grid=grid_22)
         deflections_0 = exponential.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -813,7 +795,7 @@ class TestExponential(object):
 
         exponential = al.SphericalExponential(centre=(0.0, 0.0))
 
-        deflections_1 = exponential.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = exponential.deflections_from_grid(grid=grid_01)
         deflections_0 = exponential.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -821,7 +803,7 @@ class TestExponential(object):
 
         exponential = al.SphericalExponential(centre=(1.0, 1.0))
 
-        deflections_1 = exponential.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = exponential.deflections_from_grid(grid=grid_22)
         deflections_0 = exponential.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -832,9 +814,7 @@ class TestDevVaucouleurs(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         dev_vaucouleurs = al.EllipticalDevVaucouleurs(centre=(0.0, 0.0))
 
-        convergence_1 = dev_vaucouleurs.convergence_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
+        convergence_1 = dev_vaucouleurs.convergence_from_grid(grid=grid_01)
         convergence_0 = dev_vaucouleurs.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -842,9 +822,7 @@ class TestDevVaucouleurs(object):
 
         dev_vaucouleurs = al.EllipticalDevVaucouleurs(centre=(1.0, 1.0))
 
-        convergence_1 = dev_vaucouleurs.convergence_from_grid(
-            grid=np.array([[2.0, 1.0]])
-        )
+        convergence_1 = dev_vaucouleurs.convergence_from_grid(grid=grid_22)
         convergence_0 = dev_vaucouleurs.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -852,9 +830,7 @@ class TestDevVaucouleurs(object):
 
         dev_vaucouleurs = al.SphericalDevVaucouleurs(centre=(0.0, 0.0))
 
-        convergence_1 = dev_vaucouleurs.convergence_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
+        convergence_1 = dev_vaucouleurs.convergence_from_grid(grid=grid_01)
         convergence_0 = dev_vaucouleurs.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -862,9 +838,7 @@ class TestDevVaucouleurs(object):
 
         dev_vaucouleurs = al.SphericalDevVaucouleurs(centre=(1.0, 1.0))
 
-        convergence_1 = dev_vaucouleurs.convergence_from_grid(
-            grid=np.array([[2.0, 1.0]])
-        )
+        convergence_1 = dev_vaucouleurs.convergence_from_grid(grid=grid_22)
         convergence_0 = dev_vaucouleurs.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -872,9 +846,7 @@ class TestDevVaucouleurs(object):
 
         dev_vaucouleurs = al.EllipticalDevVaucouleurs(centre=(0.0, 0.0))
 
-        deflections_1 = dev_vaucouleurs.deflections_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
+        deflections_1 = dev_vaucouleurs.deflections_from_grid(grid=grid_01)
         deflections_0 = dev_vaucouleurs.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -882,9 +854,7 @@ class TestDevVaucouleurs(object):
 
         dev_vaucouleurs = al.EllipticalDevVaucouleurs(centre=(1.0, 1.0))
 
-        deflections_1 = dev_vaucouleurs.deflections_from_grid(
-            grid=np.array([[2.0, 1.0]])
-        )
+        deflections_1 = dev_vaucouleurs.deflections_from_grid(grid=grid_22)
         deflections_0 = dev_vaucouleurs.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -892,9 +862,7 @@ class TestDevVaucouleurs(object):
 
         dev_vaucouleurs = al.SphericalDevVaucouleurs(centre=(0.0, 0.0))
 
-        deflections_1 = dev_vaucouleurs.deflections_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
+        deflections_1 = dev_vaucouleurs.deflections_from_grid(grid=grid_01)
         deflections_0 = dev_vaucouleurs.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -902,9 +870,7 @@ class TestDevVaucouleurs(object):
 
         dev_vaucouleurs = al.SphericalDevVaucouleurs(centre=(1.0, 1.0))
 
-        deflections_1 = dev_vaucouleurs.deflections_from_grid(
-            grid=np.array([[2.0, 1.0]])
-        )
+        deflections_1 = dev_vaucouleurs.deflections_from_grid(grid=grid_22)
         deflections_0 = dev_vaucouleurs.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -915,7 +881,7 @@ class TestSersicMassRadialGradient(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         sersic = al.EllipticalSersicRadialGradient(centre=(0.0, 0.0))
 
-        convergence_1 = sersic.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = sersic.convergence_from_grid(grid=grid_01)
         convergence_0 = sersic.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -923,7 +889,7 @@ class TestSersicMassRadialGradient(object):
 
         sersic = al.EllipticalSersicRadialGradient(centre=(1.0, 1.0))
 
-        convergence_1 = sersic.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = sersic.convergence_from_grid(grid=grid_22)
         convergence_0 = sersic.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -931,7 +897,7 @@ class TestSersicMassRadialGradient(object):
 
         sersic = al.SphericalSersicRadialGradient(centre=(0.0, 0.0))
 
-        convergence_1 = sersic.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+        convergence_1 = sersic.convergence_from_grid(grid=grid_01)
         convergence_0 = sersic.convergence_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -939,7 +905,7 @@ class TestSersicMassRadialGradient(object):
 
         sersic = al.SphericalSersicRadialGradient(centre=(1.0, 1.0))
 
-        convergence_1 = sersic.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
+        convergence_1 = sersic.convergence_from_grid(grid=grid_22)
         convergence_0 = sersic.convergence_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -947,7 +913,7 @@ class TestSersicMassRadialGradient(object):
 
         sersic = al.EllipticalSersicRadialGradient(centre=(0.0, 0.0))
 
-        deflections_1 = sersic.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = sersic.deflections_from_grid(grid=grid_01)
         deflections_0 = sersic.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -955,7 +921,7 @@ class TestSersicMassRadialGradient(object):
 
         sersic = al.EllipticalSersicRadialGradient(centre=(1.0, 1.0))
 
-        deflections_1 = sersic.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = sersic.deflections_from_grid(grid=grid_22)
         deflections_0 = sersic.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -963,7 +929,7 @@ class TestSersicMassRadialGradient(object):
 
         sersic = al.SphericalSersicRadialGradient(centre=(0.0, 0.0))
 
-        deflections_1 = sersic.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = sersic.deflections_from_grid(grid=grid_01)
         deflections_0 = sersic.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -971,7 +937,7 @@ class TestSersicMassRadialGradient(object):
 
         sersic = al.SphericalSersicRadialGradient(centre=(1.0, 1.0))
 
-        deflections_1 = sersic.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = sersic.deflections_from_grid(grid=grid_22)
         deflections_0 = sersic.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )
@@ -997,7 +963,7 @@ class TestSersicMassRadialGradient(object):
 
         mask = al.Mask(mask, pixel_scale=1.0)
 
-        grid = al.Grid.from_mask_and_sub_grid_size(mask=mask)
+        grid = al.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1027,7 +993,7 @@ class TestMassSheet(object):
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
         mass_sheet = al.mass_profiles.MassSheet(centre=(0.0, 0.0))
 
-        deflections_1 = mass_sheet.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = mass_sheet.deflections_from_grid(grid=grid_01)
         deflections_0 = mass_sheet.deflections_from_grid(
             grid=np.array([[0.000000001, 0.0]])
         )
@@ -1035,7 +1001,7 @@ class TestMassSheet(object):
 
         mass_sheet = al.mass_profiles.MassSheet(centre=(1.0, 1.0))
 
-        deflections_1 = mass_sheet.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        deflections_1 = mass_sheet.deflections_from_grid(grid=grid_22)
         deflections_0 = mass_sheet.deflections_from_grid(
             grid=np.array([[1.000000001, 1.0]])
         )

@@ -641,7 +641,9 @@ def plot_subtracted_image_of_plane(
 
         other_planes_model_images_2d = [
             model_image_2d
-            for i, model_image_2d in enumerate(fit.model_images_of_planes(return_in_2d=True))
+            for i, model_image_2d in enumerate(
+                fit.model_images_of_planes(return_in_2d=True)
+            )
             if i != plane_index
         ]
 

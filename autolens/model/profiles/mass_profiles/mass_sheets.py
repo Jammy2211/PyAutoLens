@@ -7,7 +7,7 @@ from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
+from autolens.array.mapping import sub_array_with_grid, grid_reshaped_with_grid
 
 
 class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
@@ -26,18 +26,24 @@ class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
         super(MassSheet, self).__init__(centre=centre)
         self.kappa = kappa
 
-    @reshape_array_from_grid
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @sub_array_with_grid
+    def convergence_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.full(shape=grid.shape[0], fill_value=self.kappa)
 
-    @reshape_array_from_grid
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @sub_array_with_grid
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_grid
+    @grid_reshaped_with_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def deflections_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return self.grid_to_grid_cartesian(grid=grid, radius=self.kappa * grid_radii)
 
@@ -82,18 +88,24 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
     ):
         return 0.0
 
-    @reshape_array_from_grid
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @sub_array_with_grid
+    def convergence_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.zeros((grid.shape[0],))
 
-    @reshape_array_from_grid
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @sub_array_with_grid
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_grid
+    @grid_reshaped_with_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def deflections_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 

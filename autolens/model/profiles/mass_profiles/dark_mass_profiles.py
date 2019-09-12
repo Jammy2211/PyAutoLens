@@ -18,7 +18,7 @@ from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
+from autolens.array.mapping import sub_array_with_grid, grid_reshaped_with_grid
 
 
 def jit_integrand(integrand_function):
@@ -154,10 +154,12 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
 
         return eta_min, eta_max, minimum_log_eta, maximum_log_eta, bin_size
 
-    @reshape_array_from_grid
+    @sub_array_with_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def convergence_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
@@ -523,11 +525,16 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
 
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
-    @reshape_array_from_grid
+    @sub_array_with_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, tabulate_bins=1000
+        self,
+        grid,
+        return_in_2d=True,
+        return_binned=True,
+        bypass_decorator=False,
+        tabulate_bins=1000,
     ):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
@@ -603,13 +610,18 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
         return potential_grid
 
-    @reshape_returned_grid
+    @grid_reshaped_with_grid
     @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, tabulate_bins=1000
+        self,
+        grid,
+        return_in_2d=True,
+        return_binned=True,
+        bypass_decorator=False,
+        tabulate_bins=1000,
     ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
@@ -791,7 +803,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
             scale_radius=scale_radius,
         )
 
-    @reshape_returned_grid
+    @grid_reshaped_with_grid
     @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
@@ -907,11 +919,13 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         grid_radius = grid_radius + 0j
         return np.real(self.coord_func_m(grid_radius=grid_radius))
 
-    @reshape_array_from_grid
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @sub_array_with_grid
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_grid
+    @grid_reshaped_with_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(self, grid, **kwargs):
@@ -1172,10 +1186,12 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         elif r == 1:
             return 1
 
-    @reshape_array_from_grid
+    @sub_array_with_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -1201,12 +1217,14 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         return potential_grid
 
-    @reshape_returned_grid
+    @grid_reshaped_with_grid
     @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def deflections_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -1334,10 +1352,12 @@ class SphericalNFW(EllipticalNFW):
 
     # TODO : Make this use numpy arithmetic
 
-    @reshape_array_from_grid
+    @sub_array_with_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -1357,10 +1377,12 @@ class SphericalNFW(EllipticalNFW):
             2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
         )
 
-    @reshape_returned_grid
+    @grid_reshaped_with_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def deflections_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 

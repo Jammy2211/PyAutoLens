@@ -21,8 +21,8 @@ def galaxy_fit_phase():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-        shape=image_shape, pixel_scale=pixel_scale, sub_grid_size=4
+    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        shape=image_shape, pixel_scale=pixel_scale, sub_size=4
     )
 
     galaxy = al.Galaxy(
@@ -33,7 +33,7 @@ def galaxy_fit_phase():
     )
 
     deflections = galaxy.deflections_from_grid(
-        galaxies=[galaxy], grid=grid, return_in_2d=True
+        galaxies=[galaxy], grid=grid, return_in_2d=True, bypass_decorator=False
     )
 
     noise_map = al.ScaledSquarePixelArray(
@@ -53,7 +53,7 @@ def galaxy_fit_phase():
             gal=al.GalaxyModel(redshift=0.5, light=al.mass_profiles.SphericalIsothermal)
         ),
         use_deflections=True,
-        sub_grid_size=4,
+        sub_size=4,
         optimizer_class=af.MultiNest,
     )
 

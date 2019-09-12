@@ -14,9 +14,7 @@ import pytest
 
 def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-        shape=(5, 5), pixel_scale=1.0
-    )
+    grid = al.Grid.from_shape_pixel_scale_and_sub_size(shape=(5, 5), pixel_scale=1.0, sub_size=1)
 
     sersic = al.light_profiles.SphericalSersic(centre=(2.0, -2.0))
     image_1d = sersic.profile_image_from_grid(grid=grid, return_in_2d=False)
@@ -49,9 +47,7 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
 def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index():
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-        shape=(5, 5), pixel_scale=1.0
-    )
+    grid = al.Grid.from_shape_pixel_scale_and_sub_size(shape=(5, 5), pixel_scale=1.0, sub_size=1)
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(2.0, -2.0))
     density_1d = sis.convergence_from_grid(grid=grid, return_in_2d=False)
@@ -84,9 +80,7 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
 
 def test__deflection_angles():
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-        shape=(5, 5), pixel_scale=1.0
-    )
+    grid = al.Grid.from_shape_pixel_scale_and_sub_size(shape=(5, 5), pixel_scale=1.0, sub_size=1)
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_1d = sis.deflections_from_grid(grid=grid, return_in_2d=False)
@@ -111,7 +105,7 @@ def test__deflection_angles():
 
 # def test__move_source_galaxy_around_source_plane__peak_follows_source_direction():
 #
-#     = masks.Grid.from_shape_pixel_scale_and_sub_grid_size(shape=(5, 5), pixel_scales=1.0)
+#     = masks.Grid.from_shape_pixel_scale_and_sub_size(shape=(5, 5), pixel_scales=1.0)
 #     sis = al.mass_profiles.SphericalIsothermal(origin=(0.0, 0.0), einstein_radius=1.0)
 #     sersic = al.light_profiles.SphericalSersic(origin=(1.0, 0.0))
 #

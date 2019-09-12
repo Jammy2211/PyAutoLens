@@ -1889,8 +1889,8 @@ class TestSimulateCCD(object):
             pixel_scale=1.0,
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=1.0, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=1.0, sub_size=1
         )
 
         g0 = al.Galaxy(
@@ -1905,7 +1905,7 @@ class TestSimulateCCD(object):
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         deflections = tracer.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True,
         )
 
         ccd_data_simulated_via_deflections = al.SimulatedCCDData.from_deflections_galaxies_and_exposure_arrays(
@@ -1919,7 +1919,7 @@ class TestSimulateCCD(object):
         )
 
         tracer_profile_image_plane_image = tracer.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True,
         )
 
         ccd_data_simulated = al.SimulatedCCDData.from_image_and_exposure_arrays(
@@ -1953,8 +1953,8 @@ class TestSimulateCCD(object):
             pixel_scale=1.0,
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.05, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.05, sub_size=1
         )
 
         lens_galaxy = al.Galaxy(

@@ -4,11 +4,7 @@ import numpy as np
 
 from autolens import exc
 from autolens.array.util import grid_util, array_util, mask_util, binning_util
-from autolens.array.mapping_util import (
-    array_mapping_util,
-    grid_mapping_util,
-    mask_mapping_util,
-)
+from autolens.array import mapping
 from autolens.array import scaled_array
 
 logging.basicConfig()
@@ -21,7 +17,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     """
 
     # noinspection PyUnusedLocal
-    def __init__(self, array, pixel_scale, origin=(0.0, 0.0)):
+    def __init__(self, array, pixel_scale, sub_size, origin=(0.0, 0.0)):
         """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
         
@@ -40,12 +36,20 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         # noinspection PyArgumentList
         super(Mask, self).__init__(array=array, pixel_scale=pixel_scale, origin=origin)
+        self.sub_size = sub_size
+        self.sub_length = int(self.sub_size ** 2.0)
+        self.sub_fraction = 1.0 / self.sub_length
+        self.mapping = mapping.Mapping(mask=self)
 
     def __array_finalize__(self, obj):
+        if hasattr(obj, "sub_size"):
+            self.sub_size = obj.sub_size
+            self.sub_length = int(obj.sub_size ** 2.0)
+            self.sub_fraction = 1.0 / obj.sub_length
+        if hasattr(obj, "mapping"):
+            self.mapping = obj.mapping
         if hasattr(obj, "pixel_scale"):
             self.pixel_scale = obj.pixel_scale
-        if hasattr(obj, "origin"):
-            self.origin = obj.origin
         if hasattr(obj, "origin"):
             self.origin = obj.origin
 
@@ -56,7 +60,9 @@ class Mask(scaled_array.ScaledSquarePixelArray):
             return True
 
     @classmethod
-    def unmasked_for_shape_and_pixel_scale(cls, shape, pixel_scale, invert=False):
+    def unmasked_from_shape_pixel_scale_and_sub_size(
+        cls, shape, pixel_scale, sub_size, invert=False
+    ):
         """Setup a mask where all pixels are unmasked.
 
         Parameters
@@ -69,11 +75,17 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         mask = np.full(tuple(map(lambda d: int(d), shape)), False)
         if invert:
             mask = np.invert(mask)
-        return cls(array=mask, pixel_scale=pixel_scale)
+        return cls(array=mask, pixel_scale=pixel_scale, sub_size=sub_size)
 
     @classmethod
     def circular(
-        cls, shape, pixel_scale, radius_arcsec, centre=(0.0, 0.0), invert=False
+        cls,
+        shape,
+        pixel_scale,
+        radius_arcsec,
+        sub_size,
+        centre=(0.0, 0.0),
+        invert=False,
     ):
         """Setup a mask where unmasked pixels are within a circle of an input arc second radius and centre.
 
@@ -96,13 +108,16 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         )
         if invert:
             mask = np.invert(mask)
-        return cls(array=mask.astype("bool"), pixel_scale=pixel_scale)
+        return cls(
+            array=mask.astype("bool"), pixel_scale=pixel_scale, sub_size=sub_size
+        )
 
     @classmethod
     def circular_annular(
         cls,
         shape,
         pixel_scale,
+        sub_size,
         inner_radius_arcsec,
         outer_radius_arcsec,
         centre=(0.0, 0.0),
@@ -136,13 +151,16 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         if invert:
             mask = np.invert(mask)
 
-        return cls(array=mask.astype("bool"), pixel_scale=pixel_scale)
+        return cls(
+            array=mask.astype("bool"), pixel_scale=pixel_scale, sub_size=sub_size
+        )
 
     @classmethod
     def circular_anti_annular(
         cls,
         shape,
         pixel_scale,
+        sub_size,
         inner_radius_arcsec,
         outer_radius_arcsec,
         outer_radius_2_arcsec,
@@ -185,7 +203,9 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         if invert:
             mask = np.invert(mask)
 
-        return cls(array=mask.astype("bool"), pixel_scale=pixel_scale)
+        return cls(
+            array=mask.astype("bool"), pixel_scale=pixel_scale, sub_size=sub_size
+        )
 
     @classmethod
     def elliptical(
@@ -195,6 +215,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         major_axis_radius_arcsec,
         axis_ratio,
         phi,
+        sub_size,
         centre=(0.0, 0.0),
         invert=False,
     ):
@@ -224,13 +245,16 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         if invert:
             mask = np.invert(mask)
 
-        return cls(array=mask.astype("bool"), pixel_scale=pixel_scale)
+        return cls(
+            array=mask.astype("bool"), pixel_scale=pixel_scale, sub_size=sub_size
+        )
 
     @classmethod
     def elliptical_annular(
         cls,
         shape,
         pixel_scale,
+        sub_size,
         inner_major_axis_radius_arcsec,
         inner_axis_ratio,
         inner_phi,
@@ -282,7 +306,43 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         if invert:
             mask = np.invert(mask)
 
-        return cls(array=mask.astype("bool"), pixel_scale=pixel_scale)
+        return cls(
+            array=mask.astype("bool"), pixel_scale=pixel_scale, sub_size=sub_size
+        )
+
+    @classmethod
+    def mask_from_fits(cls, file_path, hdu, pixel_scale, sub_size, origin=(0.0, 0.0)):
+        """
+        Loads the image from a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The full path of the fits file.
+        hdu : int
+            The HDU number in the fits file containing the image image.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        return Mask(
+            array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
+            pixel_scale=pixel_scale,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
+    def new_mask_with_new_sub_size(self, sub_size):
+        return Mask(array=self, pixel_scale=self.pixel_scale, sub_size=sub_size, origin=self.origin)
+
+    @property
+    def sub_mask(self):
+
+        sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
+
+        return mask_util.mask_from_shape_and_mask_1d_index_to_mask_2d_index(
+            shape=sub_shape,
+            mask_1d_index_to_mask_2d_index=self.mapping.sub_mask_1d_index_to_sub_mask_2d_index,
+        )
 
     def binned_up_mask_from_mask(self, bin_up_factor):
 
@@ -293,6 +353,20 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return Mask(
             array=binned_up_mask,
             pixel_scale=self.pixel_scale * bin_up_factor,
+            sub_size=self.sub_size,
+            origin=self.origin,
+        )
+
+    def binned_up_mask_sub_size_1_from_mask(self, bin_up_factor):
+
+        binned_up_mask = binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(
+            mask_2d=self, bin_up_factor=bin_up_factor
+        )
+
+        return Mask(
+            array=binned_up_mask,
+            pixel_scale=self.pixel_scale * bin_up_factor,
+            sub_size=1,
             origin=self.origin,
         )
 
@@ -304,270 +378,6 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     @property
     def pixels_in_mask(self):
         return int(np.size(self) - np.sum(self))
-
-    @property
-    def mask_1d_index_to_mask_2d_index(self):
-        """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
-        return self.sub_mask_1d_index_to_sub_mask_2d_index_from_sub_grid_size(
-            sub_grid_size=1
-        )
-
-    def sub_mask_1d_index_to_sub_mask_2d_index_from_sub_grid_size(self, sub_grid_size):
-        """A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates."""
-        return mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=self, sub_grid_size=sub_grid_size
-        ).astype(
-            "int"
-        )
-
-    def array_1d_from_array_2d(self, array_2d):
-        """For a 2D array (e.g. an image, noise_map, etc.) map it to a masked 1D array of valuees using this mask.
-
-        Parameters
-        ----------
-        array_2d : ndarray | None | float
-            The 2D array to be mapped to a masked 1D array.
-        """
-        if array_2d is None or isinstance(array_2d, float):
-            return array_2d
-        return array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            mask=self, sub_array_2d=array_2d, sub_grid_size=1
-        )
-
-    def array_2d_from_array_1d(self, array_1d):
-        """ Map a 1D array the same dimension as the grid to its original 2D array.
-
-        Values which were masked in the mapping_util to the 1D array are returned as zeros.
-
-        Parameters
-        -----------
-        array_1d : ndarray
-            The 1D array which is mapped to its masked 2D array.
-        """
-        return array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=array_1d, mask=self, sub_grid_size=1
-        )
-
-    def scaled_array_2d_from_array_1d(self, array_1d):
-        """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a hyper \
-        array.
-
-        Parameters
-        -----------
-        array_1d : ndarray
-            The 1D array of which is mapped to a 2D hyper array.
-        """
-        return scaled_array.ScaledSquarePixelArray(
-            array=self.array_2d_from_array_1d(array_1d=array_1d),
-            pixel_scale=self.pixel_scale,
-            origin=self.origin,
-        )
-
-    def grid_2d_from_grid_1d(self, grid_1d):
-        """Map a 1D grid the same dimension as the grid to its original 2D grid.
-
-        Values which were masked in the mapping_util to the 1D array are returned as zeros.
-
-        Parameters
-        -----------
-        grid_1d : ndarray
-            The 1D grid which is mapped to its masked 2D array.
-        """
-        return grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
-            sub_grid_1d=grid_1d, mask=self, sub_grid_size=1
-        )
-
-    def grid_1d_from_grid_2d(self, grid_2d):
-        """ Map a 2D grid to its masked 1D grid..
-
-        Values which are masked in the mapping_util to the 1D grid are returned as zeros.
-
-        Parameters
-        -----------
-        grid_1d : ndgrid
-            The 1D grid which is mapped to its masked 2D grid.
-        """
-        return grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-            sub_grid_2d=grid_2d, mask=self, sub_grid_size=1
-        )
-
-    def sub_array_2d_from_sub_array_1d_and_sub_grid_size(
-        self, sub_array_1d, sub_grid_size
-    ):
-        """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
-        2D sub array.
-
-        Parameters
-        -----------
-        sub_array_1d : ndarray
-            The 1D sub_array which is mapped to its masked 2D sub-array.
-        """
-        return array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=sub_array_1d, mask=self, sub_grid_size=sub_grid_size
-        )
-
-    def scaled_array_2d_with_sub_dimensions_from_sub_array_1d_and_sub_grid_size(
-        self, sub_array_1d, sub_grid_size
-    ):
-        """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
-        a hyper array.
-
-        Parameters
-        -----------
-        sub_array_1d : ndarray
-            The 1D sub-array of which is mapped to a 2D hyper sub-array the dimensions.
-        """
-        return scaled_array.ScaledSquarePixelArray(
-            array=self.sub_array_2d_from_sub_array_1d_and_sub_grid_size(
-                sub_array_1d=sub_array_1d, sub_grid_size=sub_grid_size
-            ),
-            pixel_scale=self.pixel_scale / sub_grid_size,
-            origin=self.origin,
-        )
-
-    def array_1d_binned_from_sub_array_1d_and_sub_grid_size(
-        self, sub_array_1d, sub_grid_size
-    ):
-        """For an input 1D sub-array, map its values to a 1D array of values by summing each set \of sub-pixel \
-        values and dividing by the total number of sub-pixels.
-
-        Parameters
-        -----------
-        sub_array_1d : ndarray
-            A 1D sub-array of values (e.g. image, convergence, potential) which is mapped to
-            a 1d array.
-        """
-
-        sub_grid_length = int(sub_grid_size ** 2.0)
-        sub_grid_fraction = 1.0 / sub_grid_length
-
-        return np.multiply(
-            sub_grid_fraction, sub_array_1d.reshape(-1, sub_grid_length).sum(axis=1)
-        )
-
-    def scaled_array_2d_binned_from_sub_array_1d_and_sub_grid_size(
-        self, sub_array_1d, sub_grid_size
-    ):
-        """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
-        a hyper array.
-
-        Parameters
-        -----------
-        sub_array_1d : ndarray
-            The 1D sub-array of which is mapped to a 2D hyper sub-array the dimensions.
-        """
-
-        array_1d = self.array_1d_binned_from_sub_array_1d_and_sub_grid_size(
-            sub_array_1d=sub_array_1d, sub_grid_size=sub_grid_size
-        )
-
-        return scaled_array.ScaledSquarePixelArray(
-            array=self.array_2d_from_array_1d(array_1d=array_1d),
-            pixel_scale=self.pixel_scale,
-            origin=self.origin,
-        )
-
-    def sub_array_1d_with_sub_dimensions_from_sub_array_2d_and_sub_grid_size(
-        self, sub_array_2d, sub_grid_size
-    ):
-        """ Map a 2D sub-array to its masked 1D sub-array.
-
-        Values which are masked in the mapping_util to the 1D array are returned as zeros.
-
-        Parameters
-        -----------
-        su_array_2d : ndarray
-            The 2D sub-array which is mapped to its masked 1D sub-array.
-        """
-        return array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=sub_array_2d, mask=self, sub_grid_size=sub_grid_size
-        )
-
-    def sub_grid_1d_with_sub_dimensions_from_sub_grid_2d_and_sub_grid_size(
-        self, sub_grid_2d, sub_grid_size
-    ):
-        """For an input 1D sub-array, map its values to a 1D array of values by summing each set \of sub-pixel \
-        values and dividing by the total number of sub-pixels.
-
-        Parameters
-        -----------
-        sub_grid_2d : ndarray
-            A 1D sub-array of values (e.g. image, convergence, potential) which is mapped to
-            a 1d array.
-        """
-        return grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-            sub_grid_2d=sub_grid_2d, mask=self, sub_grid_size=sub_grid_size
-        )
-
-    def grid_1d_binned_from_sub_grid_1d_and_sub_grid_size(
-        self, sub_grid_1d, sub_grid_size
-    ):
-        """For an input 1D sub-array, map its values to a 1D array of values by summing each set \of sub-pixel \
-        values and dividing by the total number of sub-pixels.
-
-        Parameters
-        -----------
-        sub_grid_1d : ndarray
-            A 1D sub-array of values (e.g. image, convergence, potential) which is mapped to
-            a 1d array.
-        """
-
-        grid_1d_y = self.array_1d_binned_from_sub_array_1d_and_sub_grid_size(
-            sub_array_1d=sub_grid_1d[:, 0], sub_grid_size=sub_grid_size
-        )
-
-        grid_1d_x = self.array_1d_binned_from_sub_array_1d_and_sub_grid_size(
-            sub_array_1d=sub_grid_1d[:, 1], sub_grid_size=sub_grid_size
-        )
-
-        return np.stack((grid_1d_y, grid_1d_x), axis=-1)
-
-    def grid_2d_binned_from_sub_grid_1d_and_sub_grid_size(
-        self, sub_grid_1d, sub_grid_size
-    ):
-        """For an input 1D sub-array, map its values to a 1D array of values by summing each set \of sub-pixel \
-        values and dividing by the total number of sub-pixels.
-
-        Parameters
-        -----------
-        sub_grid_1d : ndarray
-            A 1D sub-array of values (e.g. image, convergence, potential) which is mapped to
-            a 1d array.
-        """
-
-        grid_1d = self.grid_1d_binned_from_sub_grid_1d_and_sub_grid_size(
-            sub_grid_1d=sub_grid_1d, sub_grid_size=sub_grid_size
-        )
-
-        return self.grid_2d_from_grid_1d(grid_1d=grid_1d)
-
-    def sub_grid_2d_with_sub_dimensions_from_sub_grid_1d_and_sub_grid_size(
-        self, sub_grid_1d, sub_grid_size
-    ):
-        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
-        2D sub grid.
-
-        Parameters
-        -----------
-        sub_grid_1d : ndgrid
-            The 1D grid which is mapped to its masked 2D sub-grid.
-        """
-        return grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
-            sub_grid_1d=sub_grid_1d, mask=self, sub_grid_size=sub_grid_size
-        )
-
-    @array_util.Memoizer()
-    def sub_mask_1d_index_to_mask_1d_index_from_sub_grid_size(self, sub_grid_size):
-        """The mapping_util between every sub-pixel and its host pixel.
-
-        For example:
-
-        - sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd pixel.
-        - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th pixel.
-        """
-        return mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
-            mask=self, sub_grid_size=sub_grid_size
-        ).astype("int")
 
     @array_util.Memoizer()
     def blurring_mask_from_psf_shape(self, psf_shape):
@@ -585,7 +395,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
         blurring_mask = mask_util.blurring_mask_from_mask_and_psf_shape(self, psf_shape)
 
-        return Mask(array=blurring_mask, pixel_scale=self.pixel_scale)
+        return Mask(array=blurring_mask, pixel_scale=self.pixel_scale, sub_size=1)
 
     @property
     def edge_1d_indexes(self):
@@ -603,6 +413,16 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return mask_util.border_1d_indexes_from_mask(mask=self).astype("int")
 
     @property
+    def sub_border_1d_indexes(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        an annulus mask).
+        """
+        return mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+            mask=self, sub_size=self.sub_size
+        ).astype("int")
+
+    @property
     def border_grid_1d(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
@@ -610,64 +430,26 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         return self.masked_grid_1d[self.border_1d_indexes]
 
-    def sub_border_1d_indexes_from_sub_grid_size(self, sub_grid_size, filter_size=None):
+    @property
+    def sub_border_grid_1d(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        sub_border_1d_indexes = mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_grid_size(
-            mask=self, sub_grid_size=sub_grid_size
-        ).astype(
-            "int"
-        )
-
-        if filter_size is None:
-            return sub_border_1d_indexes
-        else:
-            sub_border_thetas_1d = self.sub_border_thetas_1d_from_sub_grid_size(
-                sub_grid_size=sub_grid_size
-            )
-            sub_border_ordered_indexes = np.argsort(sub_border_thetas_1d)
-            return np.sort(
-                sub_border_1d_indexes[sub_border_ordered_indexes[1::filter_size]]
-            )
-
-    def sub_border_grid_1d_from_sub_grid_size(self, sub_grid_size, filter_size=None):
-        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
-        an annulus mask).
-        """
-        masked_sub_grid_1d = self.masked_sub_grid_1d_from_sub_grid_size(
-            sub_grid_size=sub_grid_size
-        )
-        sub_border_pixel_1d_indexes = self.sub_border_1d_indexes_from_sub_grid_size(
-            sub_grid_size=sub_grid_size, filter_size=filter_size
-        )
-        return masked_sub_grid_1d[sub_border_pixel_1d_indexes]
-
-    def sub_border_thetas_1d_from_sub_grid_size(self, sub_grid_size, filter_size=None):
-        sub_border_grid_1d = self.sub_border_grid_1d_from_sub_grid_size(
-            sub_grid_size=sub_grid_size, filter_size=filter_size
-        )
-        return np.arctan2(
-            (sub_border_grid_1d[:, 0] - self.centre[0]),
-            sub_border_grid_1d[:, 1] - self.centre[1],
-        )
+        return self.masked_sub_grid_1d[self.sub_border_1d_indexes]
 
     @property
     def masked_grid_1d(self):
-        return grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-            mask=self,
-            pixel_scales=self.pixel_scales,
-            sub_grid_size=1,
-            origin=self.origin,
+        return grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+            mask=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 
-    def masked_sub_grid_1d_from_sub_grid_size(self, sub_grid_size):
-        return grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
+    @property
+    def masked_sub_grid_1d(self):
+        return grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=self,
             pixel_scales=self.pixel_scales,
-            sub_grid_size=sub_grid_size,
+            sub_size=self.sub_size,
             origin=self.origin,
         )
 
@@ -726,9 +508,9 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return [y0, y1 + 1, x0, x1 + 1]
 
 
-def load_mask_from_fits(mask_path, pixel_scale, mask_hdu=0):
-    return Mask.from_fits_with_pixel_scale(
-        file_path=mask_path, hdu=mask_hdu, pixel_scale=pixel_scale
+def load_mask_from_fits(mask_path, pixel_scale, sub_size=1, mask_hdu=0):
+    return Mask.mask_from_fits(
+        file_path=mask_path, hdu=mask_hdu, pixel_scale=pixel_scale, sub_size=sub_size
     )
 
 
