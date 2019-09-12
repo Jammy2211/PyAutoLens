@@ -10,10 +10,10 @@ from autolens.model.inversion import inversions as inv
 from autolens.model.galaxy import galaxy as g
 
 from autolens.array.mapping import (
-    sub_array_with_grid,
-    array_reshaped_with_grid_and_convolver,
-    array_reshaped_with_grid_and_psf,
-    grid_reshaped_with_grid,
+    reshape_returned_sub_array,
+    reshape_returned_array,
+    reshape_returned_array,
+    reshape_returned_grid,
 )
 
 
@@ -268,7 +268,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @sub_array_with_grid
+    @reshape_returned_sub_array
     def profile_image_from_grid(
         self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     ):
@@ -316,7 +316,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             bypass_decorator=False,
         )
 
-    @sub_array_with_grid
+    @reshape_returned_sub_array
     def convergence_from_grid(
         self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     ):
@@ -329,7 +329,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             ]
         )
 
-    @sub_array_with_grid
+    @reshape_returned_sub_array
     def potential_from_grid(
         self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     ):
@@ -342,7 +342,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             ]
         )
 
-    @grid_reshaped_with_grid
+    @reshape_returned_grid
     def deflections_from_grid(
         self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     ):
@@ -413,7 +413,7 @@ class AbstractTracerData(AbstractTracerLensing):
     def __init__(self, planes, cosmology):
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
 
-    @array_reshaped_with_grid_and_psf
+    @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
         self,
         grid,
@@ -482,7 +482,7 @@ class AbstractTracerData(AbstractTracerLensing):
             for (plane, traced_grid) in zip(self.planes, traced_grids_of_planes)
         ]
 
-    @array_reshaped_with_grid_and_convolver
+    @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
         self,
         grid,

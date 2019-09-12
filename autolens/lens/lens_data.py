@@ -3,7 +3,7 @@ import numpy as np
 from autolens.array import grids
 from autolens.array import mask as msk
 from autolens.data.convolution import Convolver
-from autolens.array.mapping import array_reshaped_with_obj
+from autolens.array.mapping import reshape_returned_array
 
 
 class LensData(object):
@@ -209,11 +209,11 @@ class LensData(object):
         else:
             return self.mask_1d
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def image(self, return_in_2d=True):
         return self.image_1d
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def noise_map(self, return_in_2d=True):
         return self.noise_map_1d
 
@@ -221,7 +221,7 @@ class LensData(object):
     def signal_to_noise_map_1d(self):
         return self.image_1d / self.noise_map_1d
 
-    @array_reshaped_with_obj
+    @reshape_returned_array
     def signal_to_noise_map(self, return_in_2d=True):
         return self.signal_to_noise_map_1d
 

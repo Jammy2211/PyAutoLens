@@ -13,10 +13,6 @@ Big Picture:
 
 - RJLens pipelines.
 
-SLACS:
-
-- Swap results of slacs1250 from hyper_galaxies to hyper_galaxies_bg_noise
-
 UV Plane:
 
 - Extend lens_data to have LensCCDData, LensInterferometerData.
