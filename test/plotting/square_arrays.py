@@ -4,7 +4,7 @@ from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
-from autolens.lens import lens_fit
+from autolens.lens.lens_fit import lens_image_fit
 from autolens.lens import lens_data as ld
 from autolens.lens.plotters import lens_fit_plotters
 from test.simulation import simulation_util
@@ -47,7 +47,7 @@ source_galaxy = al.Galaxy(
 lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
-fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
+fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
 
 lens_fit_plotters.plot_fit_subplot(

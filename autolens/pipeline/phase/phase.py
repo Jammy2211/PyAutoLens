@@ -8,22 +8,21 @@ from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 
 
-def default_mask_function(image, sub_size):
+def default_mask_function(image):
     return msk.Mask.circular(
-        shape=image.shape, pixel_scale=image.pixel_scale, sub_size=sub_size, radius_arcsec=3.0
+        shape=image.shape, pixel_scale=image.pixel_scale, sub_size=1, radius_arcsec=3.0
     )
 
 
 def setup_phase_mask(data, mask, sub_size, mask_function, inner_mask_radii):
 
-    if mask is not None:
-        if mask.sub_size != sub_size:
-            mask = mask.new_mask_with_new_sub_size(sub_size=sub_size)
-
     if mask_function is not None:
         mask = mask_function(image=data.image, sub_size=sub_size)
     elif mask is None and mask_function is None:
-        mask = default_mask_function(image=data.image, sub_size=sub_size)
+        mask = default_mask_function(image=data.image)
+
+    if mask.sub_size != sub_size:
+        mask = mask.new_mask_with_new_sub_size(sub_size=sub_size)
 
     if inner_mask_radii is not None:
         inner_mask = msk.Mask.circular(
