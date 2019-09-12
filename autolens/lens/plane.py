@@ -517,7 +517,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             lambda_tangential_2d, 0
         )
 
-        if tangential_critical_curve_indices == []:
+        if len(tangential_critical_curve_indices) == 0:
             return []
 
         return grid.marching_squares_grid_pixels_to_grid_arcsec(
@@ -533,7 +533,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
 
-        if radial_critical_curve_indices == []:
+        if len(radial_critical_curve_indices) == 0:
             return []
 
         return grid.marching_squares_grid_pixels_to_grid_arcsec(
@@ -544,7 +544,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         tangential_critical_curve = self.tangential_critical_curve_from_grid(grid=grid)
 
-        if tangential_critical_curve == []:
+        if len(tangential_critical_curve) == 0:
             return []
 
         deflections_1d = self.deflections_from_grid(
@@ -557,7 +557,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         radial_critical_curve = self.radial_critical_curve_from_grid(grid=grid)
 
-        if radial_critical_curve == []:
+        if len(radial_critical_curve) == 0:
             return []
 
         deflections_1d = self.deflections_from_grid(
