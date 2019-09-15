@@ -4,13 +4,13 @@ from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
-from autolens.lens.lens_fit import lens_image_fit
+from autolens.lens.lens_fit import lens_imaging_fit
 from autolens.lens import lens_data as ld
-from autolens.data.plotters import ccd_plotters
-from autolens.lens.plotters import lens_fit_plotters
+from autolens.data.plotters import imaging_plotters
+from autolens.lens.plotters import lens_imaging_fit_plotters
 from test.simulation import simulation_util
 
-ccd_data = simulation_util.load_test_ccd_data(
+imaging_data = simulation_util.load_test_imaging_data(
     data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
 )
 
@@ -18,8 +18,8 @@ ccd_data = simulation_util.load_test_ccd_data(
 def fit_with_offset_centre(centre):
 
     mask = al.Mask.elliptical(
-        shape=ccd_data.shape,
-        pixel_scale=ccd_data.pixel_scale,
+        shape=imaging_data.shape,
+        pixel_scale=imaging_data.pixel_scale,
         major_axis_radius_arcsec=3.0,
         axis_ratio=1.0,
         phi=0.0,
@@ -40,7 +40,7 @@ def fit_with_offset_centre(centre):
         regularization=al.regularization.Constant(coefficient=1.0),
     )
 
-    lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
+    lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
 
     pixelization_grid = source_galaxy.pixelization.traced_pixelization_grids_of_planes_from_grid(
         grid=lens_data.grid
@@ -54,14 +54,14 @@ def fit_with_offset_centre(centre):
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid=grid_stack_with_pixelization_grid,
     )
-    fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
+    fit = al.LensImageFit.from_lens_imaging_data_and_tracer(lens_imaging_data=lens_data, tracer=tracer)
 
     return fit
 
 
 fit = fit_with_offset_centre(centre=(1.0, 1.0))
 
-lens_fit_plotters.plot_fit_subplot(
+lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     extract_array_from_mask=True,
@@ -73,7 +73,7 @@ lens_fit_plotters.plot_fit_subplot(
 fit = fit_with_offset_centre(centre=(1.05, 1.05))
 
 
-lens_fit_plotters.plot_fit_subplot(
+lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     extract_array_from_mask=True,
@@ -84,7 +84,7 @@ lens_fit_plotters.plot_fit_subplot(
 
 fit = fit_with_offset_centre(centre=(1.1, 1.1))
 
-lens_fit_plotters.plot_fit_subplot(
+lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     extract_array_from_mask=True,
@@ -95,7 +95,7 @@ lens_fit_plotters.plot_fit_subplot(
 
 fit = fit_with_offset_centre(centre=(0.95, 0.95))
 
-lens_fit_plotters.plot_fit_subplot(
+lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     extract_array_from_mask=True,
@@ -106,7 +106,7 @@ lens_fit_plotters.plot_fit_subplot(
 
 fit = fit_with_offset_centre(centre=(5.9, 5.9))
 
-lens_fit_plotters.plot_fit_subplot(
+lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     extract_array_from_mask=True,

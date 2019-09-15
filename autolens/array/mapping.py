@@ -52,6 +52,7 @@ def reshape_returned_array(func):
         convolver = kwargs["convolver"] if "convolver" in kwargs else None
 
         return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
+        return_masked = kwargs["return_masked"] if "return_masked" in kwargs else True
 
         if hasattr(obj, "mapping"):
             mapping = obj.mapping
@@ -71,12 +72,15 @@ def reshape_returned_array(func):
             array_from_func = func(obj)
 
         return reshaped_array_from_array_and_mapping(
-            array=array_from_func, mapping=mapping, return_in_2d=return_in_2d
+            array=array_from_func, mapping=mapping, return_in_2d=return_in_2d, return_masked=return_masked,
         )
 
     return wrapper
 
-def reshaped_array_from_array_and_mapping(array, mapping, return_in_2d):
+def reshaped_array_from_array_and_mapping(array, mapping, return_in_2d, return_masked):
+
+    if return_in_2d and not return_masked:
+        return array
 
     if len(array.shape) == 2:
         array_1d = mapping.array_1d_from_array_2d(array_2d=array)
@@ -258,9 +262,9 @@ class Mapping(object):
         return self.mask.origin
 
     @property
-    def mask_1d_index_to_mask_2d_index(self):
+    def mask_1d_index_tomask_index(self):
         """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
-        return mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_size(
+        return mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
             mask=self.mask, sub_size=1
         ).astype(
             "int"
@@ -338,9 +342,9 @@ class Mapping(object):
         )
 
     @property
-    def sub_mask_1d_index_to_sub_mask_2d_index(self):
+    def sub_mask_1d_index_to_submask_index(self):
         """A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates."""
-        return mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_size(
+        return mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
             mask=self.mask, sub_size=self.sub_size
         ).astype(
             "int"

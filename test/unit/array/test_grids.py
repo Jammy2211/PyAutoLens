@@ -36,8 +36,8 @@ class TestGrid:
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scale == 2.0
         assert (
-            grid.mask.mapping.mask_1d_index_to_mask_2d_index
-            == mask.mapping.mask_1d_index_to_mask_2d_index
+            grid.mask.mapping.mask_1d_index_tomask_index
+            == mask.mapping.mask_1d_index_tomask_index
         ).all()
         assert grid.interpolator == None
 
@@ -217,8 +217,8 @@ class TestGrid:
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scale == 2.0
         assert (
-            grid.mapping.mask_1d_index_to_mask_2d_index
-            == mask.mapping.mask_1d_index_to_mask_2d_index
+            grid.mapping.mask_1d_index_tomask_index
+            == mask.mapping.mask_1d_index_tomask_index
         ).all()
 
         mask = np.array(
@@ -269,8 +269,8 @@ class TestGrid:
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scale == 2.0
         assert (
-            blurring_grid.mask.mapping.mask_1d_index_to_mask_2d_index
-            == blurring_mask.mapping.mask_1d_index_to_mask_2d_index
+            blurring_grid.mask.mapping.mask_1d_index_tomask_index
+            == blurring_mask.mapping.mask_1d_index_tomask_index
         ).all()
         assert blurring_grid.sub_size == 1
 
@@ -309,8 +309,8 @@ class TestGrid:
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scale == 2.0
         assert (
-            blurring_grid.mask.mapping.mask_1d_index_to_mask_2d_index
-            == blurring_mask.mapping.mask_1d_index_to_mask_2d_index
+            blurring_grid.mask.mapping.mask_1d_index_tomask_index
+            == blurring_mask.mapping.mask_1d_index_tomask_index
         ).all()
         assert blurring_grid.sub_size == 1
 

@@ -196,7 +196,7 @@ class Grid(np.ndarray):
         via PSF convolution. For example, if our mask is as follows:
         
         |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an ccd.Mask, where:
+        |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
         |x|x|x|x|x|x|x|x|x|x|
         |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
         |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
@@ -663,7 +663,7 @@ class BinnedGrid(Grid):
         )
 
         binned_grid = Grid.from_mask(mask=binned_mask)
-        binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
+        binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.binned_masked_array_1d_to_masked_array_1d_all_frommask_and_bin_up_factor(
             mask_2d=mask, bin_up_factor=bin_up_factor
         )
 
@@ -917,7 +917,7 @@ class Interpolator(object):
 
         rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
 
-        rescaled_mask = mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        rescaled_mask = mask_util.rescaledmask_frommask_and_rescale_factor(
             mask_2d=mask, rescale_factor=rescale_factor
         )
 

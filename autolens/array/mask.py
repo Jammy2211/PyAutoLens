@@ -339,14 +339,14 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
         sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
 
-        return mask_util.mask_from_shape_and_mask_1d_index_to_mask_2d_index(
+        return mask_util.mask_from_shape_and_mask_1d_index_tomask_index(
             shape=sub_shape,
-            mask_1d_index_to_mask_2d_index=self.mapping.sub_mask_1d_index_to_sub_mask_2d_index,
+            mask_1d_index_tomask_index=self.mapping.sub_mask_1d_index_to_submask_index,
         )
 
     def binned_up_mask_from_mask(self, bin_up_factor):
 
-        binned_up_mask = binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(
+        binned_up_mask = binning_util.binned_upmask_frommask_and_bin_up_factor(
             mask_2d=self, bin_up_factor=bin_up_factor
         )
 
@@ -359,7 +359,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     def binned_up_mask_sub_size_1_from_mask(self, bin_up_factor):
 
-        binned_up_mask = binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(
+        binned_up_mask = binning_util.binned_upmask_frommask_and_bin_up_factor(
             mask_2d=self, bin_up_factor=bin_up_factor
         )
 

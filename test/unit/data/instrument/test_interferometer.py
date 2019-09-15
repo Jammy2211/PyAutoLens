@@ -13,266 +13,36 @@ test_data_dir = "{}/../../test_files/array/".format(
 
 class TestInterferometerData(object):
     class TestNewInterferometerDataResized:
-        def test__all_components_resized__psf_and_primary_beam_are_not(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            image_array[3, 3] = 2.0
-
-            noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
-            )
-            noise_map_array[3, 3] = 3.0
-
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
-            )
-            exposure_time_map_array[3, 3] = 5.0
-
-            interferometer_data = al.InterferometerData(
-                image=image_array,
-                pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
-                primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scale=1.0),
-                noise_map=noise_map_array,
-                exposure_time_map=exposure_time_map_array,
-                visibilities=np.array([[1, 1]]),
-                visibilities_noise_map=1,
-                uv_wavelengths=1,
-            )
-
-            interferometer_data = interferometer_data.new_interferometer_data_with_resized_arrays(
-                new_shape=(4, 4)
-            )
-
-            assert (
-                interferometer_data.image
-                == np.array(
-                    [
-                        [1.0, 1.0, 1.0, 1.0],
-                        [1.0, 1.0, 1.0, 1.0],
-                        [1.0, 1.0, 2.0, 1.0],
-                        [1.0, 1.0, 1.0, 1.0],
-                    ]
-                )
-            ).all()
-            assert (
-                interferometer_data.noise_map
-                == np.array(
-                    [
-                        [1.0, 1.0, 1.0, 1.0],
-                        [1.0, 1.0, 1.0, 1.0],
-                        [1.0, 1.0, 3.0, 1.0],
-                        [1.0, 1.0, 1.0, 1.0],
-                    ]
-                )
-            ).all()
-
-            assert (
-                interferometer_data.exposure_time_map
-                == np.array(
-                    [
-                        [1.0, 1.0, 1.0, 1.0],
-                        [1.0, 1.0, 1.0, 1.0],
-                        [1.0, 1.0, 5.0, 1.0],
-                        [1.0, 1.0, 1.0, 1.0],
-                    ]
-                )
-            ).all()
-
-            assert interferometer_data.pixel_scale == 1.0
-            assert (interferometer_data.psf == np.zeros((3, 3))).all()
-            assert (interferometer_data.primary_beam == np.zeros((5, 5))).all()
-            assert interferometer_data.origin == (0.0, 0.0)
-
-        def test__resize_psf(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-
-            interferometer_data = al.InterferometerData(
-                image=image_array,
-                pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
-                primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scale=1.0),
-                noise_map=1,
-                exposure_time_map=1,
-                visibilities=np.array([[1, 1]]),
-                visibilities_noise_map=1,
-                uv_wavelengths=1,
-            )
-
-            interferometer_data = interferometer_data.new_interferometer_data_with_resized_psf(
-                new_shape=(1, 1)
-            )
-
-            assert (interferometer_data.image == np.ones((6, 6))).all()
-            assert interferometer_data.pixel_scale == 1.0
-            assert (interferometer_data.psf == np.zeros((1, 1))).all()
-            assert interferometer_data.origin == (0.0, 0.0)
 
         def test__resize_primary_beam(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
 
             interferometer_data = al.InterferometerData(
-                image=image_array,
+                shape=(2,2),
+                visibilities=np.array([[1, 1]]),
                 pixel_scale=1.0,
-                psf=1,
                 primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scale=1.0),
                 noise_map=1,
                 exposure_time_map=1,
-                visibilities=np.array([[1, 1]]),
-                visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
 
             interferometer_data = interferometer_data.new_interferometer_data_with_resized_primary_beam(
                 new_shape=(1, 1)
             )
-
-            assert (interferometer_data.image == np.ones((6, 6))).all()
             assert interferometer_data.pixel_scale == 1.0
             assert (interferometer_data.primary_beam == np.zeros((1, 1))).all()
             assert interferometer_data.origin == (0.0, 0.0)
 
-        def test__input_new_centre_pixels__arrays_use_new_centre__psf_and_primary_beam_do_not(
-            self
-        ):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            image_array[3, 3] = 2.0
-
-            noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
-            )
-            noise_map_array[3, 3] = 3.0
-
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
-            )
-            exposure_time_map_array[3, 3] = 5.0
-
-            interferometer_data = al.InterferometerData(
-                image=image_array,
-                pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
-                primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scale=1.0),
-                noise_map=noise_map_array,
-                exposure_time_map=exposure_time_map_array,
-                visibilities=np.array([[1, 1]]),
-                visibilities_noise_map=1,
-                uv_wavelengths=1,
-            )
-
-            interferometer_data = interferometer_data.new_interferometer_data_with_resized_arrays(
-                new_shape=(3, 3), new_centre_pixels=(3, 3)
-            )
-
-            assert (
-                interferometer_data.image
-                == np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])
-            ).all()
-            assert (
-                interferometer_data.noise_map
-                == np.array([[1.0, 1.0, 1.0], [1.0, 3.0, 1.0], [1.0, 1.0, 1.0]])
-            ).all()
-
-            assert (
-                interferometer_data.exposure_time_map
-                == np.array([[1.0, 1.0, 1.0], [1.0, 5.0, 1.0], [1.0, 1.0, 1.0]])
-            ).all()
-
-            assert interferometer_data.pixel_scale == 1.0
-            assert (interferometer_data.psf == np.zeros((3, 3))).all()
-            assert (interferometer_data.primary_beam == np.zeros((5, 5))).all()
-            assert interferometer_data.origin == (0.0, 0.0)
-
-        def test__input_new_centre_arcsec__arrays_use_new_centre__psf_and_primary_beam_do_not(
-            self
-        ):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            image_array[3, 3] = 2.0
-
-            noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
-            )
-            noise_map_array[3, 3] = 3.0
-
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
-            )
-            exposure_time_map_array[3, 3] = 5.0
-
-            interferometer_data = al.InterferometerData(
-                image=image_array,
-                pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
-                primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scale=1.0),
-                noise_map=noise_map_array,
-                exposure_time_map=exposure_time_map_array,
-                visibilities=np.array([[1, 1]]),
-                visibilities_noise_map=1,
-                uv_wavelengths=1,
-            )
-
-            interferometer_data = interferometer_data.new_interferometer_data_with_resized_arrays(
-                new_shape=(3, 3), new_centre_arcsec=(-0.5, 0.5)
-            )
-
-            assert (
-                interferometer_data.image
-                == np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])
-            ).all()
-            assert (
-                interferometer_data.noise_map
-                == np.array([[1.0, 1.0, 1.0], [1.0, 3.0, 1.0], [1.0, 1.0, 1.0]])
-            ).all()
-            assert (
-                interferometer_data.exposure_time_map
-                == np.array([[1.0, 1.0, 1.0], [1.0, 5.0, 1.0], [1.0, 1.0, 1.0]])
-            ).all()
-
-            assert interferometer_data.pixel_scale == 1.0
-            assert (interferometer_data.psf == np.zeros((3, 3))).all()
-            assert (interferometer_data.primary_beam == np.zeros((5, 5))).all()
-            assert interferometer_data.origin == (0.0, 0.0)
-
-        def test__input_both_centres__raises_error(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            interferometer_data = al.InterferometerData(
-                image=image_array,
-                pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
-                primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scale=1.0),
-                noise_map=1,
-                exposure_time_map=1,
-                visibilities=np.array([[1, 1]]),
-                visibilities_noise_map=1,
-                uv_wavelengths=1,
-            )
-
-            with pytest.raises(exc.DataException):
-                interferometer_data.new_interferometer_data_with_resized_arrays(
-                    new_shape=(3, 3),
-                    new_centre_pixels=(3, 3),
-                    new_centre_arcsec=(-0.5, 0.5),
-                )
-
     class TestNewImageConvertedFrom:
         def test__counts__all_arrays_in_units_of_flux_are_converted(self):
 
-            image_array = al.ScaledSquarePixelArray(np.ones((3, 3)), pixel_scale=1.0)
-            noise_map_array = al.ScaledSquarePixelArray(
-                2.0 * np.ones((3, 3)), pixel_scale=1.0
-            )
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                0.5 * np.ones((3, 3)), pixel_scale=1.0
-            )
-
             interferometer_data = al.InterferometerData(
-                image=image_array,
+                shape=(2,2),
+                visibilities=np.ones((3,2)),
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
-                noise_map=noise_map_array,
-                exposure_time_map=exposure_time_map_array,
+                noise_map=2.0*np.ones((3,)),
+                exposure_time_map=0.5*np.ones((3,)),
                 primary_beam=1,
-                visibilities=np.array([[1, 1]]),
-                visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
 
@@ -280,29 +50,19 @@ class TestInterferometerData(object):
                 interferometer_data.new_interferometer_data_converted_from_electrons()
             )
 
-            assert (interferometer_data.image == 2.0 * np.ones((3, 3))).all()
-            assert (interferometer_data.noise_map == 4.0 * np.ones((3, 3))).all()
+            assert (interferometer_data.visibilities == 2.0 * np.ones((3, 2))).all()
+            assert (interferometer_data.noise_map == 4.0 * np.ones((3,))).all()
             assert interferometer_data.origin == (0.0, 0.0)
 
         def test__adus__all_arrays_in_units_of_flux_are_converted(self):
 
-            image_array = al.ScaledSquarePixelArray(np.ones((3, 3)), pixel_scale=1.0)
-            noise_map_array = al.ScaledSquarePixelArray(
-                2.0 * np.ones((3, 3)), pixel_scale=1.0
-            )
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                0.5 * np.ones((3, 3)), pixel_scale=1.0
-            )
-
             interferometer_data = al.InterferometerData(
-                image=image_array,
+                shape=(2,2),
+                visibilities=np.ones((3,2)),
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
-                noise_map=noise_map_array,
-                exposure_time_map=exposure_time_map_array,
+                noise_map=2.0*np.ones((3,)),
+                exposure_time_map=0.5*np.ones((3)),
                 primary_beam=1,
-                visibilities=np.array([[1, 1]]),
-                visibilities_noise_map=1,
                 uv_wavelengths=1,
             )
 
@@ -310,8 +70,8 @@ class TestInterferometerData(object):
                 gain=2.0
             )
 
-            assert (interferometer_data.image == 2.0 * 2.0 * np.ones((3, 3))).all()
-            assert (interferometer_data.noise_map == 2.0 * 4.0 * np.ones((3, 3))).all()
+            assert (interferometer_data.visibilities == 2.0 * 2.0 * np.ones((3, 2))).all()
+            assert (interferometer_data.noise_map == 2.0 * 4.0 * np.ones((3,))).all()
             assert interferometer_data.origin == (0.0, 0.0)
 
 
@@ -758,10 +518,6 @@ class TestSimulateInterferometerData(object):
             simulated_visibilities, 1.0e-4
         )
         assert interferometer_data_simulated.pixel_scale == 0.1
-        assert (
-            interferometer_data_simulated.image
-            == np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
-        ).all()
 
     def test__setup_with_background_sky_on__noise_off__no_noise_in_image__noise_map_is_noise_value(
         self, transformer_7x7_7
@@ -801,11 +557,7 @@ class TestSimulateInterferometerData(object):
         ).all()
         assert interferometer_data_simulated.pixel_scale == 0.1
 
-        assert (
-            interferometer_data_simulated.image
-            == np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
-        ).all()
-        assert interferometer_data_simulated.visibilities_noise_map == 0.2 * np.ones(
+        assert interferometer_data_simulated.noise_map == 0.2 * np.ones(
             (6, 2)
         )
 
@@ -836,10 +588,6 @@ class TestSimulateInterferometerData(object):
         ).all()
         assert interferometer_data_simulated.pixel_scale == 0.1
 
-        assert interferometer_data_simulated.image == pytest.approx(
-            np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]]), 1e-2
-        )
-
         assert interferometer_data_simulated.visibilities[0, :] == pytest.approx(
             [1.728611, -2.582958], 1.0e-4
         )
@@ -848,10 +596,10 @@ class TestSimulateInterferometerData(object):
         )
 
         assert visibilities_noise_map_realization == pytest.approx(
-            interferometer_data_simulated.visibilities_noise_map_realization, 1.0e-4
+            interferometer_data_simulated.noise_map_realization, 1.0e-4
         )
 
-        assert interferometer_data_simulated.visibilities_noise_map == 0.1 * np.ones(
+        assert interferometer_data_simulated.noise_map == 0.1 * np.ones(
             (6, 2)
         )
 
@@ -904,11 +652,6 @@ class TestSimulateInterferometerData(object):
         )
 
         assert (
-            interferometer_data_simulated_via_deflections.image
-            == interferometer_data_simulated.image
-        ).all()
-
-        assert (
             interferometer_data_simulated_via_deflections.exposure_time_map
             == interferometer_data_simulated.exposure_time_map
         ).all()
@@ -918,8 +661,8 @@ class TestSimulateInterferometerData(object):
         ).all()
 
         assert (
-            interferometer_data_simulated_via_deflections.visibilities_noise_map
-            == interferometer_data_simulated.visibilities_noise_map
+            interferometer_data_simulated_via_deflections.noise_map
+            == interferometer_data_simulated.noise_map
         ).all()
 
     def test__from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
@@ -964,11 +707,6 @@ class TestSimulateInterferometerData(object):
         )
 
         assert (
-            interferometer_data_simulated_via_tracer.image
-            == interferometer_data_simulated.image
-        ).all()
-
-        assert (
             interferometer_data_simulated_via_tracer.exposure_time_map
             == interferometer_data_simulated.exposure_time_map
         ).all()
@@ -978,8 +716,8 @@ class TestSimulateInterferometerData(object):
         ).all()
 
         assert (
-            interferometer_data_simulated_via_tracer.visibilities_noise_map
-            == interferometer_data_simulated.visibilities_noise_map
+            interferometer_data_simulated_via_tracer.noise_map
+            == interferometer_data_simulated.noise_map
         ).all()
 
     class TestCreateGaussianNoiseMap(object):
@@ -1011,26 +749,20 @@ class TestInterferometerFromFits(object):
     def test__no_settings_just_pass_fits(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
+            shape=(7,7),
             pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            visibilities_noise_map_path=test_data_dir + "3_threes.fits",
+            noise_map_path=test_data_dir + "3_threes.fits",
             u_wavelengths_path=test_data_dir + "3_fours.fits",
             v_wavelengths_path=test_data_dir + "3_fives.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
-            renormalize_psf=False,
             renormalize_primary_beam=False,
         )
 
-        assert (interferometer_data.image == np.ones((3, 3))).all()
-        assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
         assert (interferometer_data.visibilities[:, 0] == np.ones(3)).all()
         assert (interferometer_data.visibilities[:, 1] == 2.0 * np.ones(3)).all()
-        assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
+        assert (interferometer_data.noise_map == 3.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:, 0] == 4.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:, 1] == 5.0 * np.ones(3)).all()
         assert (interferometer_data.primary_beam == 5.0 * np.ones((3, 3))).all()
@@ -1040,35 +772,28 @@ class TestInterferometerFromFits(object):
     def test__optional_array_paths_included__loads_optional_array(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
+            shape=(7,7),
             pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
+            noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
+            exposure_time_map_path=test_data_dir + "3_sixes.fits",
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            renormalize_psf=False,
             renormalize_primary_beam=False,
         )
 
-        assert (interferometer_data.image == np.ones((3, 3))).all()
-        assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
+        assert (interferometer_data.noise_map == 3.0 * np.ones((3,))).all()
         assert (interferometer_data.primary_beam == 5.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
+        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3,))).all()
 
         assert interferometer_data.pixel_scale == 0.1
 
     def test__all_files_in_one_fits__load_using_different_hdus(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_multiple_hdu.fits",
-            image_hdu=0,
+            shape=(7,7),
             pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_multiple_hdu.fits",
-            psf_hdu=1,
-            noise_map_path=test_data_dir + "3x3_multiple_hdu.fits",
+            noise_map_path=test_data_dir + "3_multiple_hdu.fits",
             noise_map_hdu=2,
             primary_beam_path=test_data_dir + "3x3_multiple_hdu.fits",
             primary_beam_hdu=3,
@@ -1078,98 +803,51 @@ class TestInterferometerFromFits(object):
             real_visibilities_hdu=0,
             imaginary_visibilities_path=test_data_dir + "3_multiple_hdu.fits",
             imaginary_visibilities_hdu=1,
-            visibilities_noise_map_path=test_data_dir + "3_multiple_hdu.fits",
-            visibilities_noise_map_hdu=2,
             u_wavelengths_path=test_data_dir + "3_multiple_hdu.fits",
             u_wavelengths_hdu=3,
             v_wavelengths_path=test_data_dir + "3_multiple_hdu.fits",
             v_wavelengths_hdu=4,
-            renormalize_psf=False,
             renormalize_primary_beam=False,
         )
 
-        assert (interferometer_data.image == np.ones((3, 3))).all()
-        assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
         assert (interferometer_data.primary_beam == 4.0 * np.ones((3, 3))).all()
         assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
         assert (interferometer_data.visibilities[:, 0] == np.ones(3)).all()
         assert (interferometer_data.visibilities[:, 1] == 2.0 * np.ones(3)).all()
-        assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
+        assert (interferometer_data.noise_map == 3.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:, 0] == 4.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:, 1] == 5.0 * np.ones(3)).all()
 
         assert interferometer_data.pixel_scale == 0.1
-        assert interferometer_data.psf.pixel_scale == 0.1
-        assert interferometer_data.noise_map.pixel_scale == 0.1
-        assert interferometer_data.exposure_time_map.pixel_scale == 0.1
 
     def test__exposure_time_included__creates_exposure_time_map_using_exposure_time(
         self
     ):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
-            noise_map_path=test_data_dir + "3x3_ones.fits",
-            psf_path=test_data_dir + "3x3_ones.fits",
+            shape=(7,7),
+            noise_map_path=test_data_dir + "3_ones.fits",
             primary_beam_path=test_data_dir + "3x3_ones.fits",
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
             pixel_scale=0.1,
             exposure_time_map_from_single_value=3.0,
-            renormalize_psf=False,
         )
 
-        assert (interferometer_data.exposure_time_map == 3.0 * np.ones((3, 3))).all()
+        assert (interferometer_data.exposure_time_map == 3.0 * np.ones((3,))).all()
 
-    def test__pad_shape_of_image_arrays_and_psf(self):
+    def test__pad_shape_of_primary_beam(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
+            shape=(7, 7),
             pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
+            noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
+            exposure_time_map_path=test_data_dir + "3_sixes.fits",
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            resized_interferometer_shape=(5, 5),
-            resized_psf_shape=(7, 7),
             resized_primary_beam_shape=(9, 9),
-            renormalize_psf=False,
             renormalize_primary_beam=False,
-        )
-
-        padded_array = np.array(
-            [
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 1.0, 1.0, 0.0],
-                [0.0, 1.0, 1.0, 1.0, 0.0],
-                [0.0, 1.0, 1.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
-        )
-
-        exposure_padded_array = np.array(
-            [
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 6.0, 6.0, 6.0, 0.0],
-                [0.0, 6.0, 6.0, 6.0, 0.0],
-                [0.0, 6.0, 6.0, 6.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
-        )
-
-        psf_padded_array = np.array(
-            [
-                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],
-                [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],
-                [0.0, 0.0, 2.0, 2.0, 2.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
         )
 
         primary_beam_padded_array = np.array(
@@ -1186,240 +864,121 @@ class TestInterferometerFromFits(object):
             ]
         )
 
-        assert (interferometer_data.image == padded_array).all()
-        assert (interferometer_data.psf == psf_padded_array).all()
-        assert (interferometer_data.noise_map == 3.0 * padded_array).all()
-        assert (interferometer_data.exposure_time_map == 6.0 * padded_array).all()
         assert (interferometer_data.primary_beam == primary_beam_padded_array).all()
-        assert (interferometer_data.exposure_time_map == exposure_padded_array).all()
 
         assert interferometer_data.pixel_scale == 0.1
 
-    def test__trim_shape_of_image_arrays_and_psf(self):
+    def test__trim_shape_of_primary_beam(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
+            shape=(7, 7),
             pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
+            noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
+            exposure_time_map_path=test_data_dir + "3_sixes.fits",
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            resized_interferometer_shape=(1, 1),
-            resized_psf_shape=(1, 1),
-            renormalize_psf=False,
+            resized_primary_beam_shape=(1, 1),
             renormalize_primary_beam=False,
         )
 
         trimmed_array = np.array([[1.0]])
 
-        assert (interferometer_data.image == trimmed_array).all()
-        assert (interferometer_data.psf == 2.0 * trimmed_array).all()
-        assert (interferometer_data.noise_map == 3.0 * trimmed_array).all()
         assert (interferometer_data.primary_beam == 5.0 * trimmed_array).all()
-        assert (interferometer_data.exposure_time_map == 6.0 * trimmed_array).all()
 
         assert interferometer_data.pixel_scale == 0.1
-        assert interferometer_data.psf.pixel_scale == 0.1
-        assert interferometer_data.noise_map.pixel_scale == 0.1
-        assert interferometer_data.exposure_time_map.pixel_scale == 0.1
 
-    def test__convert_noise_map_from_weight_map(self):
+    def test__primary_beam_renormalized_false__does_not_renormalize_primary_beam(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
+            shape=(7,7),
             pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
+            noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
+            exposure_time_map_path=test_data_dir + "3_sixes.fits",
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            convert_noise_map_from_weight_map=True,
-            renormalize_psf=False,
-        )
-
-        noise_map_converted = al.NoiseMap.from_weight_map(
-            weight_map=3.0 * np.ones((3, 3)), pixel_scale=0.1
-        )
-
-        assert (interferometer_data.image == np.ones((3, 3))).all()
-        assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.noise_map == noise_map_converted).all()
-        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
-
-        assert interferometer_data.pixel_scale == 0.1
-        assert interferometer_data.psf.pixel_scale == 0.1
-        assert interferometer_data.noise_map.pixel_scale == 0.1
-        assert interferometer_data.exposure_time_map.pixel_scale == 0.1
-
-    def test__convert_noise_map_from_inverse_noise_map(self):
-
-        interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
-            primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
-            real_visibilities_path=test_data_dir + "3_ones.fits",
-            imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            convert_noise_map_from_inverse_noise_map=True,
-            renormalize_psf=False,
-        )
-
-        noise_map_converted = al.NoiseMap.from_inverse_noise_map(
-            inverse_noise_map=3.0 * np.ones((3, 3)), pixel_scale=0.1
-        )
-
-        assert (interferometer_data.image == np.ones((3, 3))).all()
-        assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.noise_map == noise_map_converted).all()
-        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
-
-        assert interferometer_data.pixel_scale == 0.1
-        assert interferometer_data.psf.pixel_scale == 0.1
-        assert interferometer_data.noise_map.pixel_scale == 0.1
-        assert interferometer_data.exposure_time_map.pixel_scale == 0.1
-
-    def test__psf_renormalized_true__renormalized_psf(self):
-
-        interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
-            primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
-            real_visibilities_path=test_data_dir + "3_ones.fits",
-            imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            renormalize_psf=True,
             renormalize_primary_beam=False,
         )
 
-        assert (interferometer_data.image == np.ones((3, 3))).all()
-        assert interferometer_data.psf == pytest.approx(
-            (1.0 / 9.0) * np.ones((3, 3)), 1e-2
-        )
         assert (interferometer_data.primary_beam == 5.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
+        assert (interferometer_data.noise_map == 3.0 * np.ones((3,))).all()
+        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3,))).all()
 
         assert interferometer_data.pixel_scale == 0.1
-        assert interferometer_data.psf.pixel_scale == 0.1
-        assert interferometer_data.noise_map.pixel_scale == 0.1
-        assert interferometer_data.exposure_time_map.pixel_scale == 0.1
 
-    def test__primary_beam_renormalized_true__renormalized_psf(self):
+    def test__primary_beam_renormalized_true__renormalized_primary_beam(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
+            shape=(7,7),
             pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
+            noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
+            exposure_time_map_path=test_data_dir + "3_sixes.fits",
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            renormalize_psf=False,
             renormalize_primary_beam=True,
         )
 
-        assert (interferometer_data.image == np.ones((3, 3))).all()
-        assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
         assert interferometer_data.primary_beam == pytest.approx(
             (1.0 / 9.0) * np.ones((3, 3)), 1e-2
         )
-        assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
+        assert (interferometer_data.noise_map == 3.0 * np.ones((3,))).all()
+        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, ))).all()
 
         assert interferometer_data.pixel_scale == 0.1
-        assert interferometer_data.psf.pixel_scale == 0.1
-        assert interferometer_data.noise_map.pixel_scale == 0.1
-        assert interferometer_data.exposure_time_map.pixel_scale == 0.1
 
-    def test__convert_image_from_electrons_using_exposure_time(self):
+    def test__convert_visibilities_from_electrons_using_exposure_time(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
-            primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
+            shape=(2,2),
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            renormalize_psf=False,
+            pixel_scale=0.1,
+            noise_map_path=test_data_dir + "3_threes.fits",
+            primary_beam_path=test_data_dir + "3x3_fives.fits",
+            exposure_time_map_path=test_data_dir + "3_sixes.fits",
             renormalize_primary_beam=False,
             convert_from_electrons=True,
         )
 
-        assert (interferometer_data.image == np.ones((3, 3)) / 6.0).all()
-        assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3)) / 6.0).all()
-        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
+        assert (interferometer_data.visibilities[:,0] == np.ones((3,)) / 6.0).all()
+        assert (interferometer_data.visibilities[:,1] == 2.0* np.ones((3,)) / 6.0).all()
+        assert (interferometer_data.noise_map == 3.0 * np.ones((3,)) / 6.0).all()
+        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3,))).all()
 
         assert interferometer_data.pixel_scale == 0.1
-        assert interferometer_data.psf.pixel_scale == 0.1
-        assert interferometer_data.noise_map.pixel_scale == 0.1
-        assert interferometer_data.exposure_time_map.pixel_scale == 0.1
 
     def test__convert_image_from_adus_using_exposure_time_and_gain(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
-            primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
+            shape=(2,2),
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            renormalize_psf=False,
+            pixel_scale=0.1,
+            noise_map_path=test_data_dir + "3_threes.fits",
+            primary_beam_path=test_data_dir + "3x3_fives.fits",
+            exposure_time_map_path=test_data_dir + "3_sixes.fits",
             gain=2.0,
             convert_from_adus=True,
         )
 
-        assert (interferometer_data.image == 2.0 * np.ones((3, 3)) / 6.0).all()
-        assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
+        assert (interferometer_data.visibilities[:,0] == 2.0* np.ones((3,)) / 6.0).all()
+        assert (interferometer_data.visibilities[:,1] == 2.0*2.0*np.ones((3,)) / 6.0).all()
         assert (
             interferometer_data.noise_map == 2.0 * 3.0 * np.ones((3, 3)) / 6.0
         ).all()
         assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
 
         assert interferometer_data.pixel_scale == 0.1
-        assert interferometer_data.psf.pixel_scale == 0.1
-        assert interferometer_data.noise_map.pixel_scale == 0.1
-        assert interferometer_data.exposure_time_map.pixel_scale == 0.1
-
-    def test__no_noise_map_input__raises_imaging_exception(self):
-
-        with pytest.raises(exc.DataException):
-            al.load_interferometer_data_from_fits(
-                image_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
-                psf_path=test_data_dir + "3x3_twos.fits",
-            )
-
-    def test__multiple_noise_map_options__raises_imaging_exception(self):
-
-        with pytest.raises(exc.DataException):
-            al.load_interferometer_data_from_fits(
-                image_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
-                psf_path=test_data_dir + "3x3_twos.fits",
-                noise_map_path=test_data_dir + "3x3_threes.fits",
-                convert_noise_map_from_inverse_noise_map=True,
-                convert_noise_map_from_weight_map=True,
-            )
 
     def test__exposure_time_and_exposure_time_map_included__raies_imaging_error(self):
 
         with pytest.raises(exc.DataException):
             al.load_interferometer_data_from_fits(
-                image_path=test_data_dir + "3x3_ones.fits",
-                psf_path=test_data_dir + "3x3_ones.fits",
+                shape=(7,7),
+                real_visibilities_path=test_data_dir + "3_ones.fits",
+                imaginary_visibilities_path=test_data_dir + "3_twos.fits",
                 pixel_scale=0.1,
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 exposure_time_map_path=test_data_dir + "3x3_ones.fits",
@@ -1429,18 +988,15 @@ class TestInterferometerFromFits(object):
     def test__output_all_arrays(self):
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=test_data_dir + "3x3_ones.fits",
+            shape=(7,7),
             pixel_scale=0.1,
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
-            primary_beam_path=test_data_dir + "3x3_fives.fits",
-            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            visibilities_noise_map_path=test_data_dir + "3_threes.fits",
+            noise_map_path=test_data_dir + "3_threes.fits",
+            primary_beam_path=test_data_dir + "3x3_fives.fits",
+            exposure_time_map_path=test_data_dir + "3_sixes.fits",
             u_wavelengths_path=test_data_dir + "3_fours.fits",
             v_wavelengths_path=test_data_dir + "3_fives.fits",
-            renormalize_psf=False,
             renormalize_primary_beam=False,
         )
 
@@ -1454,47 +1010,36 @@ class TestInterferometerFromFits(object):
 
         al.output_interferometer_data_to_fits(
             interferometer_data=interferometer_data,
-            image_path=output_data_dir + "image.fits",
-            psf_path=output_data_dir + "psf.fits",
+            real_visibilities_path=output_data_dir + "real_visibilities.fits",
+            imaginary_visibilities_path=output_data_dir + "imaginary_visibilities.fits",
             noise_map_path=output_data_dir + "noise_map.fits",
             primary_beam_path=output_data_dir + "primary_beam.fits",
             exposure_time_map_path=output_data_dir + "exposure_time_map.fits",
-            real_visibilities_path=output_data_dir + "real_visibilities.fits",
-            imaginary_visibilities_path=output_data_dir + "imaginary_visibilities.fits",
-            visibilities_noise_map_path=output_data_dir + "visibilities_noise_map.fits",
             u_wavelengths_path=output_data_dir + "u_wavelengths.fits",
             v_wavelengths_path=output_data_dir + "v_wavelengths.fits",
             overwrite=True,
         )
 
         interferometer_data = al.load_interferometer_data_from_fits(
-            image_path=output_data_dir + "image.fits",
+            shape=(7,7),
             pixel_scale=0.1,
-            psf_path=output_data_dir + "psf.fits",
+            real_visibilities_path=output_data_dir + "real_visibilities.fits",
+            imaginary_visibilities_path=output_data_dir + "imaginary_visibilities.fits",
             noise_map_path=output_data_dir + "noise_map.fits",
             primary_beam_path=output_data_dir + "primary_beam.fits",
             exposure_time_map_path=output_data_dir + "exposure_time_map.fits",
-            real_visibilities_path=output_data_dir + "real_visibilities.fits",
-            imaginary_visibilities_path=output_data_dir + "imaginary_visibilities.fits",
-            visibilities_noise_map_path=output_data_dir + "visibilities_noise_map.fits",
             u_wavelengths_path=output_data_dir + "u_wavelengths.fits",
             v_wavelengths_path=output_data_dir + "v_wavelengths.fits",
-            renormalize_psf=False,
             renormalize_primary_beam=False,
         )
 
-        assert (interferometer_data.image == np.ones((3, 3))).all()
-        assert (interferometer_data.psf == 2.0 * np.ones((3, 3))).all()
         assert (interferometer_data.noise_map == 3.0 * np.ones((3, 3))).all()
         assert (interferometer_data.primary_beam == 5.0 * np.ones((3, 3))).all()
-        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
+        assert (interferometer_data.exposure_time_map == 6.0 * np.ones((3, ))).all()
         assert (interferometer_data.visibilities[:, 0] == np.ones(3)).all()
         assert (interferometer_data.visibilities[:, 1] == 2.0 * np.ones(3)).all()
-        assert (interferometer_data.visibilities_noise_map == 3.0 * np.ones(3)).all()
+        assert (interferometer_data.noise_map == 3.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:, 0] == 4.0 * np.ones(3)).all()
         assert (interferometer_data.uv_wavelengths[:, 1] == 5.0 * np.ones(3)).all()
 
         assert interferometer_data.pixel_scale == 0.1
-        assert interferometer_data.psf.pixel_scale == 0.1
-        assert interferometer_data.noise_map.pixel_scale == 0.1
-        assert interferometer_data.exposure_time_map.pixel_scale == 0.1

@@ -46,7 +46,7 @@ class VariableFixingHyperPhase(HyperPhase):
         return phase.run(
             data,
             results=results,
-            mask=results.last.mask_2d,
+            mask=results.last.mask,
             positions=results.last.positions,
         )
 

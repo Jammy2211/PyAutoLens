@@ -41,13 +41,13 @@ def plot_ray_tracing_subplot(
     output_filename="tracer",
     output_format="show",
 ):
-    """Plot the observed _tracer of an analysis, using the *CCD* class object.
+    """Plot the observed _tracer of an analysis, using the *Imaging* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
-    tracer : autolens.ccd.tracer.CCD
+    tracer : autolens.imaging.tracer.Imaging
         Class containing the _tracer,  noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -288,13 +288,13 @@ def plot_ray_tracing_individual(
     output_path=None,
     output_format="show",
 ):
-    """Plot the observed _tracer of an analysis, using the *CCD* class object.
+    """Plot the observed _tracer of an analysis, using the *Imaging* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
-    tracer : autolens.ccd.tracer.CCD
+    tracer : autolens.imaging.tracer.Imaging
         Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -408,7 +408,7 @@ def plot_profile_image(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Tracer CCD-Plane CCD",
+    title="Tracer Imaging-Plane Imaging",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,

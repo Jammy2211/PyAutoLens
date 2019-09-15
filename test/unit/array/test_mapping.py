@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 class TestMapping:
-    def test__mask_1d_index_to_mask_2d_index__compare_to_array_util(self):
+    def test__mask_1d_index_tomask_index__compare_to_array_util(self):
 
         mask = np.array([[True, True, True], [True, False, False], [True, True, False]])
 
@@ -12,12 +12,12 @@ class TestMapping:
 
         mapping = al.Mapping(mask=mask)
 
-        mask_1d_index_to_mask_2d_index = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_size(
+        mask_1d_index_tomask_index = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
             mask=mask, sub_size=1
         )
 
-        assert mapping.mask_1d_index_to_mask_2d_index == pytest.approx(
-            mask_1d_index_to_mask_2d_index, 1e-4
+        assert mapping.mask_1d_index_tomask_index == pytest.approx(
+            mask_1d_index_tomask_index, 1e-4
         )
 
     def test__array_1d_from_array_2d__compare_to_array_util(self):
@@ -126,19 +126,19 @@ class TestMapping:
 
         assert (grid_1d_util == grid_1d).all()
 
-    def test__sub_mask_1d_index_to_sub_mask_2d_index__compare_to_array_util(self):
+    def test__sub_mask_1d_index_to_submask_index__compare_to_array_util(self):
         mask = np.array([[True, True, True], [True, False, False], [True, True, False]])
 
         mask = al.Mask(array=mask, pixel_scale=7.0, sub_size=2)
 
         mapping = al.Mapping(mask=mask)
 
-        sub_mask_1d_index_to_sub_mask_2d_index = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_size(
+        sub_mask_1d_index_to_submask_index = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
-        assert mapping.sub_mask_1d_index_to_sub_mask_2d_index == pytest.approx(
-            sub_mask_1d_index_to_sub_mask_2d_index, 1e-4
+        assert mapping.sub_mask_1d_index_to_submask_index == pytest.approx(
+            sub_mask_1d_index_to_submask_index, 1e-4
         )
 
     def test__sub_array_2d_from_sub_array_1d__use_real_mask_and_grid(self):
