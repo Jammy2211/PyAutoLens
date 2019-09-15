@@ -626,10 +626,6 @@ class MockObject(object):
     ):
         return self.values
 
-    @al.mapping.reshape_returned_array
-    def array_from_grid_and_psf(self, grid, psf, return_in_2d=True, bypass_decorator=False):
-        return self.values
-
 class TestMappingArrayDecorator(object):
     def test__array_1d_from_function__decorator_changes_array_dimensions_depending_on_inputs(
         self
