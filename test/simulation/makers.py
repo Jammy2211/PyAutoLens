@@ -25,19 +25,19 @@ def simulate_image_from_galaxies_and_output_to_fits(
         shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale
     )
 
-    # Setup the image-plane al.ogrid of the CCD array which will be used for generating the image of the
+    # Setup the image-plane al.ogrid of the Imaging array which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
     image_plane_grid = al.Grid.from_shape_pixel_scale_and_sub_size(
         shape=shape, pixel_scale=pixel_scale, sub_size=sub_size
     )
 
-    # Use the input galaxies to setup a tracer, which will generate the image for the simulated CCD instrument.
+    # Use the input galaxies to setup a tracer, which will generate the image for the simulated Imaging instrument.
     tracer = al.Tracer.from_galaxies(galaxies=galaxies)
 
-    # Simulate the CCD instrument, remembering that we use a special image which ensures edge-effects don't
+    # Simulate the Imaging instrument, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
-    ccd_data = al.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
+    imaging_data = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         psf=psf,
@@ -47,30 +47,30 @@ def simulate_image_from_galaxies_and_output_to_fits(
         grid=image_plane_grid,
     )
 
-    # Now, lets output this simulated ccd-data to the test/data folder.
+    # Now, lets output this simulated imaging-data to the test/data folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
         path=test_path, folder_names=["data", data_type, data_resolution]
     )
 
-    al.output_ccd_data_to_fits(
-        ccd_data=ccd_data,
+    al.output_imaging_data_to_fits(
+        imaging_data=imaging_data,
         image_path=data_path + "image.fits",
         psf_path=data_path + "psf.fits",
         noise_map_path=data_path + "noise_map.fits",
         overwrite=True,
     )
 
-    al.ccd_plotters.plot_ccd_subplot(
-        ccd_data=ccd_data,
-        output_filename="ccd_data",
+    al.imaging_plotters.plot_imaging_subplot(
+        imaging_data=imaging_data,
+        output_filename="imaging_data",
         output_path=data_path,
         output_format="png",
     )
 
-    al.ccd_plotters.plot_ccd_individual(
-        ccd_data=ccd_data,
+    al.imaging_plotters.plot_imaging_individual(
+        imaging_data=imaging_data,
         should_plot_image=True,
         should_plot_noise_map=True,
         should_plot_psf=True,

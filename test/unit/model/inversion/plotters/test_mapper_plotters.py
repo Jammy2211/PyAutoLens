@@ -18,7 +18,7 @@ def make_image():
     noise_map = al.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
     psf = al.PSF(array=3.0 * np.ones((3, 3)), pixel_scale=1.0)
 
-    return al.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+    return al.ImagingData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
 
 @pytest.fixture(name="mask")
@@ -63,7 +63,7 @@ def test__image_and_rectangular_mapper_is_output(
     image, rectangular_mapper, mapper_plotter_path, plot_patch
 ):
     al.mapper_plotters.plot_image_and_mapper(
-        ccd_data=image,
+        imaging_data=image,
         mapper=rectangular_mapper,
         should_plot_centres=True,
         should_plot_grid=True,

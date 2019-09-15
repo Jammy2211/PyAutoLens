@@ -15,15 +15,15 @@ class TestGalaxyFitData(object):
         )
 
         assert galaxy_fit_data.pixel_scale == 1.0
-        assert (galaxy_fit_data.unmasked_image == np.ones((7, 7))).all()
-        assert (galaxy_fit_data.unmasked_noise_map == 2.0 * np.ones((7, 7))).all()
+        assert (galaxy_fit_data.image(return_in_2d=True, return_masked=False) == np.ones((7, 7))).all()
+        assert (galaxy_fit_data.noise_map(return_in_2d=True, return_masked=False) == 2.0 * np.ones((7, 7))).all()
 
-        assert (galaxy_fit_data.image_1d == np.ones(9)).all()
-        assert (galaxy_fit_data.noise_map_1d == 2.0 * np.ones(9)).all()
-        assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
+        assert (galaxy_fit_data._image_1d == np.ones(9)).all()
+        assert (galaxy_fit_data._noise_map_1d == 2.0 * np.ones(9)).all()
+        assert (galaxy_fit_data._mask_1d == np.full(fill_value=False, shape=(9))).all()
 
         assert (
-            galaxy_fit_data.mask(return_in_2d=True)
+            galaxy_fit_data.mask
             == np.array(
                 [
                     [True, True, True, True, True, True, True],
@@ -103,15 +103,15 @@ class TestGalaxyFitData(object):
         )
 
         assert galaxy_fit_data.pixel_scale == 1.0
-        assert (galaxy_fit_data.unmasked_image == np.ones((7, 7))).all()
-        assert (galaxy_fit_data.unmasked_noise_map == 2.0 * np.ones((7, 7))).all()
+        assert (galaxy_fit_data.image(return_in_2d=True, return_masked=False) == np.ones((7, 7))).all()
+        assert (galaxy_fit_data.noise_map(return_in_2d=True, return_masked=False) == 2.0 * np.ones((7, 7))).all()
 
-        assert (galaxy_fit_data.image_1d == np.ones(9)).all()
-        assert (galaxy_fit_data.noise_map_1d == 2.0 * np.ones(9)).all()
-        assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
+        assert (galaxy_fit_data._image_1d == np.ones(9)).all()
+        assert (galaxy_fit_data._noise_map_1d == 2.0 * np.ones(9)).all()
+        assert (galaxy_fit_data._mask_1d == np.full(fill_value=False, shape=(9))).all()
 
         assert (
-            galaxy_fit_data.mask(return_in_2d=True)
+            galaxy_fit_data.mask
             == np.array(
                 [
                     [True, True, True, True, True, True, True],
@@ -180,15 +180,15 @@ class TestGalaxyFitData(object):
         )
 
         assert galaxy_fit_data.pixel_scale == 1.0
-        assert (galaxy_fit_data.unmasked_image == np.ones((7, 7))).all()
-        assert (galaxy_fit_data.unmasked_noise_map == 2.0 * np.ones((7, 7))).all()
+        assert (galaxy_fit_data.image(return_in_2d=True, return_masked=False) == np.ones((7, 7))).all()
+        assert (galaxy_fit_data.noise_map(return_in_2d=True, return_masked=False) == 2.0 * np.ones((7, 7))).all()
 
-        assert (galaxy_fit_data.image_1d == np.ones(9)).all()
-        assert (galaxy_fit_data.noise_map_1d == 2.0 * np.ones(9)).all()
-        assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
+        assert (galaxy_fit_data._image_1d == np.ones(9)).all()
+        assert (galaxy_fit_data._noise_map_1d == 2.0 * np.ones(9)).all()
+        assert (galaxy_fit_data._mask_1d == np.full(fill_value=False, shape=(9))).all()
 
         assert (
-            galaxy_fit_data.mask(return_in_2d=True)
+            galaxy_fit_data.mask
             == np.array(
                 [
                     [True, True, True, True, True, True, True],
@@ -259,15 +259,15 @@ class TestGalaxyFitData(object):
         )
 
         assert galaxy_fit_data.pixel_scale == 1.0
-        assert (galaxy_fit_data.unmasked_image == np.ones((7, 7))).all()
-        assert (galaxy_fit_data.unmasked_noise_map == 2.0 * np.ones((7, 7))).all()
+        assert (galaxy_fit_data.image(return_in_2d=True, return_masked=False) == np.ones((7, 7))).all()
+        assert (galaxy_fit_data.noise_map(return_in_2d=True, return_masked=False) == 2.0 * np.ones((7, 7))).all()
 
-        assert (galaxy_fit_data.image_1d == np.ones(9)).all()
-        assert (galaxy_fit_data.noise_map_1d == 2.0 * np.ones(9)).all()
-        assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
+        assert (galaxy_fit_data._image_1d == np.ones(9)).all()
+        assert (galaxy_fit_data._noise_map_1d == 2.0 * np.ones(9)).all()
+        assert (galaxy_fit_data._mask_1d == np.full(fill_value=False, shape=(9))).all()
 
         assert (
-            galaxy_fit_data.mask(return_in_2d=True)
+            galaxy_fit_data.mask
             == np.array(
                 [
                     [True, True, True, True, True, True, True],
@@ -335,15 +335,15 @@ class TestGalaxyFitData(object):
             galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_deflections_y=True
         )
         assert galaxy_fit_data.pixel_scale == 1.0
-        assert (galaxy_fit_data.unmasked_image == np.ones((7, 7))).all()
-        assert (galaxy_fit_data.unmasked_noise_map == 2.0 * np.ones((7, 7))).all()
+        assert (galaxy_fit_data.image(return_in_2d=True, return_masked=False) == np.ones((7, 7))).all()
+        assert (galaxy_fit_data.noise_map(return_in_2d=True, return_masked=False) == 2.0 * np.ones((7, 7))).all()
 
-        assert (galaxy_fit_data.image_1d == np.ones(9)).all()
-        assert (galaxy_fit_data.noise_map_1d == 2.0 * np.ones(9)).all()
-        assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
+        assert (galaxy_fit_data._image_1d == np.ones(9)).all()
+        assert (galaxy_fit_data._noise_map_1d == 2.0 * np.ones(9)).all()
+        assert (galaxy_fit_data._mask_1d == np.full(fill_value=False, shape=(9))).all()
 
         assert (
-            galaxy_fit_data.mask(return_in_2d=True)
+            galaxy_fit_data.mask
             == np.array(
                 [
                     [True, True, True, True, True, True, True],
@@ -424,15 +424,15 @@ class TestGalaxyFitData(object):
         )
 
         assert galaxy_fit_data.pixel_scale == 1.0
-        assert (galaxy_fit_data.unmasked_image == np.ones((7, 7))).all()
-        assert (galaxy_fit_data.unmasked_noise_map == 2.0 * np.ones((7, 7))).all()
+        assert (galaxy_fit_data.image(return_in_2d=True, return_masked=False) == np.ones((7, 7))).all()
+        assert (galaxy_fit_data.noise_map(return_in_2d=True, return_masked=False) == 2.0 * np.ones((7, 7))).all()
 
-        assert (galaxy_fit_data.image_1d == np.ones(9)).all()
-        assert (galaxy_fit_data.noise_map_1d == 2.0 * np.ones(9)).all()
-        assert (galaxy_fit_data.mask_1d == np.full(fill_value=False, shape=(9))).all()
+        assert (galaxy_fit_data._image_1d == np.ones(9)).all()
+        assert (galaxy_fit_data._noise_map_1d == 2.0 * np.ones(9)).all()
+        assert (galaxy_fit_data._mask_1d == np.full(fill_value=False, shape=(9))).all()
 
         assert (
-            galaxy_fit_data.mask(return_in_2d=True)
+            galaxy_fit_data.mask
             == np.array(
                 [
                     [True, True, True, True, True, True, True],

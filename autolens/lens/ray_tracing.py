@@ -423,13 +423,13 @@ class AbstractTracerData(AbstractTracerLensing):
         bypass_decorator=False,
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a psf (see ccd.convolution).
+        PSF using a psf (see imaging.convolution).
 
         These are summed to give the tracer's overall blurred image in 1D.
 
         Parameters
         ----------
-        psf : hyper_galaxies.ccd.convolution.ConvolverImage
+        psf : hyper_galaxies.imaging.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -455,13 +455,13 @@ class AbstractTracerData(AbstractTracerLensing):
         self, grid, psf, preload_blurring_grid=None, return_in_2d=False
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a psf (see ccd.convolution).
+        PSF using a psf (see imaging.convolution).
 
         The blurred image of every plane is returned in 1D.
 
         Parameters
         ----------
-        psf : hyper_galaxies.ccd.convolution.ConvolverImage
+        psf : hyper_galaxies.imaging.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -492,13 +492,13 @@ class AbstractTracerData(AbstractTracerLensing):
         bypass_decorator=False,
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a convolver (see ccd.convolution).
+        PSF using a convolver (see imaging.convolution).
 
         These are summed to give the tracer's overall blurred image in 1D.
 
         Parameters
         ----------
-        convolver : hyper_galaxies.ccd.convolution.ConvolverImage
+        convolver : hyper_galaxies.imaging.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -530,13 +530,13 @@ class AbstractTracerData(AbstractTracerLensing):
         self, grid, convolver, preload_blurring_grid=None, return_in_2d=False
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a convolver (see ccd.convolution).
+        PSF using a convolver (see imaging.convolution).
 
         The blurred image of every plane is returned in 1D.
 
         Parameters
         ----------
-        convolver : hyper_galaxies.ccd.convolution.ConvolverImage
+        convolver : hyper_galaxies.imaging.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 

@@ -25,15 +25,15 @@ data_path = '{}/../data/'.format(os.path.dirname(os.path.realpath(__file__)))
 
 lens_name = 'example_lens'
 
-# Get the relative path to the data in our workspace & load the ccd imaging data.
-ccd_data = al.load_ccd_data_from_fits(
+# Get the relative path to the data in our workspace & load the imaging imaging data.
+imaging_data = al.load_imaging_data_from_fits(
     image_path=data_path + lens_name + '/image.fits',
     psf_path=data_path+lens_name+'/psf.fits',
     noise_map_path=data_path+lens_name+'/noise_map.fits', 
     pixel_scale=0.1)
 
 # Create a mask for the data, which we setup as a 3.0" circle.
-mask = al.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0)
+mask = al.Mask.circular(shape=imaging_data.shape, pixel_scale=imaging_data.pixel_scale, radius_arcsec=3.0)
 
 # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) & our source galaxy 
 # a light profile (an elliptical Sersic).
@@ -51,8 +51,8 @@ phase = al.PhaseImaging(
     galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
     phase_name='example/phase_example', optimizer_class=af.MultiNest)
 
-# We pass the ccd data and mask to the phase, thereby fitting it with the lens model above & plot the resulting fit.
-result = phase.run(data=ccd_data, mask=mask)
+# We pass the imaging data and mask to the phase, thereby fitting it with the lens model above & plot the resulting fit.
+result = phase.run(data=imaging_data, mask=mask)
 al.lens_fit_plotters.plot_fit_subplot(fit=result.most_likely_fit)
 ```
 

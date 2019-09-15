@@ -41,7 +41,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    ccd_simulated = al.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
+    imaging_simulated = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         exposure_time=100.0,
@@ -54,12 +54,12 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
         os.makedirs(output_path)
 
     array_util.numpy_array_2d_to_fits(
-        array_2d=ccd_simulated.image,
+        array_2d=imaging_simulated.image,
         file_path=output_path + "/image.fits",
         overwrite=True,
     )
     array_util.numpy_array_2d_to_fits(
-        array_2d=ccd_simulated.noise_map,
+        array_2d=imaging_simulated.noise_map,
         file_path=output_path + "/noise_map.fits",
         overwrite=True,
     )
@@ -67,7 +67,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
         array_2d=psf, file_path=output_path + "/psf.fits", overwrite=True
     )
     array_util.numpy_array_2d_to_fits(
-        array_2d=ccd_simulated.exposure_time_map,
+        array_2d=imaging_simulated.exposure_time_map,
         file_path=output_path + "/exposure_map.fits",
         overwrite=True,
     )
@@ -119,7 +119,7 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        ccd_data = al.load_ccd_data_from_fits(
+        imaging_data = al.load_imaging_data_from_fits(
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
@@ -143,7 +143,7 @@ class TestPhaseModelMapper(object):
         )
 
         initial_total_priors = phase.variable.prior_count
-        phase.make_analysis(data=ccd_data)
+        phase.make_analysis(data=imaging_data)
 
         assert phase.galaxies[0].sersic.intensity == al.Galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
@@ -192,7 +192,7 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        ccd_data = al.load_ccd_data_from_fits(
+        imaging_data = al.load_imaging_data_from_fits(
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
@@ -220,7 +220,7 @@ class TestPhaseModelMapper(object):
         phase.optimizer.n_live_points = 20
         phase.optimizer.sampling_efficiency = 0.8
 
-        phase.make_analysis(data=ccd_data)
+        phase.make_analysis(data=imaging_data)
 
         sersic = phase.variable.galaxies[0].sersic
 

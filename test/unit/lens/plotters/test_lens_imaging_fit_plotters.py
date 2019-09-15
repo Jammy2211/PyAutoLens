@@ -10,10 +10,10 @@ def make_lens_fit_plotter_setup():
     )
 
 
-def test__fit_sub_plot(lens_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch):
+def test__fit_sub_plot(lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch):
 
-    al.lens_fit_plotters.plot_fit_subplot(
-        fit=lens_fit_x2_plane_7x7,
+    al.lens_imaging_fit_plotters.plot_fit_subplot(
+        fit=lens_imaging_fit_x2_plane_7x7,
         should_plot_mask=True,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -27,11 +27,11 @@ def test__fit_sub_plot(lens_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch)
 
 
 def test__fit_for_plane_subplot(
-    lens_fit_x1_plane_7x7, lens_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
+    lens_imaging_fit_x1_plane_7x7, lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
 ):
 
-    al.lens_fit_plotters.plot_fit_subplot_for_plane(
-        fit=lens_fit_x1_plane_7x7,
+    al.lens_imaging_fit_plotters.plot_fit_subplot_for_plane(
+        fit=lens_imaging_fit_x1_plane_7x7,
         plane_index=0,
         should_plot_mask=True,
         extract_array_from_mask=True,
@@ -44,8 +44,8 @@ def test__fit_for_plane_subplot(
 
     assert lens_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
 
-    al.lens_fit_plotters.plot_fit_subplot_for_plane(
-        fit=lens_fit_x2_plane_7x7,
+    al.lens_imaging_fit_plotters.plot_fit_subplot_for_plane(
+        fit=lens_imaging_fit_x2_plane_7x7,
         plane_index=0,
         should_plot_mask=True,
         extract_array_from_mask=True,
@@ -58,8 +58,8 @@ def test__fit_for_plane_subplot(
 
     assert lens_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
 
-    al.lens_fit_plotters.plot_fit_subplot_for_plane(
-        fit=lens_fit_x2_plane_7x7,
+    al.lens_imaging_fit_plotters.plot_fit_subplot_for_plane(
+        fit=lens_imaging_fit_x2_plane_7x7,
         plane_index=1,
         should_plot_mask=True,
         extract_array_from_mask=True,
@@ -74,11 +74,11 @@ def test__fit_for_plane_subplot(
 
 
 def test__fit_for_planes_subplot(
-    lens_fit_x1_plane_7x7, lens_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
+    lens_imaging_fit_x1_plane_7x7, lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
 ):
 
-    al.lens_fit_plotters.plot_fit_subplot_of_planes(
-        fit=lens_fit_x1_plane_7x7,
+    al.lens_imaging_fit_plotters.plot_fit_subplot_of_planes(
+        fit=lens_imaging_fit_x1_plane_7x7,
         should_plot_mask=True,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -90,8 +90,8 @@ def test__fit_for_planes_subplot(
 
     assert lens_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
 
-    al.lens_fit_plotters.plot_fit_subplot_of_planes(
-        fit=lens_fit_x2_plane_7x7,
+    al.lens_imaging_fit_plotters.plot_fit_subplot_of_planes(
+        fit=lens_imaging_fit_x2_plane_7x7,
         should_plot_mask=True,
         extract_array_from_mask=True,
         zoom_around_mask=True,
@@ -106,11 +106,11 @@ def test__fit_for_planes_subplot(
 
 
 def test__fit_individuals__source_and_lens__depedent_on_input(
-    lens_fit_x1_plane_7x7, lens_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
+    lens_imaging_fit_x1_plane_7x7, lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
 ):
 
-    al.lens_fit_plotters.plot_fit_individuals(
-        fit=lens_fit_x1_plane_7x7,
+    al.lens_imaging_fit_plotters.plot_fit_individuals(
+        fit=lens_imaging_fit_x1_plane_7x7,
         should_plot_image=True,
         should_plot_noise_map=False,
         should_plot_signal_to_noise_map=False,
@@ -149,8 +149,8 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     assert lens_fit_plotter_path + "fit_plane_image_of_plane_0.png" in plot_patch.paths
 
-    al.lens_fit_plotters.plot_fit_individuals(
-        fit=lens_fit_x2_plane_7x7,
+    al.lens_imaging_fit_plotters.plot_fit_individuals(
+        fit=lens_imaging_fit_x2_plane_7x7,
         should_plot_image=True,
         should_plot_noise_map=False,
         should_plot_signal_to_noise_map=False,

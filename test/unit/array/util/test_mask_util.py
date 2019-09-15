@@ -1671,8 +1671,8 @@ class TestMaskFromShapeAndOneToTwo(object):
         one_to_two = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         shape = (2, 2)
 
-        mask_2d = al.mask_util.mask_from_shape_and_mask_1d_index_to_mask_2d_index(
-            shape=shape, mask_1d_index_to_mask_2d_index=one_to_two
+        mask_2d = al.mask_util.mask_from_shape_and_mask_1d_index_tomask_index(
+            shape=shape, mask_1d_index_tomask_index=one_to_two
         )
 
         assert (mask_2d == np.array([[False, False], [False, False]])).all()
@@ -1682,8 +1682,8 @@ class TestMaskFromShapeAndOneToTwo(object):
         one_to_two = np.array([[0, 0], [0, 1], [1, 0]])
         shape = (2, 2)
 
-        mask_2d = al.mask_util.mask_from_shape_and_mask_1d_index_to_mask_2d_index(
-            shape=shape, mask_1d_index_to_mask_2d_index=one_to_two
+        mask_2d = al.mask_util.mask_from_shape_and_mask_1d_index_tomask_index(
+            shape=shape, mask_1d_index_tomask_index=one_to_two
         )
 
         assert (mask_2d == np.array([[False, False], [False, True]])).all()
@@ -1693,8 +1693,8 @@ class TestMaskFromShapeAndOneToTwo(object):
         one_to_two = np.array([[0, 0], [0, 1], [1, 0], [2, 0], [2, 1], [2, 3]])
         shape = (3, 4)
 
-        mask_2d = al.mask_util.mask_from_shape_and_mask_1d_index_to_mask_2d_index(
-            shape=shape, mask_1d_index_to_mask_2d_index=one_to_two
+        mask_2d = al.mask_util.mask_from_shape_and_mask_1d_index_tomask_index(
+            shape=shape, mask_1d_index_tomask_index=one_to_two
         )
 
         assert (

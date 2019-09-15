@@ -6,7 +6,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.array.mapping import reshape_returned_array
 
 
-class ImageFit(af.DataFit):
+class ImagingFit(af.DataFit):
     def __init__(
         self, image, noise_map, mask, model_image, mapping, inversion
     ):
@@ -22,21 +22,19 @@ class ImageFit(af.DataFit):
         self.inversion = inversion
 
     @reshape_returned_array
-    def image(self, return_in_2d=True):
+    def image(self, return_in_2d=True, return_masked=True):
         return self._data
 
     @reshape_returned_array
-    def noise_map(self, return_in_2d=True):
+    def noise_map(self, return_in_2d=True, return_masked=True):
         return self._noise_map
 
-    def mask(self, return_in_2d=True):
-        if not return_in_2d:
-            return self._mask
-        else:
-            return self.mapping.mask
+    @property
+    def mask(self):
+        return self.mapping.mask
 
     @reshape_returned_array
-    def signal_to_noise_map(self, return_in_2d=True):
+    def signal_to_noise_map(self, return_in_2d=True, return_masked=True):
         return self._signal_to_noise_map
 
     @reshape_returned_array
@@ -83,7 +81,7 @@ class ImageFit(af.DataFit):
             return self.evidence
 
 
-class LensImageFit(ImageFit):
+class LensImagingFit(ImagingFit):
     def __init__(
         self,
         tracer,
@@ -113,8 +111,8 @@ class LensImageFit(ImageFit):
         )
 
     @classmethod
-    def from_lens_data_and_tracer(
-        cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
+    def from_lens_imaging_data_and_tracer(
+        cls, lens_imaging_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper_galaxies.
@@ -128,19 +126,19 @@ class LensImageFit(ImageFit):
         """
 
         image_1d = image_1d_from_lens_data_and_hyper_image_sky(
-            lens_data=lens_data, hyper_image_sky=hyper_image_sky
+            lens_data=lens_imaging_data, hyper_image_sky=hyper_image_sky
         )
 
         noise_map_1d = noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
-            lens_data=lens_data,
+            lens_data=lens_imaging_data,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
 
         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
-            grid=lens_data.grid,
-            convolver=lens_data.convolver,
-            preload_blurring_grid=lens_data.preload_blurring_grid,
+            grid=lens_imaging_data.grid,
+            convolver=lens_imaging_data.convolver,
+            preload_blurring_grid=lens_imaging_data.preload_blurring_grid,
             return_in_2d=False,
         )
 
@@ -154,12 +152,12 @@ class LensImageFit(ImageFit):
         else:
 
             inversion = tracer.inversion_from_grid_image_1d_noise_map_1d_and_convolver(
-                grid=lens_data.grid,
+                grid=lens_imaging_data.grid,
                 image_1d=profile_subtracted_image_1d,
                 noise_map_1d=noise_map_1d,
-                convolver=lens_data.convolver,
-                inversion_uses_border=lens_data.inversion_uses_border,
-                preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
+                convolver=lens_imaging_data.convolver,
+                inversion_uses_border=lens_imaging_data.inversion_uses_border,
+                preload_pixelization_grids_of_planes=lens_imaging_data.preload_pixelization_grids_of_planes,
             )
 
             model_image_1d = blurred_profile_image_1d + inversion.reconstructed_data_1d
@@ -168,12 +166,12 @@ class LensImageFit(ImageFit):
             tracer=tracer,
             image=image_1d,
             noise_map=noise_map_1d,
-            mask=lens_data.mask_1d,
+            mask=lens_imaging_data._mask_1d,
             model_image=model_image_1d,
-            grid=lens_data.grid,
-            convolver=lens_data.convolver,
+            grid=lens_imaging_data.grid,
+            convolver=lens_imaging_data.convolver,
             inversion=inversion,
-            positions=lens_data.positions,
+            positions=lens_imaging_data.positions,
         )
 
     @reshape_returned_array
@@ -270,9 +268,9 @@ class LensImageFit(ImageFit):
 def image_1d_from_lens_data_and_hyper_image_sky(lens_data, hyper_image_sky):
 
     if hyper_image_sky is not None:
-        return hyper_image_sky.image_scaled_sky_from_image(image=lens_data.image_1d)
+        return hyper_image_sky.image_scaled_sky_from_image(image=lens_data._image_1d)
     else:
-        return lens_data.image_1d
+        return lens_data._image_1d
 
 
 def noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
@@ -281,13 +279,13 @@ def noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
 
     if hyper_background_noise is not None:
         noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
-            noise_map=lens_data.noise_map_1d
+            noise_map=lens_data._noise_map_1d
         )
     else:
-        noise_map_1d = lens_data.noise_map_1d
+        noise_map_1d = lens_data._noise_map_1d
 
     hyper_noise_map_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
-        noise_map_1d=lens_data.noise_map_1d
+        noise_map_1d=lens_data._noise_map_1d
     )
 
     if hyper_noise_map_1d is not None:

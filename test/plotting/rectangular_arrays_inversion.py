@@ -1,15 +1,15 @@
 from autolens.data.instrument import abstract_data
-from autolens.data.instrument import ccd
+from autolens.data.instrument import imaging
 from autolens.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
-from autolens.lens.lens_fit import lens_image_fit
+from autolens.lens.lens_fit import lens_imaging_fit
 from autolens.lens import lens_data as ld
-from autolens.data.plotters import ccd_plotters
-from autolens.lens.plotters import lens_fit_plotters
+from autolens.data.plotters import imaging_plotters
+from autolens.lens.plotters import lens_imaging_fit_plotters
 from test.simulation import simulation_util
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
@@ -17,23 +17,23 @@ from test.simulation import simulation_util
 # Lets take another look at the rectangular grid, and think about its weakness.
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
-ccd_data = simulation_util.load_test_ccd_data(
+imaging_data = simulation_util.load_test_imaging_data(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 mask = al.Mask.elliptical(
-    shape=ccd_data.shape,
-    pixel_scale=ccd_data.pixel_scale,
+    shape=imaging_data.shape,
+    pixel_scale=imaging_data.pixel_scale,
     major_axis_radius_arcsec=3.0,
     axis_ratio=0.5,
     phi=0.0,
     centre=(0.0, 0.0),
 )
 
-# ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask, zoom_around_mask=True, aspect='equal')
-# ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask, zoom_around_mask=True, aspect='auto')
+# imaging_plotters.plot_imaging_subplot(imaging_data=imaging_data, mask=mask, zoom_around_mask=True, aspect='equal')
+# imaging_plotters.plot_imaging_subplot(imaging_data=imaging_data, mask=mask, zoom_around_mask=True, aspect='auto')
 
-# ccd_plotters.plot_image(ccd_data=ccd_data, mask=mask, zoom_around_mask=True, aspect='square')
-# ccd_plotters.plot_image(ccd_data=ccd_data, mask=mask, zoom_around_mask=True, aspect='equal')
+# imaging_plotters.plot_image(imaging_data=imaging_data, mask=mask, zoom_around_mask=True, aspect='square')
+# imaging_plotters.plot_image(imaging_data=imaging_data, mask=mask, zoom_around_mask=True, aspect='equal')
 
 # The lines of code below do everything we're used to, that is, setup an image and its al.ogrid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
@@ -47,12 +47,12 @@ source_galaxy = al.Galaxy(
     regularization=al.regularization.Constant(coefficient=1.0),
 )
 
-lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
+lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
-fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
+fit = al.LensImageFit.from_lens_imaging_data_and_tracer(lens_imaging_data=lens_data, tracer=tracer)
 
-lens_fit_plotters.plot_fit_subplot(
+lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     extract_array_from_mask=True,
@@ -61,7 +61,7 @@ lens_fit_plotters.plot_fit_subplot(
     aspect="auto",
 )
 
-lens_fit_plotters.plot_fit_subplot(
+lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     extract_array_from_mask=True,
@@ -70,7 +70,7 @@ lens_fit_plotters.plot_fit_subplot(
     aspect="equal",
 )
 
-lens_fit_plotters.plot_fit_subplot(
+lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     extract_array_from_mask=True,
