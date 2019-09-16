@@ -33,7 +33,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    ccd_simulated = al.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
+    imaging_simulated = al.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         pixel_scale=0.2,
@@ -43,7 +43,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         add_noise=False,
     )
 
-    ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
+    imaging_simulated.noise_map = np.ones(imaging_simulated.image.shape)
 
     path = "{}/data_temp/simulate_and_fit".format(
         os.path.dirname(os.path.realpath(__file__))
@@ -58,14 +58,14 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         os.makedirs(path)
 
     array_util.numpy_array_2d_to_fits(
-        array_2d=ccd_simulated.image, file_path=path + "/image.fits"
+        array_2d=imaging_simulated.image, file_path=path + "/image.fits"
     )
     array_util.numpy_array_2d_to_fits(
-        array_2d=ccd_simulated.noise_map, file_path=path + "/noise_map.fits"
+        array_2d=imaging_simulated.noise_map, file_path=path + "/noise_map.fits"
     )
     array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
 
-    ccd_data = al.load_ccd_data_from_fits(
+    imaging_data = al.load_imaging_data_from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
@@ -73,10 +73,10 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     )
 
     mask = al.Mask.circular(
-        shape=ccd_data.image.shape, pixel_scale=0.2, sub_size=2, radius_arcsec=0.8
+        shape=imaging_data.image.shape, pixel_scale=0.2, sub_size=2, radius_arcsec=0.8
     )
 
-    lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
+    lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
@@ -113,7 +113,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     )
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    ccd_simulated = al.SimulatedCCDData.from_image_and_exposure_arrays(
+    imaging_simulated = al.SimulatedCCDData.from_image_and_exposure_arrays(
         image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
             grid=grid, psf_shape=psf.shape
         ),
@@ -123,7 +123,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         background_sky_level=0.0,
         add_noise=False,
     )
-    ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
+    imaging_simulated.noise_map = np.ones(imaging_simulated.image.shape)
 
     path = "{}/data_temp/simulate_and_fit".format(
         os.path.dirname(os.path.realpath(__file__))
@@ -138,14 +138,14 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         os.makedirs(path)
 
     array_util.numpy_array_2d_to_fits(
-        array_2d=ccd_simulated.image, file_path=path + "/image.fits"
+        array_2d=imaging_simulated.image, file_path=path + "/image.fits"
     )
     array_util.numpy_array_2d_to_fits(
-        array_2d=ccd_simulated.noise_map, file_path=path + "/noise_map.fits"
+        array_2d=imaging_simulated.noise_map, file_path=path + "/noise_map.fits"
     )
     array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
 
-    ccd_data = al.load_ccd_data_from_fits(
+    imaging_data = al.load_imaging_data_from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
@@ -153,10 +153,10 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     )
 
     mask = al.Mask.circular(
-        shape=ccd_data.image.shape, pixel_scale=0.2, sub_size=1, radius_arcsec=0.8
+        shape=imaging_data.image.shape, pixel_scale=0.2, sub_size=1, radius_arcsec=0.8
     )
 
-    lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
+    lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 

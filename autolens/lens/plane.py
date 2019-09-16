@@ -914,7 +914,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
         Parameters
         -----------
-        noise_map_1d : ccd.NoiseMap or ndarray
+        noise_map_1d : imaging.NoiseMap or ndarray
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """

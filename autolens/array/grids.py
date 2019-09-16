@@ -196,7 +196,7 @@ class Grid(np.ndarray):
         via PSF convolution. For example, if our mask is as follows:
         
         |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an ccd.Mask, where:
+        |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
         |x|x|x|x|x|x|x|x|x|x|
         |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
         |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)

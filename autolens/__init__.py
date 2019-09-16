@@ -42,16 +42,16 @@ from autolens.data.instrument.abstract_data import (
     load_positions,
     output_positions,
 )
-from autolens.data.instrument.ccd import (
-    CCDData,
+from autolens.data.instrument.imaging import (
+    ImagingData,
     NoiseMap,
     PoissonNoiseMap,
-    SimulatedCCDData,
+    SimulatedImagingData,
     generate_poisson_noise,
-    load_ccd_data_from_fits,
+    load_imaging_data_from_fits,
     load_noise_map,
-    load_ccd_data_from_fits,
-    output_ccd_data_to_fits,
+    load_imaging_data_from_fits,
+    output_imaging_data_to_fits,
 )
 from autolens.data.instrument.interferometer import (
     InterferometerData,
@@ -61,7 +61,7 @@ from autolens.data.instrument.interferometer import (
     output_interferometer_data_to_fits,
     gaussian_noise_map_from_shape_and_sigma,
 )
-from autolens.data.plotters import ccd_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.data.plotters import data_plotters
 from autolens.data.plotters import interferometer_plotters
 from autolens.dimensions import (

@@ -2,14 +2,14 @@ from autolens.array.mapping import reshape_returned_array
 
 
 class MockLensData(object):
-    def __init__(self, ccd_data, mask, grid, blurring_grid, convolver, binned_grid):
+    def __init__(self, imaging_data, mask, grid, blurring_grid, convolver, binned_grid):
 
-        self.ccd_data = ccd_data
-        self.unmasked_image = ccd_data.image
-        self.unmasked_noise_map = ccd_data.noise_map
-        self.pixel_scale = ccd_data.pixel_scale
+        self.imaging_data = imaging_data
+        self.unmasked_image = imaging_data.image
+        self.unmasked_noise_map = imaging_data.noise_map
+        self.pixel_scale = imaging_data.pixel_scale
 
-        self.psf = ccd_data.psf
+        self.psf = imaging_data.psf
 
         self.mask_2d = mask
         self.mask_1d = self.mask_2d.mapping.array_1d_from_array_2d(array_2d=self.mask_2d)

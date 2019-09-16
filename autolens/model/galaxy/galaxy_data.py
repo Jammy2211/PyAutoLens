@@ -60,13 +60,13 @@ class GalaxyFitData(object):
         mask: msk.Mask
             The 2D masks that is applied to image fit instrument.
         sub_size : int
-            The size of the sub-grid used for computing the SubGrid (see ccd.masks.SubGrid).
+            The size of the sub-grid used for computing the SubGrid (see imaging.masks.SubGrid).
 
         Attributes
         ----------
         noise_map_1d : ndarray
             The masked 1D array of the noise_map-map
-        grid_stacks : ccd.masks.GridStack
+        grid_stacks : imaging.masks.GridStack
             Grids of (y,x) Cartesian coordinates which map over the masked 1D fit instrument array's pixels (includes an \
             grid, sub-grid, etc.)
         """

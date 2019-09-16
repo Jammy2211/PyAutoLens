@@ -9,7 +9,7 @@ from autolens.array.mapping import reshape_returned_array
 class LensData(object):
     def __init__(
         self,
-        ccd_data,
+        imaging_data,
         mask,
         positions=None,
         positions_threshold=None,
@@ -30,8 +30,8 @@ class LensData(object):
 
         Parameters
         ----------
-        ccd_data: im.CCD
-            The ccd instrument all in 2D (the image, noise-map, PSF, etc.)
+        imaging_data: im.CCD
+            The imaging instrument all in 2D (the image, noise-map, PSF, etc.)
         mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_size : int
@@ -59,15 +59,15 @@ class LensData(object):
 
         ### CCD DATA + MASK ####
 
-        self.ccd_data = ccd_data
+        self.imaging_data = imaging_data
 
-        self.unmasked_image = ccd_data.image
-        self.unmasked_noise_map = ccd_data.noise_map
-        self.pixel_scale = ccd_data.pixel_scale
-        self.psf = ccd_data.psf
+        self.unmasked_image = imaging_data.image
+        self.unmasked_noise_map = imaging_data.noise_map
+        self.pixel_scale = imaging_data.pixel_scale
+        self.psf = imaging_data.psf
         self.mask_1d = mask.mapping.array_1d_from_array_2d(array_2d=mask)
-        self.image_1d = mask.mapping.array_1d_from_array_2d(array_2d=ccd_data.image)
-        self.noise_map_1d = mask.mapping.array_1d_from_array_2d(array_2d=ccd_data.noise_map)
+        self.image_1d = mask.mapping.array_1d_from_array_2d(array_2d=imaging_data.image)
+        self.noise_map_1d = mask.mapping.array_1d_from_array_2d(array_2d=imaging_data.noise_map)
         self.mask_2d = mask
         self.sub_size = mask.sub_size
 
@@ -142,12 +142,12 @@ class LensData(object):
 
     def new_lens_data_with_modified_image(self, modified_image):
 
-        ccd_data_with_modified_image = self.ccd_data.new_ccd_data_with_modified_image(
+        imaging_data_with_modified_image = self.imaging_data.new_imaging_data_with_modified_image(
             modified_image=modified_image
         )
 
         return LensData(
-            ccd_data=ccd_data_with_modified_image,
+            imaging_data=imaging_data_with_modified_image,
             mask=self.mask_2d,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
@@ -160,9 +160,9 @@ class LensData(object):
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
         )
 
-    def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
+    def new_lens_data_with_binned_up_imaging_data_and_mask(self, bin_up_factor):
 
-        binned_up_ccd_data = self.ccd_data.new_ccd_data_with_binned_up_arrays(
+        binned_up_imaging_data = self.imaging_data.new_imaging_data_with_binned_up_arrays(
             bin_up_factor=bin_up_factor
         )
         binned_up_mask = self.mask_2d.binned_up_mask_from_mask(
@@ -170,7 +170,7 @@ class LensData(object):
         )
 
         return LensData(
-            ccd_data=binned_up_ccd_data,
+            imaging_data=binned_up_imaging_data,
             mask=binned_up_mask,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
@@ -185,12 +185,12 @@ class LensData(object):
 
     def new_lens_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
 
-        ccd_data_with_signal_to_noise_limit = self.ccd_data.new_ccd_data_with_signal_to_noise_limit(
+        imaging_data_with_signal_to_noise_limit = self.imaging_data.new_imaging_data_with_signal_to_noise_limit(
             signal_to_noise_limit=signal_to_noise_limit
         )
 
         return LensData(
-            ccd_data=ccd_data_with_signal_to_noise_limit,
+            imaging_data=imaging_data_with_signal_to_noise_limit,
             mask=self.mask_2d,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
@@ -227,7 +227,7 @@ class LensData(object):
 
     def __array_finalize__(self, obj):
         if isinstance(obj, LensData):
-            self.ccd_data = obj.ccd_data
+            self.imaging_data = obj.imaging_data
             self.unmasked_image = obj.unmasked_image
             self.unmasked_noise_map = obj.unmasked_noise_map
             self.mask_2d = obj.mask_2d

@@ -246,7 +246,7 @@ def plot_visibilities(
     output_format="show",
     output_filename="interferometer_visibilities",
 ):
-    """Plot the observed image of the ccd instrument.
+    """Plot the observed image of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -304,7 +304,7 @@ def plot_u_wavelengths(
     output_format="show",
     output_filename="interferometer_u_wavelengths",
 ):
-    """Plot the observed image of the ccd instrument.
+    """Plot the observed image of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -359,7 +359,7 @@ def plot_v_wavelengths(
     output_format="show",
     output_filename="interferometer_v_wavelengths",
 ):
-    """Plot the observed image of the ccd instrument.
+    """Plot the observed image of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 

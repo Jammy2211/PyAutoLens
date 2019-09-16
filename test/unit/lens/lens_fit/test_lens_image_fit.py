@@ -100,13 +100,13 @@ class TestLensImageFit:
                 pixel_scale=1.0,
             )
 
-            ccd_data = al.CCDData(
+            imaging_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
                 noise_map=np.ones((3, 4)),
             )
-            ccd_data.image[1, 2] = 4.0
+            imaging_data.image[1, 2] = 4.0
 
             mask = al.Mask(
                 array=np.array(
@@ -119,7 +119,7 @@ class TestLensImageFit:
                 pixel_scale=1.0, sub_size=1,
             )
 
-            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask)
+            lens_data_7x7 = al.LensData(imaging_data=imaging_data, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -211,13 +211,13 @@ class TestLensImageFit:
                 pixel_scale=1.0,
             )
 
-            ccd_data = al.CCDData(
+            imaging_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
                 noise_map=np.ones((3, 4)),
             )
-            ccd_data.image[1, 2] = 4.0
+            imaging_data.image[1, 2] = 4.0
 
             mask = al.Mask(
                 array=np.array(
@@ -230,7 +230,7 @@ class TestLensImageFit:
                 pixel_scale=1.0, sub_size=1,
             )
 
-            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask)
+            lens_data_7x7 = al.LensData(imaging_data=imaging_data, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -326,13 +326,13 @@ class TestLensImageFit:
                 pixel_scale=1.0,
             )
 
-            ccd_data = al.CCDData(
+            imaging_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
                 noise_map=np.ones((3, 4)),
             )
-            ccd_data.image[1, 2] = 4.0
+            imaging_data.image[1, 2] = 4.0
 
             mask = al.Mask(
                 array=np.array(
@@ -345,7 +345,7 @@ class TestLensImageFit:
                 pixel_scale=1.0, sub_size=1,
             )
 
-            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask)
+            lens_data_7x7 = al.LensData(imaging_data=imaging_data, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -438,13 +438,13 @@ class TestLensImageFit:
                 pixel_scale=1.0,
             )
 
-            ccd_data = al.CCDData(
+            imaging_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
                 noise_map=np.ones((3, 4)),
             )
-            ccd_data.image[1, 2] = 4.0
+            imaging_data.image[1, 2] = 4.0
 
             mask = al.Mask(
                 array=np.array(
@@ -457,7 +457,7 @@ class TestLensImageFit:
                 pixel_scale=1.0, sub_size=1,
             )
 
-            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask)
+            lens_data_7x7 = al.LensData(imaging_data=imaging_data, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -548,13 +548,13 @@ class TestLensImageFit:
                 pixel_scale=1.0,
             )
 
-            ccd_data = al.CCDData(
+            imaging_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
                 noise_map=np.ones((3, 4)),
             )
-            ccd_data.image[1, 2] = 4.0
+            imaging_data.image[1, 2] = 4.0
 
             mask = al.Mask(
                 array=np.array(
@@ -567,7 +567,7 @@ class TestLensImageFit:
                 pixel_scale=1.0, sub_size=1,
             )
 
-            lens_data_7x7 = al.LensData(ccd_data=ccd_data, mask=mask)
+            lens_data_7x7 = al.LensData(imaging_data=imaging_data, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -658,13 +658,13 @@ class TestLensImageFit:
                 pixel_scale=1.0,
             )
 
-            ccd_data = al.CCDData(
+            imaging_data = al.CCDData(
                 5.0 * np.ones((3, 4)),
                 pixel_scale=1.0,
                 psf=psf,
                 noise_map=np.ones((3, 4)),
             )
-            ccd_data.image[1, 2] = 4.0
+            imaging_data.image[1, 2] = 4.0
 
             mask = al.Mask(
                 array=np.array(
@@ -678,7 +678,7 @@ class TestLensImageFit:
             )
 
             lens_data_7x7 = al.LensData(
-                ccd_data=ccd_data, mask=mask, hyper_noise_map_max=1.0
+                imaging_data=imaging_data, mask=mask, hyper_noise_map_max=1.0
             )
 
             # Setup as a ray trace instance, using a light profile for the lens

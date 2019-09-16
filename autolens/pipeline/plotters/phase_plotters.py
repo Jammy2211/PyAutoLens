@@ -1,13 +1,13 @@
 import autofit as af
-from autolens.data.plotters import ccd_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.plotters import lens_fit_plotters
 from autolens.model.inversion.plotters import inversion_plotters
 from autolens.pipeline.plotters import hyper_plotters
 
 
-def plot_ccd_for_phase(
-    ccd_data,
+def plot_imaging_for_phase(
+    imaging_data,
     mask,
     positions,
     extract_array_from_mask,
@@ -25,13 +25,13 @@ def plot_ccd_for_phase(
 ):
 
     output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=visualize_path, folder_names=["ccd"]
+        path=visualize_path, folder_names=["imaging"]
     )
 
     if should_plot_as_subplot:
 
-        ccd_plotters.plot_ccd_subplot(
-            ccd_data=ccd_data,
+        imaging_plotters.plot_imaging_subplot(
+            imaging_data=imaging_data,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
@@ -41,8 +41,8 @@ def plot_ccd_for_phase(
             output_format="png",
         )
 
-    ccd_plotters.plot_ccd_individual(
-        ccd_data=ccd_data,
+    imaging_plotters.plot_imaging_individual(
+        imaging_data=imaging_data,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask,

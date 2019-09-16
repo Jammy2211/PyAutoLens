@@ -466,7 +466,7 @@ def plot_hyper_model_image(
 
     Parameters
     -----------
-    hyper_model_image : datas.ccd.datas.CCD
+    hyper_model_image : datas.imaging.datas.CCD
         The hyper_galaxies model image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -550,7 +550,7 @@ def plot_hyper_galaxy_image(
 
     Parameters
     -----------
-    hyper_galaxy_image : datas.ccd.datas.CCD
+    hyper_galaxy_image : datas.imaging.datas.CCD
         The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -634,7 +634,7 @@ def plot_contribution_map(
 
     Parameters
     -----------
-    contribution_map : datas.ccd.datas.CCD
+    contribution_map : datas.imaging.datas.CCD
         The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -718,7 +718,7 @@ def plot_hyper_noise_map(
 
     Parameters
     -----------
-    hyper_noise_map : datas.ccd.datas.CCD
+    hyper_noise_map : datas.imaging.datas.CCD
         The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -802,7 +802,7 @@ def plot_chi_squared_map(
 
     Parameters
     -----------
-    chi_squared_map : datas.ccd.datas.CCD
+    chi_squared_map : datas.imaging.datas.CCD
         The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -886,7 +886,7 @@ def plot_hyper_chi_squared_map(
 
     Parameters
     -----------
-    hyper_chi_squared_map : datas.ccd.datas.CCD
+    hyper_chi_squared_map : datas.imaging.datas.CCD
         The hyper_galaxies galaxy image.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.

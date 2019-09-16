@@ -24,18 +24,18 @@ for data_resolution in ["HST_Up"]:
 
     print()
 
-    ccd_data = simulation_util.load_test_ccd_data(
+    imaging_data = simulation_util.load_test_imaging_data(
         data_type="lens_mass__source_smooth",
         data_resolution=data_resolution,
         psf_shape=(3, 3),
     )
     mask = al.Mask.circular_annular(
-        shape=ccd_data.shape,
-        pixel_scale=ccd_data.pixel_scale,
+        shape=imaging_data.shape,
+        pixel_scale=imaging_data.pixel_scale,
         inner_radius_arcsec=inner_radius_arcsec,
         outer_radius_arcsec=outer_radius_arcsec,
     )
-    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_size=sub_size)
+    lens_data = al.LensData(imaging_data=imaging_data, mask=mask, sub_size=sub_size)
 
     print("Deflection angle run times for image type " + data_resolution + "\n")
     print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")

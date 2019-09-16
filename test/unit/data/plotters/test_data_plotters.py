@@ -12,7 +12,7 @@ def make_data_plotter_setup():
     return data_plotter_path
 
 
-def test__all_ccd_data_types_are_output(
+def test__all_imaging_data_types_are_output(
     image_7x7,
     noise_map_7x7,
     psf_3x3,

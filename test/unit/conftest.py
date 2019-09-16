@@ -69,8 +69,8 @@ def make_positions_7x7():
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
 
-@pytest.fixture(name="ccd_data_7x7")
-def make_ccd_data_7x7(
+@pytest.fixture(name="imaging_data_7x7")
+def make_imaging_data_7x7(
     image_7x7,
     psf_3x3,
     noise_map_7x7,
@@ -88,12 +88,12 @@ def make_ccd_data_7x7(
         poisson_noise_map=poisson_noise_map_7x7,
         exposure_time_map=exposure_time_map_7x7,
         background_sky_map=background_sky_map_7x7,
-        name="mock_ccd_data_7x7",
+        name="mock_imaging_data_7x7",
     )
 
 
-@pytest.fixture(name="ccd_data_6x6")
-def make_ccd_data_6x6():
+@pytest.fixture(name="imaging_data_6x6")
+def make_imaging_data_6x6():
     image = mock_data.MockImage(shape=(6, 6), value=1.0)
     psf = mock_data.MockPSF(shape=(3, 3), value=1.0)
     noise_map = mock_data.MockNoiseMap(shape=(6, 6), value=2.0)
@@ -111,7 +111,7 @@ def make_ccd_data_6x6():
         poisson_noise_map=poisson_noise_map,
         exposure_time_map=exposure_time_map,
         background_sky_map=background_sky_map,
-        name="mock_ccd_data_6x6",
+        name="mock_imaging_data_6x6",
     )
 
 
@@ -472,7 +472,7 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 
 @pytest.fixture(name="lens_data_7x7")
 def make_lens_data_7x7(
-    ccd_data_7x7,
+    imaging_data_7x7,
     mask_7x7,
     sub_grid_7x7,
     blurring_grid_7x7,
@@ -480,7 +480,7 @@ def make_lens_data_7x7(
     binned_grid_7x7,
 ):
     return mock_lens_data.MockLensData(
-        ccd_data=ccd_data_7x7,
+        imaging_data=imaging_data_7x7,
         mask=mask_7x7,
         grid=sub_grid_7x7,
         blurring_grid=blurring_grid_7x7,
