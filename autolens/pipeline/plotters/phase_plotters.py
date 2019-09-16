@@ -226,7 +226,7 @@ def plot_lens_imaging_fit_for_phase(
 
         inversion_plotters.plot_inversion_subplot(
             inversion=fit.inversion,
-            mask=fit.mask(return_in_2d=True),
+            mask=fit.mask,
             positions=positions,
             extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
