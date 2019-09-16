@@ -25,7 +25,7 @@ data_path = '{}/../data/'.format(os.path.dirname(os.path.realpath(__file__)))
 
 lens_name = 'example_lens'
 
-# Get the relative path to the data in our workspace & load the imaging imaging data.
+# Get the relative path to the data in our workspace & load the imaging data.
 imaging_data = al.load_imaging_data_from_fits(
     image_path=data_path + lens_name + '/image.fits',
     psf_path=data_path+lens_name+'/psf.fits',

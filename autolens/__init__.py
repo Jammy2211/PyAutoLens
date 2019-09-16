@@ -32,12 +32,10 @@ from autolens.data.fourier_transform import Transformer
 from autolens.data.instrument import abstract_data
 from autolens.data.instrument import interferometer
 from autolens.data.instrument.abstract_data import (
-    PSF,
     AbstractData,
     AbstractNoiseMap,
     ExposureTimeMap,
     load_image,
-    load_psf,
     load_exposure_time_map,
     load_positions,
     output_positions,
@@ -46,10 +44,12 @@ from autolens.data.instrument.imaging import (
     ImagingData,
     NoiseMap,
     PoissonNoiseMap,
+    PSF,
     SimulatedImagingData,
     generate_poisson_noise,
     load_imaging_data_from_fits,
     load_noise_map,
+    load_psf,
     load_imaging_data_from_fits,
     output_imaging_data_to_fits,
 )
@@ -76,10 +76,10 @@ from autolens.dimensions import (
     convert_units_to_input_units,
 )
 from autolens.lens import ray_tracing
-from autolens.lens.lens_data import LensData
-from autolens.lens.lens_fit import ImageFit, LensImageFit, LensPositionFit
+from autolens.lens.lens_data import AbstractLensData, LensImagingData
+from autolens.lens.lens_fit import ImagingFit, LensImagingFit, LensPositionFit
 from autolens.lens.plane import Plane, PlanePositions, PlaneImage
-from autolens.lens.plotters import lens_fit_plotters
+from autolens.lens.plotters import lens_imaging_fit_plotters
 from autolens.lens.plotters import lens_plotter_util
 from autolens.lens.plotters import plane_plotters
 from autolens.lens.plotters import ray_tracing_plotters
@@ -111,7 +111,6 @@ from autolens.model.profiles import mass_profiles
 from autolens.model.profiles.plotters import profile_plotters
 from autolens.pipeline import phase_tagging
 from autolens.pipeline import pipeline_tagging
-from autolens.pipeline.phase import GalaxyFitPhase, Phase
 from autolens.pipeline.phase import phase
 from autolens.pipeline.phase.phase import AbstractPhase
 from autolens.pipeline.phase.phase_extensions import CombinedHyperPhase
@@ -131,7 +130,10 @@ from autolens.pipeline.phase.phase_extensions.inversion_phase import InversionPh
 from autolens.pipeline.phase.phase_extensions.inversion_phase import (
     VariableFixingHyperPhase,
 )
+from autolens.pipeline.phase.phase import Phase
+from autolens.pipeline.phase.phase_data import PhaseData
 from autolens.pipeline.phase.phase_imaging import PhaseImaging
+from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
 from autolens.pipeline.phase.phase_positions import PhasePositions
 from autolens.pipeline.pipeline import (
     PipelineSettings,
