@@ -142,14 +142,14 @@ class TestReconstructedDataVectorAndImage:
 
         matrix_shape = (3, 3)
 
-        msk = al.Mask(
+        mask = al.Mask(
             array=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scale=1.0, sub_size=1,
         )
 
-        grid = al.Grid.from_mask_and_sub_grid_size(mask=msk, sub_grid_size=1)
+        grid = al.Grid.from_mask(mask=mask)
 
         inv = al.Inversion.from_data_1d_mapper_and_regularization(
             image_1d=np.ones(9),
@@ -164,9 +164,9 @@ class TestReconstructedDataVectorAndImage:
         inv.blurred_mapping_matrix = np.array(
             [[1.0, 1.0, 1.0, 1.0], [1.0, 0.0, 1.0, 1.0], [1.0, 0.0, 0.0, 0.0]]
         )
-        # CCD pixel 0 maps to 4 pixs pixxels -> value is 4.0
-        # CCD pixel 1 maps to 3 pixs pixxels -> value is 3.0
-        # CCD pixel 2 maps to 1 pixs pixxels -> value is 1.0
+        # Imaging pixel 0 maps to 4 pixs pixxels -> value is 4.0
+        # Imaging pixel 1 maps to 3 pixs pixxels -> value is 3.0
+        # Imaging pixel 2 maps to 1 pixs pixxels -> value is 1.0
 
         assert (inv.reconstructed_data_1d == np.array([4.0, 3.0, 1.0])).all()
         assert inv.reconstructed_data_2d == np.array(
@@ -186,14 +186,14 @@ class TestReconstructedDataVectorAndImage:
 
         matrix_shape = (3, 3)
 
-        msk = al.Mask(
+        mask = al.Mask(
             array=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scale=1.0, sub_size=1,
         )
 
-        grid = al.Grid.from_mask_and_sub_grid_size(mask=msk, sub_grid_size=1)
+        grid = al.Grid.from_mask(mask=mask)
 
         inv = al.Inversion.from_data_1d_mapper_and_regularization(
             image_1d=np.ones(9),
@@ -209,9 +209,9 @@ class TestReconstructedDataVectorAndImage:
             [[1.0, 1.0, 1.0, 1.0], [1.0, 0.0, 1.0, 1.0], [1.0, 0.0, 0.0, 0.0]]
         )
 
-        # # CCD pixel 0 maps to 4 pixs pixxels -> value is 1.0 + 2.0 + 3.0 + 4.0 = 10.0
-        # # CCD pixel 1 maps to 3 pixs pixxels -> value is 1.0 + 3.0 + 4.0
-        # # CCD pixel 2 maps to 1 pixs pixxels -> value is 1.0
+        # # Imaging pixel 0 maps to 4 pixs pixxels -> value is 1.0 + 2.0 + 3.0 + 4.0 = 10.0
+        # # Imaging pixel 1 maps to 3 pixs pixxels -> value is 1.0 + 3.0 + 4.0
+        # # Imaging pixel 2 maps to 1 pixs pixxels -> value is 1.0
 
         assert (inv.reconstructed_data_1d == np.array([10.0, 8.0, 1.0])).all()
         assert inv.reconstructed_data_2d == np.array(
@@ -233,12 +233,12 @@ class TestReconstructedDataVectorAndImage:
 #
 #         matrix_shape = (3,3)
 #
-#         msk = al.Mask(array=np.array([[True, True, True],
+#         mask = al.Mask(array=np.array([[True, True, True],
 #                                         [False, False, False],
 #                                         [True, True, True]]), pixel_scale=1.0)
 #
-#         grid = grids.grid_stack_from_mask_sub_grid_size_and_psf_shape(
-#             mask=msk, sub_grid_size=1, psf_shape=(1,1))
+#         grid = grids.grid_stack_from_mask_sub_size_and_psf_shape(
+#             mask=mask, sub_size=1, psf_shape=(1,1))
 #
 #         inv = al.Inversion(
 #             image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),

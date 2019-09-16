@@ -8,8 +8,6 @@ import autofit as af
 
 from test.unit.mock.model import mock_cosmology
 
-grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
-
 
 @pytest.fixture(autouse=True)
 def reset_config():
@@ -725,8 +723,8 @@ class TestDeflectionsViaPotential(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.05
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.05, sub_size=1
         )
 
         deflections_via_calculation = sis.deflections_from_grid(
@@ -747,8 +745,8 @@ class TestDeflectionsViaPotential(object):
             centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.05
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.05, sub_size=1
         )
 
         deflections_via_calculation = sie.deflections_from_grid(
@@ -769,8 +767,8 @@ class TestDeflectionsViaPotential(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.05
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.05, sub_size=1
         )
 
         deflections_via_calculation = sie.deflections_from_grid(
@@ -785,14 +783,14 @@ class TestDeflectionsViaPotential(object):
 
         assert mean_error < 1e-4
 
-    def test(self):
+    def test__compare_reg_and_sub_grid(self):
 
         sie = al.mass_profiles.EllipticalIsothermal(
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
         deflections_binned_reg_grid = sie.deflections_via_potential_from_grid(
@@ -833,8 +831,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
         jacobian = sie.lensing_jacobian_from_grid(grid=grid, return_in_2d=False)
@@ -846,8 +844,8 @@ class TestJacobianandMagnification(object):
 
         assert mean_error < 1e-4
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         jacobian = sie.lensing_jacobian_from_grid(
@@ -867,8 +865,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -897,8 +895,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -931,8 +929,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -957,8 +955,8 @@ class TestJacobianandMagnification(object):
 
         assert mean_error < 1e-4
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -989,8 +987,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
         jacobian_binned_reg_grid = sie.lensing_jacobian_from_grid(
@@ -1029,8 +1027,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
         shear_binned_reg_grid = sie.shear_via_jacobian_from_grid(
@@ -1068,8 +1066,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
         lambda_t_binned_reg_grid = sie.tangential_eigen_value_from_grid(
@@ -1107,8 +1105,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         lambda_r_binned_reg_grid = sie.radial_eigen_value_from_grid(
@@ -1182,7 +1180,7 @@ def caustics_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
         critical_curve = critical_curves[i]
 
         deflections_1d = mass_profile.deflections_from_grid(
-            grid=critical_curve, return_in_2d=False, return_binned=False
+            grid=critical_curve, bypass_decorator=True
         )
 
         caustic = critical_curve - deflections_1d
@@ -1199,16 +1197,16 @@ class TestConvergenceViajacobian(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.05
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.05, sub_size=1
         )
 
         convergence_via_calculation = sis.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
         convergence_via_jacobian = sis.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
@@ -1235,16 +1233,16 @@ class TestConvergenceViajacobian(object):
             centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.05
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.05, sub_size=1
         )
 
         convergence_via_calculation = sie.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
         convergence_via_jacobian = sie.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
@@ -1257,8 +1255,8 @@ class TestConvergenceViajacobian(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.05, sub_size=2
         )
 
         convergence_binned_reg_grid = sie.convergence_via_jacobian_from_grid(
@@ -1313,8 +1311,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         magnification_via_determinant = sie.magnification_from_grid(
@@ -1345,8 +1343,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=2
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1366,8 +1364,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.5, sub_grid_size=4
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.5, sub_size=4
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1389,8 +1387,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1403,8 +1401,8 @@ class TestCriticalCurvesandCaustics(object):
         assert -0.03 < y_centre < 0.03
         assert -0.03 < x_centre < 0.03
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25, sub_grid_size=4
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=4
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1421,8 +1419,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.5, 1.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(60, 60), pixel_scale=0.25, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(60, 60), pixel_scale=0.25, sub_size=1
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1441,8 +1439,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1455,8 +1453,8 @@ class TestCriticalCurvesandCaustics(object):
         assert -0.05 < y_centre < 0.05
         assert -0.05 < x_centre < 0.05
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25, sub_grid_size=4
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=4
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1473,8 +1471,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.5, 1.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(60, 60), pixel_scale=0.25, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(60, 60), pixel_scale=0.25, sub_size=1
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1493,8 +1491,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1507,8 +1505,8 @@ class TestCriticalCurvesandCaustics(object):
         assert -0.03 < y_centre < 0.03
         assert -0.03 < x_centre < 0.03
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25, sub_grid_size=4
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=4
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1525,8 +1523,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.5, 1.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(60, 60), pixel_scale=0.25, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(60, 60), pixel_scale=0.25, sub_size=1
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1545,8 +1543,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.5, sub_grid_size=4
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.5, sub_size=4
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1568,8 +1566,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1582,8 +1580,8 @@ class TestCriticalCurvesandCaustics(object):
         assert -0.2 < y_centre < 0.2
         assert -0.2 < x_centre < 0.2
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25, sub_grid_size=4
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=4
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1600,8 +1598,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.5, 1.0), einstein_radius=2.0
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(60, 60), pixel_scale=0.25, sub_grid_size=1
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(60, 60), pixel_scale=0.25, sub_size=1
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1620,8 +1618,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         tangential_critical_curve_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
@@ -1638,8 +1636,8 @@ class TestCriticalCurvesandCaustics(object):
             tangential_critical_curve_from_magnification, 5e-1
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.5, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.5, sub_size=2
         )
 
         tangential_critical_curve_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
@@ -1662,8 +1660,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         critical_curve_radial_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
@@ -1686,8 +1684,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(20, 20), pixel_scale=0.25
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         tangential_caustic_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
@@ -1702,8 +1700,8 @@ class TestCriticalCurvesandCaustics(object):
             sum(tangential_caustic_from_magnification), 5e-1
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(10, 10), pixel_scale=0.5, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(10, 10), pixel_scale=0.5, sub_size=2
         )
 
         tangential_caustic_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
@@ -1724,8 +1722,8 @@ class TestCriticalCurvesandCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
         caustic_radial_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
@@ -1740,8 +1738,8 @@ class TestCriticalCurvesandCaustics(object):
             sum(caustic_radial_from_magnification), 7e-1
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         caustic_radial_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(

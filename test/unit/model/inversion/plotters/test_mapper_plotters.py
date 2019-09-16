@@ -18,7 +18,7 @@ def make_image():
     noise_map = al.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
     psf = al.PSF(array=3.0 * np.ones((3, 3)), pixel_scale=1.0)
 
-    return al.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+    return al.ImagingData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
 
 @pytest.fixture(name="mask")
@@ -42,8 +42,8 @@ def make_galaxy_mass():
 
 @pytest.fixture(name="grid")
 def make_grid():
-    return al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-        shape=(100, 100), pixel_scale=0.05, sub_grid_size=2
+    return al.Grid.from_shape_pixel_scale_and_sub_size(
+        shape=(100, 100), pixel_scale=0.05, sub_size=2
     )
 
 
@@ -63,7 +63,7 @@ def test__image_and_rectangular_mapper_is_output(
     image, rectangular_mapper, mapper_plotter_path, plot_patch
 ):
     al.mapper_plotters.plot_image_and_mapper(
-        ccd_data=image,
+        imaging_data=image,
         mapper=rectangular_mapper,
         should_plot_centres=True,
         should_plot_grid=True,

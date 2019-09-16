@@ -7,10 +7,11 @@ from autolens import dimensions as dim
 from autolens import text_util
 from autolens.model.profiles import geometry_profiles
 
-from autolens.array.grids import (
-    reshape_array_from_grid,
-    reshape_array_from_grid_and_convolver,
-    reshape_array_from_grid_and_psf,
+from autolens.array.mapping import (
+    reshape_returned_sub_array,
+    reshape_returned_array,
+    reshape_returned_array,
+    reshape_returned_array,
 )
 
 
@@ -30,7 +31,12 @@ class LightProfile(object):
 
     # noinspection PyMethodMayBeStatic
     def profile_image_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, grid_radial_minimum=None
+        self,
+        grid,
+        return_in_2d=True,
+        return_binned=True,
+        bypass_decorator=False,
+        grid_radial_minimum=None,
     ):
         """
         Abstract method for obtaining intensity at a grid of Cartesian (y,x) coordinates.
@@ -107,13 +113,17 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             centre=centre, axis_ratio=axis_ratio, phi=phi
         )
 
-    @reshape_array_from_grid_and_psf
+    @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, preload_blurring_grid=None, return_in_2d=True
+        self,
+        grid,
+        psf,
+        preload_blurring_grid=None,
+        return_in_2d=True,
     ):
 
         profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
         if preload_blurring_grid is None:
@@ -122,14 +132,21 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             )
 
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid, return_in_2d=True, return_binned=True
+            grid=preload_blurring_grid,
+            return_in_2d=True,
+            return_binned=True,
+            bypass_decorator=False,
         )
 
         return psf.convolve(profile_image + blurring_image)
 
-    @reshape_array_from_grid_and_convolver
+    @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
+        self,
+        grid,
+        convolver,
+        preload_blurring_grid=None,
+        return_in_2d=True,
     ):
 
         if preload_blurring_grid is None:
@@ -336,11 +353,16 @@ class EllipticalGaussian(EllipticalLightProfile):
             np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))),
         )
 
-    @reshape_array_from_grid
+    @reshape_returned_sub_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def profile_image_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, grid_radial_minimum=None
+        self,
+        grid,
+        return_in_2d=True,
+        return_binned=True,
+        bypass_decorator=False,
+        grid_radial_minimum=None,
     ):
         """
         Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
@@ -369,7 +391,7 @@ class SphericalGaussian(EllipticalGaussian):
         ----------
         centre : (float, float)
             The (y,x) arc-second coordinates of the profile centre.
-        intensity : float
+        intensity : float_
             Overall intensity normalisation of the light profiles (electrons per second).
         sigma : float
             The sigma value of the Gaussian.
@@ -530,11 +552,16 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
             ),
         )
 
-    @reshape_array_from_grid
+    @reshape_returned_sub_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def profile_image_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, grid_radial_minimum=None
+        self,
+        grid,
+        return_in_2d=True,
+        return_binned=True,
+        bypass_decorator=False,
+        grid_radial_minimum=None,
     ):
         """ Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 

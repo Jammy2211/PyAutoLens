@@ -9,6 +9,10 @@ class GridException(Exception):
     pass
 
 
+class MappingException(Exception):
+    pass
+
+
 class DataException(Exception):
     pass
 

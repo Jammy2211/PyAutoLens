@@ -2,7 +2,7 @@ from autolens import exc
 from autolens.array import grids, scaled_array
 from autolens.array import mask as msk
 
-from autolens.array.grids import reshape_array
+from autolens.array.mapping import reshape_returned_array
 
 
 class GalaxyData(object):
@@ -35,7 +35,6 @@ class GalaxyFitData(object):
         self,
         galaxy_data,
         mask,
-        sub_grid_size=2,
         pixel_scale_interpolation_grid=None,
         use_image=False,
         use_convergence=False,
@@ -60,33 +59,30 @@ class GalaxyFitData(object):
             The collection of instrument about the galaxy (image of its profile map, noise-map, etc.) that is fitted.
         mask: msk.Mask
             The 2D masks that is applied to image fit instrument.
-        sub_grid_size : int
-            The size of the sub-grid used for computing the SubGrid (see ccd.masks.SubGrid).
+        sub_size : int
+            The size of the sub-grid used for computing the SubGrid (see imaging.masks.SubGrid).
 
         Attributes
         ----------
         noise_map_1d : ndarray
             The masked 1D array of the noise_map-map
-        grid_stacks : ccd.masks.GridStack
+        grid_stacks : imaging.masks.GridStack
             Grids of (y,x) Cartesian coordinates which map over the masked 1D fit instrument array's pixels (includes an \
             grid, sub-grid, etc.)
         """
-        self.unmasked_image = galaxy_data.image
+        self.galaxy_data = galaxy_data
         self.pixel_scale = galaxy_data.pixel_scale
-        self.unmasked_noise_map = galaxy_data.noise_map
 
-        self.image_1d = mask.array_1d_from_array_2d(array_2d=self.unmasked_image)
-        self.noise_map_1d = mask.array_1d_from_array_2d(
-            array_2d=self.unmasked_noise_map
+        self._image_1d = mask.mapping.array_1d_from_array_2d(array_2d=galaxy_data.image)
+        self._noise_map_1d = mask.mapping.array_1d_from_array_2d(
+            array_2d=galaxy_data.noise_map
         )
-        self.signal_to_noise_map_1d = self.image_1d / self.noise_map_1d
-        self.mask_1d = mask.array_1d_from_array_2d(array_2d=mask)
+        self.signal_to_noise_map_1d = self._image_1d / self._noise_map_1d
+        self._mask_1d = mask.mapping.array_1d_from_array_2d(array_2d=mask)
 
-        self.sub_grid_size = sub_grid_size
+        self.sub_size = mask.sub_size
 
-        self.grid = grids.Grid.from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=sub_grid_size
-        )
+        self.grid = grids.Grid.from_mask(mask=mask)
 
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 
@@ -96,7 +92,7 @@ class GalaxyFitData(object):
                 pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
 
-        self.mask_2d = mask
+        self.mask = mask
 
         if all(
             not element
@@ -135,17 +131,28 @@ class GalaxyFitData(object):
         self.use_deflections_y = use_deflections_y
         self.use_deflections_x = use_deflections_x
 
+    @property
+    def mapping(self):
+        return self.mask.mapping
+
+    @reshape_returned_array
+    def image(self, return_in_2d=True, return_masked=False):
+        return self.galaxy_data.image
+
+    @reshape_returned_array
+    def noise_map(self, return_in_2d=True, return_masked=False):
+        return self.galaxy_data.noise_map
+
     def __array_finalize__(self, obj):
         super(GalaxyFitData, self).__array_finalize__(obj)
         if isinstance(obj, GalaxyFitData):
-            self.unmasked_image = obj.unmasked_image
+            self.galaxy_data = obj.galaxy_data
             self.pixel_scale = obj.pixel_scale
-            self.mask_2d = obj.mask_2d
-            self.unmasked_noise_map = obj.unmasked_noise_map
-            self.image_1d = obj.image_1d
-            self.noise_map_1d = obj.noise_map_1d
-            self.mask_1d = obj.mask_1d
-            self.sub_grid_size = obj.sub_grid_size
+            self.mask = obj.mask
+            self._image_1d = obj._image_1d
+            self._noise_map_1d = obj._noise_map_1d
+            self._mask_1d = obj._mask_1d
+            self.sub_size = obj.sub_size
             self.pixel_scale_interpolation_grid = obj.pixel_scale_interpolation_grid
             self.grid = obj.grid
             self.use_image = obj.use_image
@@ -153,9 +160,6 @@ class GalaxyFitData(object):
             self.use_potential = obj.use_potential
             self.use_deflections_y = obj.use_deflections_y
             self.use_deflections_x = obj.use_deflections_x
-
-    def map_to_scaled_array(self, array_1d):
-        return self.grid.scaled_array_2d_from_array_1d(array_1d=array_1d)
 
     def profile_quantity_from_galaxies(self, galaxies):
 
@@ -207,18 +211,6 @@ class GalaxyFitData(object):
 
     def mask(self, return_in_2d=True):
         if return_in_2d:
-            return self.mask_2d
+            return self.mask
         else:
-            return self.mask_1d
-
-    @reshape_array
-    def image(self, return_in_2d=True):
-        return self.image_1d
-
-    @reshape_array
-    def noise_map(self, return_in_2d=True):
-        return self.noise_map_1d
-
-    @reshape_array
-    def signal_to_noise_map(self, return_in_2d=True):
-        return self.signal_to_noise_map_1d
+            return self._mask_1d

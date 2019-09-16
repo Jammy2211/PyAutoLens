@@ -147,8 +147,8 @@ class TestArrayGeometry:
 
     class TestGrids:
         def test__square_pixel_grid__grid_2d__compare_to_array_util(self):
-            grid_2d_util = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
-                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_grid_size=1
+            grid_2d_util = al.grid_util.grid_2d_from_shape_pixel_scales_sub_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
             )
 
             sca = al.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56)
@@ -170,8 +170,8 @@ class TestArrayGeometry:
             ).all()
 
         def test__square_pixel_grid__grid_1d__compare_to_array_util(self):
-            grid_1d_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
-                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_grid_size=1
+            grid_1d_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
             )
 
             sca = al.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56)
@@ -179,11 +179,8 @@ class TestArrayGeometry:
             assert sca.grid_1d == pytest.approx(grid_1d_util, 1e-4)
 
         def test__square_pixel_grid__nonzero_centres__compure_to_array_util(self):
-            grid_2d_util = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
-                shape=(4, 7),
-                pixel_scales=(0.56, 0.56),
-                sub_grid_size=1,
-                origin=(1.0, 3.0),
+            grid_2d_util = al.grid_util.grid_2d_from_shape_pixel_scales_sub_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1, origin=(1.0, 3.0)
             )
 
             sca = al.ScaledSquarePixelArray(
@@ -192,11 +189,8 @@ class TestArrayGeometry:
 
             assert sca.grid_2d == pytest.approx(grid_2d_util, 1e-4)
 
-            grid_1d_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
-                shape=(4, 7),
-                pixel_scales=(0.56, 0.56),
-                sub_grid_size=1,
-                origin=(-1.0, -4.0),
+            grid_1d_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1, origin=(-1.0, -4.0)
             )
 
             sca = al.ScaledSquarePixelArray(
@@ -206,8 +200,8 @@ class TestArrayGeometry:
             assert sca.grid_1d == pytest.approx(grid_1d_util, 1e-4)
 
         def test__rectangular_pixel_grid__grid_2d__compare_to_array_util(self):
-            grid_2d_util = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
-                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_grid_size=1
+            grid_2d_util = al.grid_util.grid_2d_from_shape_pixel_scales_sub_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
             )
 
             sca = al.ScaledRectangularPixelArray(
@@ -233,8 +227,8 @@ class TestArrayGeometry:
             ).all()
 
         def test__rectangular_pixel_grid__grid_1d__compare_to_array_util(self):
-            grid_1d_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
-                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_grid_size=1
+            grid_1d_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
             )
 
             sca = al.ScaledRectangularPixelArray(
@@ -244,11 +238,8 @@ class TestArrayGeometry:
             assert sca.grid_1d == pytest.approx(grid_1d_util, 1e-4)
 
         def test__rectangular_pixel_grid__nonzero_centres__compure_to_array_util(self):
-            grid_2d_util = al.grid_util.grid_2d_from_shape_pixel_scales_sub_grid_size_and_origin(
-                shape=(4, 7),
-                pixel_scales=(0.8, 0.56),
-                sub_grid_size=1,
-                origin=(1.0, 2.0),
+            grid_2d_util = al.grid_util.grid_2d_from_shape_pixel_scales_sub_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1, origin=(1.0, 2.0)
             )
 
             sca = al.ScaledRectangularPixelArray(
@@ -257,11 +248,8 @@ class TestArrayGeometry:
 
             assert sca.grid_2d == pytest.approx(grid_2d_util, 1e-4)
 
-            grid_1d_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_grid_size_and_origin(
-                shape=(4, 7),
-                pixel_scales=(0.8, 0.56),
-                sub_grid_size=1,
-                origin=(-1.0, -4.0),
+            grid_1d_util = al.grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
+                shape=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1, origin=(-1.0, -4.0)
             )
 
             sca = al.ScaledRectangularPixelArray(
@@ -950,6 +938,7 @@ class TestScaledSquarePixelArray:
                     ]
                 ),
                 pixel_scale=1.0,
+                sub_size=1,
             )
 
             array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
@@ -965,6 +954,7 @@ class TestScaledSquarePixelArray:
                     ]
                 ),
                 pixel_scale=1.0,
+                sub_size=1,
             )
 
             array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
@@ -982,6 +972,7 @@ class TestScaledSquarePixelArray:
                     ]
                 ),
                 pixel_scale=1.0,
+                sub_size=1,
             )
 
             array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
@@ -999,6 +990,7 @@ class TestScaledSquarePixelArray:
                     ]
                 ),
                 pixel_scale=1.0,
+                sub_size=1,
             )
 
             array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
@@ -1016,6 +1008,7 @@ class TestScaledSquarePixelArray:
                     ]
                 ),
                 pixel_scale=1.0,
+                sub_size=1,
             )
 
             array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
@@ -1033,6 +1026,7 @@ class TestScaledSquarePixelArray:
                     ]
                 ),
                 pixel_scale=1.0,
+                sub_size=1,
             )
 
             array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=1)

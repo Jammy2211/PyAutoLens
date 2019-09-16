@@ -8,7 +8,7 @@ import os
 def simulate_image_from_galaxies_and_output_to_fits(
     data_resolution,
     data_type,
-    sub_grid_size,
+    sub_size,
     galaxies,
     psf_shape=(51, 51),
     exposure_time=300.0,
@@ -25,19 +25,19 @@ def simulate_image_from_galaxies_and_output_to_fits(
         shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale
     )
 
-    # Setup the image-plane al.ogrid of the CCD array which will be used for generating the image of the
+    # Setup the image-plane al.ogrid of the Imaging array which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
-    image_plane_grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-        shape=shape, pixel_scale=pixel_scale, sub_grid_size=sub_grid_size
+    image_plane_grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        shape=shape, pixel_scale=pixel_scale, sub_size=sub_size
     )
 
-    # Use the input galaxies to setup a tracer, which will generate the image for the simulated CCD instrument.
+    # Use the input galaxies to setup a tracer, which will generate the image for the simulated Imaging instrument.
     tracer = al.Tracer.from_galaxies(galaxies=galaxies)
 
-    # Simulate the CCD instrument, remembering that we use a special image which ensures edge-effects don't
+    # Simulate the Imaging instrument, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
-    ccd_data = al.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
+    imaging_data = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         pixel_scale=pixel_scale,
         psf=psf,
@@ -47,30 +47,30 @@ def simulate_image_from_galaxies_and_output_to_fits(
         grid=image_plane_grid,
     )
 
-    # Now, lets output this simulated ccd-data to the test/data folder.
+    # Now, lets output this simulated imaging-data to the test/data folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
         path=test_path, folder_names=["data", data_type, data_resolution]
     )
 
-    al.output_ccd_data_to_fits(
-        ccd_data=ccd_data,
+    al.output_imaging_data_to_fits(
+        imaging_data=imaging_data,
         image_path=data_path + "image.fits",
         psf_path=data_path + "psf.fits",
         noise_map_path=data_path + "noise_map.fits",
         overwrite=True,
     )
 
-    al.ccd_plotters.plot_ccd_subplot(
-        ccd_data=ccd_data,
-        output_filename="ccd_data",
+    al.imaging_plotters.plot_imaging_subplot(
+        imaging_data=imaging_data,
+        output_filename="imaging_data",
         output_path=data_path,
         output_format="png",
     )
 
-    al.ccd_plotters.plot_ccd_individual(
-        ccd_data=ccd_data,
+    al.imaging_plotters.plot_imaging_individual(
+        imaging_data=imaging_data,
         should_plot_image=True,
         should_plot_noise_map=True,
         should_plot_psf=True,
@@ -100,7 +100,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
     )
 
 
-def make_lens_light_dev_vaucouleurs(data_resolutions, sub_grid_size):
+def make_lens_light_dev_vaucouleurs(data_resolutions, sub_size):
 
     data_type = "lens_light_dev_vaucouleurs"
 
@@ -122,12 +122,12 @@ def make_lens_light_dev_vaucouleurs(data_resolutions, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(
             data_type=data_type,
             data_resolution=data_resolution,
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             galaxies=[lens_galaxy, al.Galaxy(redshift=1.0)],
         )
 
 
-def make_lens_bulge_disk(data_resolutions, sub_grid_size):
+def make_lens_bulge_disk(data_resolutions, sub_size):
 
     data_type = "lens_bulge_disk"
 
@@ -156,12 +156,12 @@ def make_lens_bulge_disk(data_resolutions, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(
             data_type=data_type,
             data_resolution=data_resolution,
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             galaxies=[lens_galaxy, al.Galaxy(redshift=1.0)],
         )
 
 
-def make_lens_x2_light(data_resolutions, sub_grid_size):
+def make_lens_x2_light(data_resolutions, sub_size):
 
     data_type = "lens_x2_light"
 
@@ -196,12 +196,12 @@ def make_lens_x2_light(data_resolutions, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(
             data_type=data_type,
             data_resolution=data_resolution,
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             galaxies=[lens_galaxy_0, lens_galaxy_1, al.Galaxy(redshift=1.0)],
         )
 
 
-def make_lens_mass__source_smooth(data_resolutions, sub_grid_size):
+def make_lens_mass__source_smooth(data_resolutions, sub_size):
 
     data_type = "lens_mass__source_smooth"
 
@@ -231,12 +231,12 @@ def make_lens_mass__source_smooth(data_resolutions, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(
             data_type=data_type,
             data_resolution=data_resolution,
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             galaxies=[lens_galaxy, source_galaxy],
         )
 
 
-def make_lens_mass__source_cuspy(data_resolutions, sub_grid_size):
+def make_lens_mass__source_cuspy(data_resolutions, sub_size):
 
     data_type = "lens_mass__source_cuspy"
 
@@ -266,12 +266,12 @@ def make_lens_mass__source_cuspy(data_resolutions, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(
             data_type=data_type,
             data_resolution=data_resolution,
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             galaxies=[lens_galaxy, source_galaxy],
         )
 
 
-def make_lens_sis__source_smooth(data_resolutions, sub_grid_size):
+def make_lens_sis__source_smooth(data_resolutions, sub_size):
 
     data_type = "lens_sis__source_smooth"
 
@@ -301,12 +301,12 @@ def make_lens_sis__source_smooth(data_resolutions, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(
             data_type=data_type,
             data_resolution=data_resolution,
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             galaxies=[lens_galaxy, source_galaxy],
         )
 
 
-def make_lens_sis__source_smooth__offset_centre(data_resolutions, sub_grid_size):
+def make_lens_sis__source_smooth__offset_centre(data_resolutions, sub_size):
 
     data_type = "lens_sis__source_smooth__offset_centre"
 
@@ -336,12 +336,12 @@ def make_lens_sis__source_smooth__offset_centre(data_resolutions, sub_grid_size)
         simulate_image_from_galaxies_and_output_to_fits(
             data_type=data_type,
             data_resolution=data_resolution,
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             galaxies=[lens_galaxy, source_galaxy],
         )
 
 
-def make_lens_light__source_smooth(data_resolutions, sub_grid_size):
+def make_lens_light__source_smooth(data_resolutions, sub_size):
 
     data_type = "lens_light__source_smooth"
 
@@ -379,12 +379,12 @@ def make_lens_light__source_smooth(data_resolutions, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(
             data_type=data_type,
             data_resolution=data_resolution,
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             galaxies=[lens_galaxy, source_galaxy],
         )
 
 
-def make_lens_light__source_cuspy(data_resolutions, sub_grid_size):
+def make_lens_light__source_cuspy(data_resolutions, sub_size):
 
     data_type = "lens_light__source_cuspy"
 
@@ -422,6 +422,6 @@ def make_lens_light__source_cuspy(data_resolutions, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(
             data_type=data_type,
             data_resolution=data_resolution,
-            sub_grid_size=sub_grid_size,
+            sub_size=sub_size,
             galaxies=[lens_galaxy, source_galaxy],
         )

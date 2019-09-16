@@ -6,7 +6,7 @@ from autolens.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.plotters import ccd_plotters
+from autolens.data.plotters import imaging_plotters
 from test.simulation import simulation_util
 
 import os
@@ -20,12 +20,12 @@ af.conf.instance = af.conf.Config(
 )
 
 # It is convinient to specify the lens name as a string, so that if the pipeline is applied to multiple images we \
-# don't have to change all of the path entries in the load_ccd_data_from_fits function below.
+# don't have to change all of the path entries in the load_imaging_data_from_fits function below.
 data_type = "no_lens_source_smooth"
 data_resolution = "Euclid"
 
 # Setup the size of the sub-grid and mask used for this precision analysis.
-sub_grid_size = 2
+sub_size = 2
 inner_radius_arcsec = 0.0
 outer_radius_arcsec = 3.0
 
@@ -33,20 +33,20 @@ outer_radius_arcsec = 3.0
 # more precise interpolation of the sub-grid deflection angles.
 pixel_scale_interpolation_grid = 0.2
 
-ccd_data = simulation_util.load_test_ccd_data(
+imaging_data = simulation_util.load_test_imaging_data(
     data_type=data_type, data_resolution=data_resolution, psf_shape=(21, 21)
 )
 
 # The phase is passed the mask we setup below using the radii specified above.
 mask = al.Mask.circular_annular(
-    shape=ccd_data.shape,
-    pixel_scale=ccd_data.pixel_scale,
+    shape=imaging_data.shape,
+    pixel_scale=imaging_data.pixel_scale,
     inner_radius_arcsec=inner_radius_arcsec,
     outer_radius_arcsec=outer_radius_arcsec,
 )
 
-# Plot the CCD instrument and mask.
-ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask)
+# Plot the Imaging instrument and mask.
+imaging_plotters.plot_imaging_subplot(imaging_data=imaging_data, mask=mask)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
@@ -64,4 +64,4 @@ phase.optimizer.n_live_points = 50
 phase.optimizer.sampling_efficiency = 0.5
 
 # We run the phase on the image, print the results and plot the fit.
-result = phase.run(data=ccd_data, mask=mask)
+result = phase.run(data=imaging_data, mask=mask)

@@ -7,14 +7,14 @@ from autolens.plotters import array_plotters
 # Lets take another look at the rectangular grid, and think about its weakness.
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
-ccd_data = simulation_util.load_test_ccd_data(
+imaging_data = simulation_util.load_test_imaging_data(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
-array = ccd_data.image
+array = imaging_data.image
 
 mask = al.Mask.circular(
-    shape=ccd_data.shape,
-    pixel_scale=ccd_data.pixel_scale,
+    shape=imaging_data.shape,
+    pixel_scale=imaging_data.pixel_scale,
     radius_arcsec=5.0,
     centre=(0.0, 0.0),
 )
@@ -27,14 +27,14 @@ array_plotters.plot_array(
     extract_array_from_mask=True,
 )
 
-ccd_data = simulation_util.load_test_ccd_data(
+imaging_data = simulation_util.load_test_imaging_data(
     data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
 )
-array = ccd_data.image
+array = imaging_data.image
 
 mask = al.Mask.circular(
-    shape=ccd_data.shape,
-    pixel_scale=ccd_data.pixel_scale,
+    shape=imaging_data.shape,
+    pixel_scale=imaging_data.pixel_scale,
     radius_arcsec=5.0,
     centre=(1.0, 1.0),
 )

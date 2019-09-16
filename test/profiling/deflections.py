@@ -10,25 +10,25 @@ from test.simulation import simulation_util
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
 # analysis
 
-sub_grid_size = 2
+sub_size = 2
 radius_arcsec = 4.0
 
-print("sub grid size = " + str(sub_grid_size))
+print("sub grid size = " + str(sub_size))
 print("circular mask radius = " + str(radius_arcsec) + "\n")
 
 for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
-    ccd_data = simulation_util.load_test_ccd_data(
+    imaging_data = simulation_util.load_test_imaging_data(
         data_type="lens_mass__source_smooth",
         data_resolution=data_resolution,
         psf_shape=(3, 3),
     )
     mask = al.Mask.circular(
-        shape=ccd_data.shape,
-        pixel_scale=ccd_data.pixel_scale,
+        shape=imaging_data.shape,
+        pixel_scale=imaging_data.pixel_scale,
         radius_arcsec=radius_arcsec,
     )
-    lens_data = al.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
+    lens_data = al.LensData(imaging_data=imaging_data, mask=mask, sub_size=sub_size)
 
     print("Deflection angle run times for image type " + data_resolution + "\n")
     print("Number of points = " + str(lens_data.grid.shape[0]) + "\n")

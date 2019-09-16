@@ -50,4 +50,4 @@ test/integration/hyper/
 workspace/runners/cosma/
 workspace
 test/integration/data_temp/
-
+autolens/lens/lens_fit/__pycache__
