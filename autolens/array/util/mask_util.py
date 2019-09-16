@@ -107,7 +107,7 @@ def total_sparse_pixels_from_mask(mask, unmasked_sparse_grid_pixel_centres):
 
     Parameters
     -----------
-    mask : ccd.mask.Mask
+    mask : imaging.mask.Mask
         The mask within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.

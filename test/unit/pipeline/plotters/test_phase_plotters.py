@@ -11,11 +11,11 @@ def make_phase_plotter_setup():
     )
 
 
-def test__plot_ccd_for_phase(
-    ccd_data_7x7, mask_7x7, general_config, phase_plotter_path, plot_patch
+def test__plot_imaging_for_phase(
+    imaging_data_7x7, mask_7x7, general_config, phase_plotter_path, plot_patch
 ):
-    al.phase_plotters.plot_ccd_for_phase(
-        ccd_data=ccd_data_7x7,
+    al.phase_plotters.plot_imaging_for_phase(
+        imaging_data=imaging_data_7x7,
         mask=mask_7x7,
         positions=None,
         units="arcsec",
@@ -32,19 +32,19 @@ def test__plot_ccd_for_phase(
         subplot_path=phase_plotter_path,
     )
 
-    assert phase_plotter_path + "ccd_data.png" in plot_patch.paths
-    assert phase_plotter_path + "ccd/ccd_image.png" in plot_patch.paths
-    assert phase_plotter_path + "ccd/ccd_noise_map.png" not in plot_patch.paths
-    assert phase_plotter_path + "ccd/ccd_psf.png" in plot_patch.paths
+    assert phase_plotter_path + "imaging_data.png" in plot_patch.paths
+    assert phase_plotter_path + "imaging/imaging_image.png" in plot_patch.paths
+    assert phase_plotter_path + "imaging/imaging_noise_map.png" not in plot_patch.paths
+    assert phase_plotter_path + "imaging/imaging_psf.png" in plot_patch.paths
     assert (
-        phase_plotter_path + "ccd/ccd_signal_to_noise_map.png" not in plot_patch.paths
+        phase_plotter_path + "imaging/imaging_signal_to_noise_map.png" not in plot_patch.paths
     )
     assert (
-        phase_plotter_path + "ccd/ccd_absolute_signal_to_noise_map.png"
+        phase_plotter_path + "imaging/imaging_absolute_signal_to_noise_map.png"
         not in plot_patch.paths
     )
     assert (
-        phase_plotter_path + "ccd/ccd_potential_chi_squared_map.png" in plot_patch.paths
+        phase_plotter_path + "imaging/imaging_potential_chi_squared_map.png" in plot_patch.paths
     )
 
 

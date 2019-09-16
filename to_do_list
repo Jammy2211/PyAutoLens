@@ -53,7 +53,7 @@ Short term:
 
 Mid term:
 
-- Include output of data for a simulation (galaxies, ccd settings, etc).
+- Include output of data for a simulation (galaxies, imaging settings, etc).
 - CCD loading sanity checks
 
 Future:

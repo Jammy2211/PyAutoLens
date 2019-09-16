@@ -4,27 +4,27 @@ import pytest
 
 
 @pytest.fixture(name="lens_data_7x7")
-def make_lens_data_7x7(ccd_data_7x7, sub_mask_7x7):
-    return al.LensData(ccd_data=ccd_data_7x7, mask=sub_mask_7x7)
+def make_lens_data_7x7(imaging_data_7x7, sub_mask_7x7):
+    return al.LensData(imaging_data=imaging_data_7x7, mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="lens_data_6x6")
-def make_lens_data_6x6(ccd_data_6x6, mask_6x6):
-    return al.LensData(ccd_data=ccd_data_6x6, mask=mask_6x6)
+def make_lens_data_6x6(imaging_data_6x6, mask_6x6):
+    return al.LensData(imaging_data=imaging_data_6x6, mask=mask_6x6)
 
 
 class TestLensData(object):
-    def test__attributes(self, ccd_data_7x7, lens_data_7x7):
-        assert lens_data_7x7.pixel_scale == ccd_data_7x7.pixel_scale
+    def test__attributes(self, imaging_data_7x7, lens_data_7x7):
+        assert lens_data_7x7.pixel_scale == imaging_data_7x7.pixel_scale
         assert lens_data_7x7.pixel_scale == 1.0
 
-        assert (lens_data_7x7.unmasked_image == ccd_data_7x7.image).all()
+        assert (lens_data_7x7.unmasked_image == imaging_data_7x7.image).all()
         assert (lens_data_7x7.unmasked_image == np.ones((7, 7))).all()
 
-        assert (lens_data_7x7.unmasked_noise_map == ccd_data_7x7.noise_map).all()
+        assert (lens_data_7x7.unmasked_noise_map == imaging_data_7x7.noise_map).all()
         assert (lens_data_7x7.unmasked_noise_map == 2.0 * np.ones((7, 7))).all()
 
-        assert (lens_data_7x7.psf == ccd_data_7x7.psf).all()
+        assert (lens_data_7x7.psf == imaging_data_7x7.psf).all()
         assert (lens_data_7x7.psf == np.ones((3, 3))).all()
 
         assert lens_data_7x7.trimmed_psf_shape == (3, 3)
@@ -89,11 +89,11 @@ class TestLensData(object):
         assert (lens_data_7x7.preload_blurring_grid == blurring_grid_7x7).all()
 
     def test__pixel_scale_interpolation_grid_input__grids_nclude_interpolators(
-        self, ccd_data_7x7, sub_mask_7x7
+        self, imaging_data_7x7, sub_mask_7x7
     ):
 
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
         )
 
         grid = al.Grid.from_mask(mask=sub_mask_7x7)
@@ -121,11 +121,11 @@ class TestLensData(object):
         ).all()
 
     def test__pixel_scale_binned_grid_is_input__correct_binned_up_grid_calculated(
-        self, ccd_data_7x7, sub_mask_7x7, grid_7x7
+        self, imaging_data_7x7, sub_mask_7x7, grid_7x7
     ):
-        ccd_data_7x7.pixel_scale = 1.0
+        imaging_data_7x7.pixel_scale = 1.0
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=1.0
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=1.0
         )
 
         assert lens_data_7x7.grid.binned.bin_up_factor == 1
@@ -136,9 +136,9 @@ class TestLensData(object):
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
-        ccd_data_7x7.pixel_scale = 1.0
+        imaging_data_7x7.pixel_scale = 1.0
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=1.9
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=1.9
         )
 
         assert lens_data_7x7.grid.binned.bin_up_factor == 1
@@ -148,9 +148,9 @@ class TestLensData(object):
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
-        ccd_data_7x7.pixel_scale = 1.0
+        imaging_data_7x7.pixel_scale = 1.0
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=2.0
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=2.0
         )
         assert lens_data_7x7.grid.binned.bin_up_factor == 2
         assert (
@@ -173,16 +173,16 @@ class TestLensData(object):
             == np.array([[0, -1, -1, -1], [1, 2, -1, -1], [3, 6, -1, -1], [4, 5, 7, 8]])
         ).all()
 
-        ccd_data_7x7.pixel_scale = 2.0
+        imaging_data_7x7.pixel_scale = 2.0
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=1.0
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=1.0
         )
 
         assert lens_data_7x7.grid.binned.bin_up_factor == 1
 
-        ccd_data_7x7.pixel_scale = 1.0
+        imaging_data_7x7.pixel_scale = 1.0
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=None
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, pixel_scale_binned_grid=None
         )
 
         assert lens_data_7x7.grid.binned == None
@@ -190,38 +190,38 @@ class TestLensData(object):
     def test__convolvers(self, lens_data_7x7):
         assert type(lens_data_7x7.convolver) == al.Convolver
 
-    def test__inversion_pixel_limit(self, ccd_data_7x7, sub_mask_7x7):
+    def test__inversion_pixel_limit(self, imaging_data_7x7, sub_mask_7x7):
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, inversion_pixel_limit=2
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, inversion_pixel_limit=2
         )
 
         assert lens_data_7x7.inversion_pixel_limit == 2
 
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, inversion_pixel_limit=5
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, inversion_pixel_limit=5
         )
 
         assert lens_data_7x7.inversion_pixel_limit == 5
 
-    def test__hyper_noise_map_max(self, ccd_data_7x7, sub_mask_7x7):
+    def test__hyper_noise_map_max(self, imaging_data_7x7, sub_mask_7x7):
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, hyper_noise_map_max=10.0
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, hyper_noise_map_max=10.0
         )
 
         assert lens_data_7x7.hyper_noise_map_max == 10.0
 
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data_7x7, mask=sub_mask_7x7, hyper_noise_map_max=20.0
+            imaging_data=imaging_data_7x7, mask=sub_mask_7x7, hyper_noise_map_max=20.0
         )
 
         assert lens_data_7x7.hyper_noise_map_max == 20.0
 
-    def test__different_ccd_data_without_mock_objects__customize_constructor_inputs(
+    def test__different_imaging_data_without_mock_objects__customize_constructor_inputs(
         self
     ):
 
         psf = al.PSF(np.ones((7, 7)), 1)
-        ccd_data = al.CCDData(
+        imaging_data = al.CCDData(
             np.ones((19, 19)),
             pixel_scale=3.0,
             psf=psf,
@@ -233,7 +233,7 @@ class TestLensData(object):
         mask[9, 9] = False
 
         lens_data_7x7 = al.LensData(
-            ccd_data=ccd_data,
+            imaging_data=imaging_data,
             mask=mask,
             trimmed_psf_shape=(7, 7),
             positions=[np.array([[1.0, 1.0]])],
@@ -276,12 +276,12 @@ class TestLensData(object):
             )
         ).all()
 
-    def test__lens_data_6x6_with_binned_up_ccd_data(self, lens_data_6x6):
-        binned_up_psf = lens_data_6x6.ccd_data.psf.new_psf_with_rescaled_odd_dimensioned_array(
+    def test__lens_data_6x6_with_binned_up_imaging_data(self, lens_data_6x6):
+        binned_up_psf = lens_data_6x6.imaging_data.psf.new_psf_with_rescaled_odd_dimensioned_array(
             rescale_factor=0.5
         )
 
-        lens_data_6x6 = lens_data_6x6.new_lens_data_with_binned_up_ccd_data_and_mask(
+        lens_data_6x6 = lens_data_6x6.new_lens_data_with_binned_up_imaging_data_and_mask(
             bin_up_factor=2
         )
 
@@ -289,14 +289,14 @@ class TestLensData(object):
         assert (lens_data_6x6.psf == binned_up_psf).all()
         assert (lens_data_6x6.unmasked_noise_map == np.ones((3, 3))).all()
         assert (
-            lens_data_6x6.ccd_data.background_noise_map == 1.5 * np.ones((3, 3))
+            lens_data_6x6.imaging_data.background_noise_map == 1.5 * np.ones((3, 3))
         ).all()
-        assert (lens_data_6x6.ccd_data.poisson_noise_map == 2.0 * np.ones((3, 3))).all()
+        assert (lens_data_6x6.imaging_data.poisson_noise_map == 2.0 * np.ones((3, 3))).all()
         assert (
-            lens_data_6x6.ccd_data.exposure_time_map == 20.0 * np.ones((3, 3))
+            lens_data_6x6.imaging_data.exposure_time_map == 20.0 * np.ones((3, 3))
         ).all()
         assert (
-            lens_data_6x6.ccd_data.background_sky_map == 6.0 * np.ones((3, 3))
+            lens_data_6x6.imaging_data.background_sky_map == 6.0 * np.ones((3, 3))
         ).all()
 
         assert (
@@ -308,22 +308,22 @@ class TestLensData(object):
         assert (lens_data_6x6.noise_map_1d == np.ones((1))).all()
 
     def test__lens_data_7x7_with_signal_to_noise_limit(
-        self, ccd_data_7x7, lens_data_7x7
+        self, imaging_data_7x7, lens_data_7x7
     ):
 
         lens_data_snr_limit = lens_data_7x7.new_lens_data_with_signal_to_noise_limit(
             signal_to_noise_limit=0.25
         )
 
-        assert lens_data_snr_limit.pixel_scale == ccd_data_7x7.pixel_scale
+        assert lens_data_snr_limit.pixel_scale == imaging_data_7x7.pixel_scale
         assert lens_data_snr_limit.pixel_scale == 1.0
 
-        assert (lens_data_snr_limit.unmasked_image == ccd_data_7x7.image).all()
+        assert (lens_data_snr_limit.unmasked_image == imaging_data_7x7.image).all()
         assert (lens_data_snr_limit.unmasked_image == np.ones((7, 7))).all()
 
         assert (lens_data_snr_limit.unmasked_noise_map == 4.0 * np.ones((7, 7))).all()
 
-        assert (lens_data_snr_limit.psf == ccd_data_7x7.psf).all()
+        assert (lens_data_snr_limit.psf == imaging_data_7x7.psf).all()
         assert (lens_data_snr_limit.psf == np.ones((3, 3))).all()
 
         assert lens_data_snr_limit.trimmed_psf_shape == (3, 3)

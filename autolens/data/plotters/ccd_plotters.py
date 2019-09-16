@@ -9,8 +9,8 @@ from autolens.data.plotters import data_plotters
 from autolens.plotters import plotter_util
 
 
-def plot_ccd_subplot(
-    ccd_data,
+def plot_imaging_subplot(
+    imaging_data,
     plot_origin=True,
     mask=None,
     extract_array_from_mask=False,
@@ -40,18 +40,18 @@ def plot_ccd_subplot(
     position_pointsize=30,
     grid_pointsize=1,
     output_path=None,
-    output_filename="ccd_data",
+    output_filename="imaging_data",
     output_format="show",
 ):
-    """Plot the ccd instrument as a sub-plot of all its quantites (e.g. the data, noise_map-map, PSF, Signal-to_noise-map, \
+    """Plot the imaging instrument as a sub-plot of all its quantites (e.g. the data, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    ccd_data : instrument.CCDData
-        The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    imaging_data : instrument.CCDData
+        The imaging instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
@@ -73,7 +73,7 @@ def plot_ccd_subplot(
     plt.subplot(rows, columns, 1)
 
     plot_image(
-        ccd_data=ccd_data,
+        imaging_data=imaging_data,
         plot_origin=plot_origin,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -110,7 +110,7 @@ def plot_ccd_subplot(
     plt.subplot(rows, columns, 2)
 
     plot_noise_map(
-        ccd_data=ccd_data,
+        imaging_data=imaging_data,
         plot_origin=plot_origin,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -143,7 +143,7 @@ def plot_ccd_subplot(
     plt.subplot(rows, columns, 3)
 
     plot_psf(
-        ccd_data=ccd_data,
+        imaging_data=imaging_data,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -171,7 +171,7 @@ def plot_ccd_subplot(
     plt.subplot(rows, columns, 4)
 
     plot_signal_to_noise_map(
-        ccd_data=ccd_data,
+        imaging_data=imaging_data,
         plot_origin=plot_origin,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -204,7 +204,7 @@ def plot_ccd_subplot(
     plt.subplot(rows, columns, 5)
 
     plot_absolute_signal_to_noise_map(
-        ccd_data=ccd_data,
+        imaging_data=imaging_data,
         plot_origin=plot_origin,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -237,7 +237,7 @@ def plot_ccd_subplot(
     plt.subplot(rows, columns, 6)
 
     plot_potential_chi_squared_map(
-        ccd_data=ccd_data,
+        imaging_data=imaging_data,
         plot_origin=plot_origin,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -276,8 +276,8 @@ def plot_ccd_subplot(
     plt.close()
 
 
-def plot_ccd_individual(
-    ccd_data,
+def plot_imaging_individual(
+    imaging_data,
     plot_origin=True,
     mask=None,
     extract_array_from_mask=False,
@@ -293,15 +293,15 @@ def plot_ccd_individual(
     output_path=None,
     output_format="png",
 ):
-    """Plot each attribute of the ccd instrument as individual figures one by one (e.g. the data, noise_map-map, PSF, \
+    """Plot each attribute of the imaging instrument as individual figures one by one (e.g. the data, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    ccd_data : instrument.CCDData
-        The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    imaging_data : instrument.CCDData
+        The imaging instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
@@ -309,7 +309,7 @@ def plot_ccd_individual(
     if should_plot_image:
 
         plot_image(
-            ccd_data=ccd_data,
+            imaging_data=imaging_data,
             plot_origin=plot_origin,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
@@ -323,7 +323,7 @@ def plot_ccd_individual(
     if should_plot_noise_map:
 
         plot_noise_map(
-            ccd_data=ccd_data,
+            imaging_data=imaging_data,
             plot_origin=plot_origin,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
@@ -336,7 +336,7 @@ def plot_ccd_individual(
     if should_plot_psf:
 
         plot_psf(
-            ccd_data=ccd_data,
+            imaging_data=imaging_data,
             plot_origin=plot_origin,
             output_path=output_path,
             output_format=output_format,
@@ -345,7 +345,7 @@ def plot_ccd_individual(
     if should_plot_signal_to_noise_map:
 
         plot_signal_to_noise_map(
-            ccd_data=ccd_data,
+            imaging_data=imaging_data,
             plot_origin=plot_origin,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
@@ -358,7 +358,7 @@ def plot_ccd_individual(
     if should_plot_absolute_signal_to_noise_map:
 
         plot_absolute_signal_to_noise_map(
-            ccd_data=ccd_data,
+            imaging_data=imaging_data,
             plot_origin=plot_origin,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
@@ -371,7 +371,7 @@ def plot_ccd_individual(
     if should_plot_potential_chi_squared_map:
 
         plot_potential_chi_squared_map(
-            ccd_data=ccd_data,
+            imaging_data=imaging_data,
             plot_origin=plot_origin,
             mask=mask,
             extract_array_from_mask=extract_array_from_mask,
@@ -383,7 +383,7 @@ def plot_ccd_individual(
 
 
 def plot_image(
-    ccd_data,
+    imaging_data,
     plot_origin=True,
     grid=None,
     mask=None,
@@ -417,16 +417,16 @@ def plot_image(
     grid_pointsize=1,
     output_path=None,
     output_format="show",
-    output_filename="ccd_image",
+    output_filename="imaging_image",
 ):
-    """Plot the observed instrument of the ccd instrument.
+    """Plot the observed instrument of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : instrument.CCDData
-        The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
@@ -434,7 +434,7 @@ def plot_image(
         over the immage.
     """
     data_plotters.plot_image(
-        image=ccd_data.image,
+        image=imaging_data.image,
         plot_origin=plot_origin,
         grid=grid,
         mask=mask,
@@ -473,7 +473,7 @@ def plot_image(
 
 
 def plot_noise_map(
-    ccd_data,
+    imaging_data,
     plot_origin=True,
     mask=None,
     extract_array_from_mask=False,
@@ -502,22 +502,22 @@ def plot_noise_map(
     mask_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="ccd_noise_map",
+    output_filename="imaging_noise_map",
 ):
-    """Plot the noise_map-map of the ccd instrument.
+    """Plot the noise_map-map of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : instrument.CCDData
-        The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_noise_map(
-        noise_map=ccd_data.noise_map,
+        noise_map=imaging_data.noise_map,
         plot_origin=plot_origin,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -551,7 +551,7 @@ def plot_noise_map(
 
 
 def plot_psf(
-    ccd_data,
+    imaging_data,
     plot_origin=True,
     as_subplot=False,
     units="arcsec",
@@ -576,22 +576,22 @@ def plot_psf(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="ccd_psf",
+    output_filename="imaging_psf",
 ):
-    """Plot the PSF of the ccd instrument.
+    """Plot the PSF of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : instrument.CCDData
-        The ccd instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_psf(
-        psf=ccd_data.psf,
+        psf=imaging_data.psf,
         plot_origin=plot_origin,
         as_subplot=as_subplot,
         units=units,
@@ -621,7 +621,7 @@ def plot_psf(
 
 
 def plot_signal_to_noise_map(
-    ccd_data,
+    imaging_data,
     plot_origin=True,
     mask=None,
     extract_array_from_mask=False,
@@ -650,22 +650,22 @@ def plot_signal_to_noise_map(
     mask_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="ccd_signal_to_noise_map",
+    output_filename="imaging_signal_to_noise_map",
 ):
-    """Plot the signal-to-noise_map-map of the ccd instrument.
+    """Plot the signal-to-noise_map-map of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : instrument.CCDData
-        The ccd instrument, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging instrument, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_signal_to_noise_map(
-        signal_to_noise_map=ccd_data.signal_to_noise_map,
+        signal_to_noise_map=imaging_data.signal_to_noise_map,
         plot_origin=plot_origin,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -699,7 +699,7 @@ def plot_signal_to_noise_map(
 
 
 def plot_absolute_signal_to_noise_map(
-    ccd_data,
+    imaging_data,
     plot_origin=True,
     mask=None,
     extract_array_from_mask=False,
@@ -728,22 +728,22 @@ def plot_absolute_signal_to_noise_map(
     mask_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="ccd_absolute_signal_to_noise_map",
+    output_filename="imaging_absolute_signal_to_noise_map",
 ):
-    """Plot the signal-to-noise_map-map of the ccd instrument.
+    """Plot the signal-to-noise_map-map of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : instrument.CCDData
-        The ccd instrument, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging instrument, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_absolute_signal_to_noise_map(
-        absolute_signal_to_noise_map=ccd_data.absolute_signal_to_noise_map,
+        absolute_signal_to_noise_map=imaging_data.absolute_signal_to_noise_map,
         plot_origin=plot_origin,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -777,7 +777,7 @@ def plot_absolute_signal_to_noise_map(
 
 
 def plot_potential_chi_squared_map(
-    ccd_data,
+    imaging_data,
     plot_origin=True,
     mask=None,
     extract_array_from_mask=False,
@@ -806,22 +806,22 @@ def plot_potential_chi_squared_map(
     mask_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="ccd_potential_chi_squared_map",
+    output_filename="imaging_potential_chi_squared_map",
 ):
-    """Plot the signal-to-noise_map-map of the ccd instrument.
+    """Plot the signal-to-noise_map-map of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : instrument.CCDData
-        The ccd instrument, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging instrument, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     data_plotters.plot_potential_chi_squared_map(
-        potential_chi_squared_map=ccd_data.potential_chi_squared_map,
+        potential_chi_squared_map=imaging_data.potential_chi_squared_map,
         plot_origin=plot_origin,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -855,7 +855,7 @@ def plot_potential_chi_squared_map(
 
 
 def get_origin(array, plot_origin):
-    """Get the (y,x) origin of the ccd instrument if it going to be plotted.
+    """Get the (y,x) origin of the imaging instrument if it going to be plotted.
 
     Parameters
     -----------

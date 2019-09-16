@@ -47,7 +47,7 @@ def plot_ray_tracing_subplot(
 
     Parameters
     -----------
-    tracer : autolens.ccd.tracer.CCD
+    tracer : autolens.imaging.tracer.CCD
         Class containing the _tracer,  noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -294,7 +294,7 @@ def plot_ray_tracing_individual(
 
     Parameters
     -----------
-    tracer : autolens.ccd.tracer.CCD
+    tracer : autolens.imaging.tracer.CCD
         Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str

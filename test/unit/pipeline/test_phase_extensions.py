@@ -218,7 +218,7 @@ class TestImagePassing(object):
         )
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_images(
-        self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
+        self, mask_function_7x7, results_collection_7x7, imaging_data_7x7
     ):
         results_collection_7x7[0].galaxy_images = [
             2.0 * np.ones((7, 7)),
@@ -237,7 +237,7 @@ class TestImagePassing(object):
         )
 
         analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -256,7 +256,7 @@ class TestImagePassing(object):
         ).all()
 
     def test__results_are_passed_to_new_analysis__hyper_images_values_below_minimum_are_scaled_up_using_config(
-        self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
+        self, mask_function_7x7, results_collection_7x7, imaging_data_7x7
     ):
         phase_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -268,7 +268,7 @@ class TestImagePassing(object):
         )
 
         analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (analysis.hyper_model_image_1d == 5.0 * np.ones(9)).all()
@@ -281,7 +281,7 @@ class TestImagePassing(object):
         ).all()
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_cluster_images__includes_hyper_minimum(
-        self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
+        self, mask_function_7x7, results_collection_7x7, imaging_data_7x7
     ):
         phase_7x7 = al.PhaseImaging(
             phase_name="test_phase",
@@ -300,7 +300,7 @@ class TestImagePassing(object):
         )
 
         analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -322,12 +322,12 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale,
+            pixel_scale_binned_cluster_grid=imaging_data_7x7.pixel_scale,
             phase_name="test_phase",
         )
 
         analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -357,12 +357,12 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale * 2.0,
+            pixel_scale_binned_cluster_grid=imaging_data_7x7.pixel_scale * 2.0,
             phase_name="test_phase",
         )
 
         analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -401,12 +401,12 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale * 2.0,
+            pixel_scale_binned_cluster_grid=imaging_data_7x7.pixel_scale * 2.0,
             phase_name="test_phase",
         )
 
         analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -576,7 +576,7 @@ class TestHyperAPI(object):
         assert pixelization_phase.hyper_name == "inversion"
         assert isinstance(pixelization_phase, al.InversionPhase)
 
-    def test_hyper_result(self, ccd_data_7x7):
+    def test_hyper_result(self, imaging_data_7x7):
         normal_phase = MockPhase()
 
         # noinspection PyTypeChecker
@@ -588,7 +588,7 @@ class TestHyperAPI(object):
 
         phase.run_hyper = run_hyper
 
-        result = phase.run(ccd_data_7x7)
+        result = phase.run(imaging_data_7x7)
 
         assert hasattr(result, "hyper_galaxy")
         assert isinstance(result.hyper_galaxy, MockResult)
@@ -596,7 +596,7 @@ class TestHyperAPI(object):
 
 class TestHyperGalaxyPhase(object):
     def test__likelihood_function_is_same_as_normal_phase_likelihood_function(
-        self, ccd_data_7x7, mask_function_7x7
+        self, imaging_data_7x7, mask_function_7x7
     ):
 
         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
@@ -616,11 +616,11 @@ class TestHyperGalaxyPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_7x7.make_analysis(data=ccd_data_7x7)
+        analysis = phase_7x7.make_analysis(data=imaging_data_7x7)
         instance = phase_7x7.variable.instance_from_unit_vector([])
 
-        mask = phase_7x7.mask_function(image=ccd_data_7x7.image, sub_size=2)
-        lens_data = al.LensData(ccd_data=ccd_data_7x7, mask=mask)
+        mask = phase_7x7.mask_function(image=imaging_data_7x7.image, sub_size=2)
+        lens_data = al.LensData(imaging_data=imaging_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImageFit.from_lens_data_and_tracer(
             lens_data=lens_data,

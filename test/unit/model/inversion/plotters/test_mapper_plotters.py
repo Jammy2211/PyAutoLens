@@ -63,7 +63,7 @@ def test__image_and_rectangular_mapper_is_output(
     image, rectangular_mapper, mapper_plotter_path, plot_patch
 ):
     al.mapper_plotters.plot_image_and_mapper(
-        ccd_data=image,
+        imaging_data=image,
         mapper=rectangular_mapper,
         should_plot_centres=True,
         should_plot_grid=True,

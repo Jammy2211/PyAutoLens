@@ -190,7 +190,7 @@ class HyperGalaxyPhase(HyperPhase):
         phase = self.make_hyper_phase()
 
         lens_data = ld.LensData(
-            ccd_data=data,
+            imaging_data=data,
             mask=results.last.mask_2d,
             trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,
@@ -348,7 +348,7 @@ class HyperGalaxyAllPhase(HyperPhase):
         phase = self.make_hyper_phase()
 
         lens_data = ld.LensData(
-            ccd_data=data,
+            imaging_data=data,
             mask=results.last.mask_2d,
             trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
             positions=results.last.positions,

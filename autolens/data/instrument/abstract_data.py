@@ -42,7 +42,7 @@ class AbstractData(object):
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
             preferably in units of electrons per second.
         exposure_time_map : scaled_array.ScaledSquarePixelArray
-            An array describing the effective exposure time in each ccd pixel.
+            An array describing the effective exposure time in each imaging pixel.
         background_sky_map : scaled_array.ScaledSquarePixelArray
             An array describing the background sky.
         """
@@ -103,7 +103,7 @@ class AbstractData(object):
 
     @property
     def potential_chi_squared_map(self):
-        """The potential chi-squared map of the ccd instrument. This represents how much each pixel can contribute to \
+        """The potential chi-squared map of the imaging instrument. This represents how much each pixel can contribute to \
         the chi-squared map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
         return np.square(self.absolute_signal_to_noise_map)
 

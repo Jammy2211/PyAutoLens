@@ -11,11 +11,11 @@ from scipy.spatial import Voronoi
 
 from autolens.plotters import plotter_util, grid_plotters
 from autolens.model.inversion import mappers
-from autolens.data.plotters import ccd_plotters
+from autolens.data.plotters import imaging_plotters
 
 
 def plot_image_and_mapper(
-    ccd_data,
+    imaging_data,
     mapper,
     mask=None,
     positions=None,
@@ -37,8 +37,8 @@ def plot_image_and_mapper(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    ccd_plotters.plot_image(
-        ccd_data=ccd_data,
+    imaging_plotters.plot_image(
+        imaging_data=imaging_data,
         mask=mask,
         positions=positions,
         as_subplot=True,

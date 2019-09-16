@@ -47,7 +47,7 @@ def plot_image(
     output_format="show",
     output_filename="image",
 ):
-    """Plot the observed image of the ccd instrument.
+    """Plot the observed image of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -134,7 +134,7 @@ def plot_noise_map(
     output_format="show",
     output_filename="noise_map",
 ):
-    """Plot the noise_map of the ccd instrument.
+    """Plot the noise_map of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -209,7 +209,7 @@ def plot_psf(
     output_format="show",
     output_filename="psf",
 ):
-    """Plot the PSF of the ccd instrument.
+    """Plot the PSF of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -284,7 +284,7 @@ def plot_signal_to_noise_map(
     output_format="show",
     output_filename="signal_to_noise_map",
 ):
-    """Plot the signal-to-noise_map of the ccd instrument.
+    """Plot the signal-to-noise_map of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -363,7 +363,7 @@ def plot_absolute_signal_to_noise_map(
     output_format="show",
     output_filename="absolute_signal_to_noise_map",
 ):
-    """Plot the absolute signal-to-noise map of the ccd instrument.
+    """Plot the absolute signal-to-noise map of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -442,7 +442,7 @@ def plot_potential_chi_squared_map(
     output_format="show",
     output_filename="potential_chi_squared_map",
 ):
-    """Plot the signal-to-noise_map of the ccd instrument.
+    """Plot the signal-to-noise_map of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -511,7 +511,7 @@ def plot_visibilities(
     output_format="show",
     output_filename="visibilities",
 ):
-    """Plot the observed image of the ccd instrument.
+    """Plot the observed image of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -569,7 +569,7 @@ def plot_u_wavelengths(
     output_format="show",
     output_filename="u_wavelengths",
 ):
-    """Plot the observed image of the ccd instrument.
+    """Plot the observed image of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -625,7 +625,7 @@ def plot_v_wavelengths(
     output_format="show",
     output_filename="v_wavelengths",
 ):
-    """Plot the observed image of the ccd instrument.
+    """Plot the observed image of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -690,7 +690,7 @@ def plot_primary_beam(
     output_format="show",
     output_filename="primary_beam",
 ):
-    """Plot the PSF of the ccd instrument.
+    """Plot the PSF of the imaging instrument.
 
     Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
 
@@ -734,7 +734,7 @@ def plot_primary_beam(
 
 
 def get_origin(array, plot_origin):
-    """Get the (y,x) origin of the ccd instrument if it going to be plotted.
+    """Get the (y,x) origin of the imaging instrument if it going to be plotted.
 
     Parameters
     -----------

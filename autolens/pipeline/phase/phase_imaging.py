@@ -271,7 +271,7 @@ class PhaseImaging(Phase):
             preload_pixelization_grids_of_planes = None
 
         lens_data = ld.LensData(
-            ccd_data=data,
+            imaging_data=data,
             mask=mask,
             trimmed_psf_shape=self.psf_shape,
             positions=positions,
@@ -298,7 +298,7 @@ class PhaseImaging(Phase):
             )
 
         if self.bin_up_factor is not None:
-            lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(
+            lens_data = lens_data.new_lens_data_with_binned_up_imaging_data_and_mask(
                 bin_up_factor=self.bin_up_factor
             )
 
@@ -509,8 +509,8 @@ class PhaseImaging(Phase):
                 path=image_path, folder_names=["subplots"]
             )
 
-            phase_plotters.plot_ccd_for_phase(
-                ccd_data=self.lens_data.ccd_data,
+            phase_plotters.plot_imaging_for_phase(
+                imaging_data=self.lens_data.imaging_data,
                 mask=mask,
                 positions=positions,
                 extract_array_from_mask=self.extract_array_from_mask,

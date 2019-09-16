@@ -6,11 +6,11 @@ from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 from autolens.lens.lens_fit import lens_image_fit
 from autolens.lens import lens_data as ld
-from autolens.data.plotters import ccd_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.lens.plotters import lens_fit_plotters
 from test.simulation import simulation_util
 
-ccd_data = simulation_util.load_test_ccd_data(
+imaging_data = simulation_util.load_test_imaging_data(
     data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
 )
 
@@ -18,8 +18,8 @@ ccd_data = simulation_util.load_test_ccd_data(
 def fit_with_offset_centre(centre):
 
     mask = al.Mask.elliptical(
-        shape=ccd_data.shape,
-        pixel_scale=ccd_data.pixel_scale,
+        shape=imaging_data.shape,
+        pixel_scale=imaging_data.pixel_scale,
         major_axis_radius_arcsec=3.0,
         axis_ratio=1.0,
         phi=0.0,
@@ -40,7 +40,7 @@ def fit_with_offset_centre(centre):
         regularization=al.regularization.Constant(coefficient=1.0),
     )
 
-    lens_data = al.LensData(ccd_data=ccd_data, mask=mask)
+    lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
 
     pixelization_grid = source_galaxy.pixelization.traced_pixelization_grids_of_planes_from_grid(
         grid=lens_data.grid
