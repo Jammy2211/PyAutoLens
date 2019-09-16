@@ -2608,7 +2608,7 @@ class TestAbstractPlaneData(object):
 
             plane = al.Plane(redshift=0.5, galaxies=[g0])
 
-            plane_visibilities = plane.visibilities_from_grid_and_transformer(
+            plane_visibilities = plane.profile_visibilities_from_grid_and_transformer(
                 grid=sub_grid_7x7, transformer=transformer_7x7_7
             )
 
@@ -2631,7 +2631,7 @@ class TestAbstractPlaneData(object):
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
 
-            plane_visibilities = plane.visibilities_from_grid_and_transformer(
+            plane_visibilities = plane.profile_visibilities_from_grid_and_transformer(
                 grid=sub_grid_7x7, transformer=transformer_7x7_7
             )
 

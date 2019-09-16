@@ -10,8 +10,6 @@ from autolens.model.profiles import geometry_profiles
 from autolens.array.mapping import (
     reshape_returned_sub_array,
     reshape_returned_array,
-    reshape_returned_array,
-    reshape_returned_array,
 )
 
 
@@ -174,14 +172,14 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             image_array=profile_image, blurring_array=blurring_image
         )
 
-    def visibilities_from_grid_and_transformer(self, grid, transformer):
+    def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
-        profile_image_plane_image_1d = self.profile_image_from_grid(
+        profile_image_1d = self.profile_image_from_grid(
             grid=grid, return_in_2d=False, return_binned=True
         )
 
         return transformer.visibilities_from_image_1d(
-            image_1d=profile_image_plane_image_1d
+            image_1d=profile_image_1d
         )
 
     @dim.convert_units_to_input_units
