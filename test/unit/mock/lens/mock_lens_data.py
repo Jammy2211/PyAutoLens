@@ -1,31 +1,28 @@
 from autolens.array.mapping import reshape_returned_array
 
 
-class MockLensData(object):
+class MockLensImagingData(object):
     def __init__(self, imaging_data, mask, grid, blurring_grid, convolver, binned_grid):
 
         self.imaging_data = imaging_data
-        self.unmasked_image = imaging_data.image
-        self.unmasked_noise_map = imaging_data.noise_map
         self.pixel_scale = imaging_data.pixel_scale
 
         self.psf = imaging_data.psf
 
-        self.mask_2d = mask
-        self.mask_1d = self.mask_2d.mapping.array_1d_from_array_2d(array_2d=self.mask_2d)
+        self.mask = mask
+        self._mask_1d = self.mask.mapping.array_1d_from_array_2d(array_2d=self.mask)
 
         self.grid = grid
         self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
         self.sub_size = self.grid.sub_size
         self.convolver = convolver
 
-        self.image_1d = self.mask_2d.mapping.array_1d_from_array_2d(
-            array_2d=self.unmasked_image
+        self._image_1d = self.mask.mapping.array_1d_from_array_2d(
+            array_2d=imaging_data.image
         )
-        self.noise_map_1d = self.mask_2d.mapping.array_1d_from_array_2d(
-            array_2d=self.unmasked_noise_map
+        self._noise_map_1d = self.mask.mapping.array_1d_from_array_2d(
+            array_2d=imaging_data.noise_map
         )
-        self.signal_to_noise_map_1d = self.image_1d / self.noise_map_1d
 
         self.positions = None
 
@@ -40,24 +37,16 @@ class MockLensData(object):
 
     @property
     def mapping(self):
-        return self.mask_2d.mapping
+        return self.mask.mapping
 
     @reshape_returned_array
     def image(self, return_in_2d=True):
-        return self.image_1d
+        return self._image_1d
 
     @reshape_returned_array
     def noise_map(self, return_in_2d=True):
-        return self.noise_map_1d
+        return self._noise_map_1d
 
     @reshape_returned_array
     def signal_to_noise_map(self, return_in_2d=True):
-        return self.signal_to_noise_map_1d
-
-    @property
-    def array_1d_from_array_2d(self):
-        return self.grid.array_1d_from_array_2d
-
-    @property
-    def scaled_array_2d_from_array_1d(self):
-        return self.grid.mapping.scaled_array_2d_from_array_1d
+        return self._image_1d / self._noise_map_1d

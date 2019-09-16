@@ -45,7 +45,7 @@ mask = al.Mask.circular_annular(
     outer_radius_arcsec=outer_radius_arcsec,
 )
 
-# Plot the CCD instrument and mask.
+# Plot the Imaging instrument and mask.
 imaging_plotters.plot_imaging_subplot(imaging_data=imaging_data, mask=mask)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').

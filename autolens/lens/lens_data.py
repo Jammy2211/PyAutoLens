@@ -6,87 +6,22 @@ from autolens.data.convolution import Convolver
 from autolens.array.mapping import reshape_returned_array
 
 
-class LensData(object):
-    def __init__(
-        self,
-        imaging_data,
-        mask,
-        positions=None,
-        positions_threshold=None,
-        trimmed_psf_shape=None,
-        pixel_scale_interpolation_grid=None,
-        pixel_scale_binned_grid=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        hyper_noise_map_max=None,
-        preload_pixelization_grids_of_planes=None,
-    ):
-        """
-        The lens data is the collection of instrument (image, noise-map, PSF), a mask, grid, convolver \
-        and other utilities that are used for modeling and fitting an image of a strong lens.
+class AbstractLensData(object):
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
-        for lensing calculations.
+    def __init__(self, mask,
+                 positions=None,
+                 positions_threshold=None,
+                 pixel_scale_interpolation_grid=None,
+                 pixel_scale_binned_grid=None,
+                 inversion_pixel_limit=None,
+                 inversion_uses_border=True,
+                 hyper_noise_map_max=None,
+                 preload_pixelization_grids_of_planes=None,
+                 ):
 
-        Parameters
-        ----------
-        imaging_data: im.CCD
-            The imaging instrument all in 2D (the image, noise-map, PSF, etc.)
-        mask: msk.Mask
-            The 2D mask that is applied to the image.
-        sub_size : int
-            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
-            sub-grid.
-        trimmed_psf_shape : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        inversion_psf_shape : (int, int)
-            The shape of the PSF used for convolving the inversion mapping_util matrix. A smaller \
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        positions : [[]]
-            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
-            used to speed up the non-linear sampling.
-        pixel_scale_interpolation_grid : float
-            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
-        inversion_pixel_limit : int or None
-            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-            up run.
-        pixel_scale_binned_cluster_grid : float or None
-            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned up to this higher \
-            pixel scale to speed up the KMeans clustering algorithm.
-        """
-
-        ### CCD DATA + MASK ####
-
-        self.imaging_data = imaging_data
-
-        self.unmasked_image = imaging_data.image
-        self.unmasked_noise_map = imaging_data.noise_map
-        self.pixel_scale = imaging_data.pixel_scale
-        self.psf = imaging_data.psf
-        self.mask_1d = mask.mapping.array_1d_from_array_2d(array_2d=mask)
-        self.image_1d = mask.mapping.array_1d_from_array_2d(array_2d=imaging_data.image)
-        self.noise_map_1d = mask.mapping.array_1d_from_array_2d(array_2d=imaging_data.noise_map)
-        self.mask_2d = mask
+        self.mask = mask
+        self._mask_1d = mask.mapping.array_1d_from_array_2d(array_2d=mask)
         self.sub_size = mask.sub_size
-
-        ### PSF TRIMMING + CONVOLVER ###
-
-        if trimmed_psf_shape is None:
-            self.trimmed_psf_shape = self.psf.shape
-        else:
-            self.trimmed_psf_shape = trimmed_psf_shape
-
-        self.convolver = Convolver(
-            mask=mask,
-            blurring_mask=mask.blurring_mask_from_psf_shape(
-                psf_shape=self.trimmed_psf_shape
-            ),
-            psf=self.psf.resized_scaled_array_from_array(
-                new_shape=self.trimmed_psf_shape
-            ),
-        )
 
         ### GRIDS ###
 
@@ -124,6 +59,96 @@ class LensData(object):
         self.inversion_pixel_limit = inversion_pixel_limit
         self.inversion_uses_border = inversion_uses_border
 
+        self.preload_pixelization_grids_of_planes = preload_pixelization_grids_of_planes
+
+    @property
+    def mapping(self):
+        return self.mask.mapping
+
+    @property
+    def pixel_scale(self):
+        return self.mask.pixel_scale
+
+
+class LensImagingData(AbstractLensData):
+    def __init__(
+        self,
+        imaging_data,
+        mask,
+        positions=None,
+        positions_threshold=None,
+        trimmed_psf_shape=None,
+        pixel_scale_interpolation_grid=None,
+        pixel_scale_binned_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+        hyper_noise_map_max=None,
+        preload_pixelization_grids_of_planes=None,
+    ):
+        """
+        The lens data is the collection of instrument (image, noise-map, PSF), a mask, grid, convolver \
+        and other utilities that are used for modeling and fitting an image of a strong lens.
+
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        for lensing calculations.
+
+        Parameters
+        ----------
+        imaging_data: im.Imaging
+            The imaging instrument all in 2D (the image, noise-map, PSF, etc.)
+        mask: msk.Mask
+            The 2D mask that is applied to the image.
+        sub_size : int
+            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
+            sub-grid.
+        trimmed_psf_shape : (int, int)
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+        inversion_psf_shape : (int, int)
+            The shape of the PSF used for convolving the inversion mapping_util matrix. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+        positions : [[]]
+            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
+            used to speed up the non-linear sampling.
+        pixel_scale_interpolation_grid : float
+            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+            interpolated to the grid, sub and blurring grids.
+        inversion_pixel_limit : int or None
+            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+            up run.
+        pixel_scale_binned_cluster_grid : float or None
+            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned up to this higher \
+            pixel scale to speed up the KMeans clustering algorithm.
+        """
+
+        self.imaging_data = imaging_data
+
+        super(LensImagingData, self).__init__(
+            mask=mask, positions=positions, positions_threshold=positions_threshold, pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            pixel_scale_binned_grid=pixel_scale_binned_grid, inversion_pixel_limit=inversion_pixel_limit,
+                                          inversion_uses_border=inversion_uses_border, hyper_noise_map_max=hyper_noise_map_max,
+                                          preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes)
+
+        self._image_1d = self.image(return_in_2d=False)
+        self._noise_map_1d = self.noise_map(return_in_2d=False)
+
+        ### PSF TRIMMING + CONVOLVER ###
+
+        if trimmed_psf_shape is None:
+            self.trimmed_psf_shape = self.psf.shape
+        else:
+            self.trimmed_psf_shape = trimmed_psf_shape
+
+        self.convolver = Convolver(
+            mask=mask,
+            blurring_mask=mask.blurring_mask_from_psf_shape(
+                psf_shape=self.trimmed_psf_shape
+            ),
+            psf=self.psf.resized_scaled_array_from_array(
+                new_shape=self.trimmed_psf_shape
+            ),
+        )
+
         self.preload_blurring_grid = grids.Grid.blurring_grid_from_mask_and_psf_shape(
             mask=mask, psf_shape=self.trimmed_psf_shape
         )
@@ -134,21 +159,31 @@ class LensData(object):
                 pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
 
-        self.preload_pixelization_grids_of_planes = preload_pixelization_grids_of_planes
+    @reshape_returned_array
+    def image(self, return_in_2d=True, return_masked=True):
+        return self.imaging_data.image
+
+    @reshape_returned_array
+    def noise_map(self, return_in_2d=True, return_masked=True):
+        return self.imaging_data.noise_map
 
     @property
-    def mapping(self):
-        return self.mask_2d.mapping
+    def psf(self):
+        return self.imaging_data.psf
 
-    def new_lens_data_with_modified_image(self, modified_image):
+    @reshape_returned_array
+    def signal_to_noise_map(self, return_in_2d=True, return_masked=True):
+        return self.imaging_data.image / self.imaging_data.noise_map
+
+    def new_lens_imaging_data_with_modified_image(self, modified_image):
 
         imaging_data_with_modified_image = self.imaging_data.new_imaging_data_with_modified_image(
             modified_image=modified_image
         )
 
-        return LensData(
+        return LensImagingData(
             imaging_data=imaging_data_with_modified_image,
-            mask=self.mask_2d,
+            mask=self.mask,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
             trimmed_psf_shape=self.trimmed_psf_shape,
@@ -160,16 +195,16 @@ class LensData(object):
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
         )
 
-    def new_lens_data_with_binned_up_imaging_data_and_mask(self, bin_up_factor):
+    def new_lens_imaging_data_with_binned_up_imaging_data_and_mask(self, bin_up_factor):
 
         binned_up_imaging_data = self.imaging_data.new_imaging_data_with_binned_up_arrays(
             bin_up_factor=bin_up_factor
         )
-        binned_up_mask = self.mask_2d.binned_up_mask_from_mask(
+        binned_up_mask = self.mask.binned_up_mask_from_mask(
             bin_up_factor=bin_up_factor
         )
 
-        return LensData(
+        return LensImagingData(
             imaging_data=binned_up_imaging_data,
             mask=binned_up_mask,
             positions=self.positions,
@@ -183,15 +218,15 @@ class LensData(object):
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
         )
 
-    def new_lens_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
+    def new_lens_imaging_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
 
         imaging_data_with_signal_to_noise_limit = self.imaging_data.new_imaging_data_with_signal_to_noise_limit(
             signal_to_noise_limit=signal_to_noise_limit
         )
 
-        return LensData(
+        return LensImagingData(
             imaging_data=imaging_data_with_signal_to_noise_limit,
-            mask=self.mask_2d,
+            mask=self.mask,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
             trimmed_psf_shape=self.trimmed_psf_shape,
@@ -203,40 +238,14 @@ class LensData(object):
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
         )
 
-    def mask(self, return_in_2d=True):
-        if return_in_2d:
-            return self.mask_2d
-        else:
-            return self.mask_1d
-
-    @reshape_returned_array
-    def image(self, return_in_2d=True):
-        return self.image_1d
-
-    @reshape_returned_array
-    def noise_map(self, return_in_2d=True):
-        return self.noise_map_1d
-
-    @property
-    def signal_to_noise_map_1d(self):
-        return self.image_1d / self.noise_map_1d
-
-    @reshape_returned_array
-    def signal_to_noise_map(self, return_in_2d=True):
-        return self.signal_to_noise_map_1d
-
     def __array_finalize__(self, obj):
-        if isinstance(obj, LensData):
+        if isinstance(obj, LensImagingData):
             self.imaging_data = obj.imaging_data
-            self.unmasked_image = obj.unmasked_image
-            self.unmasked_noise_map = obj.unmasked_noise_map
-            self.mask_2d = obj.mask_2d
-            self.mask_1d = obj.mask_1d
-            self.psf = obj.psf
+            self.mask = obj.mask
+            self._mask_1d = obj._mask_1d
+            self._image_1d = obj._image_1d
+            self._noise_map_1d = obj._noise_map_1d
             self.trimmed_psf_shape = obj.trimmed_psf_shape
-            self.mask_1d = obj.mask_1d
-            self.image_1d = obj.image_1d
-            self.noise_map_1d = obj.noise_map_1d
             self.sub_size = obj.sub_size
             self.convolver = obj.convolver
             self.grid = obj.grid

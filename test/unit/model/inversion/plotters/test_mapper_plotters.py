@@ -18,7 +18,7 @@ def make_image():
     noise_map = al.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
     psf = al.PSF(array=3.0 * np.ones((3, 3)), pixel_scale=1.0)
 
-    return al.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+    return al.ImagingData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
 
 @pytest.fixture(name="mask")

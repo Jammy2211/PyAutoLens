@@ -53,7 +53,7 @@ class DummyPhaseImaging(af.AbstractPhase):
         return af.Result(af.ModelInstance(), 1)
 
 
-class MockCCDData(object):
+class MockImagingData(object):
     pass
 
 
@@ -93,7 +93,7 @@ class TestMetaData(object):
             "pipeline_name",
             DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"),
         )
-        pipeline.run(MockCCDData(), data_name="data_name")
+        pipeline.run(MockImagingData(), data_name="data_name")
 
         assert (
             mock_files[1].text
@@ -109,7 +109,7 @@ class TestPassMask(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = al.PipelineImaging("", phase_1, phase_2)
-        pipeline.run(data=MockCCDData(), mask=mask)
+        pipeline.run(data=MockImagingData(), mask=mask)
 
         assert phase_1.mask is mask
         assert phase_2.mask is mask
@@ -121,7 +121,7 @@ class TestPassPositions(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = al.PipelineImaging("", phase_1, phase_2)
-        pipeline.run(data=MockCCDData(), positions=positions)
+        pipeline.run(data=MockImagingData(), positions=positions)
 
         assert phase_1.positions == positions
         assert phase_2.positions == positions
@@ -134,7 +134,7 @@ class TestPipelineImaging(object):
 
         pipeline = al.PipelineImaging("", phase_1, phase_2)
 
-        pipeline.run(MockCCDData())
+        pipeline.run(MockImagingData())
 
         assert len(phase_2.results) == 2
 
@@ -154,14 +154,14 @@ class TestPipelineImaging(object):
 
         pipeline = al.PipelineImaging("", phase_1, phase_2, hyper_mode=False)
 
-        pipeline.run(MockCCDData())
+        pipeline.run(MockImagingData())
 
         pipeline = al.PipelineImaging("", phase_1, phase_2, hyper_mode=True)
 
         with pytest.raises(exc.PhaseException):
-            pipeline.run(MockCCDData())
+            pipeline.run(MockImagingData())
 
-        pipeline.run(data=MockCCDData, mask=1.0)
+        pipeline.run(data=MockImagingData, mask=1.0)
 
 
 class DummyPhasePositions(af.AbstractPhase):

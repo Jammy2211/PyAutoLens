@@ -95,10 +95,10 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
 
 
 def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
-    lens_fit_x2_plane_7x7, phase_plotter_path, plot_patch
+    lens_imaging_fit_x2_plane_7x7, phase_plotter_path, plot_patch
 ):
-    al.phase_plotters.plot_lens_fit_for_phase(
-        fit=lens_fit_x2_plane_7x7,
+    al.phase_plotters.plot_lens_imaging_fit_for_phase(
+        fit=lens_imaging_fit_x2_plane_7x7,
         during_analysis=False,
         should_plot_mask=True,
         positions=None,

@@ -2629,6 +2629,43 @@ class TestAbstractTracerData(object):
                 == manual_blurred_image_3[1:4, 1:4]
             ).all()
 
+    class TestVisibilities:
+        def test__visibilities_from_grid_and_transformer(
+                self, sub_grid_7x7, transformer_7x7_7
+        ):
+            g0 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+            )
+
+            g1 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+            )
+
+            g0_image_1d = g0.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            deflections = g0.deflections_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=False)
+
+            source_grid_7x7 = sub_grid_7x7 - deflections
+
+            g1_image_1d = g1.profile_image_from_grid(grid=source_grid_7x7, return_in_2d=False, return_binned=True)
+
+            visibilities = transformer_7x7_7.visibilities_from_image_1d(
+                image_1d=g0_image_1d + g1_image_1d
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            tracer_visibilities = tracer.visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            assert visibilities == pytest.approx(tracer_visibilities, 1.0e-4)
+
     class TestPixelizationGridsOfPlanes:
         def test__x2_planes__traced_grid_setup_correctly(self, sub_grid_7x7):
             galaxy_pix = al.Galaxy(

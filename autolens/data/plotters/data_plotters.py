@@ -491,7 +491,7 @@ def plot_potential_chi_squared_map(
 
 def plot_visibilities(
     visibilities,
-    visibilities_noise_map=None,
+    noise_map=None,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -528,7 +528,7 @@ def plot_visibilities(
 
     grid_plotters.plot_grid(
         grid=visibilities,
-        colors=visibilities_noise_map,
+        colors=noise_map,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,

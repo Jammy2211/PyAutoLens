@@ -108,7 +108,7 @@ def test__all_interferometer_data_types_are_output(
 ):
     al.data_plotters.plot_visibilities(
         visibilities=visibilities_7,
-        visibilities_noise_map=visibilities_noise_map_7,
+        noise_map=visibilities_noise_map_7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=data_plotter_path,

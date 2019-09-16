@@ -6,7 +6,7 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.lens import lens_data as ld
 from autolens.lens import ray_tracing
-from autolens.lens.lens_fit import lens_image_fit
+from autolens.lens.lens_fit import lens_imaging_fit
 from autolens.lens.util import lens_fit_util
 
 from test.simulation import simulation_util
@@ -103,7 +103,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
         al.LensDataFit(
             image_1d=lens_data.unmasked_image,
             noise_map_1d=lens_data.unmasked_noise_map,
-            mask_1d=lens_data.mask_2d,
+            mask_1d=lens_data.mask,
             model_image_1d=blurred_profile_image,
         )
     diff = time.time() - start
@@ -111,7 +111,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     start = time.time()
     for i in range(repeats):
-        al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
+        al.LensImageFit.from_lens_imaging_data_and_tracer(lens_imaging_data=lens_data, tracer=tracer)
     diff = time.time() - start
     print("Time to perform complete fit = {}".format(diff / repeats))
 

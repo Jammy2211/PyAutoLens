@@ -632,6 +632,15 @@ class AbstractTracerData(AbstractTracerLensing):
 
         return unmasked_blurred_profile_images_of_planes_and_galaxies
 
+    def visibilities_from_grid_and_transformer(self, grid, transformer):
+
+        profile_image_1d = self.profile_image_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+        return transformer.visibilities_from_image_1d(
+            image_1d=profile_image_1d
+        )
+
     def pixelization_grids_of_planes_from_grid(self, grid):
 
         pixelization_grids_of_planes = []

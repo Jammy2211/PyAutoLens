@@ -43,7 +43,7 @@ def plot_image(
 
     Parameters
     -----------
-    image : datas.imaging.datas.CCD
+    image : datas.imaging.datas.Imaging
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -127,7 +127,7 @@ def plot_noise_map(
 
     Parameters
     -----------
-    image : datas.imaging.datas.CCD
+    image : datas.imaging.datas.Imaging
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -209,7 +209,7 @@ def plot_signal_to_noise_map(
 
     Parameters
     -----------
-    image : datas.imaging.datas.CCD
+    image : datas.imaging.datas.Imaging
     The datas-datas, which includes the observed datas, signal_to_noise_map-map, PSF, signal-to-signal_to_noise_map-map, etc.
     plot_origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -888,7 +888,7 @@ def get_mask(fit, should_plot_mask):
         If *True*, the masks is plotted on the fit's datas.
     """
     if should_plot_mask:
-        return fit.mask(return_in_2d=True)
+        return fit.mask
     else:
         return None
 
