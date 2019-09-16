@@ -25,7 +25,7 @@ def set_config_path():
 #
 # DATA #
 #
-# CCD #
+# Imaging #
 
 
 @pytest.fixture(name="image_7x7")
@@ -79,7 +79,7 @@ def make_imaging_data_7x7(
     exposure_time_map_7x7,
     background_sky_map_7x7,
 ):
-    return mock_data.MockCCDData(
+    return mock_data.MockImagingData(
         image=image_7x7,
         pixel_scale=image_7x7.pixel_scale,
         psf=psf_3x3,
@@ -102,7 +102,7 @@ def make_imaging_data_6x6():
     exposure_time_map = mock_data.MockExposureTimeMap(shape=(6, 6), value=5.0)
     background_sky_map = mock_data.MockBackgrondSkyMap(shape=(6, 6), value=6.0)
 
-    return mock_data.MockCCDData(
+    return mock_data.MockImagingData(
         image=image,
         pixel_scale=1.0,
         psf=psf,
@@ -137,21 +137,16 @@ def make_uv_wavelengths_7():
 
 @pytest.fixture(name="interferometer_data_7")
 def make_interferometer_data_7x7(
-    image_7x7,
-    psf_3x3,
-    noise_map_7x7,
     visibilities_7,
     visibilities_noise_map_7,
     primary_beam_3x3,
     uv_wavelengths_7,
 ):
     return mock_data.MockInterferometerData(
-        image=image_7x7,
-        pixel_scale=image_7x7.pixel_scale,
-        psf=psf_3x3,
-        noise_map=noise_map_7x7,
+        shape=(7,7),
         visibilities=visibilities_7,
-        visibilities_noise_map=visibilities_noise_map_7,
+        pixel_scale=1.0,
+        noise_map=visibilities_noise_map_7,
         primary_beam=primary_beam_3x3,
         uv_wavelengths=uv_wavelengths_7,
     )
@@ -470,8 +465,8 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 # Lens Data #
 
 
-@pytest.fixture(name="lens_data_7x7")
-def make_lens_data_7x7(
+@pytest.fixture(name="lens_imaging_data_7x7")
+def make_lens_imaging_data_7x7(
     imaging_data_7x7,
     mask_7x7,
     sub_grid_7x7,
@@ -479,7 +474,7 @@ def make_lens_data_7x7(
     convolver_7x7,
     binned_grid_7x7,
 ):
-    return mock_lens_data.MockLensData(
+    return mock_lens_data.MockLensImagingData(
         imaging_data=imaging_data_7x7,
         mask=mask_7x7,
         grid=sub_grid_7x7,
@@ -515,17 +510,17 @@ def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
 # Lens Fit #
 
 
-@pytest.fixture(name="lens_fit_x1_plane_7x7")
-def make_lens_fit_x1_plane_7x7(lens_data_7x7, tracer_x1_plane_7x7):
-    return al.LensImageFit.from_lens_data_and_tracer(
-        lens_data=lens_data_7x7, tracer=tracer_x1_plane_7x7
+@pytest.fixture(name="lens_imaging_fit_x1_plane_7x7")
+def make_lens_imaging_fit_x1_plane_7x7(lens_imaging_data_7x7, tracer_x1_plane_7x7):
+    return al.LensImagingFit.from_lens_imaging_data_and_tracer(
+        lens_imaging_data=lens_imaging_data_7x7, tracer=tracer_x1_plane_7x7
     )
 
 
-@pytest.fixture(name="lens_fit_x2_plane_7x7")
-def make_lens_fit_x2_plane_7x7(lens_data_7x7, tracer_x2_plane_7x7):
-    return al.LensImageFit.from_lens_data_and_tracer(
-        lens_data=lens_data_7x7, tracer=tracer_x2_plane_7x7
+@pytest.fixture(name="lens_imaging_fit_x2_plane_7x7")
+def make_lens_imaging_fit_x2_plane_7x7(lens_imaging_data_7x7, tracer_x2_plane_7x7):
+    return al.LensImagingFit.from_lens_imaging_data_and_tracer(
+        lens_imaging_data=lens_imaging_data_7x7, tracer=tracer_x2_plane_7x7
     )
 
 
@@ -571,8 +566,18 @@ def make_mask_function_7x7():
     return mask_function_7x7
 
 
-@pytest.fixture(name="phase_7x7")
-def make_phase_7x7(mask_function_7x7):
+@pytest.fixture(name="phase_data_7x7")
+def make_phase_data(mask_function_7x7):
+    return al.PhaseData(
+        optimizer_class=mock_pipeline.MockNLO,
+        phase_tag='',
+        mask_function=mask_function_7x7,
+        phase_name="test_phase",
+    )
+
+
+@pytest.fixture(name="phase_imaging_7x7")
+def make_phase_imaging_7x7(mask_function_7x7):
     return al.PhaseImaging(
         optimizer_class=mock_pipeline.MockNLO,
         mask_function=mask_function_7x7,

@@ -1269,7 +1269,7 @@ class TestBinnedMaskFromMask:
         mask[4, 9] = False
         mask[11, 10] = False
 
-        binned_up_mask_via_util = al.binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(
+        binned_up_mask_via_util = al.binning_util.binned_upmask_frommask_and_bin_up_factor(
             mask_2d=mask, bin_up_factor=2
         )
 
@@ -1278,7 +1278,7 @@ class TestBinnedMaskFromMask:
         assert (mask == binned_up_mask_via_util).all()
         assert mask.pixel_scale == 2.0
 
-        binned_up_mask_via_util = al.binning_util.binned_up_mask_2d_from_mask_2d_and_bin_up_factor(
+        binned_up_mask_via_util = al.binning_util.binned_upmask_frommask_and_bin_up_factor(
             mask_2d=mask, bin_up_factor=3
         )
 
@@ -1300,7 +1300,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = al.mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        rescaled_mask = al.mask_util.rescaledmask_frommask_and_rescale_factor(
             mask_2d=mask, rescale_factor=1.0
         )
 
@@ -1330,7 +1330,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = al.mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        rescaled_mask = al.mask_util.rescaledmask_frommask_and_rescale_factor(
             mask_2d=mask, rescale_factor=2.0
         )
 
@@ -1363,7 +1363,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = al.mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        rescaled_mask = al.mask_util.rescaledmask_frommask_and_rescale_factor(
             mask_2d=mask, rescale_factor=2.0
         )
 
@@ -1399,7 +1399,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = al.mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        rescaled_mask = al.mask_util.rescaledmask_frommask_and_rescale_factor(
             mask_2d=mask, rescale_factor=1.2
         )
 
@@ -1418,7 +1418,7 @@ class TestRescaledMaskFromMask(object):
             )
         ).all()
 
-        rescaled_mask = al.mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        rescaled_mask = al.mask_util.rescaledmask_frommask_and_rescale_factor(
             mask_2d=mask, rescale_factor=0.8
         )
 
@@ -1448,7 +1448,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = al.mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        rescaled_mask = al.mask_util.rescaledmask_frommask_and_rescale_factor(
             mask_2d=mask, rescale_factor=1.2
         )
 
@@ -1466,7 +1466,7 @@ class TestRescaledMaskFromMask(object):
             )
         ).all()
 
-        rescaled_mask = al.mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        rescaled_mask = al.mask_util.rescaledmask_frommask_and_rescale_factor(
             mask_2d=mask, rescale_factor=0.8
         )
 

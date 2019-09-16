@@ -1,16 +1,21 @@
 from astropy import cosmology as cosmo
+import numpy as np
 
 import autofit as af
-from autolens import exc
-from autolens.lens import ray_tracing, lens_data as ld
+from autolens.array.util import binning_util
+from autolens.array import mask as msk
+from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g
-from autolens.model.inversion import pixelizations as pix
 from autolens.pipeline import phase_tagging
+from autolens.pipeline.phase.phase_data import PhaseData
 from autolens.pipeline.phase import phase_extensions
-from autolens.pipeline.phase.phase import Phase, setup_phase_mask
 from autolens.pipeline.plotters import phase_plotters
 
+def default_mask_function(image):
+    return msk.Mask.circular(
+        shape=image.shape, pixel_scale=image.pixel_scale, sub_size=1, radius_arcsec=3.0
+    )
 
 def isinstance_or_prior(obj, cls):
     if isinstance(obj, cls):
@@ -19,11 +24,11 @@ def isinstance_or_prior(obj, cls):
         return True
     return False
 
+class PhaseImaging(PhaseData):
 
-class PhaseImaging(Phase):
+    galaxies = af.PhaseProperty("galaxies")
     hyper_image_sky = af.PhaseProperty("hyper_image_sky")
     hyper_background_noise = af.PhaseProperty("hyper_background_noise")
-    galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
         self,
@@ -79,30 +84,24 @@ class PhaseImaging(Phase):
             phase_name=phase_name,
             phase_tag=phase_tag,
             phase_folders=phase_folders,
+            galaxies=galaxies,
+            sub_size=sub_size,
+            signal_to_noise_limit=signal_to_noise_limit,
+            positions_threshold=positions_threshold,
+            mask_function=mask_function,
+            inner_mask_radii=inner_mask_radii,
+            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            pixel_scale_binned_cluster_grid=pixel_scale_binned_cluster_grid,
+            inversion_uses_border=inversion_uses_border,
+            inversion_pixel_limit=inversion_pixel_limit,
             optimizer_class=optimizer_class,
             cosmology=cosmology,
             auto_link_priors=auto_link_priors,
         )
 
-        self.sub_size = sub_size
-        self.signal_to_noise_limit = signal_to_noise_limit
         self.bin_up_factor = bin_up_factor
         self.psf_shape = psf_shape
-        self.positions_threshold = positions_threshold
-        self.mask_function = mask_function
-        self.inner_mask_radii = inner_mask_radii
-        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
-        self.pixel_scale_binned_cluster_grid = pixel_scale_binned_cluster_grid
-        self.inversion_uses_border = inversion_uses_border
 
-        if inversion_pixel_limit is not None:
-            self.inversion_pixel_limit = inversion_pixel_limit
-        else:
-            self.inversion_pixel_limit = af.conf.instance.general.get(
-                "inversion", "inversion_pixel_limit_overall", int
-            )
-
-        self.galaxies = galaxies or []
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
 
@@ -111,24 +110,6 @@ class PhaseImaging(Phase):
         )
 
         self.is_hyper_phase = False
-
-    @property
-    def pixelization(self):
-        for galaxy in self.galaxies:
-            if galaxy.pixelization is not None:
-                if isinstance(galaxy.pixelization, af.PriorModel):
-                    return galaxy.pixelization.cls
-                else:
-                    return galaxy.pixelization
-
-    @property
-    def uses_cluster_inversion(self):
-        if self.galaxies:
-            for galaxy in self.galaxies:
-                if isinstance_or_prior(galaxy.pixelization, pix.VoronoiBrightnessImage):
-                    return True
-
-        return False
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, results):
@@ -149,37 +130,6 @@ class PhaseImaging(Phase):
         """
         return image
 
-    def run(self, data, results=None, mask=None, positions=None):
-        """
-        Run this phase.
-
-        Parameters
-        ----------
-        positions
-        mask: Mask
-            The default masks passed in by the pipeline
-        results: autofit.tools.pipeline.ResultsCollection
-            An object describing the results of the last phase or None if no phase has been executed
-        data: scaled_array.ScaledSquarePixelArray
-            An lens_data that has been masked
-
-        Returns
-        -------
-        result: AbstractPhase.Result
-            A result object comprising the best fit model and other hyper_galaxies.
-        """
-        analysis = self.make_analysis(
-            data=data, results=results, mask=mask, positions=positions
-        )
-
-        self.variable = self.variable.populate(results)
-        self.customize_priors(results)
-        self.assert_and_save_pickle()
-
-        result = self.run_analysis(analysis)
-
-        return self.make_result(result=result, analysis=analysis)
-
     def make_analysis(self, data, results=None, mask=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
@@ -190,7 +140,7 @@ class PhaseImaging(Phase):
         positions
         mask: Mask
             The default masks passed in by the pipeline
-        data: im.CCD
+        data: im.Imaging
             An lens_data that has been masked
         results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
@@ -201,76 +151,18 @@ class PhaseImaging(Phase):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
 
-        mask = setup_phase_mask(
+        mask = self.setup_phase_mask(
             data=data,
             mask=mask,
-            sub_size=self.sub_size,
-            mask_function=self.mask_function,
-            inner_mask_radii=self.inner_mask_radii,
         )
 
-        if self.positions_threshold is not None and positions is None:
-            raise exc.PhaseException(
-                "You have specified for a phase to use positions, but not input positions to the "
-                "pipeline when you ran it."
-            )
+        self.check_positions(positions=positions)
 
-        pixel_scale_binned_grid = None
+        pixel_scale_binned_grid = self.pixel_scale_binned_grid_from_mask(mask=mask)
 
-        if self.uses_cluster_inversion:
+        preload_pixelization_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(results=results)
 
-            if self.pixel_scale_binned_cluster_grid is None:
-
-                pixel_scale_binned_cluster_grid = mask.pixel_scale
-
-            else:
-
-                pixel_scale_binned_cluster_grid = self.pixel_scale_binned_cluster_grid
-
-            if pixel_scale_binned_cluster_grid > mask.pixel_scale:
-
-                bin_up_factor = int(
-                    self.pixel_scale_binned_cluster_grid / mask.pixel_scale
-                )
-
-            else:
-
-                bin_up_factor = 1
-
-            binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
-
-            while binned_mask.pixels_in_mask < self.inversion_pixel_limit:
-
-                if bin_up_factor == 1:
-                    raise exc.DataException(
-                        "The pixelization "
-                        + str(self.pixelization)
-                        + " uses a KMeans clustering algorithm which uses"
-                        "a hyper model image to adapt the pixelization. This hyper model image must have more pixels"
-                        "than inversion pixels. Current, the inversion_pixel_limit exceeds the data-points in the image.\n\n"
-                        "To rectify this image, manually set the inversion pixel limit in the pipeline phases or change the inversion_pixel_limit_overall parameter in general.ini"
-                    )
-
-                bin_up_factor -= 1
-                binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
-
-            pixel_scale_binned_grid = mask.pixel_scale * bin_up_factor
-
-        preload_pixelization_grids_of_planes = None
-
-        if results is not None:
-            if results.last is not None:
-                if hasattr(results.last, "hyper_combined"):
-                    if self.pixelization is not None:
-                        if type(self.pixelization) == type(results.last.pixelization):
-                            preload_pixelization_grids_of_planes = (
-                                results.last.hyper_combined.most_likely_pixelization_grids_of_planes
-                            )
-
-        if self.is_hyper_phase:
-            preload_pixelization_grids_of_planes = None
-
-        lens_data = ld.LensData(
+        lens_imaging_data = ld.LensImagingData(
             imaging_data=data,
             mask=mask,
             trimmed_psf_shape=self.psf_shape,
@@ -285,27 +177,27 @@ class PhaseImaging(Phase):
         )
 
         modified_image = self.modify_image(
-            image=lens_data.unmasked_image, results=results
+            image=lens_imaging_data.image(return_in_2d=True, return_masked=False), results=results
         )
 
-        lens_data = lens_data.new_lens_data_with_modified_image(
+        lens_imaging_data = lens_imaging_data.new_lens_imaging_data_with_modified_image(
             modified_image=modified_image
         )
 
         if self.signal_to_noise_limit is not None:
-            lens_data = lens_data.new_lens_data_with_signal_to_noise_limit(
+            lens_imaging_data = lens_imaging_data.new_lens_imaging_data_with_signal_to_noise_limit(
                 signal_to_noise_limit=self.signal_to_noise_limit
             )
 
         if self.bin_up_factor is not None:
-            lens_data = lens_data.new_lens_data_with_binned_up_imaging_data_and_mask(
+            lens_imaging_data = lens_imaging_data.new_lens_imaging_data_with_binned_up_imaging_data_and_mask(
                 bin_up_factor=self.bin_up_factor
             )
 
         self.output_phase_info()
 
         analysis = self.Analysis(
-            lens_data=lens_data,
+            lens_imaging_data=lens_imaging_data,
             cosmology=self.cosmology,
             image_path=self.optimizer.image_path,
             results=results,
@@ -328,9 +220,6 @@ class PhaseImaging(Phase):
             phase_info.write("Auto Link Priors = {} \n".format(self.auto_link_priors))
 
             phase_info.close()
-
-    def extend_with_inversion_phase(self):
-        return phase_extensions.InversionPhase(phase=self)
 
     def extend_with_multiple_hyper_phases(
         self,
@@ -382,135 +271,24 @@ class PhaseImaging(Phase):
             )
 
     # noinspection PyAbstractClass
-    class Analysis(Phase.Analysis):
-        def __init__(self, lens_data, cosmology, image_path=None, results=None):
+    class Analysis(PhaseData.Analysis):
+        def __init__(self, lens_imaging_data, cosmology, image_path=None, results=None):
 
             super(PhaseImaging.Analysis, self).__init__(
                 cosmology=cosmology, results=results
             )
 
-            self.lens_data = lens_data
+            self.lens_imaging_data = lens_imaging_data
 
-            self.should_plot_image_plane_pix = af.conf.instance.visualize.get(
-                "figures", "plot_image_plane_adaptive_pixelization_grid", bool
-            )
-
-            self.plot_data_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_data_as_subplot", bool
-            )
-
-            self.plot_data_image = af.conf.instance.visualize.get(
-                "plots", "plot_data_image", bool
-            )
-
-            self.plot_data_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_data_noise_map", bool
-            )
-
-            self.plot_data_psf = af.conf.instance.visualize.get(
-                "plots", "plot_data_psf", bool
-            )
-
-            self.plot_data_signal_to_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_data_signal_to_noise_map", bool
-            )
-
-            self.plot_data_absolute_signal_to_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_data_absolute_signal_to_noise_map", bool
-            )
-
-            self.plot_data_potential_chi_squared_map = af.conf.instance.visualize.get(
-                "plots", "plot_data_potential_chi_squared_map", bool
-            )
-
-            self.plot_lens_fit_all_at_end_png = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_all_at_end_png", bool
-            )
-            self.plot_lens_fit_all_at_end_fits = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_all_at_end_fits", bool
-            )
-
-            self.plot_lens_fit_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_as_subplot", bool
-            )
-
-            self.plot_lens_fit_of_planes_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_of_planes_as_subplot", bool
-            )
-
-            self.plot_lens_fit_inversion_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_inversion_as_subplot", bool
-            )
-
-            self.plot_lens_fit_image = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_image", bool
-            )
-
-            self.plot_lens_fit_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_noise_map", bool
-            )
-
-            self.plot_lens_fit_signal_to_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_signal_to_noise_map", bool
-            )
-
-            self.plot_lens_fit_model_image = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_model_image", bool
-            )
-
-            self.plot_lens_fit_residual_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_residual_map", bool
-            )
-
-            self.plot_lens_fit_normalized_residual_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_normalized_residual_map", bool
-            )
-
-            self.plot_lens_fit_chi_squared_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_chi_squared_map", bool
-            )
-
-            self.plot_lens_fit_contribution_maps = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_contribution_maps", bool
-            )
-
-            self.plot_lens_fit_pixelization_residual_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_pixelization_residual_map", bool
-            )
-
-            self.plot_lens_fit_pixelization_normalized_residuals = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_pixelization_normalized_residual_map", bool
-            )
-
-            self.plot_lens_fit_pixelization_chi_squared_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_pixelization_chi_squared_map", bool
-            )
-
-            self.plot_lens_fit_pixelization_regularization_weights = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_pixelization_regularization_weight_map", bool
-            )
-
-            self.plot_lens_fit_subtracted_images_of_planes = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_subtracted_images_of_planes", bool
-            )
-
-            self.plot_lens_fit_model_images_of_planes = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_model_images_of_planes", bool
-            )
-
-            self.plot_lens_fit_plane_images_of_planes = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_plane_images_of_planes", bool
-            )
-
-            mask = self.lens_data.mask_2d if self.should_plot_mask else None
-            positions = self.lens_data.positions if self.should_plot_positions else None
+            mask = self.lens_imaging_data.mask if self.should_plot_mask else None
+            positions = self.lens_imaging_data.positions if self.should_plot_positions else None
 
             subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
                 path=image_path, folder_names=["subplots"]
             )
 
             phase_plotters.plot_imaging_for_phase(
-                imaging_data=self.lens_data.imaging_data,
+                imaging_data=self.lens_imaging_data.imaging_data,
                 mask=mask,
                 positions=positions,
                 extract_array_from_mask=self.extract_array_from_mask,
@@ -548,7 +326,7 @@ class PhaseImaging(Phase):
                 self.hyper_model_image_1d = self.last_results.hyper_model_image_1d
 
                 self.binned_hyper_galaxy_image_1d_path_dict = self.last_results.binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(
-                    binned_grid=lens_data.grid.binned
+                    binned_grid=lens_imaging_data.grid.binned
                 )
 
                 if mask is not None:
@@ -558,10 +336,10 @@ class PhaseImaging(Phase):
                         ),
                         hyper_galaxy_image_2d_path_dict=self.last_results.hyper_galaxy_image_2d_path_dict,
                         binned_hyper_galaxy_image_2d_path_dict=self.last_results.binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(
-                            binned_grid=lens_data.grid.binned
+                            binned_grid=lens_imaging_data.grid.binned
                         ),
-                        mask=lens_data.mask_2d,
-                        binned_grid=lens_data.grid.binned,
+                        mask=lens_imaging_data.mask,
+                        binned_grid=lens_imaging_data.grid.binned,
                         extract_array_from_mask=self.extract_array_from_mask,
                         zoom_around_mask=self.zoom_around_mask,
                         units=self.plot_units,
@@ -570,6 +348,10 @@ class PhaseImaging(Phase):
                         should_plot_binned_hyper_galaxy_images=self.plot_binned_hyper_galaxy_images,
                         visualize_path=image_path,
                     )
+
+        @property
+        def lens_data(self):
+            return self.lens_imaging_data
 
         def fit(self, instance):
             """
@@ -586,6 +368,7 @@ class PhaseImaging(Phase):
                 A fractional value indicating how well this model fit and the model lens_data itself
             """
 
+            self.associate_images(instance=instance)
             tracer = self.tracer_for_instance(instance=instance)
 
             self.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
@@ -597,7 +380,7 @@ class PhaseImaging(Phase):
                 instance=instance
             )
 
-            fit = self.fit_for_tracer(
+            fit = self.lens_imaging_fit_for_tracer(
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
                 hyper_background_noise=hyper_background_noise,
@@ -661,56 +444,14 @@ class PhaseImaging(Phase):
             else:
                 return None
 
-        def tracer_for_instance(self, instance):
+        def lens_imaging_fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
 
-            instance = self.associate_images(instance=instance)
-
-            return ray_tracing.Tracer.from_galaxies(
-                galaxies=instance.galaxies, cosmology=self.cosmology
-            )
-
-        def fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
-
-            return lens_fit.LensImageFit.from_lens_data_and_tracer(
-                lens_data=self.lens_data,
+            return lens_fit.LensImagingFit.from_lens_imaging_data_and_tracer(
+                lens_imaging_data=self.lens_imaging_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
                 hyper_background_noise=hyper_background_noise,
             )
-
-        def check_positions_trace_within_threshold_via_tracer(self, tracer):
-
-            if (
-                self.lens_data.positions is not None
-                and self.lens_data.positions_threshold is not None
-            ):
-
-                traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-                    positions=self.lens_data.positions
-                )
-
-                fit = lens_fit.LensPositionFit(
-                    positions=traced_positions_of_planes[-1],
-                    noise_map=self.lens_data.pixel_scale,
-                )
-
-                if not fit.maximum_separation_within_threshold(
-                    self.lens_data.positions_threshold
-                ):
-                    raise exc.RayTracingException
-
-        def check_inversion_pixels_are_below_limit_via_tracer(self, tracer):
-
-            if self.lens_data.inversion_pixel_limit is not None:
-                pixelizations = list(filter(None, tracer.pixelizations_of_planes))
-                if pixelizations:
-                    for pixelization in pixelizations:
-                        if pixelization.pixels > self.lens_data.inversion_pixel_limit:
-                            raise exc.PixelizationException
-
-        def map_to_1d(self, data):
-            """Convenience method"""
-            return self.lens_data.mask.mapping.array_1d_from_array_2d(data)
 
         @classmethod
         def describe(cls, instance):
@@ -724,14 +465,14 @@ class PhaseImaging(Phase):
 
             instance = self.associate_images(instance=instance)
 
-            mask = self.lens_data.mask_2d if self.should_plot_mask else None
-            positions = self.lens_data.positions if self.should_plot_positions else None
+            mask = self.lens_imaging_data.mask if self.should_plot_mask else None
+            positions = self.lens_imaging_data.positions if self.should_plot_positions else None
 
             tracer = self.tracer_for_instance(instance=instance)
 
             phase_plotters.plot_ray_tracing_for_phase(
                 tracer=tracer,
-                grid=self.lens_data.grid,
+                grid=self.lens_imaging_data.grid,
                 during_analysis=during_analysis,
                 mask=mask,
                 extract_array_from_mask=self.extract_array_from_mask,
@@ -756,13 +497,13 @@ class PhaseImaging(Phase):
                 instance=instance
             )
 
-            fit = self.fit_for_tracer(
+            fit = self.lens_imaging_fit_for_tracer(
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
                 hyper_background_noise=hyper_background_noise,
             )
 
-            phase_plotters.plot_lens_fit_for_phase(
+            phase_plotters.plot_lens_imaging_fit_for_phase(
                 fit=fit,
                 during_analysis=during_analysis,
                 should_plot_mask=self.should_plot_mask,
@@ -793,3 +534,218 @@ class PhaseImaging(Phase):
                 visualize_path=image_path,
                 subplot_path=subplot_path,
             )
+
+    class Result(PhaseData.Result):
+        def __init__(
+            self,
+            constant,
+            figure_of_merit,
+            previous_variable,
+            gaussian_tuples,
+            analysis,
+            optimizer,
+        ):
+            """
+            The result of a phase
+            """
+            super(PhaseImaging.Result, self).__init__(
+                analysis=analysis,
+                optimizer=optimizer,
+                constant=constant,
+                figure_of_merit=figure_of_merit,
+                previous_variable=previous_variable,
+                gaussian_tuples=gaussian_tuples,
+            )
+
+        @property
+        def most_likely_fit(self):
+
+            hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
+                instance=self.constant
+            )
+
+            hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
+                instance=self.constant
+            )
+
+            return self.analysis.lens_imaging_fit_for_tracer(
+                tracer=self.most_likely_tracer,
+                hyper_image_sky=hyper_image_sky,
+                hyper_background_noise=hyper_background_noise,
+            )
+
+        @property
+        def unmasked_model_image(self):
+            return self.most_likely_fit.unmasked_blurred_profile_image
+
+        @property
+        def unmasked_model_image_of_planes(self):
+            return self.most_likely_fit.unmasked_blurred_profile_image_of_planes
+
+        @property
+        def unmasked_model_image_of_planes_and_galaxies(self):
+            fit = self.most_likely_fit
+            return fit.unmasked_blurred_profile_image_of_planes_and_galaxies
+
+        def image_2d_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
+            """
+            Parameters
+            ----------
+            galaxy
+                A galaxy used in this phase
+
+            Returns
+            -------
+            ndarray or None
+                A numpy array giving the model image of that galaxy
+            """
+            return self.most_likely_fit.galaxy_image_2d_dict[galaxy]
+
+        @property
+        def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
+            """
+            A dictionary associating galaxy names with model images of those galaxies
+            """
+
+            image_1d_dict = {}
+
+            for galaxy, galaxy_image_2d in self.image_galaxy_2d_dict.items():
+                image_1d_dict[galaxy] = self.mask.mapping.array_1d_from_array_2d(
+                    array_2d=galaxy_image_2d
+                )
+
+            return image_1d_dict
+
+        @property
+        def image_galaxy_2d_dict(self) -> {str: g.Galaxy}:
+            """
+            A dictionary associating galaxy names with model images of those galaxies
+            """
+            return {
+                galaxy_path: self.image_2d_for_galaxy(galaxy)
+                for galaxy_path, galaxy in self.path_galaxy_tuples
+            }
+
+        @property
+        def hyper_galaxy_image_1d_path_dict(self):
+            """
+            A dictionary associating 1D hyper_galaxies galaxy images with their names.
+            """
+
+            hyper_minimum_percent = af.conf.instance.general.get(
+                "hyper", "hyper_minimum_percent", float
+            )
+
+            hyper_galaxy_image_1d_path_dict = {}
+
+            for path, galaxy in self.path_galaxy_tuples:
+
+                galaxy_image_1d = self.image_galaxy_1d_dict[path]
+
+                if not np.all(galaxy_image_1d == 0):
+                    minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
+                    galaxy_image_1d[
+                        galaxy_image_1d < minimum_galaxy_value
+                    ] = minimum_galaxy_value
+
+                hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
+
+            return hyper_galaxy_image_1d_path_dict
+
+        @property
+        def hyper_galaxy_image_2d_path_dict(self):
+            """
+            A dictionary associating 2D hyper_galaxies galaxy images with their names.
+            """
+
+            hyper_galaxy_image_2d_path_dict = {}
+
+            for path, galaxy in self.path_galaxy_tuples:
+                hyper_galaxy_image_2d_path_dict[
+                    path
+                ] = self.mask.mapping.scaled_array_2d_from_array_1d(
+                    array_1d=self.hyper_galaxy_image_1d_path_dict[path]
+                )
+
+            return hyper_galaxy_image_2d_path_dict
+
+        def binned_image_1d_dict_from_binned_grid(self, binned_grid) -> {str: g.Galaxy}:
+            """
+            A dictionary associating 1D binned images with their names.
+            """
+
+            binned_image_1d_dict = {}
+
+            for galaxy, galaxy_image_2d in self.image_galaxy_2d_dict.items():
+                binned_image_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+                    array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
+                )
+
+                binned_image_1d_dict[galaxy] = binned_grid.mask.mapping.array_1d_from_array_2d(
+                    array_2d=binned_image_2d
+                )
+
+            return binned_image_1d_dict
+
+        def binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(self, binned_grid):
+            """
+            A dictionary associating 1D hyper_galaxies galaxy binned images with their names.
+            """
+
+            if binned_grid is not None:
+
+                hyper_minimum_percent = af.conf.instance.general.get(
+                    "hyper", "hyper_minimum_percent", float
+                )
+
+                binned_image_1d_galaxy_dict = self.binned_image_1d_dict_from_binned_grid(
+                    binned_grid=binned_grid
+                )
+
+                binned_hyper_galaxy_image_path_dict = {}
+
+                for path, galaxy in self.path_galaxy_tuples:
+                    binned_galaxy_image_1d = binned_image_1d_galaxy_dict[path]
+
+                    minimum_hyper_value = hyper_minimum_percent * max(
+                        binned_galaxy_image_1d
+                    )
+                    binned_galaxy_image_1d[
+                        binned_galaxy_image_1d < minimum_hyper_value
+                    ] = minimum_hyper_value
+
+                    binned_hyper_galaxy_image_path_dict[path] = binned_galaxy_image_1d
+
+                return binned_hyper_galaxy_image_path_dict
+
+        def binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(self, binned_grid):
+            """
+            A dictionary associating "D hyper_galaxies galaxy images binned images with their names.
+            """
+
+            if binned_grid is not None:
+
+                binned_hyper_galaxy_image_1d_path_dict = self.binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(
+                    binned_grid=binned_grid
+                )
+
+                binned_hyper_galaxy_image_2d_path_dict = {}
+
+                for path, galaxy in self.path_galaxy_tuples:
+                    binned_hyper_galaxy_image_2d_path_dict[
+                        path
+                    ] = binned_grid.mask.mapping.scaled_array_2d_from_array_1d(
+                        array_1d=binned_hyper_galaxy_image_1d_path_dict[path]
+                    )
+
+                return binned_hyper_galaxy_image_2d_path_dict
+
+        @property
+        def hyper_model_image_1d(self):
+
+            hyper_model_image_1d = np.zeros(self.mask.pixels_in_mask)
+
+            for path, galaxy in self.path_galaxy_tuples:
+                hyper_model_image_1d += self.hyper_galaxy_image_1d_path_dict[path]
+
+            return hyper_model_image_1d

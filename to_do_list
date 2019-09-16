@@ -15,8 +15,8 @@ Big Picture:
 
 UV Plane:
 
-- Extend lens_data to have LensCCDData, LensInterferometerData.
-- PhaseCCDData, PhaseInterometer - PhaseImaging is now abstract Phase.
+- Extend lens_data to have LensImagingData, LensInterferometerData.
+- PhaseImagingData, PhaseInterometer - PhaseImaging is now abstract Phase.
 
 Small Picture:
 
@@ -54,14 +54,14 @@ Short term:
 Mid term:
 
 - Include output of data for a simulation (galaxies, imaging settings, etc).
-- CCD loading sanity checks
+- Imaging loading sanity checks
 
 Future:
 
 2019) Population module for simulating large suites of 'realistic' lenses.
 2019) Quasar modeling (time-delays, variable cosmology, PSF refinement)
 2019) UV-plane
-2020) Multi-CCD analysis.
+2020) Multi-Imaging analysis.
 
 
 Possible:
@@ -78,3 +78,5 @@ Residual Flux Fraction
 Reduced Chi Squared
 Summed regularization
 Stuff combining chi squared with regularization
+
+--ignore-installed astropy

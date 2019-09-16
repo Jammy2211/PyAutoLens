@@ -42,7 +42,7 @@ def galaxy_fit_phase():
         image=convergence, noise_map=noise_map, pixel_scale=pixel_scale
     )
 
-    phase1 = al.GalaxyFitPhase(
+    phase1 = al.PhaseGalaxy(
         phase_name=test_name + "/",
         galaxies=dict(
             gal=al.GalaxyModel(redshift=0.5, light=al.mass_profiles.SphericalIsothermal)

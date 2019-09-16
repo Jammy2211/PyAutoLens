@@ -8,8 +8,6 @@ from matplotlib import pyplot as plt
 from autolens.data.plotters import data_plotters
 from autolens.plotters import plotter_util
 
-import numpy as np
-
 
 def plot_interferometer_subplot(
     interferometer_data,
@@ -263,7 +261,7 @@ def plot_visibilities(
 
     data_plotters.plot_visibilities(
         visibilities=interferometer_data.visibilities,
-        visibilities_noise_map=interferometer_data.visibilities_noise_map,
+        noise_map=interferometer_data.noise_map,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -414,7 +412,7 @@ def plot_primary_beam(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="CCD PSF",
+    title="Imaging PSF",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
@@ -429,7 +427,7 @@ def plot_primary_beam(
 
     Parameters
     -----------
-    image : instrument.CCDData
+    image : instrument.ImagingData
         The interferometer instrument, which includes the observed instrument, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.

@@ -17,19 +17,18 @@ class GalaxyFit(af.DataFit):
         """
 
         self.galaxy_data = galaxy_data
-        self.mask_2d = galaxy_data.mask_2d
         self.model_galaxies = model_galaxies
         self.mapping = galaxy_data.mapping
 
-        model_data_1d = galaxy_data.profile_quantity_from_galaxies(
+        _model_data_1d = galaxy_data.profile_quantity_from_galaxies(
             galaxies=model_galaxies
         )
 
         super(GalaxyFit, self).__init__(
-            data=galaxy_data.image_1d,
-            noise_map=galaxy_data.noise_map_1d,
-            mask=galaxy_data.mask_1d,
-            model_data=model_data_1d,
+            data=galaxy_data._image_1d,
+            noise_map=galaxy_data._noise_map_1d,
+            mask=galaxy_data._mask_1d,
+            model_data=_model_data_1d,
         )
 
     @property
@@ -37,21 +36,19 @@ class GalaxyFit(af.DataFit):
         return self.galaxy_data.grid
 
     @reshape_returned_array
-    def image(self, return_in_2d=True):
+    def image(self, return_in_2d=True, return_masked=True):
         return self._data
 
     @reshape_returned_array
-    def noise_map(self, return_in_2d=True):
+    def noise_map(self, return_in_2d=True, return_masked=True):
         return self._noise_map
 
-    def mask(self, return_in_2d=True):
-        if not return_in_2d:
-            return self._mask
-        else:
-            return self.mapping.mask
+    @property
+    def mask(self):
+        return self.mapping.mask
 
     @reshape_returned_array
-    def signal_to_noise_map(self, return_in_2d=True):
+    def signal_to_noise_map(self, return_in_2d=True, return_masked=True):
         return self._signal_to_noise_map
 
     @reshape_returned_array

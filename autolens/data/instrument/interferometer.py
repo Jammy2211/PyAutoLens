@@ -18,135 +18,82 @@ logger = logging.getLogger(__name__)
 class InterferometerData(abstract_data.AbstractData):
     def __init__(
         self,
-        image,
-        pixel_scale,
-        psf,
-        noise_map,
+        shape,
         visibilities,
-        visibilities_noise_map,
+        pixel_scale,
+        noise_map,
         uv_wavelengths,
         primary_beam,
         exposure_time_map=None,
     ):
 
+        self.shape = shape
+
         super(InterferometerData, self).__init__(
-            image=image,
+            data=visibilities,
             pixel_scale=pixel_scale,
-            psf=psf,
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
             origin=(0.0, 0.0),
         )
 
-        self.visibilities = visibilities
         self.visibilities_magnitudes = np.sqrt(
-            np.square(visibilities[:, 0]) + np.square(visibilities[:, 1])
+            np.square(self.visibilities[:, 0]) + np.square(self.visibilities[:, 1])
         )
-        self.visibilities_noise_map = visibilities_noise_map
         self.uv_wavelengths = uv_wavelengths
         self.primary_beam = primary_beam
 
-    def new_interferometer_data_with_resized_arrays(
-        self, new_shape, new_centre_pixels=None, new_centre_arcsec=None
-    ):
-
-        image = self.resize_scaled_array(
-            scaled_array=self.image,
-            new_shape=new_shape,
-            new_centre_pixels=new_centre_pixels,
-            new_centre_arcsec=new_centre_arcsec,
-        )
-
-        noise_map = self.resize_scaled_array(
-            scaled_array=self.noise_map,
-            new_shape=new_shape,
-            new_centre_pixels=new_centre_pixels,
-            new_centre_arcsec=new_centre_arcsec,
-        )
-
-        exposure_time_map = self.resize_scaled_array(
-            scaled_array=self.exposure_time_map,
-            new_shape=new_shape,
-            new_centre_pixels=new_centre_pixels,
-            new_centre_arcsec=new_centre_arcsec,
-        )
-
-        return InterferometerData(
-            image=image,
-            pixel_scale=self.pixel_scale,
-            psf=self.psf,
-            noise_map=noise_map,
-            exposure_time_map=exposure_time_map,
-            visibilities=self.visibilities,
-            visibilities_noise_map=self.visibilities_noise_map,
-            uv_wavelengths=self.uv_wavelengths,
-            primary_beam=self.primary_beam,
-        )
-
-    def new_interferometer_data_with_resized_psf(self, new_shape):
-        psf = self.resize_scaled_array(scaled_array=self.psf, new_shape=new_shape)
-        return InterferometerData(
-            image=self.image,
-            pixel_scale=self.pixel_scale,
-            psf=psf,
-            noise_map=self.noise_map,
-            exposure_time_map=self.exposure_time_map,
-            visibilities=self.visibilities,
-            visibilities_noise_map=self.visibilities_noise_map,
-            uv_wavelengths=self.uv_wavelengths,
-            primary_beam=self.primary_beam,
-        )
+    @property
+    def visibilities(self):
+        return self._data
 
     def new_interferometer_data_with_resized_primary_beam(self, new_shape):
         primary_beam = self.resize_scaled_array(
             scaled_array=self.primary_beam, new_shape=new_shape
         )
         return InterferometerData(
-            image=self.image,
+            shape=self.shape,
+            visibilities=self._data,
             pixel_scale=self.pixel_scale,
-            psf=self.psf,
             noise_map=self.noise_map,
             exposure_time_map=self.exposure_time_map,
-            visibilities=self.visibilities,
-            visibilities_noise_map=self.visibilities_noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=primary_beam,
         )
 
     def new_interferometer_data_converted_from_electrons(self):
 
-        image = self.array_from_counts_to_electrons_per_second(array=self.image)
+        real_visibilities = self.array_from_counts_to_electrons_per_second(array=self._data[:,0])
+        imaginary_visibilities = self.array_from_counts_to_electrons_per_second(array=self._data[:,1])
+        visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
         noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
 
         return InterferometerData(
-            image=image,
+            shape=self.shape,
+            visibilities=visibilities,
             pixel_scale=self.pixel_scale,
-            psf=self.psf,
             noise_map=noise_map,
             exposure_time_map=self.exposure_time_map,
-            visibilities=self.visibilities,
-            visibilities_noise_map=self.visibilities_noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=self.primary_beam,
         )
 
     def new_interferometer_data_converted_from_adus(self, gain):
 
-        image = self.array_from_adus_to_electrons_per_second(
-            array=self.image, gain=gain
-        )
+        real_visibilities = self.array_from_adus_to_electrons_per_second(array=self._data[:, 0], gain=gain)
+        imaginary_visibilities = self.array_from_adus_to_electrons_per_second(array=self._data[:, 1], gain=gain)
+        visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
+
         noise_map = self.array_from_adus_to_electrons_per_second(
             array=self.noise_map, gain=gain
         )
 
         return InterferometerData(
-            image=image,
+            shape=self.shape,
+            visibilities=visibilities,
             pixel_scale=self.pixel_scale,
-            psf=self.psf,
             noise_map=noise_map,
             exposure_time_map=self.exposure_time_map,
-            visibilities=self.visibilities,
-            visibilities_noise_map=self.visibilities_noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=self.primary_beam,
         )
@@ -194,7 +141,7 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
         gaussian = gaussian.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, return_in_2d=True, return_binned=True,
         )
 
         return PrimaryBeam(array=gaussian, pixel_scale=pixel_scale, renormalize=True)
@@ -335,32 +282,28 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
 class SimulatedInterferometerData(InterferometerData):
     def __init__(
         self,
-        image,
-        pixel_scale,
-        psf,
-        noise_map,
+        shape,
         visibilities,
-        visibilities_noise_map,
+        pixel_scale,
+        noise_map,
         uv_wavelengths,
         primary_beam,
-        visibilities_noise_map_realization,
+        noise_map_realization,
         exposure_time_map=None,
         **kwargs
     ):
 
         super(SimulatedInterferometerData, self).__init__(
-            image=image,
-            pixel_scale=pixel_scale,
-            psf=psf,
-            noise_map=noise_map,
+            shape=shape,
             visibilities=visibilities,
-            visibilities_noise_map=visibilities_noise_map,
+            pixel_scale=pixel_scale,
+            noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
             primary_beam=primary_beam,
             exposure_time_map=exposure_time_map,
         )
 
-        self.visibilities_noise_map_realization = visibilities_noise_map_realization
+        self.noise_map_realization = noise_map_realization
 
     @classmethod
     def from_deflections_galaxies_and_exposure_arrays(
@@ -456,7 +399,7 @@ class SimulatedInterferometerData(InterferometerData):
         """
 
         image_plane_image_2d = tracer.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, return_in_2d=True, return_binned=True,
         )
 
         return cls.from_image_and_exposure_arrays(
@@ -533,22 +476,22 @@ class SimulatedInterferometerData(InterferometerData):
         visibilities = transformer.visibilities_from_image_1d(image_1d=image_1d)
 
         if noise_sigma is not None:
-            visibilities_noise_map_realization = gaussian_noise_map_from_shape_and_sigma(
+            noise_map_realization = gaussian_noise_map_from_shape_and_sigma(
                 shape=visibilities.shape, sigma=noise_sigma, noise_seed=noise_seed
             )
-            visibilities = visibilities + visibilities_noise_map_realization
-            visibilities_noise_map = NoiseMap.single_value(
+            visibilities = visibilities + noise_map_realization
+            noise_map = NoiseMap.single_value(
                 value=noise_sigma, shape=visibilities.shape, pixel_scale=pixel_scale
             )
         else:
-            visibilities_noise_map = NoiseMap.single_value(
+            noise_map = NoiseMap.single_value(
                 value=noise_if_add_noise_false,
                 shape=visibilities.shape,
                 pixel_scale=pixel_scale,
             )
-            visibilities_noise_map_realization = None
+            noise_map_realization = None
 
-        if np.isnan(visibilities_noise_map).any():
+        if np.isnan(noise_map).any():
             raise exc.DataException(
                 "The noise-map has NaN values in it. This suggests your exposure time and / or"
                 "background sky levels are too low, creating signal counts at or close to 0.0."
@@ -557,18 +500,16 @@ class SimulatedInterferometerData(InterferometerData):
         image -= background_sky_map
 
         return SimulatedInterferometerData(
-            image=image,
-            pixel_scale=pixel_scale,
-            noise_map=None,
-            psf=None,
+            shape=image.shape,
             visibilities=visibilities,
-            visibilities_noise_map=visibilities_noise_map,
+            pixel_scale=pixel_scale,
+            noise_map=noise_map,
             uv_wavelengths=transformer.uv_wavelengths,
             primary_beam=primary_beam,
-            visibilities_noise_map_realization=visibilities_noise_map_realization,
+            noise_map_realization=noise_map_realization,
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
-            noise_realization=visibilities_noise_map_realization,
+            noise_realization=noise_map_realization,
         )
 
     def __array_finalize__(self, obj):
@@ -612,35 +553,23 @@ def gaussian_noise_map_from_shape_and_sigma(shape, sigma, noise_seed=-1):
 
 
 def load_interferometer_data_from_fits(
-    image_path,
+    shape,
     pixel_scale,
     real_visibilities_path=None,
+    real_visibilities_hdu=0,
     imaginary_visibilities_path=None,
-    visibilities_noise_map_path=None,
-    u_wavelengths_path=None,
-    v_wavelengths_path=None,
-    image_hdu=0,
-    resized_interferometer_shape=None,
-    resized_interferometer_origin_pixels=None,
-    resized_interferometer_origin_arcsec=None,
-    psf_path=None,
-    psf_hdu=0,
-    resized_psf_shape=None,
-    renormalize_psf=True,
-    resized_primary_beam_shape=None,
-    renormalize_primary_beam=True,
+    imaginary_visibilities_hdu=0,
     noise_map_path=None,
     noise_map_hdu=0,
-    convert_noise_map_from_weight_map=False,
-    convert_noise_map_from_inverse_noise_map=False,
+    u_wavelengths_path=None,
+    u_wavelengths_hdu=0,
+    v_wavelengths_path=None,
+    v_wavelengths_hdu=0,
+    resized_primary_beam_shape=None,
+    renormalize_primary_beam=True,
     exposure_time_map_path=None,
     exposure_time_map_hdu=0,
     exposure_time_map_from_single_value=None,
-    real_visibilities_hdu=0,
-    imaginary_visibilities_hdu=0,
-    visibilities_noise_map_hdu=0,
-    u_wavelengths_hdu=0,
-    v_wavelengths_hdu=0,
     primary_beam_path=None,
     primary_beam_hdu=0,
     convert_from_electrons=False,
@@ -741,35 +670,6 @@ def load_interferometer_data_from_fits(
         time map and gain.
     """
 
-    image = abstract_data.load_image(
-        image_path=image_path, image_hdu=image_hdu, pixel_scale=pixel_scale
-    )
-
-    psf = abstract_data.load_psf(
-        psf_path=psf_path,
-        psf_hdu=psf_hdu,
-        pixel_scale=pixel_scale,
-        renormalize=renormalize_psf,
-    )
-
-    noise_map = load_noise_map(
-        noise_map_path=noise_map_path,
-        noise_map_hdu=noise_map_hdu,
-        pixel_scale=pixel_scale,
-        convert_noise_map_from_weight_map=convert_noise_map_from_weight_map,
-        convert_noise_map_from_inverse_noise_map=convert_noise_map_from_inverse_noise_map,
-    )
-
-    exposure_time_map = abstract_data.load_exposure_time_map(
-        exposure_time_map_path=exposure_time_map_path,
-        exposure_time_map_hdu=exposure_time_map_hdu,
-        pixel_scale=pixel_scale,
-        shape=image.shape,
-        exposure_time=exposure_time_map_from_single_value,
-        exposure_time_map_from_inverse_noise_map=False,
-        inverse_noise_map=None,
-    )
-
     real_visibilities = load_visibilities(
         visibilities_path=real_visibilities_path, visibilities_hdu=real_visibilities_hdu
     )
@@ -780,9 +680,19 @@ def load_interferometer_data_from_fits(
 
     visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
 
-    visibilities_noise_map = load_visibilities_noise_map(
-        visibilities_noise_map_path=visibilities_noise_map_path,
-        visibilities_noise_map_hdu=visibilities_noise_map_hdu,
+    exposure_time_map = abstract_data.load_exposure_time_map(
+        exposure_time_map_path=exposure_time_map_path,
+        exposure_time_map_hdu=exposure_time_map_hdu,
+        pixel_scale=pixel_scale,
+        shape=real_visibilities.shape,
+        exposure_time=exposure_time_map_from_single_value,
+        exposure_time_map_from_inverse_noise_map=False,
+        inverse_noise_map=None,
+    )
+
+    noise_map = load_visibilities_noise_map(
+        noise_map_path=noise_map_path,
+        noise_map_hdu=noise_map_hdu,
     )
     u_wavelengths = load_visibilities(
         visibilities_path=u_wavelengths_path, visibilities_hdu=u_wavelengths_hdu
@@ -801,28 +711,14 @@ def load_interferometer_data_from_fits(
     )
 
     interferometer_data = InterferometerData(
-        image=image,
+        shape=shape,
+        visibilities=visibilities,
         pixel_scale=pixel_scale,
-        psf=psf,
         primary_beam=primary_beam,
         noise_map=noise_map,
-        visibilities=visibilities,
-        visibilities_noise_map=visibilities_noise_map,
         uv_wavelengths=uv_wavelengths,
         exposure_time_map=exposure_time_map,
     )
-
-    if resized_interferometer_shape is not None:
-        interferometer_data = interferometer_data.new_interferometer_data_with_resized_arrays(
-            new_shape=resized_interferometer_shape,
-            new_centre_pixels=resized_interferometer_origin_pixels,
-            new_centre_arcsec=resized_interferometer_origin_arcsec,
-        )
-
-    if resized_psf_shape is not None:
-        interferometer_data = interferometer_data.new_interferometer_data_with_resized_psf(
-            new_shape=resized_psf_shape
-        )
 
     if resized_primary_beam_shape is not None:
         interferometer_data = interferometer_data.new_interferometer_data_with_resized_primary_beam(
@@ -840,95 +736,6 @@ def load_interferometer_data_from_fits(
 
     return interferometer_data
 
-
-def load_noise_map(
-    noise_map_path,
-    noise_map_hdu,
-    pixel_scale,
-    convert_noise_map_from_weight_map,
-    convert_noise_map_from_inverse_noise_map,
-):
-    """Factory for loading the noise-map from a .fits file.
-
-    This factory also includes a number of routines for converting the noise-map from from other units (e.g. \
-    a weight map) or computing the noise-map from other unblurred_image_1d (e.g. the interferometer image and background noise-map).
-
-    Parameters
-    ----------
-    noise_map_path : str
-        The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
-    noise_map_hdu : int
-        The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
-    pixel_scale : float
-        The size of each pixel in arc seconds.
-    image : ndarray
-        The image-image, which the noise-map can be calculated using.
-    background_noise_map : ndarray
-        The background noise-map, which the noise-map can be calculated using.
-    exposure_time_map : ndarray
-        The exposure-time map, which the noise-map can be calculated using.
-    convert_noise_map_from_weight_map : bool
-        If True, the noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
-        *NoiseMap.from_weight_map).
-    convert_noise_map_from_inverse_noise_map : bool
-        If True, the noise-map loaded from the .fits file is converted from an inverse noise-map to a noise-map (see \
-        *NoiseMap.from_inverse_noise_map).
-    background_noise_map_path : str
-        The path and filename of the .fits image containing the background noise-map.
-    background_noise_map_hdu : int
-        The hdu the background noise-map is contained in the .fits file that *background_noise_map_path* points too.
-    convert_background_noise_map_from_weight_map : bool
-        If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
-        *NoiseMap.from_weight_map).
-    convert_background_noise_map_from_inverse_noise_map : bool
-        If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
-        noise-map (see *NoiseMap.from_inverse_noise_map).
-    noise_map_from_image_and_background_noise_map : bool
-        If True, the noise-map is computed from the observed image and background noise-map \
-        (see NoiseMap.from_image_and_background_noise_map).
-    convert_from_electrons : bool
-        If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
-        time map.
-    gain : float
-        The image gain, used for convert from ADUs.
-    convert_from_adus : bool
-        If True, the input unblurred_image_1d are in units of adus and all converted to electrons / second using the exposure \
-        time map and gain.
-    """
-    noise_map_options = sum(
-        [convert_noise_map_from_weight_map, convert_noise_map_from_inverse_noise_map]
-    )
-
-    if noise_map_options > 1:
-        raise exc.DataException(
-            "You have specified more than one method to load the noise_map map, e.g.:"
-            "convert_noise_map_from_weight_map | "
-            "convert_noise_map_from_inverse_noise_map |"
-            "noise_map_from_image_and_background_noise_map"
-        )
-
-    if noise_map_options == 0 and noise_map_path is not None:
-        return NoiseMap.from_fits_with_pixel_scale(
-            file_path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale
-        )
-    elif convert_noise_map_from_weight_map and noise_map_path is not None:
-        weight_map = scaled_array.Array.from_fits(
-            file_path=noise_map_path, hdu=noise_map_hdu
-        )
-        return NoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
-    elif convert_noise_map_from_inverse_noise_map and noise_map_path is not None:
-        inverse_noise_map = scaled_array.Array.from_fits(
-            file_path=noise_map_path, hdu=noise_map_hdu
-        )
-        return NoiseMap.from_inverse_noise_map(
-            inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale
-        )
-    else:
-        raise exc.DataException(
-            "A noise_map map was not loaded, specify a noise_map_path or option to compute a noise_map map."
-        )
-
-
 def load_visibilities(visibilities_path, visibilities_hdu):
 
     if visibilities_path is not None:
@@ -938,20 +745,12 @@ def load_visibilities(visibilities_path, visibilities_hdu):
 
 
 def load_visibilities_noise_map(
-    visibilities_noise_map_path, visibilities_noise_map_hdu
+    noise_map_path, noise_map_hdu
 ):
-    if visibilities_noise_map_path is not None:
+    if noise_map_path is not None:
         return array_util.numpy_array_1d_from_fits(
-            file_path=visibilities_noise_map_path, hdu=visibilities_noise_map_hdu
+            file_path=noise_map_path, hdu=noise_map_hdu
         )
-
-
-def load_baselines(baselines_path, baselines_hdu):
-    if baselines_path is not None:
-        return array_util.numpy_array_1d_from_fits(
-            file_path=baselines_path, hdu=baselines_hdu
-        )
-
 
 def load_primary_beam(
     primary_beam_path, primary_beam_hdu, pixel_scale, renormalize=False
@@ -981,36 +780,20 @@ def load_primary_beam(
 
 def output_interferometer_data_to_fits(
     interferometer_data,
-    image_path,
-    psf_path,
+    real_visibilities_path=None,
+    imaginary_visibilities_path=None,
     noise_map_path=None,
     primary_beam_path=None,
     exposure_time_map_path=None,
-    real_visibilities_path=None,
-    imaginary_visibilities_path=None,
-    visibilities_noise_map_path=None,
     u_wavelengths_path=None,
     v_wavelengths_path=None,
     overwrite=False,
 ):
-    array_util.numpy_array_2d_to_fits(
-        array_2d=interferometer_data.image, file_path=image_path, overwrite=overwrite
-    )
-    array_util.numpy_array_2d_to_fits(
-        array_2d=interferometer_data.psf, file_path=psf_path, overwrite=overwrite
-    )
 
     if primary_beam_path is not None:
         array_util.numpy_array_2d_to_fits(
             array_2d=interferometer_data.primary_beam,
             file_path=primary_beam_path,
-            overwrite=overwrite,
-        )
-
-    if interferometer_data.noise_map is not None and noise_map_path is not None:
-        array_util.numpy_array_2d_to_fits(
-            array_2d=interferometer_data.noise_map,
-            file_path=noise_map_path,
             overwrite=overwrite,
         )
 
@@ -1045,12 +828,12 @@ def output_interferometer_data_to_fits(
         )
 
     if (
-        interferometer_data.visibilities_noise_map is not None
-        and visibilities_noise_map_path is not None
+        interferometer_data.noise_map is not None
+        and noise_map_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.visibilities_noise_map,
-            file_path=visibilities_noise_map_path,
+            array_1d=interferometer_data.noise_map,
+            file_path=noise_map_path,
             overwrite=overwrite,
         )
 

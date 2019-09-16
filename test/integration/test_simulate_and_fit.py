@@ -33,7 +33,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    imaging_simulated = al.SimulatedCCDData.from_tracer_grid_and_exposure_arrays(
+    imaging_simulated = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         pixel_scale=0.2,
@@ -76,11 +76,11 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         shape=imaging_data.image.shape, pixel_scale=0.2, sub_size=2, radius_arcsec=0.8
     )
 
-    lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
+    lens_data = al.LensImagingData(imaging_data=imaging_data, mask=mask)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
+    fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(lens_imaging_data=lens_data, tracer=tracer)
 
     assert fit.chi_squared == 0.0
 
@@ -113,7 +113,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     )
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    imaging_simulated = al.SimulatedCCDData.from_image_and_exposure_arrays(
+    imaging_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
         image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
             grid=grid, psf_shape=psf.shape
         ),
@@ -156,12 +156,12 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         shape=imaging_data.image.shape, pixel_scale=0.2, sub_size=1, radius_arcsec=0.8
     )
 
-    lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
+    lens_data = al.LensImagingData(imaging_data=imaging_data, mask=mask)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fitter = al.LensImageFit.from_lens_data_and_tracer(
-        lens_data=lens_data, tracer=tracer
+    fitter = al.LensImagingFit.from_lens_imaging_data_and_tracer(
+        lens_imaging_data=lens_data, tracer=tracer
     )
 
     assert fitter.chi_squared == pytest.approx(0.0, 1e-4)
