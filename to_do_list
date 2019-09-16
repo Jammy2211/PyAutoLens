@@ -78,3 +78,5 @@ Residual Flux Fraction
 Reduced Chi Squared
 Summed regularization
 Stuff combining chi squared with regularization
+
+--ignore-installed astropy
