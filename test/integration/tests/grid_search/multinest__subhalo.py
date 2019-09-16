@@ -85,12 +85,10 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
 
-            self.galaxies.subhalo.mass.kappa_s = af.UniformPrior(
-                lower_limit=0.0005, upper_limit=0.2
+            self.galaxies.subhalo.mass.mass_at_200 = af.LogUniformPrior(
+                lower_limit=10.0e6, upper_limit=10.0e9
             )
-            self.galaxies.subhalo.mass.scale_radius = af.UniformPrior(
-                lower_limit=0.001, upper_limit=1.0
-            )
+
             self.galaxies.subhalo.mass.centre_0 = af.UniformPrior(
                 lower_limit=-2.0, upper_limit=2.0
             )
