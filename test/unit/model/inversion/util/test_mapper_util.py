@@ -26,19 +26,19 @@ class TestMappingMatrix:
             pixels=6,
             total_mask_pixels=3,
             sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_fraction=1.0,
+            sub_fraction=1.0,
         )
 
         assert (
             mapping_matrix
             == np.array(
                 [
-                    [1, 0, 0, 0, 0, 0],  # CCD pixel 0 maps to pix pixel 0.
-                    [0, 1, 0, 0, 0, 0],  # CCD pixel 1 maps to pix pixel 1.
+                    [1, 0, 0, 0, 0, 0],  # Imaging pixel 0 maps to pix pixel 0.
+                    [0, 1, 0, 0, 0, 0],  # Imaging pixel 1 maps to pix pixel 1.
                     [0, 0, 1, 0, 0, 0],
                 ]
             )
-        ).all()  # CCD pixel 2 maps to pix pixel 2
+        ).all()  # Imaging pixel 2 maps to pix pixel 2
 
     def test__5_image_pixels__8_pixel_pixels__sub_grid_1x1(self, five_pixels):
 
@@ -50,7 +50,7 @@ class TestMappingMatrix:
             pixels=8,
             total_mask_pixels=5,
             sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_fraction=1.0,
+            sub_fraction=1.0,
         )
 
         assert (
@@ -66,7 +66,7 @@ class TestMappingMatrix:
                         0,
                         0,
                         0,
-                    ],  # CCD image_to_pixel 0 and 3 mappers to pix pixel 0.
+                    ],  # Imaging image_to_pixel 0 and 3 mappers to pix pixel 0.
                     [
                         0,
                         1,
@@ -76,13 +76,13 @@ class TestMappingMatrix:
                         0,
                         0,
                         0,
-                    ],  # CCD image_to_pixel 1 and 4 mappers to pix pixel 1.
+                    ],  # Imaging image_to_pixel 1 and 4 mappers to pix pixel 1.
                     [0, 0, 1, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 1],
                     [0, 0, 0, 0, 0, 0, 1, 0],
                 ]
             )
-        ).all()  # CCD image_to_pixel 2 and 5 mappers to pix pixel 2
+        ).all()  # Imaging image_to_pixel 2 and 5 mappers to pix pixel 2
 
     def test__5_image_pixels__8_pixel_pixels__sub_grid_2x2__no_overlapping_pixels(
         self, five_pixels
@@ -99,7 +99,7 @@ class TestMappingMatrix:
             pixels=8,
             total_mask_pixels=5,
             sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_fraction=0.25,
+            sub_fraction=0.25,
         )
 
         assert (
@@ -131,7 +131,7 @@ class TestMappingMatrix:
             pixels=8,
             total_mask_pixels=5,
             sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_fraction=0.25,
+            sub_fraction=0.25,
         )
 
         assert (
@@ -260,7 +260,7 @@ class TestMappingMatrix:
             pixels=6,
             total_mask_pixels=3,
             sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-            sub_grid_fraction=1.0 / 16.0,
+            sub_fraction=1.0 / 16.0,
         )
 
         assert (

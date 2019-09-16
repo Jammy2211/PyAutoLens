@@ -1,23 +1,15 @@
 import ast
 import numpy as np
 
-import scipy.signal
-from astropy import units
-from skimage.transform import resize, rescale
-
 from autolens import exc
-from autolens.array.util import array_util, grid_util
-from autolens.array.mapping_util import array_mapping_util
 from autolens.array import scaled_array
-from autolens.model.profiles.light_profiles import EllipticalGaussian
 
 
 class AbstractData(object):
     def __init__(
         self,
-        image,
+        data,
         pixel_scale,
-        psf,
         noise_map,
         exposure_time_map=None,
         origin=(0.0, 0.0),
@@ -26,7 +18,7 @@ class AbstractData(object):
 
         Parameters
         ----------
-        image : scaled_array.ScaledArraySquarePixels
+        data : scaled_array.ScaledArraySquarePixels
             The array of the image instrument, in units of electrons per second.
         pixel_scale : float
             The size of each pixel in arc seconds.
@@ -42,20 +34,15 @@ class AbstractData(object):
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
             preferably in units of electrons per second.
         exposure_time_map : scaled_array.ScaledSquarePixelArray
-            An array describing the effective exposure time in each ccd pixel.
+            An array describing the effective exposure time in each imaging pixel.
         background_sky_map : scaled_array.ScaledSquarePixelArray
             An array describing the background sky.
         """
-        self.image = image
+        self._data = data
         self.pixel_scale = pixel_scale
-        self.psf = psf
         self.noise_map = noise_map
         self.exposure_time_map = exposure_time_map
         self.origin = origin
-
-    @property
-    def shape(self):
-        return self.image.shape
 
     @staticmethod
     def bin_up_scaled_array(scaled_array, bin_up_factor, method):
@@ -82,7 +69,7 @@ class AbstractData(object):
     @property
     def signal_to_noise_map(self):
         """The estimated signal-to-noise_maps mappers of the image."""
-        signal_to_noise_map = np.divide(self.image, self.noise_map)
+        signal_to_noise_map = np.divide(self._data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 
@@ -94,7 +81,7 @@ class AbstractData(object):
     @property
     def absolute_signal_to_noise_map(self):
         """The estimated absolute_signal-to-noise_maps mappers of the image."""
-        return np.divide(np.abs(self.image), self.noise_map)
+        return np.divide(np.abs(self._data), self.noise_map)
 
     @property
     def absolute_signal_to_noise_max(self):
@@ -103,7 +90,7 @@ class AbstractData(object):
 
     @property
     def potential_chi_squared_map(self):
-        """The potential chi-squared map of the ccd instrument. This represents how much each pixel can contribute to \
+        """The potential chi-squared map of the imaging instrument. This represents how much each pixel can contribute to \
         the chi-squared map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
         return np.square(self.absolute_signal_to_noise_map)
 
@@ -154,7 +141,7 @@ class AbstractData(object):
     @property
     def image_counts(self):
         """The image in units of counts."""
-        return self.array_from_electrons_per_second_to_counts(self.image)
+        return self.array_from_electrons_per_second_to_counts(self._data)
 
 
 class AbstractNoiseMap(scaled_array.ScaledSquarePixelArray):
@@ -205,208 +192,6 @@ class AbstractNoiseMap(scaled_array.ScaledSquarePixelArray):
         return cls(array=noise_map, pixel_scale=pixel_scale)
 
 
-class PSF(scaled_array.ScaledSquarePixelArray):
-
-    # noinspection PyUnusedLocal
-    def __init__(self, array, pixel_scale, renormalize=False, **kwargs):
-        """
-        Class storing a 2D Point Spread Function (PSF), including its blurring kernel.
-
-        Parameters
-        ----------
-        array : ndarray
-            The 2d PSF blurring kernel.
-        renormalize : bool
-            Renormalize the PSF such that he sum of kernel values total 1.0?
-        """
-
-        # noinspection PyArgumentList
-        super().__init__(array=array, pixel_scale=pixel_scale)
-        if renormalize:
-            self[:, :] = np.divide(self, np.sum(self))
-
-    @classmethod
-    def from_no_blurring_kernel(cls, pixel_scale):
-
-        array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
-
-        return PSF(array=array, pixel_scale=pixel_scale, renormalize=False)
-
-    @classmethod
-    def from_gaussian(
-        cls, shape, pixel_scale, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0
-    ):
-        """Simulate the PSF as an elliptical Gaussian profile."""
-        from autolens.model.profiles.light_profiles import EllipticalGaussian
-
-        gaussian = EllipticalGaussian(
-            centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma
-        )
-        grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_grid_size_and_origin(
-            mask=np.full(shape, False),
-            pixel_scales=(pixel_scale, pixel_scale),
-            sub_grid_size=1,
-        )
-
-        gaussian_1d = gaussian.profile_image_from_grid(
-            grid=grid_1d, return_in_2d=False, return_binned=False
-        )
-
-        gaussian_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=gaussian_1d,
-            mask=np.full(fill_value=False, shape=shape),
-            sub_grid_size=1,
-        )
-
-        return PSF(array=gaussian_2d, pixel_scale=pixel_scale, renormalize=True)
-
-    @classmethod
-    def from_as_gaussian_via_alma_fits_header_parameters(
-        cls, shape, pixel_scale, y_stddev, x_stddev, theta, centre=(0.0, 0.0)
-    ):
-
-        x_stddev = (
-            x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-        )
-        y_stddev = (
-            y_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-        )
-
-        axis_ratio = x_stddev / y_stddev
-
-        gaussian = EllipticalGaussian(
-            centre=centre,
-            axis_ratio=axis_ratio,
-            phi=90.0 - theta,
-            intensity=1.0,
-            sigma=y_stddev,
-        )
-
-        from autolens.array import grids
-
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=shape, pixel_scale=pixel_scale, sub_grid_size=1
-        )
-
-        gaussian = gaussian.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
-        )
-
-        return PSF(array=gaussian, pixel_scale=pixel_scale, renormalize=True)
-
-    @classmethod
-    def from_fits_renormalized(cls, file_path, hdu, pixel_scale):
-        """Loads a PSF from fits and renormalizes it
-
-        Parameters
-        ----------
-        pixel_scale
-        file_path: String
-            The path to the file containing the PSF
-        hdu : int
-            The HDU the PSF is stored in the .fits file.
-
-        Returns
-        -------
-        psf: PSF
-            A renormalized PSF instance
-        """
-        psf = PSF.from_fits_with_scale(file_path, hdu, pixel_scale)
-        psf[:, :] = np.divide(psf, np.sum(psf))
-        return psf
-
-    @classmethod
-    def from_fits_with_scale(cls, file_path, hdu, pixel_scale):
-        """
-        Loads the PSF from a .fits file.
-
-        Parameters
-        ----------
-        pixel_scale
-        file_path: String
-            The path to the file containing the PSF
-        hdu : int
-            The HDU the PSF is stored in the .fits file.
-        """
-        return cls(
-            array=array_util.numpy_array_2d_from_fits(file_path, hdu),
-            pixel_scale=pixel_scale,
-        )
-
-    def new_psf_with_rescaled_odd_dimensioned_array(
-        self, rescale_factor, renormalize=True
-    ):
-
-        psf_rescaled = rescale(
-            self,
-            rescale_factor,
-            anti_aliasing=False,
-            mode="constant",
-            multichannel=False,
-        )
-
-        if psf_rescaled.shape[0] % 2 == 0 and psf_rescaled.shape[1] % 2 == 0:
-            psf_rescaled = resize(
-                psf_rescaled,
-                output_shape=(psf_rescaled.shape[0] + 1, psf_rescaled.shape[1] + 1),
-                anti_aliasing=False,
-                mode="constant",
-            )
-        elif psf_rescaled.shape[0] % 2 == 0 and psf_rescaled.shape[1] % 2 != 0:
-            psf_rescaled = resize(
-                psf_rescaled,
-                output_shape=(psf_rescaled.shape[0] + 1, psf_rescaled.shape[1]),
-                anti_aliasing=False,
-                mode="constant",
-            )
-        elif psf_rescaled.shape[0] % 2 != 0 and psf_rescaled.shape[1] % 2 == 0:
-            psf_rescaled = resize(
-                psf_rescaled,
-                output_shape=(psf_rescaled.shape[0], psf_rescaled.shape[1] + 1),
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        pixel_scale_factors = (
-            self.shape[0] / psf_rescaled.shape[0],
-            self.shape[1] / psf_rescaled.shape[1],
-        )
-        pixel_scale = (
-            self.pixel_scale * pixel_scale_factors[0],
-            self.pixel_scale * pixel_scale_factors[1],
-        )
-        return PSF(
-            array=psf_rescaled, pixel_scale=np.max(pixel_scale), renormalize=renormalize
-        )
-
-    def new_psf_with_renormalized_array(self):
-        """Renormalize the PSF such that its data_vector values sum to unity."""
-        return PSF(array=self, pixel_scale=self.pixel_scale, renormalize=True)
-
-    def convolve(self, array_2d):
-        """
-        Convolve an array with this PSF
-
-        Parameters
-        ----------
-        image : ndarray
-            An array representing the image the PSF is convolved with.
-
-        Returns
-        -------
-        convolved_image : ndarray
-            An array representing the image after convolution.
-
-        Raises
-        ------
-        KernelException if either PSF psf dimension is odd
-        """
-        if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
-            raise exc.ConvolutionException("PSF Kernel must be odd")
-
-        return scipy.signal.convolve2d(array_2d, self, mode="same")
-
-
 class ExposureTimeMap(scaled_array.ScaledSquarePixelArray):
     @classmethod
     def from_exposure_time_and_inverse_noise_map(
@@ -434,30 +219,6 @@ def load_image(image_path, image_hdu, pixel_scale):
     return scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(
         file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale
     )
-
-
-def load_psf(psf_path, psf_hdu, pixel_scale, renormalize=False):
-    """Factory for loading the psf from a .fits file.
-
-    Parameters
-    ----------
-    psf_path : str
-        The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
-    psf_hdu : int
-        The hdu the psf is contained in the .fits file specified by *psf_path*.
-    pixel_scale : float
-        The size of each pixel in arc seconds.
-    renormalize : bool
-        If True, the PSF is renoralized such that all elements sum to 1.0.
-    """
-    if renormalize:
-        return PSF.from_fits_renormalized(
-            file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale
-        )
-    if not renormalize:
-        return PSF.from_fits_with_scale(
-            file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale
-        )
 
 
 def load_exposure_time_map(

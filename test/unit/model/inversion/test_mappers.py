@@ -71,7 +71,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -128,7 +128,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -183,7 +183,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -245,7 +245,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -309,7 +309,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -359,7 +359,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -404,7 +404,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -450,7 +450,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -496,7 +496,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
@@ -570,7 +570,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_sub_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -627,7 +627,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -673,7 +673,7 @@ class TestRectangularMapper:
             grid = MockPixelizationGrid(
                 pixelization_grid,
                 sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pix = al.RectangularMapper(
@@ -757,10 +757,10 @@ class TestRectangularMapper:
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            recon_pix_util = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(4, 3)),
-                sub_grid_size=1,
+                sub_size=1,
             )
             assert (recon_pix == recon_pix_util).all()
             assert recon_pix.shape == (4, 3)
@@ -778,10 +778,10 @@ class TestRectangularMapper:
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
+            recon_pix_util = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(3, 4)),
-                sub_grid_size=1,
+                sub_size=1,
             )
             assert (recon_pix == recon_pix_util).all()
             assert recon_pix.shape == (3, 4)
@@ -916,7 +916,7 @@ class TestVoronoiMapper:
             grid = MockPixelizationGrid(
                 arr=grid,
                 sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
-                sub_grid_size=1,
+                sub_size=1,
             )
 
             pixelization_grid = MockPixelizationGrid(

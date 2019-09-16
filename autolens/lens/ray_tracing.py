@@ -9,10 +9,10 @@ from autolens.model import cosmology_util
 from autolens.model.inversion import inversions as inv
 from autolens.model.galaxy import galaxy as g
 
-from autolens.array.grids import (
-    reshape_array_from_grid,
-    reshape_array_from_grid_and_convolver,
-    reshape_array_from_grid_and_psf,
+from autolens.array.mapping import (
+    reshape_returned_sub_array,
+    reshape_returned_array,
+    reshape_returned_array,
     reshape_returned_grid,
 )
 
@@ -235,7 +235,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
             traced_deflections.append(
                 plane.deflections_from_grid(
-                    grid=scaled_grid, return_in_2d=False, return_binned=False
+                    grid=scaled_grid, return_in_2d=False, return_binned=False, bypass_decorator=True
                 )
             )
 
@@ -259,7 +259,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         return traced_positions_of_planes
 
     def deflections_between_planes_from_grid(
-        self, grid, plane_i=0, plane_j=-1, return_in_2d=True
+        self, grid, plane_i=0, plane_j=-1, return_in_2d=True,
     ):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
@@ -268,16 +268,18 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @reshape_array_from_grid
-    def profile_image_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @reshape_returned_sub_array
+    def profile_image_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return sum(
             self.profile_images_of_planes_from_grid(
-                grid=grid, return_in_2d=False, return_binned=False
+                grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True,
             )
         )
 
     def profile_images_of_planes_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     ):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
@@ -288,6 +290,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
                 grid=traced_grids_of_planes[plane_index],
                 return_in_2d=return_in_2d,
                 return_binned=return_binned,
+                bypass_decorator=bypass_decorator
             )
             for plane_index in range(len(traced_grids_of_planes))
         ]
@@ -307,37 +310,46 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         padded_grid = grid.padded_grid_from_psf_shape(psf_shape=psf_shape)
 
         return self.profile_image_from_grid(
-            grid=padded_grid, return_in_2d=True, return_binned=True
+            grid=padded_grid,
+            return_in_2d=True,
+            return_binned=True,
+            bypass_decorator=False,
         )
 
-    @reshape_array_from_grid
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @reshape_returned_sub_array
+    def convergence_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return sum(
             [
                 plane.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
+                    grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True
                 )
                 for plane in self.planes
             ]
         )
 
-    @reshape_array_from_grid
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @reshape_returned_sub_array
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return sum(
             [
                 plane.potential_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
+                    grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True,
                 )
                 for plane in self.planes
             ]
         )
 
     @reshape_returned_grid
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def deflections_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return sum(
             [
                 plane.deflections_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False
+                    grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True,
                 )
                 for plane in self.planes
             ]
@@ -401,23 +413,28 @@ class AbstractTracerData(AbstractTracerLensing):
     def __init__(self, planes, cosmology):
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
 
-    @reshape_array_from_grid_and_psf
+    @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, preload_blurring_grid=None, return_in_2d=True
+        self,
+        grid,
+        psf,
+        preload_blurring_grid=None,
+        return_in_2d=True,
+        bypass_decorator=False,
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a psf (see ccd.convolution).
+        PSF using a psf (see imaging.convolution).
 
         These are summed to give the tracer's overall blurred image in 1D.
 
         Parameters
         ----------
-        psf : hyper_galaxies.ccd.convolution.ConvolverImage
+        psf : hyper_galaxies.imaging.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
         profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
         if preload_blurring_grid is None:
@@ -426,7 +443,10 @@ class AbstractTracerData(AbstractTracerLensing):
             )
 
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid, return_in_2d=True, return_binned=True
+            grid=preload_blurring_grid,
+            return_in_2d=True,
+            return_binned=True,
+            bypass_decorator=False,
         )
 
         return psf.convolve(profile_image + blurring_image)
@@ -435,13 +455,13 @@ class AbstractTracerData(AbstractTracerLensing):
         self, grid, psf, preload_blurring_grid=None, return_in_2d=False
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a psf (see ccd.convolution).
+        PSF using a psf (see imaging.convolution).
 
         The blurred image of every plane is returned in 1D.
 
         Parameters
         ----------
-        psf : hyper_galaxies.ccd.convolution.ConvolverImage
+        psf : hyper_galaxies.imaging.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -462,18 +482,23 @@ class AbstractTracerData(AbstractTracerLensing):
             for (plane, traced_grid) in zip(self.planes, traced_grids_of_planes)
         ]
 
-    @reshape_array_from_grid_and_convolver
+    @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
+        self,
+        grid,
+        convolver,
+        preload_blurring_grid=None,
+        return_in_2d=True,
+        bypass_decorator=False,
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a convolver (see ccd.convolution).
+        PSF using a convolver (see imaging.convolution).
 
         These are summed to give the tracer's overall blurred image in 1D.
 
         Parameters
         ----------
-        convolver : hyper_galaxies.ccd.convolution.ConvolverImage
+        convolver : hyper_galaxies.imaging.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -505,13 +530,13 @@ class AbstractTracerData(AbstractTracerLensing):
         self, grid, convolver, preload_blurring_grid=None, return_in_2d=False
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a convolver (see ccd.convolution).
+        PSF using a convolver (see imaging.convolution).
 
         The blurred image of every plane is returned in 1D.
 
         Parameters
         ----------
-        convolver : hyper_galaxies.ccd.convolution.ConvolverImage
+        convolver : hyper_galaxies.imaging.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
@@ -606,6 +631,15 @@ class AbstractTracerData(AbstractTracerLensing):
             )
 
         return unmasked_blurred_profile_images_of_planes_and_galaxies
+
+    def visibilities_from_grid_and_transformer(self, grid, transformer):
+
+        profile_image_1d = self.profile_image_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+        return transformer.visibilities_from_image_1d(
+            image_1d=profile_image_1d
+        )
 
     def pixelization_grids_of_planes_from_grid(self, grid):
 

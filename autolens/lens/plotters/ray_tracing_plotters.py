@@ -41,13 +41,13 @@ def plot_ray_tracing_subplot(
     output_filename="tracer",
     output_format="show",
 ):
-    """Plot the observed _tracer of an analysis, using the *CCD* class object.
+    """Plot the observed _tracer of an analysis, using the *Imaging* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
-    tracer : autolens.ccd.tracer.CCD
+    tracer : autolens.imaging.tracer.Imaging
         Class containing the _tracer,  noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -288,13 +288,13 @@ def plot_ray_tracing_individual(
     output_path=None,
     output_format="show",
 ):
-    """Plot the observed _tracer of an analysis, using the *CCD* class object.
+    """Plot the observed _tracer of an analysis, using the *Imaging* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
-    tracer : autolens.ccd.tracer.CCD
+    tracer : autolens.imaging.tracer.Imaging
         Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -408,7 +408,7 @@ def plot_profile_image(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Tracer CCD-Plane CCD",
+    title="Tracer Imaging-Plane Imaging",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
@@ -421,7 +421,7 @@ def plot_profile_image(
 ):
 
     profile_image = tracer.profile_image_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True
+        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     )
 
     array_plotters.plot_array(
@@ -491,7 +491,7 @@ def plot_convergence(
 ):
 
     convergence = tracer.convergence_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True
+        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     )
 
     array_plotters.plot_array(
@@ -558,7 +558,7 @@ def plot_potential(
 ):
 
     potential = tracer.potential_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True
+        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     )
 
     array_plotters.plot_array(
@@ -627,7 +627,7 @@ def plot_deflections_y(
     deflections = tracer.deflections_from_grid(
         grid=grid, return_in_2d=False, return_binned=True
     )
-    deflections_y = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
+    deflections_y = grid.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
 
     array_plotters.plot_array(
         array=deflections_y,
@@ -695,7 +695,7 @@ def plot_deflections_x(
     deflections = tracer.deflections_from_grid(
         grid=grid, return_in_2d=False, return_binned=True
     )
-    deflections_x = grid.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
+    deflections_x = grid.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
 
     array_plotters.plot_array(
         array=deflections_x,

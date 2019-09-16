@@ -22,8 +22,8 @@ class TestSubGrid1DFromSubGrid2D(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        grid_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-            sub_grid_2d=grid_2d, mask=mask, sub_grid_size=1
+        grid_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
+            sub_grid_2d=grid_2d, mask=mask, sub_size=1
         )
 
         assert (grid_1d == np.array([[5, 5]])).all()
@@ -40,8 +40,8 @@ class TestSubGrid1DFromSubGrid2D(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        grid_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-            sub_grid_2d=grid_2d, mask=mask, sub_grid_size=1
+        grid_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
+            sub_grid_2d=grid_2d, mask=mask, sub_size=1
         )
 
         assert (grid_1d == np.array([[2, 2], [4, 4], [5, 5], [6, 6], [8, 8]])).all()
@@ -62,8 +62,8 @@ class TestSubGrid1DFromSubGrid2D(object):
             ]
         )
 
-        grid_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-            sub_grid_2d=grid_2d, mask=mask, sub_grid_size=1
+        grid_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
+            sub_grid_2d=grid_2d, mask=mask, sub_size=1
         )
 
         assert (
@@ -88,8 +88,8 @@ class TestSubGrid1DFromSubGrid2D(object):
             ]
         )
 
-        grid_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-            sub_grid_2d=grid_2d, mask=mask, sub_grid_size=1
+        grid_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
+            sub_grid_2d=grid_2d, mask=mask, sub_size=1
         )
 
         assert (grid_1d == np.array([[2, 2], [4, 4], [5, 5], [6, 6], [8, 8]])).all()
@@ -109,8 +109,8 @@ class TestSubGrid1DFromSubGrid2D(object):
 
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
-        sub_array_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_grid_size(
-            sub_grid_2d=sub_grid_2d, mask=mask, sub_grid_size=2
+        sub_array_1d = al.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
+            sub_grid_2d=sub_grid_2d, mask=mask, sub_size=2
         )
 
         assert (
@@ -135,14 +135,14 @@ class TestSubGrid1DFromSubGrid2D(object):
 
 
 class TestSubGrid2DFromSubGrid1d(object):
-    def test__simple_2d_array__is_masked_and_mapped__sub_grid_size_1(self):
+    def test__simple_2d_array__is_masked_and_mapped__sub_size_1(self):
 
         grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
         mask = np.full(fill_value=False, shape=(2, 2))
 
-        grid_2d = al.grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
-            sub_grid_1d=grid_1d, mask=mask, sub_grid_size=1
+        grid_2d = al.grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+            sub_grid_1d=grid_1d, mask=mask, sub_size=1
         )
 
         assert (
@@ -153,8 +153,8 @@ class TestSubGrid2DFromSubGrid1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        grid_2d = al.grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
-            sub_grid_1d=grid_1d, mask=mask, sub_grid_size=1
+        grid_2d = al.grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+            sub_grid_1d=grid_1d, mask=mask, sub_size=1
         )
 
         assert (
@@ -180,8 +180,8 @@ class TestSubGrid2DFromSubGrid1d(object):
             ]
         )
 
-        grid_2d = al.grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
-            sub_grid_1d=grid_1d, mask=mask, sub_grid_size=1
+        grid_2d = al.grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+            sub_grid_1d=grid_1d, mask=mask, sub_size=1
         )
 
         assert (
@@ -195,7 +195,7 @@ class TestSubGrid2DFromSubGrid1d(object):
             )
         ).all()
 
-    def test__simple_2d_grid__is_masked_and_mapped__sub_grid_size_2(self):
+    def test__simple_2d_grid__is_masked_and_mapped__sub_size_2(self):
 
         grid_1d = np.array(
             [
@@ -216,8 +216,8 @@ class TestSubGrid2DFromSubGrid1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        grid_2d = al.grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_grid_size(
-            sub_grid_1d=grid_1d, mask=mask, sub_grid_size=2
+        grid_2d = al.grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+            sub_grid_1d=grid_1d, mask=mask, sub_size=2
         )
 
         assert (

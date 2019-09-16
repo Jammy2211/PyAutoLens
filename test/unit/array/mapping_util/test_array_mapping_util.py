@@ -112,14 +112,14 @@ class TestMap2dIndexesTo1dIndex(object):
 
 
 class TestSubArray1DFromSubArray2d(object):
-    def test__map_simple_data__sub_grid_size_1(self):
+    def test__map_simple_data__sub_size_1(self):
 
         array_2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            mask=mask, sub_array_2d=array_2d, sub_grid_size=1
+        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+            mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([5])).all()
@@ -130,8 +130,8 @@ class TestSubArray1DFromSubArray2d(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            mask=mask, sub_array_2d=array_2d, sub_grid_size=1
+        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+            mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([2, 4, 5, 6, 8])).all()
@@ -146,8 +146,8 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            mask=mask, sub_array_2d=array_2d, sub_grid_size=1
+        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+            mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([2, 5, 6, 7, 10, 12])).all()
@@ -163,13 +163,13 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            mask=mask, sub_array_2d=array_2d, sub_grid_size=1
+        array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+            mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([2, 4, 5, 6, 8])).all()
 
-    def test__map_simple_data__sub_grid_size_2(self):
+    def test__map_simple_data__sub_size_2(self):
 
         sub_array_2d = np.array(
             [
@@ -184,16 +184,16 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
         assert (sub_array_1d == np.array([15, 16, 3, 4])).all()
 
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
-        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
         assert (
@@ -219,8 +219,8 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
         assert (
@@ -277,8 +277,8 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=2
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
         assert (
@@ -288,7 +288,7 @@ class TestSubArray1DFromSubArray2d(object):
             )
         ).all()
 
-    def test__setup_2x2_data__sub_grid_size_3(self):
+    def test__setup_2x2_data__sub_size_3(self):
 
         sub_array_2d = np.array(
             [
@@ -303,8 +303,8 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[False, True], [True, False]])
 
-        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_grid_size(
-            sub_array_2d=sub_array_2d, mask=mask, sub_grid_size=3
+        sub_array_1d = al.array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+            sub_array_2d=sub_array_2d, mask=mask, sub_size=3
         )
 
         assert (
@@ -314,14 +314,14 @@ class TestSubArray1DFromSubArray2d(object):
 
 
 class TestSubArray2dFromSubArray1d(object):
-    def test__simple_2d_array__is_masked_and_mapped__sub_grid_size_1(self):
+    def test__simple_2d_array__is_masked_and_mapped__sub_size_1(self):
 
         array_1d = np.array([1.0, 2.0, 3.0, 4.0])
 
         mask = np.full(fill_value=False, shape=(2, 2))
 
-        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=array_1d, mask=mask, sub_grid_size=1
+        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+            sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
         assert (array_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
@@ -330,8 +330,8 @@ class TestSubArray2dFromSubArray1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=array_1d, mask=mask, sub_grid_size=1
+        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+            sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
         assert (array_2d == np.array([[1.0, 2.0], [3.0, 0.0]])).all()
@@ -346,8 +346,8 @@ class TestSubArray2dFromSubArray1d(object):
             ]
         )
 
-        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=array_1d, mask=mask, sub_grid_size=1
+        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+            sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
         assert (
@@ -357,7 +357,7 @@ class TestSubArray2dFromSubArray1d(object):
             )
         ).all()
 
-    def test__simple_2d_array__is_masked_and_mapped__sub_grid_size_2(self):
+    def test__simple_2d_array__is_masked_and_mapped__sub_size_2(self):
 
         array_1d = np.array(
             [1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0]
@@ -365,8 +365,8 @@ class TestSubArray2dFromSubArray1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_grid_size(
-            sub_array_1d=array_1d, mask=mask, sub_grid_size=2
+        array_2d = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+            sub_array_1d=array_1d, mask=mask, sub_size=2
         )
 
         assert (

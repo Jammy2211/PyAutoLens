@@ -37,14 +37,14 @@ def make_instance(all_galaxies):
 
 
 @pytest.fixture(name="result")
-def make_result(lens_data_7x7, instance):
+def make_result(lens_imaging_data_7x7, instance):
     return al.PhaseImaging.Result(
         constant=instance,
         figure_of_merit=1.0,
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=al.PhaseImaging.Analysis(
-            lens_data=lens_data_7x7, cosmology=cosmo.Planck15, image_path=""
+            lens_imaging_data=lens_imaging_data_7x7, cosmology=cosmo.Planck15, image_path=""
         ),
         optimizer=None,
     )
@@ -61,7 +61,7 @@ class MockResult(object):
         self.analysis = MockAnalysis()
         self.path_galaxy_tuples = []
         self.variable = af.ModelMapper()
-        self.mask_2d = None
+        self.mask = None
         self.positions = None
 
 
@@ -218,7 +218,7 @@ class TestImagePassing(object):
         )
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_images(
-        self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
+        self, mask_function_7x7, results_collection_7x7, imaging_data_7x7
     ):
         results_collection_7x7[0].galaxy_images = [
             2.0 * np.ones((7, 7)),
@@ -227,7 +227,7 @@ class TestImagePassing(object):
         results_collection_7x7[0].galaxy_images[0][3, 2] = -1.0
         results_collection_7x7[0].galaxy_images[1][3, 4] = -1.0
 
-        phase_7x7 = al.PhaseImaging(
+        phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
@@ -236,8 +236,8 @@ class TestImagePassing(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+        analysis = phase_imaging_7x7.make_analysis(
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -256,9 +256,9 @@ class TestImagePassing(object):
         ).all()
 
     def test__results_are_passed_to_new_analysis__hyper_images_values_below_minimum_are_scaled_up_using_config(
-        self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
+        self, mask_function_7x7, results_collection_7x7, imaging_data_7x7
     ):
-        phase_7x7 = al.PhaseImaging(
+        phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
@@ -267,8 +267,8 @@ class TestImagePassing(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+        analysis = phase_imaging_7x7.make_analysis(
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (analysis.hyper_model_image_1d == 5.0 * np.ones(9)).all()
@@ -281,9 +281,9 @@ class TestImagePassing(object):
         ).all()
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_cluster_images__includes_hyper_minimum(
-        self, mask_function_7x7, results_collection_7x7, ccd_data_7x7
+        self, mask_function_7x7, results_collection_7x7, imaging_data_7x7
     ):
-        phase_7x7 = al.PhaseImaging(
+        phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
             galaxies=dict(
                 lens=al.GalaxyModel(
@@ -299,8 +299,8 @@ class TestImagePassing(object):
             optimizer_class=mock_pipeline.MockNLO,
         )
 
-        analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+        analysis = phase_imaging_7x7.make_analysis(
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -310,7 +310,7 @@ class TestImagePassing(object):
             analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)] == 3.0 * np.ones(9)
         ).all()
 
-        phase_7x7 = al.PhaseImaging(
+        phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
                 lens=al.GalaxyModel(
                     redshift=0.5,
@@ -322,12 +322,12 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale,
+            pixel_scale_binned_cluster_grid=imaging_data_7x7.pixel_scale,
             phase_name="test_phase",
         )
 
-        analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+        analysis = phase_imaging_7x7.make_analysis(
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -345,7 +345,7 @@ class TestImagePassing(object):
             == analysis.lens_data.grid.binned.shape[0]
         )
 
-        phase_7x7 = al.PhaseImaging(
+        phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
                 lens=al.GalaxyModel(
                     redshift=0.5,
@@ -357,12 +357,12 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale * 2.0,
+            pixel_scale_binned_cluster_grid=imaging_data_7x7.pixel_scale * 2.0,
             phase_name="test_phase",
         )
 
-        analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+        analysis = phase_imaging_7x7.make_analysis(
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -389,7 +389,7 @@ class TestImagePassing(object):
         results_collection_7x7[0].galaxy_images[0][3, 2] = -1.0
         results_collection_7x7[0].galaxy_images[1][3, 4] = -1.0
 
-        phase_7x7 = al.PhaseImaging(
+        phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
                 lens=al.GalaxyModel(
                     redshift=0.5,
@@ -401,12 +401,12 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            pixel_scale_binned_cluster_grid=ccd_data_7x7.pixel_scale * 2.0,
+            pixel_scale_binned_cluster_grid=imaging_data_7x7.pixel_scale * 2.0,
             phase_name="test_phase",
         )
 
-        analysis = phase_7x7.make_analysis(
-            data=ccd_data_7x7, results=results_collection_7x7
+        analysis = phase_imaging_7x7.make_analysis(
+            data=imaging_data_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -426,11 +426,11 @@ class TestImagePassing(object):
             == analysis.lens_data.grid.binned.shape[0]
         )
 
-    def test_associate_images_(self, instance, result, lens_data_7x7):
+    def test__associate_images_(self, instance, result, lens_imaging_data_7x7):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = al.PhaseImaging.Analysis(
-            lens_data=lens_data_7x7,
+            lens_imaging_data=lens_imaging_data_7x7,
             cosmology=None,
             results=results_collection,
             image_path="",
@@ -438,10 +438,10 @@ class TestImagePassing(object):
 
         instance = analysis.associate_images(instance=instance)
 
-        hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
+        hyper_lens_image_1d = lens_imaging_data_7x7.mapping.array_1d_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
-        hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
+        hyper_source_image_1d = lens_imaging_data_7x7.mapping.array_1d_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
@@ -461,11 +461,11 @@ class TestImagePassing(object):
             hyper_model_image_1d, 1.0e-4
         )
 
-    def test_fit_uses_hyper_fit_correctly_(self, instance, result, lens_data_7x7):
+    def test__fit_uses_hyper_fit_correctly_(self, instance, result, lens_imaging_data_7x7):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = al.PhaseImaging.Analysis(
-            lens_data=lens_data_7x7,
+            lens_imaging_data=lens_imaging_data_7x7,
             cosmology=cosmo.Planck15,
             results=results_collection,
             image_path="",
@@ -479,10 +479,10 @@ class TestImagePassing(object):
 
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        hyper_lens_image_1d = lens_data_7x7.array_1d_from_array_2d(
+        hyper_lens_image_1d = lens_imaging_data_7x7.mapping.array_1d_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
-        hyper_source_image_1d = lens_data_7x7.array_1d_from_array_2d(
+        hyper_source_image_1d = lens_imaging_data_7x7.mapping.array_1d_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
@@ -501,7 +501,9 @@ class TestImagePassing(object):
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensDataFit.for_data_and_tracer(lens_data=lens_data_7x7, tracer=tracer)
+        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
+            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        )
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
@@ -574,7 +576,7 @@ class TestHyperAPI(object):
         assert pixelization_phase.hyper_name == "inversion"
         assert isinstance(pixelization_phase, al.InversionPhase)
 
-    def test_hyper_result(self, ccd_data_7x7):
+    def test_hyper_result(self, imaging_data_7x7):
         normal_phase = MockPhase()
 
         # noinspection PyTypeChecker
@@ -586,7 +588,77 @@ class TestHyperAPI(object):
 
         phase.run_hyper = run_hyper
 
-        result = phase.run(ccd_data_7x7)
+        result = phase.run(imaging_data_7x7)
 
         assert hasattr(result, "hyper_galaxy")
         assert isinstance(result.hyper_galaxy, MockResult)
+
+
+class TestHyperGalaxyPhase(object):
+    def test__likelihood_function_is_same_as_normal_phase_likelihood_function(
+        self, imaging_data_7x7, mask_function_7x7
+    ):
+
+        hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
+        hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
+
+        lens_galaxy = al.Galaxy(
+            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=0.1)
+        )
+
+        phase_imaging_7x7 = al.PhaseImaging(
+            mask_function=mask_function_7x7,
+            galaxies=dict(lens=lens_galaxy),
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+            sub_size=2,
+            cosmology=cosmo.FLRW,
+            phase_name="test_phase",
+        )
+
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+
+        mask = phase_imaging_7x7.mask_function(image=imaging_data_7x7.image, sub_size=2)
+        lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
+            lens_imaging_data=lens_data,
+            tracer=tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
+
+        phase_imaging_7x7_hyper = phase_imaging_7x7.extend_with_multiple_hyper_phases(hyper_galaxy=True)
+
+        instance = phase_imaging_7x7_hyper.variable.instance_from_unit_vector([])
+
+        instance.hyper_galaxy = al.HyperGalaxy(noise_factor=0.0)
+
+        analysis = phase_imaging_7x7_hyper.hyper_phases[0].Analysis(
+            lens_data=lens_data,
+            hyper_model_image_1d=fit.model_image(return_in_2d=False),
+            hyper_galaxy_image_1d=fit.model_image(return_in_2d=False),
+        )
+
+        fit_hyper = analysis.fit_for_hyper_galaxy(
+            hyper_galaxy=al.HyperGalaxy(noise_factor=0.0),
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
+
+        assert fit_hyper.figure_of_merit == fit.figure_of_merit
+
+        fit_hyper = analysis.fit_for_hyper_galaxy(
+            hyper_galaxy=al.HyperGalaxy(noise_factor=1.0),
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
+
+        assert fit_hyper.figure_of_merit != fit.figure_of_merit
+
+        instance.hyper_galaxy = al.HyperGalaxy(noise_factor=0.0)
+
+        figure_of_merit = analysis.fit(instance=instance)
+
+        assert figure_of_merit == fit.figure_of_merit

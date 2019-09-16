@@ -967,10 +967,10 @@ class TestAbstractTracerLensing(object):
             )
 
             defl11 = g0.deflections_from_grid(
-                grid=np.array([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
+                grid=np.array([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]]), bypass_decorator=True
             )
             defl12 = g0.deflections_from_grid(
-                grid=np.array([[(1.0 - beta_01 * 1.0), 0.0]])
+                grid=np.array([[(1.0 - beta_01 * 1.0), 0.0]]), bypass_decorator=True
             )
 
             assert traced_grids_of_planes[2][0] == pytest.approx(
@@ -1121,11 +1121,15 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_profile_image = image_plane.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_profile_image = tracer.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert tracer_profile_image.shape == (7, 7)
@@ -1149,13 +1153,19 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image = image_plane.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             ) + source_plane.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_profile_image = tracer.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert tracer_profile_image.shape == (7, 7)
@@ -1177,7 +1187,7 @@ class TestAbstractTracerLensing(object):
             image_plane = al.Plane(galaxies=[g0])
 
             source_plane_grid = image_plane.traced_grid_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False
+                grid=sub_grid_7x7, return_in_2d=False,
             )
 
             source_plane = al.Plane(galaxies=[g1])
@@ -1185,13 +1195,19 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image = image_plane.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             ) + source_plane.profile_image_from_grid(
-                grid=source_plane_grid, return_in_2d=True, return_binned=True
+                grid=source_plane_grid,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_profile_image = tracer.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert image == pytest.approx(tracer_profile_image, 1.0e-4)
@@ -1211,21 +1227,29 @@ class TestAbstractTracerLensing(object):
             )
 
             g0_image = g0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             g1_image = g1.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             g2_image = g2.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             tracer_profile_image = tracer.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert tracer_profile_image == pytest.approx(
@@ -1256,13 +1280,19 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             plane_profile_image = image_plane.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             ) + source_plane.profile_image_from_grid(
-                grid=source_plane_grid, return_in_2d=True, return_binned=True
+                grid=source_plane_grid,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_profile_image = tracer.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert tracer_profile_image == pytest.approx(plane_profile_image, 1.0e-4)
@@ -1297,7 +1327,9 @@ class TestAbstractTracerLensing(object):
 
             image = (
                 plane_0.profile_image_from_grid(
-                    grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                    grid=sub_grid_7x7,
+                    return_in_2d=True,
+                return_binned=True,
                 )
                 + plane_1.profile_image_from_grid(
                     grid=traced_grids_of_planes[1],
@@ -1312,7 +1344,9 @@ class TestAbstractTracerLensing(object):
             )
 
             tracer_profile_image = tracer.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert image.shape == (7, 7)
@@ -1348,7 +1382,9 @@ class TestAbstractTracerLensing(object):
 
             image = (
                 plane_0.profile_image_from_grid(
-                    grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                    grid=sub_grid_7x7,
+                    return_in_2d=True,
+                return_binned=True,
                 )
                 + plane_1.profile_image_from_grid(
                     grid=traced_grids_of_planes[1],
@@ -1363,7 +1399,9 @@ class TestAbstractTracerLensing(object):
             )
 
             tracer_profile_image = tracer.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert image.shape == (7, 7)
@@ -1405,7 +1443,9 @@ class TestAbstractTracerLensing(object):
 
             image = (
                 plane_0.profile_image_from_grid(
-                    grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                    grid=sub_grid_7x7,
+                    return_in_2d=True,
+                return_binned=True,
                 )
                 + plane_1.profile_image_from_grid(
                     grid=traced_grids_of_planes[1],
@@ -1420,7 +1460,9 @@ class TestAbstractTracerLensing(object):
             )
 
             tracer_profile_image = tracer.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert image.shape == (7, 7)
@@ -1448,15 +1490,21 @@ class TestAbstractTracerLensing(object):
             plane_1 = al.Plane(galaxies=[g1])
 
             plane_0_image = plane_0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             plane_1_image = plane_1.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_profile_image_of_planes = tracer.profile_images_of_planes_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert len(tracer_profile_image_of_planes) == 3
@@ -1493,15 +1541,21 @@ class TestAbstractTracerLensing(object):
             )
 
             padded_g0_image = g0.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             padded_g1_image = g1.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             padded_g2_image = g2.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -1534,15 +1588,21 @@ class TestAbstractTracerLensing(object):
             )
 
             padded_g0_image = g0.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             padded_g1_image = g1.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             padded_g2_image = g2.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -1572,11 +1632,15 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_convergence = image_plane.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_convergence = tracer.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert image_plane_convergence.shape == (7, 7)
@@ -1600,29 +1664,41 @@ class TestAbstractTracerLensing(object):
             )
 
             g0_convergence = g0.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             g1_convergence = g1.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             g2_convergence = g2.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_convergence = tracer.image_plane.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             source_plane_convergence = tracer.source_plane.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_convergence = tracer.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert image_plane_convergence == pytest.approx(
@@ -1643,7 +1719,9 @@ class TestAbstractTracerLensing(object):
 
             assert (
                 tracer.convergence_from_grid(
-                    grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                    grid=sub_grid_7x7,
+                    return_in_2d=True,
+                return_binned=True,
                 )
                 == np.zeros(shape=(7, 7))
             ).all()
@@ -1654,7 +1732,9 @@ class TestAbstractTracerLensing(object):
 
             assert (
                 tracer.convergence_from_grid(
-                    grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                    grid=sub_grid_7x7,
+                    return_in_2d=True,
+                return_binned=True,
                 )
                 == np.zeros(shape=(7, 7))
             ).all()
@@ -1673,11 +1753,15 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_potential = image_plane.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_potential = tracer.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert image_plane_potential.shape == (7, 7)
@@ -1701,29 +1785,41 @@ class TestAbstractTracerLensing(object):
             )
 
             g0_potential = g0.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             g1_potential = g1.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             g2_potential = g2.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_potential = tracer.image_plane.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             source_plane_potential = tracer.source_plane.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_potential = tracer.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert image_plane_potential == pytest.approx(
@@ -1744,7 +1840,9 @@ class TestAbstractTracerLensing(object):
 
             assert (
                 tracer.potential_from_grid(
-                    grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                    grid=sub_grid_7x7,
+                    return_in_2d=True,
+                return_binned=True,
                 )
                 == np.zeros(shape=(7, 7))
             ).all()
@@ -1755,7 +1853,9 @@ class TestAbstractTracerLensing(object):
 
             assert (
                 tracer.potential_from_grid(
-                    grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                    grid=sub_grid_7x7,
+                    return_in_2d=True,
+                return_binned=True,
                 )
                 == np.zeros(shape=(7, 7))
             ).all()
@@ -1776,11 +1876,15 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_deflections = image_plane.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_deflections = tracer.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert tracer_deflections[:, :, 0].shape == (7, 7)
@@ -1810,29 +1914,41 @@ class TestAbstractTracerLensing(object):
             )
 
             g0_deflections = g0.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             g1_deflections = g1.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             g2_deflections = g2.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_deflections = tracer.image_plane.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             source_plane_deflections = tracer.source_plane.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             tracer_deflections = tracer.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert image_plane_deflections[:, :, 0] == pytest.approx(
@@ -1857,7 +1973,9 @@ class TestAbstractTracerLensing(object):
             )
 
             tracer_deflections = tracer.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7,
+                return_in_2d=True,
+                return_binned=True,
             )
 
             assert (tracer_deflections[:, :, 0] == np.zeros(shape=(7, 7))).all()
@@ -2189,7 +2307,7 @@ class TestAbstractTracerData(object):
                 blurred_image_1d_0 + blurred_image_1d_1, 1.0e-4
             )
 
-            blurred_image_2d = sub_grid_7x7.array_2d_from_array_1d(
+            blurred_image_2d = sub_grid_7x7.mapping.array_2d_from_array_1d(
                 array_1d=blurred_image_1d
             )
 
@@ -2255,10 +2373,10 @@ class TestAbstractTracerData(object):
                 return_in_2d=True,
             )
 
-            blurred_image_2d_0 = sub_grid_7x7.scaled_array_2d_from_array_1d(
+            blurred_image_2d_0 = sub_grid_7x7.mapping.scaled_array_2d_from_array_1d(
                 array_1d=blurred_image_1d_0
             )
-            blurred_image_2d_1 = sub_grid_7x7.scaled_array_2d_from_array_1d(
+            blurred_image_2d_1 = sub_grid_7x7.mapping.scaled_array_2d_from_array_1d(
                 array_1d=blurred_image_1d_1
             )
 
@@ -2311,7 +2429,7 @@ class TestAbstractTracerData(object):
                 blurred_image_1d_0 + blurred_image_1d_1, 1.0e-4
             )
 
-            blurred_image_2d = sub_grid_7x7.array_2d_from_array_1d(
+            blurred_image_2d = sub_grid_7x7.mapping.array_2d_from_array_1d(
                 array_1d=blurred_image_1d
             )
 
@@ -2377,10 +2495,10 @@ class TestAbstractTracerData(object):
                 return_in_2d=True,
             )
 
-            blurred_image_2d_0 = sub_grid_7x7.scaled_array_2d_from_array_1d(
+            blurred_image_2d_0 = sub_grid_7x7.mapping.scaled_array_2d_from_array_1d(
                 array_1d=blurred_image_1d_0
             )
-            blurred_image_2d_1 = sub_grid_7x7.scaled_array_2d_from_array_1d(
+            blurred_image_2d_1 = sub_grid_7x7.mapping.scaled_array_2d_from_array_1d(
                 array_1d=blurred_image_1d_1
             )
 
@@ -2399,10 +2517,10 @@ class TestAbstractTracerData(object):
                 array=np.array(
                     [[True, True, True], [True, False, True], [True, True, True]]
                 ),
-                pixel_scale=1.0,
+                pixel_scale=1.0, sub_size=1,
             )
 
-            grid = al.Grid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+            grid = al.Grid.from_mask(mask=mask)
 
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -2430,28 +2548,36 @@ class TestAbstractTracerData(object):
             )
 
             manual_blurred_image_0 = tracer.image_plane.profile_images_of_galaxies_from_grid(
-                grid=traced_padded_grids[0], return_in_2d=True, return_binned=True
+                grid=traced_padded_grids[0],
+                return_in_2d=True,
+                return_binned=True,
             )[
                 0
             ]
             manual_blurred_image_0 = psf.convolve(array_2d=manual_blurred_image_0)
 
             manual_blurred_image_1 = tracer.image_plane.profile_images_of_galaxies_from_grid(
-                grid=traced_padded_grids[0], return_in_2d=True, return_binned=True
+                grid=traced_padded_grids[0],
+                return_in_2d=True,
+                return_binned=True,
             )[
                 1
             ]
             manual_blurred_image_1 = psf.convolve(array_2d=manual_blurred_image_1)
 
             manual_blurred_image_2 = tracer.source_plane.profile_images_of_galaxies_from_grid(
-                grid=traced_padded_grids[1], return_in_2d=True, return_binned=True
+                grid=traced_padded_grids[1],
+                return_in_2d=True,
+                return_binned=True,
             )[
                 0
             ]
             manual_blurred_image_2 = psf.convolve(array_2d=manual_blurred_image_2)
 
             manual_blurred_image_3 = tracer.source_plane.profile_images_of_galaxies_from_grid(
-                grid=traced_padded_grids[1], return_in_2d=True, return_binned=True
+                grid=traced_padded_grids[1],
+                return_in_2d=True,
+                return_binned=True,
             )[
                 1
             ]
@@ -2502,6 +2628,43 @@ class TestAbstractTracerData(object):
                 unmasked_blurred_image_of_planes_and_galaxies[1][1]
                 == manual_blurred_image_3[1:4, 1:4]
             ).all()
+
+    class TestVisibilities:
+        def test__visibilities_from_grid_and_transformer(
+                self, sub_grid_7x7, transformer_7x7_7
+        ):
+            g0 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+            )
+
+            g1 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+            )
+
+            g0_image_1d = g0.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+            )
+
+            deflections = g0.deflections_from_grid(grid=sub_grid_7x7, return_in_2d=False, return_binned=False)
+
+            source_grid_7x7 = sub_grid_7x7 - deflections
+
+            g1_image_1d = g1.profile_image_from_grid(grid=source_grid_7x7, return_in_2d=False, return_binned=True)
+
+            visibilities = transformer_7x7_7.visibilities_from_image_1d(
+                image_1d=g0_image_1d + g1_image_1d
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            tracer_visibilities = tracer.visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            assert visibilities == pytest.approx(tracer_visibilities, 1.0e-4)
 
     class TestPixelizationGridsOfPlanes:
         def test__x2_planes__traced_grid_setup_correctly(self, sub_grid_7x7):
@@ -3331,11 +3494,11 @@ class TestTacerFixedSlices(object):
 
             defl11 = 3.0 * lens_g0.deflections_from_grid(
                 grid=np.array(
-                    [[(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]]
-                )
+                    [[(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]],
+                ), bypass_decorator=True
             )
             defl12 = 3.0 * lens_g0.deflections_from_grid(
-                grid=np.array([[(1.0 - beta_01 * 2.0 * 1.0), 0.0]])
+                grid=np.array([[(1.0 - beta_01 * 2.0 * 1.0), 0.0]]), bypass_decorator=True
             )
 
             assert traced_grids[2][0] == pytest.approx(
@@ -3490,7 +3653,7 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
+            grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]), bypass_decorator=True
         )
 
         assert traced_positions_of_planes[2][0] == pytest.approx(
@@ -3564,7 +3727,7 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
+            grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]), bypass_decorator=True
         )
 
         assert traced_positions_of_planes[2][0] == pytest.approx(
@@ -3592,7 +3755,7 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
+            grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]), bypass_decorator=True
         )
 
         assert traced_positions_of_planes[2][1] == pytest.approx(

@@ -50,7 +50,7 @@ def plot_image(
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     image = light_profile.profile_image_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True
+        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     )
 
     array_plotters.plot_array(
@@ -205,7 +205,7 @@ def plot_convergence(
     """
 
     convergence = mass_profile.convergence_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True
+        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     )
 
     lines = plotter_util.get_critical_curve_and_caustic(
@@ -301,7 +301,7 @@ def plot_potential(
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     potential = mass_profile.potential_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True
+        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     )
 
     lines = plotter_util.get_critical_curve_and_caustic(
@@ -400,7 +400,7 @@ def plot_deflections_y(
     deflections = mass_profile.deflections_from_grid(
         grid, return_in_2d=False, return_binned=True
     )
-    deflections_y = grid.scaled_array_2d_from_array_1d(deflections[:, 0])
+    deflections_y = grid.mapping.scaled_array_2d_from_array_1d(deflections[:, 0])
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,
@@ -497,7 +497,7 @@ def plot_deflections_x(
     deflections = mass_profile.deflections_from_grid(
         grid, return_in_2d=False, return_binned=True
     )
-    deflections_x = grid.scaled_array_2d_from_array_1d(deflections[:, 1])
+    deflections_x = grid.mapping.scaled_array_2d_from_array_1d(deflections[:, 1])
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,
@@ -592,7 +592,7 @@ def plot_magnification(
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     magnification = mass_profile.magnification_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True
+        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     )
 
     lines = plotter_util.get_critical_curve_and_caustic(

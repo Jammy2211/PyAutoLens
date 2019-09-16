@@ -3,7 +3,7 @@ import autolens as al
 from test.integration.tests import runner
 
 test_type = "phase_features"
-test_name = "sub_grid_size"
+test_name = "sub_size"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "LSST"
 
@@ -16,7 +16,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, sersic=al.light_profiles.EllipticalSersic)
         ),
-        sub_grid_size=2,
+        sub_size=2,
         optimizer_class=optimizer_class,
     )
 

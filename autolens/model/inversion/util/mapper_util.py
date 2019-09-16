@@ -8,7 +8,7 @@ def mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
     pixels,
     total_mask_pixels,
     sub_mask_1d_index_to_mask_1d_index,
-    sub_grid_fraction,
+    sub_fraction,
 ):
     """Computes the mapping_util matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
@@ -22,7 +22,7 @@ def mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
         The number of datas pixels in the observed datas and thus on the grid.
     sub_mask_1d_index_to_mask_1d_index : ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
-    sub_grid_fraction : float
+    sub_fraction : float
         The fractional area each sub-pixel takes up in an pixel.
     """
 
@@ -32,7 +32,7 @@ def mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
         mapping_matrix[
             sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index],
             sub_mask_1d_index_to_pixelization_1d_index[sub_mask_1d_index],
-        ] += sub_grid_fraction
+        ] += sub_fraction
 
     return mapping_matrix
 

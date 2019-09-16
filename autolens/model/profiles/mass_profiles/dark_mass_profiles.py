@@ -18,7 +18,7 @@ from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.array.grids import reshape_array_from_grid, reshape_returned_grid
+from autolens.array.mapping import reshape_returned_sub_array, reshape_returned_grid
 
 
 def jit_integrand(integrand_function):
@@ -154,10 +154,12 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
 
         return eta_min, eta_max, minimum_log_eta, maximum_log_eta, bin_size
 
-    @reshape_array_from_grid
+    @reshape_returned_sub_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def convergence_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
@@ -523,11 +525,16 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
 
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
-    @reshape_array_from_grid
+    @reshape_returned_sub_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def potential_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, tabulate_bins=1000
+        self,
+        grid,
+        return_in_2d=True,
+        return_binned=True,
+        bypass_decorator=False,
+        tabulate_bins=1000,
     ):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
@@ -609,7 +616,12 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, tabulate_bins=1000
+        self,
+        grid,
+        return_in_2d=True,
+        return_binned=True,
+        bypass_decorator=False,
+        tabulate_bins=1000,
     ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
@@ -907,8 +919,10 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         grid_radius = grid_radius + 0j
         return np.real(self.coord_func_m(grid_radius=grid_radius))
 
-    @reshape_array_from_grid
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @reshape_returned_sub_array
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         return np.zeros((grid.shape[0],))
 
     @reshape_returned_grid
@@ -1014,6 +1028,61 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         return summary
 
 
+class SphericalTruncatedNFWMassToConcentration(SphericalTruncatedNFW):
+    """
+    This function only applies for the lensing configuration as follows:
+    Cosmology: FlatLamdaCDM
+    H0 = 70.0 km/sec/Mpc
+    Omega_Lambda = 0.7
+    Omega_m = 0.3
+    Redshfit of Main Lens: 0.6
+    Redshift of Source: 2.5
+    A truncated NFW halo at z = 0.6 with tau = 2.0
+    """
+
+    @af.map_types
+    def __init__(self, centre: dim.Position = (0.0, 0.0), mass_at_200: float = 1e9):
+        """
+        Input m200: The m200 of the NFW part of the corresponding tNFW part. Unit: M_sun.
+        """
+
+        cosmic_average_density = (
+            262.30319684751
+        )  # Critical Density at z=0.6 M_sun/kpc^3
+        critical_surface_density = (
+            1940654909.413325
+        )  # Lensing Critical Surface Density for lens at z=0.6, source at z=2.5. M_sun/kpc^2
+        kpc_per_arcsec = 6.685491486088  # 1 arcsec = 6.685491486 kpc at z=0.6
+
+        concentration = 11.5 * (mass_at_200 / 1e10 + (mass_at_200 / 1e10) ** 2.0) ** (
+            -0.05
+        )  # This is the challenge setting.
+        radius_at_200 = (
+            mass_at_200 / (200.0 * cosmic_average_density * (4.0 * np.pi / 3.0))
+        ) ** (1.0 / 3.0)
+        de_c = (
+            200.0
+            / 3.0
+            * (
+                concentration
+                * concentration
+                * concentration
+                / (np.log(1.0 + concentration) - concentration / (1.0 + concentration))
+            )
+        )
+        scale_radius_kpc = radius_at_200 / concentration
+        rho_s = cosmic_average_density * de_c
+        kappa_s = rho_s * scale_radius_kpc / critical_surface_density
+        scale_radius = scale_radius_kpc / kpc_per_arcsec
+
+        super(SphericalTruncatedNFWMassToConcentration, self).__init__(
+            centre=centre,
+            kappa_s=kappa_s,
+            scale_radius=scale_radius,
+            truncation_radius=2.0 * radius_at_200,
+        )
+
+
 class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
     @af.map_types
     def __init__(
@@ -1070,61 +1139,6 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
         return summary
 
 
-class SphericalTruncatedNFWMassToConcentration(SphericalTruncatedNFW):
-    """
-    This function only applies for the lensing configuration as follows:
-    Cosmology: FlatLamdaCDM
-    H0 = 70.0 km/sec/Mpc
-    Omega_Lambda = 0.7
-    Omega_m = 0.3
-    Redshfit of Main Lens: 0.6
-    Redshift of Source: 2.5
-    A truncated NFW halo at z = 0.6 with tau = 2.0
-    """
-
-    @af.map_types
-    def __init__(self, centre: dim.Position = (0.0, 0.0), mass_at_200: float = 1e9):
-        """
-        Input m200: The m200 of the NFW part of the corresponding tNFW part. Unit: M_sun.
-        """
-
-        cosmic_average_density = (
-            262.30319684751
-        )  # Critical Density at z=0.6 M_sun/kpc^3
-        critical_surface_density = (
-            1942853712.685
-        )  # Lensing Critical Surface Density for lens at z=0.6, source at z=2.5. M_sun/kpc^2
-        kpc_per_arcsec = 6.685491486088  # 1 arcsec = 6.685491486 kpc at z=0.6
-
-        concentration = 11.5 * (mass_at_200 / 1e10 + (mass_at_200 / 1e10) ** 2.0) ** (
-            -0.05
-        )  # This is the challenge setting.
-        radius_at_200 = (
-            mass_at_200 / (200.0 * cosmic_average_density * (4.0 * np.pi / 3.0))
-        ) ** (1.0 / 3.0)
-        de_c = (
-            200.0
-            / 3.0
-            * (
-                concentration
-                * concentration
-                * concentration
-                / (np.log(1.0 + concentration) - concentration / (1.0 + concentration))
-            )
-        )
-        scale_radius_kpc = radius_at_200 / concentration
-        rho_s = cosmic_average_density * de_c
-        kappa_s = rho_s * scale_radius_kpc / critical_surface_density
-        scale_radius = scale_radius_kpc / kpc_per_arcsec
-
-        super(SphericalTruncatedNFWMassToConcentration, self).__init__(
-            centre=centre,
-            kappa_s=kappa_s,
-            scale_radius=scale_radius,
-            truncation_radius=2.0 * radius_at_200,
-        )
-
-
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
     @af.map_types
     def __init__(
@@ -1172,10 +1186,12 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         elif r == 1:
             return 1
 
-    @reshape_array_from_grid
+    @reshape_returned_sub_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -1206,7 +1222,9 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def deflections_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -1334,10 +1352,12 @@ class SphericalNFW(EllipticalNFW):
 
     # TODO : Make this use numpy arithmetic
 
-    @reshape_array_from_grid
+    @reshape_returned_sub_array
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def potential_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -1360,7 +1380,9 @@ class SphericalNFW(EllipticalNFW):
     @reshape_returned_grid
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def deflections_from_grid(
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+    ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 

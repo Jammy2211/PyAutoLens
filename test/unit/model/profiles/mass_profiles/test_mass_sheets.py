@@ -24,15 +24,14 @@ class TestMassSheet(object):
         mass_sheet = al.mass_profiles.MassSheet(centre=(0.0, 0.0), kappa=1.0)
 
         convergence = mass_sheet.convergence_from_grid(
-            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
         )
 
         assert convergence[0] == pytest.approx(1.0, 1e-3)
 
         convergence = mass_sheet.convergence_from_grid(
             grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]),
-            return_in_2d=False,
-            return_binned=False,
+bypass_decorator=True
         )
 
         assert convergence[0] == pytest.approx(1.0, 1e-3)
@@ -43,8 +42,7 @@ class TestMassSheet(object):
 
         convergence = mass_sheet.convergence_from_grid(
             grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]),
-            return_in_2d=False,
-            return_binned=False,
+bypass_decorator=True
         )
 
         assert convergence[0] == pytest.approx(-3.0, 1e-3)
@@ -55,14 +53,14 @@ class TestMassSheet(object):
         mass_sheet = al.mass_profiles.MassSheet(centre=(0.0, 0.0), kappa=1.0)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
         )
 
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(0.0, 1e-3)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[2.0, 0.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[2.0, 0.0]]), bypass_decorator=True
         )
 
         assert deflections[0, 0] == pytest.approx(2.0, 1e-3)
@@ -71,14 +69,14 @@ class TestMassSheet(object):
         mass_sheet = al.mass_profiles.MassSheet(centre=(0.0, 0.0), kappa=-1.0)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
         )
 
         assert deflections[0, 0] == pytest.approx(-1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(0.0, 1e-3)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[2.0, 0.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[2.0, 0.0]]), bypass_decorator=True
         )
 
         assert deflections[0, 0] == pytest.approx(-2.0, 1e-3)
@@ -87,7 +85,7 @@ class TestMassSheet(object):
         mass_sheet = al.mass_profiles.MassSheet(centre=(0.0, 0.0), kappa=2.0)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[2.0, 0.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[2.0, 0.0]]), bypass_decorator=True
         )
 
         assert deflections[0, 0] == pytest.approx(4.0, 1e-3)
@@ -100,7 +98,7 @@ class TestMassSheet(object):
         # Thus, for a mass sheet, the deflection angle is (sqrt(2) * sqrt(2) / 2.0) = 1.0
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[1.0, 1.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[1.0, 1.0]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
@@ -108,7 +106,7 @@ class TestMassSheet(object):
         mass_sheet = al.mass_profiles.MassSheet(centre=(0.0, 0.0), kappa=2.0)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[1.0, 1.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[1.0, 1.0]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(2.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(2.0, 1e-3)
@@ -116,7 +114,7 @@ class TestMassSheet(object):
         mass_sheet = al.mass_profiles.MassSheet(centre=(0.0, 0.0), kappa=2.0)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[2.0, 2.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[2.0, 2.0]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(4.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(4.0, 1e-3)
@@ -129,13 +127,13 @@ class TestMassSheet(object):
         # This is decomposed into x angle of sin(26.5650512 degrees) = 0.4472135
         # Thus, for a mass sheet, the deflection angles are:
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[2.0, 1.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[2.0, 1.0]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(0.8944271 * np.sqrt(5), 1e-3)
         assert deflections[0, 1] == pytest.approx(0.4472135 * np.sqrt(5), 1e-3)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[-1.0, -1.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[-1.0, -1.0]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(-1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(-1.0, 1e-3)
@@ -143,7 +141,7 @@ class TestMassSheet(object):
         mass_sheet = al.mass_profiles.MassSheet(centre=(1.0, 2.0), kappa=1.0)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[2.0, 3.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[2.0, 3.0]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
@@ -151,7 +149,7 @@ class TestMassSheet(object):
         mass_sheet = al.mass_profiles.MassSheet(centre=(1.0, 2.0), kappa=-1.0)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[2.0, 3.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[2.0, 3.0]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(-1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(-1.0, 1e-3)
@@ -160,10 +158,10 @@ class TestMassSheet(object):
         mass_sheet_0 = al.mass_profiles.MassSheet(centre=(0.0, 0.0))
         mass_sheet_1 = al.mass_profiles.MassSheet(centre=(1.0, 1.0))
         deflections_0 = mass_sheet_0.deflections_from_grid(
-            grid=np.array([[1.0, 1.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[1.0, 1.0]]), bypass_decorator=True
         )
         deflections_1 = mass_sheet_1.deflections_from_grid(
-            grid=np.array([[0.0, 0.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[0.0, 0.0]]), bypass_decorator=True
         )
         assert deflections_0[0, 0] == pytest.approx(-deflections_1[0, 0], 1e-5)
         assert deflections_0[0, 1] == pytest.approx(-deflections_1[0, 1], 1e-5)
@@ -171,10 +169,10 @@ class TestMassSheet(object):
         mass_sheet_0 = al.mass_profiles.MassSheet(centre=(0.0, 0.0))
         mass_sheet_1 = al.mass_profiles.MassSheet(centre=(0.0, 0.0))
         deflections_0 = mass_sheet_0.deflections_from_grid(
-            grid=np.array([[1.0, 0.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
         )
         deflections_1 = mass_sheet_1.deflections_from_grid(
-            grid=np.array([[0.0, 1.0]]), return_in_2d=False, return_binned=False
+            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
         )
         assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
         assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
@@ -184,8 +182,7 @@ class TestMassSheet(object):
 
         deflections = mass_sheet.deflections_from_grid(
             grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]]),
-            return_in_2d=False,
-            return_binned=False,
+bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
@@ -198,8 +195,7 @@ class TestMassSheet(object):
 
         deflections = mass_sheet.deflections_from_grid(
             grid=np.array([[1.0, 1.0], [2.0, 2.0], [1.0, 1.0], [2.0, 2.0]]),
-            return_in_2d=False,
-            return_binned=False,
+bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
@@ -215,8 +211,8 @@ class TestMassSheet(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(2, 2), pixel_scale=1.0
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(2, 2), pixel_scale=1.0, sub_size=1,
         )
 
         mass_sheet = al.mass_profiles.MassSheet()
@@ -255,48 +251,48 @@ class TestExternalShear(object):
 
         shear = al.mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
         convergence = shear.convergence_from_grid(
-            grid=np.array([0.1]), return_in_2d=False, return_binned=False
+            grid=np.array([0.1]), bypass_decorator=True
         )
         assert (convergence == np.array([0.0])).all()
 
         shear = al.mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
         convergence = shear.convergence_from_grid(
-            grid=np.array([0.1, 0.2, 0.3]), return_in_2d=False, return_binned=False
+            grid=np.array([0.1, 0.2, 0.3]), bypass_decorator=True
         )
         assert (convergence == np.array([0.0, 0.0, 0.0])).all()
 
     def test__potential_returns_zeros(self):
         shear = al.mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
         potential = shear.potential_from_grid(
-            grid=np.array([0.1]), return_in_2d=False, return_binned=False
+            grid=np.array([0.1]), bypass_decorator=True
         )
         assert (potential == np.array([0.0])).all()
 
         shear = al.mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
         potential = shear.potential_from_grid(
-            grid=np.array([0.1, 0.2, 0.3]), return_in_2d=False, return_binned=False
+            grid=np.array([0.1, 0.2, 0.3]), bypass_decorator=True
         )
         assert (potential == np.array([0.0, 0.0, 0.0])).all()
 
     def test__deflections_correct_values(self):
         shear = al.mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
         deflections = shear.deflections_from_grid(
-            grid=np.array([[0.1625, 0.1625]]), return_in_2d=False, return_binned=False
+            grid=np.array([[0.1625, 0.1625]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(0.01625, 1e-3)
         assert deflections[0, 1] == pytest.approx(0.01625, 1e-3)
 
         shear = al.mass_profiles.ExternalShear(magnitude=0.2, phi=75.0)
         deflections = shear.deflections_from_grid(
-            grid=np.array([[0.1625, 0.1625]]), return_in_2d=False, return_binned=False
+            grid=np.array([[0.1625, 0.1625]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(0.04439, 1e-3)
         assert deflections[0, 1] == pytest.approx(-0.011895, 1e-3)
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_grid_size(
-            shape=(2, 2), pixel_scale=1.0
+        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         shear = al.mass_profiles.ExternalShear()

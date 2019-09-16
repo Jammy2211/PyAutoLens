@@ -16,7 +16,7 @@ class TestSubMask1DIndexToMask1DIndex(object):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
         sub_mask_1d_index_to_mask_1d_index = al.mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
-            mask, sub_grid_size=2
+            mask, sub_size=2
         )
 
         assert (sub_mask_1d_index_to_mask_1d_index == np.array([0, 0, 0, 0])).all()
@@ -27,7 +27,7 @@ class TestSubMask1DIndexToMask1DIndex(object):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
         sub_mask_1d_index_to_mask_1d_index = al.mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
-            mask, sub_grid_size=2
+            mask, sub_size=2
         )
 
         assert (
@@ -41,7 +41,7 @@ class TestSubMask1DIndexToMask1DIndex(object):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
         sub_mask_1d_index_to_mask_1d_index = al.mask_mapping_util.sub_mask_1d_index_to_mask_1d_index_from_mask(
-            mask, sub_grid_size=3
+            mask, sub_size=3
         )
 
         assert (
@@ -88,7 +88,7 @@ class TestMask1DIndexToSubMask1DIndexes(object):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
         mask_1d_index_to_sub_mask_1d_indexes = al.mask_mapping_util.mask_1d_index_to_sub_mask_1d_indexes_from_mask(
-            mask, sub_grid_size=2
+            mask, sub_size=2
         )
 
         assert mask_1d_index_to_sub_mask_1d_indexes == [[0, 1, 2, 3]]
@@ -99,7 +99,7 @@ class TestMask1DIndexToSubMask1DIndexes(object):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
         mask_1d_index_to_sub_mask_1d_indexes = al.mask_mapping_util.mask_1d_index_to_sub_mask_1d_indexes_from_mask(
-            mask, sub_grid_size=2
+            mask, sub_size=2
         )
 
         assert mask_1d_index_to_sub_mask_1d_indexes == [
@@ -114,7 +114,7 @@ class TestMask1DIndexToSubMask1DIndexes(object):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
         mask_1d_index_to_sub_mask_1d_indexes = al.mask_mapping_util.mask_1d_index_to_sub_mask_1d_indexes_from_mask(
-            mask, sub_grid_size=3
+            mask, sub_size=3
         )
 
         assert mask_1d_index_to_sub_mask_1d_indexes == [
@@ -129,7 +129,7 @@ class TestSubMask2dToSubMask1d(object):
 
         mask_2d = np.full(fill_value=False, shape=(3, 3))
 
-        sub_two_to_one = al.mask_mapping_util.sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(
+        sub_two_to_one = al.mask_mapping_util.submask_index_to_sub_mask_1d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -137,7 +137,7 @@ class TestSubMask2dToSubMask1d(object):
 
         mask_2d = np.full(fill_value=False, shape=(2, 3))
 
-        sub_two_to_one = al.mask_mapping_util.sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(
+        sub_two_to_one = al.mask_mapping_util.submask_index_to_sub_mask_1d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -145,7 +145,7 @@ class TestSubMask2dToSubMask1d(object):
 
         mask_2d = np.full(fill_value=False, shape=(3, 2))
 
-        sub_two_to_one = al.mask_mapping_util.sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(
+        sub_two_to_one = al.mask_mapping_util.submask_index_to_sub_mask_1d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -159,7 +159,7 @@ class TestSubMask2dToSubMask1d(object):
             [[False, True, False], [True, True, False], [False, False, True]]
         )
 
-        sub_two_to_one = al.mask_mapping_util.sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(
+        sub_two_to_one = al.mask_mapping_util.submask_index_to_sub_mask_1d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -173,7 +173,7 @@ class TestSubMask2dToSubMask1d(object):
             ]
         )
 
-        sub_two_to_one = al.mask_mapping_util.sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(
+        sub_two_to_one = al.mask_mapping_util.submask_index_to_sub_mask_1d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -190,7 +190,7 @@ class TestSubMask2dToSubMask1d(object):
             ]
         )
 
-        sub_two_to_one = al.mask_mapping_util.sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(
+        sub_two_to_one = al.mask_mapping_util.submask_index_to_sub_mask_1d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -201,12 +201,12 @@ class TestSubMask2dToSubMask1d(object):
 
 
 class TestSubOneToTwo(object):
-    def test__simple_mappings__sub_grid_size_is_1(self):
+    def test__simple_mappings__sub_size_is_1(self):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=1
+        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+            mask=mask, sub_size=1
         )
 
         assert (sub_one_to_two == np.array([[1, 1]])).all()
@@ -215,8 +215,8 @@ class TestSubOneToTwo(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=1
+        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+            mask=mask, sub_size=1
         )
 
         assert (
@@ -231,8 +231,8 @@ class TestSubOneToTwo(object):
             ]
         )
 
-        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=1
+        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+            mask=mask, sub_size=1
         )
 
         assert (
@@ -248,26 +248,26 @@ class TestSubOneToTwo(object):
             ]
         )
 
-        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=1
+        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+            mask=mask, sub_size=1
         )
 
         assert (
             sub_one_to_two == np.array([[0, 1], [1, 0], [1, 1], [1, 2], [2, 1], [3, 2]])
         ).all()
 
-    def test__simple_grid_mappings__sub_grid_size_2(self):
+    def test__simple_grid_mappings__sub_size_2(self):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=2
+        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+            mask=mask, sub_size=2
         )
 
         assert (sub_one_to_two == np.array([[2, 2], [2, 3], [3, 2], [3, 3]])).all()
 
-        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=3
+        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+            mask=mask, sub_size=3
         )
 
         assert (
@@ -281,8 +281,8 @@ class TestSubOneToTwo(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=2
+        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+            mask=mask, sub_size=2
         )
 
         assert (
@@ -321,8 +321,8 @@ class TestSubOneToTwo(object):
             ]
         )
 
-        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=2
+        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+            mask=mask, sub_size=2
         )
 
         assert (
@@ -341,8 +341,8 @@ class TestSubOneToTwo(object):
             ]
         )
 
-        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_grid_size(
-            mask=mask, sub_grid_size=2
+        sub_one_to_two = al.mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+            mask=mask, sub_size=2
         )
 
         assert (
