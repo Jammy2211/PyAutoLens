@@ -6,9 +6,8 @@ import autofit as af
 from autolens import exc, dimensions as dim
 from autolens.array import scaled_array
 from autolens.array.mapping import (
+    reshape_returned_array,
     reshape_returned_sub_array,
-    reshape_returned_array,
-    reshape_returned_array,
     reshape_returned_grid,
 )
 from autolens.lens.util import lens_util
@@ -840,7 +839,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
             for galaxy in self.galaxies
         ]
 
-    def visibilities_from_grid_and_transformer(self, grid, transformer):
+    def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
         profile_image_1d = self.profile_image_from_grid(
             grid=grid, return_in_2d=False, return_binned=True

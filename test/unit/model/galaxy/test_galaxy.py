@@ -431,7 +431,7 @@ class TestLightProfiles(object):
                 redshift=0.5,
             )
 
-            galaxy_visibilities = galaxy.visibilities_from_grid_and_transformer(
+            galaxy_visibilities = galaxy.profile_visibilities_from_grid_and_transformer(
                 grid=sub_grid_7x7, transformer=transformer_7x7_7
             )
 

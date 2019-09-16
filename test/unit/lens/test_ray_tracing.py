@@ -2660,11 +2660,51 @@ class TestAbstractTracerData(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            tracer_visibilities = tracer.visibilities_from_grid_and_transformer(
+            tracer_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
                 grid=sub_grid_7x7, transformer=transformer_7x7_7
             )
 
             assert visibilities == pytest.approx(tracer_visibilities, 1.0e-4)
+
+        def test__visibilities_of_planes_from_grid_and_transformer(
+                self, sub_grid_7x7, transformer_7x7_7
+        ):
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+            )
+            g1 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+            )
+
+            plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
+            plane_1 = al.Plane(redshift=0.5, galaxies=[g1])
+            plane_2 = al.Plane(redshift=1.0, galaxies=[al.Galaxy(redshift=1.0)])
+
+            visibilities_0 = plane_0.profile_visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7,
+                transformer=transformer_7x7_7,
+            )
+
+            visibilities_1 = plane_1.profile_visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7,
+                transformer=transformer_7x7_7,
+            )
+
+            tracer = al.Tracer(
+                planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15
+            )
+
+            visibilities = tracer.profile_visibilities_of_planes_from_grid_and_transformer(
+                grid=sub_grid_7x7,
+                transformer=transformer_7x7_7,
+            )
+
+            assert (visibilities[0] == visibilities_0).all()
+            assert (visibilities[1] == visibilities_1).all()
+
 
     class TestPixelizationGridsOfPlanes:
         def test__x2_planes__traced_grid_setup_correctly(self, sub_grid_7x7):
