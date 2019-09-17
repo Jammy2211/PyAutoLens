@@ -7,19 +7,14 @@ from autolens.array import scaled_array
 
 class AbstractData(object):
     def __init__(
-        self,
-        data,
-        pixel_scale,
-        noise_map,
-        exposure_time_map=None,
-        origin=(0.0, 0.0),
+        self, data, pixel_scale, noise_map, exposure_time_map=None, origin=(0.0, 0.0)
     ):
-        """A collection of abstract 2D for different instrument classes (an image, pixel-scale, noise-map, etc.)
+        """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
         ----------
         data : scaled_array.ScaledArraySquarePixels
-            The array of the image instrument, in units of electrons per second.
+            The array of the image data_type, in units of electrons per second.
         pixel_scale : float
             The size of each pixel in arc seconds.
         psf : PSF
@@ -90,7 +85,7 @@ class AbstractData(object):
 
     @property
     def potential_chi_squared_map(self):
-        """The potential chi-squared map of the imaging instrument. This represents how much each pixel can contribute to \
+        """The potential chi-squared map of the imaging data_type. This represents how much each pixel can contribute to \
         the chi-squared map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
         return np.square(self.absolute_signal_to_noise_map)
 

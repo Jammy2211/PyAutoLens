@@ -5,6 +5,7 @@ from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
 
 
+
 class AbstractPhase(af.AbstractPhase):
     def __init__(
             self,

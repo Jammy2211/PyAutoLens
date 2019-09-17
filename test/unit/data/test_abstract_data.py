@@ -2,18 +2,17 @@ import logging
 import os
 
 import numpy as np
-import pytest
 import shutil
 
 import autolens as al
 
 logger = logging.getLogger(__name__)
 
-test_data_dir = "{}/../../test_files/array/".format(
+test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
-test_positions_dir = "{}/../../test_files/positions/".format(
+test_positions_dir = "{}/../test_files/positions/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
@@ -139,7 +138,7 @@ class TestExposureTimeMap(object):
 
 class TestPositionsToFile(object):
     def test__load_positions__retains_list_structure(self):
-        positions = al.abstract_data.load_positions(
+        positions = al.load_positions(
             positions_path=test_positions_dir + "positions_test.dat"
         )
 
@@ -159,11 +158,11 @@ class TestPositionsToFile(object):
 
         os.makedirs(output_data_dir)
 
-        al.abstract_data.output_positions(
+        al.output_positions(
             positions=positions, positions_path=output_data_dir + "positions_test.dat"
         )
 
-        positions = al.abstract_data.load_positions(
+        positions = al.load_positions(
             positions_path=output_data_dir + "positions_test.dat"
         )
 

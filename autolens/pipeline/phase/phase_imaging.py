@@ -153,10 +153,7 @@ class PhaseImaging(PhaseData):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
 
-        mask = self.setup_phase_mask(
-            data=data,
-            mask=mask,
-        )
+        mask = self.setup_phase_mask(data=data, mask=mask)
 
         self.check_positions(positions=positions)
 
@@ -180,7 +177,8 @@ class PhaseImaging(PhaseData):
         )
 
         modified_image = self.modify_image(
-            image=lens_imaging_data.image(return_in_2d=True, return_masked=False), results=results
+            image=lens_imaging_data.image(return_in_2d=True, return_masked=False),
+            results=results,
         )
 
         lens_imaging_data = lens_imaging_data.new_lens_imaging_data_with_modified_image(
@@ -394,7 +392,9 @@ class PhaseImaging(PhaseData):
             else:
                 return None
 
-        def lens_imaging_fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
+        def lens_imaging_fit_for_tracer(
+                self, tracer, hyper_image_sky, hyper_background_noise
+        ):
 
             return lens_fit.LensImagingFit.from_lens_imaging_data_and_tracer(
                 lens_imaging_data=self.lens_imaging_data,
@@ -452,7 +452,7 @@ class PhaseImaging(PhaseData):
             ndarray or None
                 A numpy array giving the model image of that galaxy
             """
-            return self.most_likely_fit.galaxy_image_2d_dict[galaxy]
+            return self.most_likely_fit.galaxy_model_image_2d_dict[galaxy]
 
         @property
         def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:
@@ -534,7 +534,9 @@ class PhaseImaging(PhaseData):
                     array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
                 )
 
-                binned_image_1d_dict[galaxy] = binned_grid.mask.mapping.array_1d_from_array_2d(
+                binned_image_1d_dict[
+                    galaxy
+                ] = binned_grid.mask.mapping.array_1d_from_array_2d(
                     array_2d=binned_image_2d
                 )
 

@@ -37,15 +37,24 @@ def clean_images():
 
 
 class TestPhase(object):
-
-    def test__make_analysis(self, phase_imaging_7x7, imaging_data_7x7, lens_imaging_data_7x7):
+    def test__make_analysis(
+        self, phase_imaging_7x7, imaging_data_7x7, lens_imaging_data_7x7
+    ):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
 
         assert analysis.last_results is None
-        assert analysis.lens_imaging_data.image(return_in_2d=True, return_masked=False) == imaging_data_7x7.image
-        assert analysis.lens_imaging_data.noise_map(return_in_2d=True, return_masked=False) == imaging_data_7x7.noise_map
+        assert (
+            analysis.lens_imaging_data.image(return_in_2d=True, return_masked=False)
+            == imaging_data_7x7.image
+        )
+        assert (
+            analysis.lens_imaging_data.noise_map(return_in_2d=True, return_masked=False)
+            == imaging_data_7x7.noise_map
+        )
 
-    def test__make_analysis__phase_info_is_made(self, phase_imaging_7x7, imaging_data_7x7):
+    def test__make_analysis__phase_info_is_made(
+        self, phase_imaging_7x7, imaging_data_7x7
+    ):
         phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
 
         file_phase_info = "{}/{}".format(
@@ -102,10 +111,15 @@ class TestPhase(object):
                 image = 20.0 * np.ones(shape=(5, 5))
                 return image
 
-        phase_imaging_7x7 = MyPhase(phase_name="phase_imaging_7x7", mask_function=mask_function_7x7)
+        phase_imaging_7x7 = MyPhase(
+            phase_name="phase_imaging_7x7", mask_function=mask_function_7x7
+        )
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
-        assert (analysis.lens_data.image(return_in_2d=True, return_masked=False) == 20.0 * np.ones(shape=(5, 5))).all()
+        assert (
+            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            == 20.0 * np.ones(shape=(5, 5))
+        ).all()
         assert (analysis.lens_data._image_1d == 20.0 * np.ones(shape=9)).all()
 
     def test__lens_data_signal_to_noise_limit(
@@ -122,9 +136,13 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
-        assert (analysis.lens_data.image(return_in_2d=True, return_masked=False) == imaging_data_snr_limit.image).all()
         assert (
-            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False) == imaging_data_snr_limit.noise_map
+            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            == imaging_data_snr_limit.image
+        ).all()
+        assert (
+            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
+            == imaging_data_snr_limit.noise_map
         ).all()
 
         imaging_data_snr_limit = imaging_data_7x7.new_imaging_data_with_signal_to_noise_limit(
@@ -138,9 +156,13 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
-        assert (analysis.lens_data.image(return_in_2d=True, return_masked=False) == imaging_data_snr_limit.image).all()
         assert (
-            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False) == imaging_data_snr_limit.noise_map
+            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            == imaging_data_snr_limit.image
+        ).all()
+        assert (
+            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
+            == imaging_data_snr_limit.noise_map
         ).all()
 
     def test__lens_data_is_binned_up(
@@ -159,15 +181,21 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
-        assert (analysis.lens_data.image(return_in_2d=True, return_masked=False) == binned_up_imaging_data.image).all()
+        assert (
+            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            == binned_up_imaging_data.image
+        ).all()
         assert (analysis.lens_data.psf == binned_up_imaging_data.psf).all()
         assert (
-            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False) == binned_up_imaging_data.noise_map
+            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
+            == binned_up_imaging_data.noise_map
         ).all()
 
         assert (analysis.lens_data.mask == binned_up_mask).all()
 
-        lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask_7x7_1_pix)
+        lens_data = al.LensImagingData(
+            imaging_data=imaging_data_7x7, mask=mask_7x7_1_pix
+        )
 
         binned_up_lens_data = lens_data.new_lens_imaging_data_with_binned_up_imaging_data_and_mask(
             bin_up_factor=2
@@ -248,7 +276,9 @@ class TestPhase(object):
         )
         assert phase_extended == phase_imaging_7x7
 
-        phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(inversion=True)
+        phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(
+            inversion=True
+        )
         assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
 
         phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(

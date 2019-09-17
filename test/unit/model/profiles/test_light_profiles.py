@@ -999,7 +999,7 @@ class TestVisibilities(object):
 
         visibilities = transformer_7x7_7.visibilities_from_image_1d(image_1d=image_1d)
 
-        light_profile_visibilities = light_profile.visibilities_from_grid_and_transformer(
+        light_profile_visibilities = light_profile.profile_visibilities_from_grid_and_transformer(
             grid=sub_grid_7x7, transformer=transformer_7x7_7
         )
 

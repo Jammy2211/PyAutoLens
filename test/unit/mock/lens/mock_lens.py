@@ -25,22 +25,6 @@ class MockTracer(object):
         return []
 
     @property
-    def image_plane_image_1d(self):
-        return self.unblurred_image_1d
-
-    @property
-    def image_plane_blurring_image_1d(self):
-        return self.blurring_image_1d
-
-    @property
-    def image_plane_images_1d(self):
-        return [self.unblurred_image_1d]
-
-    @property
-    def image_plane_blurring_images_1d(self):
-        return [self.blurring_image_1d]
-
-    @property
     def mappers_of_planes(self):
         return [MockMapper()]
 

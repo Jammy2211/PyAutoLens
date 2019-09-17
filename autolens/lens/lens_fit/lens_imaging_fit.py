@@ -7,15 +7,10 @@ from autolens.array.mapping import reshape_returned_array
 
 
 class ImagingFit(af.DataFit):
-    def __init__(
-        self, image, noise_map, mask, model_image, mapping, inversion
-    ):
+    def __init__(self, image, noise_map, mask, model_image, mapping, inversion):
 
         super().__init__(
-            data=image,
-            noise_map=noise_map,
-            mask=mask,
-            model_data=model_image,
+            data=image, noise_map=noise_map, mask=mask, model_data=model_image
         )
 
         self.mapping = mapping
@@ -112,7 +107,11 @@ class LensImagingFit(ImagingFit):
 
     @classmethod
     def from_lens_imaging_data_and_tracer(
-        cls, lens_imaging_data, tracer, hyper_image_sky=None, hyper_background_noise=None
+        cls,
+        lens_imaging_data,
+        tracer,
+        hyper_image_sky=None,
+        hyper_background_noise=None,
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper_galaxies.
@@ -182,14 +181,16 @@ class LensImagingFit(ImagingFit):
 
     @reshape_returned_array
     def profile_subtracted_image(self, return_in_2d=True):
-        return self.image(return_in_2d=False) - self.blurred_profile_image(return_in_2d=False)
+        return self.image(return_in_2d=False) - self.blurred_profile_image(
+            return_in_2d=False
+        )
 
     @property
-    def galaxy_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
+    def galaxy_model_image_1d_dict(self) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_image_dict = self.tracer.galaxy_image_dict_from_grid_and_convolver(
+        galaxy_model_image_dict = self.tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
             grid=self.grid, convolver=self.convolver
         )
 
@@ -197,7 +198,7 @@ class LensImagingFit(ImagingFit):
 
         for plane_index in self.tracer.plane_indexes_with_pixelizations:
 
-            galaxy_image_dict.update(
+            galaxy_model_image_dict.update(
                 {
                     self.tracer.planes[plane_index].galaxies[
                         0
@@ -205,23 +206,23 @@ class LensImagingFit(ImagingFit):
                 }
             )
 
-        return galaxy_image_dict
+        return galaxy_model_image_dict
 
     @property
-    def galaxy_image_2d_dict(self) -> {g.Galaxy: np.ndarray}:
+    def galaxy_model_image_2d_dict(self) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
 
-        galaxy_image_2d_dict = {}
+        galaxy_model_image_2d_dict = {}
 
-        for galalxy, galaxy_image in self.galaxy_image_1d_dict.items():
+        for galalxy, galaxy_image in self.galaxy_model_image_1d_dict.items():
 
-            galaxy_image_2d_dict[galalxy] = self.grid.mapping.scaled_array_2d_from_array_1d(
-                array_1d=galaxy_image
-            )
+            galaxy_model_image_2d_dict[
+                galalxy
+            ] = self.grid.mapping.scaled_array_2d_from_array_1d(array_1d=galaxy_image)
 
-        return galaxy_image_2d_dict
+        return galaxy_model_image_2d_dict
 
     def model_images_of_planes(self, return_in_2d=True):
 

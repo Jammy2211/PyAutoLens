@@ -95,10 +95,16 @@ def test__imaging_individuals__output_dependent_on_input(
 
     assert imaging_plotter_path + "imaging_psf.png" in plot_patch.paths
 
-    assert not imaging_plotter_path + "imaging_signal_to_noise_map.png" in plot_patch.paths
-
-    assert imaging_plotter_path + "imaging_absolute_signal_to_noise_map.png" in plot_patch.paths
+    assert (
+        not imaging_plotter_path + "imaging_signal_to_noise_map.png" in plot_patch.paths
+    )
 
     assert (
-        not imaging_plotter_path + "imaging_potential_chi_squared_map.png" in plot_patch.paths
+        imaging_plotter_path + "imaging_absolute_signal_to_noise_map.png"
+        in plot_patch.paths
+    )
+
+    assert (
+        not imaging_plotter_path + "imaging_potential_chi_squared_map.png"
+        in plot_patch.paths
     )

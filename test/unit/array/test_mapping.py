@@ -3,6 +3,7 @@ import autolens as al
 import numpy as np
 import pytest
 
+
 class TestMapping:
     def test__mask_1d_index_tomask_index__compare_to_array_util(self):
 
@@ -625,6 +626,7 @@ class MockObject(object):
         self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     ):
         return self.values
+
 
 class TestMappingArrayDecorator(object):
     def test__array_1d_from_function__decorator_changes_array_dimensions_depending_on_inputs(
