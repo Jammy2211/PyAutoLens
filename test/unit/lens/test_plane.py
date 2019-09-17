@@ -562,25 +562,6 @@ class TestAbstractPlaneLensing(object):
 
             assert profile_image_1d == pytest.approx(galaxy_image, 1.0e-4)
 
-        def test__single_multiple_intensity(self, sub_grid_7x7):
-            g0 = al.Galaxy(
-                redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-            )
-
-            plane = al.Plane(galaxies=[g0], redshift=None)
-
-            profile_image_of_galaxies = plane.profile_images_of_galaxies_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
-            )
-
-            profile_image_of_galaxy = plane.profile_image_of_galaxy_from_grid_and_galaxy(
-                grid=sub_grid_7x7, galaxy=g0, return_in_2d=True, return_binned=True
-            )
-
-            assert profile_image_of_galaxy.shape == (7, 7)
-            assert (profile_image_of_galaxies[0] == profile_image_of_galaxy).all()
-
         def test__profile_images_of_galaxies(self, sub_grid_7x7):
             # Overwrite one value so intensity in each pixel is different
             sub_grid_7x7[5] = np.array([2.0, 2.0])

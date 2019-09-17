@@ -237,21 +237,13 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
     ):
         return list(
             map(
-                lambda galaxy: self.profile_image_of_galaxy_from_grid_and_galaxy(
+                lambda galaxy: galaxy.profile_image_from_grid(
                     grid=grid,
-                    galaxy=galaxy,
                     return_in_2d=return_in_2d,
                     return_binned=return_binned,
                 ),
                 self.galaxies,
             )
-        )
-
-    def profile_image_of_galaxy_from_grid_and_galaxy(
-        self, grid, galaxy, return_in_2d=True, return_binned=True
-    ):
-        return galaxy.profile_image_from_grid(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
     @reshape_returned_sub_array
