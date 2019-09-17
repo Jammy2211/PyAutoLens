@@ -1,29 +1,100 @@
 import autofit as af
+from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.pipeline.plotters import phase_plotters
 
 
-class Visualizer:
-    def __init__(
-            self,
-            lens_imaging_data,
-            image_path
-    ):
-        self.lens_imaging_data = lens_imaging_data
+def setting(section, name):
+    return af.conf.instance.visualize.get(
+        section, name, bool
+    )
+
+
+def plot_setting(name):
+    return setting("plots", name)
+
+
+def figure_setting(name):
+    return setting("figures", name)
+
+
+class AbstractVisualizer:
+    def __init__(self, image_path):
         self.image_path = image_path
+        self.plot_units = af.conf.instance.visualize.get(
+            "figures",
+            "plot_units",
+            str
+        ).strip()
+        self.should_plot_mask = figure_setting("plot_mask_on_images")
+        self.zoom_around_mask = figure_setting("zoom_around_mask_of_images")
+        self.plot_ray_tracing_all_at_end_png = plot_setting("plot_ray_tracing_all_at_end_png")
+        self.plot_ray_tracing_all_at_end_fits = plot_setting("plot_ray_tracing_all_at_end_fits")
+
+
+class PhaseGalaxyVisualizer(AbstractVisualizer):
+    def __init__(self, image_path):
+        super().__init__(image_path)
+        self.plot_galaxy_fit_all_at_end_png = plot_setting("plot_galaxy_fit_all_at_end_png")
+        self.plot_galaxy_fit_all_at_end_fits = plot_setting("plot_galaxy_fit_all_at_end_fits")
+        self.plot_galaxy_fit_as_subplot = plot_setting("plot_galaxy_fit_as_subplot")
+        self.plot_galaxy_fit_image = plot_setting("plot_galaxy_fit_image")
+        self.plot_galaxy_fit_noise_map = plot_setting("plot_galaxy_fit_noise_map")
+        self.plot_galaxy_fit_model_image = plot_setting("plot_galaxy_fit_model_image")
+        self.plot_galaxy_fit_residual_map = plot_setting("plot_galaxy_fit_residual_map")
+        self.plot_galaxy_fit_chi_squared_map = plot_setting("plot_galaxy_fit_chi_squared_map")
+
+    def plot_galaxy_fit_subplot(self, fit):
+        if self.plot_galaxy_fit_as_subplot:
+            galaxy_fit_plotters.plot_fit_subplot(
+                fit=fit,
+                should_plot_mask=self.should_plot_mask,
+                zoom_around_mask=self.zoom_around_mask,
+                units=self.plot_units,
+                output_path=self.image_path,
+                output_format="png",
+            )
+
+    def plot_fit_individuals(
+            self,
+            fit,
+            plot_all=False,
+            image_format="png",
+            path_suffix=""
+    ):
+        if plot_all:
+            should_plot_image = True
+            should_plot_noise_map = True
+            should_plot_model_image = True
+            should_plot_residual_map = True
+            should_plot_chi_squared_map = True
+        else:
+            should_plot_image = self.plot_galaxy_fit_image
+            should_plot_noise_map = self.plot_galaxy_fit_noise_map
+            should_plot_model_image = self.plot_galaxy_fit_model_image
+            should_plot_residual_map = self.plot_galaxy_fit_residual_map
+            should_plot_chi_squared_map = self.plot_galaxy_fit_chi_squared_map
+        galaxy_fit_plotters.plot_fit_individuals(
+            fit=fit,
+            should_plot_mask=self.should_plot_mask,
+            zoom_around_mask=self.zoom_around_mask,
+            should_plot_image=should_plot_image,
+            should_plot_noise_map=should_plot_noise_map,
+            should_plot_model_image=should_plot_model_image,
+            should_plot_residual_map=should_plot_residual_map,
+            should_plot_chi_squared_map=should_plot_chi_squared_map,
+            units=self.plot_units,
+            output_path=f"{self.image_path}/{path_suffix}",
+            output_format=image_format,
+        )
+
+
+class PhaseImagingVisualizer(AbstractVisualizer):
+    def __init__(self, lens_imaging_data, image_path):
+        super().__init__(image_path)
+        self.lens_imaging_data = lens_imaging_data
         self.subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
             path=image_path, folder_names=["subplots"]
         )
-
-        def setting(section, name):
-            return af.conf.instance.visualize.get(
-                section, name, bool
-            )
-
-        def plot_setting(name):
-            return setting("plots", name)
-
-        def figure_setting(name):
-            return setting("figures", name)
 
         self.should_plot_image_plane_pix = figure_setting("plot_image_plane_adaptive_pixelization_grid")
         self.plot_data_as_subplot = plot_setting("plot_data_as_subplot")
@@ -61,16 +132,9 @@ class Visualizer:
         self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
         self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
         self.plot_binned_hyper_galaxy_images = plot_setting("plot_binned_hyper_galaxy_images")
-        self.should_plot_mask = figure_setting("plot_mask_on_images")
         self.extract_array_from_mask = figure_setting("extract_images_from_mask")
-        self.zoom_around_mask = figure_setting("zoom_around_mask_of_images")
         self.should_plot_positions = figure_setting("plot_positions_on_images")
-        self.plot_units = af.conf.instance.visualize.get(
-            "figures", "plot_units", str
-        ).strip()
 
-        self.plot_ray_tracing_all_at_end_png = plot_setting("plot_ray_tracing_all_at_end_png")
-        self.plot_ray_tracing_all_at_end_fits = plot_setting("plot_ray_tracing_all_at_end_fits")
         self.plot_ray_tracing_as_subplot = plot_setting("plot_ray_tracing_as_subplot")
         self.plot_ray_tracing_profile_image = plot_setting("plot_ray_tracing_profile_image")
         self.plot_ray_tracing_source_plane = plot_setting("plot_ray_tracing_source_plane_image")

@@ -84,8 +84,6 @@ class AbstractPhase(af.AbstractPhase):
             self.results = results
             self.cosmology = cosmology
 
-            self.plot_count = 0
-
         @property
         def last_results(self):
             """
