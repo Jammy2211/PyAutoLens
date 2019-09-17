@@ -43,7 +43,9 @@ class TestPhase(object):
 
     def test__set_variables(self, phase_data_7x7):
         phase_data_7x7.galaxies = [al.GalaxyModel(redshift=0.5)]
-        assert phase_data_7x7.optimizer.variable.galaxies == [al.GalaxyModel(redshift=0.5)]
+        assert phase_data_7x7.optimizer.variable.galaxies == [
+            al.GalaxyModel(redshift=0.5)
+        ]
 
     def test__customize(
         self, mask_function_7x7, results_7x7, results_collection_7x7, imaging_data_7x7
@@ -64,7 +66,9 @@ class TestPhase(object):
             mask_function=mask_function_7x7,
         )
 
-        phase_imaging_7x7.make_analysis(data=imaging_data_7x7, results=results_collection_7x7)
+        phase_imaging_7x7.make_analysis(
+            data=imaging_data_7x7, results=results_collection_7x7
+        )
         phase_imaging_7x7.customize_priors(results_collection_7x7)
 
         assert phase_imaging_7x7.galaxies == [galaxy]
@@ -85,7 +89,9 @@ class TestPhase(object):
             mask_function=mask_function_7x7,
         )
 
-        phase_imaging_7x7.make_analysis(data=imaging_data_7x7, results=results_collection_7x7)
+        phase_imaging_7x7.make_analysis(
+            data=imaging_data_7x7, results=results_collection_7x7
+        )
         phase_imaging_7x7.customize_priors(results_collection_7x7)
 
         assert phase_imaging_7x7.galaxies == [galaxy_model]
@@ -360,7 +366,9 @@ class TestPhase(object):
             phase_imaging_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
         }
 
-        instance = phase_imaging_7x7.optimizer.variable.instance_for_arguments(arguments)
+        instance = phase_imaging_7x7.optimizer.variable.instance_for_arguments(
+            arguments
+        )
 
         assert instance.galaxies[0].sersic.centre[0] == 0.01
         assert instance.galaxies[0].sis.centre[0] == 0.1
@@ -395,7 +403,9 @@ class TestResult(object):
 
         assert isinstance(result, al.AbstractPhase.Result)
 
-    def test__most_likely_tracer_available_as_result(self, imaging_data_7x7, mask_function_7x7):
+    def test__most_likely_tracer_available_as_result(
+        self, imaging_data_7x7, mask_function_7x7
+    ):
 
         phase_imaging_7x7 = al.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
@@ -407,7 +417,7 @@ class TestResult(object):
                 ),
                 source=al.Galaxy(
                     redshift=1.0,
-                    light=al.light_profiles.EllipticalCoreSersic(intensity=2.0)
+                    light=al.light_profiles.EllipticalCoreSersic(intensity=2.0),
                 ),
             ),
             phase_name="test_phase_2",
@@ -418,6 +428,7 @@ class TestResult(object):
         assert isinstance(result.most_likely_tracer, al.Tracer)
         assert result.most_likely_tracer.galaxies[0].light.intensity == 1.0
         assert result.most_likely_tracer.galaxies[1].light.intensity == 2.0
+
 
 class TestPhasePickle(object):
 
@@ -477,4 +488,4 @@ class TestPhasePickle(object):
         phase_imaging_7x7.make_analysis = make_analysis
 
         # with pytest.raises(af.exc.PipelineException):
-        #     phase_imaging_7x7.run(instrument=imaging_data_7x7, results=None, mask=None, positions=None)
+        #     phase_imaging_7x7.run(data_type=imaging_data_7x7, results=None, mask=None, positions=None)

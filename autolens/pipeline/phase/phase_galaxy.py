@@ -6,6 +6,7 @@ from autolens.model.galaxy import galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.pipeline.phase.phase import Phase
 
+
 class PhaseGalaxy(af.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 

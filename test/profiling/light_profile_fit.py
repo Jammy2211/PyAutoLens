@@ -111,7 +111,9 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     start = time.time()
     for i in range(repeats):
-        al.LensImageFit.from_lens_imaging_data_and_tracer(lens_imaging_data=lens_data, tracer=tracer)
+        al.LensImageFit.from_lens_imaging_data_and_tracer(
+            lens_imaging_data=lens_data, tracer=tracer
+        )
     diff = time.time() - start
     print("Time to perform complete fit = {}".format(diff / repeats))
 

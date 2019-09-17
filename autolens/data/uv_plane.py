@@ -5,17 +5,17 @@ from skimage.transform import resize, rescale
 
 from autolens import exc
 from autolens.array import grids
-from autolens.data.instrument import abstract_data
+from autolens.data import abstract_data
 from autolens.array.mapping_util import grid_mapping_util
 
-from autolens.array.util import array_util, grid_util
+from autolens.array.util import array_util
 from autolens.array.mapping_util import array_mapping_util
 from autolens.array import scaled_array
 
 logger = logging.getLogger(__name__)
 
 
-class InterferometerData(abstract_data.AbstractData):
+class UVPlaneData(abstract_data.AbstractData):
     def __init__(
         self,
         shape,
@@ -29,7 +29,7 @@ class InterferometerData(abstract_data.AbstractData):
 
         self.shape = shape
 
-        super(InterferometerData, self).__init__(
+        super(UVPlaneData, self).__init__(
             data=visibilities,
             pixel_scale=pixel_scale,
             noise_map=noise_map,
@@ -47,11 +47,23 @@ class InterferometerData(abstract_data.AbstractData):
     def visibilities(self):
         return self._data
 
-    def new_interferometer_data_with_resized_primary_beam(self, new_shape):
+    def new_uv_plane_data_with_modified_visibilities(self, modified_visibilities):
+
+        return UVPlaneData(
+            shape=self.shape,
+            visibilities=modified_visibilities,
+            pixel_scale=self.pixel_scale,
+            noise_map=self.noise_map,
+            uv_wavelengths=self.uv_wavelengths,
+            primary_beam=self.primary_beam,
+            exposure_time_map=self.exposure_time_map,
+        )
+
+    def new_uv_plane_data_with_resized_primary_beam(self, new_shape):
         primary_beam = self.resize_scaled_array(
             scaled_array=self.primary_beam, new_shape=new_shape
         )
-        return InterferometerData(
+        return UVPlaneData(
             shape=self.shape,
             visibilities=self._data,
             pixel_scale=self.pixel_scale,
@@ -61,14 +73,14 @@ class InterferometerData(abstract_data.AbstractData):
             primary_beam=primary_beam,
         )
 
-    def new_interferometer_data_converted_from_electrons(self):
+    def new_uv_plane_data_converted_from_electrons(self):
 
         real_visibilities = self.array_from_counts_to_electrons_per_second(array=self._data[:,0])
         imaginary_visibilities = self.array_from_counts_to_electrons_per_second(array=self._data[:,1])
         visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
         noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
 
-        return InterferometerData(
+        return UVPlaneData(
             shape=self.shape,
             visibilities=visibilities,
             pixel_scale=self.pixel_scale,
@@ -78,7 +90,7 @@ class InterferometerData(abstract_data.AbstractData):
             primary_beam=self.primary_beam,
         )
 
-    def new_interferometer_data_converted_from_adus(self, gain):
+    def new_uv_plane_data_converted_from_adus(self, gain):
 
         real_visibilities = self.array_from_adus_to_electrons_per_second(array=self._data[:, 0], gain=gain)
         imaginary_visibilities = self.array_from_adus_to_electrons_per_second(array=self._data[:, 1], gain=gain)
@@ -88,7 +100,7 @@ class InterferometerData(abstract_data.AbstractData):
             array=self.noise_map, gain=gain
         )
 
-        return InterferometerData(
+        return UVPlaneData(
             shape=self.shape,
             visibilities=visibilities,
             pixel_scale=self.pixel_scale,
@@ -279,7 +291,7 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
         return scipy.signal.convolve2d(array_2d, self, mode="same")
 
 
-class SimulatedInterferometerData(InterferometerData):
+class SimulatedUVPlaneData(UVPlaneData):
     def __init__(
         self,
         shape,
@@ -293,7 +305,7 @@ class SimulatedInterferometerData(InterferometerData):
         **kwargs
     ):
 
-        super(SimulatedInterferometerData, self).__init__(
+        super(SimulatedUVPlaneData, self).__init__(
             shape=shape,
             visibilities=visibilities,
             pixel_scale=pixel_scale,
@@ -382,7 +394,7 @@ class SimulatedInterferometerData(InterferometerData):
         ----------
         name
         image : ndarray
-            The image before simulating (e.g. the lens and source galaxies before optics blurring and Interferometer read-out).
+            The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
         pixel_scale: float
             The scale of each pixel in arc seconds
         exposure_time_map : ndarray
@@ -398,12 +410,12 @@ class SimulatedInterferometerData(InterferometerData):
             A seed for random noise_maps generation
         """
 
-        image_plane_image_2d = tracer.profile_image_from_grid(
+        image_2d = tracer.profile_image_from_grid(
             grid=grid, return_in_2d=True, return_binned=True,
         )
 
         return cls.from_image_and_exposure_arrays(
-            image=image_plane_image_2d,
+            image=image_2d,
             pixel_scale=pixel_scale,
             exposure_time=exposure_time,
             exposure_time_map=exposure_time_map,
@@ -438,7 +450,7 @@ class SimulatedInterferometerData(InterferometerData):
         ----------
         name
         image : ndarray
-            The image before simulating (e.g. the lens and source galaxies before optics blurring and Interferometer read-out).
+            The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
         pixel_scale: float
             The scale of each pixel in arc seconds
         exposure_time_map : ndarray
@@ -499,7 +511,7 @@ class SimulatedInterferometerData(InterferometerData):
 
         image -= background_sky_map
 
-        return SimulatedInterferometerData(
+        return SimulatedUVPlaneData(
             shape=image.shape,
             visibilities=visibilities,
             pixel_scale=pixel_scale,
@@ -513,7 +525,7 @@ class SimulatedInterferometerData(InterferometerData):
         )
 
     def __array_finalize__(self, obj):
-        if isinstance(obj, SimulatedInterferometerData):
+        if isinstance(obj, SimulatedUVPlaneData):
             try:
                 self.image = obj.image
                 self.pixel_scale = obj.pixel_scale
@@ -528,7 +540,7 @@ class SimulatedInterferometerData(InterferometerData):
                 self.origin = obj.origin
             except AttributeError:
                 logger.debug(
-                    "Original object in Interferometer.__array_finalize__ missing one or more attributes"
+                    "Original object in UVPlane.__array_finalize__ missing one or more attributes"
                 )
 
 
@@ -552,7 +564,7 @@ def gaussian_noise_map_from_shape_and_sigma(shape, sigma, noise_seed=-1):
     return read_noise_map
 
 
-def load_interferometer_data_from_fits(
+def load_uv_plane_data_from_fits(
     shape,
     pixel_scale,
     real_visibilities_path=None,
@@ -576,10 +588,10 @@ def load_interferometer_data_from_fits(
     gain=None,
     convert_from_adus=False,
 ):
-    """Factory for loading the interferometer instrument from .fits files, as well as computing properties like the noise-map,
-    exposure-time map, etc. from the interferometer-instrument.
+    """Factory for loading the uv_plane data_type from .fits files, as well as computing properties like the noise-map,
+    exposure-time map, etc. from the uv_plane-data_type.
 
-    This factory also includes a number of routines for converting the interferometer-instrument from units not supported by PyAutoLens \
+    This factory also includes a number of routines for converting the uv_plane-data_type from units not supported by PyAutoLens \
     (e.g. adus, electrons) to electrons per second.
 
     Parameters
@@ -593,12 +605,12 @@ def load_interferometer_data_from_fits(
         The hdu the image is contained in the .fits file specified by *image_path*.        
     image_hdu : int
         The hdu the image is contained in the .fits file that *image_path* points too.
-    resized_interferometer_shape : (int, int) | None
-        If input, the interferometer arrays that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
-    resized_interferometer_origin_pixels : (int, int) | None
-        If the interferometer arrays are resized, this defines a new origin (in pixels) around which recentering occurs.
-    resized_interferometer_origin_arcsec : (float, float) | None
-        If the interferometer arrays are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
+    resized_uv_plane_shape : (int, int) | None
+        If input, the uv_plane arrays that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
+    resized_uv_plane_origin_pixels : (int, int) | None
+        If the uv_plane arrays are resized, this defines a new origin (in pixels) around which recentering occurs.
+    resized_uv_plane_origin_arcsec : (float, float) | None
+        If the uv_plane arrays are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
     primary_beam_path : str
         The path to the primary_beam .fits file containing the primary_beam (e.g. '/path/to/primary_beam.fits')        
     primary_beam_hdu : int
@@ -650,7 +662,7 @@ def load_interferometer_data_from_fits(
     exposure_time_map_hdu : int
         The hdu the exposure_time_map is contained in the .fits file specified by *exposure_time_map_path*.
     exposure_time_map_from_single_value : float
-        The exposure time of the interferometer imaging, which is used to compute the exposure-time map as a single value \
+        The exposure time of the uv_plane imaging, which is used to compute the exposure-time map as a single value \
         (see *ExposureTimeMap.from_single_value*).
     exposure_time_map_from_inverse_noise_map : bool
         If True, the exposure-time map is computed from the background noise_map map \
@@ -710,7 +722,7 @@ def load_interferometer_data_from_fits(
         renormalize=renormalize_primary_beam,
     )
 
-    interferometer_data = InterferometerData(
+    uv_plane_data = UVPlaneData(
         shape=shape,
         visibilities=visibilities,
         pixel_scale=pixel_scale,
@@ -721,20 +733,20 @@ def load_interferometer_data_from_fits(
     )
 
     if resized_primary_beam_shape is not None:
-        interferometer_data = interferometer_data.new_interferometer_data_with_resized_primary_beam(
+        uv_plane_data = uv_plane_data.new_uv_plane_data_with_resized_primary_beam(
             new_shape=resized_primary_beam_shape
         )
 
     if convert_from_electrons:
-        interferometer_data = (
-            interferometer_data.new_interferometer_data_converted_from_electrons()
+        uv_plane_data = (
+            uv_plane_data.new_uv_plane_data_converted_from_electrons()
         )
     elif convert_from_adus:
-        interferometer_data = interferometer_data.new_interferometer_data_converted_from_adus(
+        uv_plane_data = uv_plane_data.new_uv_plane_data_converted_from_adus(
             gain=gain
         )
 
-    return interferometer_data
+    return uv_plane_data
 
 def load_visibilities(visibilities_path, visibilities_hdu):
 
@@ -778,8 +790,8 @@ def load_primary_beam(
         )
 
 
-def output_interferometer_data_to_fits(
-    interferometer_data,
+def output_uv_plane_data_to_fits(
+    uv_plane_data,
     real_visibilities_path=None,
     imaginary_visibilities_path=None,
     noise_map_path=None,
@@ -792,67 +804,67 @@ def output_interferometer_data_to_fits(
 
     if primary_beam_path is not None:
         array_util.numpy_array_2d_to_fits(
-            array_2d=interferometer_data.primary_beam,
+            array_2d=uv_plane_data.primary_beam,
             file_path=primary_beam_path,
             overwrite=overwrite,
         )
 
     if (
-        interferometer_data.exposure_time_map is not None
+        uv_plane_data.exposure_time_map is not None
         and exposure_time_map_path is not None
     ):
         array_util.numpy_array_2d_to_fits(
-            array_2d=interferometer_data.exposure_time_map,
+            array_2d=uv_plane_data.exposure_time_map,
             file_path=exposure_time_map_path,
             overwrite=overwrite,
         )
 
     if (
-        interferometer_data.visibilities is not None
+        uv_plane_data.visibilities is not None
         and real_visibilities_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.visibilities[:, 0],
+            array_1d=uv_plane_data.visibilities[:, 0],
             file_path=real_visibilities_path,
             overwrite=overwrite,
         )
 
     if (
-        interferometer_data.visibilities is not None
+        uv_plane_data.visibilities is not None
         and imaginary_visibilities_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.visibilities[:, 1],
+            array_1d=uv_plane_data.visibilities[:, 1],
             file_path=imaginary_visibilities_path,
             overwrite=overwrite,
         )
 
     if (
-        interferometer_data.noise_map is not None
+        uv_plane_data.noise_map is not None
         and noise_map_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.noise_map,
+            array_1d=uv_plane_data.noise_map,
             file_path=noise_map_path,
             overwrite=overwrite,
         )
 
     if (
-        interferometer_data.uv_wavelengths is not None
+        uv_plane_data.uv_wavelengths is not None
         and u_wavelengths_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.uv_wavelengths[:, 0],
+            array_1d=uv_plane_data.uv_wavelengths[:, 0],
             file_path=u_wavelengths_path,
             overwrite=overwrite,
         )
 
     if (
-        interferometer_data.uv_wavelengths is not None
+        uv_plane_data.uv_wavelengths is not None
         and v_wavelengths_path is not None
     ):
         array_util.numpy_array_1d_to_fits(
-            array_1d=interferometer_data.uv_wavelengths[:, 1],
+            array_1d=uv_plane_data.uv_wavelengths[:, 1],
             file_path=v_wavelengths_path,
             overwrite=overwrite,
         )

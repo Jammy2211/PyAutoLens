@@ -122,7 +122,7 @@ def make_visibilities_7():
 
 @pytest.fixture(name="visibilities_noise_map_7")
 def make_visibilities_noisse_map_7():
-    return mock_data.MockVisibilitiesNoiseMap(shape=7, value=1.0)
+    return mock_data.MockVisibilitiesNoiseMap(shape=7, value=2.0)
 
 
 @pytest.fixture(name="primary_beam_3x3")
@@ -132,18 +132,15 @@ def make_primary_beam_3x3():
 
 @pytest.fixture(name="uv_wavelengths_7")
 def make_uv_wavelengths_7():
-    return mock_data.MockUVWavelengths(shape=7, value=1.0)
+    return mock_data.MockUVWavelengths(shape=7, value=3.0)
 
 
-@pytest.fixture(name="interferometer_data_7")
-def make_interferometer_data_7x7(
-    visibilities_7,
-    visibilities_noise_map_7,
-    primary_beam_3x3,
-    uv_wavelengths_7,
+@pytest.fixture(name="uv_plane_data_7")
+def make_uv_plane_data_7(
+    visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
 ):
-    return mock_data.MockInterferometerData(
-        shape=(7,7),
+    return mock_data.MockUVPlaneData(
+        shape=(7, 7),
         visibilities=visibilities_7,
         pixel_scale=1.0,
         noise_map=visibilities_noise_map_7,
@@ -389,9 +386,7 @@ def make_gal_data_7x7(image_7x7, noise_map_7x7):
 
 @pytest.fixture(name="gal_fit_data_7x7_image")
 def make_gal_fit_data_7x7_image(gal_data_7x7, sub_mask_7x7):
-    return al.GalaxyFitData(
-        galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_image=True
-    )
+    return al.GalaxyFitData(galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_image=True)
 
 
 @pytest.fixture(name="gal_fit_data_7x7_convergence")
@@ -484,6 +479,19 @@ def make_lens_imaging_data_7x7(
     )
 
 
+@pytest.fixture(name="lens_uv_plane_data_7")
+def make_lens_uv_plane_data_7(
+    uv_plane_data_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
+):
+    return mock_lens_data.MockLensUVPlaneData(
+        uv_plane_data=uv_plane_data_7,
+        mask=mask_7x7,
+        grid=sub_grid_7x7,
+        transformer=transformer_7x7_7,
+        binned_grid=binned_grid_7x7,
+    )
+
+
 # Plane #
 
 
@@ -570,7 +578,7 @@ def make_mask_function_7x7():
 def make_phase_data(mask_function_7x7):
     return al.PhaseData(
         optimizer_class=mock_pipeline.MockNLO,
-        phase_tag='',
+        phase_tag="",
         mask_function=mask_function_7x7,
         phase_name="test_phase",
     )
