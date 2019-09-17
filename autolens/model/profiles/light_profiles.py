@@ -7,10 +7,7 @@ from autolens import dimensions as dim
 from autolens import text_util
 from autolens.model.profiles import geometry_profiles
 
-from autolens.array.mapping import (
-    reshape_returned_sub_array,
-    reshape_returned_array,
-)
+from autolens.array.mapping import reshape_returned_sub_array, reshape_returned_array
 
 
 class LightProfile(object):
@@ -113,11 +110,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-        self,
-        grid,
-        psf,
-        preload_blurring_grid=None,
-        return_in_2d=True,
+        self, grid, psf, preload_blurring_grid=None, return_in_2d=True
     ):
 
         profile_image = self.profile_image_from_grid(
@@ -140,11 +133,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-        self,
-        grid,
-        convolver,
-        preload_blurring_grid=None,
-        return_in_2d=True,
+        self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
     ):
 
         if preload_blurring_grid is None:
@@ -178,9 +167,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             grid=grid, return_in_2d=False, return_binned=True
         )
 
-        return transformer.visibilities_from_image_1d(
-            image_1d=profile_image_1d
-        )
+        return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
 
     @dim.convert_units_to_input_units
     def luminosity_within_circle_in_units(

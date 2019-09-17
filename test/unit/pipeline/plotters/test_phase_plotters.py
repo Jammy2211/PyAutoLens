@@ -37,14 +37,16 @@ def test__plot_imaging_for_phase(
     assert phase_plotter_path + "imaging/imaging_noise_map.png" not in plot_patch.paths
     assert phase_plotter_path + "imaging/imaging_psf.png" in plot_patch.paths
     assert (
-        phase_plotter_path + "imaging/imaging_signal_to_noise_map.png" not in plot_patch.paths
+        phase_plotter_path + "imaging/imaging_signal_to_noise_map.png"
+        not in plot_patch.paths
     )
     assert (
         phase_plotter_path + "imaging/imaging_absolute_signal_to_noise_map.png"
         not in plot_patch.paths
     )
     assert (
-        phase_plotter_path + "imaging/imaging_potential_chi_squared_map.png" in plot_patch.paths
+        phase_plotter_path + "imaging/imaging_potential_chi_squared_map.png"
+        in plot_patch.paths
     )
 
 
@@ -63,7 +65,7 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
         should_plot_as_subplot=True,
         should_plot_all_at_end_png=False,
         should_plot_all_at_end_fits=False,
-        should_plot_image_plane_image=True,
+        should_plot_image=True,
         should_plot_source_plane=True,
         should_plot_convergence=False,
         should_plot_potential=True,

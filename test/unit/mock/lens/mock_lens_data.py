@@ -1,6 +1,7 @@
 from autolens.array.mapping import reshape_returned_array
 import numpy as np
 
+
 class MockLensImagingData(object):
     def __init__(self, imaging_data, mask, grid, blurring_grid, convolver, binned_grid):
 
@@ -87,7 +88,9 @@ class MockLensUVPlaneData(object):
         if not return_x2:
             return self.uv_plane_data.noise_map
         else:
-            return np.stack((self.uv_plane_data.noise_map, self.uv_plane_data.noise_map), axis=-1)
+            return np.stack(
+                (self.uv_plane_data.noise_map, self.uv_plane_data.noise_map), axis=-1
+            )
 
     @property
     def primary_beam(self):

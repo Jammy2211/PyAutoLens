@@ -2,23 +2,24 @@ import numpy as np
 
 from autolens.array import grids
 from autolens.array import mask as msk
-from autolens.data.convolution import Convolver
-from autolens.data.fourier_transform import Transformer
+from autolens.array.convolution import Convolver
+from autolens.array.fourier_transform import Transformer
 from autolens.array.mapping import reshape_returned_array
 
 
 class AbstractLensData(object):
-
-    def __init__(self, mask,
-                 positions=None,
-                 positions_threshold=None,
-                 pixel_scale_interpolation_grid=None,
-                 pixel_scale_binned_grid=None,
-                 inversion_pixel_limit=None,
-                 inversion_uses_border=True,
-                 hyper_noise_map_max=None,
-                 preload_pixelization_grids_of_planes=None,
-                 ):
+    def __init__(
+        self,
+        mask,
+        positions=None,
+        positions_threshold=None,
+        pixel_scale_interpolation_grid=None,
+        pixel_scale_binned_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+        hyper_noise_map_max=None,
+        preload_pixelization_grids_of_planes=None,
+    ):
 
         self.mask = mask
         self._mask_1d = mask.mapping.array_1d_from_array_2d(array_2d=mask)
@@ -122,10 +123,16 @@ class LensImagingData(AbstractLensData):
         self.imaging_data = imaging_data
 
         super(LensImagingData, self).__init__(
-            mask=mask, positions=positions, positions_threshold=positions_threshold, pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-            pixel_scale_binned_grid=pixel_scale_binned_grid, inversion_pixel_limit=inversion_pixel_limit,
-                                          inversion_uses_border=inversion_uses_border, hyper_noise_map_max=hyper_noise_map_max,
-                                          preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes)
+            mask=mask,
+            positions=positions,
+            positions_threshold=positions_threshold,
+            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            pixel_scale_binned_grid=pixel_scale_binned_grid,
+            inversion_pixel_limit=inversion_pixel_limit,
+            inversion_uses_border=inversion_uses_border,
+            hyper_noise_map_max=hyper_noise_map_max,
+            preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
+        )
 
         self._image_1d = self.image(return_in_2d=False)
         self._noise_map_1d = self.noise_map(return_in_2d=False)
@@ -198,9 +205,7 @@ class LensImagingData(AbstractLensData):
         binned_up_imaging_data = self.imaging_data.new_imaging_data_with_binned_up_arrays(
             bin_up_factor=bin_up_factor
         )
-        binned_up_mask = self.mask.binned_up_mask_from_mask(
-            bin_up_factor=bin_up_factor
-        )
+        binned_up_mask = self.mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
 
         return LensImagingData(
             imaging_data=binned_up_imaging_data,
@@ -257,7 +262,7 @@ class LensImagingData(AbstractLensData):
             self.preload_pixelization_grids_of_planes = (
                 obj.preload_pixelization_grids_of_planes
             )
-            
+
 
 class LensUVPlaneData(AbstractLensData):
     def __init__(
@@ -310,10 +315,16 @@ class LensUVPlaneData(AbstractLensData):
         self.uv_plane_data = uv_plane_data
 
         super(LensUVPlaneData, self).__init__(
-            mask=mask, positions=positions, positions_threshold=positions_threshold, pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-            pixel_scale_binned_grid=pixel_scale_binned_grid, inversion_pixel_limit=inversion_pixel_limit,
-                                          inversion_uses_border=inversion_uses_border, hyper_noise_map_max=hyper_noise_map_max,
-                                          preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes)
+            mask=mask,
+            positions=positions,
+            positions_threshold=positions_threshold,
+            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            pixel_scale_binned_grid=pixel_scale_binned_grid,
+            inversion_pixel_limit=inversion_pixel_limit,
+            inversion_uses_border=inversion_uses_border,
+            hyper_noise_map_max=hyper_noise_map_max,
+            preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
+        )
 
         if trimmed_primary_beam_shape is None and self.primary_beam is not None:
             self.trimmed_primary_beam_shape = self.primary_beam.shape
@@ -322,7 +333,10 @@ class LensUVPlaneData(AbstractLensData):
         else:
             self.trimmed_primary_beam_shape = trimmed_primary_beam_shape
 
-        self.transformer = Transformer(uv_wavelengths=uv_plane_data.uv_wavelengths, grid_radians=self.grid.in_radians)
+        self.transformer = Transformer(
+            uv_wavelengths=uv_plane_data.uv_wavelengths,
+            grid_radians=self.grid.in_radians,
+        )
 
     def visibilities(self):
         return self.uv_plane_data.visibilities
@@ -331,7 +345,9 @@ class LensUVPlaneData(AbstractLensData):
         if not return_x2:
             return self.uv_plane_data.noise_map
         else:
-            return np.stack((self.uv_plane_data.noise_map, self.uv_plane_data.noise_map), axis=-1)
+            return np.stack(
+                (self.uv_plane_data.noise_map, self.uv_plane_data.noise_map), axis=-1
+            )
 
     @property
     def visibilities_mask(self):

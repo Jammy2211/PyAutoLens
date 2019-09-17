@@ -235,7 +235,10 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
             traced_deflections.append(
                 plane.deflections_from_grid(
-                    grid=scaled_grid, return_in_2d=False, return_binned=False, bypass_decorator=True
+                    grid=scaled_grid,
+                    return_in_2d=False,
+                    return_binned=False,
+                    bypass_decorator=True,
                 )
             )
 
@@ -259,7 +262,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         return traced_positions_of_planes
 
     def deflections_between_planes_from_grid(
-        self, grid, plane_i=0, plane_j=-1, return_in_2d=True,
+        self, grid, plane_i=0, plane_j=-1, return_in_2d=True
     ):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
@@ -274,7 +277,10 @@ class AbstractTracerLensing(AbstractTracerCosmology):
     ):
         return sum(
             self.profile_images_of_planes_from_grid(
-                grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True,
+                grid=grid,
+                return_in_2d=False,
+                return_binned=False,
+                bypass_decorator=True,
             )
         )
 
@@ -290,7 +296,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
                 grid=traced_grids_of_planes[plane_index],
                 return_in_2d=return_in_2d,
                 return_binned=return_binned,
-                bypass_decorator=bypass_decorator
+                bypass_decorator=bypass_decorator,
             )
             for plane_index in range(len(traced_grids_of_planes))
         ]
@@ -323,7 +329,10 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         return sum(
             [
                 plane.convergence_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True
+                    grid=grid,
+                    return_in_2d=False,
+                    return_binned=False,
+                    bypass_decorator=True,
                 )
                 for plane in self.planes
             ]
@@ -336,7 +345,10 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         return sum(
             [
                 plane.potential_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True,
+                    grid=grid,
+                    return_in_2d=False,
+                    return_binned=False,
+                    bypass_decorator=True,
                 )
                 for plane in self.planes
             ]
@@ -349,7 +361,10 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         return sum(
             [
                 plane.deflections_from_grid(
-                    grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True,
+                    grid=grid,
+                    return_in_2d=False,
+                    return_binned=False,
+                    bypass_decorator=True,
                 )
                 for plane in self.planes
             ]
@@ -637,16 +652,19 @@ class AbstractTracerData(AbstractTracerLensing):
         profile_image_1d = self.profile_image_from_grid(
             grid=grid, return_in_2d=False, return_binned=True
         )
-        return transformer.visibilities_from_image_1d(
-            image_1d=profile_image_1d
-        )
+        return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
 
-    def profile_visibilities_of_planes_from_grid_and_transformer(self, grid, transformer):
+    def profile_visibilities_of_planes_from_grid_and_transformer(
+        self, grid, transformer
+    ):
 
         profile_images_1d_of_planes = self.profile_images_of_planes_from_grid(
             grid=grid, return_in_2d=False, return_binned=True
         )
-        return [transformer.visibilities_from_image_1d(image_1d=profile_image_1d) for profile_image_1d in profile_images_1d_of_planes]
+        return [
+            transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
+            for profile_image_1d in profile_images_1d_of_planes
+        ]
 
     def pixelization_grids_of_planes_from_grid(self, grid):
 

@@ -1,9 +1,7 @@
 import numpy as np
 
 import autolens as al
-from autolens.array import scaled_array
-from autolens.data import fourier_transform
-from autolens.data.data_type import uv_plane
+from autolens.array import fourier_transform
 
 
 class MockImage(object):
@@ -159,13 +157,7 @@ class MockUVWavelengths(np.ndarray):
 
 class MockUVPlaneData(al.UVPlaneData):
     def __init__(
-        self,
-        shape,
-        visibilities,
-        pixel_scale,
-        primary_beam,
-        noise_map,
-        uv_wavelengths,
+        self, shape, visibilities, pixel_scale, primary_beam, noise_map, uv_wavelengths
     ):
         super(MockUVPlaneData, self).__init__(
             shape=shape,
