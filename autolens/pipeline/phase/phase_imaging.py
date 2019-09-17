@@ -263,14 +263,15 @@ class PhaseImaging(PhaseData):
                 cosmology=cosmology, results=results
             )
             self.visualizer = visualizer.Visualizer(
-                self,
                 lens_imaging_data,
                 image_path
             )
 
             self.lens_imaging_data = lens_imaging_data
 
-            self.visualizer.initial_plot(lens_imaging_data, self.last_results)
+            self.visualizer.initial_plot(
+                self.last_results
+            )
 
             if self.last_results is not None:
                 self.hyper_galaxy_image_1d_path_dict = (
