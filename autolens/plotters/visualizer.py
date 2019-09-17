@@ -174,23 +174,33 @@ class Visualizer:
             subplot_path=self.subplot_path,
         )
 
-        if last_results is not None:
-            if mask is not None:
-                phase_plotters.plot_hyper_images_for_phase(
-                    hyper_model_image_2d=mask.mapping.scaled_array_2d_from_array_1d(
-                        array_1d=last_results.hyper_model_image_1d
-                    ),
-                    hyper_galaxy_image_2d_path_dict=last_results.hyper_galaxy_image_2d_path_dict,
-                    binned_hyper_galaxy_image_2d_path_dict=last_results.binned_hyper_galaxy_image_2d_path_dict(
-                        binned_grid=lens_imaging_data.grid.binned
-                    ),
-                    mask=lens_imaging_data.mask,
-                    binned_grid=lens_imaging_data.grid.binned,
-                    extract_array_from_mask=self.extract_array_from_mask,
-                    zoom_around_mask=self.zoom_around_mask,
-                    units=self.plot_units,
-                    should_plot_hyper_model_image=self.plot_hyper_model_image,
-                    should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
-                    should_plot_binned_hyper_galaxy_images=self.plot_binned_hyper_galaxy_images,
-                    visualize_path=self.image_path,
-                )
+        self.plot_hyper_images(
+            lens_imaging_data,
+            last_results
+        )
+
+    def plot_hyper_images(
+            self,
+            lens_imaging_data,
+            last_results
+    ):
+        mask = lens_imaging_data.mask
+        if self.should_plot_mask and mask is not None and last_results is not None:
+            phase_plotters.plot_hyper_images_for_phase(
+                hyper_model_image_2d=mask.mapping.scaled_array_2d_from_array_1d(
+                    array_1d=last_results.hyper_model_image_1d
+                ),
+                hyper_galaxy_image_2d_path_dict=last_results.hyper_galaxy_image_2d_path_dict,
+                binned_hyper_galaxy_image_2d_path_dict=last_results.binned_hyper_galaxy_image_2d_path_dict(
+                    binned_grid=lens_imaging_data.grid.binned
+                ),
+                mask=lens_imaging_data.mask,
+                binned_grid=lens_imaging_data.grid.binned,
+                extract_array_from_mask=self.extract_array_from_mask,
+                zoom_around_mask=self.zoom_around_mask,
+                units=self.plot_units,
+                should_plot_hyper_model_image=self.plot_hyper_model_image,
+                should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
+                should_plot_binned_hyper_galaxy_images=self.plot_binned_hyper_galaxy_images,
+                visualize_path=self.image_path,
+            )
