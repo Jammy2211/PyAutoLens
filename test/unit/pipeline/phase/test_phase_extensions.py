@@ -648,6 +648,7 @@ class TestHyperGalaxyPhase(object):
             lens_data=lens_data,
             hyper_model_image_1d=fit.model_image(return_in_2d=False),
             hyper_galaxy_image_1d=fit.model_image(return_in_2d=False),
+            image_path=None
         )
 
         fit_hyper = analysis.fit_for_hyper_galaxy(

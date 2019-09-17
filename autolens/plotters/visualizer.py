@@ -1,7 +1,8 @@
+import os
+
 import autofit as af
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
-from autolens.pipeline.plotters import phase_plotters
-import os
+from autolens.pipeline.plotters import phase_plotters, hyper_plotters
 
 
 def setting(section, name):
@@ -30,6 +31,16 @@ class AbstractVisualizer:
         self.zoom_around_mask = figure_setting("zoom_around_mask_of_images")
         self.plot_ray_tracing_all_at_end_png = plot_setting("plot_ray_tracing_all_at_end_png")
         self.plot_ray_tracing_all_at_end_fits = plot_setting("plot_ray_tracing_all_at_end_fits")
+
+
+class SubPlotVisualizer(AbstractVisualizer):
+    def __init__(self, image_path):
+        super().__init__(image_path)
+        self.subplot_path = f"{image_path}subplots"
+        try:
+            os.makedirs(self.subplot_path)
+        except FileExistsError:
+            pass
 
 
 class PhaseGalaxyVisualizer(AbstractVisualizer):
@@ -93,15 +104,10 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
         )
 
 
-class PhaseImagingVisualizer(AbstractVisualizer):
+class PhaseImagingVisualizer(SubPlotVisualizer):
     def __init__(self, lens_imaging_data, image_path):
         super().__init__(image_path)
         self.lens_imaging_data = lens_imaging_data
-        self.subplot_path = f"{image_path}subplots"
-        try:
-            os.makedirs(self.subplot_path)
-        except FileExistsError:
-            pass
 
         self.should_plot_image_plane_pix = figure_setting("plot_image_plane_adaptive_pixelization_grid")
         self.plot_data_as_subplot = plot_setting("plot_data_as_subplot")
@@ -264,3 +270,29 @@ class PhaseImagingVisualizer(AbstractVisualizer):
                 should_plot_binned_hyper_galaxy_images=self.plot_binned_hyper_galaxy_images,
                 visualize_path=self.image_path,
             )
+
+
+class HyperGalaxyVisualizer(SubPlotVisualizer):
+    def __init__(self, image_path):
+        super().__init__(image_path)
+        self.plot_hyper_galaxy_subplot = plot_setting("plot_hyper_galaxy_subplot")
+
+    def hyper_galaxy_subplot(
+            self,
+            hyper_galaxy_image,
+            contribution_map,
+            noise_map,
+            hyper_noise_map,
+            chi_squared_map,
+            hyper_chi_squared_map
+    ):
+        hyper_plotters.plot_hyper_galaxy_subplot(
+            hyper_galaxy_image=hyper_galaxy_image,
+            contribution_map=contribution_map,
+            noise_map=noise_map,
+            hyper_noise_map=hyper_noise_map,
+            chi_squared_map=chi_squared_map,
+            hyper_chi_squared_map=hyper_chi_squared_map,
+            output_path=self.subplot_path,
+            output_format="png",
+        )
