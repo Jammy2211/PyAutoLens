@@ -1,11 +1,15 @@
 import copy
 
 import autofit as af
-from autolens.pipeline.phase.phase_imaging import PhaseImaging
+from autolens.pipeline.phase.phase import Phase
 
 
 class HyperPhase(object):
-    def __init__(self, phase: PhaseImaging, hyper_name: str):
+    def __init__(
+            self,
+            phase: Phase,
+            hyper_name: str
+    ):
         """
         Abstract HyperPhase. Wraps a phase, performing that phase before performing the action
         specified by the run_hyper.
@@ -34,7 +38,7 @@ class HyperPhase(object):
         """
         raise NotImplementedError()
 
-    def make_hyper_phase(self) -> PhaseImaging:
+    def make_hyper_phase(self) -> Phase:
         """
         Returns
         -------
@@ -72,7 +76,6 @@ class HyperPhase(object):
         return phase
 
     def customize_priors(self, results):
-
         pass
 
     def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:

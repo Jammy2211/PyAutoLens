@@ -1,20 +1,20 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-
-from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
+from autolens.model.galaxy import galaxy as g
+
 
 
 class AbstractPhase(af.AbstractPhase):
     def __init__(
-        self,
-        phase_name,
-        phase_tag=None,
-        phase_folders=tuple(),
-        optimizer_class=af.MultiNest,
-        cosmology=cosmo.Planck15,
-        auto_link_priors=False,
+            self,
+            phase_name,
+            phase_tag=None,
+            phase_folders=tuple(),
+            optimizer_class=af.MultiNest,
+            cosmology=cosmo.Planck15,
+            auto_link_priors=False,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
@@ -28,8 +28,6 @@ class AbstractPhase(af.AbstractPhase):
             The name of this phase
         """
 
-        self.phase_folders = phase_folders
-
         super().__init__(
             phase_name=phase_name,
             phase_tag=phase_tag,
@@ -39,6 +37,10 @@ class AbstractPhase(af.AbstractPhase):
         )
 
         self.cosmology = cosmology
+
+    @property
+    def phase_folders(self):
+        return self.optimizer.phase_folders
 
     @property
     def phase_property_collections(self):
@@ -55,11 +57,6 @@ class AbstractPhase(af.AbstractPhase):
     @property
     def path(self):
         return self.optimizer.path
-
-    @property
-    def doc(self):
-        if self.__doc__ is not None:
-            return self.__doc__.replace("  ", "").replace("\n", " ")
 
     def customize_priors(self, results):
         """
@@ -102,7 +99,6 @@ class AbstractPhase(af.AbstractPhase):
                 return self.results.last
 
         def tracer_for_instance(self, instance):
-
             return ray_tracing.Tracer.from_galaxies(
                 galaxies=instance.galaxies, cosmology=self.cosmology
             )
@@ -119,18 +115,18 @@ class AbstractPhase(af.AbstractPhase):
 
     class Result(af.Result):
         def __init__(
-            self,
-            constant,
-            figure_of_merit,
-            previous_variable,
-            gaussian_tuples,
-            analysis,
-            optimizer,
+                self,
+                constant,
+                figure_of_merit,
+                previous_variable,
+                gaussian_tuples,
+                analysis,
+                optimizer,
         ):
             """
             The result of a phase
             """
-            super(Phase.Result, self).__init__(
+            super().__init__(
                 constant=constant,
                 figure_of_merit=figure_of_merit,
                 previous_variable=previous_variable,
