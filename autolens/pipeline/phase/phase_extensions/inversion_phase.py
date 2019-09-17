@@ -2,16 +2,23 @@ import autofit as af
 from autolens.model.hyper import hyper_data as hd
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
-from autolens.pipeline.phase import phase_imaging as ph
+from autolens.pipeline.phase.phase import Phase
+from autolens.pipeline.phase.phase_imaging import PhaseImaging
 from .hyper_phase import HyperPhase
 
 
 # noinspection PyAbstractClass
 class VariableFixingHyperPhase(HyperPhase):
     def __init__(
-        self, phase: ph.PhaseImaging, hyper_name: str, variable_classes=tuple()
+            self,
+            phase: Phase,
+            hyper_name: str,
+            variable_classes=tuple()
     ):
-        super().__init__(phase=phase, hyper_name=hyper_name)
+        super().__init__(
+            phase=phase,
+            hyper_name=hyper_name
+        )
         self.variable_classes = variable_classes
 
     def make_hyper_phase(self):
@@ -46,8 +53,7 @@ class VariableFixingHyperPhase(HyperPhase):
         return phase.run(
             data,
             results=results,
-            mask=results.last.mask,
-            positions=results.last.positions,
+            mask=results.last.mask
         )
 
 
@@ -59,12 +65,17 @@ class InversionPhase(VariableFixingHyperPhase):
     """
 
     def __init__(
-        self,
-        phase: ph.PhaseImaging,
-        variable_classes=(px.Pixelization, rg.Regularization),
+            self,
+            phase: Phase,
+            variable_classes=(
+                    px.Pixelization,
+                    rg.Regularization
+            ),
     ):
         super().__init__(
-            phase=phase, variable_classes=variable_classes, hyper_name="inversion"
+            phase=phase,
+            variable_classes=variable_classes,
+            hyper_name="inversion"
         )
 
 
@@ -75,10 +86,14 @@ class InversionBackgroundSkyPhase(InversionPhase):
     pixelization
     """
 
-    def __init__(self, phase: ph.PhaseImaging):
+    def __init__(self, phase: PhaseImaging):
         super().__init__(
             phase=phase,
-            variable_classes=(px.Pixelization, rg.Regularization, hd.HyperImageSky),
+            variable_classes=(
+                px.Pixelization,
+                rg.Regularization,
+                hd.HyperImageSky
+            ),
         )
 
 
@@ -89,7 +104,7 @@ class InversionBackgroundNoisePhase(InversionPhase):
     pixelization
     """
 
-    def __init__(self, phase: ph.PhaseImaging):
+    def __init__(self, phase: PhaseImaging):
         super().__init__(
             phase=phase,
             variable_classes=(
@@ -107,7 +122,7 @@ class InversionBackgroundBothPhase(InversionPhase):
     pixelization
     """
 
-    def __init__(self, phase: ph.PhaseImaging):
+    def __init__(self, phase: PhaseImaging):
         super().__init__(
             phase=phase,
             variable_classes=(
