@@ -195,7 +195,7 @@ class PhaseGalaxy(af.AbstractPhase):
             fit = self.fit_for_instance(instance=instance)
             return fit.figure_of_merit
 
-        def visualize(self, instance, image_path, during_analysis):
+        def visualize(self, instance, during_analysis):
             fit = self.fit_for_instance(instance=instance)
 
             self.visualizer.plot_galaxy_fit_subplot(
@@ -268,7 +268,7 @@ class PhaseGalaxy(af.AbstractPhase):
             fit_y, fit_x = self.fit_for_instance(instance=instance)
             return fit_y.figure_of_merit + fit_x.figure_of_merit
 
-        def visualize(self, instance, image_path, during_analysis):
+        def visualize(self, instance, during_analysis):
 
             fit_y, fit_x = self.fit_for_instance(instance=instance)
 

@@ -396,7 +396,7 @@ class PhaseImaging(PhaseData):
                 hyper_background_noise=hyper_background_noise,
             )
 
-        def visualize(self, instance, image_path, during_analysis):
+        def visualize(self, instance, during_analysis):
             instance = self.associate_images(
                 instance=instance
             )
