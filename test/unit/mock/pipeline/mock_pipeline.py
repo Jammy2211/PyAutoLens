@@ -133,7 +133,9 @@ class MockResults(object):
                 array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
             )
 
-            binned_image_1d_dict[galaxy] = binned_grid.mask.mapping.array_1d_from_array_2d(
+            binned_image_1d_dict[
+                galaxy
+            ] = binned_grid.mask.mapping.array_1d_from_array_2d(
                 array_2d=binned_image_2d
             )
 

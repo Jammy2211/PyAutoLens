@@ -30,8 +30,7 @@ class TestMassSheet(object):
         assert convergence[0] == pytest.approx(1.0, 1e-3)
 
         convergence = mass_sheet.convergence_from_grid(
-            grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]),
-bypass_decorator=True
+            grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]), bypass_decorator=True
         )
 
         assert convergence[0] == pytest.approx(1.0, 1e-3)
@@ -41,8 +40,7 @@ bypass_decorator=True
         mass_sheet = al.mass_profiles.MassSheet(centre=(0.0, 0.0), kappa=-3.0)
 
         convergence = mass_sheet.convergence_from_grid(
-            grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]),
-bypass_decorator=True
+            grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]), bypass_decorator=True
         )
 
         assert convergence[0] == pytest.approx(-3.0, 1e-3)
@@ -181,8 +179,7 @@ bypass_decorator=True
         mass_sheet = al.mass_profiles.MassSheet(centre=(1.0, 2.0), kappa=1.0)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]]),
-bypass_decorator=True
+            grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]]), bypass_decorator=True
         )
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
@@ -195,7 +192,7 @@ bypass_decorator=True
 
         deflections = mass_sheet.deflections_from_grid(
             grid=np.array([[1.0, 1.0], [2.0, 2.0], [1.0, 1.0], [2.0, 2.0]]),
-bypass_decorator=True
+            bypass_decorator=True,
         )
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
@@ -212,7 +209,7 @@ bypass_decorator=True
     def test__reshape_decorators(self):
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1,
+            shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         mass_sheet = al.mass_profiles.MassSheet()

@@ -80,7 +80,9 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(lens_imaging_data=lens_data, tracer=tracer)
+    fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
+        lens_imaging_data=lens_data, tracer=tracer
+    )
 
     assert fit.chi_squared == 0.0
 

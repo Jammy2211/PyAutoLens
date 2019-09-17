@@ -53,7 +53,8 @@ class TestTotalPixels:
                         [False, False, False],
                     ]
                 ),
-                pixel_scale=1.0, sub_size=1,
+                pixel_scale=1.0,
+                sub_size=1,
             )
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
@@ -82,7 +83,8 @@ class TestTotalPixels:
                 array=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
-                pixel_scale=1.0, sub_size=1,
+                pixel_scale=1.0,
+                sub_size=1,
             )
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
@@ -113,7 +115,8 @@ class TestTotalPixels:
                         [True, True, False, True],
                     ]
                 ),
-                pixel_scale=1.0, sub_size=1,
+                pixel_scale=1.0,
+                sub_size=1,
             )
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
@@ -145,7 +148,8 @@ class TestTotalPixels:
                         [True, False, True],
                     ]
                 ),
-                pixel_scale=1.0, sub_size=1,
+                pixel_scale=1.0,
+                sub_size=1,
             )
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 1]])

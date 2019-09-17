@@ -290,9 +290,7 @@ def binned_upmask_frommask_and_bin_up_factor(mask_2d, bin_up_factor):
 
 
 @decorator_util.jit()
-def paddedmask_to_mask_1d_index_frommask_and_bin_up_factor(
-    mask_2d, bin_up_factor
-):
+def paddedmask_to_mask_1d_index_frommask_and_bin_up_factor(mask_2d, bin_up_factor):
     """Create a 2D array which maps every False entry of a 2D mask to its 1D mask array index 2D binned mask. Every \
     True entry is given a value -1.
 
@@ -572,9 +570,7 @@ def binned_masked_array_1d_to_masked_array_1d_frommask_and_bin_up_factor(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
-    total_binned_masked_pixels = mask_util.total_pixels_from_mask(
-        mask=binned_upmask
-    )
+    total_binned_masked_pixels = mask_util.total_pixels_from_mask(mask=binned_upmask)
 
     binned_masked_array_1d_to_masked_array_1d = -1 * np.ones(total_binned_masked_pixels)
 
@@ -589,9 +585,7 @@ def binned_masked_array_1d_to_masked_array_1d_frommask_and_bin_up_factor(
     for mask_y in range(paddedmask_to_mask_1d_index.shape[0]):
         for mask_x in range(paddedmask_to_mask_1d_index.shape[1]):
             if paddedmask_to_mask_1d_index[mask_y, mask_x] >= 0:
-                binned_mask_index = paddedmask_to_binned_mask_1d_index[
-                    mask_y, mask_x
-                ]
+                binned_mask_index = paddedmask_to_binned_mask_1d_index[mask_y, mask_x]
                 if binned_masked_array_1d_to_masked_array_1d[binned_mask_index] == -1:
                     padded_mask_index = paddedmask_to_mask_1d_index[mask_y, mask_x]
                     binned_masked_array_1d_to_masked_array_1d[
@@ -675,9 +669,7 @@ def binned_masked_array_1d_to_masked_array_1d_all_frommask_and_bin_up_factor(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
-    total_binned_masked_pixels = mask_util.total_pixels_from_mask(
-        mask=binned_upmask
-    )
+    total_binned_masked_pixels = mask_util.total_pixels_from_mask(mask=binned_upmask)
 
     binned_masked_array_1d_to_masked_array_1d_all = -1 * np.ones(
         (total_binned_masked_pixels, bin_up_factor ** 2)
@@ -697,9 +689,7 @@ def binned_masked_array_1d_to_masked_array_1d_all_frommask_and_bin_up_factor(
         for mask_x in range(paddedmask_to_mask_1d_index.shape[1]):
             if paddedmask_to_mask_1d_index[mask_y, mask_x] >= 0:
 
-                binned_mask_index = paddedmask_to_binned_mask_1d_index[
-                    mask_y, mask_x
-                ]
+                binned_mask_index = paddedmask_to_binned_mask_1d_index[mask_y, mask_x]
                 binned_mask_count = int(binned_masked_array_1d_sizes[binned_mask_index])
                 padded_mask_index = paddedmask_to_mask_1d_index[mask_y, mask_x]
 

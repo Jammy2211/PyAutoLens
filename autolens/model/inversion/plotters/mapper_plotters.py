@@ -68,7 +68,7 @@ def plot_image_and_mapper(
     )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-    plot_image_plane_image_pixels(
+    plot_image_pixels(
         grid=image_grid, image_pixels=image_pixels, point_colors=point_colors
     )
     plot_image_plane_source_pixels(
@@ -612,7 +612,7 @@ def plot_border(
         )
 
 
-def plot_image_plane_image_pixels(grid, image_pixels, point_colors):
+def plot_image_pixels(grid, image_pixels, point_colors):
 
     if image_pixels is not None:
 

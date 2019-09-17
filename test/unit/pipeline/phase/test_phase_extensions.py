@@ -44,7 +44,9 @@ def make_result(lens_imaging_data_7x7, instance):
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=al.PhaseImaging.Analysis(
-            lens_imaging_data=lens_imaging_data_7x7, cosmology=cosmo.Planck15, image_path=""
+            lens_imaging_data=lens_imaging_data_7x7,
+            cosmology=cosmo.Planck15,
+            image_path="",
         ),
         optimizer=None,
     )
@@ -204,17 +206,20 @@ class TestImagePassing(object):
 
         assert (
             len(
-                tracer.galaxy_image_dict_from_grid_and_convolver(
+                tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
                     grid=sub_grid_7x7, convolver=convolver_7x7
                 )
             )
             == 2
         )
-        assert lens_galaxy in tracer.galaxy_image_dict_from_grid_and_convolver(
+        assert lens_galaxy in tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
             grid=sub_grid_7x7, convolver=convolver_7x7
         )
-        assert source_galaxy in tracer.galaxy_image_dict_from_grid_and_convolver(
-            grid=sub_grid_7x7, convolver=convolver_7x7
+        assert (
+            source_galaxy
+            in tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
+                grid=sub_grid_7x7, convolver=convolver_7x7
+            )
         )
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_images(
@@ -461,7 +466,9 @@ class TestImagePassing(object):
             hyper_model_image_1d, 1.0e-4
         )
 
-    def test__fit_uses_hyper_fit_correctly_(self, instance, result, lens_imaging_data_7x7):
+    def test__fit_uses_hyper_fit_correctly_(
+        self, instance, result, lens_imaging_data_7x7
+    ):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = al.PhaseImaging.Analysis(
@@ -629,7 +636,9 @@ class TestHyperGalaxyPhase(object):
             hyper_background_noise=hyper_background_noise,
         )
 
-        phase_imaging_7x7_hyper = phase_imaging_7x7.extend_with_multiple_hyper_phases(hyper_galaxy=True)
+        phase_imaging_7x7_hyper = phase_imaging_7x7.extend_with_multiple_hyper_phases(
+            hyper_galaxy=True
+        )
 
         instance = phase_imaging_7x7_hyper.variable.instance_from_unit_vector([])
 
