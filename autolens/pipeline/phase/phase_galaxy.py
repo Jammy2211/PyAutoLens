@@ -4,7 +4,7 @@ import autofit as af
 
 from autolens.model.galaxy import galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
-from autolens.pipeline.phase.phase import Phase
+from autolens.pipeline.phase.phase import AbstractPhase
 
 
 class PhaseGalaxy(af.AbstractPhase):
@@ -161,7 +161,7 @@ class PhaseGalaxy(af.AbstractPhase):
             )
 
     # noinspection PyAbstractClass
-    class Analysis(Phase.Analysis):
+    class Analysis(AbstractPhase.Analysis):
         def __init__(self, cosmology, results):
             super(PhaseGalaxy.Analysis, self).__init__(
                 cosmology=cosmology, results=results

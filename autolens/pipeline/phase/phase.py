@@ -5,7 +5,6 @@ from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
 
 
-
 class AbstractPhase(af.AbstractPhase):
     def __init__(
             self,
@@ -147,12 +146,5 @@ class AbstractPhase(af.AbstractPhase):
             """
             return self.constant.path_instance_tuples_for_class(cls=g.Galaxy)
 
-
-class Phase(AbstractPhase):
     def run(self, image, results=None, mask=None):
         raise NotImplementedError()
-
-    # noinspection PyAbstractClass
-    class Analysis(AbstractPhase.Analysis):
-        def __init__(self, cosmology, results=None):
-            super(Phase.Analysis, self).__init__(cosmology=cosmology, results=results)

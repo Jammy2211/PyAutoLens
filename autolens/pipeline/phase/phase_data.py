@@ -6,7 +6,7 @@ from autolens.array import mask as msk
 from autolens.lens import lens_fit
 from autolens.model.inversion import pixelizations as pix
 from autolens.pipeline.phase import phase_extensions
-from autolens.pipeline.phase.phase import Phase
+from autolens.pipeline.phase.phase import AbstractPhase
 
 
 def default_mask_function(image):
@@ -23,7 +23,7 @@ def isinstance_or_prior(obj, cls):
     return False
 
 
-class PhaseData(Phase):
+class PhaseData(AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
@@ -264,7 +264,7 @@ class PhaseData(Phase):
         )
 
     # noinspection PyAbstractClass
-    class Analysis(Phase.Analysis):
+    class Analysis(AbstractPhase.Analysis):
         @property
         def lens_data(self):
             raise NotImplementedError()
@@ -299,7 +299,7 @@ class PhaseData(Phase):
                         if pixelization.pixels > self.lens_data.inversion_pixel_limit:
                             raise exc.PixelizationException
 
-    class Result(Phase.Result):
+    class Result(AbstractPhase.Result):
         def __init__(
                 self,
                 constant,
