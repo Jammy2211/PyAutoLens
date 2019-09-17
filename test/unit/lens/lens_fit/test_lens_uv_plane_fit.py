@@ -73,7 +73,7 @@ class TestLikelihood:
         uv_wavelengths = np.array([[0.0, 0.0]])
 
         uv_plane_data = al.UVPlaneData(
-            shape=(1,2),
+            shape=(1, 2),
             visibilities=5.0 * np.ones((1, 2)),
             pixel_scale=1.0,
             noise_map=np.ones((1,)),
@@ -90,16 +90,17 @@ class TestLikelihood:
                     [True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
-        lens_uv_plane_data_7 = al.LensUVPlaneData(uv_plane_data=uv_plane_data, mask=mask)
+        lens_uv_plane_data_7 = al.LensUVPlaneData(
+            uv_plane_data=uv_plane_data, mask=mask
+        )
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        g0 = al.Galaxy(
-            redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
-        )
+        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
@@ -124,19 +125,15 @@ class TestLikelihood:
         assert fit.chi_squared == 25.0
         assert fit.reduced_chi_squared == 25.0 / 2.0
         assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
-        assert fit.likelihood == -0.5 * (
-            25.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0)
-        )
+        assert fit.likelihood == -0.5 * (25.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
 
-    def test__3x2_image__2x2_visibilities__use_transformer_for_likelihood(
-        self
-    ):
+    def test__3x2_image__2x2_visibilities__use_transformer_for_likelihood(self):
 
         uv_wavelengths = np.array([[1.0, 0.0], [1.0, 1.0], [2.0, 2.0]])
 
         transformer = al.Transformer(
             uv_wavelengths=uv_wavelengths,
-            grid_radians=np.array([[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]])
+            grid_radians=np.array([[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]]),
         )
 
         # This PSF changes the blurred image plane image from [1.0, 1.0] to [1.0, 5.0]
@@ -144,7 +141,7 @@ class TestLikelihood:
         # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
         uv_plane_data = al.UVPlaneData(
-            shape=(1,2),
+            shape=(1, 2),
             visibilities=5.0 * np.ones((3, 2)),
             pixel_scale=1.0,
             noise_map=2.0 * np.ones((3,)),
@@ -160,19 +157,27 @@ class TestLikelihood:
                     [True, True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
-        lens_uv_plane_data_7 = al.LensUVPlaneData(uv_plane_data=uv_plane_data, mask=mask)
+        lens_uv_plane_data_7 = al.LensUVPlaneData(
+            uv_plane_data=uv_plane_data, mask=mask
+        )
 
         # Setup as a ray trace instance, using a light profile for the lens
 
         g0 = al.Galaxy(
-            redshift=0.5, light_profile=al.light_profiles.EllipticalSersic(intensity=0.001)
+            redshift=0.5,
+            light_profile=al.light_profiles.EllipticalSersic(intensity=0.001),
         )
 
-        profile_image = g0.profile_image_from_grid(grid=lens_uv_plane_data_7.grid, return_in_2d=False, return_binned=True)
-        model_visibilities_manual = transformer.visibilities_from_image_1d(image_1d=profile_image)
+        profile_image = g0.profile_image_from_grid(
+            grid=lens_uv_plane_data_7.grid, return_in_2d=False, return_binned=True
+        )
+        model_visibilities_manual = transformer.visibilities_from_image_1d(
+            image_1d=profile_image
+        )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
@@ -183,28 +188,78 @@ class TestLikelihood:
         assert (fit._mask == np.array([False, False])).all()
 
         assert (fit._data == np.array([[5.0, 5.0], [5.0, 5.0], [5.0, 5.0]])).all()
-        assert (fit.visibilities() == np.array([[[5.0, 5.0], [5.0, 5.0], [5.0, 5.0]]])).all()
-        assert (fit._noise_map == np.array([[[2.0, 2.0], [2.0, 2.0], [2.0, 2.0]]])).all()
-        assert (fit.noise_map() == np.array([[[2.0, 2.0], [2.0, 2.0], [2.0, 2.0]]])).all()
+        assert (
+            fit.visibilities() == np.array([[[5.0, 5.0], [5.0, 5.0], [5.0, 5.0]]])
+        ).all()
+        assert (
+            fit._noise_map == np.array([[[2.0, 2.0], [2.0, 2.0], [2.0, 2.0]]])
+        ).all()
+        assert (
+            fit.noise_map() == np.array([[[2.0, 2.0], [2.0, 2.0], [2.0, 2.0]]])
+        ).all()
 
         assert fit._model_data == pytest.approx(model_visibilities_manual, 1.0e-4)
-        assert fit.model_visibilities() == pytest.approx(model_visibilities_manual, 1.0e-4)
+        assert fit.model_visibilities() == pytest.approx(
+            model_visibilities_manual, 1.0e-4
+        )
 
         # moddel visibilities are all [1.94805, 0.0]
 
-        assert fit._residual_map == pytest.approx(np.array([[3.0519, 5.0], [3.0519, 5.0], [3.0519, 5.0]]), 1.0e-4)
-        assert fit.residual_map() == pytest.approx(np.array([[3.0519, 5.0], [3.0519, 5.0], [3.0519, 5.0]]), 1.0e-4)
-        assert fit._normalized_residual_map == pytest.approx(np.array([[3.0519/2.0, 5.0/2.0], [3.0519/2.0, 5.0/2.0], [3.0519/2.0, 5.0/2.0]]), 1.0e-4)
-        assert fit.normalized_residual_map() == pytest.approx(np.array([[3.0519/2.0, 5.0/2.0], [3.0519/2.0, 5.0/2.0], [3.0519/2.0, 5.0/2.0]]), 1.0e-4)
-        assert fit._chi_squared_map == pytest.approx(np.array([[(3.0519/2.0)**2.0, (5.0/2.0)**2.0], [(3.0519/2.0)**2.0, (5.0/2.0)**2.0], [(3.0519/2.0)**2.0, (5.0/2.0)**2.0]]), 1.0e-4)
-        assert fit.chi_squared_map() ==  pytest.approx(np.array([[(3.0519/2.0)**2.0, (5.0/2.0)**2.0], [(3.0519/2.0)**2.0, (5.0/2.0)**2.0], [(3.0519/2.0)**2.0, (5.0/2.0)**2.0]]), 1.0e-4)
+        assert fit._residual_map == pytest.approx(
+            np.array([[3.0519, 5.0], [3.0519, 5.0], [3.0519, 5.0]]), 1.0e-4
+        )
+        assert fit.residual_map() == pytest.approx(
+            np.array([[3.0519, 5.0], [3.0519, 5.0], [3.0519, 5.0]]), 1.0e-4
+        )
+        assert fit._normalized_residual_map == pytest.approx(
+            np.array(
+                [
+                    [3.0519 / 2.0, 5.0 / 2.0],
+                    [3.0519 / 2.0, 5.0 / 2.0],
+                    [3.0519 / 2.0, 5.0 / 2.0],
+                ]
+            ),
+            1.0e-4,
+        )
+        assert fit.normalized_residual_map() == pytest.approx(
+            np.array(
+                [
+                    [3.0519 / 2.0, 5.0 / 2.0],
+                    [3.0519 / 2.0, 5.0 / 2.0],
+                    [3.0519 / 2.0, 5.0 / 2.0],
+                ]
+            ),
+            1.0e-4,
+        )
+        assert fit._chi_squared_map == pytest.approx(
+            np.array(
+                [
+                    [(3.0519 / 2.0) ** 2.0, (5.0 / 2.0) ** 2.0],
+                    [(3.0519 / 2.0) ** 2.0, (5.0 / 2.0) ** 2.0],
+                    [(3.0519 / 2.0) ** 2.0, (5.0 / 2.0) ** 2.0],
+                ]
+            ),
+            1.0e-4,
+        )
+        assert fit.chi_squared_map() == pytest.approx(
+            np.array(
+                [
+                    [(3.0519 / 2.0) ** 2.0, (5.0 / 2.0) ** 2.0],
+                    [(3.0519 / 2.0) ** 2.0, (5.0 / 2.0) ** 2.0],
+                    [(3.0519 / 2.0) ** 2.0, (5.0 / 2.0) ** 2.0],
+                ]
+            ),
+            1.0e-4,
+        )
 
         assert fit.chi_squared == pytest.approx(25.73579, 1.0e-4)
         assert fit.reduced_chi_squared == pytest.approx(25.73579 / 6.0)
-        assert fit.noise_normalization == pytest.approx((6.0 * np.log(2 * np.pi * 2.0 ** 2.0)), 1.0e-4)
-        assert fit.likelihood == pytest.approx(-0.5 * (
-            25.73579 + 6.0 * np.log(2 * np.pi * 2.0 ** 2.0)
-        ), 1.0e-4)
+        assert fit.noise_normalization == pytest.approx(
+            (6.0 * np.log(2 * np.pi * 2.0 ** 2.0)), 1.0e-4
+        )
+        assert fit.likelihood == pytest.approx(
+            -0.5 * (25.73579 + 6.0 * np.log(2 * np.pi * 2.0 ** 2.0)), 1.0e-4
+        )
 
 
 class TestCompareToManualProfilesOnly:
@@ -232,13 +287,12 @@ class TestCompareToManualProfilesOnly:
         )
 
         model_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
-            grid=lens_uv_plane_data_7.grid,
-            transformer=lens_uv_plane_data_7.transformer,
+            grid=lens_uv_plane_data_7.grid, transformer=lens_uv_plane_data_7.transformer
         )
 
         assert model_visibilities == pytest.approx(fit._model_data, 1e-4)
         assert model_visibilities == pytest.approx(fit.model_visibilities(), 1e-4)
-        
+
         residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
             data=lens_uv_plane_data_7.visibilities(),
             mask=lens_uv_plane_data_7.visibilities_mask,
@@ -271,7 +325,8 @@ class TestCompareToManualProfilesOnly:
         assert chi_squared_map == pytest.approx(fit.chi_squared_map(), 1e-4)
 
         chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=fit._chi_squared_map, mask=lens_uv_plane_data_7.visibilities_mask
+            chi_squared_map=fit._chi_squared_map,
+            mask=lens_uv_plane_data_7.visibilities_mask,
         )
 
         noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
@@ -440,6 +495,7 @@ class TestCompareToManualProfilesOnly:
     #         unmasked_blurred_profile_image_of_galaxies[1][0]
     #         == fit.unmasked_blurred_profile_image_of_planes_and_galaxies[1][0]
     #     ).all()
+
 
 #
 # class TestCompareToManualInversionOnly:

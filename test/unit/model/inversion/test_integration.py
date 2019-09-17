@@ -366,7 +366,8 @@ class TestVoronoiMagnification:
             array=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         grid = np.array(
@@ -455,7 +456,8 @@ class TestVoronoiMagnification:
             array=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         grid = np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
@@ -520,7 +522,8 @@ class TestVoronoiMagnification:
             array=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0, sub_size=2,
+            pixel_scale=1.0,
+            sub_size=2,
         )
 
         grid = np.array(
@@ -614,7 +617,8 @@ class TestVoronoiMagnification:
                     [True, True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         grid = np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])

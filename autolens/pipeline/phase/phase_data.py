@@ -8,10 +8,12 @@ from autolens.model.inversion import pixelizations as pix
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase.phase import Phase
 
+
 def default_mask_function(image):
     return msk.Mask.circular(
         shape=image.shape, pixel_scale=image.pixel_scale, sub_size=1, radius_arcsec=3.0
     )
+
 
 def isinstance_or_prior(obj, cls):
     if isinstance(obj, cls):

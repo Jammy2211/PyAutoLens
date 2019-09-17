@@ -679,7 +679,9 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
     if mask is not None:
 
         plt.gca()
-        edge_pixels = mask.mapping.mask_1d_index_tomask_index[mask.edge_1d_indexes] + 0.5
+        edge_pixels = (
+            mask.mapping.mask_1d_index_tomask_index[mask.edge_1d_indexes] + 0.5
+        )
 
         if zoom_offset_pixels is not None:
             edge_pixels_plot = edge_pixels - zoom_offset_pixels

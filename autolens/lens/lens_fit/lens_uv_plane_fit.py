@@ -53,7 +53,7 @@ class UVPlaneFit(af.DataFit):
     #             regularization_term=self.inversion.regularization_term,
     #             noise_normalization=self.noise_normalization,
     #         )
-    # 
+    #
     # @property
     # def evidence(self):
     #     if self.inversion is not None:
@@ -102,9 +102,7 @@ class LensUVPlaneFit(UVPlaneFit):
         )
 
     @classmethod
-    def from_lens_uv_plane_data_and_tracer(
-        cls, lens_uv_plane_data, tracer, 
-    ):
+    def from_lens_uv_plane_data_and_tracer(cls, lens_uv_plane_data, tracer):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper_galaxies.
 
@@ -117,19 +115,18 @@ class LensUVPlaneFit(UVPlaneFit):
         """
 
         profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
-            grid=lens_uv_plane_data.grid,
-            transformer=lens_uv_plane_data.transformer,
+            grid=lens_uv_plane_data.grid, transformer=lens_uv_plane_data.transformer
         )
 
         # profile_subtracted_visibilities_1d = visibilities_1d - blurred_profile_visibilities_1d
-        # 
+        #
         # if not tracer.has_pixelization:
 
         inversion = None
         model_visibilities = profile_visibilities
 
         # else:
-        # 
+        #
         #     inversion = tracer.inversion_from_grid_visibilities_1d_noise_map_1d_and_convolver(
         #         grid=lens_uv_plane_data.grid,
         #         visibilities_1d=profile_subtracted_visibilities_1d,
@@ -138,7 +135,7 @@ class LensUVPlaneFit(UVPlaneFit):
         #         inversion_uses_border=lens_uv_plane_data.inversion_uses_border,
         #         preload_pixelization_grids_of_planes=lens_uv_plane_data.preload_pixelization_grids_of_planes,
         #     )
-        # 
+        #
         #     model_visibilities_1d = blurred_profile_visibilities_1d + inversion.reconstructed_data_1d
 
         return cls(
@@ -170,11 +167,11 @@ class LensUVPlaneFit(UVPlaneFit):
     #     galaxy_visibilities_dict = self.tracer.galaxy_visibilities_dict_from_grid_and_convolver(
     #         grid=self.grid, convolver=self.convolver
     #     )
-    # 
+    #
     #     # TODO : Extend to multiple inversioons across Planes
-    # 
+    #
     #     for plane_index in self.tracer.plane_indexes_with_pixelizations:
-    # 
+    #
     #         galaxy_visibilities_dict.update(
     #             {
     #                 self.tracer.planes[plane_index].galaxies[
@@ -182,23 +179,23 @@ class LensUVPlaneFit(UVPlaneFit):
     #                 ]: self.inversion.reconstructed_data_1d
     #             }
     #         )
-    # 
+    #
     #     return galaxy_visibilities_dict
-    # 
+    #
     # @property
     # def galaxy_visibilities_2d_dict(self) -> {g.Galaxy: np.ndarray}:
     #     """
     #     A dictionary associating galaxies with their corresponding model visibilities
     #     """
-    # 
+    #
     #     galaxy_visibilities_2d_dict = {}
-    # 
+    #
     #     for galalxy, galaxy_visibilities in self.galaxy_visibilities_1d_dict.items():
-    # 
+    #
     #         galaxy_visibilities_2d_dict[galalxy] = self.grid.mapping.scaled_array_2d_from_array_1d(
     #             array_1d=galaxy_visibilities
     #         )
-    # 
+    #
     #     return galaxy_visibilities_2d_dict
 
     def model_visibilities_of_planes(self):

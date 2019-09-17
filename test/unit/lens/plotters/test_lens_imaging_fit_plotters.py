@@ -10,7 +10,9 @@ def make_lens_fit_plotter_setup():
     )
 
 
-def test__fit_sub_plot(lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch):
+def test__fit_sub_plot(
+    lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
+):
 
     al.lens_imaging_fit_plotters.plot_fit_subplot(
         fit=lens_imaging_fit_x2_plane_7x7,
@@ -27,7 +29,10 @@ def test__fit_sub_plot(lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plo
 
 
 def test__fit_for_plane_subplot(
-    lens_imaging_fit_x1_plane_7x7, lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
+    lens_imaging_fit_x1_plane_7x7,
+    lens_imaging_fit_x2_plane_7x7,
+    lens_fit_plotter_path,
+    plot_patch,
 ):
 
     al.lens_imaging_fit_plotters.plot_fit_subplot_for_plane(
@@ -74,7 +79,10 @@ def test__fit_for_plane_subplot(
 
 
 def test__fit_for_planes_subplot(
-    lens_imaging_fit_x1_plane_7x7, lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
+    lens_imaging_fit_x1_plane_7x7,
+    lens_imaging_fit_x2_plane_7x7,
+    lens_fit_plotter_path,
+    plot_patch,
 ):
 
     al.lens_imaging_fit_plotters.plot_fit_subplot_of_planes(
@@ -106,7 +114,10 @@ def test__fit_for_planes_subplot(
 
 
 def test__fit_individuals__source_and_lens__depedent_on_input(
-    lens_imaging_fit_x1_plane_7x7, lens_imaging_fit_x2_plane_7x7, lens_fit_plotter_path, plot_patch
+    lens_imaging_fit_x1_plane_7x7,
+    lens_imaging_fit_x2_plane_7x7,
+    lens_fit_plotter_path,
+    plot_patch,
 ):
 
     al.lens_imaging_fit_plotters.plot_fit_individuals(

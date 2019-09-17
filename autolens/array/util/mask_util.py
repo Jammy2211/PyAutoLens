@@ -475,9 +475,7 @@ def blurring_mask_from_mask_and_psf_shape(mask, psf_shape):
 
 
 @decorator_util.jit()
-def mask_from_shape_and_mask_1d_index_tomask_index(
-    shape, mask_1d_index_tomask_index
-):
+def mask_from_shape_and_mask_1d_index_tomask_index(shape, mask_1d_index_tomask_index):
     """For a 1D array that was computed by mapping_util unmasked values from a 2D array of shape (rows, columns), map its \
     indexes back to the original 2D array to create the origianl 2D mask.
 
@@ -511,8 +509,7 @@ def mask_from_shape_and_mask_1d_index_tomask_index(
 
     for index in range(len(mask_1d_index_tomask_index)):
         mask[
-            mask_1d_index_tomask_index[index, 0],
-            mask_1d_index_tomask_index[index, 1],
+            mask_1d_index_tomask_index[index, 0], mask_1d_index_tomask_index[index, 1]
         ] = False
 
     return mask

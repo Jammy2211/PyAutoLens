@@ -12,10 +12,12 @@ from autolens.pipeline.phase.phase_data import PhaseData
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.plotters import phase_plotters
 
+
 def default_mask_function(image):
     return msk.Mask.circular(
         shape=image.shape, pixel_scale=image.pixel_scale, sub_size=1, radius_arcsec=3.0
     )
+
 
 def isinstance_or_prior(obj, cls):
     if isinstance(obj, cls):
@@ -23,6 +25,7 @@ def isinstance_or_prior(obj, cls):
     if isinstance(obj, af.PriorModel) and obj.cls == cls:
         return True
     return False
+
 
 class PhaseImaging(PhaseData):
 
@@ -151,16 +154,15 @@ class PhaseImaging(PhaseData):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
 
-        mask = self.setup_phase_mask(
-            data=data,
-            mask=mask,
-        )
+        mask = self.setup_phase_mask(data=data, mask=mask)
 
         self.check_positions(positions=positions)
 
         pixel_scale_binned_grid = self.pixel_scale_binned_grid_from_mask(mask=mask)
 
-        preload_pixelization_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(results=results)
+        preload_pixelization_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(
+            results=results
+        )
 
         lens_imaging_data = ld.LensImagingData(
             imaging_data=data,
@@ -177,7 +179,8 @@ class PhaseImaging(PhaseData):
         )
 
         modified_image = self.modify_image(
-            image=lens_imaging_data.image(return_in_2d=True, return_masked=False), results=results
+            image=lens_imaging_data.image(return_in_2d=True, return_masked=False),
+            results=results,
         )
 
         lens_imaging_data = lens_imaging_data.new_lens_imaging_data_with_modified_image(
@@ -281,7 +284,9 @@ class PhaseImaging(PhaseData):
             self.lens_imaging_data = lens_imaging_data
 
             mask = self.lens_imaging_data.mask if self.should_plot_mask else None
-            positions = self.lens_imaging_data.positions if self.should_plot_positions else None
+            positions = (
+                self.lens_imaging_data.positions if self.should_plot_positions else None
+            )
 
             subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
                 path=image_path, folder_names=["subplots"]
@@ -444,7 +449,9 @@ class PhaseImaging(PhaseData):
             else:
                 return None
 
-        def lens_imaging_fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
+        def lens_imaging_fit_for_tracer(
+            self, tracer, hyper_image_sky, hyper_background_noise
+        ):
 
             return lens_fit.LensImagingFit.from_lens_imaging_data_and_tracer(
                 lens_imaging_data=self.lens_imaging_data,
@@ -466,7 +473,9 @@ class PhaseImaging(PhaseData):
             instance = self.associate_images(instance=instance)
 
             mask = self.lens_imaging_data.mask if self.should_plot_mask else None
-            positions = self.lens_imaging_data.positions if self.should_plot_positions else None
+            positions = (
+                self.lens_imaging_data.positions if self.should_plot_positions else None
+            )
 
             tracer = self.tracer_for_instance(instance=instance)
 
@@ -482,7 +491,7 @@ class PhaseImaging(PhaseData):
                 should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
                 should_plot_all_at_end_png=self.plot_ray_tracing_all_at_end_png,
                 should_plot_all_at_end_fits=self.plot_ray_tracing_all_at_end_fits,
-                should_plot_image_plane_image=self.plot_ray_tracing_profile_image,
+                should_plot_image=self.plot_ray_tracing_profile_image,
                 should_plot_source_plane=self.plot_ray_tracing_source_plane,
                 should_plot_convergence=self.plot_ray_tracing_convergence,
                 should_plot_potential=self.plot_ray_tracing_potential,
@@ -681,7 +690,9 @@ class PhaseImaging(PhaseData):
                     array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
                 )
 
-                binned_image_1d_dict[galaxy] = binned_grid.mask.mapping.array_1d_from_array_2d(
+                binned_image_1d_dict[
+                    galaxy
+                ] = binned_grid.mask.mapping.array_1d_from_array_2d(
                     array_2d=binned_image_2d
                 )
 

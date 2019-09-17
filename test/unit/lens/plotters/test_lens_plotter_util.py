@@ -109,7 +109,10 @@ def test__fit_quantities_are_output(
 
 
 def test__subtracted_image_of_plane_is_output(
-    lens_imaging_fit_x1_plane_7x7, lens_imaging_fit_x2_plane_7x7, lens_plotter_util_path, plot_patch
+    lens_imaging_fit_x1_plane_7x7,
+    lens_imaging_fit_x2_plane_7x7,
+    lens_plotter_util_path,
+    plot_patch,
 ):
 
     al.lens_plotter_util.plot_subtracted_image_of_plane(
@@ -165,7 +168,10 @@ def test__subtracted_image_of_plane_is_output(
 
 
 def test__model_image_of_plane_is_output(
-    lens_imaging_fit_x1_plane_7x7, lens_imaging_fit_x2_plane_7x7, lens_plotter_util_path, plot_patch
+    lens_imaging_fit_x1_plane_7x7,
+    lens_imaging_fit_x2_plane_7x7,
+    lens_plotter_util_path,
+    plot_patch,
 ):
 
     al.lens_plotter_util.plot_model_image_of_plane(

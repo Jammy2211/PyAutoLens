@@ -571,16 +571,11 @@ class TestAbstractPlaneLensing(object):
             plane = al.Plane(galaxies=[g0], redshift=None)
 
             profile_image_of_galaxies = plane.profile_images_of_galaxies_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=True,
-                return_binned=True,
+                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
             )
 
             profile_image_of_galaxy = plane.profile_image_of_galaxy_from_grid_and_galaxy(
-                grid=sub_grid_7x7,
-                galaxy=g0,
-                return_in_2d=True,
-                return_binned=True,
+                grid=sub_grid_7x7, galaxy=g0, return_in_2d=True, return_binned=True
             )
 
             assert profile_image_of_galaxy.shape == (7, 7)
@@ -1099,7 +1094,7 @@ class TestAbstractPlaneLensing(object):
     class TestDeflectionAnglesviaPotential(object):
         def test__compare_plane_deflections_via_potential_and_calculation(self):
             grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=1,
+                shape=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1132,7 +1127,7 @@ class TestAbstractPlaneLensing(object):
             self
         ):
             grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=1,
+                shape=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1163,7 +1158,7 @@ class TestAbstractPlaneLensing(object):
     class TestJacobian(object):
         def test__jacobian_components__two_component_galaxy_plane(self):
             grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.05, sub_size=1,
+                shape=(20, 20), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1229,7 +1224,7 @@ class TestAbstractPlaneLensing(object):
             a11_binned_reg_grid = jacobian_binned_reg_grid[0, 0]
 
             jacobian_sub_grid = plane.lensing_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=False,
+                grid=grid, return_in_2d=False, return_binned=False
             )
             a11_sub_grid = jacobian_sub_grid[0, 0]
 
@@ -1362,7 +1357,7 @@ class TestAbstractPlaneLensing(object):
     class TestConvergenceviaJacobian(object):
         def test__compare_plane_convergence_via_jacobian_and_calculation(self):
             grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.05, sub_size=1,
+                shape=(20, 20), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1419,7 +1414,7 @@ class TestAbstractPlaneLensing(object):
             )
 
             convergence_sub_grid = plane.convergence_via_jacobian_from_grid(
-                grid=grid, return_binned=False, return_in_2d=False,
+                grid=grid, return_binned=False, return_in_2d=False
             )
 
             pixel_1_reg_grid = convergence_binned_reg_grid[0]
@@ -1596,15 +1591,15 @@ class TestAbstractPlaneLensing(object):
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
             magnification_via_determinant = plane.magnification_from_grid(
-                grid=grid, return_in_2d=True,
+                grid=grid, return_in_2d=True
             )
 
             tangential_eigen_value = plane.tangential_eigen_value_from_grid(
-                grid=grid, return_in_2d=True,
+                grid=grid, return_in_2d=True
             )
 
             radal_eigen_value = plane.radial_eigen_value_from_grid(
-                grid=grid, return_in_2d=True,
+                grid=grid, return_in_2d=True
             )
 
             magnification_via_eigen_values = 1 / (
@@ -1649,7 +1644,7 @@ class TestAbstractPlaneLensing(object):
             self
         ):
             grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=1,
+                shape=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1673,7 +1668,7 @@ class TestAbstractPlaneLensing(object):
             )
 
             convergence = plane.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=True,
+                grid=grid, return_in_2d=True
             )
 
             shear = plane.shear_via_jacobian_from_grid(grid=grid, return_in_2d=True)
@@ -1835,7 +1830,7 @@ class TestAbstractPlaneLensing(object):
             self
         ):
             grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.25, sub_size=1,
+                shape=(20, 20), pixel_scale=0.25, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -2402,9 +2397,7 @@ class TestAbstractPlaneData(object):
             )
 
             plane_blurred_image_2d = plane.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7,
-                psf=psf_3x3,
-                return_in_2d=True,
+                grid=sub_grid_7x7, psf=psf_3x3, return_in_2d=True
             )
 
             assert blurred_image_2d == pytest.approx(plane_blurred_image_2d, 1.0e-4)
@@ -2448,15 +2441,11 @@ class TestAbstractPlaneData(object):
             )
 
             blurred_g0_image_2d = g0.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7,
-                psf=psf_3x3,
-                return_in_2d=True,
+                grid=sub_grid_7x7, psf=psf_3x3, return_in_2d=True
             )
 
             blurred_g1_image_2d = g1.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7,
-                psf=psf_3x3,
-                return_in_2d=True,
+                grid=sub_grid_7x7, psf=psf_3x3, return_in_2d=True
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
@@ -2514,9 +2503,7 @@ class TestAbstractPlaneData(object):
             )
 
             plane_blurred_image_2d = plane.blurred_profile_image_from_grid_and_convolver(
-                grid=sub_grid_7x7,
-                convolver=convolver_7x7,
-                return_in_2d=True,
+                grid=sub_grid_7x7, convolver=convolver_7x7, return_in_2d=True
             )
 
             assert blurred_image_2d == pytest.approx(plane_blurred_image_2d, 1.0e-4)
@@ -2560,15 +2547,11 @@ class TestAbstractPlaneData(object):
             )
 
             blurred_g0_image_2d = g0.blurred_profile_image_from_grid_and_convolver(
-                grid=sub_grid_7x7,
-                convolver=convolver_7x7,
-                return_in_2d=True,
+                grid=sub_grid_7x7, convolver=convolver_7x7, return_in_2d=True
             )
 
             blurred_g1_image_2d = g1.blurred_profile_image_from_grid_and_convolver(
-                grid=sub_grid_7x7,
-                convolver=convolver_7x7,
-                return_in_2d=True,
+                grid=sub_grid_7x7, convolver=convolver_7x7, return_in_2d=True
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
@@ -3278,9 +3261,7 @@ class TestPlane(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            plane_traced_grid = plane.traced_grid_from_grid(
-                grid=sub_grid_7x7,
-            )
+            plane_traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7)
 
             assert plane_traced_grid == pytest.approx(traced_grid, 1.0e-4)
 
@@ -3289,9 +3270,7 @@ class TestPlane(object):
         ):
             plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 
-            traced_grid = plane.traced_grid_from_grid(
-                grid=sub_grid_7x7_simple,
-            )
+            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7_simple)
 
             assert traced_grid[0] == pytest.approx(
                 np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3
