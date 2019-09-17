@@ -27,8 +27,6 @@ class AbstractPhase(af.AbstractPhase):
             The name of this phase
         """
 
-        self.phase_folders = phase_folders
-
         super().__init__(
             phase_name=phase_name,
             phase_tag=phase_tag,
@@ -38,6 +36,10 @@ class AbstractPhase(af.AbstractPhase):
         )
 
         self.cosmology = cosmology
+
+    @property
+    def phase_folders(self):
+        return self.optimizer.phase_folders
 
     @property
     def phase_property_collections(self):
@@ -54,11 +56,6 @@ class AbstractPhase(af.AbstractPhase):
     @property
     def path(self):
         return self.optimizer.path
-
-    @property
-    def doc(self):
-        if self.__doc__ is not None:
-            return self.__doc__.replace("  ", "").replace("\n", " ")
 
     def customize_priors(self, results):
         """
@@ -128,7 +125,7 @@ class AbstractPhase(af.AbstractPhase):
             """
             The result of a phase
             """
-            super(Phase.Result, self).__init__(
+            super().__init__(
                 constant=constant,
                 figure_of_merit=figure_of_merit,
                 previous_variable=previous_variable,

@@ -8,10 +8,12 @@ from autolens.model.inversion import pixelizations as pix
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase.phase import Phase
 
+
 def default_mask_function(image):
     return msk.Mask.circular(
         shape=image.shape, pixel_scale=image.pixel_scale, sub_size=1, radius_arcsec=3.0
     )
+
 
 def isinstance_or_prior(obj, cls):
     if isinstance(obj, cls):
@@ -22,27 +24,26 @@ def isinstance_or_prior(obj, cls):
 
 
 class PhaseData(Phase):
-
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
-        self,
-        phase_name,
-        phase_tag,
-        phase_folders=tuple(),
-        galaxies=None,
-        optimizer_class=af.MultiNest,
-        cosmology=cosmo.Planck15,
-        sub_size=2,
-        signal_to_noise_limit=None,
-        positions_threshold=None,
-        mask_function=None,
-        inner_mask_radii=None,
-        pixel_scale_interpolation_grid=None,
-        pixel_scale_binned_cluster_grid=None,
-        inversion_uses_border=True,
-        inversion_pixel_limit=None,
-        auto_link_priors=False,
+            self,
+            phase_name,
+            phase_tag,
+            phase_folders=tuple(),
+            galaxies=None,
+            optimizer_class=af.MultiNest,
+            cosmology=cosmo.Planck15,
+            sub_size=2,
+            signal_to_noise_limit=None,
+            positions_threshold=None,
+            mask_function=None,
+            inner_mask_radii=None,
+            pixel_scale_interpolation_grid=None,
+            pixel_scale_binned_cluster_grid=None,
+            inversion_uses_border=True,
+            inversion_pixel_limit=None,
+            auto_link_priors=False,
     ):
 
         """
@@ -228,9 +229,9 @@ class PhaseData(Phase):
                         "The pixelization "
                         + str(self.pixelization)
                         + " uses a KMeans clustering algorithm which uses"
-                        "a hyper model image to adapt the pixelization. This hyper model image must have more pixels"
-                        "than inversion pixels. Current, the inversion_pixel_limit exceeds the data-points in the image.\n\n"
-                        "To rectify this image, manually set the inversion pixel limit in the pipeline phases or change the inversion_pixel_limit_overall parameter in general.ini"
+                          "a hyper model image to adapt the pixelization. This hyper model image must have more pixels"
+                          "than inversion pixels. Current, the inversion_pixel_limit exceeds the data-points in the image.\n\n"
+                          "To rectify this image, manually set the inversion pixel limit in the pipeline phases or change the inversion_pixel_limit_overall parameter in general.ini"
                     )
 
                 bin_up_factor -= 1
@@ -259,7 +260,9 @@ class PhaseData(Phase):
         return preload_pixelization_grids_of_planes
 
     def extend_with_inversion_phase(self):
-        return phase_extensions.InversionPhase(phase=self)
+        return phase_extensions.InversionPhase(
+            phase=self
+        )
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
@@ -382,13 +385,13 @@ class PhaseData(Phase):
 
         @property
         def lens_data(self):
-            return NotImplementedError
+            raise NotImplementedError()
 
         def check_positions_trace_within_threshold_via_tracer(self, tracer):
 
             if (
-                self.lens_data.positions is not None
-                and self.lens_data.positions_threshold is not None
+                    self.lens_data.positions is not None
+                    and self.lens_data.positions_threshold is not None
             ):
 
                 traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
@@ -401,7 +404,7 @@ class PhaseData(Phase):
                 )
 
                 if not fit.maximum_separation_within_threshold(
-                    self.lens_data.positions_threshold
+                        self.lens_data.positions_threshold
                 ):
                     raise exc.RayTracingException
 
@@ -416,13 +419,13 @@ class PhaseData(Phase):
 
     class Result(Phase.Result):
         def __init__(
-            self,
-            constant,
-            figure_of_merit,
-            previous_variable,
-            gaussian_tuples,
-            analysis,
-            optimizer,
+                self,
+                constant,
+                figure_of_merit,
+                previous_variable,
+                gaussian_tuples,
+                analysis,
+                optimizer,
         ):
             """
             The result of a phase
