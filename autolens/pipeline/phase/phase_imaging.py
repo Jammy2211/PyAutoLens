@@ -279,11 +279,14 @@ class PhaseImaging(PhaseData):
             super(PhaseImaging.Analysis, self).__init__(
                 cosmology=cosmology, results=results
             )
-            self.visualizer = visualizer.Visualizer(self)
+            self.visualizer = visualizer.Visualizer(
+                self,
+                image_path
+            )
 
             self.lens_imaging_data = lens_imaging_data
 
-            self.visualizer.initial_plot(lens_imaging_data, image_path, self.last_results)
+            self.visualizer.initial_plot(lens_imaging_data, self.last_results)
 
             if self.last_results is not None:
                 self.hyper_galaxy_image_1d_path_dict = (
@@ -292,7 +295,7 @@ class PhaseImaging(PhaseData):
 
                 self.hyper_model_image_1d = self.last_results.hyper_model_image_1d
 
-                self.binned_hyper_galaxy_image_1d_path_dict = self.last_results.binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(
+                self.binned_hyper_galaxy_image_1d_path_dict = self.last_results.binned_hyper_galaxy_image_1d_path_dict(
                     binned_grid=lens_imaging_data.grid.binned
                 )
 
@@ -403,32 +406,10 @@ class PhaseImaging(PhaseData):
         def visualize(self, instance, image_path, during_analysis):
             self.visualizer.visualize(
                 instance,
-                image_path,
                 during_analysis
             )
 
     class Result(PhaseData.Result):
-        def __init__(
-                self,
-                constant,
-                figure_of_merit,
-                previous_variable,
-                gaussian_tuples,
-                analysis,
-                optimizer,
-        ):
-            """
-            The result of a phase
-            """
-            super(PhaseImaging.Result, self).__init__(
-                analysis=analysis,
-                optimizer=optimizer,
-                constant=constant,
-                figure_of_merit=figure_of_merit,
-                previous_variable=previous_variable,
-                gaussian_tuples=gaussian_tuples,
-            )
-
         @property
         def most_likely_fit(self):
 

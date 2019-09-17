@@ -3,8 +3,12 @@ from autolens.pipeline.plotters import phase_plotters
 
 
 class Visualizer:
-    def __init__(self, analysis):
+    def __init__(self, analysis, image_path):
         self.analysis = analysis
+        self.image_path = image_path
+        self.subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+            path=image_path, folder_names=["subplots"]
+        )
 
         def setting(section, name):
             return af.conf.instance.visualize.get(
@@ -74,13 +78,8 @@ class Visualizer:
     def visualize(
             self,
             instance,
-            image_path,
             during_analysis
     ):
-        subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-            path=image_path, folder_names=["subplots"]
-        )
-
         instance = self.analysis.associate_images(instance=instance)
 
         mask = self.analysis.lens_imaging_data.mask if self.should_plot_mask else None
@@ -105,8 +104,8 @@ class Visualizer:
             should_plot_convergence=self.plot_ray_tracing_convergence,
             should_plot_potential=self.plot_ray_tracing_potential,
             should_plot_deflections=self.plot_ray_tracing_deflections,
-            visualize_path=image_path,
-            subplot_path=subplot_path,
+            visualize_path=self.image_path,
+            subplot_path=self.subplot_path,
         )
 
         hyper_image_sky = self.analysis.hyper_image_sky_for_instance(instance=instance)
@@ -149,17 +148,13 @@ class Visualizer:
             should_plot_model_images_of_planes=self.plot_lens_fit_model_images_of_planes,
             should_plot_plane_images_of_planes=self.plot_lens_fit_plane_images_of_planes,
             units=self.plot_units,
-            visualize_path=image_path,
-            subplot_path=subplot_path,
+            visualize_path=self.image_path,
+            subplot_path=self.subplot_path,
         )
 
-    def initial_plot(self, lens_imaging_data, image_path, last_results):
+    def initial_plot(self, lens_imaging_data, last_results):
         mask = lens_imaging_data.mask if self.should_plot_mask else None
         positions = lens_imaging_data.positions if self.should_plot_positions else None
-
-        subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-            path=image_path, folder_names=["subplots"]
-        )
 
         phase_plotters.plot_imaging_for_phase(
             imaging_data=lens_imaging_data.imaging_data,
@@ -175,8 +170,8 @@ class Visualizer:
             should_plot_signal_to_noise_map=self.plot_data_signal_to_noise_map,
             should_plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
             should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
-            visualize_path=image_path,
-            subplot_path=subplot_path,
+            visualize_path=self.image_path,
+            subplot_path=self.subplot_path,
         )
 
         if last_results is not None:
@@ -197,5 +192,5 @@ class Visualizer:
                     should_plot_hyper_model_image=self.plot_hyper_model_image,
                     should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
                     should_plot_binned_hyper_galaxy_images=self.plot_binned_hyper_galaxy_images,
-                    visualize_path=image_path,
+                    visualize_path=self.image_path,
                 )
