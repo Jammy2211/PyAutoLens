@@ -6,7 +6,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.array.mapping import reshape_returned_array
 
 
-class InterfeometerFit(af.DataFit):
+class UVPlaneFit(af.DataFit):
     def __init__(
         self, visibilities, noise_map, mask, model_visibilities, mapping, inversion
     ):
@@ -73,7 +73,7 @@ class InterfeometerFit(af.DataFit):
         #     return self.evidence
 
 
-class LensInterferometerFit(InterfeometerFit):
+class LensUVPlaneFit(UVPlaneFit):
     def __init__(
         self,
         tracer,
@@ -102,8 +102,8 @@ class LensInterferometerFit(InterfeometerFit):
         )
 
     @classmethod
-    def from_lens_interferometer_data_and_tracer(
-        cls, lens_interferometer_data, tracer, 
+    def from_lens_uv_plane_data_and_tracer(
+        cls, lens_uv_plane_data, tracer, 
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper_galaxies.
@@ -117,8 +117,8 @@ class LensInterferometerFit(InterfeometerFit):
         """
 
         blurred_profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
-            grid=lens_interferometer_data.grid,
-            transformer=lens_interferometer_data.transformer,
+            grid=lens_uv_plane_data.grid,
+            transformer=lens_uv_plane_data.transformer,
         )
 
         # profile_subtracted_visibilities_1d = visibilities_1d - blurred_profile_visibilities_1d
@@ -131,26 +131,26 @@ class LensInterferometerFit(InterfeometerFit):
         # else:
         # 
         #     inversion = tracer.inversion_from_grid_visibilities_1d_noise_map_1d_and_convolver(
-        #         grid=lens_interferometer_data.grid,
+        #         grid=lens_uv_plane_data.grid,
         #         visibilities_1d=profile_subtracted_visibilities_1d,
         #         noise_map_1d=noise_map_1d,
-        #         convolver=lens_interferometer_data.convolver,
-        #         inversion_uses_border=lens_interferometer_data.inversion_uses_border,
-        #         preload_pixelization_grids_of_planes=lens_interferometer_data.preload_pixelization_grids_of_planes,
+        #         convolver=lens_uv_plane_data.convolver,
+        #         inversion_uses_border=lens_uv_plane_data.inversion_uses_border,
+        #         preload_pixelization_grids_of_planes=lens_uv_plane_data.preload_pixelization_grids_of_planes,
         #     )
         # 
         #     model_visibilities_1d = blurred_profile_visibilities_1d + inversion.reconstructed_data_1d
 
         return cls(
             tracer=tracer,
-            visibilities=lens_interferometer_data.visibilities,
-            noise_map=lens_interferometer_data.noise_map,
-            mask=lens_interferometer_data.mask,
+            visibilities=lens_uv_plane_data.visibilities,
+            noise_map=lens_uv_plane_data.noise_map,
+            mask=lens_uv_plane_data.mask,
             model_visibilities=model_visibilities,
-            grid=lens_interferometer_data.grid,
-            transformer=lens_interferometer_data.transformer,
+            grid=lens_uv_plane_data.grid,
+            transformer=lens_uv_plane_data.transformer,
             inversion=inversion,
-            positions=lens_interferometer_data.positions,
+            positions=lens_uv_plane_data.positions,
         )
 
     def profile_visibilities(self):

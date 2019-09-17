@@ -1,5 +1,5 @@
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import imaging
+from autolens.data.data_type import abstract_data
+from autolens.data.data_type import imaging
 from autolens.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
