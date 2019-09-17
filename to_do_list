@@ -15,6 +15,8 @@ Big Picture:
 
 UV Plane:
 
+- Remove unused galaxy dict method, split galaxy dicts to use images, bluured images, visibilities.
+- Model Image / Unmasked Image / visiblities in lens_uv_plane_fit.
 - Extend lens_data to have LensImagingData, LensUVPlaneData.
 - PhaseImagingData, PhaseInterometer - PhaseImaging is now abstract Phase.
 

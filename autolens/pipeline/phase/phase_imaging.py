@@ -599,7 +599,7 @@ class PhaseImaging(PhaseData):
             ndarray or None
                 A numpy array giving the model image of that galaxy
             """
-            return self.most_likely_fit.galaxy_image_2d_dict[galaxy]
+            return self.most_likely_fit.galaxy_model_image_2d_dict[galaxy]
 
         @property
         def image_galaxy_1d_dict(self) -> {str: g.Galaxy}:

@@ -777,7 +777,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         return galaxy_image_dict
 
-    def galaxy_image_dict_from_grid_and_convolver(
+    def galaxy_blurred_image_dict_from_grid_and_convolver(
         self, grid, convolver, preload_blurring_grid=None
     ) -> {g.Galaxy: np.ndarray}:
         """

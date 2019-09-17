@@ -204,16 +204,16 @@ class TestImagePassing(object):
 
         assert (
             len(
-                tracer.galaxy_image_dict_from_grid_and_convolver(
+                tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
                     grid=sub_grid_7x7, convolver=convolver_7x7
                 )
             )
             == 2
         )
-        assert lens_galaxy in tracer.galaxy_image_dict_from_grid_and_convolver(
+        assert lens_galaxy in tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
             grid=sub_grid_7x7, convolver=convolver_7x7
         )
-        assert source_galaxy in tracer.galaxy_image_dict_from_grid_and_convolver(
+        assert source_galaxy in tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
             grid=sub_grid_7x7, convolver=convolver_7x7
         )
 
