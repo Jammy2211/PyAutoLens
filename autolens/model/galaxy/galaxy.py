@@ -67,19 +67,9 @@ class Galaxy(af.ModelObject):
         super().__init__()
         self.redshift = redshift
 
-        self.hyper_model_image_1d = (
-            kwargs["hyper_model_image_1d"] if "hyper_model_image_1d" in kwargs else None
-        )
-        self.hyper_galaxy_image_1d = (
-            kwargs["hyper_galaxy_image_1d"]
-            if "hyper_galaxy_image_1d" in kwargs
-            else None
-        )
-        self.binned_hyper_galaxy_image_1d = (
-            kwargs["binned_hyper_galaxy_image_1d"]
-            if "binned_hyper_galaxy_image_1d" in kwargs
-            else None
-        )
+        self.hyper_model_image_1d = None
+        self.hyper_galaxy_image_1d = None
+        self.binned_hyper_galaxy_image_1d = None
 
         for name, val in kwargs.items():
             setattr(self, name, val)
