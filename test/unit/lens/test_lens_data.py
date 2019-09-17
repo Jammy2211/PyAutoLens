@@ -374,7 +374,7 @@ class TestLensImagingData(object):
 
 class TestLensUVPlaneData(object):
 
-    def test__attributes(self, uv_plane_data_7, lens_uv_plane_data_7):
+    def test__attributes(self, uv_plane_data_7, lens_uv_plane_data_7, sub_mask_7x7):
 
         assert lens_uv_plane_data_7.pixel_scale == uv_plane_data_7.pixel_scale
         assert lens_uv_plane_data_7.pixel_scale == 1.0
@@ -384,6 +384,10 @@ class TestLensUVPlaneData(object):
 
         assert (lens_uv_plane_data_7.noise_map() == uv_plane_data_7.noise_map).all()
         assert (lens_uv_plane_data_7.noise_map() == 2.0 * np.ones((7))).all()
+        assert (lens_uv_plane_data_7.noise_map(return_x2=True)[:,0] == 2.0 * np.ones((7))).all()
+        assert (lens_uv_plane_data_7.noise_map(return_x2=True)[:,1] == 2.0 * np.ones((7))).all()
+
+        assert (lens_uv_plane_data_7.visibilities_mask == np.full(fill_value=False, shape=(7,2))).all()
 
         assert (lens_uv_plane_data_7.primary_beam == uv_plane_data_7.primary_beam).all()
         assert (lens_uv_plane_data_7.primary_beam == np.ones((3, 3))).all()

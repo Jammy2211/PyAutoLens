@@ -315,8 +315,10 @@ class LensUVPlaneData(AbstractLensData):
                                           inversion_uses_border=inversion_uses_border, hyper_noise_map_max=hyper_noise_map_max,
                                           preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes)
 
-        if trimmed_primary_beam_shape is None:
+        if trimmed_primary_beam_shape is None and self.primary_beam is not None:
             self.trimmed_primary_beam_shape = self.primary_beam.shape
+        elif self.primary_beam is None:
+            self.trimmed_primary_beam_shape = None
         else:
             self.trimmed_primary_beam_shape = trimmed_primary_beam_shape
 
@@ -325,8 +327,15 @@ class LensUVPlaneData(AbstractLensData):
     def visibilities(self):
         return self.uv_plane_data.visibilities
 
-    def noise_map(self):
-        return self.uv_plane_data.noise_map
+    def noise_map(self, return_x2=False):
+        if not return_x2:
+            return self.uv_plane_data.noise_map
+        else:
+            return np.stack((self.uv_plane_data.noise_map, self.uv_plane_data.noise_map), axis=-1)
+
+    @property
+    def visibilities_mask(self):
+        return np.full(fill_value=False, shape=self.uv_plane_data.uv_wavelengths.shape)
 
     @property
     def primary_beam(self):

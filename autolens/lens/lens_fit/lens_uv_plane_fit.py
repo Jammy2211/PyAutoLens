@@ -116,7 +116,7 @@ class LensUVPlaneFit(UVPlaneFit):
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D array.
         """
 
-        blurred_profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
+        profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
             grid=lens_uv_plane_data.grid,
             transformer=lens_uv_plane_data.transformer,
         )
@@ -126,7 +126,7 @@ class LensUVPlaneFit(UVPlaneFit):
         # if not tracer.has_pixelization:
 
         inversion = None
-        model_visibilities = blurred_profile_visibilities
+        model_visibilities = profile_visibilities
 
         # else:
         # 
@@ -143,9 +143,9 @@ class LensUVPlaneFit(UVPlaneFit):
 
         return cls(
             tracer=tracer,
-            visibilities=lens_uv_plane_data.visibilities,
-            noise_map=lens_uv_plane_data.noise_map,
-            mask=lens_uv_plane_data.mask,
+            visibilities=lens_uv_plane_data.visibilities(),
+            noise_map=lens_uv_plane_data.noise_map(return_x2=True),
+            mask=lens_uv_plane_data.visibilities_mask,
             model_visibilities=model_visibilities,
             grid=lens_uv_plane_data.grid,
             transformer=lens_uv_plane_data.transformer,
