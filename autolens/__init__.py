@@ -77,7 +77,7 @@ from autolens.dimensions import (
 )
 from autolens.lens import ray_tracing
 from autolens.lens.lens_data import AbstractLensData, LensImagingData, LensUVPlaneData
-from autolens.lens.lens_fit import ImagingFit, LensImagingFit, LensPositionFit
+from autolens.lens.lens_fit import ImagingFit, LensImagingFit, UVPlaneFit, LensUVPlaneFit, LensPositionFit
 from autolens.lens.plane import Plane, PlanePositions, PlaneImage
 from autolens.lens.plotters import lens_imaging_fit_plotters
 from autolens.lens.plotters import lens_plotter_util
