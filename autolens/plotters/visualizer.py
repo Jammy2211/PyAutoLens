@@ -5,173 +5,71 @@ from autolens.pipeline.plotters import phase_plotters
 class Visualizer:
     def __init__(self, analysis):
         self.analysis = analysis
-        self.should_plot_image_plane_pix = af.conf.instance.visualize.get(
-            "figures", "plot_image_plane_adaptive_pixelization_grid", bool
-        )
 
-        self.plot_data_as_subplot = af.conf.instance.visualize.get(
-            "plots", "plot_data_as_subplot", bool
-        )
+        def setting(section, name):
+            return af.conf.instance.visualize.get(
+                section, name, bool
+            )
 
-        self.plot_data_image = af.conf.instance.visualize.get(
-            "plots", "plot_data_image", bool
-        )
+        def plot_setting(name):
+            return setting("plots", name)
 
-        self.plot_data_noise_map = af.conf.instance.visualize.get(
-            "plots", "plot_data_noise_map", bool
-        )
+        def figure_setting(name):
+            return setting("figures", name)
 
-        self.plot_data_psf = af.conf.instance.visualize.get(
-            "plots", "plot_data_psf", bool
-        )
+        self.should_plot_image_plane_pix = figure_setting("plot_image_plane_adaptive_pixelization_grid")
+        self.plot_data_as_subplot = plot_setting("plot_data_as_subplot")
+        self.plot_data_image = plot_setting("plot_data_image")
+        self.plot_data_noise_map = plot_setting("plot_data_noise_map")
+        self.plot_data_psf = plot_setting("plot_data_psf")
 
-        self.plot_data_signal_to_noise_map = af.conf.instance.visualize.get(
-            "plots", "plot_data_signal_to_noise_map", bool
-        )
-
-        self.plot_data_absolute_signal_to_noise_map = af.conf.instance.visualize.get(
-            "plots", "plot_data_absolute_signal_to_noise_map", bool
-        )
-
-        self.plot_data_potential_chi_squared_map = af.conf.instance.visualize.get(
-            "plots", "plot_data_potential_chi_squared_map", bool
-        )
-
-        self.plot_lens_fit_all_at_end_png = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_all_at_end_png", bool
-        )
-        self.plot_lens_fit_all_at_end_fits = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_all_at_end_fits", bool
-        )
-
-        self.plot_lens_fit_as_subplot = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_as_subplot", bool
-        )
-
-        self.plot_lens_fit_of_planes_as_subplot = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_of_planes_as_subplot", bool
-        )
-
-        self.plot_lens_fit_inversion_as_subplot = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_inversion_as_subplot", bool
-        )
-
-        self.plot_lens_fit_image = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_image", bool
-        )
-
-        self.plot_lens_fit_noise_map = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_noise_map", bool
-        )
-
-        self.plot_lens_fit_signal_to_noise_map = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_signal_to_noise_map", bool
-        )
-
-        self.plot_lens_fit_model_image = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_model_image", bool
-        )
-
-        self.plot_lens_fit_residual_map = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_residual_map", bool
-        )
-
-        self.plot_lens_fit_normalized_residual_map = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_normalized_residual_map", bool
-        )
-
-        self.plot_lens_fit_chi_squared_map = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_chi_squared_map", bool
-        )
-
-        self.plot_lens_fit_contribution_maps = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_contribution_maps", bool
-        )
-
-        self.plot_lens_fit_pixelization_residual_map = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_pixelization_residual_map", bool
-        )
-
-        self.plot_lens_fit_pixelization_normalized_residuals = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_pixelization_normalized_residual_map", bool
-        )
-
-        self.plot_lens_fit_pixelization_chi_squared_map = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_pixelization_chi_squared_map", bool
-        )
-
-        self.plot_lens_fit_pixelization_regularization_weights = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_pixelization_regularization_weight_map", bool
-        )
-
-        self.plot_lens_fit_subtracted_images_of_planes = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_subtracted_images_of_planes", bool
-        )
-
-        self.plot_lens_fit_model_images_of_planes = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_model_images_of_planes", bool
-        )
-
-        self.plot_lens_fit_plane_images_of_planes = af.conf.instance.visualize.get(
-            "plots", "plot_lens_fit_plane_images_of_planes", bool
-        )
-
-        self.plot_hyper_model_image = af.conf.instance.visualize.get(
-            "plots", "plot_hyper_model_image", bool
-        )
-
-        self.plot_hyper_galaxy_images = af.conf.instance.visualize.get(
-            "plots", "plot_hyper_galaxy_images", bool
-        )
-
-        self.plot_binned_hyper_galaxy_images = af.conf.instance.visualize.get(
-            "plots", "plot_binned_hyper_galaxy_images", bool
-        )
-
-        self.should_plot_mask = af.conf.instance.visualize.get(
-            "figures", "plot_mask_on_images", bool
-        )
-        self.extract_array_from_mask = af.conf.instance.visualize.get(
-            "figures", "extract_images_from_mask", bool
-        )
-        self.zoom_around_mask = af.conf.instance.visualize.get(
-            "figures", "zoom_around_mask_of_images", bool
-        )
-        self.should_plot_positions = af.conf.instance.visualize.get(
-            "figures", "plot_positions_on_images", bool
-        )
+        self.plot_data_signal_to_noise_map = plot_setting("plot_data_signal_to_noise_map")
+        self.plot_data_absolute_signal_to_noise_map = plot_setting("plot_data_absolute_signal_to_noise_map")
+        self.plot_data_potential_chi_squared_map = plot_setting("plot_data_potential_chi_squared_map")
+        self.plot_lens_fit_all_at_end_png = plot_setting("plot_lens_fit_all_at_end_png")
+        self.plot_lens_fit_all_at_end_fits = plot_setting("plot_lens_fit_all_at_end_fits")
+        self.plot_lens_fit_as_subplot = plot_setting("plot_lens_fit_as_subplot")
+        self.plot_lens_fit_of_planes_as_subplot = plot_setting("plot_lens_fit_of_planes_as_subplot")
+        self.plot_lens_fit_inversion_as_subplot = plot_setting("plot_lens_fit_inversion_as_subplot")
+        self.plot_lens_fit_image = plot_setting("plot_lens_fit_image")
+        self.plot_lens_fit_noise_map = plot_setting("plot_lens_fit_noise_map")
+        self.plot_lens_fit_signal_to_noise_map = plot_setting("plot_lens_fit_signal_to_noise_map")
+        self.plot_lens_fit_model_image = plot_setting("plot_lens_fit_model_image")
+        self.plot_lens_fit_residual_map = plot_setting("plot_lens_fit_residual_map")
+        self.plot_lens_fit_normalized_residual_map = plot_setting("plot_lens_fit_normalized_residual_map")
+        self.plot_lens_fit_chi_squared_map = plot_setting("plot_lens_fit_chi_squared_map")
+        self.plot_lens_fit_contribution_maps = plot_setting("plot_lens_fit_contribution_maps")
+        self.plot_lens_fit_pixelization_residual_map = plot_setting("plot_lens_fit_pixelization_residual_map")
+        self.plot_lens_fit_pixelization_normalized_residuals = plot_setting(
+            "plot_lens_fit_pixelization_normalized_residual_map")
+        self.plot_lens_fit_pixelization_chi_squared_map = plot_setting(
+            "plot_lens_fit_pixelization_chi_squared_map")
+        self.plot_lens_fit_pixelization_regularization_weights = plot_setting(
+            "plot_lens_fit_pixelization_regularization_weight_map")
+        self.plot_lens_fit_subtracted_images_of_planes = plot_setting(
+            "plot_lens_fit_subtracted_images_of_planes")
+        self.plot_lens_fit_model_images_of_planes = plot_setting("plot_lens_fit_model_images_of_planes")
+        self.plot_lens_fit_plane_images_of_planes = plot_setting("plot_lens_fit_plane_images_of_planes")
+        self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
+        self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
+        self.plot_binned_hyper_galaxy_images = plot_setting("plot_binned_hyper_galaxy_images")
+        self.should_plot_mask = figure_setting("plot_mask_on_images")
+        self.extract_array_from_mask = figure_setting("extract_images_from_mask")
+        self.zoom_around_mask = figure_setting("zoom_around_mask_of_images")
+        self.should_plot_positions = figure_setting("plot_positions_on_images")
         self.plot_units = af.conf.instance.visualize.get(
             "figures", "plot_units", str
         ).strip()
 
-        self.plot_ray_tracing_all_at_end_png = af.conf.instance.visualize.get(
-            "plots", "plot_ray_tracing_all_at_end_png", bool
-        )
-        self.plot_ray_tracing_all_at_end_fits = af.conf.instance.visualize.get(
-            "plots", "plot_ray_tracing_all_at_end_fits", bool
-        )
-
-        self.plot_ray_tracing_as_subplot = af.conf.instance.visualize.get(
-            "plots", "plot_ray_tracing_as_subplot", bool
-        )
-        self.plot_ray_tracing_profile_image = af.conf.instance.visualize.get(
-            "plots", "plot_ray_tracing_profile_image", bool
-        )
-        self.plot_ray_tracing_source_plane = af.conf.instance.visualize.get(
-            "plots", "plot_ray_tracing_source_plane_image", bool
-        )
-        self.plot_ray_tracing_convergence = af.conf.instance.visualize.get(
-            "plots", "plot_ray_tracing_convergence", bool
-        )
-        self.plot_ray_tracing_potential = af.conf.instance.visualize.get(
-            "plots", "plot_ray_tracing_potential", bool
-        )
-        self.plot_ray_tracing_deflections = af.conf.instance.visualize.get(
-            "plots", "plot_ray_tracing_deflections", bool
-        )
-        self.plot_ray_tracing_magnification = af.conf.instance.visualize.get(
-            "plots", "plot_ray_tracing_magnification", bool
-        )
+        self.plot_ray_tracing_all_at_end_png = plot_setting("plot_ray_tracing_all_at_end_png")
+        self.plot_ray_tracing_all_at_end_fits = plot_setting("plot_ray_tracing_all_at_end_fits")
+        self.plot_ray_tracing_as_subplot = plot_setting("plot_ray_tracing_as_subplot")
+        self.plot_ray_tracing_profile_image = plot_setting("plot_ray_tracing_profile_image")
+        self.plot_ray_tracing_source_plane = plot_setting("plot_ray_tracing_source_plane_image")
+        self.plot_ray_tracing_convergence = plot_setting("plot_ray_tracing_convergence")
+        self.plot_ray_tracing_potential = plot_setting("plot_ray_tracing_potential")
+        self.plot_ray_tracing_deflections = plot_setting("plot_ray_tracing_deflections")
+        self.plot_ray_tracing_magnification = plot_setting("plot_ray_tracing_magnification")
 
     def visualize(
             self,
@@ -288,7 +186,7 @@ class Visualizer:
                         array_1d=last_results.hyper_model_image_1d
                     ),
                     hyper_galaxy_image_2d_path_dict=last_results.hyper_galaxy_image_2d_path_dict,
-                    binned_hyper_galaxy_image_2d_path_dict=last_results.binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(
+                    binned_hyper_galaxy_image_2d_path_dict=last_results.binned_hyper_galaxy_image_2d_path_dict(
                         binned_grid=lens_imaging_data.grid.binned
                     ),
                     mask=lens_imaging_data.mask,
