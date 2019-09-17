@@ -262,7 +262,7 @@ class PhaseImaging(PhaseData):
             super(PhaseImaging.Analysis, self).__init__(
                 cosmology=cosmology, results=results
             )
-            self.visualizer = visualizer.Visualizer(
+            self.visualizer = visualizer.PhaseImagingVisualizer(
                 lens_imaging_data,
                 image_path
             )
