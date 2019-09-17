@@ -2,7 +2,6 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.array import mask as msk
 from autolens.array.util import binning_util
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
@@ -279,8 +278,10 @@ class PhaseImaging(PhaseData):
 
                 self.hyper_model_image_1d = self.last_results.hyper_model_image_1d
 
-                self.binned_hyper_galaxy_image_1d_path_dict = self.last_results.binned_hyper_galaxy_image_1d_path_dict(
-                    binned_grid=lens_imaging_data.grid.binned
+                self.binned_hyper_galaxy_image_1d_path_dict = (
+                    self.last_results.binned_hyper_galaxy_image_1d_path_dict(
+                        binned_grid=lens_imaging_data.grid.binned
+                    )
                 )
 
         @property

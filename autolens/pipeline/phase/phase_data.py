@@ -80,18 +80,18 @@ class PhaseData(AbstractPhase):
         self.pixel_scale_binned_cluster_grid = pixel_scale_binned_cluster_grid
         self.inversion_uses_border = inversion_uses_border
 
-        if inversion_pixel_limit is not None:
-            self.inversion_pixel_limit = inversion_pixel_limit
-        else:
-            self.inversion_pixel_limit = af.conf.instance.general.get(
-                "inversion", "inversion_pixel_limit_overall", int
-            )
+        self.inversion_pixel_limit = inversion_pixel_limit or af.conf.instance.general.get(
+            "inversion",
+            "inversion_pixel_limit_overall",
+            int
+        )
+        self.hyper_noise_map_max = af.conf.instance.general.get(
+            "hyper",
+            "hyper_noise_map_max",
+            float
+        )
 
         self.galaxies = galaxies or []
-
-        self.hyper_noise_map_max = af.conf.instance.general.get(
-            "hyper", "hyper_noise_map_max", float
-        )
 
         self.is_hyper_phase = False
 
@@ -242,21 +242,20 @@ class PhaseData(AbstractPhase):
 
     def preload_pixelization_grids_of_planes_from_results(self, results):
 
-        preload_pixelization_grids_of_planes = None
-
-        if results is not None:
-            if results.last is not None:
-                if hasattr(results.last, "hyper_combined"):
-                    if self.pixelization is not None:
-                        if type(self.pixelization) == type(results.last.pixelization):
-                            preload_pixelization_grids_of_planes = (
-                                results.last.hyper_combined.most_likely_pixelization_grids_of_planes
-                            )
-
         if self.is_hyper_phase:
-            preload_pixelization_grids_of_planes = None
+            return None
 
-        return preload_pixelization_grids_of_planes
+        if (
+                results is not None
+                and results.last is not None
+                and hasattr(results.last, "hyper_combined")
+                and self.pixelization is not None
+        ):
+            if self.pixelization.__class__ is results.last.pixelization.__class__:
+                return (
+                    results.last.hyper_combined.most_likely_pixelization_grids_of_planes
+                )
+        return None
 
     def extend_with_inversion_phase(self):
         return phase_extensions.InversionPhase(
