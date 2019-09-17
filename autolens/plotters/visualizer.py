@@ -1,6 +1,7 @@
 import autofit as af
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.pipeline.plotters import phase_plotters
+import os
 
 
 def setting(section, name):
@@ -96,9 +97,11 @@ class PhaseImagingVisualizer(AbstractVisualizer):
     def __init__(self, lens_imaging_data, image_path):
         super().__init__(image_path)
         self.lens_imaging_data = lens_imaging_data
-        self.subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-            path=image_path, folder_names=["subplots"]
-        )
+        self.subplot_path = f"{image_path}subplots"
+        try:
+            os.makedirs(self.subplot_path)
+        except FileExistsError:
+            pass
 
         self.should_plot_image_plane_pix = figure_setting("plot_image_plane_adaptive_pixelization_grid")
         self.plot_data_as_subplot = plot_setting("plot_data_as_subplot")
