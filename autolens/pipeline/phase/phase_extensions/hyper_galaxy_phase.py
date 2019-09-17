@@ -43,7 +43,7 @@ class HyperGalaxyPhase(HyperPhase):
             self.hyper_model_image_1d = hyper_model_image_1d
             self.hyper_galaxy_image_1d = hyper_galaxy_image_1d
 
-        def visualize(self, instance, image_path, during_analysis):
+        def visualize(self, instance, during_analysis):
 
             if self.visualizer.plot_hyper_galaxy_subplot:
                 hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
