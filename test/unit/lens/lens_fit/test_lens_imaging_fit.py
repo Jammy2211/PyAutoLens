@@ -859,7 +859,7 @@ class TestCompareToManualProfilesOnly:
         assert likelihood == pytest.approx(fit.likelihood, 1e-4)
         assert likelihood == fit.figure_of_merit
 
-    def test___lens_fit_galaxy_image_dict__corresponds_to_blurred_galaxy_images(
+    def test___lens_fit_galaxy_model_image_dict__corresponds_to_blurred_galaxy_images(
         self, lens_imaging_data_7x7
     ):
         g0 = al.Galaxy(
@@ -914,16 +914,16 @@ class TestCompareToManualProfilesOnly:
             blurring_array=g1_image_plane_blurring_image_1d,
         )
 
-        assert fit.galaxy_image_1d_dict[g0] == pytest.approx(
+        assert fit.galaxy_model_image_1d_dict[g0] == pytest.approx(
             g0_blurred_image_plane_image_1d, 1.0e-4
         )
-        assert fit.galaxy_image_1d_dict[g1] == pytest.approx(
+        assert fit.galaxy_model_image_1d_dict[g1] == pytest.approx(
             g1_blurred_image_plane_image_1d, 1.0e-4
         )
-        assert (fit.galaxy_image_1d_dict[g2] == np.zeros(9)).all()
+        assert (fit.galaxy_model_image_1d_dict[g2] == np.zeros(9)).all()
 
         assert fit._model_data == pytest.approx(
-            fit.galaxy_image_1d_dict[g0] + fit.galaxy_image_1d_dict[g1], 1.0e-4
+            fit.galaxy_model_image_1d_dict[g0] + fit.galaxy_model_image_1d_dict[g1], 1.0e-4
         )
 
         g0_blurred_image_plane_image_2d = lens_imaging_data_7x7.mapping.scaled_array_2d_from_array_1d(
@@ -933,15 +933,15 @@ class TestCompareToManualProfilesOnly:
             array_1d=g1_blurred_image_plane_image_1d
         )
 
-        assert fit.galaxy_image_2d_dict[g0] == pytest.approx(
+        assert fit.galaxy_model_image_2d_dict[g0] == pytest.approx(
             g0_blurred_image_plane_image_2d, 1.0e-4
         )
-        assert fit.galaxy_image_2d_dict[g1] == pytest.approx(
+        assert fit.galaxy_model_image_2d_dict[g1] == pytest.approx(
             g1_blurred_image_plane_image_2d, 1.0e-4
         )
 
         assert fit.model_image(return_in_2d=True) == pytest.approx(
-            fit.galaxy_image_2d_dict[g0] + fit.galaxy_image_2d_dict[g1], 1.0e-4
+            fit.galaxy_model_image_2d_dict[g0] + fit.galaxy_model_image_2d_dict[g1], 1.0e-4
         )
 
     def test___all_lens_fit_quantities__including_hyper_methods(
@@ -1255,7 +1255,7 @@ class TestCompareToManualInversionOnly:
         assert evidence == fit.evidence
         assert evidence == fit.figure_of_merit
 
-    def test___lens_fit_galaxy_image_dict__has_inversion_reconstructed_data(
+    def test___lens_fit_galaxy_model_image_dict__has_inversion_reconstructed_data(
         self, lens_imaging_data_7x7
     ):
         pix = al.pixelizations.Rectangular(shape=(3, 3))
@@ -1282,22 +1282,22 @@ class TestCompareToManualInversionOnly:
             convolver=lens_imaging_data_7x7.convolver,
         )
 
-        assert (fit.galaxy_image_1d_dict[g0] == np.zeros(9)).all()
+        assert (fit.galaxy_model_image_1d_dict[g0] == np.zeros(9)).all()
 
-        assert fit.galaxy_image_1d_dict[g1] == pytest.approx(
+        assert fit.galaxy_model_image_1d_dict[g1] == pytest.approx(
             inversion.reconstructed_data_1d, 1.0e-4
         )
 
         assert fit._model_data == pytest.approx(
-            fit.galaxy_image_1d_dict[g1], 1.0e-4
+            fit.galaxy_model_image_1d_dict[g1], 1.0e-4
         )
 
-        assert fit.galaxy_image_2d_dict[g1] == pytest.approx(
+        assert fit.galaxy_model_image_2d_dict[g1] == pytest.approx(
             inversion.reconstructed_data_2d, 1.0e-4
         )
 
         assert fit.model_image(return_in_2d=True) == pytest.approx(
-            fit.galaxy_image_2d_dict[g1], 1.0e-4
+            fit.galaxy_model_image_2d_dict[g1], 1.0e-4
         )
 
     def test___all_lens_fit_quantities__include_hyper_methods(self, lens_imaging_data_7x7):
@@ -1631,7 +1631,7 @@ class TestCompareToManualProfilesAndInversion:
         assert evidence == fit.evidence
         assert evidence == fit.figure_of_merit
 
-    def test___lens_fit_galaxy_image_dict__has_blurred_profile_images_and_inversion_reconstructed_data(
+    def test___lens_fit_galaxy_model_image_dict__has_blurred_profile_images_and_inversion_reconstructed_data(
         self, lens_imaging_data_7x7
     ):
 
@@ -1705,21 +1705,21 @@ class TestCompareToManualProfilesAndInversion:
             regularization=reg,
         )
 
-        assert fit.galaxy_image_1d_dict[g0] == pytest.approx(
+        assert fit.galaxy_model_image_1d_dict[g0] == pytest.approx(
             g0_blurred_image_plane_image_1d, 1.0e-4
         )
-        assert fit.galaxy_image_1d_dict[g1] == pytest.approx(
+        assert fit.galaxy_model_image_1d_dict[g1] == pytest.approx(
             g1_blurred_image_plane_image_1d, 1.0e-4
         )
-        assert (fit.galaxy_image_1d_dict[g2] == np.zeros(9)).all()
-        assert fit.galaxy_image_1d_dict[galaxy_pix] == pytest.approx(
+        assert (fit.galaxy_model_image_1d_dict[g2] == np.zeros(9)).all()
+        assert fit.galaxy_model_image_1d_dict[galaxy_pix] == pytest.approx(
             inversion.reconstructed_data_1d, 1.0e-4
         )
 
         assert fit._model_data == pytest.approx(
-            fit.galaxy_image_1d_dict[g0]
-            + fit.galaxy_image_1d_dict[g1]
-            + fit.galaxy_image_1d_dict[galaxy_pix],
+            fit.galaxy_model_image_1d_dict[g0]
+            + fit.galaxy_model_image_1d_dict[g1]
+            + fit.galaxy_model_image_1d_dict[galaxy_pix],
             1.0e-4,
         )
 
@@ -1730,19 +1730,19 @@ class TestCompareToManualProfilesAndInversion:
             array_1d=g1_blurred_image_plane_image_1d
         )
 
-        assert fit.galaxy_image_2d_dict[g0] == pytest.approx(
+        assert fit.galaxy_model_image_2d_dict[g0] == pytest.approx(
             g0_blurred_image_plane_image_2d, 1.0e-4
         )
-        assert fit.galaxy_image_2d_dict[g1] == pytest.approx(
+        assert fit.galaxy_model_image_2d_dict[g1] == pytest.approx(
             g1_blurred_image_plane_image_2d, 1.0e-4
         )
-        assert fit.galaxy_image_2d_dict[galaxy_pix] == pytest.approx(
+        assert fit.galaxy_model_image_2d_dict[galaxy_pix] == pytest.approx(
             inversion.reconstructed_data_2d, 1.0e-4
         )
 
         assert fit.model_image(return_in_2d=True) == pytest.approx(
-            fit.galaxy_image_2d_dict[g0]
-            + fit.galaxy_image_2d_dict[g1]
+            fit.galaxy_model_image_2d_dict[g0]
+            + fit.galaxy_model_image_2d_dict[g1]
             + inversion.reconstructed_data_2d,
             1.0e-4,
         )
