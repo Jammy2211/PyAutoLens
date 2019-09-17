@@ -130,7 +130,7 @@ class Visualizer:
             should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
             should_plot_all_at_end_png=self.plot_ray_tracing_all_at_end_png,
             should_plot_all_at_end_fits=self.plot_ray_tracing_all_at_end_fits,
-            should_plot_image_plane_image=self.plot_ray_tracing_profile_image,
+            should_plot_image=self.plot_ray_tracing_profile_image,
             should_plot_source_plane=self.plot_ray_tracing_source_plane,
             should_plot_convergence=self.plot_ray_tracing_convergence,
             should_plot_potential=self.plot_ray_tracing_potential,
@@ -168,7 +168,9 @@ class Visualizer:
             should_plot_pixelization_residual_map=self.plot_lens_fit_pixelization_residual_map,
             should_plot_pixelization_normalized_residual_map=self.plot_lens_fit_normalized_residual_map,
             should_plot_pixelization_chi_squared_map=self.plot_lens_fit_pixelization_chi_squared_map,
-            should_plot_pixelization_regularization_weights=self.plot_lens_fit_pixelization_regularization_weights,
+            should_plot_pixelization_regularization_weights=(
+                self.plot_lens_fit_pixelization_regularization_weights
+            ),
             should_plot_subtracted_images_of_planes=self.plot_lens_fit_subtracted_images_of_planes,
             should_plot_model_images_of_planes=self.plot_lens_fit_model_images_of_planes,
             should_plot_plane_images_of_planes=self.plot_lens_fit_plane_images_of_planes,
