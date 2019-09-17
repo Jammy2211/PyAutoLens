@@ -110,7 +110,6 @@ class PhaseData(Phase):
             for galaxy in self.galaxies:
                 if isinstance_or_prior(galaxy.pixelization, pix.VoronoiBrightnessImage):
                     return True
-
         return False
 
     def run(self, data, results=None, mask=None, positions=None):
