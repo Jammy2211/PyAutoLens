@@ -13,20 +13,6 @@ from autolens.pipeline.phase.phase_data import PhaseData
 from autolens.plotters import visualizer
 
 
-def default_mask_function(image):
-    return msk.Mask.circular(
-        shape=image.shape, pixel_scale=image.pixel_scale, sub_size=1, radius_arcsec=3.0
-    )
-
-
-def isinstance_or_prior(obj, cls):
-    if isinstance(obj, cls):
-        return True
-    if isinstance(obj, af.PriorModel) and obj.cls == cls:
-        return True
-    return False
-
-
 class PhaseImaging(PhaseData):
     galaxies = af.PhaseProperty("galaxies")
     hyper_image_sky = af.PhaseProperty("hyper_image_sky")
