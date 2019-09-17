@@ -58,8 +58,8 @@ class PhaseData(AbstractPhase):
         sub_size: int
             The side length of the subgrid
         pixel_scale_binned_cluster_grid : float or None
-            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned up to this \
-            higher pixel scale to speed up the KMeans clustering algorithm.
+            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned
+            up to this higher pixel scale to speed up the KMeans clustering algorithm. \
         """
 
         super(PhaseData, self).__init__(
@@ -163,7 +163,7 @@ class PhaseData(AbstractPhase):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        return NotImplementedError
+        raise NotImplementedError()
 
     def setup_phase_mask(self, data, mask):
 
@@ -225,12 +225,12 @@ class PhaseData(AbstractPhase):
 
                 if bin_up_factor == 1:
                     raise exc.DataException(
-                        "The pixelization "
-                        + str(self.pixelization)
-                        + " uses a KMeans clustering algorithm which uses"
-                          "a hyper model image to adapt the pixelization. This hyper model image must have more pixels"
-                          "than inversion pixels. Current, the inversion_pixel_limit exceeds the data-points in the image.\n\n"
-                          "To rectify this image, manually set the inversion pixel limit in the pipeline phases or change the inversion_pixel_limit_overall parameter in general.ini"
+                        f"The pixelization {self.pixelization} uses a KMeans clustering algorithm which uses "
+                        f"a hyper model image to adapt the pixelization. This hyper model image must have "
+                        f"more pixels than inversion pixels. Current, the inversion_pixel_limit exceeds the "
+                        f"data-points in the image.\n\n To rectify this image, manually set the inversion "
+                        f"pixel limit in the pipeline phases or change the inversion_pixel_limit_overall "
+                        f"parameter in general.ini "
                     )
 
                 bin_up_factor -= 1
