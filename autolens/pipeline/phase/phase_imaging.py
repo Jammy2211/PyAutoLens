@@ -559,7 +559,7 @@ class PhaseImaging(PhaseData):
 
             return binned_image_1d_dict
 
-        def binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(self, binned_grid):
+        def binned_hyper_galaxy_image_1d_path_dict(self, binned_grid):
             """
             A dictionary associating 1D hyper_galaxies galaxy binned images with their names.
             """
@@ -590,14 +590,14 @@ class PhaseImaging(PhaseData):
 
                 return binned_hyper_galaxy_image_path_dict
 
-        def binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(self, binned_grid):
+        def binned_hyper_galaxy_image_2d_path_dict(self, binned_grid):
             """
             A dictionary associating "D hyper_galaxies galaxy images binned images with their names.
             """
 
             if binned_grid is not None:
 
-                binned_hyper_galaxy_image_1d_path_dict = self.binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(
+                binned_hyper_galaxy_image_1d_path_dict = self.binned_hyper_galaxy_image_1d_path_dict(
                     binned_grid=binned_grid
                 )
 
