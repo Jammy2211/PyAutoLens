@@ -10,7 +10,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase.phase_data import PhaseData
-from autolens.pipeline.plotters import phase_plotters
+from autolens.plotters import visualizer
 
 
 def default_mask_function(image):
@@ -67,8 +67,8 @@ class PhaseImaging(PhaseData):
         sub_size: int
             The side length of the subgrid
         pixel_scale_binned_cluster_grid : float or None
-            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned up to this \
-            higher pixel scale to speed up the KMeans clustering algorithm.
+            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned \
+            up to this higher pixel scale to speed up the KMeans clustering algorithm.
         """
 
         phase_tag = phase_tagging.phase_tag_from_phase_settings(
@@ -276,52 +276,16 @@ class PhaseImaging(PhaseData):
     # noinspection PyAbstractClass
     class Analysis(PhaseData.Analysis):
         def __init__(self, lens_imaging_data, cosmology, image_path=None, results=None):
-
             super(PhaseImaging.Analysis, self).__init__(
                 cosmology=cosmology, results=results
             )
+            self.visualizer = visualizer.Visualizer(self)
 
             self.lens_imaging_data = lens_imaging_data
 
-            mask = self.lens_imaging_data.mask if self.should_plot_mask else None
-            positions = self.lens_imaging_data.positions if self.should_plot_positions else None
-
-            subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-                path=image_path, folder_names=["subplots"]
-            )
-
-            phase_plotters.plot_imaging_for_phase(
-                imaging_data=self.lens_imaging_data.imaging_data,
-                mask=mask,
-                positions=positions,
-                extract_array_from_mask=self.extract_array_from_mask,
-                zoom_around_mask=self.zoom_around_mask,
-                units=self.plot_units,
-                should_plot_as_subplot=self.plot_data_as_subplot,
-                should_plot_image=self.plot_data_image,
-                should_plot_noise_map=self.plot_data_noise_map,
-                should_plot_psf=self.plot_data_psf,
-                should_plot_signal_to_noise_map=self.plot_data_signal_to_noise_map,
-                should_plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
-                should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
-                visualize_path=image_path,
-                subplot_path=subplot_path,
-            )
-
-            self.plot_hyper_model_image = af.conf.instance.visualize.get(
-                "plots", "plot_hyper_model_image", bool
-            )
-
-            self.plot_hyper_galaxy_images = af.conf.instance.visualize.get(
-                "plots", "plot_hyper_galaxy_images", bool
-            )
-
-            self.plot_binned_hyper_galaxy_images = af.conf.instance.visualize.get(
-                "plots", "plot_binned_hyper_galaxy_images", bool
-            )
+            self.visualizer.initial_plot(lens_imaging_data, image_path, self.last_results)
 
             if self.last_results is not None:
-
                 self.hyper_galaxy_image_1d_path_dict = (
                     self.last_results.hyper_galaxy_image_1d_path_dict
                 )
@@ -331,26 +295,6 @@ class PhaseImaging(PhaseData):
                 self.binned_hyper_galaxy_image_1d_path_dict = self.last_results.binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(
                     binned_grid=lens_imaging_data.grid.binned
                 )
-
-                if mask is not None:
-                    phase_plotters.plot_hyper_images_for_phase(
-                        hyper_model_image_2d=mask.mapping.scaled_array_2d_from_array_1d(
-                            array_1d=self.hyper_model_image_1d
-                        ),
-                        hyper_galaxy_image_2d_path_dict=self.last_results.hyper_galaxy_image_2d_path_dict,
-                        binned_hyper_galaxy_image_2d_path_dict=self.last_results.binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(
-                            binned_grid=lens_imaging_data.grid.binned
-                        ),
-                        mask=lens_imaging_data.mask,
-                        binned_grid=lens_imaging_data.grid.binned,
-                        extract_array_from_mask=self.extract_array_from_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        units=self.plot_units,
-                        should_plot_hyper_model_image=self.plot_hyper_model_image,
-                        should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
-                        should_plot_binned_hyper_galaxy_images=self.plot_binned_hyper_galaxy_images,
-                        visualize_path=image_path,
-                    )
 
         @property
         def lens_data(self):
@@ -393,8 +337,8 @@ class PhaseImaging(PhaseData):
 
         def associate_images(self, instance: af.ModelInstance) -> af.ModelInstance:
             """
-            Takes images from the last result, if there is one, and associates them with galaxies in this phase where
-            full-path galaxy names match.
+            Takes images from the last result, if there is one, and associates them with galaxies in this phase
+            where full-path galaxy names match.
 
             If the galaxy collection has a different name then an association is not made.
 
@@ -456,86 +400,11 @@ class PhaseImaging(PhaseData):
                 hyper_background_noise=hyper_background_noise,
             )
 
-        @classmethod
-        def describe(cls, instance):
-            return "\nRunning for... \n\nGalaxies:\n{}\n\n".format(instance.galaxies)
-
         def visualize(self, instance, image_path, during_analysis):
-
-            subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-                path=image_path, folder_names=["subplots"]
-            )
-
-            instance = self.associate_images(instance=instance)
-
-            mask = self.lens_imaging_data.mask if self.should_plot_mask else None
-            positions = self.lens_imaging_data.positions if self.should_plot_positions else None
-
-            tracer = self.tracer_for_instance(instance=instance)
-
-            phase_plotters.plot_ray_tracing_for_phase(
-                tracer=tracer,
-                grid=self.lens_imaging_data.grid,
-                during_analysis=during_analysis,
-                mask=mask,
-                extract_array_from_mask=self.extract_array_from_mask,
-                zoom_around_mask=self.zoom_around_mask,
-                positions=positions,
-                units=self.plot_units,
-                should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
-                should_plot_all_at_end_png=self.plot_ray_tracing_all_at_end_png,
-                should_plot_all_at_end_fits=self.plot_ray_tracing_all_at_end_fits,
-                should_plot_image_plane_image=self.plot_ray_tracing_profile_image,
-                should_plot_source_plane=self.plot_ray_tracing_source_plane,
-                should_plot_convergence=self.plot_ray_tracing_convergence,
-                should_plot_potential=self.plot_ray_tracing_potential,
-                should_plot_deflections=self.plot_ray_tracing_deflections,
-                visualize_path=image_path,
-                subplot_path=subplot_path,
-            )
-
-            hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
-
-            hyper_background_noise = self.hyper_background_noise_for_instance(
-                instance=instance
-            )
-
-            fit = self.lens_imaging_fit_for_tracer(
-                tracer=tracer,
-                hyper_image_sky=hyper_image_sky,
-                hyper_background_noise=hyper_background_noise,
-            )
-
-            phase_plotters.plot_lens_imaging_fit_for_phase(
-                fit=fit,
-                during_analysis=during_analysis,
-                should_plot_mask=self.should_plot_mask,
-                extract_array_from_mask=self.extract_array_from_mask,
-                zoom_around_mask=self.zoom_around_mask,
-                positions=positions,
-                should_plot_image_plane_pix=self.should_plot_image_plane_pix,
-                should_plot_all_at_end_png=self.plot_lens_fit_all_at_end_png,
-                should_plot_all_at_end_fits=self.plot_lens_fit_all_at_end_fits,
-                should_plot_fit_as_subplot=self.plot_lens_fit_as_subplot,
-                should_plot_fit_of_planes_as_subplot=self.plot_lens_fit_of_planes_as_subplot,
-                should_plot_inversion_as_subplot=self.plot_lens_fit_inversion_as_subplot,
-                should_plot_image=self.plot_lens_fit_image,
-                should_plot_noise_map=self.plot_lens_fit_noise_map,
-                should_plot_signal_to_noise_map=self.plot_lens_fit_signal_to_noise_map,
-                should_plot_model_image=self.plot_lens_fit_model_image,
-                should_plot_residual_map=self.plot_lens_fit_residual_map,
-                should_plot_normalized_residual_map=self.plot_lens_fit_normalized_residual_map,
-                should_plot_chi_squared_map=self.plot_lens_fit_chi_squared_map,
-                should_plot_pixelization_residual_map=self.plot_lens_fit_pixelization_residual_map,
-                should_plot_pixelization_normalized_residual_map=self.plot_lens_fit_normalized_residual_map,
-                should_plot_pixelization_chi_squared_map=self.plot_lens_fit_pixelization_chi_squared_map,
-                should_plot_pixelization_regularization_weights=self.plot_lens_fit_pixelization_regularization_weights,
-                should_plot_subtracted_images_of_planes=self.plot_lens_fit_subtracted_images_of_planes,
-                should_plot_model_images_of_planes=self.plot_lens_fit_model_images_of_planes,
-                should_plot_plane_images_of_planes=self.plot_lens_fit_plane_images_of_planes,
-                units=self.plot_units,
-                visualize_path=image_path,
-                subplot_path=subplot_path,
+            self.visualizer.visualize(
+                instance,
+                image_path,
+                during_analysis
             )
 
     class Result(PhaseData.Result):
