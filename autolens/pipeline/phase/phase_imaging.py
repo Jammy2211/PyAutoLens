@@ -269,7 +269,7 @@ class PhaseImaging(PhaseData):
 
             self.lens_imaging_data = lens_imaging_data
 
-            self.visualizer.initial_plot(
+            self.visualizer.plot_hyper_images(
                 self.last_results
             )
 
@@ -284,6 +284,10 @@ class PhaseImaging(PhaseData):
                     self.last_results.binned_hyper_galaxy_image_1d_path_dict(
                         binned_grid=lens_imaging_data.grid.binned
                     )
+                )
+
+                self.visualizer.plot_hyper_images(
+                    self.last_results
                 )
 
         @property

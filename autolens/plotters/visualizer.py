@@ -147,7 +147,7 @@ class Visualizer:
             subplot_path=self.subplot_path,
         )
 
-    def initial_plot(self, last_results):
+    def plot_imaging(self):
         mask = self.lens_imaging_data.mask if self.should_plot_mask else None
         positions = self.lens_imaging_data.positions if self.should_plot_positions else None
 
@@ -167,10 +167,6 @@ class Visualizer:
             should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
             visualize_path=self.image_path,
             subplot_path=self.subplot_path,
-        )
-
-        self.plot_hyper_images(
-            last_results
         )
 
     def plot_hyper_images(
