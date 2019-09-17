@@ -299,27 +299,6 @@ class PhaseData(AbstractPhase):
                             raise exc.PixelizationException
 
     class Result(AbstractPhase.Result):
-        def __init__(
-                self,
-                constant,
-                figure_of_merit,
-                previous_variable,
-                gaussian_tuples,
-                analysis,
-                optimizer,
-        ):
-            """
-            The result of a phase
-            """
-            super(PhaseData.Result, self).__init__(
-                analysis=analysis,
-                optimizer=optimizer,
-                constant=constant,
-                figure_of_merit=figure_of_merit,
-                previous_variable=previous_variable,
-                gaussian_tuples=gaussian_tuples,
-            )
-
         @property
         def most_likely_fit(self):
 
