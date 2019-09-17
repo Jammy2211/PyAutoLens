@@ -15,7 +15,7 @@ Big Picture:
 
 UV Plane:
 
-- Extend lens_data to have LensImagingData, LensInterferometerData.
+- Extend lens_data to have LensImagingData, LensUVPlaneData.
 - PhaseImagingData, PhaseInterometer - PhaseImaging is now abstract Phase.
 
 Small Picture:

@@ -477,4 +477,4 @@ class TestPhasePickle(object):
         phase_imaging_7x7.make_analysis = make_analysis
 
         # with pytest.raises(af.exc.PipelineException):
-        #     phase_imaging_7x7.run(instrument=imaging_data_7x7, results=None, mask=None, positions=None)
+        #     phase_imaging_7x7.run(data_type=imaging_data_7x7, results=None, mask=None, positions=None)

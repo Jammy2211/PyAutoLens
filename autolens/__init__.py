@@ -29,9 +29,9 @@ from autolens.array.util import binning_util, grid_util, mask_util
 from autolens.array.util import grid_util, mask_util
 from autolens.data.convolution import Convolver
 from autolens.data.fourier_transform import Transformer
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import interferometer
-from autolens.data.instrument.abstract_data import (
+from autolens.data.data_type import abstract_data
+from autolens.data.data_type import uv_plane
+from autolens.data.data_type.abstract_data import (
     AbstractData,
     AbstractNoiseMap,
     ExposureTimeMap,
@@ -40,7 +40,7 @@ from autolens.data.instrument.abstract_data import (
     load_positions,
     output_positions,
 )
-from autolens.data.instrument.imaging import (
+from autolens.data.data_type.imaging import (
     ImagingData,
     NoiseMap,
     PoissonNoiseMap,
@@ -53,17 +53,17 @@ from autolens.data.instrument.imaging import (
     load_imaging_data_from_fits,
     output_imaging_data_to_fits,
 )
-from autolens.data.instrument.interferometer import (
-    InterferometerData,
+from autolens.data.data_type.uv_plane import (
+    UVPlaneData,
     PrimaryBeam,
-    SimulatedInterferometerData,
-    load_interferometer_data_from_fits,
-    output_interferometer_data_to_fits,
+    SimulatedUVPlaneData,
+    load_uv_plane_data_from_fits,
+    output_uv_plane_data_to_fits,
     gaussian_noise_map_from_shape_and_sigma,
 )
 from autolens.data.plotters import imaging_plotters
 from autolens.data.plotters import data_plotters
-from autolens.data.plotters import interferometer_plotters
+from autolens.data.plotters import uv_plane_plotters
 from autolens.dimensions import (
     DimensionsProfile,
     Length,
@@ -76,7 +76,7 @@ from autolens.dimensions import (
     convert_units_to_input_units,
 )
 from autolens.lens import ray_tracing
-from autolens.lens.lens_data import AbstractLensData, LensImagingData
+from autolens.lens.lens_data import AbstractLensData, LensImagingData, LensUVPlaneData
 from autolens.lens.lens_fit import ImagingFit, LensImagingFit, LensPositionFit
 from autolens.lens.plane import Plane, PlanePositions, PlaneImage
 from autolens.lens.plotters import lens_imaging_fit_plotters

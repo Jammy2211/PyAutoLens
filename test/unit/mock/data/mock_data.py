@@ -3,7 +3,7 @@ import numpy as np
 import autolens as al
 from autolens.array import scaled_array
 from autolens.data import fourier_transform
-from autolens.data.instrument import interferometer
+from autolens.data.data_type import uv_plane
 
 
 class MockImage(object):
@@ -156,7 +156,7 @@ class MockUVWavelengths(np.ndarray):
         return obj
 
 
-class MockInterferometerData(al.InterferometerData):
+class MockUVPlaneData(al.UVPlaneData):
     def __init__(
         self,
         shape,
@@ -166,7 +166,7 @@ class MockInterferometerData(al.InterferometerData):
         noise_map,
         uv_wavelengths,
     ):
-        super(MockInterferometerData, self).__init__(
+        super(MockUVPlaneData, self).__init__(
             shape=shape,
             visibilities=visibilities,
             pixel_scale=pixel_scale,

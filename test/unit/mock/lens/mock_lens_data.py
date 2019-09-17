@@ -50,3 +50,41 @@ class MockLensImagingData(object):
     @reshape_returned_array
     def signal_to_noise_map(self, return_in_2d=True):
         return self._image_1d / self._noise_map_1d
+
+
+class MockLensUVPlaneData(object):
+    def __init__(self, uv_plane_data, mask, grid, transformer, binned_grid):
+
+        self.uv_plane_data = uv_plane_data
+        self.pixel_scale = uv_plane_data.pixel_scale
+
+        self.mask = mask
+        self._mask_1d = self.mask.mapping.array_1d_from_array_2d(array_2d=self.mask)
+
+        self.grid = grid
+        self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
+        self.sub_size = self.grid.sub_size
+        self.transformer = transformer
+
+        self.positions = None
+
+        self.hyper_noise_map_max = None
+
+        self.uses_cluster_inversion = False
+        self.inversion_pixel_limit = 1000
+        self.inversion_uses_border = True
+
+        self.preload_pixelization_grids_of_planes = None
+
+    def visibilities(self):
+        return self.uv_plane_data.visibilities
+
+    def noise_map(self):
+        return self.uv_plane_data.noise_map
+
+    @property
+    def primary_beam(self):
+        return self.uv_plane_data.primary_beam
+
+    def signal_to_noise_map(self):
+        return self.uv_plane_data.visibilities / self.uv_plane_data.noise_map

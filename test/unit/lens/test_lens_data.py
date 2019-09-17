@@ -13,6 +13,11 @@ def make_lens_imaging_data_6x6(imaging_data_6x6, mask_6x6):
     return al.LensImagingData(imaging_data=imaging_data_6x6, mask=mask_6x6)
 
 
+@pytest.fixture(name="lens_uv_plane_data_7")
+def make_lens_uv_plane_data_7(uv_plane_data_7, sub_mask_7x7):
+    return al.LensUVPlaneData(uv_plane_data=uv_plane_data_7, mask=sub_mask_7x7)
+
+
 class TestAbstractLensData(object):
 
     def test__pixel_scale_interpolation_grid_input__grids_nclude_interpolators(
@@ -124,7 +129,7 @@ class TestAbstractLensData(object):
         assert lens_imaging_data_7x7.hyper_noise_map_max == 20.0
 
 
-class TestAbstractLensImagingData(object):
+class TestLensImagingData(object):
     
     def test__attributes(self, imaging_data_7x7, lens_imaging_data_7x7):
         assert lens_imaging_data_7x7.pixel_scale == imaging_data_7x7.pixel_scale
@@ -365,3 +370,78 @@ class TestAbstractLensImagingData(object):
                 ]
             )
         ).all()
+
+
+class TestLensUVPlaneData(object):
+
+    def test__attributes(self, uv_plane_data_7, lens_uv_plane_data_7):
+
+        assert lens_uv_plane_data_7.pixel_scale == uv_plane_data_7.pixel_scale
+        assert lens_uv_plane_data_7.pixel_scale == 1.0
+
+        assert (lens_uv_plane_data_7.visibilities() == uv_plane_data_7.visibilities).all()
+        assert (lens_uv_plane_data_7.visibilities() == np.ones((7,2))).all()
+
+        assert (lens_uv_plane_data_7.noise_map() == uv_plane_data_7.noise_map).all()
+        assert (lens_uv_plane_data_7.noise_map() == 2.0 * np.ones((7))).all()
+
+        assert (lens_uv_plane_data_7.primary_beam == uv_plane_data_7.primary_beam).all()
+        assert (lens_uv_plane_data_7.primary_beam == np.ones((3, 3))).all()
+        assert lens_uv_plane_data_7.trimmed_primary_beam_shape == (3, 3)
+
+        assert (lens_uv_plane_data_7.uv_plane_data.uv_wavelengths == uv_plane_data_7.uv_wavelengths).all()
+        assert lens_uv_plane_data_7.uv_plane_data.uv_wavelengths[0,0] == -55636.4609375
+
+    def test__grids(
+            self, lens_uv_plane_data_7, grid_7x7, sub_grid_7x7,
+    ):
+        assert (lens_uv_plane_data_7.grid.unlensed_unsubbed_1d == grid_7x7).all()
+        assert (lens_uv_plane_data_7.grid == sub_grid_7x7).all()
+
+    def test__transformer(self, lens_uv_plane_data_7):
+        assert type(lens_uv_plane_data_7.transformer) == al.Transformer
+
+    def test__different_uv_plane_data_without_mock_objects__customize_constructor_inputs(
+            self
+    ):
+        primary_beam = al.PrimaryBeam(np.ones((7, 7)), 1)
+        uv_plane_data = al.UVPlaneData(
+            shape=(2,2),
+            visibilities=np.ones((19, 2)),
+            pixel_scale=3.0,
+            primary_beam=primary_beam,
+            noise_map=2.0 * np.ones((19,)),
+            uv_wavelengths=3.0 * np.ones((19, 2)),
+        )
+        mask = al.Mask.unmasked_from_shape_pixel_scale_and_sub_size(
+            shape=(19, 19), pixel_scale=1.0, invert=True, sub_size=8
+        )
+        mask[9, 9] = False
+
+        lens_uv_plane_data_7 = al.LensUVPlaneData(
+            uv_plane_data=uv_plane_data,
+            mask=mask,
+            trimmed_primary_beam_shape=(7, 7),
+            positions=[np.array([[1.0, 1.0]])],
+            positions_threshold=1.0,
+        )
+
+        assert (lens_uv_plane_data_7.visibilities() == np.ones((19, 2))).all()
+        assert (lens_uv_plane_data_7.noise_map() == 2.0 * np.ones(
+            (19,))).all()
+        assert (lens_uv_plane_data_7.uv_plane_data.uv_wavelengths == 3.0 * np.ones(
+            (19, 2))).all()
+        assert (lens_uv_plane_data_7.primary_beam == np.ones((7, 7))).all()
+
+        assert lens_uv_plane_data_7.sub_size == 8
+        assert (lens_uv_plane_data_7.positions[0] == np.array([[1.0, 1.0]])).all()
+        assert lens_uv_plane_data_7.positions_threshold == 1.0
+
+        assert lens_uv_plane_data_7.trimmed_primary_beam_shape == (7, 7)
+
+    def test__lens_uv_plane_data_7_with_modified_visibilities(self, lens_uv_plane_data_7):
+        lens_uv_plane_data_7 = lens_uv_plane_data_7.new_lens_imaging_data_with_modified_visibilities(
+            modified_visibilities=8.0 * np.ones((7, 2))
+        )
+
+        assert (lens_uv_plane_data_7.visibilities() == 8.0 * np.ones((7, 2))).all()

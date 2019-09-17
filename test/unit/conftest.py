@@ -122,7 +122,7 @@ def make_visibilities_7():
 
 @pytest.fixture(name="visibilities_noise_map_7")
 def make_visibilities_noisse_map_7():
-    return mock_data.MockVisibilitiesNoiseMap(shape=7, value=1.0)
+    return mock_data.MockVisibilitiesNoiseMap(shape=7, value=2.0)
 
 
 @pytest.fixture(name="primary_beam_3x3")
@@ -132,17 +132,17 @@ def make_primary_beam_3x3():
 
 @pytest.fixture(name="uv_wavelengths_7")
 def make_uv_wavelengths_7():
-    return mock_data.MockUVWavelengths(shape=7, value=1.0)
+    return mock_data.MockUVWavelengths(shape=7, value=3.0)
 
 
-@pytest.fixture(name="interferometer_data_7")
-def make_interferometer_data_7x7(
+@pytest.fixture(name="uv_plane_data_7")
+def make_uv_plane_data_7(
     visibilities_7,
     visibilities_noise_map_7,
     primary_beam_3x3,
     uv_wavelengths_7,
 ):
-    return mock_data.MockInterferometerData(
+    return mock_data.MockUVPlaneData(
         shape=(7,7),
         visibilities=visibilities_7,
         pixel_scale=1.0,
@@ -480,6 +480,23 @@ def make_lens_imaging_data_7x7(
         grid=sub_grid_7x7,
         blurring_grid=blurring_grid_7x7,
         convolver=convolver_7x7,
+        binned_grid=binned_grid_7x7,
+    )
+
+
+@pytest.fixture(name="lens_uv_plane_data_7")
+def make_lens_uv_plane_data_7(
+    uv_plane_data_7,
+    mask_7x7,
+    sub_grid_7x7,
+    transformer_7x7_7,
+    binned_grid_7x7,
+):
+    return mock_lens_data.MockLensUVPlaneData(
+        uv_plane_data=uv_plane_data_7,
+        mask=mask_7x7,
+        grid=sub_grid_7x7,
+        transformer=transformer_7x7_7,
         binned_grid=binned_grid_7x7,
     )
 
