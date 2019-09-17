@@ -43,14 +43,18 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
         self.plot_galaxy_fit_residual_map = plot_setting("plot_galaxy_fit_residual_map")
         self.plot_galaxy_fit_chi_squared_map = plot_setting("plot_galaxy_fit_chi_squared_map")
 
-    def plot_galaxy_fit_subplot(self, fit):
+    def plot_galaxy_fit_subplot(
+            self,
+            fit,
+            path_suffix=""
+    ):
         if self.plot_galaxy_fit_as_subplot:
             galaxy_fit_plotters.plot_fit_subplot(
                 fit=fit,
                 should_plot_mask=self.should_plot_mask,
                 zoom_around_mask=self.zoom_around_mask,
                 units=self.plot_units,
-                output_path=self.image_path,
+                output_path=f"{self.image_path}/{path_suffix}",
                 output_format="png",
             )
 
