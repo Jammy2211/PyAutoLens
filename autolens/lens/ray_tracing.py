@@ -777,6 +777,42 @@ class AbstractTracerData(AbstractTracerLensing):
             for plane in self.planes
         ]
 
+    def galaxy_image_dict_from_grid(
+        self, grid,
+    ) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+
+        galaxy_image_dict = dict()
+
+        galaxy_images_of_planes = self.profile_images_of_planes_from_grid(
+            grid=grid, return_in_2d=False
+        )
+
+        for galaxy_image in galaxy_images:
+            for galaxy in plane.galaxies:
+
+                profile_image_1d = plane.profile_image_of_galaxy_from_grid_and_galaxy(
+                    grid=traced_grid,
+                    galaxy=galaxy,
+                    return_in_2d=False,
+                    return_binned=True,
+                )
+
+                profile_blurring_image_1d = plane.profile_image_of_galaxy_from_grid_and_galaxy(
+                    grid=traced_blurring_grid, galaxy=galaxy, return_in_2d=False
+                )
+
+                blurred_profile_image_1d = convolver.convolve_image(
+                    image_array=profile_image_1d,
+                    blurring_array=profile_blurring_image_1d,
+                )
+
+                galaxy_image_dict[galaxy] = blurred_profile_image_1d
+
+        return galaxy_image_dict
+
     def galaxy_blurred_image_dict_from_grid_and_convolver(
         self, grid, convolver, preload_blurring_grid=None
     ) -> {g.Galaxy: np.ndarray}:
