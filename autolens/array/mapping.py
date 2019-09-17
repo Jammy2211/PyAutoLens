@@ -59,8 +59,10 @@ def reshape_returned_array(func):
         elif hasattr(grid, "mapping"):
             mapping = grid.mapping
         else:
-            raise exc.MappingException("Unable to find mapping object from the functions input object or any of its"
-                                       "keyword arguments.")
+            raise exc.MappingException(
+                "Unable to find mapping object from the functions input object or any of its"
+                "keyword arguments."
+            )
 
         if grid is not None and psf is not None:
             array_from_func = func(obj, grid, psf)
@@ -72,10 +74,14 @@ def reshape_returned_array(func):
             array_from_func = func(obj)
 
         return reshaped_array_from_array_and_mapping(
-            array=array_from_func, mapping=mapping, return_in_2d=return_in_2d, return_masked=return_masked,
+            array=array_from_func,
+            mapping=mapping,
+            return_in_2d=return_in_2d,
+            return_masked=return_masked,
         )
 
     return wrapper
+
 
 def reshaped_array_from_array_and_mapping(array, mapping, return_in_2d, return_masked):
 

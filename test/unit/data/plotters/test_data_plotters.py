@@ -98,7 +98,7 @@ def test__all_imaging_data_types_are_output(
     assert data_plotter_path + "potential_chi_squared_map.png" in plot_patch.paths
 
 
-def test__all_interferometer_data_types_are_output(
+def test__all_uv_plane_data_types_are_output(
     visibilities_7,
     visibilities_noise_map_7,
     uv_wavelengths_7,

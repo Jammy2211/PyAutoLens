@@ -332,7 +332,12 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         )
 
     def new_mask_with_new_sub_size(self, sub_size):
-        return Mask(array=self, pixel_scale=self.pixel_scale, sub_size=sub_size, origin=self.origin)
+        return Mask(
+            array=self,
+            pixel_scale=self.pixel_scale,
+            sub_size=sub_size,
+            origin=self.origin,
+        )
 
     @property
     def sub_mask(self):

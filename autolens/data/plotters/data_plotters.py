@@ -47,9 +47,9 @@ def plot_image(
     output_format="show",
     output_filename="image",
 ):
-    """Plot the observed image of the imaging instrument.
+    """Plot the observed image of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -57,7 +57,7 @@ def plot_image(
         The image of the data.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
+    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
@@ -134,9 +134,9 @@ def plot_noise_map(
     output_format="show",
     output_filename="noise_map",
 ):
-    """Plot the noise_map of the imaging instrument.
+    """Plot the noise_map of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -209,9 +209,9 @@ def plot_psf(
     output_format="show",
     output_filename="psf",
 ):
-    """Plot the PSF of the imaging instrument.
+    """Plot the PSF of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -284,9 +284,9 @@ def plot_signal_to_noise_map(
     output_format="show",
     output_filename="signal_to_noise_map",
 ):
-    """Plot the signal-to-noise_map of the imaging instrument.
+    """Plot the signal-to-noise_map of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -363,9 +363,9 @@ def plot_absolute_signal_to_noise_map(
     output_format="show",
     output_filename="absolute_signal_to_noise_map",
 ):
-    """Plot the absolute signal-to-noise map of the imaging instrument.
+    """Plot the absolute signal-to-noise map of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -442,9 +442,9 @@ def plot_potential_chi_squared_map(
     output_format="show",
     output_filename="potential_chi_squared_map",
 ):
-    """Plot the signal-to-noise_map of the imaging instrument.
+    """Plot the signal-to-noise_map of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -511,9 +511,9 @@ def plot_visibilities(
     output_format="show",
     output_filename="visibilities",
 ):
-    """Plot the observed image of the imaging instrument.
+    """Plot the observed image of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -521,7 +521,7 @@ def plot_visibilities(
         The image of the data.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
+    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
@@ -569,9 +569,9 @@ def plot_u_wavelengths(
     output_format="show",
     output_filename="u_wavelengths",
 ):
-    """Plot the observed image of the imaging instrument.
+    """Plot the observed image of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -579,7 +579,7 @@ def plot_u_wavelengths(
         The image of the data.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
+    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
@@ -625,9 +625,9 @@ def plot_v_wavelengths(
     output_format="show",
     output_filename="v_wavelengths",
 ):
-    """Plot the observed image of the imaging instrument.
+    """Plot the observed image of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -635,7 +635,7 @@ def plot_v_wavelengths(
         The image of the data.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or instrument.array.grid_stacks.PixGrid
+    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
@@ -690,9 +690,9 @@ def plot_primary_beam(
     output_format="show",
     output_filename="primary_beam",
 ):
-    """Plot the PSF of the imaging instrument.
+    """Plot the PSF of the imaging data_type.
 
-    Set *autolens.instrument.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -734,11 +734,11 @@ def plot_primary_beam(
 
 
 def get_origin(array, plot_origin):
-    """Get the (y,x) origin of the imaging instrument if it going to be plotted.
+    """Get the (y,x) origin of the imaging data_type if it going to be plotted.
 
     Parameters
     -----------
-    array : instrument.array.scaled_array.ScaledArray
+    array : data_type.array.scaled_array.ScaledArray
         The array from which the origin is extracted.
     plot_origin : True
         If true, the origin of the data's coordinate system is returned.

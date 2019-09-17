@@ -5,6 +5,7 @@ import autofit as af
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 
+
 class AbstractPhase(af.AbstractPhase):
     def __init__(
         self,
@@ -204,5 +205,3 @@ class Phase(AbstractPhase):
             self.plot_ray_tracing_magnification = af.conf.instance.visualize.get(
                 "plots", "plot_ray_tracing_magnification", bool
             )
-
-

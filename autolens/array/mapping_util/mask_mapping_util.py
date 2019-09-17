@@ -127,9 +127,7 @@ def submask_index_to_sub_mask_1d_index_from_sub_mask(sub_mask):
     for sub_mask_y in range(sub_mask.shape[0]):
         for sub_mask_x in range(sub_mask.shape[1]):
             if sub_mask[sub_mask_y, sub_mask_x] == False:
-                submask_index_to_1d_index[
-                    sub_mask_y, sub_mask_x
-                ] = sub_mask_1d_index
+                submask_index_to_1d_index[sub_mask_y, sub_mask_x] = sub_mask_1d_index
                 sub_mask_1d_index += 1
 
     return submask_index_to_1d_index

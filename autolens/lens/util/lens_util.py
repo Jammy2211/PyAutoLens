@@ -29,7 +29,10 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
     image_1d = sum(
         map(
             lambda g: g.profile_image_from_grid(
-                grid=uniform_grid, return_in_2d=False, return_binned=False, bypass_decorator=True
+                grid=uniform_grid,
+                return_in_2d=False,
+                return_binned=False,
+                bypass_decorator=True,
             ),
             galaxies,
         )

@@ -1,12 +1,3 @@
-from autolens.data.instrument import abstract_data
-from autolens.data.instrument import imaging
-from autolens.array import mask as msk
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.galaxy import galaxy as g
-from autolens.lens import ray_tracing
-from autolens.lens.lens_fit import lens_imaging_fit
-from autolens.lens import lens_data as ld
-from autolens.data.plotters import imaging_plotters
 from autolens.lens.plotters import lens_imaging_fit_plotters
 from test.simulation import simulation_util
 
@@ -33,7 +24,9 @@ lens_galaxy = al.Galaxy(
 lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
-fit = al.LensImageFit.from_lens_imaging_data_and_tracer(lens_imaging_data=lens_data, tracer=tracer)
+fit = al.LensImageFit.from_lens_imaging_data_and_tracer(
+    lens_imaging_data=lens_data, tracer=tracer
+)
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit, should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True
 )
