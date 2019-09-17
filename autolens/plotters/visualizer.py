@@ -87,6 +87,37 @@ class Visualizer:
 
         tracer = self.analysis.tracer_for_instance(instance=instance)
 
+        self.plot_ray_tracing(
+            tracer,
+            mask,
+            positions,
+            during_analysis,
+        )
+
+        hyper_image_sky = self.analysis.hyper_image_sky_for_instance(instance=instance)
+
+        hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
+            instance=instance
+        )
+
+        fit = self.analysis.lens_imaging_fit_for_tracer(
+            tracer=tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
+        self.plot_lens_imaging(
+            fit,
+            positions,
+            during_analysis
+        )
+
+    def plot_ray_tracing(
+            self,
+            tracer,
+            mask,
+            positions,
+            during_analysis,
+    ):
         phase_plotters.plot_ray_tracing_for_phase(
             tracer=tracer,
             grid=self.analysis.lens_imaging_data.grid,
@@ -108,18 +139,12 @@ class Visualizer:
             subplot_path=self.subplot_path,
         )
 
-        hyper_image_sky = self.analysis.hyper_image_sky_for_instance(instance=instance)
-
-        hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
-            instance=instance
-        )
-
-        fit = self.analysis.lens_imaging_fit_for_tracer(
-            tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-        )
-
+    def plot_lens_imaging(
+            self,
+            fit,
+            positions,
+            during_analysis
+    ):
         phase_plotters.plot_lens_imaging_fit_for_phase(
             fit=fit,
             during_analysis=during_analysis,
