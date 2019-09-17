@@ -264,6 +264,7 @@ class PhaseImaging(PhaseData):
             )
             self.visualizer = visualizer.Visualizer(
                 self,
+                lens_imaging_data,
                 image_path
             )
 
@@ -391,8 +392,30 @@ class PhaseImaging(PhaseData):
             )
 
         def visualize(self, instance, image_path, during_analysis):
-            self.visualizer.visualize(
-                instance,
+            instance = self.associate_images(
+                instance=instance
+            )
+            tracer = self.tracer_for_instance(
+                instance=instance
+            )
+            hyper_image_sky = self.hyper_image_sky_for_instance(
+                instance=instance
+            )
+            hyper_background_noise = self.hyper_background_noise_for_instance(
+                instance=instance
+            )
+
+            fit = self.lens_imaging_fit_for_tracer(
+                tracer=tracer,
+                hyper_image_sky=hyper_image_sky,
+                hyper_background_noise=hyper_background_noise,
+            )
+            self.visualizer.plot_ray_tracing(
+                fit.tracer,
+                during_analysis,
+            )
+            self.visualizer.plot_lens_imaging(
+                fit,
                 during_analysis
             )
 

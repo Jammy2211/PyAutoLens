@@ -3,7 +3,13 @@ from autolens.pipeline.plotters import phase_plotters
 
 
 class Visualizer:
-    def __init__(self, analysis, image_path):
+    def __init__(
+            self,
+            analysis,
+            lens_imaging_data,
+            image_path
+    ):
+        self.lens_imaging_data = lens_imaging_data
         self.analysis = analysis
         self.image_path = image_path
         self.subplot_path = af.path_util.make_and_return_path_from_path_and_folder_names(
@@ -75,52 +81,16 @@ class Visualizer:
         self.plot_ray_tracing_deflections = plot_setting("plot_ray_tracing_deflections")
         self.plot_ray_tracing_magnification = plot_setting("plot_ray_tracing_magnification")
 
-    def visualize(
-            self,
-            instance,
-            during_analysis
-    ):
-        instance = self.analysis.associate_images(instance=instance)
-
-        mask = self.analysis.lens_imaging_data.mask if self.should_plot_mask else None
-        positions = self.analysis.lens_imaging_data.positions if self.should_plot_positions else None
-
-        tracer = self.analysis.tracer_for_instance(instance=instance)
-
-        self.plot_ray_tracing(
-            tracer,
-            mask,
-            positions,
-            during_analysis,
-        )
-
-        hyper_image_sky = self.analysis.hyper_image_sky_for_instance(instance=instance)
-
-        hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
-            instance=instance
-        )
-
-        fit = self.analysis.lens_imaging_fit_for_tracer(
-            tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-        )
-        self.plot_lens_imaging(
-            fit,
-            positions,
-            during_analysis
-        )
-
     def plot_ray_tracing(
             self,
             tracer,
-            mask,
-            positions,
             during_analysis,
     ):
+        positions = self.lens_imaging_data.positions if self.should_plot_positions else None
+        mask = self.lens_imaging_data.mask if self.should_plot_mask else None
         phase_plotters.plot_ray_tracing_for_phase(
             tracer=tracer,
-            grid=self.analysis.lens_imaging_data.grid,
+            grid=self.lens_imaging_data.grid,
             during_analysis=during_analysis,
             mask=mask,
             extract_array_from_mask=self.extract_array_from_mask,
@@ -142,9 +112,9 @@ class Visualizer:
     def plot_lens_imaging(
             self,
             fit,
-            positions,
             during_analysis
     ):
+        positions = self.lens_imaging_data.positions if self.should_plot_positions else None
         phase_plotters.plot_lens_imaging_fit_for_phase(
             fit=fit,
             during_analysis=during_analysis,
