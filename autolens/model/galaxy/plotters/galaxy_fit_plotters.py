@@ -337,7 +337,7 @@ def plot_galaxy_data_array(
         title = "Galaxy Data Deflections (x)"
     else:
         raise exc.PlottingException(
-            "The galaxy instrument array does not have a True use_profile_type"
+            "The galaxy data_type array does not have a True use_profile_type"
         )
 
     array_plotters.plot_array(

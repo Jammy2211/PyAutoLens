@@ -1185,23 +1185,19 @@ class TestTruncatedNFW(object):
         )
 
         truncated_nfw_convergence = truncated_nfw.convergence_from_grid(
-            grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]),
-bypass_decorator=True
+            grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]), bypass_decorator=True
         )
         nfw_convergence = nfw.convergence_from_grid(
-            grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]),
-bypass_decorator=True
+            grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]), bypass_decorator=True
         )
 
         assert truncated_nfw_convergence == pytest.approx(nfw_convergence, 1.0e-4)
 
         truncated_nfw_deflections = truncated_nfw.deflections_from_grid(
-            grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]),
-bypass_decorator=True
+            grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]), bypass_decorator=True
         )
         nfw_deflections = nfw.deflections_from_grid(
-            grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]),
-bypass_decorator=True
+            grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]), bypass_decorator=True
         )
 
         assert truncated_nfw_deflections == pytest.approx(nfw_deflections, 1.0e-4)

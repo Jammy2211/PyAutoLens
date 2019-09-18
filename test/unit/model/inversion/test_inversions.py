@@ -146,7 +146,8 @@ class TestReconstructedDataVectorAndImage:
             array=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         grid = al.Grid.from_mask(mask=mask)
@@ -190,7 +191,8 @@ class TestReconstructedDataVectorAndImage:
             array=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         grid = al.Grid.from_mask(mask=mask)

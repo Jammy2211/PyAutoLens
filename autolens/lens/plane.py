@@ -6,9 +6,8 @@ import autofit as af
 from autolens import exc, dimensions as dim
 from autolens.array import scaled_array
 from autolens.array.mapping import (
+    reshape_returned_array,
     reshape_returned_sub_array,
-    reshape_returned_array,
-    reshape_returned_array,
     reshape_returned_grid,
 )
 from autolens.lens.util import lens_util
@@ -222,7 +221,10 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             return sum(
                 map(
                     lambda galaxy: galaxy.profile_image_from_grid(
-                        grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True,
+                        grid=grid,
+                        return_in_2d=False,
+                        return_binned=False,
+                        bypass_decorator=True,
                     ),
                     self.galaxies,
                 )
@@ -231,29 +233,15 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             return np.full((grid.shape[0]), 0.0)
 
     def profile_images_of_galaxies_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
+        self, grid, return_in_2d=True, return_binned=True
     ):
         return list(
             map(
-                lambda galaxy: self.profile_image_of_galaxy_from_grid_and_galaxy(
-                    grid=grid,
-                    galaxy=galaxy,
-                    return_in_2d=return_in_2d,
-                    return_binned=return_binned,
+                lambda galaxy: galaxy.profile_image_from_grid(
+                    grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
                 ),
                 self.galaxies,
             )
-        )
-
-    def profile_image_of_galaxy_from_grid_and_galaxy(
-        self,
-        grid,
-        galaxy,
-        return_in_2d=True,
-        return_binned=True,
-    ):
-        return galaxy.profile_image_from_grid(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
         )
 
     @reshape_returned_sub_array
@@ -287,7 +275,10 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             return sum(
                 map(
                     lambda g: g.convergence_from_grid(
-                        grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True,
+                        grid=grid,
+                        return_in_2d=False,
+                        return_binned=False,
+                        bypass_decorator=True,
                     ),
                     self.galaxies,
                 )
@@ -326,7 +317,10 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             return sum(
                 map(
                     lambda g: g.potential_from_grid(
-                        grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True
+                        grid=grid,
+                        return_in_2d=False,
+                        return_binned=False,
+                        bypass_decorator=True,
                     ),
                     self.galaxies,
                 )
@@ -342,7 +336,10 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             return sum(
                 map(
                     lambda g: g.deflections_from_grid(
-                        grid=grid, return_in_2d=False, return_binned=False, bypass_decorator=True
+                        grid=grid,
+                        return_in_2d=False,
+                        return_binned=False,
+                        bypass_decorator=True,
                     ),
                     self.galaxies,
                 )
@@ -360,7 +357,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     @reshape_returned_grid
     def deflections_via_potential_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
+        self, grid, return_in_2d=True, return_binned=True
     ):
         potential_2d = self.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -373,7 +370,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a11_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -384,7 +381,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a12_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -395,7 +392,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a21_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -406,7 +403,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a22_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -415,9 +412,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         return 1 - np.gradient(deflections_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
 
-    def lensing_jacobian_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
-    ):
+    def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         a11 = self.lensing_jacobian_a11_from_grid(
             grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
@@ -439,7 +434,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     @reshape_returned_sub_array
     def convergence_via_jacobian_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         jacobian = self.lensing_jacobian_from_grid(
@@ -451,9 +446,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         return convergence
 
     @reshape_returned_sub_array
-    def shear_via_jacobian_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
-    ):
+    def shear_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -466,7 +459,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     @reshape_returned_sub_array
     def tangential_eigen_value_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
+        self, grid, return_in_2d=True, return_binned=True
     ):
 
         convergence = self.convergence_via_jacobian_from_grid(
@@ -480,9 +473,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         return 1 - convergence - shear
 
     @reshape_returned_sub_array
-    def radial_eigen_value_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
-    ):
+    def radial_eigen_value_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         convergence = self.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -495,9 +486,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         return 1 - convergence + shear
 
     @reshape_returned_sub_array
-    def magnification_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
-    ):
+    def magnification_from_grid(self, grid, return_in_2d=True, return_binned=True):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -743,25 +732,15 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-        self,
-        grid,
-        psf,
-        preload_blurring_grid=None,
-        return_in_2d=True,
-        bypass_decorator=False,
+        self, grid, psf, blurring_grid, return_in_2d=True, bypass_decorator=False
     ):
 
         profile_image = self.profile_image_from_grid(
             grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
-        if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
-                psf_shape=psf.shape
-            )
-
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid,
+            grid=blurring_grid,
             return_in_2d=True,
             return_binned=True,
             bypass_decorator=False,
@@ -770,18 +749,13 @@ class AbstractPlaneData(AbstractPlaneLensing):
         return psf.convolve(profile_image + blurring_image)
 
     def blurred_profile_images_of_galaxies_from_grid_and_psf(
-        self,
-        grid,
-        psf,
-        preload_blurring_grid=None,
-        return_in_2d=True,
-        bypass_decorator=False,
+        self, grid, psf, blurring_grid, return_in_2d=True, bypass_decorator=False
     ):
         return [
             galaxy.blurred_profile_image_from_grid_and_psf(
                 grid=grid,
                 psf=psf,
-                preload_blurring_grid=preload_blurring_grid,
+                blurring_grid=blurring_grid,
                 return_in_2d=return_in_2d,
             )
             for galaxy in self.galaxies
@@ -789,18 +763,12 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-        self,
-        grid,
-        convolver,
-        preload_blurring_grid=None,
-        return_in_2d=True,
-        bypass_decorator=False,
+        self, grid, convolver, blurring_grid, return_in_2d=True, bypass_decorator=False
     ):
 
-        if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
-                psf_shape=convolver.psf.shape
-            )
+        image_array = self.profile_image_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
 
         if convolver.blurring_mask is None:
             blurring_mask = grid.mask.blurring_mask_from_psf_shape(
@@ -810,12 +778,8 @@ class AbstractPlaneData(AbstractPlaneLensing):
                 blurring_mask=blurring_mask
             )
 
-        image_array = self.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
-
         blurring_array = self.profile_image_from_grid(
-            grid=preload_blurring_grid, return_in_2d=False, return_binned=True
+            grid=blurring_grid, return_in_2d=False, return_binned=True
         )
 
         return convolver.convolve_image(
@@ -823,32 +787,35 @@ class AbstractPlaneData(AbstractPlaneLensing):
         )
 
     def blurred_profile_images_of_galaxies_from_grid_and_convolver(
-        self,
-        grid,
-        convolver,
-        preload_blurring_grid=None,
-        return_in_2d=True,
-        bypass_decorator=False,
+        self, grid, convolver, blurring_grid, return_in_2d=True, bypass_decorator=False
     ):
         return [
             galaxy.blurred_profile_image_from_grid_and_convolver(
                 grid=grid,
                 convolver=convolver,
-                preload_blurring_grid=preload_blurring_grid,
+                blurring_grid=blurring_grid,
                 return_in_2d=return_in_2d,
             )
             for galaxy in self.galaxies
         ]
 
-    def visibilities_from_grid_and_transformer(self, grid, transformer):
+    def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
         profile_image_1d = self.profile_image_from_grid(
             grid=grid, return_in_2d=False, return_binned=True
         )
 
-        return transformer.visibilities_from_image_1d(
-            image_1d=profile_image_1d
-        )
+        return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
+
+    def profile_visibilities_of_galaxies_from_grid_and_transformer(
+        self, grid, transformer
+    ):
+        return [
+            galaxy.profile_visibilities_from_grid_and_transformer(
+                grid=grid, transformer=transformer
+            )
+            for galaxy in self.galaxies
+        ]
 
     def pixelization_grid_from_grid(self, grid):
 

@@ -10,7 +10,7 @@ import numpy as np
 
 from autolens import exc
 from autolens.array import grids
-from autolens.data.instrument import abstract_data
+from autolens.data import abstract_data
 from autolens.array import scaled_array
 from autolens.array.util import array_util
 from autolens.array.mapping_util import grid_mapping_util
@@ -38,7 +38,7 @@ class ImagingData(abstract_data.AbstractData):
         Parameters
         ----------
         image : scaled_array.ScaledArraySquarePixels
-            The array of the image instrument, in units of electrons per second.
+            The array of the image data_type, in units of electrons per second.
         pixel_scale : float
             The size of each pixel in arc seconds.
         psf : PSF
@@ -460,7 +460,9 @@ class PSF(scaled_array.ScaledSquarePixelArray):
             centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma
         )
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_size(shape=shape, pixel_scale=pixel_scale, sub_size=1)
+        grid = grids.Grid.from_shape_pixel_scale_and_sub_size(
+            shape=shape, pixel_scale=pixel_scale, sub_size=1
+        )
 
         gaussian = gaussian.profile_image_from_grid(
             grid=grid, return_in_2d=True, return_binned=True
@@ -497,7 +499,7 @@ class PSF(scaled_array.ScaledSquarePixelArray):
         )
 
         gaussian = gaussian.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True,
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
         return PSF(array=gaussian, pixel_scale=pixel_scale, renormalize=True)
@@ -692,7 +694,7 @@ class SimulatedImagingData(ImagingData):
         shape = (deflections.shape[0], deflections.shape[1])
 
         grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=shape, pixel_scale=pixel_scale, sub_size=1,
+            shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
 
         deflections_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
@@ -766,16 +768,16 @@ class SimulatedImagingData(ImagingData):
         """
 
         if psf is not None:
-            image_plane_image_2d = tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+            image_2d = tracer.padded_profile_image_2d_from_grid_and_psf_shape(
                 grid=grid, psf_shape=psf.shape
             )
         else:
-            image_plane_image_2d = tracer.profile_image_from_grid(
+            image_2d = tracer.profile_image_from_grid(
                 grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
             )
 
         return cls.from_image_and_exposure_arrays(
-            image=image_plane_image_2d,
+            image=image_2d,
             pixel_scale=pixel_scale,
             exposure_time=exposure_time,
             psf=psf,
@@ -889,7 +891,9 @@ class SimulatedImagingData(ImagingData):
         image_counts = np.multiply(image, exposure_time_map)
         poisson_noise_map = np.divide(np.sqrt(np.abs(image_counts)), exposure_time_map)
 
-        image = scaled_array.ScaledSquarePixelArray(array=image, pixel_scale=pixel_scale)
+        image = scaled_array.ScaledSquarePixelArray(
+            array=image, pixel_scale=pixel_scale
+        )
         background_noise_map = NoiseMap(
             array=background_noise_map, pixel_scale=pixel_scale
         )
@@ -1021,7 +1025,7 @@ def load_imaging_data_from_fits(
     convert_from_adus=False,
     lens_name=None,
 ):
-    """Factory for loading the imaging instrument from .fits files, as well as computing properties like the noise-map,
+    """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
     exposure-time map, etc. from the imaging-data.
 
     This factory also includes a number of routines for converting the imaging-data from units not supported by PyAutoLens \
@@ -1205,7 +1209,9 @@ def load_imaging_data_from_fits(
         )
 
     if resized_psf_shape is not None:
-        imaging_data = imaging_data.new_imaging_data_with_resized_psf(new_shape=resized_psf_shape)
+        imaging_data = imaging_data.new_imaging_data_with_resized_psf(
+            new_shape=resized_psf_shape
+        )
 
     if convert_from_electrons:
         imaging_data = imaging_data.new_imaging_data_converted_from_electrons()
@@ -1297,10 +1303,14 @@ def load_noise_map(
             file_path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale
         )
     elif convert_noise_map_from_weight_map and noise_map_path is not None:
-        weight_map = scaled_array.Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
+        weight_map = scaled_array.Array.from_fits(
+            file_path=noise_map_path, hdu=noise_map_hdu
+        )
         return NoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
     elif convert_noise_map_from_inverse_noise_map and noise_map_path is not None:
-        inverse_noise_map = scaled_array.Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
+        inverse_noise_map = scaled_array.Array.from_fits(
+            file_path=noise_map_path, hdu=noise_map_hdu
+        )
         return NoiseMap.from_inverse_noise_map(
             inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale
         )
@@ -1587,7 +1597,9 @@ def output_imaging_data_to_fits(
 
     if imaging_data.noise_map is not None and noise_map_path is not None:
         array_util.numpy_array_2d_to_fits(
-            array_2d=imaging_data.noise_map, file_path=noise_map_path, overwrite=overwrite
+            array_2d=imaging_data.noise_map,
+            file_path=noise_map_path,
+            overwrite=overwrite,
         )
 
     if (
@@ -1600,21 +1612,30 @@ def output_imaging_data_to_fits(
             overwrite=overwrite,
         )
 
-    if imaging_data.poisson_noise_map is not None and poisson_noise_map_path is not None:
+    if (
+        imaging_data.poisson_noise_map is not None
+        and poisson_noise_map_path is not None
+    ):
         array_util.numpy_array_2d_to_fits(
             array_2d=imaging_data.poisson_noise_map,
             file_path=poisson_noise_map_path,
             overwrite=overwrite,
         )
 
-    if imaging_data.exposure_time_map is not None and exposure_time_map_path is not None:
+    if (
+        imaging_data.exposure_time_map is not None
+        and exposure_time_map_path is not None
+    ):
         array_util.numpy_array_2d_to_fits(
             array_2d=imaging_data.exposure_time_map,
             file_path=exposure_time_map_path,
             overwrite=overwrite,
         )
 
-    if imaging_data.background_sky_map is not None and background_sky_map_path is not None:
+    if (
+        imaging_data.background_sky_map is not None
+        and background_sky_map_path is not None
+    ):
         array_util.numpy_array_2d_to_fits(
             array_2d=imaging_data.background_sky_map,
             file_path=background_sky_map_path,

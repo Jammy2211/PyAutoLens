@@ -7,7 +7,7 @@ from autolens.array.mapping import reshape_returned_array
 
 class GalaxyData(object):
     def __init__(self, image, noise_map, pixel_scale):
-        """ A galaxy-fit instrument is a collection of fit instrument components which are used to fit a galaxy to another galaxy. \
+        """ A galaxy-fit data_type is a collection of fit data_type components which are used to fit a galaxy to another galaxy. \
         This is where a component of a galaxy's light profiles (e.g. image) or mass profiles (e.g. convergence \
         , potential or deflection angles) are fitted to one another.
 
@@ -15,7 +15,7 @@ class GalaxyData(object):
         using one inferred parametrization of light or mass profiles to a new galaxy with a different parametrization \
         of light or mass profiles.
 
-        This omits a number of the fit instrument components typically used when fitting an image (e.g. the observed image, PSF, \
+        This omits a number of the fit data_type components typically used when fitting an image (e.g. the observed image, PSF, \
         exposure time map), but still has a number of the other components (e.g. an effective noise_map-map, grid_stacks).
 
         Parameters
@@ -42,7 +42,7 @@ class GalaxyFitData(object):
         use_deflections_y=False,
         use_deflections_x=False,
     ):
-        """ A galaxy-fit instrument is a collection of fit instrument components which are used to fit a galaxy to another galaxy. \
+        """ A galaxy-fit data_type is a collection of fit data_type components which are used to fit a galaxy to another galaxy. \
         This is where a component of a galaxy's light profiles (e.g. image) or mass profiles (e.g. surface \
         density, potential or deflection angles) are fitted to one another.
 
@@ -50,15 +50,15 @@ class GalaxyFitData(object):
         using one inferred parametrization of light or mass profiles to a new galaxy with a different parametrization \
         of light or mass profiles.
 
-        This omits a number of the fit instrument components typically used when fitting an image (e.g. the observed image, PSF, \
+        This omits a number of the fit data_type components typically used when fitting an image (e.g. the observed image, PSF, \
         exposure time map), but still has a number of the other components (e.g. an effective noise_map-map, grid_stacks).
 
         Parameters
         ----------
         galaxy_data : GalaxyData
-            The collection of instrument about the galaxy (image of its profile map, noise-map, etc.) that is fitted.
+            The collection of data_type about the galaxy (image of its profile map, noise-map, etc.) that is fitted.
         mask: msk.Mask
-            The 2D masks that is applied to image fit instrument.
+            The 2D masks that is applied to image fit data_type.
         sub_size : int
             The size of the sub-grid used for computing the SubGrid (see imaging.masks.SubGrid).
 
@@ -67,7 +67,7 @@ class GalaxyFitData(object):
         noise_map_1d : ndarray
             The masked 1D array of the noise_map-map
         grid_stacks : imaging.masks.GridStack
-            Grids of (y,x) Cartesian coordinates which map over the masked 1D fit instrument array's pixels (includes an \
+            Grids of (y,x) Cartesian coordinates which map over the masked 1D fit data_type array's pixels (includes an \
             grid, sub-grid, etc.)
         """
         self.galaxy_data = galaxy_data
@@ -105,7 +105,7 @@ class GalaxyFitData(object):
             ]
         ):
             raise exc.GalaxyException(
-                "The galaxy fit instrument has not been supplied with a use_ method."
+                "The galaxy fit data_type has not been supplied with a use_ method."
             )
 
         if (
@@ -121,7 +121,7 @@ class GalaxyFitData(object):
             > 1
         ):
             raise exc.GalaxyException(
-                "The galaxy fit instrument has not been supplied with multiple use_ methods, only supply "
+                "The galaxy fit data_type has not been supplied with multiple use_ methods, only supply "
                 "one."
             )
 

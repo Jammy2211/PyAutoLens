@@ -1461,7 +1461,9 @@ class TestCompareToFull2dConv:
         im = np.arange(900).reshape(30, 30)
         psf = al.PSF(array=np.arange(49).reshape(7, 7), pixel_scale=1.0)
         blurred_im = psf.convolve(im)
-        mask = al.Mask.circular(shape=(30, 30), pixel_scale=1.0, sub_size=1, radius_arcsec=4.0)
+        mask = al.Mask.circular(
+            shape=(30, 30), pixel_scale=1.0, sub_size=1, radius_arcsec=4.0
+        )
         blurred_masked_im_0 = mask.mapping.array_1d_from_array_2d(blurred_im)
 
         # Now reproduce this datas_ using the frame convolver_image

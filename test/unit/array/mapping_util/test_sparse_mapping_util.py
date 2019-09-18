@@ -18,7 +18,8 @@ class TestSparseToUnmaskedSparse:
             array=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -48,7 +49,8 @@ class TestSparseToUnmaskedSparse:
             array=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -74,7 +76,8 @@ class TestSparseToUnmaskedSparse:
             array=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -100,7 +103,8 @@ class TestSparseToUnmaskedSparse:
             array=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -130,7 +134,8 @@ class TestSparseToUnmaskedSparse:
                     [True, True, False, True],
                 ]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -161,7 +166,8 @@ class TestSparseToUnmaskedSparse:
                     [True, False, True],
                 ]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -191,7 +197,8 @@ class TestUnmaskedSparseToSparse:
             array=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -216,7 +223,8 @@ class TestUnmaskedSparseToSparse:
             array=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -237,7 +245,8 @@ class TestUnmaskedSparseToSparse:
             array=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -260,7 +269,8 @@ class TestUnmaskedSparseToSparse:
             array=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -285,7 +295,8 @@ class TestUnmaskedSparseToSparse:
                     [True, True, False, True],
                 ]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(
@@ -311,7 +322,8 @@ class TestUnmaskedSparseToSparse:
                     [True, False, True],
                 ]
             ),
-            pixel_scale=1.0, sub_size=1,
+            pixel_scale=1.0,
+            sub_size=1,
         )
 
         unmasked_sparse_grid_pixel_centres = np.array(

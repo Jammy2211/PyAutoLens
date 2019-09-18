@@ -79,7 +79,7 @@ class PipelineImaging(af.Pipeline):
         if self.hyper_mode and mask is None:
             raise exc.PhaseException(
                 "The pipeline is running in hyper_galaxies mode, but has not received an input mask. Add"
-                "a mask to the run function of the pipeline (e.g. pipeline.run(instrument=instrument, mask=mask)"
+                "a mask to the run function of the pipeline (e.g. pipeline.run(data_type=data_type, mask=mask)"
             )
 
         def runner(phase, results):
