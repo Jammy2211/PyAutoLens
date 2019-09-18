@@ -154,13 +154,13 @@ class LensImagingData(AbstractLensData):
             ),
         )
 
-        self.preload_blurring_grid = grids.Grid.blurring_grid_from_mask_and_psf_shape(
+        self.blurring_grid = grids.Grid.blurring_grid_from_mask_and_psf_shape(
             mask=mask, psf_shape=self.trimmed_psf_shape
         )
 
         if pixel_scale_interpolation_grid is not None:
 
-            self.preload_blurring_grid = self.preload_blurring_grid.new_grid_with_interpolator(
+            self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
                 pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
 
@@ -258,7 +258,7 @@ class LensImagingData(AbstractLensData):
             self.inversion_uses_border = obj.inversion_uses_border
             self.inversion_pixel_limit = obj.inversion_pixel_limit
             self.hyper_noise_map_max = obj.hyper_noise_map_max
-            self.preload_blurring_grid = obj.preload_blurring_grid
+            self.blurring_grid = obj.blurring_grid
             self.preload_pixelization_grids_of_planes = (
                 obj.preload_pixelization_grids_of_planes
             )

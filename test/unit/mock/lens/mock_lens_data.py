@@ -33,7 +33,7 @@ class MockLensImagingData(object):
         self.inversion_pixel_limit = 1000
         self.inversion_uses_border = True
 
-        self.preload_blurring_grid = blurring_grid
+        self.blurring_grid = blurring_grid
         self.preload_pixelization_grids_of_planes = None
 
     @property

@@ -15,7 +15,6 @@ from autolens.model.profiles import mass_profiles as mp
 from autolens.array.mapping import (
     reshape_returned_sub_array,
     reshape_returned_array,
-    reshape_returned_array,
     reshape_returned_grid,
 )
 
@@ -210,30 +209,30 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, preload_blurring_grid=None, return_in_2d=True
+        self, grid, psf, blurring_grid, return_in_2d=True
     ):
 
         profile_image = self.profile_image_from_grid(
             grid=grid, return_in_2d=True, return_binned=True
         )
 
-        if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
-                psf_shape=psf.shape
-            )
-
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid, return_in_2d=True, return_binned=True
+            grid=blurring_grid, return_in_2d=True, return_binned=True
         )
 
         return psf.convolve(profile_image + blurring_image)
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
+        self, grid, convolver, blurring_grid, return_in_2d=True
     ):
 
+        profile_image = self.profile_image_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
+
         if convolver.blurring_mask is None:
+
             blurring_mask = grid.mask.blurring_mask_from_psf_shape(
                 psf_shape=convolver.psf.shape
             )
@@ -241,17 +240,8 @@ class Galaxy(af.ModelObject):
                 blurring_mask=blurring_mask
             )
 
-        profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
-
-        if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
-                psf_shape=convolver.psf.shape
-            )
-
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid, return_in_2d=False, return_binned=True
+            grid=blurring_grid, return_in_2d=False, return_binned=True
         )
 
         return convolver.convolve_image(

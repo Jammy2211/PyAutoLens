@@ -330,7 +330,7 @@ class TestLightProfiles(object):
             )
 
             light_profile_blurred_image_1d = galaxy.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7, psf=psf_3x3, return_in_2d=False
+                grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3, return_in_2d=False
             )
 
             assert blurred_image_1d == pytest.approx(
@@ -344,6 +344,7 @@ class TestLightProfiles(object):
             light_profile_blurred_image_2d = galaxy.blurred_profile_image_from_grid_and_psf(
                 grid=sub_grid_7x7,
                 psf=psf_3x3,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=True,
                 bypass_decorator=False,
             )
@@ -379,7 +380,7 @@ class TestLightProfiles(object):
             convolver_7x7.blurring_mask = None
 
             light_profile_blurred_image_1d = galaxy.blurred_profile_image_from_grid_and_convolver(
-                grid=sub_grid_7x7, convolver=convolver_7x7, return_in_2d=False
+                grid=sub_grid_7x7, convolver=convolver_7x7, blurring_grid=blurring_grid_7x7, return_in_2d=False
             )
 
             assert blurred_image_1d == pytest.approx(
@@ -393,6 +394,7 @@ class TestLightProfiles(object):
             light_profile_blurred_image_2d = galaxy.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=True,
                 bypass_decorator=False,
             )
