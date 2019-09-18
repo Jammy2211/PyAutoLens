@@ -42,7 +42,7 @@ class VariableFixingHyperPhase(HyperPhase):
         phase = self.make_hyper_phase()
         phase.optimizer.variable = self.make_variable(results.last.constant)
 
-        return phase.run(data, results=results, mask=results.last.mask)
+        return phase.run(data, results=results, mask=results.last.mask, positions=results.last.positions)
 
 
 class InversionPhase(VariableFixingHyperPhase):

@@ -144,5 +144,5 @@ class AbstractPhase(af.AbstractPhase):
             """
             return self.constant.path_instance_tuples_for_class(cls=g.Galaxy)
 
-    def run(self, image, results=None, mask=None):
+    def run(self, image, results=None, mask=None, positions=None):
         raise NotImplementedError()
