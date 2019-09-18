@@ -430,12 +430,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-        self,
-        grid,
-        psf,
-        blurring_grid,
-        return_in_2d=True,
-        bypass_decorator=False,
+        self, grid, psf, blurring_grid, return_in_2d=True, bypass_decorator=False
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a psf (see imaging.convolution).
@@ -476,7 +471,9 @@ class AbstractTracerData(AbstractTracerLensing):
         """
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
-        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=blurring_grid)
+        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(
+            grid=blurring_grid
+        )
 
         return [
             plane.blurred_profile_image_from_grid_and_psf(
@@ -490,12 +487,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-        self,
-        grid,
-        convolver,
-        blurring_grid,
-        return_in_2d=True,
-        bypass_decorator=False,
+        self, grid, convolver, blurring_grid, return_in_2d=True, bypass_decorator=False
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a convolver (see imaging.convolution).
@@ -543,7 +535,9 @@ class AbstractTracerData(AbstractTracerLensing):
         """
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
-        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=blurring_grid)
+        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(
+            grid=blurring_grid
+        )
 
         return [
             plane.blurred_profile_image_from_grid_and_convolver(
@@ -792,7 +786,7 @@ class AbstractTracerData(AbstractTracerLensing):
         )
 
         traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(
-            grid=blurring_grid, return_in_2d=False,
+            grid=blurring_grid, return_in_2d=False
         )
 
         for (plane_index, plane) in enumerate(self.planes):

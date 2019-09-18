@@ -2237,7 +2237,7 @@ class TestAbstractTracerData(object):
             g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-                mass_profile = al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
@@ -2255,7 +2255,9 @@ class TestAbstractTracerData(object):
             )
 
             source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
-            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(grid=blurring_grid_7x7)
+            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_7x7
+            )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_psf(
                 grid=source_grid_7x7,
@@ -2264,9 +2266,7 @@ class TestAbstractTracerData(object):
                 return_in_2d=False,
             )
 
-            tracer = al.Tracer(
-                planes=[plane_0, plane_1], cosmology=cosmo.Planck15
-            )
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_image_1d = tracer.blurred_profile_image_from_grid_and_psf(
                 grid=sub_grid_7x7,
@@ -2317,7 +2317,9 @@ class TestAbstractTracerData(object):
             )
 
             source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
-            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(grid=blurring_grid_7x7)
+            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_7x7
+            )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_psf(
                 grid=source_grid_7x7,
@@ -2326,9 +2328,7 @@ class TestAbstractTracerData(object):
                 return_in_2d=False,
             )
 
-            tracer = al.Tracer(
-                planes=[plane_0, plane_1], cosmology=cosmo.Planck15
-            )
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_images_1d = tracer.blurred_profile_images_of_planes_from_grid_and_psf(
                 grid=sub_grid_7x7,
@@ -2391,7 +2391,9 @@ class TestAbstractTracerData(object):
             )
 
             source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
-            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(grid=blurring_grid_7x7)
+            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_7x7
+            )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_convolver(
                 grid=source_grid_7x7,
@@ -2400,9 +2402,7 @@ class TestAbstractTracerData(object):
                 return_in_2d=False,
             )
 
-            tracer = al.Tracer(
-                planes=[plane_0, plane_1], cosmology=cosmo.Planck15
-            )
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
@@ -2453,7 +2453,9 @@ class TestAbstractTracerData(object):
             )
 
             source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
-            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(grid=blurring_grid_7x7)
+            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_7x7
+            )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_convolver(
                 grid=source_grid_7x7,
@@ -2462,9 +2464,7 @@ class TestAbstractTracerData(object):
                 return_in_2d=False,
             )
 
-            tracer = al.Tracer(
-                planes=[plane_0, plane_1], cosmology=cosmo.Planck15
-            )
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_images_1d = tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
                 grid=sub_grid_7x7,
