@@ -54,8 +54,8 @@ def fit_with_offset_centre(centre):
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid=grid_stack_with_pixelization_grid,
     )
-    fit = al.LensImageFit.from_lens_imaging_data_and_tracer(
-        lens_imaging_data=lens_data, tracer=tracer
+    fit = al.LensImageFit.from_lens_data_and_tracer(
+        lens_data=lens_data, tracer=tracer
     )
 
     return fit

@@ -15,13 +15,14 @@ Big Picture:
 
 UV Plane:
 
-- Remove unused galaxy dict method, split galaxy dicts to use images, bluured images, visibilities.
 - Model Image / Unmasked Image / visiblities in lens_uv_plane_fit.
 - Extend lens_data to have LensImagingData, LensUVPlaneData.
 - PhaseImagingData, PhaseInterometer - PhaseImaging is now abstract Phase.
 
 Small Picture:
 
+- Decorator inputs can be removed.
+- Blurring grid not a required input again? Think aabout traced grids!
 - Acceptance ratio override on MultiNest run. This may require a new error estimator :(
 - Simulated lensed image from discrete image grid.
 - Iterator grids.

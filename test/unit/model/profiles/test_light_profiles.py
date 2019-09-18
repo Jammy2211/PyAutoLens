@@ -935,7 +935,7 @@ class TestBlurredProfileImages(object):
         )
 
         light_profile_blurred_image_1d = light_profile.blurred_profile_image_from_grid_and_psf(
-            grid=sub_grid_7x7, psf=psf_3x3, return_in_2d=False
+            grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3, return_in_2d=False
         )
 
         assert blurred_image_1d == pytest.approx(light_profile_blurred_image_1d, 1.0e-4)
@@ -945,7 +945,7 @@ class TestBlurredProfileImages(object):
         )
 
         light_profile_blurred_image_2d = light_profile.blurred_profile_image_from_grid_and_psf(
-            grid=sub_grid_7x7, psf=psf_3x3, return_in_2d=True
+            grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3, return_in_2d=True
         )
 
         assert blurred_image_2d == pytest.approx(light_profile_blurred_image_2d, 1.0e-4)
@@ -971,7 +971,7 @@ class TestBlurredProfileImages(object):
         convolver_7x7.blurring_mask = None
 
         light_profile_blurred_image_1d = light_profile.blurred_profile_image_from_grid_and_convolver(
-            grid=sub_grid_7x7, convolver=convolver_7x7, return_in_2d=False
+            grid=sub_grid_7x7, convolver=convolver_7x7, blurring_grid=blurring_grid_7x7, return_in_2d=False
         )
 
         assert blurred_image_1d == pytest.approx(light_profile_blurred_image_1d, 1.0e-4)
@@ -981,7 +981,7 @@ class TestBlurredProfileImages(object):
         )
 
         light_profile_blurred_image_2d = light_profile.blurred_profile_image_from_grid_and_convolver(
-            grid=sub_grid_7x7, convolver=convolver_7x7, return_in_2d=True
+            grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, convolver=convolver_7x7, return_in_2d=True
         )
 
         assert blurred_image_2d == pytest.approx(light_profile_blurred_image_2d, 1.0e-4)

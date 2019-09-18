@@ -78,7 +78,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     for i in range(repeats):
         blurred_profile_image_1d = lens_fit_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.profile_image_from_grid,
-            blurring_image_1d=tracer.profile_image_plane_blurring_image,
+            blurring_image_1d=tracer.profile_blurring_image,
             convolver=lens_data.convolver,
         )
         blurred_profile_image = lens_data.grid.mapping.scaled_array_2d_from_array_1d(
@@ -111,8 +111,8 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
 
     start = time.time()
     for i in range(repeats):
-        al.LensImageFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_data, tracer=tracer
+        al.LensImageFit.from_lens_data_and_tracer(
+            lens_data=lens_data, tracer=tracer
         )
     diff = time.time() - start
     print("Time to perform complete fit = {}".format(diff / repeats))

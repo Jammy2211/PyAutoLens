@@ -41,8 +41,8 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         assert fit.total_inversions == 0
@@ -55,8 +55,8 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         assert fit.total_inversions == 1
@@ -81,8 +81,8 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         assert fit.total_inversions == 3
@@ -123,8 +123,8 @@ class TestLikelihood:
         g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -226,8 +226,8 @@ class TestLikelihood:
         g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -345,8 +345,8 @@ class TestLikelihood:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -447,8 +447,8 @@ class TestLikelihood:
 
         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7,
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
         )
@@ -553,8 +553,8 @@ class TestLikelihood:
 
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7,
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
@@ -659,8 +659,8 @@ class TestLikelihood:
 
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7,
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
@@ -747,8 +747,8 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         assert lens_imaging_data_7x7.noise_map(return_in_2d=True) == pytest.approx(
@@ -758,6 +758,7 @@ class TestCompareToManualProfilesOnly:
         model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
+            blurring_grid=lens_imaging_data_7x7.blurring_grid,
             return_in_2d=False,
         )
         model_image_2d = lens_imaging_data_7x7.mapping.scaled_array_2d_from_array_1d(
@@ -843,43 +844,41 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
             grid=lens_imaging_data_7x7.grid, return_in_2d=False
         )
         traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-            grid=lens_imaging_data_7x7.preload_blurring_grid, return_in_2d=False
+            grid=lens_imaging_data_7x7.blurring_grid, return_in_2d=False
         )
 
         g0_image_1d = g0.profile_image_from_grid(
             grid=traced_grids_of_planes[0], return_in_2d=False, return_binned=True
         )
-        g0_image_plane_blurring_image_1d = g0.profile_image_from_grid(
+        g0_blurring_image_1d = g0.profile_image_from_grid(
             grid=traced_blurring_grids_of_planes[0],
             return_in_2d=False,
             return_binned=True,
         )
 
         g0_blurred_image_1d = lens_imaging_data_7x7.convolver.convolve_image(
-            image_array=g0_image_1d,
-            blurring_array=g0_image_plane_blurring_image_1d,
+            image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
         )
 
         g1_image_1d = g1.profile_image_from_grid(
             grid=traced_grids_of_planes[1], return_in_2d=False, return_binned=True
         )
-        g1_image_plane_blurring_image_1d = g1.profile_image_from_grid(
+        g1_blurring_image_1d = g1.profile_image_from_grid(
             grid=traced_blurring_grids_of_planes[1],
             return_in_2d=False,
             return_binned=True,
         )
 
         g1_blurred_image_1d = lens_imaging_data_7x7.convolver.convolve_image(
-            image_array=g1_image_1d,
-            blurring_array=g1_image_plane_blurring_image_1d,
+            image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
         )
 
         assert fit.galaxy_model_image_1d_dict[g0] == pytest.approx(
@@ -951,8 +950,8 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7,
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -980,6 +979,7 @@ class TestCompareToManualProfilesOnly:
         model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
+            blurring_grid=lens_imaging_data_7x7.blurring_grid,
             return_in_2d=False,
         )
 
@@ -1066,13 +1066,14 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         blurred_profile_image_2d_of_planes = tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
+            blurring_grid=lens_imaging_data_7x7.blurring_grid,
             return_in_2d=True,
         )
 
@@ -1086,7 +1087,7 @@ class TestCompareToManualProfilesOnly:
         )
 
         unmasked_blurred_profile_image = tracer.unmasked_blurred_profile_image_from_grid_and_psf(
-            grid=lens_imaging_data_7x7.grid, psf=lens_imaging_data_7x7.psf
+            grid=lens_imaging_data_7x7.grid, psf=lens_imaging_data_7x7.psf,
         )
 
         assert (
@@ -1130,8 +1131,8 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
@@ -1238,8 +1239,8 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
@@ -1308,8 +1309,8 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7,
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -1434,8 +1435,8 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
@@ -1471,13 +1472,14 @@ class TestCompareToManualProfilesAndInversion:
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
+            blurring_grid=lens_imaging_data_7x7.blurring_grid,
             return_in_2d=False,
         )
 
@@ -1625,44 +1627,40 @@ class TestCompareToManualProfilesAndInversion:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         traced_grids = tracer.traced_grids_of_planes_from_grid(
             grid=lens_imaging_data_7x7.grid
         )
         traced_blurring_grids = tracer.traced_grids_of_planes_from_grid(
-            grid=lens_imaging_data_7x7.preload_blurring_grid
+            grid=lens_imaging_data_7x7.blurring_grid
         )
 
         g0_image_1d = g0.profile_image_from_grid(
             grid=traced_grids[0], return_in_2d=False, return_binned=True
         )
-        g0_image_plane_blurring_image_1d = g0.profile_image_from_grid(
+        g0_blurring_image_1d = g0.profile_image_from_grid(
             grid=traced_blurring_grids[0], return_in_2d=False, return_binned=False
         )
 
         g0_blurred_image_1d = lens_imaging_data_7x7.convolver.convolve_image(
-            image_array=g0_image_1d,
-            blurring_array=g0_image_plane_blurring_image_1d,
+            image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
         )
 
         g1_image_1d = g1.profile_image_from_grid(
             grid=traced_grids[1], return_in_2d=False, return_binned=True
         )
-        g1_image_plane_blurring_image_1d = g1.profile_image_from_grid(
+        g1_blurring_image_1d = g1.profile_image_from_grid(
             grid=traced_blurring_grids[1], return_in_2d=False, return_binned=False
         )
 
         g1_blurred_image_1d = lens_imaging_data_7x7.convolver.convolve_image(
-            image_array=g1_image_1d,
-            blurring_array=g1_image_plane_blurring_image_1d,
+            image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
         )
 
-        blurred_profile_image_1d = (
-            g0_blurred_image_1d + g1_blurred_image_1d
-        )
+        blurred_profile_image_1d = g0_blurred_image_1d + g1_blurred_image_1d
 
         profile_subtracted_image_1d = (
             lens_imaging_data_7x7._image_1d - blurred_profile_image_1d
@@ -1757,8 +1755,8 @@ class TestCompareToManualProfilesAndInversion:
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7,
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -1784,6 +1782,7 @@ class TestCompareToManualProfilesAndInversion:
         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
+            blurring_grid=lens_imaging_data_7x7.blurring_grid,
             return_in_2d=False,
         )
 
@@ -1924,13 +1923,14 @@ class TestCompareToManualProfilesAndInversion:
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
+            blurring_grid=lens_imaging_data_7x7.blurring_grid,
             return_in_2d=False,
         )
 
