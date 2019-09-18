@@ -75,8 +75,12 @@ class UVPlaneData(abstract_data.AbstractData):
 
     def new_uv_plane_data_converted_from_electrons(self):
 
-        real_visibilities = self.array_from_counts_to_electrons_per_second(array=self._data[:,0])
-        imaginary_visibilities = self.array_from_counts_to_electrons_per_second(array=self._data[:,1])
+        real_visibilities = self.array_from_counts_to_electrons_per_second(
+            array=self._data[:, 0]
+        )
+        imaginary_visibilities = self.array_from_counts_to_electrons_per_second(
+            array=self._data[:, 1]
+        )
         visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
         noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
 
@@ -92,8 +96,12 @@ class UVPlaneData(abstract_data.AbstractData):
 
     def new_uv_plane_data_converted_from_adus(self, gain):
 
-        real_visibilities = self.array_from_adus_to_electrons_per_second(array=self._data[:, 0], gain=gain)
-        imaginary_visibilities = self.array_from_adus_to_electrons_per_second(array=self._data[:, 1], gain=gain)
+        real_visibilities = self.array_from_adus_to_electrons_per_second(
+            array=self._data[:, 0], gain=gain
+        )
+        imaginary_visibilities = self.array_from_adus_to_electrons_per_second(
+            array=self._data[:, 1], gain=gain
+        )
         visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
 
         noise_map = self.array_from_adus_to_electrons_per_second(
@@ -153,7 +161,7 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
         gaussian = gaussian.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True,
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
         return PrimaryBeam(array=gaussian, pixel_scale=pixel_scale, renormalize=True)
@@ -337,7 +345,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         shape = (deflections.shape[0], deflections.shape[1])
 
         grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=shape, pixel_scale=pixel_scale, sub_size=1,
+            shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
 
         deflections_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
@@ -411,7 +419,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         """
 
         image_2d = tracer.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True,
+            grid=grid, return_in_2d=True, return_binned=True
         )
 
         return cls.from_image_and_exposure_arrays(
@@ -703,8 +711,7 @@ def load_uv_plane_data_from_fits(
     )
 
     noise_map = load_visibilities_noise_map(
-        noise_map_path=noise_map_path,
-        noise_map_hdu=noise_map_hdu,
+        noise_map_path=noise_map_path, noise_map_hdu=noise_map_hdu
     )
     u_wavelengths = load_visibilities(
         visibilities_path=u_wavelengths_path, visibilities_hdu=u_wavelengths_hdu
@@ -738,15 +745,12 @@ def load_uv_plane_data_from_fits(
         )
 
     if convert_from_electrons:
-        uv_plane_data = (
-            uv_plane_data.new_uv_plane_data_converted_from_electrons()
-        )
+        uv_plane_data = uv_plane_data.new_uv_plane_data_converted_from_electrons()
     elif convert_from_adus:
-        uv_plane_data = uv_plane_data.new_uv_plane_data_converted_from_adus(
-            gain=gain
-        )
+        uv_plane_data = uv_plane_data.new_uv_plane_data_converted_from_adus(gain=gain)
 
     return uv_plane_data
+
 
 def load_visibilities(visibilities_path, visibilities_hdu):
 
@@ -756,13 +760,12 @@ def load_visibilities(visibilities_path, visibilities_hdu):
         )
 
 
-def load_visibilities_noise_map(
-    noise_map_path, noise_map_hdu
-):
+def load_visibilities_noise_map(noise_map_path, noise_map_hdu):
     if noise_map_path is not None:
         return array_util.numpy_array_1d_from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu
         )
+
 
 def load_primary_beam(
     primary_beam_path, primary_beam_hdu, pixel_scale, renormalize=False
@@ -819,10 +822,7 @@ def output_uv_plane_data_to_fits(
             overwrite=overwrite,
         )
 
-    if (
-        uv_plane_data.visibilities is not None
-        and real_visibilities_path is not None
-    ):
+    if uv_plane_data.visibilities is not None and real_visibilities_path is not None:
         array_util.numpy_array_1d_to_fits(
             array_1d=uv_plane_data.visibilities[:, 0],
             file_path=real_visibilities_path,
@@ -839,30 +839,21 @@ def output_uv_plane_data_to_fits(
             overwrite=overwrite,
         )
 
-    if (
-        uv_plane_data.noise_map is not None
-        and noise_map_path is not None
-    ):
+    if uv_plane_data.noise_map is not None and noise_map_path is not None:
         array_util.numpy_array_1d_to_fits(
             array_1d=uv_plane_data.noise_map,
             file_path=noise_map_path,
             overwrite=overwrite,
         )
 
-    if (
-        uv_plane_data.uv_wavelengths is not None
-        and u_wavelengths_path is not None
-    ):
+    if uv_plane_data.uv_wavelengths is not None and u_wavelengths_path is not None:
         array_util.numpy_array_1d_to_fits(
             array_1d=uv_plane_data.uv_wavelengths[:, 0],
             file_path=u_wavelengths_path,
             overwrite=overwrite,
         )
 
-    if (
-        uv_plane_data.uv_wavelengths is not None
-        and v_wavelengths_path is not None
-    ):
+    if uv_plane_data.uv_wavelengths is not None and v_wavelengths_path is not None:
         array_util.numpy_array_1d_to_fits(
             array_1d=uv_plane_data.uv_wavelengths[:, 1],
             file_path=v_wavelengths_path,

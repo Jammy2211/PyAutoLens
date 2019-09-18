@@ -102,7 +102,7 @@ class LensUVPlaneFit(UVPlaneFit):
         )
 
     @classmethod
-    def from_lens_uv_plane_data_and_tracer(cls, lens_uv_plane_data, tracer):
+    def from_lens_data_and_tracer(cls, lens_data, tracer):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper_galaxies.
 
@@ -115,7 +115,7 @@ class LensUVPlaneFit(UVPlaneFit):
         """
 
         profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
-            grid=lens_uv_plane_data.grid, transformer=lens_uv_plane_data.transformer
+            grid=lens_data.grid, transformer=lens_data.transformer
         )
 
         # profile_subtracted_visibilities_1d = visibilities_1d - blurred_profile_visibilities_1d
@@ -140,14 +140,14 @@ class LensUVPlaneFit(UVPlaneFit):
 
         return cls(
             tracer=tracer,
-            visibilities=lens_uv_plane_data.visibilities(),
-            noise_map=lens_uv_plane_data.noise_map(return_x2=True),
-            mask=lens_uv_plane_data.visibilities_mask,
+            visibilities=lens_data.visibilities(),
+            noise_map=lens_data.noise_map(return_x2=True),
+            mask=lens_data.visibilities_mask,
             model_visibilities=model_visibilities,
-            grid=lens_uv_plane_data.grid,
-            transformer=lens_uv_plane_data.transformer,
+            grid=lens_data.grid,
+            transformer=lens_data.transformer,
             inversion=inversion,
-            positions=lens_uv_plane_data.positions,
+            positions=lens_data.positions,
         )
 
     def profile_visibilities(self):
