@@ -110,11 +110,11 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, blurring_grid, return_in_2d=True
+        self, grid, psf, blurring_grid
     ):
 
         profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         blurring_image = self.profile_image_from_grid(
@@ -128,7 +128,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, blurring_grid, return_in_2d=True
+        self, grid, convolver, blurring_grid
     ):
 
         profile_image = self.profile_image_from_grid(

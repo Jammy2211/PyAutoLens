@@ -17,20 +17,23 @@ class MassProfile(object):
     def convergence_func(self, eta):
         raise NotImplementedError("surface_density_func should be overridden")
 
+    @reshape_returned_sub_array
     def convergence_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         pass
         # raise NotImplementedError("surface_density_from_grid should be overridden")
 
+    @reshape_returned_sub_array
     def potential_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         pass
         # raise NotImplementedError("potential_from_grid should be overridden")
 
+    @reshape_returned_sub_array
     def deflections_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
@@ -352,7 +355,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @reshape_returned_grid
     def deflections_via_potential_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         potential_2d = self.potential_from_grid(
@@ -366,7 +369,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a11_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -377,7 +380,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a12_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -388,7 +391,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a21_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -399,7 +402,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a22_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -430,7 +433,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @reshape_returned_sub_array
     def convergence_via_jacobian_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         jacobian = self.lensing_jacobian_from_grid(
@@ -442,7 +445,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return convergence
 
     @reshape_returned_sub_array
-    def shear_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def shear_via_jacobian_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -455,7 +458,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     @reshape_returned_sub_array
     def tangential_eigen_value_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         convergence = self.convergence_via_jacobian_from_grid(
@@ -469,7 +472,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return 1 - convergence - shear
 
     @reshape_returned_sub_array
-    def radial_eigen_value_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def radial_eigen_value_from_grid(self, grid):
 
         convergence = self.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -482,7 +485,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return 1 - convergence + shear
 
     @reshape_returned_sub_array
-    def magnification_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def magnification_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False

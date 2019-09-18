@@ -14,7 +14,7 @@ from autolens.array import scaled_array
 
 def reshape_returned_array(func):
     @wraps(func)
-    def wrapper(obj, return_in_2d=True, bypass_decorator=False, *args, **kwargs):
+    def wrapper(obj, return_in_2d=True, bypass_decorator=False, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -97,7 +97,7 @@ def reshaped_array_from_array_and_mapping(array, mapping, return_in_2d, return_m
 
 def reshape_returned_sub_array(func):
     @wraps(func)
-    def wrapper(object, grid, *args, **kwargs):
+    def wrapper(object, grid, return_in_2d=True, return_binned=True, bypass_decorator=False, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -123,15 +123,9 @@ def reshape_returned_sub_array(func):
             An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
         """
 
-        bypass_decorator = (
-            kwargs["bypass_decorator"] if "bypass_decorator" in kwargs else False
-        )
-
         if bypass_decorator:
             return func(object, grid)
 
-        return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else True
-        return_binned = kwargs["return_binned"] if "return_binned" in kwargs else True
         sub_array_from_func = func(object, grid)
 
         return reshaped_sub_array_from_sub_array_and_mapping(
@@ -177,7 +171,7 @@ def reshaped_sub_array_from_sub_array_and_mapping(
 
 def reshape_returned_grid(func):
     @wraps(func)
-    def wrapper(object, grid, *args, **kwargs):
+    def wrapper(object, grid, return_in_2d=True, return_binned=True, bypass_decorator=False):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 2D grids of physical quantities \
@@ -197,15 +191,8 @@ def reshape_returned_grid(func):
             An grid of (y,x) coordinates that may be in 1D or 2D and binned up from a sub-grid.
         """
 
-        bypass_decorator = (
-            kwargs["bypass_decorator"] if "bypass_decorator" in kwargs else False
-        )
-
         if bypass_decorator:
             return func(object, grid)
-
-        return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
-        return_binned = kwargs["return_binned"] if "return_binned" in kwargs else False
 
         mapping = grid.mapping
 

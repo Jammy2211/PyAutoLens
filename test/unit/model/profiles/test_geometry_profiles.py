@@ -563,7 +563,7 @@ class MockGridRadialMinimum(object):
 
     @al.geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid, bypass_decorator=False
     ):
         return grid
 
