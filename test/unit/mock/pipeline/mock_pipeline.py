@@ -2,7 +2,6 @@ import numpy as np
 
 import autofit as af
 import autolens as al
-from autolens.array.util import binning_util
 
 
 class MockAnalysis(object):
@@ -20,14 +19,14 @@ class MockAnalysis(object):
 
 class MockResults(object):
     def __init__(
-        self,
-        model_image=None,
-        mask=None,
-        galaxy_images=(),
-        constant=None,
-        analysis=None,
-        optimizer=None,
-        pixelization=None,
+            self,
+            model_image=None,
+            mask=None,
+            galaxy_images=(),
+            constant=None,
+            analysis=None,
+            optimizer=None,
+            pixelization=None,
     ):
         self.model_image = model_image
         self.unmasked_model_image = model_image
@@ -76,7 +75,6 @@ class MockResults(object):
         image_1d_dict = {}
 
         for galaxy, galaxy_image_2d in self.image_2d_dict.items():
-
             image_1d_dict[galaxy] = self.mask_2d.mapping.array_1d_from_array_2d(
                 array_2d=galaxy_image_2d
             )
@@ -96,13 +94,12 @@ class MockResults(object):
         hyper_galaxy_image_1d_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
-
             galaxy_image_1d = self.image_galaxy_1d_dict[path]
 
             minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
             galaxy_image_1d[
                 galaxy_image_1d < minimum_galaxy_value
-            ] = minimum_galaxy_value
+                ] = minimum_galaxy_value
             hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
 
         return hyper_galaxy_image_1d_path_dict
@@ -116,7 +113,6 @@ class MockResults(object):
         hyper_galaxy_image_2d_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
-
             hyper_galaxy_image_2d_path_dict[
                 path
             ] = self.mask_2d.mapping.scaled_array_2d_from_array_1d(
@@ -133,7 +129,6 @@ class MockResults(object):
         binned_image_1d_dict = {}
 
         for galaxy, galaxy_image_2d in self.image_2d_dict.items():
-
             binned_image_2d = al.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
             )
@@ -146,7 +141,7 @@ class MockResults(object):
 
         return binned_image_1d_dict
 
-    def binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(self, binned_grid):
+    def binned_hyper_galaxy_image_1d_path_dict(self, binned_grid):
         """
         A dictionary associating 1D hyper_galaxies galaxy cluster images with their names.
         """
@@ -171,20 +166,20 @@ class MockResults(object):
                 )
                 binned_galaxy_image_1d[
                     binned_galaxy_image_1d < minimum_hyper_value
-                ] = minimum_hyper_value
+                    ] = minimum_hyper_value
 
                 binned_hyper_galaxy_image_path_dict[path] = binned_galaxy_image_1d
 
             return binned_hyper_galaxy_image_path_dict
 
-    def binned_hyper_galaxy_image_2d_path_dict_from_binned_grid(self, binned_grid):
+    def binned_hyper_galaxy_image_2d_path_dict(self, binned_grid):
         """
         A dictionary associating "D hyper_galaxies galaxy images cluster images with their names.
         """
 
         if binned_grid is not None:
 
-            binned_hyper_galaxy_image_1d_path_dict = self.binned_hyper_galaxy_image_1d_path_dict_from_binned_grid(
+            binned_hyper_galaxy_image_1d_path_dict = self.binned_hyper_galaxy_image_1d_path_dict(
                 binned_grid=binned_grid
             )
 
@@ -223,7 +218,6 @@ class MockResult:
 
 class MockHyperCombinedPhase(object):
     def __init__(self):
-
         pass
 
     @property

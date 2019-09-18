@@ -1,29 +1,28 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-
 from autolens.model.galaxy import galaxy_fit, galaxy_data as gd
-from autolens.model.galaxy.plotters import galaxy_fit_plotters
-from autolens.pipeline.phase.phase import Phase
+from autolens.pipeline.phase.phase import AbstractPhase
+from autolens.plotters import visualizer
 
 
 class PhaseGalaxy(af.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
-        self,
-        phase_name,
-        phase_folders=tuple(),
-        galaxies=None,
-        use_image=False,
-        use_convergence=False,
-        use_potential=False,
-        use_deflections=False,
-        optimizer_class=af.MultiNest,
-        sub_size=2,
-        pixel_scale_interpolation_grid=None,
-        mask_function=None,
-        cosmology=cosmo.Planck15,
+            self,
+            phase_name,
+            phase_folders=tuple(),
+            galaxies=None,
+            use_image=False,
+            use_convergence=False,
+            use_potential=False,
+            use_deflections=False,
+            optimizer_class=af.MultiNest,
+            sub_size=2,
+            pixel_scale_interpolation_grid=None,
+            mask_function=None,
+            cosmology=cosmo.Planck15,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
@@ -41,8 +40,8 @@ class PhaseGalaxy(af.AbstractPhase):
             phase_name=phase_name,
             phase_folders=phase_folders,
             optimizer_class=optimizer_class,
-            cosmology=cosmology,
         )
+        self.cosmology = cosmology
         self.use_image = use_image
         self.use_convergence = use_convergence
         self.use_potential = use_potential
@@ -114,7 +113,6 @@ class PhaseGalaxy(af.AbstractPhase):
             galaxy_data = gd.GalaxyFitData(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
-                sub_size=self.sub_size,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
                 use_image=self.use_image,
                 use_convergence=self.use_convergence,
@@ -124,7 +122,10 @@ class PhaseGalaxy(af.AbstractPhase):
             )
 
             return self.AnalysisSingle(
-                galaxy_data=galaxy_data, cosmology=self.cosmology, results=results
+                galaxy_data=galaxy_data,
+                cosmology=self.cosmology,
+                image_path=self.optimizer.image_path,
+                results=results
             )
 
         elif self.use_deflections:
@@ -132,7 +133,6 @@ class PhaseGalaxy(af.AbstractPhase):
             galaxy_data_y = gd.GalaxyFitData(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
-                sub_size=self.sub_size,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
                 use_image=self.use_image,
                 use_convergence=self.use_convergence,
@@ -144,7 +144,6 @@ class PhaseGalaxy(af.AbstractPhase):
             galaxy_data_x = gd.GalaxyFitData(
                 galaxy_data=galaxy_data[1],
                 mask=mask,
-                sub_size=self.sub_size,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
                 use_image=self.use_image,
                 use_convergence=self.use_convergence,
@@ -157,52 +156,37 @@ class PhaseGalaxy(af.AbstractPhase):
                 galaxy_data_y=galaxy_data_y,
                 galaxy_data_x=galaxy_data_x,
                 cosmology=self.cosmology,
+                image_path=self.optimizer.image_path,
                 results=results,
             )
 
     # noinspection PyAbstractClass
-    class Analysis(Phase.Analysis):
-        def __init__(self, cosmology, results):
-            super(PhaseGalaxy.Analysis, self).__init__(
-                cosmology=cosmology, results=results
+    class Analysis(AbstractPhase.Analysis):
+        def __init__(
+                self,
+                cosmology,
+                results,
+                image_path
+        ):
+            super().__init__(
+                cosmology=cosmology,
+                results=results
             )
-
-            self.plot_galaxy_fit_all_at_end_png = af.conf.instance.visualize.get(
-                "plots", "plot_galaxy_fit_all_at_end_png", bool
-            )
-            self.plot_galaxy_fit_all_at_end_fits = af.conf.instance.visualize.get(
-                "plots", "plot_galaxy_fit_all_at_end_fits", bool
-            )
-            self.plot_galaxy_fit_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_galaxy_fit_as_subplot", bool
-            )
-            self.plot_galaxy_fit_image = af.conf.instance.visualize.get(
-                "plots", "plot_galaxy_fit_image", bool
-            )
-            self.plot_galaxy_fit_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_galaxy_fit_noise_map", bool
-            )
-            self.plot_galaxy_fit_model_image = af.conf.instance.visualize.get(
-                "plots", "plot_galaxy_fit_model_image", bool
-            )
-            self.plot_galaxy_fit_residual_map = af.conf.instance.visualize.get(
-                "plots", "plot_galaxy_fit_residual_map", bool
-            )
-            self.plot_galaxy_fit_chi_squared_map = af.conf.instance.visualize.get(
-                "plots", "plot_galaxy_fit_chi_squared_map", bool
-            )
-
-        @classmethod
-        def describe(cls, instance):
-            return "\nRunning galaxy fit for... \n\nGalaxies::\n{}\n\n".format(
-                instance.galaxies
-            )
+            self.visualizer = visualizer.PhaseGalaxyVisualizer(image_path)
 
     # noinspection PyAbstractClass
     class AnalysisSingle(Analysis):
-        def __init__(self, galaxy_data, cosmology, results=None):
-            super(PhaseGalaxy.AnalysisSingle, self).__init__(
-                cosmology=cosmology, results=results
+        def __init__(
+                self,
+                galaxy_data,
+                cosmology,
+                image_path: str,
+                results=None
+        ):
+            super().__init__(
+                cosmology=cosmology,
+                image_path=image_path,
+                results=results
             )
 
             self.galaxy_data = galaxy_data
@@ -211,67 +195,32 @@ class PhaseGalaxy(af.AbstractPhase):
             fit = self.fit_for_instance(instance=instance)
             return fit.figure_of_merit
 
-        def visualize(self, instance, image_path, during_analysis):
-
-            self.plot_count += 1
+        def visualize(self, instance, during_analysis):
             fit = self.fit_for_instance(instance=instance)
 
-            if self.plot_galaxy_fit_as_subplot:
-                galaxy_fit_plotters.plot_fit_subplot(
-                    fit=fit,
-                    should_plot_mask=self.should_plot_mask,
-                    zoom_around_mask=self.zoom_around_mask,
-                    units=self.plot_units,
-                    output_path=image_path,
-                    output_format="png",
-                )
+            self.visualizer.plot_galaxy_fit_subplot(
+                fit
+            )
 
             if during_analysis:
-
-                galaxy_fit_plotters.plot_fit_individuals(
-                    fit=fit,
-                    should_plot_mask=self.should_plot_mask,
-                    zoom_around_mask=self.zoom_around_mask,
-                    should_plot_image=self.plot_galaxy_fit_image,
-                    should_plot_noise_map=self.plot_galaxy_fit_noise_map,
-                    should_plot_model_image=self.plot_galaxy_fit_model_image,
-                    should_plot_residual_map=self.plot_galaxy_fit_residual_map,
-                    should_plot_chi_squared_map=self.plot_galaxy_fit_chi_squared_map,
-                    units=self.plot_units,
-                    output_path=image_path,
-                    output_format="png",
+                self.visualizer.plot_fit_individuals(
+                    fit
                 )
+            else:
 
-            elif not during_analysis:
-
-                if self.plot_ray_tracing_all_at_end_png:
-                    galaxy_fit_plotters.plot_fit_individuals(
+                if self.visualizer.plot_ray_tracing_all_at_end_png:
+                    self.visualizer.plot_fit_individuals(
                         fit=fit,
-                        should_plot_mask=self.should_plot_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        should_plot_image=True,
-                        should_plot_noise_map=True,
-                        should_plot_model_image=True,
-                        should_plot_residual_map=True,
-                        should_plot_chi_squared_map=True,
-                        units=self.plot_units,
-                        output_path=image_path,
-                        output_format="png",
+                        plot_all=True,
+                        image_format="png"
                     )
 
-                if self.plot_ray_tracing_all_at_end_fits:
-                    galaxy_fit_plotters.plot_fit_individuals(
+                if self.visualizer.plot_ray_tracing_all_at_end_fits:
+                    self.visualizer.plot_fit_individuals(
                         fit=fit,
-                        should_plot_mask=self.should_plot_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        should_plot_image=True,
-                        should_plot_noise_map=True,
-                        should_plot_model_image=True,
-                        should_plot_residual_map=True,
-                        should_plot_chi_squared_map=True,
-                        units=self.plot_units,
-                        output_path="{}/fits/".format(image_path),
-                        output_format="fits",
+                        plot_all=True,
+                        image_format="fits",
+                        path_suffix="/fits/"
                     )
 
             return fit
@@ -298,9 +247,18 @@ class PhaseGalaxy(af.AbstractPhase):
 
     # noinspection PyAbstractClass
     class AnalysisDeflections(Analysis):
-        def __init__(self, galaxy_data_y, galaxy_data_x, cosmology, results=None):
-            super(PhaseGalaxy.AnalysisDeflections, self).__init__(
-                cosmology=cosmology, results=results
+        def __init__(
+                self,
+                galaxy_data_y,
+                galaxy_data_x,
+                cosmology,
+                image_path,
+                results=None
+        ):
+            super().__init__(
+                cosmology=cosmology,
+                image_path=image_path,
+                results=results
             )
 
             self.galaxy_data_y = galaxy_data_y
@@ -310,123 +268,54 @@ class PhaseGalaxy(af.AbstractPhase):
             fit_y, fit_x = self.fit_for_instance(instance=instance)
             return fit_y.figure_of_merit + fit_x.figure_of_merit
 
-        def visualize(self, instance, image_path, during_analysis):
+        def visualize(self, instance, during_analysis):
 
-            output_image_y_path = "{}/fit_y_".format(image_path)
-            output_fits_y_path = "{}/fits/fit_y".format(image_path)
-            output_image_x_path = "{}/fit_x_".format(image_path)
-            output_fits_x_path = "{}/fits/fit_x".format(image_path)
-
-            self.plot_count += 1
             fit_y, fit_x = self.fit_for_instance(instance=instance)
 
-            if self.plot_galaxy_fit_as_subplot:
-                galaxy_fit_plotters.plot_fit_subplot(
-                    fit=fit_y,
-                    should_plot_mask=self.should_plot_mask,
-                    zoom_around_mask=self.zoom_around_mask,
-                    units=self.plot_units,
-                    output_path=output_image_y_path,
-                    output_format="png",
+            if self.visualizer.plot_galaxy_fit_as_subplot:
+                self.visualizer.plot_galaxy_fit_subplot(
+                    fit_y,
+                    path_suffix="/fit_y_"
                 )
-
-                galaxy_fit_plotters.plot_fit_subplot(
-                    fit=fit_x,
-                    should_plot_mask=self.should_plot_mask,
-                    zoom_around_mask=self.zoom_around_mask,
-                    units=self.plot_units,
-                    output_path=output_image_x_path,
-                    output_format="png",
+                self.visualizer.plot_galaxy_fit_subplot(
+                    fit_x,
+                    path_suffix="/fit_x_"
                 )
 
             if during_analysis:
-
-                galaxy_fit_plotters.plot_fit_individuals(
-                    fit=fit_y,
-                    should_plot_mask=self.should_plot_mask,
-                    zoom_around_mask=self.zoom_around_mask,
-                    should_plot_image=self.plot_galaxy_fit_image,
-                    should_plot_noise_map=self.plot_galaxy_fit_noise_map,
-                    should_plot_model_image=self.plot_galaxy_fit_model_image,
-                    should_plot_residual_map=self.plot_galaxy_fit_residual_map,
-                    should_plot_chi_squared_map=self.plot_galaxy_fit_chi_squared_map,
-                    units=self.plot_units,
-                    output_path=output_image_y_path,
-                    output_format="png",
+                self.visualizer.plot_fit_individuals(
+                    fit_y,
+                    path_suffix="/fit_y"
                 )
-
-                galaxy_fit_plotters.plot_fit_individuals(
-                    fit=fit_x,
-                    should_plot_mask=self.should_plot_mask,
-                    zoom_around_mask=self.zoom_around_mask,
-                    should_plot_image=self.plot_galaxy_fit_image,
-                    should_plot_noise_map=self.plot_galaxy_fit_noise_map,
-                    should_plot_model_image=self.plot_galaxy_fit_model_image,
-                    should_plot_residual_map=self.plot_galaxy_fit_residual_map,
-                    should_plot_chi_squared_map=self.plot_galaxy_fit_chi_squared_map,
-                    units=self.plot_units,
-                    output_path=output_image_x_path,
-                    output_format="png",
+                self.visualizer.plot_fit_individuals(
+                    fit_x,
+                    path_suffix="/fit_x"
                 )
-
-            elif not during_analysis:
-
-                if self.plot_ray_tracing_all_at_end_png:
-                    galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit_y,
-                        should_plot_mask=self.should_plot_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        should_plot_image=True,
-                        should_plot_noise_map=True,
-                        should_plot_model_image=True,
-                        should_plot_residual_map=True,
-                        should_plot_chi_squared_map=True,
-                        units=self.plot_units,
-                        output_path=output_image_y_path,
-                        output_format="png",
+            else:
+                if self.visualizer.plot_ray_tracing_all_at_end_png:
+                    self.visualizer.plot_fit_individuals(
+                        fit_y,
+                        path_suffix="/fits/fit_y",
+                        plot_all=True
+                    )
+                    self.visualizer.plot_fit_individuals(
+                        fit_x,
+                        path_suffix="/fits/fit_x",
+                        plot_all=True
                     )
 
-                    galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit_x,
-                        should_plot_mask=self.should_plot_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        should_plot_image=True,
-                        should_plot_noise_map=True,
-                        should_plot_model_image=True,
-                        should_plot_residual_map=True,
-                        should_plot_chi_squared_map=True,
-                        units=self.plot_units,
-                        output_path=output_image_x_path,
-                        output_format="png",
+                if self.visualizer.plot_ray_tracing_all_at_end_fits:
+                    self.visualizer.plot_fit_individuals(
+                        fit_y,
+                        path_suffix="/fits/fit_y",
+                        plot_all=True,
+                        image_format="fits"
                     )
-
-                if self.plot_ray_tracing_all_at_end_fits:
-                    galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit_y,
-                        should_plot_mask=self.should_plot_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        should_plot_image=True,
-                        should_plot_noise_map=True,
-                        should_plot_model_image=True,
-                        should_plot_residual_map=True,
-                        should_plot_chi_squared_map=True,
-                        units=self.plot_units,
-                        output_path=output_fits_y_path,
-                        output_format="fits",
-                    )
-
-                    galaxy_fit_plotters.plot_fit_individuals(
-                        fit=fit_x,
-                        should_plot_mask=self.should_plot_mask,
-                        zoom_around_mask=self.zoom_around_mask,
-                        should_plot_image=True,
-                        should_plot_noise_map=True,
-                        should_plot_model_image=True,
-                        should_plot_residual_map=True,
-                        should_plot_chi_squared_map=True,
-                        units=self.plot_units,
-                        output_path=output_fits_x_path,
-                        output_format="fits",
+                    self.visualizer.plot_fit_individuals(
+                        fit_x,
+                        path_suffix="/fits/fit_x",
+                        plot_all=True,
+                        image_format="fits"
                     )
 
             return fit_y, fit_x

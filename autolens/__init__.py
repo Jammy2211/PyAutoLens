@@ -126,11 +126,10 @@ from autolens.pipeline.phase.phase_extensions.inversion_phase import (
     InversionPhase,
     VariableFixingHyperPhase,
 )
-from autolens.pipeline.phase.phase import Phase
+from autolens.pipeline.phase.phase import AbstractPhase
 from autolens.pipeline.phase.phase_data import PhaseData
 from autolens.pipeline.phase.phase_imaging import PhaseImaging
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
-from autolens.pipeline.phase.phase_positions import PhasePositions
 from autolens.pipeline.pipeline import (
     PipelineSettings,
     PipelineSettingsHyper,
