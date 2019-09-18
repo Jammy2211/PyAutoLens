@@ -207,7 +207,9 @@ class TestImagePassing(object):
         assert (
             len(
                 tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
-                    grid=sub_grid_7x7, convolver=convolver_7x7, blurring_grid=blurring_grid_7x7,
+                    grid=sub_grid_7x7,
+                    convolver=convolver_7x7,
+                    blurring_grid=blurring_grid_7x7,
                 )
             )
             == 2
@@ -215,13 +217,17 @@ class TestImagePassing(object):
         assert (
             lens_galaxy
             in tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
-                grid=sub_grid_7x7, convolver=convolver_7x7, blurring_grid=blurring_grid_7x7,
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
             )
         )
         assert (
             source_galaxy
             in tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
-                grid=sub_grid_7x7, convolver=convolver_7x7, blurring_grid=blurring_grid_7x7,
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
             )
         )
 
@@ -651,7 +657,7 @@ class TestHyperGalaxyPhase(object):
             lens_data=lens_data,
             hyper_model_image_1d=fit.model_image(return_in_2d=False),
             hyper_galaxy_image_1d=fit.model_image(return_in_2d=False),
-            image_path=None
+            image_path=None,
         )
 
         fit_hyper = analysis.fit_for_hyper_galaxy(

@@ -10,19 +10,19 @@ class PhaseGalaxy(af.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
-            self,
-            phase_name,
-            phase_folders=tuple(),
-            galaxies=None,
-            use_image=False,
-            use_convergence=False,
-            use_potential=False,
-            use_deflections=False,
-            optimizer_class=af.MultiNest,
-            sub_size=2,
-            pixel_scale_interpolation_grid=None,
-            mask_function=None,
-            cosmology=cosmo.Planck15,
+        self,
+        phase_name,
+        phase_folders=tuple(),
+        galaxies=None,
+        use_image=False,
+        use_convergence=False,
+        use_potential=False,
+        use_deflections=False,
+        optimizer_class=af.MultiNest,
+        sub_size=2,
+        pixel_scale_interpolation_grid=None,
+        mask_function=None,
+        cosmology=cosmo.Planck15,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
@@ -125,7 +125,7 @@ class PhaseGalaxy(af.AbstractPhase):
                 galaxy_data=galaxy_data,
                 cosmology=self.cosmology,
                 image_path=self.optimizer.image_path,
-                results=results
+                results=results,
             )
 
         elif self.use_deflections:
@@ -162,31 +162,15 @@ class PhaseGalaxy(af.AbstractPhase):
 
     # noinspection PyAbstractClass
     class Analysis(AbstractPhase.Analysis):
-        def __init__(
-                self,
-                cosmology,
-                results,
-                image_path
-        ):
-            super().__init__(
-                cosmology=cosmology,
-                results=results
-            )
+        def __init__(self, cosmology, results, image_path):
+            super().__init__(cosmology=cosmology, results=results)
             self.visualizer = visualizer.PhaseGalaxyVisualizer(image_path)
 
     # noinspection PyAbstractClass
     class AnalysisSingle(Analysis):
-        def __init__(
-                self,
-                galaxy_data,
-                cosmology,
-                image_path: str,
-                results=None
-        ):
+        def __init__(self, galaxy_data, cosmology, image_path: str, results=None):
             super().__init__(
-                cosmology=cosmology,
-                image_path=image_path,
-                results=results
+                cosmology=cosmology, image_path=image_path, results=results
             )
 
             self.galaxy_data = galaxy_data
@@ -198,21 +182,15 @@ class PhaseGalaxy(af.AbstractPhase):
         def visualize(self, instance, during_analysis):
             fit = self.fit_for_instance(instance=instance)
 
-            self.visualizer.plot_galaxy_fit_subplot(
-                fit
-            )
+            self.visualizer.plot_galaxy_fit_subplot(fit)
 
             if during_analysis:
-                self.visualizer.plot_fit_individuals(
-                    fit
-                )
+                self.visualizer.plot_fit_individuals(fit)
             else:
 
                 if self.visualizer.plot_ray_tracing_all_at_end_png:
                     self.visualizer.plot_fit_individuals(
-                        fit=fit,
-                        plot_all=True,
-                        image_format="png"
+                        fit=fit, plot_all=True, image_format="png"
                     )
 
                 if self.visualizer.plot_ray_tracing_all_at_end_fits:
@@ -220,7 +198,7 @@ class PhaseGalaxy(af.AbstractPhase):
                         fit=fit,
                         plot_all=True,
                         image_format="fits",
-                        path_suffix="/fits/"
+                        path_suffix="/fits/",
                     )
 
             return fit
@@ -248,17 +226,10 @@ class PhaseGalaxy(af.AbstractPhase):
     # noinspection PyAbstractClass
     class AnalysisDeflections(Analysis):
         def __init__(
-                self,
-                galaxy_data_y,
-                galaxy_data_x,
-                cosmology,
-                image_path,
-                results=None
+            self, galaxy_data_y, galaxy_data_x, cosmology, image_path, results=None
         ):
             super().__init__(
-                cosmology=cosmology,
-                image_path=image_path,
-                results=results
+                cosmology=cosmology, image_path=image_path, results=results
             )
 
             self.galaxy_data_y = galaxy_data_y
@@ -273,35 +244,19 @@ class PhaseGalaxy(af.AbstractPhase):
             fit_y, fit_x = self.fit_for_instance(instance=instance)
 
             if self.visualizer.plot_galaxy_fit_as_subplot:
-                self.visualizer.plot_galaxy_fit_subplot(
-                    fit_y,
-                    path_suffix="/fit_y_"
-                )
-                self.visualizer.plot_galaxy_fit_subplot(
-                    fit_x,
-                    path_suffix="/fit_x_"
-                )
+                self.visualizer.plot_galaxy_fit_subplot(fit_y, path_suffix="/fit_y_")
+                self.visualizer.plot_galaxy_fit_subplot(fit_x, path_suffix="/fit_x_")
 
             if during_analysis:
-                self.visualizer.plot_fit_individuals(
-                    fit_y,
-                    path_suffix="/fit_y"
-                )
-                self.visualizer.plot_fit_individuals(
-                    fit_x,
-                    path_suffix="/fit_x"
-                )
+                self.visualizer.plot_fit_individuals(fit_y, path_suffix="/fit_y")
+                self.visualizer.plot_fit_individuals(fit_x, path_suffix="/fit_x")
             else:
                 if self.visualizer.plot_ray_tracing_all_at_end_png:
                     self.visualizer.plot_fit_individuals(
-                        fit_y,
-                        path_suffix="/fits/fit_y",
-                        plot_all=True
+                        fit_y, path_suffix="/fits/fit_y", plot_all=True
                     )
                     self.visualizer.plot_fit_individuals(
-                        fit_x,
-                        path_suffix="/fits/fit_x",
-                        plot_all=True
+                        fit_x, path_suffix="/fits/fit_x", plot_all=True
                     )
 
                 if self.visualizer.plot_ray_tracing_all_at_end_fits:
@@ -309,13 +264,13 @@ class PhaseGalaxy(af.AbstractPhase):
                         fit_y,
                         path_suffix="/fits/fit_y",
                         plot_all=True,
-                        image_format="fits"
+                        image_format="fits",
                     )
                     self.visualizer.plot_fit_individuals(
                         fit_x,
                         path_suffix="/fits/fit_x",
                         plot_all=True,
-                        image_format="fits"
+                        image_format="fits",
                     )
 
             return fit_y, fit_x

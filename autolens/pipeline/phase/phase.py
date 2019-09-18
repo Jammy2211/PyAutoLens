@@ -7,13 +7,13 @@ from autolens.model.galaxy import galaxy as g
 
 class AbstractPhase(af.AbstractPhase):
     def __init__(
-            self,
-            phase_name,
-            phase_tag=None,
-            phase_folders=tuple(),
-            optimizer_class=af.MultiNest,
-            cosmology=cosmo.Planck15,
-            auto_link_priors=False,
+        self,
+        phase_name,
+        phase_tag=None,
+        phase_folders=tuple(),
+        optimizer_class=af.MultiNest,
+        cosmology=cosmo.Planck15,
+        auto_link_priors=False,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
@@ -112,13 +112,13 @@ class AbstractPhase(af.AbstractPhase):
 
     class Result(af.Result):
         def __init__(
-                self,
-                constant,
-                figure_of_merit,
-                previous_variable,
-                gaussian_tuples,
-                analysis,
-                optimizer,
+            self,
+            constant,
+            figure_of_merit,
+            previous_variable,
+            gaussian_tuples,
+            analysis,
+            optimizer,
         ):
             """
             The result of a phase

@@ -109,11 +109,7 @@ class LensImagingFit(ImagingFit):
 
     @classmethod
     def from_lens_data_and_tracer(
-        cls,
-        lens_data,
-        tracer,
-        hyper_image_sky=None,
-        hyper_background_noise=None,
+        cls, lens_data, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper_galaxies.
@@ -179,7 +175,10 @@ class LensImagingFit(ImagingFit):
     @reshape_returned_array
     def blurred_profile_image(self, return_in_2d=True):
         return self.tracer.blurred_profile_image_from_grid_and_psf(
-            grid=self.grid, psf=self.psf, blurring_grid=self.blurring_grid, return_in_2d=False
+            grid=self.grid,
+            psf=self.psf,
+            blurring_grid=self.blurring_grid,
+            return_in_2d=False,
         )
 
     @reshape_returned_array
@@ -194,7 +193,10 @@ class LensImagingFit(ImagingFit):
         A dictionary associating galaxies with their corresponding model images
         """
         galaxy_model_image_dict = self.tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
-            grid=self.grid, convolver=self.convolver, blurring_grid=self.blurring_grid, return_in_2d=False,
+            grid=self.grid,
+            convolver=self.convolver,
+            blurring_grid=self.blurring_grid,
+            return_in_2d=False,
         )
 
         # TODO : Extend to multiple inversioons across Planes
@@ -230,7 +232,10 @@ class LensImagingFit(ImagingFit):
     def model_images_of_planes(self, return_in_2d=True):
 
         model_images_of_planes = self.tracer.blurred_profile_images_of_planes_from_grid_and_psf(
-            grid=self.grid, psf=self.psf, blurring_grid=self.blurring_grid, return_in_2d=return_in_2d
+            grid=self.grid,
+            psf=self.psf,
+            blurring_grid=self.blurring_grid,
+            return_in_2d=return_in_2d,
         )
 
         for plane_index in self.tracer.plane_indexes_with_pixelizations:
@@ -253,7 +258,7 @@ class LensImagingFit(ImagingFit):
     @property
     def unmasked_blurred_profile_image(self):
         return self.tracer.unmasked_blurred_profile_image_from_grid_and_psf(
-            grid=self.grid, psf=self.psf,
+            grid=self.grid, psf=self.psf
         )
 
     @property

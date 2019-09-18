@@ -19,14 +19,14 @@ class MockAnalysis(object):
 
 class MockResults(object):
     def __init__(
-            self,
-            model_image=None,
-            mask=None,
-            galaxy_images=(),
-            constant=None,
-            analysis=None,
-            optimizer=None,
-            pixelization=None,
+        self,
+        model_image=None,
+        mask=None,
+        galaxy_images=(),
+        constant=None,
+        analysis=None,
+        optimizer=None,
+        pixelization=None,
     ):
         self.model_image = model_image
         self.unmasked_model_image = model_image
@@ -99,7 +99,7 @@ class MockResults(object):
             minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
             galaxy_image_1d[
                 galaxy_image_1d < minimum_galaxy_value
-                ] = minimum_galaxy_value
+            ] = minimum_galaxy_value
             hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
 
         return hyper_galaxy_image_1d_path_dict
@@ -166,7 +166,7 @@ class MockResults(object):
                 )
                 binned_galaxy_image_1d[
                     binned_galaxy_image_1d < minimum_hyper_value
-                    ] = minimum_hyper_value
+                ] = minimum_hyper_value
 
                 binned_hyper_galaxy_image_path_dict[path] = binned_galaxy_image_1d
 

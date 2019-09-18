@@ -7,17 +7,17 @@ from test.integration.tests.runner import run_a_mock
 
 
 class TestCase:
-    def test_lens_light_mass__source(self):
+    def _test_lens_light_mass__source(self):
         run_a_mock(lens_light_mass__source)
 
-    def test_lens_light_mass__source__hyper(self):
+    def _test_lens_light_mass__source__hyper(self):
         run_a_mock(lens_light_mass__source__hyper)
 
-    def test_lens_light_mass__source__hyper_bg(self):
+    def _test_lens_light_mass__source__hyper_bg(self):
         run_a_mock(lens_light_mass__source__hyper_bg)
 
-    def test_lens_mass__source_x2(self):
+    def _test_lens_mass__source_x2(self):
         run_a_mock(lens_mass__source_x2)
 
-    def test_lens_mass__source_x2__hyper(self):
+    def _test_lens_mass__source_x2__hyper(self):
         run_a_mock(lens_mass__source_x2__hyper)

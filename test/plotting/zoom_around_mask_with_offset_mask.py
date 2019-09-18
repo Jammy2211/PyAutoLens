@@ -34,9 +34,7 @@ lens_galaxy = al.Galaxy(
 lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
-fit = al.LensImageFit.from_lens_data_and_tracer(
-    lens_data=lens_data, tracer=tracer
-)
+fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit, should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True
 )

@@ -1087,7 +1087,7 @@ class TestCompareToManualProfilesOnly:
         )
 
         unmasked_blurred_profile_image = tracer.unmasked_blurred_profile_image_from_grid_and_psf(
-            grid=lens_imaging_data_7x7.grid, psf=lens_imaging_data_7x7.psf,
+            grid=lens_imaging_data_7x7.grid, psf=lens_imaging_data_7x7.psf
         )
 
         assert (
