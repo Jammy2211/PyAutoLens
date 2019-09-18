@@ -549,7 +549,6 @@ class TestAbstractPlaneLensing(object):
         ):
             galaxy_image = gal_x1_lp.profile_image_from_grid(
                 grid=sub_grid_7x7,
-                galaxies=[gal_x1_lp],
                 return_in_2d=False,
                 return_binned=False,
             )
