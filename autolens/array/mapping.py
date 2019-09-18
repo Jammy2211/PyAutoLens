@@ -14,7 +14,7 @@ from autolens.array import scaled_array
 
 def reshape_returned_array(func):
     @wraps(func)
-    def wrapper(obj, *args, **kwargs):
+    def wrapper(obj, return_in_2d=True, bypass_decorator=False, *args, **kwargs):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -40,18 +40,14 @@ def reshape_returned_array(func):
             An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
         """
 
-        bypass_decorator = (
-            kwargs["bypass_decorator"] if "bypass_decorator" in kwargs else False
-        )
-
         if bypass_decorator:
             return func(obj)
 
         grid = kwargs["grid"] if "grid" in kwargs else None
+        blurring_grid = kwargs["blurring_grid"] if "blurring_grid" in kwargs else None
         psf = kwargs["psf"] if "psf" in kwargs else None
         convolver = kwargs["convolver"] if "convolver" in kwargs else None
 
-        return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
         return_masked = kwargs["return_masked"] if "return_masked" in kwargs else True
 
         if hasattr(obj, "mapping"):
@@ -59,23 +55,29 @@ def reshape_returned_array(func):
         elif hasattr(grid, "mapping"):
             mapping = grid.mapping
         else:
-            raise exc.MappingException("Unable to find mapping object from the functions input object or any of its"
-                                       "keyword arguments.")
+            raise exc.MappingException(
+                "Unable to find mapping object from the functions input object or any of its"
+                "keyword arguments."
+            )
 
         if grid is not None and psf is not None:
-            array_from_func = func(obj, grid, psf)
+            array_from_func = func(obj, grid, psf, blurring_grid)
         elif grid is not None and convolver is not None:
-            array_from_func = func(obj, grid, convolver)
+            array_from_func = func(obj, grid, convolver, blurring_grid)
         elif grid is not None:
             array_from_func = func(obj, grid)
         else:
             array_from_func = func(obj)
 
         return reshaped_array_from_array_and_mapping(
-            array=array_from_func, mapping=mapping, return_in_2d=return_in_2d, return_masked=return_masked,
+            array=array_from_func,
+            mapping=mapping,
+            return_in_2d=return_in_2d,
+            return_masked=return_masked,
         )
 
     return wrapper
+
 
 def reshaped_array_from_array_and_mapping(array, mapping, return_in_2d, return_masked):
 

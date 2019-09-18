@@ -7,12 +7,7 @@ from autolens import dimensions as dim
 from autolens import text_util
 from autolens.model.profiles import geometry_profiles
 
-from autolens.array.mapping import (
-    reshape_returned_sub_array,
-    reshape_returned_array,
-    reshape_returned_array,
-    reshape_returned_array,
-)
+from autolens.array.mapping import reshape_returned_sub_array, reshape_returned_array
 
 
 class LightProfile(object):
@@ -115,24 +110,15 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-        self,
-        grid,
-        psf,
-        preload_blurring_grid=None,
-        return_in_2d=True,
+        self, grid, psf, blurring_grid, return_in_2d=True
     ):
 
         profile_image = self.profile_image_from_grid(
             grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
         )
 
-        if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
-                psf_shape=psf.shape
-            )
-
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid,
+            grid=blurring_grid,
             return_in_2d=True,
             return_binned=True,
             bypass_decorator=False,
@@ -142,17 +128,12 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-        self,
-        grid,
-        convolver,
-        preload_blurring_grid=None,
-        return_in_2d=True,
+        self, grid, convolver, blurring_grid, return_in_2d=True
     ):
 
-        if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
-                psf_shape=convolver.psf.shape
-            )
+        profile_image = self.profile_image_from_grid(
+            grid=grid, return_in_2d=False, return_binned=True
+        )
 
         if convolver.blurring_mask is None:
             blurring_mask = grid.mask.blurring_mask_from_psf_shape(
@@ -162,27 +143,21 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
                 blurring_mask=blurring_mask
             )
 
-        profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
-
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid, return_in_2d=False, return_binned=True
+            grid=blurring_grid, return_in_2d=False, return_binned=True
         )
 
         return convolver.convolve_image(
             image_array=profile_image, blurring_array=blurring_image
         )
 
-    def visibilities_from_grid_and_transformer(self, grid, transformer):
+    def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
-        profile_image_plane_image_1d = self.profile_image_from_grid(
+        profile_image_1d = self.profile_image_from_grid(
             grid=grid, return_in_2d=False, return_binned=True
         )
 
-        return transformer.visibilities_from_image_1d(
-            image_1d=profile_image_plane_image_1d
-        )
+        return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
 
     @dim.convert_units_to_input_units
     def luminosity_within_circle_in_units(

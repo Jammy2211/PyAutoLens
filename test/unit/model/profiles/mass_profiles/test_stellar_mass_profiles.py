@@ -299,7 +299,7 @@ class TestSersic(object):
         )
 
         interp_deflections_values = sersic.deflections_from_grid(
-             grid=interpolator.interp_grid, bypass_decorator=True
+            grid=interpolator.interp_grid, bypass_decorator=True
         )
 
         interp_deflections_manual_y = interpolator.interpolated_values_from_values(
@@ -347,7 +347,7 @@ class TestSersic(object):
         )
 
         interp_deflections_values = sersic.deflections_from_grid(
-             grid=interpolator.interp_grid, bypass_decorator=True
+            grid=interpolator.interp_grid, bypass_decorator=True
         )
 
         interp_deflections_manual_y = interpolator.interpolated_values_from_values(
@@ -630,7 +630,7 @@ class TestExponential(object):
         )
 
         interp_deflections_values = exponential.deflections_from_grid(
-             grid=interpolator.interp_grid, bypass_decorator=True
+            grid=interpolator.interp_grid, bypass_decorator=True
         )
 
         interp_deflections_manual_y = interpolator.interpolated_values_from_values(
@@ -677,7 +677,7 @@ class TestExponential(object):
         )
 
         interp_deflections_values = exponential.deflections_from_grid(
-             grid=interpolator.interp_grid, bypass_decorator=True
+            grid=interpolator.interp_grid, bypass_decorator=True
         )
 
         interp_deflections_manual_y = interpolator.interpolated_values_from_values(
@@ -692,7 +692,7 @@ class TestExponential(object):
 
     def test__reshape_decorators(self):
         grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1,
+            shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         exponential = al.mass_profiles.EllipticalExponential()
@@ -946,7 +946,7 @@ class TestDevVaucouleurs(object):
         )
 
         interp_deflections_values = dev.deflections_from_grid(
-             grid=interpolator.interp_grid, bypass_decorator=True
+            grid=interpolator.interp_grid, bypass_decorator=True
         )
 
         interp_deflections_manual_y = interpolator.interpolated_values_from_values(
@@ -993,7 +993,7 @@ class TestDevVaucouleurs(object):
         )
 
         interp_deflections_values = dev.deflections_from_grid(
-             grid=interpolator.interp_grid, bypass_decorator=True
+            grid=interpolator.interp_grid, bypass_decorator=True
         )
 
         interp_deflections_manual_y = interpolator.interpolated_values_from_values(
@@ -1008,7 +1008,7 @@ class TestDevVaucouleurs(object):
 
     def test__reshape_decorators(self):
         grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1,
+            shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         dev_vaucouleurs = al.mass_profiles.EllipticalDevVaucouleurs()
@@ -1422,7 +1422,7 @@ class TestSersicMassRadialGradient(object):
         )
 
         interp_deflections_values = sersic.deflections_from_grid(
-             grid=interpolator.interp_grid, bypass_decorator=True
+            grid=interpolator.interp_grid, bypass_decorator=True
         )
 
         interp_deflections_manual_y = interpolator.interpolated_values_from_values(
@@ -1471,7 +1471,7 @@ class TestSersicMassRadialGradient(object):
         )
 
         interp_deflections_values = sersic.deflections_from_grid(
-             grid=interpolator.interp_grid, bypass_decorator=True
+            grid=interpolator.interp_grid, bypass_decorator=True
         )
 
         interp_deflections_manual_y = interpolator.interpolated_values_from_values(
@@ -1486,7 +1486,7 @@ class TestSersicMassRadialGradient(object):
 
     def test__reshape_decorators(self):
         grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1,
+            shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         sersic = al.mass_profiles.EllipticalSersicRadialGradient()

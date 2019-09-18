@@ -1,9 +1,9 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-
-from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
+from autolens.model.galaxy import galaxy as g
+
 
 class AbstractPhase(af.AbstractPhase):
     def __init__(
@@ -27,8 +27,6 @@ class AbstractPhase(af.AbstractPhase):
             The name of this phase
         """
 
-        self.phase_folders = phase_folders
-
         super().__init__(
             phase_name=phase_name,
             phase_tag=phase_tag,
@@ -38,6 +36,10 @@ class AbstractPhase(af.AbstractPhase):
         )
 
         self.cosmology = cosmology
+
+    @property
+    def phase_folders(self):
+        return self.optimizer.phase_folders
 
     @property
     def phase_property_collections(self):
@@ -54,11 +56,6 @@ class AbstractPhase(af.AbstractPhase):
     @property
     def path(self):
         return self.optimizer.path
-
-    @property
-    def doc(self):
-        if self.__doc__ is not None:
-            return self.__doc__.replace("  ", "").replace("\n", " ")
 
     def customize_priors(self, results):
         """
@@ -87,8 +84,6 @@ class AbstractPhase(af.AbstractPhase):
             self.results = results
             self.cosmology = cosmology
 
-            self.plot_count = 0
-
         @property
         def last_results(self):
             """
@@ -101,7 +96,6 @@ class AbstractPhase(af.AbstractPhase):
                 return self.results.last
 
         def tracer_for_instance(self, instance):
-
             return ray_tracing.Tracer.from_galaxies(
                 galaxies=instance.galaxies, cosmology=self.cosmology
             )
@@ -129,7 +123,7 @@ class AbstractPhase(af.AbstractPhase):
             """
             The result of a phase
             """
-            super(Phase.Result, self).__init__(
+            super().__init__(
                 constant=constant,
                 figure_of_merit=figure_of_merit,
                 previous_variable=previous_variable,
@@ -150,59 +144,5 @@ class AbstractPhase(af.AbstractPhase):
             """
             return self.constant.path_instance_tuples_for_class(cls=g.Galaxy)
 
-
-class Phase(AbstractPhase):
     def run(self, image, results=None, mask=None):
         raise NotImplementedError()
-
-    # noinspection PyAbstractClass
-    class Analysis(AbstractPhase.Analysis):
-        def __init__(self, cosmology, results=None):
-            super(Phase.Analysis, self).__init__(cosmology=cosmology, results=results)
-
-            self.should_plot_mask = af.conf.instance.visualize.get(
-                "figures", "plot_mask_on_images", bool
-            )
-            self.extract_array_from_mask = af.conf.instance.visualize.get(
-                "figures", "extract_images_from_mask", bool
-            )
-            self.zoom_around_mask = af.conf.instance.visualize.get(
-                "figures", "zoom_around_mask_of_images", bool
-            )
-            self.should_plot_positions = af.conf.instance.visualize.get(
-                "figures", "plot_positions_on_images", bool
-            )
-            self.plot_units = af.conf.instance.visualize.get(
-                "figures", "plot_units", str
-            ).strip()
-
-            self.plot_ray_tracing_all_at_end_png = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_all_at_end_png", bool
-            )
-            self.plot_ray_tracing_all_at_end_fits = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_all_at_end_fits", bool
-            )
-
-            self.plot_ray_tracing_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_as_subplot", bool
-            )
-            self.plot_ray_tracing_profile_image = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_profile_image", bool
-            )
-            self.plot_ray_tracing_source_plane = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_source_plane_image", bool
-            )
-            self.plot_ray_tracing_convergence = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_convergence", bool
-            )
-            self.plot_ray_tracing_potential = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_potential", bool
-            )
-            self.plot_ray_tracing_deflections = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_deflections", bool
-            )
-            self.plot_ray_tracing_magnification = af.conf.instance.visualize.get(
-                "plots", "plot_ray_tracing_magnification", bool
-            )
-
-

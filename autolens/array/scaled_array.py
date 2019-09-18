@@ -232,6 +232,13 @@ class Array(np.ndarray):
         """
         arguments = vars(self)
         arguments.update({"array": array})
+
+        if "sub_length" in arguments:
+            arguments.pop("sub_length")
+        if "sub_fraction" in arguments:
+            arguments.pop("sub_fraction")
+        if "mapping" in arguments:
+            arguments.pop("mapping")
         if "centre" in arguments:
             arguments.pop("centre")
         return self.__class__(**arguments)
