@@ -2397,7 +2397,7 @@ class TestAbstractTracerData(object):
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_convolver(
                 grid=source_grid_7x7,
-                psf=convolver_7x7,
+                convolver=convolver_7x7,
                 blurring_grid=source_blurring_grid_7x7,
                 return_in_2d=False,
             )
@@ -2459,7 +2459,7 @@ class TestAbstractTracerData(object):
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_convolver(
                 grid=source_grid_7x7,
-                psf=convolver_7x7,
+                convolver=convolver_7x7,
                 blurring_grid=source_blurring_grid_7x7,
                 return_in_2d=False,
             )

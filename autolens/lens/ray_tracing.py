@@ -1,7 +1,6 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autolens import exc
 from autolens.array import grids
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
@@ -9,12 +8,7 @@ from autolens.model import cosmology_util
 from autolens.model.inversion import inversions as inv
 from autolens.model.galaxy import galaxy as g
 
-from autolens.array.mapping import (
-    reshape_returned_sub_array,
-    reshape_returned_array,
-    reshape_returned_array,
-    reshape_returned_grid,
-)
+from autolens.array import mapping
 
 
 class AbstractTracer(object):
@@ -271,7 +265,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def profile_image_from_grid(
         self, grid,
     ):
@@ -322,7 +316,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             bypass_decorator=False,
         )
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def convergence_from_grid(
         self, grid,
     ):
@@ -338,7 +332,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             ]
         )
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def potential_from_grid(
         self, grid,
     ):
@@ -354,7 +348,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             ]
         )
 
-    @reshape_returned_grid
+    @mapping.reshape_returned_grid_from_grid
     def deflections_from_grid(
         self, grid,
     ):
@@ -428,9 +422,9 @@ class AbstractTracerData(AbstractTracerLensing):
     def __init__(self, planes, cosmology):
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_from_grid_and_psf
     def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, blurring_grid, bypass_decorator=False
+        self, grid, psf, blurring_grid,
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a psf (see imaging.convolution).
@@ -485,7 +479,7 @@ class AbstractTracerData(AbstractTracerLensing):
             for (plane_index, plane) in enumerate(self.planes)
         ]
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_from_grid_and_convolver
     def blurred_profile_image_from_grid_and_convolver(
         self, grid, convolver, blurring_grid,
     ):
