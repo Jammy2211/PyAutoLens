@@ -2,7 +2,7 @@ import autofit as af
 from autolens.model.hyper import hyper_data as hd
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
-from autolens.pipeline.phase.phase import Phase
+from autolens.pipeline.phase.phase import AbstractPhase
 from autolens.pipeline.phase.phase_imaging import PhaseImaging
 from .hyper_phase import HyperPhase
 
@@ -11,7 +11,7 @@ from .hyper_phase import HyperPhase
 class VariableFixingHyperPhase(HyperPhase):
     def __init__(
             self,
-            phase: Phase,
+            phase: AbstractPhase,
             hyper_name: str,
             variable_classes=tuple()
     ):
@@ -66,7 +66,7 @@ class InversionPhase(VariableFixingHyperPhase):
 
     def __init__(
             self,
-            phase: Phase,
+            phase: AbstractPhase,
             variable_classes=(
                     px.Pixelization,
                     rg.Regularization

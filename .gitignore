@@ -6,7 +6,6 @@ pip-selfcheck.json
 bin/
 include/
 lib/
-data/
 .ipynb_checkpoints
 .cache
 .idea
@@ -43,3 +42,5 @@ test/integration/data_temp/
 autolens/lens/lens_fit/__pycache__
 test/integration/hyper/
 test/integration/image/
+test/data/
+test/unit/data/test_files/
