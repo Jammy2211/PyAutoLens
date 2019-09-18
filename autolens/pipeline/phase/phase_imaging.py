@@ -453,8 +453,8 @@ class PhaseImaging(PhaseData):
             self, tracer, hyper_image_sky, hyper_background_noise
         ):
 
-            return lens_fit.LensImagingFit.from_lens_imaging_data_and_tracer(
-                lens_imaging_data=self.lens_imaging_data,
+            return lens_fit.LensImagingFit.from_lens_data_and_tracer(
+                lens_data=self.lens_imaging_data,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
                 hyper_background_noise=hyper_background_noise,
