@@ -421,7 +421,7 @@ def plot_profile_image(
 ):
 
     profile_image = tracer.profile_image_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        grid=grid, bypass_decorator=False
     )
 
     array_plotters.plot_array(
@@ -491,7 +491,7 @@ def plot_convergence(
 ):
 
     convergence = tracer.convergence_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        grid=grid, bypass_decorator=False
     )
 
     array_plotters.plot_array(
@@ -558,7 +558,7 @@ def plot_potential(
 ):
 
     potential = tracer.potential_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        grid=grid, bypass_decorator=False
     )
 
     array_plotters.plot_array(

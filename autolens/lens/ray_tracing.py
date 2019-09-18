@@ -273,7 +273,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     @reshape_returned_sub_array
     def profile_image_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         return sum(
             self.profile_images_of_planes_from_grid(
@@ -285,7 +285,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         )
 
     def profile_images_of_planes_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False,
     ):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
@@ -324,7 +324,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     @reshape_returned_sub_array
     def convergence_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         return sum(
             [
@@ -340,7 +340,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     @reshape_returned_sub_array
     def potential_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         return sum(
             [
@@ -356,7 +356,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     @reshape_returned_grid
     def deflections_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         return sum(
             [
@@ -430,7 +430,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, blurring_grid, return_in_2d=True, bypass_decorator=False
+        self, grid, psf, blurring_grid, bypass_decorator=False
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a psf (see imaging.convolution).
@@ -444,7 +444,7 @@ class AbstractTracerData(AbstractTracerLensing):
         """
 
         profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         blurring_image = self.profile_image_from_grid(
@@ -487,7 +487,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, blurring_grid, return_in_2d=True, bypass_decorator=False
+        self, grid, convolver, blurring_grid,
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a convolver (see imaging.convolution).
@@ -747,7 +747,7 @@ class AbstractTracerData(AbstractTracerLensing):
         ]
 
     def galaxy_profile_image_dict_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid, return_in_2d=True, return_binned=True,
     ) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
@@ -773,7 +773,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return galaxy_profile_image_dict
 
     def galaxy_blurred_profile_image_dict_from_grid_and_convolver(
-        self, grid, convolver, blurring_grid, return_in_2d=True
+        self, grid, convolver, blurring_grid, return_in_2d=True,
     ) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
@@ -804,7 +804,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return galaxy_blurred_profile_image_dict
 
     def galaxy_profile_visibilities_dict_from_grid_and_transformer(
-        self, grid, transformer
+        self, grid, transformer,
     ) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images

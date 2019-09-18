@@ -685,7 +685,7 @@ class TestMassProfiles(object):
         ):
             galaxy = al.Galaxy(redshift=0.5)
 
-            deflections = galaxy.deflections_from_grid(grid=sub_grid_7x7)
+            deflections = galaxy.deflections_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
 
             assert (deflections == np.zeros(shape=(sub_grid_7x7.shape[0], 2))).all()
 
@@ -1492,11 +1492,11 @@ class TestMassProfiles(object):
             )
 
             convergence_via_calculation = galaxy.convergence_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+                grid=grid, bypass_decorator=False
             )
 
             convergence_via_jacobian = galaxy.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+                grid=grid, bypass_decorator=False
             )
 
             mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
@@ -1520,11 +1520,11 @@ class TestMassProfiles(object):
             )
 
             convergence_via_calculation = galaxy.convergence_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True
+                grid=grid
             )
 
             convergence_via_jacobian = galaxy.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True
+                grid=grid
             )
 
             mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)

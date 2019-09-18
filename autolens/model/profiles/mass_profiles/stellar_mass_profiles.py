@@ -61,7 +61,7 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def convergence_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid, bypass_decorator=False
     ):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
@@ -161,7 +161,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid, bypass_decorator=False
     ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
@@ -448,7 +448,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def convergence_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid, bypass_decorator=False
     ):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
@@ -471,7 +471,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid, bypass_decorator=False
     ):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
