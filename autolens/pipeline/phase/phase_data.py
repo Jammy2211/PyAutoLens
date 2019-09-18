@@ -6,7 +6,7 @@ from autolens.array import mask as msk
 from autolens.lens import lens_fit
 from autolens.model.inversion import pixelizations as pix
 from autolens.pipeline.phase import phase_extensions
-from autolens.pipeline.phase.phase import Phase
+from autolens.pipeline.phase.phase import AbstractPhase
 
 
 def default_mask_function(image):
@@ -23,7 +23,7 @@ def isinstance_or_prior(obj, cls):
     return False
 
 
-class PhaseData(Phase):
+class PhaseData(AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
@@ -58,8 +58,8 @@ class PhaseData(Phase):
         sub_size: int
             The side length of the subgrid
         pixel_scale_binned_cluster_grid : float or None
-            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned up to this \
-            higher pixel scale to speed up the KMeans clustering algorithm.
+            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned
+            up to this higher pixel scale to speed up the KMeans clustering algorithm. \
         """
 
         super(PhaseData, self).__init__(
@@ -80,18 +80,18 @@ class PhaseData(Phase):
         self.pixel_scale_binned_cluster_grid = pixel_scale_binned_cluster_grid
         self.inversion_uses_border = inversion_uses_border
 
-        if inversion_pixel_limit is not None:
-            self.inversion_pixel_limit = inversion_pixel_limit
-        else:
-            self.inversion_pixel_limit = af.conf.instance.general.get(
-                "inversion", "inversion_pixel_limit_overall", int
-            )
+        self.inversion_pixel_limit = inversion_pixel_limit or af.conf.instance.general.get(
+            "inversion",
+            "inversion_pixel_limit_overall",
+            int
+        )
+        self.hyper_noise_map_max = af.conf.instance.general.get(
+            "hyper",
+            "hyper_noise_map_max",
+            float
+        )
 
         self.galaxies = galaxies or []
-
-        self.hyper_noise_map_max = af.conf.instance.general.get(
-            "hyper", "hyper_noise_map_max", float
-        )
 
         self.is_hyper_phase = False
 
@@ -110,7 +110,6 @@ class PhaseData(Phase):
             for galaxy in self.galaxies:
                 if isinstance_or_prior(galaxy.pixelization, pix.VoronoiBrightnessImage):
                     return True
-
         return False
 
     def run(self, data, results=None, mask=None, positions=None):
@@ -164,7 +163,7 @@ class PhaseData(Phase):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        return NotImplementedError
+        raise NotImplementedError()
 
     def setup_phase_mask(self, data, mask):
 
@@ -226,12 +225,12 @@ class PhaseData(Phase):
 
                 if bin_up_factor == 1:
                     raise exc.DataException(
-                        "The pixelization "
-                        + str(self.pixelization)
-                        + " uses a KMeans clustering algorithm which uses"
-                          "a hyper model image to adapt the pixelization. This hyper model image must have more pixels"
-                          "than inversion pixels. Current, the inversion_pixel_limit exceeds the data-points in the image.\n\n"
-                          "To rectify this image, manually set the inversion pixel limit in the pipeline phases or change the inversion_pixel_limit_overall parameter in general.ini"
+                        f"The pixelization {self.pixelization} uses a KMeans clustering algorithm which uses "
+                        f"a hyper model image to adapt the pixelization. This hyper model image must have "
+                        f"more pixels than inversion pixels. Current, the inversion_pixel_limit exceeds the "
+                        f"data-points in the image.\n\n To rectify this image, manually set the inversion "
+                        f"pixel limit in the pipeline phases or change the inversion_pixel_limit_overall "
+                        f"parameter in general.ini "
                     )
 
                 bin_up_factor -= 1
@@ -243,21 +242,20 @@ class PhaseData(Phase):
 
     def preload_pixelization_grids_of_planes_from_results(self, results):
 
-        preload_pixelization_grids_of_planes = None
-
-        if results is not None:
-            if results.last is not None:
-                if hasattr(results.last, "hyper_combined"):
-                    if self.pixelization is not None:
-                        if type(self.pixelization) == type(results.last.pixelization):
-                            preload_pixelization_grids_of_planes = (
-                                results.last.hyper_combined.most_likely_pixelization_grids_of_planes
-                            )
-
         if self.is_hyper_phase:
-            preload_pixelization_grids_of_planes = None
+            return None
 
-        return preload_pixelization_grids_of_planes
+        if (
+                results is not None
+                and results.last is not None
+                and hasattr(results.last, "hyper_combined")
+                and self.pixelization is not None
+        ):
+            if self.pixelization.__class__ is results.last.pixelization.__class__:
+                return (
+                    results.last.hyper_combined.most_likely_pixelization_grids_of_planes
+                )
+        return None
 
     def extend_with_inversion_phase(self):
         return phase_extensions.InversionPhase(
@@ -265,124 +263,7 @@ class PhaseData(Phase):
         )
 
     # noinspection PyAbstractClass
-    class Analysis(Phase.Analysis):
-        def __init__(self, cosmology, results=None):
-
-            super(PhaseData.Analysis, self).__init__(
-                cosmology=cosmology, results=results
-            )
-
-            self.should_plot_image_plane_pix = af.conf.instance.visualize.get(
-                "figures", "plot_image_plane_adaptive_pixelization_grid", bool
-            )
-
-            self.plot_data_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_data_as_subplot", bool
-            )
-
-            self.plot_data_image = af.conf.instance.visualize.get(
-                "plots", "plot_data_image", bool
-            )
-
-            self.plot_data_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_data_noise_map", bool
-            )
-
-            self.plot_data_psf = af.conf.instance.visualize.get(
-                "plots", "plot_data_psf", bool
-            )
-
-            self.plot_data_signal_to_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_data_signal_to_noise_map", bool
-            )
-
-            self.plot_data_absolute_signal_to_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_data_absolute_signal_to_noise_map", bool
-            )
-
-            self.plot_data_potential_chi_squared_map = af.conf.instance.visualize.get(
-                "plots", "plot_data_potential_chi_squared_map", bool
-            )
-
-            self.plot_lens_fit_all_at_end_png = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_all_at_end_png", bool
-            )
-            self.plot_lens_fit_all_at_end_fits = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_all_at_end_fits", bool
-            )
-
-            self.plot_lens_fit_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_as_subplot", bool
-            )
-
-            self.plot_lens_fit_of_planes_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_of_planes_as_subplot", bool
-            )
-
-            self.plot_lens_fit_inversion_as_subplot = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_inversion_as_subplot", bool
-            )
-
-            self.plot_lens_fit_image = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_image", bool
-            )
-
-            self.plot_lens_fit_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_noise_map", bool
-            )
-
-            self.plot_lens_fit_signal_to_noise_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_signal_to_noise_map", bool
-            )
-
-            self.plot_lens_fit_model_image = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_model_image", bool
-            )
-
-            self.plot_lens_fit_residual_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_residual_map", bool
-            )
-
-            self.plot_lens_fit_normalized_residual_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_normalized_residual_map", bool
-            )
-
-            self.plot_lens_fit_chi_squared_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_chi_squared_map", bool
-            )
-
-            self.plot_lens_fit_contribution_maps = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_contribution_maps", bool
-            )
-
-            self.plot_lens_fit_pixelization_residual_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_pixelization_residual_map", bool
-            )
-
-            self.plot_lens_fit_pixelization_normalized_residuals = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_pixelization_normalized_residual_map", bool
-            )
-
-            self.plot_lens_fit_pixelization_chi_squared_map = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_pixelization_chi_squared_map", bool
-            )
-
-            self.plot_lens_fit_pixelization_regularization_weights = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_pixelization_regularization_weight_map", bool
-            )
-
-            self.plot_lens_fit_subtracted_images_of_planes = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_subtracted_images_of_planes", bool
-            )
-
-            self.plot_lens_fit_model_images_of_planes = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_model_images_of_planes", bool
-            )
-
-            self.plot_lens_fit_plane_images_of_planes = af.conf.instance.visualize.get(
-                "plots", "plot_lens_fit_plane_images_of_planes", bool
-            )
-
+    class Analysis(AbstractPhase.Analysis):
         @property
         def lens_data(self):
             raise NotImplementedError()
@@ -417,28 +298,7 @@ class PhaseData(Phase):
                         if pixelization.pixels > self.lens_data.inversion_pixel_limit:
                             raise exc.PixelizationException
 
-    class Result(Phase.Result):
-        def __init__(
-                self,
-                constant,
-                figure_of_merit,
-                previous_variable,
-                gaussian_tuples,
-                analysis,
-                optimizer,
-        ):
-            """
-            The result of a phase
-            """
-            super(PhaseData.Result, self).__init__(
-                analysis=analysis,
-                optimizer=optimizer,
-                constant=constant,
-                figure_of_merit=figure_of_merit,
-                previous_variable=previous_variable,
-                gaussian_tuples=gaussian_tuples,
-            )
-
+    class Result(AbstractPhase.Result):
         @property
         def most_likely_fit(self):
 

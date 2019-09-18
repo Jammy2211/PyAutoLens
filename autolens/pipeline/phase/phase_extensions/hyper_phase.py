@@ -1,13 +1,13 @@
 import copy
 
 import autofit as af
-from autolens.pipeline.phase.phase import Phase
+from autolens.pipeline.phase.phase import AbstractPhase
 
 
 class HyperPhase(object):
     def __init__(
             self,
-            phase: Phase,
+            phase: AbstractPhase,
             hyper_name: str
     ):
         """
@@ -38,7 +38,7 @@ class HyperPhase(object):
         """
         raise NotImplementedError()
 
-    def make_hyper_phase(self) -> Phase:
+    def make_hyper_phase(self) -> AbstractPhase:
         """
         Returns
         -------
