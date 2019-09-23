@@ -25,7 +25,7 @@ def make_pipeline(
             ),
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.mass_profiles.EllipticalIsothermal()
+                light=al.mass_profiles.SphericalIsothermal()
             )
         ),
         optimizer_class=optimizer_class,
