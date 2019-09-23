@@ -3,7 +3,7 @@ import numpy as np
 import autofit as af
 from autolens.model.galaxy import galaxy as g
 
-from autolens.array.mapping import reshape_returned_array
+from autolens.array import mapping
 
 
 class UVPlaneFit(af.DataFit):
@@ -155,7 +155,7 @@ class LensUVPlaneFit(UVPlaneFit):
             grid=self.grid, transformer=self.transformer, return_in_2d=False
         )
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_no_input
     def profile_subtracted_visibilities(self):
         return self.visibilities() - self.profile_visibilities()
 

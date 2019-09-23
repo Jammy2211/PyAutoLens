@@ -2,7 +2,7 @@ from autolens import exc
 from autolens.array import grids, scaled_array
 from autolens.array import mask as msk
 
-from autolens.array.mapping import reshape_returned_array
+from autolens.array import mapping
 
 
 class GalaxyData(object):
@@ -71,6 +71,7 @@ class GalaxyFitData(object):
             grid, sub-grid, etc.)
         """
         self.galaxy_data = galaxy_data
+        self.mapping = mask.mapping
         self.pixel_scale = galaxy_data.pixel_scale
 
         self._image_1d = mask.mapping.array_1d_from_array_2d(array_2d=galaxy_data.image)
@@ -131,16 +132,12 @@ class GalaxyFitData(object):
         self.use_deflections_y = use_deflections_y
         self.use_deflections_x = use_deflections_x
 
-    @property
-    def mapping(self):
-        return self.mask.mapping
-
-    @reshape_returned_array
-    def image(self, return_in_2d=True, return_masked=False):
+    @mapping.reshape_returned_array_no_input
+    def image(self):
         return self.galaxy_data.image
 
-    @reshape_returned_array
-    def noise_map(self, return_in_2d=True, return_masked=False):
+    @mapping.reshape_returned_array_no_input
+    def noise_map(self):
         return self.galaxy_data.noise_map
 
     def __array_finalize__(self, obj):

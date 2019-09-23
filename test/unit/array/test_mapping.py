@@ -615,15 +615,15 @@ class MockObject(object):
     def __init__(self, values):
         self.values = values
 
-    @al.mapping.reshape_returned_sub_array
+    @al.mapping.reshape_returned_sub_array_from_grid
     def array_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False,
     ):
         return self.values
 
-    @al.mapping.reshape_returned_grid
+    @al.mapping.reshape_returned_grid_from_grid
     def grid_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False,
     ):
         return self.values
 
@@ -646,7 +646,7 @@ class TestMappingArrayDecorator(object):
         assert (array_via_decorator == np.ones(4)).all()
 
         array_via_decorator = obj.array_from_grid(
-            grid=grid, values=np.ones(4), return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert (array_via_decorator == np.ones((2, 2))).all()
@@ -658,13 +658,13 @@ class TestMappingArrayDecorator(object):
         )
 
         array_via_decorator = obj.array_from_grid(
-            grid=grid, values=np.ones(16), return_in_2d=False, return_binned=False
+            grid=grid, return_in_2d=False, return_binned=False
         )
 
         assert (array_via_decorator == np.ones(16)).all()
 
         array_via_decorator = obj.array_from_grid(
-            grid=grid, values=np.ones(16), return_in_2d=True, return_binned=False
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         assert (array_via_decorator == np.ones((4, 4))).all()
@@ -728,7 +728,7 @@ class TestMappingArrayDecorator(object):
         assert (array_via_decorator == np.array([1.0, 2.0, 3.0, 4.0])).all()
 
         array_via_decorator = obj.array_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         assert (array_via_decorator == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
@@ -782,7 +782,7 @@ class TestMappingArrayDecorator(object):
         assert (array_via_decorator == np.ones(16)).all()
 
         array_via_decorator = obj.array_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         assert (array_via_decorator == np.ones((4, 4))).all()
@@ -888,7 +888,7 @@ class TestMappingGridDecorator(object):
         ).all()
 
         grid_via_decorator = obj.grid_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, return_in_2d=True, bypass_decorator=False
         )
 
         assert (
@@ -943,7 +943,7 @@ class TestMappingGridDecorator(object):
         assert (grid_via_decorator == np.ones((16, 2))).all()
 
         grid_via_decorator = obj.grid_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, return_in_2d=True, bypass_decorator=False
         )
 
         assert (grid_via_decorator == np.ones((4, 4, 2))).all()

@@ -149,7 +149,7 @@ class TestPointMass(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = point_mass.deflections_from_grid(grid=regular_with_interp)
+        interp_deflections = point_mass.deflections_from_grid(grid=regular_with_interp, bypass_decorator=True)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -575,13 +575,13 @@ class TestCoredPowerLaw(object):
         mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
-        true_deflections = cored_power_law.deflections_from_grid(grid=grid)
+        true_deflections = cored_power_law.deflections_from_grid(grid=grid, bypass_decorator=True)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
         interp_deflections = cored_power_law.deflections_from_grid(
-            grid=regular_with_interp
+            grid=regular_with_interp, bypass_decorator=True
         )
         assert np.max(true_deflections[:, 0] - interp_deflections[:, 0]) < 0.1
         assert np.max(true_deflections[:, 1] - interp_deflections[:, 1]) < 0.1
@@ -624,13 +624,13 @@ class TestCoredPowerLaw(object):
         mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
-        true_deflections = cored_power_law.deflections_from_grid(grid=grid)
+        true_deflections = cored_power_law.deflections_from_grid(grid=grid, bypass_decorator=True)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
         interp_deflections = cored_power_law.deflections_from_grid(
-            grid=regular_with_interp
+            grid=regular_with_interp, bypass_decorator=True
         )
         assert np.max(true_deflections[:, 0] - interp_deflections[:, 0]) < 0.1
         assert np.max(true_deflections[:, 1] - interp_deflections[:, 1]) < 0.1
@@ -1042,7 +1042,7 @@ class TestPowerLaw(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
+        interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp, bypass_decorator=True)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -1086,7 +1086,7 @@ class TestPowerLaw(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
+        interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp, bypass_decorator=True)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -1472,7 +1472,7 @@ class TestCoredIsothermal(object):
             pixel_scale_interpolation_grid=0.5
         )
         interp_deflections = cored_isothermal.deflections_from_grid(
-            grid=regular_with_interp
+            grid=regular_with_interp, bypass_decorator=True
         )
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -1517,7 +1517,7 @@ class TestCoredIsothermal(object):
             pixel_scale_interpolation_grid=0.5
         )
         interp_deflections = cored_isothermal.deflections_from_grid(
-            grid=regular_with_interp
+            grid=regular_with_interp, bypass_decorator=True
         )
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -1841,7 +1841,7 @@ class TestIsothermal(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
+        interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp, bypass_decorator=True)
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
@@ -1884,7 +1884,7 @@ class TestIsothermal(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
+        interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp, bypass_decorator=True)
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
         )
@@ -1985,13 +1985,13 @@ def test__reshape_decorators():
     isothermal = al.mass_profiles.SphericalIsothermal()
 
     convergence = isothermal.convergence_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True
+        grid=grid
     )
 
     assert convergence.shape == (3, 3)
 
     deflections = isothermal.deflections_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True
+        grid=grid
     )
 
     assert deflections.shape == (3, 3, 2)
