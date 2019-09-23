@@ -1559,6 +1559,92 @@ class TestAbstractTracerLensing(object):
                 padded_g0_image + padded_g1_image + padded_g2_image, 1.0e-4
             )
 
+        def test__galaxy_image_dict_from_grid(self, sub_grid_7x7):
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+            )
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+            )
+
+            g2 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=3.0),
+            )
+
+            g3 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=5.0),
+            )
+
+            g0_image_1d = g0.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False
+            )
+
+            g1_image_1d = g1.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False
+            )
+
+            g2_image_1d = g2.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False
+            )
+
+            g1_deflections = g1.deflections_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
+
+            source_grid_7x7 = sub_grid_7x7 - g1_deflections
+
+            g3_image_1d = g3.profile_image_from_grid(
+                grid=source_grid_7x7, return_in_2d=False
+            )
+
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+            )
+
+            image_1d_dict = tracer.galaxy_profile_image_dict_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False
+            )
+
+            assert (image_1d_dict[g0] == g0_image_1d).all()
+            assert (image_1d_dict[g1] == g1_image_1d).all()
+            assert (image_1d_dict[g2] == g2_image_1d).all()
+            assert (image_1d_dict[g3] == g3_image_1d).all()
+
+            g0_image_2d = g0.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True
+            )
+
+            g1_image_2d = g1.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True
+            )
+
+            g2_image_2d = g2.profile_image_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True
+            )
+
+            g3_image_2d = g3.profile_image_from_grid(
+                grid=source_grid_7x7, return_in_2d=True
+            )
+
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+            )
+
+            image_2d_dict = tracer.galaxy_profile_image_dict_from_grid(
+                grid=sub_grid_7x7, return_in_2d=True
+            )
+
+            assert (image_2d_dict[g0] == g0_image_2d).all()
+            assert (image_2d_dict[g1] == g1_image_2d).all()
+            assert (image_2d_dict[g2] == g2_image_2d).all()
+            assert (image_2d_dict[g3] == g3_image_2d).all()
+
     class TestConvergence:
         def test__galaxy_mass_sis__no_source_plane_convergence(self, sub_grid_7x7):
 
@@ -2151,6 +2237,7 @@ class TestAbstractTracerData(object):
             g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
@@ -2158,31 +2245,33 @@ class TestAbstractTracerData(object):
             )
 
             plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
-            plane_1 = al.Plane(redshift=0.5, galaxies=[g1])
-            plane_2 = al.Plane(redshift=1.0, galaxies=[al.Galaxy(redshift=1.0)])
+            plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
             blurred_image_1d_0 = plane_0.blurred_profile_image_from_grid_and_psf(
                 grid=sub_grid_7x7,
                 psf=psf_3x3,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=False,
+            )
+
+            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_7x7
             )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7,
+                grid=source_grid_7x7,
                 psf=psf_3x3,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=source_blurring_grid_7x7,
                 return_in_2d=False,
             )
 
-            tracer = al.Tracer(
-                planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15
-            )
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_image_1d = tracer.blurred_profile_image_from_grid_and_psf(
                 grid=sub_grid_7x7,
                 psf=psf_3x3,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=False,
             )
 
@@ -2197,7 +2286,7 @@ class TestAbstractTracerData(object):
             tracer_blurred_image_2d = tracer.blurred_profile_image_from_grid_and_psf(
                 grid=sub_grid_7x7,
                 psf=psf_3x3,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=True,
             )
 
@@ -2210,6 +2299,7 @@ class TestAbstractTracerData(object):
             g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
@@ -2217,42 +2307,52 @@ class TestAbstractTracerData(object):
             )
 
             plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
-            plane_1 = al.Plane(redshift=0.5, galaxies=[g1])
-            plane_2 = al.Plane(redshift=1.0, galaxies=[al.Galaxy(redshift=1.0)])
+            plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
             blurred_image_1d_0 = plane_0.blurred_profile_image_from_grid_and_psf(
                 grid=sub_grid_7x7,
                 psf=psf_3x3,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=False,
+            )
+
+            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_7x7
             )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7,
+                grid=source_grid_7x7,
                 psf=psf_3x3,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=source_blurring_grid_7x7,
                 return_in_2d=False,
             )
 
-            tracer = al.Tracer(
-                planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15
-            )
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_images_1d = tracer.blurred_profile_images_of_planes_from_grid_and_psf(
                 grid=sub_grid_7x7,
                 psf=psf_3x3,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=False,
             )
 
             assert (blurred_images_1d[0] == blurred_image_1d_0).all()
             assert (blurred_images_1d[1] == blurred_image_1d_1).all()
-            assert (blurred_images_1d[2] == np.zeros(blurred_image_1d_0.shape)).all()
+
+            blurred_image_1d = tracer.blurred_profile_image_from_grid_and_psf(
+                grid=sub_grid_7x7,
+                psf=psf_3x3,
+                blurring_grid=blurring_grid_7x7,
+                return_in_2d=False,
+            )
+
+            assert sum(blurred_images_1d) == pytest.approx(blurred_image_1d, 1.0e-4)
 
             blurred_images_2d = tracer.blurred_profile_images_of_planes_from_grid_and_psf(
                 grid=sub_grid_7x7,
                 psf=psf_3x3,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=True,
             )
 
@@ -2273,6 +2373,7 @@ class TestAbstractTracerData(object):
             g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
@@ -2280,31 +2381,33 @@ class TestAbstractTracerData(object):
             )
 
             plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
-            plane_1 = al.Plane(redshift=0.5, galaxies=[g1])
-            plane_2 = al.Plane(redshift=1.0, galaxies=[al.Galaxy(redshift=1.0)])
+            plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
             blurred_image_1d_0 = plane_0.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=False,
+            )
+
+            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_7x7
             )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_convolver(
-                grid=sub_grid_7x7,
-                convolver=convolver_7x7,
-                preload_blurring_grid=blurring_grid_7x7,
+                grid=source_grid_7x7,
+                psf=convolver_7x7,
+                blurring_grid=source_blurring_grid_7x7,
                 return_in_2d=False,
             )
 
-            tracer = al.Tracer(
-                planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15
-            )
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=False,
             )
 
@@ -2319,7 +2422,7 @@ class TestAbstractTracerData(object):
             tracer_blurred_image_2d = tracer.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=True,
             )
 
@@ -2332,6 +2435,7 @@ class TestAbstractTracerData(object):
             g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
@@ -2339,42 +2443,43 @@ class TestAbstractTracerData(object):
             )
 
             plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
-            plane_1 = al.Plane(redshift=0.5, galaxies=[g1])
-            plane_2 = al.Plane(redshift=1.0, galaxies=[al.Galaxy(redshift=1.0)])
+            plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
             blurred_image_1d_0 = plane_0.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=False,
+            )
+
+            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_7x7
             )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_convolver(
-                grid=sub_grid_7x7,
-                convolver=convolver_7x7,
-                preload_blurring_grid=blurring_grid_7x7,
+                grid=source_grid_7x7,
+                psf=convolver_7x7,
+                blurring_grid=source_blurring_grid_7x7,
                 return_in_2d=False,
             )
 
-            tracer = al.Tracer(
-                planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15
-            )
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_images_1d = tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=False,
             )
 
             assert (blurred_images_1d[0] == blurred_image_1d_0).all()
             assert (blurred_images_1d[1] == blurred_image_1d_1).all()
-            assert (blurred_images_1d[2] == np.zeros(blurred_image_1d_0.shape)).all()
 
             blurred_images_2d = tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
-                preload_blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_7x7,
                 return_in_2d=True,
             )
 
@@ -2387,6 +2492,130 @@ class TestAbstractTracerData(object):
 
             assert (blurred_images_2d[0] == blurred_image_2d_0).all()
             assert (blurred_images_2d[1] == blurred_image_2d_1).all()
+
+        def test__galaxy_blurred_image_dict_from_grid_and_convolver(
+            self, sub_grid_7x7, blurring_grid_7x7, convolver_7x7
+        ):
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+            )
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+            )
+
+            g2 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=3.0),
+            )
+
+            g3 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=5.0),
+            )
+
+            g0_blurred_image_1d = g0.blurred_profile_image_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
+                return_in_2d=False,
+            )
+
+            g1_blurred_image_1d = g1.blurred_profile_image_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
+                return_in_2d=False,
+            )
+
+            g2_blurred_image_1d = g2.blurred_profile_image_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
+                return_in_2d=False,
+            )
+
+            g1_deflections = g1.deflections_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
+
+            source_grid_7x7 = sub_grid_7x7 - g1_deflections
+
+            g1_blurring_deflections = g1.deflections_from_grid(
+                grid=blurring_grid_7x7, return_in_2d=False, return_binned=False
+            )
+
+            source_blurring_grid_7x7 = blurring_grid_7x7 - g1_blurring_deflections
+
+            g3_blurred_image_1d = g3.blurred_profile_image_from_grid_and_convolver(
+                grid=source_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=source_blurring_grid_7x7,
+                return_in_2d=False,
+            )
+
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+            )
+
+            blurred_image_1d_dict = tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
+                return_in_2d=False,
+            )
+
+            assert (blurred_image_1d_dict[g0] == g0_blurred_image_1d).all()
+            assert (blurred_image_1d_dict[g1] == g1_blurred_image_1d).all()
+            assert (blurred_image_1d_dict[g2] == g2_blurred_image_1d).all()
+            assert (blurred_image_1d_dict[g3] == g3_blurred_image_1d).all()
+
+            g0_blurred_image_2d = g0.blurred_profile_image_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
+                return_in_2d=True,
+            )
+
+            g1_blurred_image_2d = g1.blurred_profile_image_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
+                return_in_2d=True,
+            )
+
+            g2_blurred_image_2d = g2.blurred_profile_image_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
+                return_in_2d=True,
+            )
+
+            g3_blurred_image_2d = g3.blurred_profile_image_from_grid_and_convolver(
+                grid=source_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=source_blurring_grid_7x7,
+                return_in_2d=True,
+            )
+
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+            )
+
+            blurred_image_2d_dict = tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
+                return_in_2d=True,
+            )
+
+            assert (blurred_image_2d_dict[g0] == g0_blurred_image_2d).all()
+            assert (blurred_image_2d_dict[g1] == g1_blurred_image_2d).all()
+            assert (blurred_image_2d_dict[g2] == g2_blurred_image_2d).all()
+            assert (blurred_image_2d_dict[g3] == g3_blurred_image_2d).all()
 
     class TestUnmaskedBlurredProfileImages:
         def test__unmasked_images_of_tracer_planes_and_galaxies(self):
@@ -2581,6 +2810,65 @@ class TestAbstractTracerData(object):
 
             assert (visibilities[0] == visibilities_0).all()
             assert (visibilities[1] == visibilities_1).all()
+
+        def test__galaxy_visibilities_dict_from_grid_and_transformer(
+            self, sub_grid_7x7, transformer_7x7_7
+        ):
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+            )
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+            )
+
+            g2 = al.Galaxy(
+                redshift=0.5,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=3.0),
+            )
+
+            g3 = al.Galaxy(
+                redshift=1.0,
+                light_profile=al.light_profiles.EllipticalSersic(intensity=5.0),
+            )
+
+            g0_visibilities = g0.profile_visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            g1_visibilities = g1.profile_visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            g2_visibilities = g2.profile_visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            g1_deflections = g1.deflections_from_grid(
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
+            )
+
+            source_grid_7x7 = sub_grid_7x7 - g1_deflections
+
+            g3_visibilities = g3.profile_visibilities_from_grid_and_transformer(
+                grid=source_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+            )
+
+            visibilities_dict = tracer.galaxy_profile_visibilities_dict_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            assert (visibilities_dict[g0] == g0_visibilities).all()
+            assert (visibilities_dict[g1] == g1_visibilities).all()
+            assert (visibilities_dict[g2] == g2_visibilities).all()
+            assert (visibilities_dict[g3] == g3_visibilities).all()
 
     class TestPixelizationGridsOfPlanes:
         def test__x2_planes__traced_grid_setup_correctly(self, sub_grid_7x7):

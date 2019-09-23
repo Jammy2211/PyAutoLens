@@ -27,23 +27,23 @@ class PhaseData(AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
     def __init__(
-            self,
-            phase_name,
-            phase_tag,
-            phase_folders=tuple(),
-            galaxies=None,
-            optimizer_class=af.MultiNest,
-            cosmology=cosmo.Planck15,
-            sub_size=2,
-            signal_to_noise_limit=None,
-            positions_threshold=None,
-            mask_function=None,
-            inner_mask_radii=None,
-            pixel_scale_interpolation_grid=None,
-            pixel_scale_binned_cluster_grid=None,
-            inversion_uses_border=True,
-            inversion_pixel_limit=None,
-            auto_link_priors=False,
+        self,
+        phase_name,
+        phase_tag,
+        phase_folders=tuple(),
+        galaxies=None,
+        optimizer_class=af.MultiNest,
+        cosmology=cosmo.Planck15,
+        sub_size=2,
+        signal_to_noise_limit=None,
+        positions_threshold=None,
+        mask_function=None,
+        inner_mask_radii=None,
+        pixel_scale_interpolation_grid=None,
+        pixel_scale_binned_cluster_grid=None,
+        inversion_uses_border=True,
+        inversion_pixel_limit=None,
+        auto_link_priors=False,
     ):
 
         """
@@ -80,15 +80,14 @@ class PhaseData(AbstractPhase):
         self.pixel_scale_binned_cluster_grid = pixel_scale_binned_cluster_grid
         self.inversion_uses_border = inversion_uses_border
 
-        self.inversion_pixel_limit = inversion_pixel_limit or af.conf.instance.general.get(
-            "inversion",
-            "inversion_pixel_limit_overall",
-            int
+        self.inversion_pixel_limit = (
+            inversion_pixel_limit
+            or af.conf.instance.general.get(
+                "inversion", "inversion_pixel_limit_overall", int
+            )
         )
         self.hyper_noise_map_max = af.conf.instance.general.get(
-            "hyper",
-            "hyper_noise_map_max",
-            float
+            "hyper", "hyper_noise_map_max", float
         )
 
         self.galaxies = galaxies or []
@@ -246,10 +245,10 @@ class PhaseData(AbstractPhase):
             return None
 
         if (
-                results is not None
-                and results.last is not None
-                and hasattr(results.last, "hyper_combined")
-                and self.pixelization is not None
+            results is not None
+            and results.last is not None
+            and hasattr(results.last, "hyper_combined")
+            and self.pixelization is not None
         ):
             if self.pixelization.__class__ is results.last.pixelization.__class__:
                 return (
@@ -258,9 +257,7 @@ class PhaseData(AbstractPhase):
         return None
 
     def extend_with_inversion_phase(self):
-        return phase_extensions.InversionPhase(
-            phase=self
-        )
+        return phase_extensions.InversionPhase(phase=self)
 
     # noinspection PyAbstractClass
     class Analysis(AbstractPhase.Analysis):
@@ -271,8 +268,8 @@ class PhaseData(AbstractPhase):
         def check_positions_trace_within_threshold_via_tracer(self, tracer):
 
             if (
-                    self.lens_data.positions is not None
-                    and self.lens_data.positions_threshold is not None
+                self.lens_data.positions is not None
+                and self.lens_data.positions_threshold is not None
             ):
 
                 traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
@@ -285,7 +282,7 @@ class PhaseData(AbstractPhase):
                 )
 
                 if not fit.maximum_separation_within_threshold(
-                        self.lens_data.positions_threshold
+                    self.lens_data.positions_threshold
                 ):
                     raise exc.RayTracingException
 

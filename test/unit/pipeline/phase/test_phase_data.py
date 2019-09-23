@@ -386,7 +386,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
         assert analysis.lens_imaging_data.pixel_scale_interpolation_grid == 0.1
         assert hasattr(analysis.lens_imaging_data.grid, "interpolator")
-        assert hasattr(analysis.lens_imaging_data.preload_blurring_grid, "interpolator")
+        assert hasattr(analysis.lens_imaging_data.blurring_grid, "interpolator")
 
     def test__make_analysis__inversion_pixel_limit__is_input__used_in_analysis(
         self, phase_imaging_7x7, imaging_data_7x7, mask_7x7
@@ -1023,8 +1023,8 @@ class TestResult(object):
         mask = phase_imaging_7x7.mask_function(image=imaging_data_7x7.image, sub_size=2)
         lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_data, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_data, tracer=tracer
         )
 
         assert fit.likelihood == fit_figure_of_merit
@@ -1055,8 +1055,8 @@ class TestResult(object):
         mask = phase_imaging_7x7.mask_function(image=imaging_data_7x7.image, sub_size=2)
         lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_data,
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,

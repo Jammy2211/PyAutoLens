@@ -200,25 +200,34 @@ class TestImagePassing(object):
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
     def test_galaxy_image_dict(
-        self, lens_galaxy, source_galaxy, sub_grid_7x7, convolver_7x7
+        self, lens_galaxy, source_galaxy, sub_grid_7x7, convolver_7x7, blurring_grid_7x7
     ):
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         assert (
             len(
-                tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
-                    grid=sub_grid_7x7, convolver=convolver_7x7
+                tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
+                    grid=sub_grid_7x7,
+                    convolver=convolver_7x7,
+                    blurring_grid=blurring_grid_7x7,
                 )
             )
             == 2
         )
-        assert lens_galaxy in tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
-            grid=sub_grid_7x7, convolver=convolver_7x7
+        assert (
+            lens_galaxy
+            in tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
+            )
         )
         assert (
             source_galaxy
-            in tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
-                grid=sub_grid_7x7, convolver=convolver_7x7
+            in tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
+                grid=sub_grid_7x7,
+                convolver=convolver_7x7,
+                blurring_grid=blurring_grid_7x7,
             )
         )
 
@@ -508,8 +517,8 @@ class TestImagePassing(object):
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_imaging_data_7x7, tracer=tracer
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_imaging_data_7x7, tracer=tracer
         )
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
@@ -629,8 +638,8 @@ class TestHyperGalaxyPhase(object):
         mask = phase_imaging_7x7.mask_function(image=imaging_data_7x7.image, sub_size=2)
         lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImagingFit.from_lens_imaging_data_and_tracer(
-            lens_imaging_data=lens_data,
+        fit = al.LensImagingFit.from_lens_data_and_tracer(
+            lens_data=lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -648,7 +657,7 @@ class TestHyperGalaxyPhase(object):
             lens_data=lens_data,
             hyper_model_image_1d=fit.model_image(return_in_2d=False),
             hyper_galaxy_image_1d=fit.model_image(return_in_2d=False),
-            image_path=None
+            image_path=None,
         )
 
         fit_hyper = analysis.fit_for_hyper_galaxy(

@@ -21,7 +21,9 @@ class HyperGalaxyPhase(HyperPhase):
         self.include_noise_background = False
 
     class Analysis(af.Analysis):
-        def __init__(self, lens_data, hyper_model_image_1d, hyper_galaxy_image_1d, image_path):
+        def __init__(
+            self, lens_data, hyper_model_image_1d, hyper_galaxy_image_1d, image_path
+        ):
             """
             An analysis to fit the noise for a single galaxy image.
             Parameters
@@ -36,9 +38,7 @@ class HyperGalaxyPhase(HyperPhase):
 
             self.lens_data = lens_data
 
-            self.visualizer = visualizer.HyperGalaxyVisualizer(
-                image_path
-            )
+            self.visualizer = visualizer.HyperGalaxyVisualizer(image_path)
 
             self.hyper_model_image_1d = hyper_model_image_1d
             self.hyper_galaxy_image_1d = hyper_galaxy_image_1d
@@ -126,10 +126,7 @@ class HyperGalaxyPhase(HyperPhase):
                 return instance.hyper_background_noise
 
         def fit_for_hyper_galaxy(
-                self,
-                hyper_galaxy,
-                hyper_image_sky,
-                hyper_background_noise
+            self, hyper_galaxy, hyper_image_sky, hyper_background_noise
         ):
 
             image_1d = lens_imaging_fit.image_1d_from_lens_data_and_hyper_image_sky(
@@ -153,7 +150,7 @@ class HyperGalaxyPhase(HyperPhase):
             if self.lens_data.hyper_noise_map_max is not None:
                 noise_map_1d[
                     noise_map_1d > self.lens_data.hyper_noise_map_max
-                    ] = self.lens_data.hyper_noise_map_max
+                ] = self.lens_data.hyper_noise_map_max
 
             return lens_imaging_fit.ImagingFit(
                 image=image_1d,
@@ -263,7 +260,7 @@ class HyperGalaxyPhase(HyperPhase):
                     lens_data=lens_data,
                     hyper_model_image_1d=model_image_1d,
                     hyper_galaxy_image_1d=hyper_galaxy_image_1d_path_dict[path],
-                    image_path=optimizer.image_path
+                    image_path=optimizer.image_path,
                 )
 
                 result = optimizer.fit(analysis)
@@ -323,7 +320,7 @@ class HyperGalaxyBackgroundBothPhase(HyperGalaxyPhase):
 
 class HyperGalaxyAllPhase(HyperPhase):
     def __init__(
-            self, phase, include_sky_background=False, include_noise_background=False
+        self, phase, include_sky_background=False, include_noise_background=False
     ):
         super().__init__(phase=phase, hyper_name="hyper_galaxy")
         self.include_sky_background = include_sky_background

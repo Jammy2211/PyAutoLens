@@ -9,16 +9,8 @@ from .hyper_phase import HyperPhase
 
 # noinspection PyAbstractClass
 class VariableFixingHyperPhase(HyperPhase):
-    def __init__(
-            self,
-            phase: AbstractPhase,
-            hyper_name: str,
-            variable_classes=tuple()
-    ):
-        super().__init__(
-            phase=phase,
-            hyper_name=hyper_name
-        )
+    def __init__(self, phase: AbstractPhase, hyper_name: str, variable_classes=tuple()):
+        super().__init__(phase=phase, hyper_name=hyper_name)
         self.variable_classes = variable_classes
 
     def make_hyper_phase(self):
@@ -50,11 +42,7 @@ class VariableFixingHyperPhase(HyperPhase):
         phase = self.make_hyper_phase()
         phase.optimizer.variable = self.make_variable(results.last.constant)
 
-        return phase.run(
-            data,
-            results=results,
-            mask=results.last.mask
-        )
+        return phase.run(data, results=results, mask=results.last.mask)
 
 
 class InversionPhase(VariableFixingHyperPhase):
@@ -65,17 +53,12 @@ class InversionPhase(VariableFixingHyperPhase):
     """
 
     def __init__(
-            self,
-            phase: AbstractPhase,
-            variable_classes=(
-                    px.Pixelization,
-                    rg.Regularization
-            ),
+        self,
+        phase: AbstractPhase,
+        variable_classes=(px.Pixelization, rg.Regularization),
     ):
         super().__init__(
-            phase=phase,
-            variable_classes=variable_classes,
-            hyper_name="inversion"
+            phase=phase, variable_classes=variable_classes, hyper_name="inversion"
         )
 
 
@@ -89,11 +72,7 @@ class InversionBackgroundSkyPhase(InversionPhase):
     def __init__(self, phase: PhaseImaging):
         super().__init__(
             phase=phase,
-            variable_classes=(
-                px.Pixelization,
-                rg.Regularization,
-                hd.HyperImageSky
-            ),
+            variable_classes=(px.Pixelization, rg.Regularization, hd.HyperImageSky),
         )
 
 
