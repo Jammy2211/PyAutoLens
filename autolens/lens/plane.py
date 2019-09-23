@@ -714,8 +714,6 @@ class AbstractPlaneData(AbstractPlaneLensing):
         grid,
         psf,
         preload_blurring_grid=None,
-        return_in_2d=True,
-        bypass_decorator=False,
     ):
 
         profile_image = self.profile_image_from_grid(
@@ -742,7 +740,6 @@ class AbstractPlaneData(AbstractPlaneLensing):
         psf,
         preload_blurring_grid=None,
         return_in_2d=True,
-        bypass_decorator=False,
     ):
         return [
             galaxy.blurred_profile_image_from_grid_and_psf(
@@ -759,9 +756,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
         self,
         grid,
         convolver,
-        preload_blurring_grid=None,
-        return_in_2d=True,
-        bypass_decorator=False,
+        preload_blurring_grid=None
     ):
 
         if preload_blurring_grid is None:
@@ -795,7 +790,6 @@ class AbstractPlaneData(AbstractPlaneLensing):
         convolver,
         preload_blurring_grid=None,
         return_in_2d=True,
-        bypass_decorator=False,
     ):
         return [
             galaxy.blurred_profile_image_from_grid_and_convolver(
