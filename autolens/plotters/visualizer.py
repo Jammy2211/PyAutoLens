@@ -24,7 +24,7 @@ class AbstractVisualizer:
         self.image_path = image_path or ""
         try:
             os.makedirs(self.image_path)
-        except FileExistsError:
+        except (FileExistsError, FileNotFoundError):
             pass
         self.plot_units = af.conf.instance.visualize.get(
             "figures",
