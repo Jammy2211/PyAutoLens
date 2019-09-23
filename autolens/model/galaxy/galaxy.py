@@ -6,11 +6,7 @@ from skimage import measure
 import autofit as af
 from autolens import exc, dimensions as dim
 from autolens import text_util
-from autolens.array.mapping import (
-    reshape_returned_sub_array,
-    reshape_returned_array,
-    reshape_returned_grid,
-)
+from autolens.array import mapping
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -30,12 +26,12 @@ class Galaxy(af.ModelObject):
     """
 
     def __init__(
-            self,
-            redshift,
-            pixelization=None,
-            regularization=None,
-            hyper_galaxy=None,
-            **kwargs
+        self,
+        redshift,
+        pixelization=None,
+        regularization=None,
+        hyper_galaxy=None,
+        **kwargs
     ):
         """Class representing a galaxy, which is composed of attributes used for fitting hyper_galaxies (e.g. light profiles, \
         mass profiles, pixelizations, etc.).
@@ -157,9 +153,9 @@ class Galaxy(af.ModelObject):
             )
         )
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def profile_image_from_grid(
-            self, grid
+        self, grid,
     ):
         """Calculate the summed image of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
@@ -194,13 +190,13 @@ class Galaxy(af.ModelObject):
         else:
             return np.zeros((grid.shape[0],))
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_from_grid_and_psf
     def blurred_profile_image_from_grid_and_psf(
-            self, grid, psf, preload_blurring_grid=None
+        self, grid, psf, preload_blurring_grid=None,
     ):
 
         profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid
         )
 
         if preload_blurring_grid is None:
@@ -209,14 +205,14 @@ class Galaxy(af.ModelObject):
             )
 
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid, return_in_2d=True, return_binned=True
+            grid=preload_blurring_grid, return_binned=True
         )
 
         return psf.convolve(profile_image + blurring_image)
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_from_grid_and_convolver
     def blurred_profile_image_from_grid_and_convolver(
-            self, grid, convolver, preload_blurring_grid=None
+        self, grid, convolver, preload_blurring_grid=None,
     ):
 
         if convolver.blurring_mask is None:
@@ -253,12 +249,12 @@ class Galaxy(af.ModelObject):
         return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
 
     def luminosity_within_circle_in_units(
-            self,
-            radius: dim.Length,
-            unit_luminosity="eps",
-            exposure_time=None,
-            cosmology=cosmo.Planck15,
-            **kwargs
+        self,
+        radius: dim.Length,
+        unit_luminosity="eps",
+        exposure_time=None,
+        cosmology=cosmo.Planck15,
+        **kwargs
     ):
         """Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
 
@@ -271,8 +267,7 @@ class Galaxy(af.ModelObject):
         unit_luminosity : str
             The units the luminosity is returned in (eps | counts).
         exposure_time : float
-            The exposure time of the observation, which converts luminosity from electrons per second units to
-            counts.
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_light_profile:
             return sum(
@@ -291,12 +286,12 @@ class Galaxy(af.ModelObject):
         return None
 
     def luminosity_within_ellipse_in_units(
-            self,
-            major_axis: dim.Length,
-            unit_luminosity="eps",
-            exposure_time=None,
-            cosmology=cosmo.Planck15,
-            **kwargs
+        self,
+        major_axis: dim.Length,
+        unit_luminosity="eps",
+        exposure_time=None,
+        cosmology=cosmo.Planck15,
+        **kwargs
     ):
         """Compute the total luminosity of the galaxy's light profiles, within an
         ellipse of specified major axis. This is performed via integration of each
@@ -332,9 +327,9 @@ class Galaxy(af.ModelObject):
             )
         return None
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def convergence_from_grid(
-            self, grid
+        self, grid,
     ):
         """Compute the summed convergence of the galaxy's mass profiles using a grid \
         of Cartesian (y,x) coordinates.
@@ -350,6 +345,12 @@ class Galaxy(af.ModelObject):
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
         if self.has_mass_profile:
             return sum(
@@ -365,9 +366,9 @@ class Galaxy(af.ModelObject):
             )
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def potential_from_grid(
-            self, grid
+        self, grid,
     ):
         """Compute the summed gravitational potential of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
@@ -376,13 +377,19 @@ class Galaxy(af.ModelObject):
 
         See *profiles.mass_profiles* module for details of how this is performed.
 
-                The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on.
-                See *grids.reshape_returned_array* for a description of the output.
+                The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
+        *grids.reshape_returned_array* for a description of the output.
 
         Parameters
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
+        return_in_2d : bool
+            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
+        return_binned : bool
+            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
+            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
+            sub-grid.
         """
         if self.has_mass_profile:
             return sum(
@@ -398,9 +405,9 @@ class Galaxy(af.ModelObject):
             )
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_grid
+    @mapping.reshape_returned_grid_from_grid
     def deflections_from_grid(
-            self, grid
+        self, grid,
     ):
         """Compute the summed (y,x) deflection angles of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
@@ -428,9 +435,9 @@ class Galaxy(af.ModelObject):
             )
         return np.full((grid.shape[0], 2), 0.0)
 
-    @reshape_returned_grid
+    @mapping.reshape_returned_grid_from_grid
     def deflections_via_potential_from_grid(
-            self, grid
+        self, grid
     ):
         potential_2d = self.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -441,9 +448,9 @@ class Galaxy(af.ModelObject):
 
         return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def lensing_jacobian_a11_from_grid(
-            self, grid
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -452,9 +459,9 @@ class Galaxy(af.ModelObject):
 
         return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def lensing_jacobian_a12_from_grid(
-            self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -463,9 +470,9 @@ class Galaxy(af.ModelObject):
 
         return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def lensing_jacobian_a21_from_grid(
-            self, grid
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -474,9 +481,9 @@ class Galaxy(af.ModelObject):
 
         return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def lensing_jacobian_a22_from_grid(
-            self, grid
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -505,9 +512,9 @@ class Galaxy(af.ModelObject):
 
         return np.array([[a11, a12], [a21, a22]])
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def convergence_via_jacobian_from_grid(
-            self, grid
+        self, grid
     ):
 
         jacobian = self.lensing_jacobian_from_grid(
@@ -518,8 +525,8 @@ class Galaxy(af.ModelObject):
 
         return convergence
 
-    @reshape_returned_sub_array
-    def shear_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @mapping.reshape_returned_sub_array_from_grid
+    def shear_via_jacobian_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -530,9 +537,9 @@ class Galaxy(af.ModelObject):
 
         return (gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def tangential_eigen_value_from_grid(
-            self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         convergence = self.convergence_via_jacobian_from_grid(
@@ -545,8 +552,8 @@ class Galaxy(af.ModelObject):
 
         return 1 - convergence - shear
 
-    @reshape_returned_sub_array
-    def radial_eigen_value_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @mapping.reshape_returned_sub_array_from_grid
+    def radial_eigen_value_from_grid(self, grid):
 
         convergence = self.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -558,8 +565,8 @@ class Galaxy(af.ModelObject):
 
         return 1 - convergence + shear
 
-    @reshape_returned_sub_array
-    def magnification_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @mapping.reshape_returned_sub_array_from_grid
+    def magnification_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -641,12 +648,12 @@ class Galaxy(af.ModelObject):
         ]
 
     def mass_within_circle_in_units(
-            self,
-            radius: dim.Length,
-            redshift_source=None,
-            unit_mass="solMass",
-            cosmology=cosmo.Planck15,
-            **kwargs
+        self,
+        radius: dim.Length,
+        redshift_source=None,
+        unit_mass="solMass",
+        cosmology=cosmo.Planck15,
+        **kwargs
     ):
         """Compute the total angular mass of the galaxy's mass profiles within a \
         circle of specified radius.
@@ -678,12 +685,12 @@ class Galaxy(af.ModelObject):
         return None
 
     def mass_within_ellipse_in_units(
-            self,
-            major_axis: dim.Length,
-            redshift_source=None,
-            unit_mass="solMass",
-            cosmology=cosmo.Planck15,
-            **kwargs
+        self,
+        major_axis: dim.Length,
+        redshift_source=None,
+        unit_mass="solMass",
+        cosmology=cosmo.Planck15,
+        **kwargs
     ):
         """Compute the total angular mass of the galaxy's mass profiles within an \
         ellipse of specified major_axis.
@@ -713,7 +720,7 @@ class Galaxy(af.ModelObject):
         return None
 
     def einstein_radius_in_units(
-            self, unit_length="arcsec", cosmology=cosmo.Planck15, **kwargs
+        self, unit_length="arcsec", cosmology=cosmo.Planck15, **kwargs
     ):
         """The Einstein Radius of this galaxy, which is the sum of Einstein Radii of \
         its mass profiles.
@@ -736,11 +743,11 @@ class Galaxy(af.ModelObject):
         return None
 
     def einstein_mass_in_units(
-            self,
-            unit_mass="solMass",
-            redshift_source=None,
-            cosmology=cosmo.Planck15,
-            **kwargs
+        self,
+        unit_mass="solMass",
+        redshift_source=None,
+        cosmology=cosmo.Planck15,
+        **kwargs
     ):
         """The Einstein Mass of this galaxy, which is the sum of Einstein Radii of its
         mass profiles.
@@ -765,15 +772,15 @@ class Galaxy(af.ModelObject):
         return None
 
     def summarize_in_units(
-            self,
-            radii,
-            whitespace=80,
-            unit_length="arcsec",
-            unit_luminosity="eps",
-            unit_mass="solMass",
-            redshift_source=None,
-            cosmology=cosmo.Planck15,
-            **kwargs
+        self,
+        radii,
+        whitespace=80,
+        unit_length="arcsec",
+        unit_luminosity="eps",
+        unit_mass="solMass",
+        redshift_source=None,
+        cosmology=cosmo.Planck15,
+        **kwargs
     ):
 
         if hasattr(self, "name"):
@@ -818,15 +825,15 @@ class Galaxy(af.ModelObject):
         return summary
 
     def summarize_light_profiles_in_units(
-            self,
-            radii,
-            whitespace=80,
-            prefix="",
-            unit_length="arcsec",
-            unit_luminosity="eps",
-            redshift_source=None,
-            cosmology=cosmo.Planck15,
-            **kwargs
+        self,
+        radii,
+        whitespace=80,
+        prefix="",
+        unit_length="arcsec",
+        unit_luminosity="eps",
+        redshift_source=None,
+        cosmology=cosmo.Planck15,
+        **kwargs
     ):
 
         summary = ["\nGALAXY LIGHT\n\n"]
@@ -870,15 +877,15 @@ class Galaxy(af.ModelObject):
         return summary
 
     def summarize_mass_profiles_in_units(
-            self,
-            radii,
-            whitespace=80,
-            prefix="",
-            unit_length="arcsec",
-            unit_mass="solMass",
-            redshift_source=None,
-            cosmology=cosmo.Planck15,
-            **kwargs
+        self,
+        radii,
+        whitespace=80,
+        prefix="",
+        unit_length="arcsec",
+        unit_mass="solMass",
+        redshift_source=None,
+        cosmology=cosmo.Planck15,
+        **kwargs
     ):
 
         summary = ["\nGALAXY MASS\n\n"]
@@ -987,7 +994,7 @@ class HyperGalaxy(object):
         self.component_number = next(self._ids)
 
     def hyper_noise_map_from_hyper_images_and_noise_map(
-            self, hyper_model_image, hyper_galaxy_image, noise_map
+        self, hyper_model_image, hyper_galaxy_image, noise_map
     ):
         contribution_map = self.contribution_map_from_hyper_images(
             hyper_model_image=hyper_model_image, hyper_galaxy_image=hyper_galaxy_image
@@ -1039,9 +1046,9 @@ class HyperGalaxy(object):
     def __eq__(self, other):
         if isinstance(other, HyperGalaxy):
             return (
-                    self.contribution_factor == other.contribution_factor
-                    and self.noise_factor == other.noise_factor
-                    and self.noise_power == other.noise_power
+                self.contribution_factor == other.contribution_factor
+                and self.noise_factor == other.noise_factor
+                and self.noise_power == other.noise_power
             )
         return False
 

@@ -1645,7 +1645,7 @@ class TestInterpolator:
             centre=(0.0, 0.0), einstein_radius=1.0
         )
 
-        true_deflections = isothermal.deflections_from_grid(grid=grid)
+        true_deflections = isothermal.deflections_from_grid(grid=grid, bypass_decorator=True)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=1.0
@@ -1684,7 +1684,7 @@ class TestInterpolator:
             centre=(3.0, 3.0), einstein_radius=1.0
         )
 
-        true_deflections = isothermal.deflections_from_grid(grid=grid)
+        true_deflections = isothermal.deflections_from_grid(grid=grid, bypass_decorator=True)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=1.0
@@ -1723,7 +1723,7 @@ class TestInterpolator:
             centre=(3.0, 3.0), einstein_radius=1.0
         )
 
-        true_deflections = isothermal.deflections_from_grid(grid=grid)
+        true_deflections = isothermal.deflections_from_grid(grid=grid, bypass_decorator=True)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.2

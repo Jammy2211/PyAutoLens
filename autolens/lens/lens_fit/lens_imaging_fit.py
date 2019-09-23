@@ -3,7 +3,7 @@ import numpy as np
 import autofit as af
 from autolens.model.galaxy import galaxy as g
 
-from autolens.array.mapping import reshape_returned_array
+from autolens.array import mapping
 
 
 class ImagingFit(af.DataFit):
@@ -16,35 +16,35 @@ class ImagingFit(af.DataFit):
         self.mapping = mapping
         self.inversion = inversion
 
-    @reshape_returned_array
-    def image(self, return_in_2d=True, return_masked=True):
+    @mapping.reshape_returned_array_no_input
+    def image(self):
         return self._data
 
-    @reshape_returned_array
-    def noise_map(self, return_in_2d=True, return_masked=True):
+    @mapping.reshape_returned_array_no_input
+    def noise_map(self):
         return self._noise_map
 
     @property
     def mask(self):
         return self.mapping.mask
 
-    @reshape_returned_array
-    def signal_to_noise_map(self, return_in_2d=True, return_masked=True):
+    @mapping.reshape_returned_array_no_input
+    def signal_to_noise_map(self):
         return self._signal_to_noise_map
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_no_input
     def model_image(self, return_in_2d=True):
         return self._model_data
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_no_input
     def residual_map(self, return_in_2d=True):
         return self._residual_map
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_no_input
     def normalized_residual_map(self, return_in_2d=True):
         return self._normalized_residual_map
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_no_input
     def chi_squared_map(self, return_in_2d=True):
         return self._chi_squared_map
 
@@ -172,7 +172,7 @@ class LensImagingFit(ImagingFit):
             positions=lens_data.positions,
         )
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_no_input
     def blurred_profile_image(self, return_in_2d=True):
         return self.tracer.blurred_profile_image_from_grid_and_psf(
             grid=self.grid,
@@ -181,7 +181,7 @@ class LensImagingFit(ImagingFit):
             return_in_2d=False,
         )
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_no_input
     def profile_subtracted_image(self, return_in_2d=True):
         return self.image(return_in_2d=False) - self.blurred_profile_image(
             return_in_2d=False

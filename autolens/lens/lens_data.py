@@ -4,7 +4,7 @@ from autolens.array import grids
 from autolens.array import mask as msk
 from autolens.array.convolution import Convolver
 from autolens.array.fourier_transform import Transformer
-from autolens.array.mapping import reshape_returned_array
+from autolens.array import mapping
 
 
 class AbstractLensData(object):
@@ -164,20 +164,20 @@ class LensImagingData(AbstractLensData):
                 pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
 
-    @reshape_returned_array
-    def image(self, return_in_2d=True, return_masked=True):
+    @mapping.reshape_returned_array_no_input
+    def image(self):
         return self.imaging_data.image
 
-    @reshape_returned_array
-    def noise_map(self, return_in_2d=True, return_masked=True):
+    @mapping.reshape_returned_array_no_input
+    def noise_map(self):
         return self.imaging_data.noise_map
 
     @property
     def psf(self):
         return self.imaging_data.psf
 
-    @reshape_returned_array
-    def signal_to_noise_map(self, return_in_2d=True, return_masked=True):
+    @mapping.reshape_returned_array_no_input
+    def signal_to_noise_map(self):
         return self.imaging_data.image / self.imaging_data.noise_map
 
     def new_lens_imaging_data_with_modified_image(self, modified_image):
