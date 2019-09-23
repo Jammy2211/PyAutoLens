@@ -429,7 +429,7 @@ class TestGalaxyFitData(object):
             redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
-        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)
+        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=False)
         deflections_gal = np.asarray(
             [
                 galaxy_fit_data.grid.mapping.array_1d_binned_from_sub_array_1d(
@@ -524,7 +524,7 @@ class TestGalaxyFitData(object):
             redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
-        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)
+        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=False)
         deflections_gal = np.asarray(
             [
                 galaxy_fit_data.grid.mapping.array_1d_binned_from_sub_array_1d(

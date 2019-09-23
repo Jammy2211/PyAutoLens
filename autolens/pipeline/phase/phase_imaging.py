@@ -117,7 +117,13 @@ class PhaseImaging(PhaseData):
         """
         return image
 
-    def make_analysis(self, data, results=None, mask=None, positions=None):
+    def make_analysis(
+            self,
+            data,
+            results=None,
+            mask=None,
+            positions=None
+    ):
         """
         Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -215,46 +221,50 @@ class PhaseImaging(PhaseData):
         include_background_sky=False,
         include_background_noise=False,
     ):
+        hyper_phase_classes = []
 
         if hyper_galaxy:
             if not include_background_sky and not include_background_noise:
-                phase_hyper_galaxy = (
+                hyper_phase_classes.append(
                     phase_extensions.hyper_galaxy_phase.HyperGalaxyPhase
                 )
             elif include_background_sky and not include_background_noise:
-                phase_hyper_galaxy = (
+                hyper_phase_classes.append(
                     phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
                 )
             elif not include_background_sky and include_background_noise:
-                phase_hyper_galaxy = (
+                hyper_phase_classes.append(
                     phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
                 )
             else:
-                phase_hyper_galaxy = (
+                hyper_phase_classes.append(
                     phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
                 )
-        else:
-            phase_hyper_galaxy = None
 
         if inversion:
             if not include_background_sky and not include_background_noise:
-                phase_inversion = phase_extensions.InversionPhase
+                hyper_phase_classes.append(
+                    phase_extensions.InversionPhase
+                )
             elif include_background_sky and not include_background_noise:
-                phase_inversion = phase_extensions.InversionBackgroundSkyPhase
+                hyper_phase_classes.append(
+                    phase_extensions.InversionBackgroundSkyPhase
+                )
             elif not include_background_sky and include_background_noise:
-                phase_inversion = phase_extensions.InversionBackgroundNoisePhase
+                hyper_phase_classes.append(
+                    phase_extensions.InversionBackgroundNoisePhase
+                )
             else:
-                phase_inversion = phase_extensions.InversionBackgroundBothPhase
-        else:
-            phase_inversion = None
-
-        hyper_phase_classes = tuple(filter(None, (phase_hyper_galaxy, phase_inversion)))
+                hyper_phase_classes.append(
+                    phase_extensions.InversionBackgroundBothPhase
+                )
 
         if len(hyper_phase_classes) == 0:
             return self
         else:
             return phase_extensions.CombinedHyperPhase(
-                phase=self, hyper_phase_classes=hyper_phase_classes
+                phase=self,
+                hyper_phase_classes=hyper_phase_classes
             )
 
     # noinspection PyAbstractClass

@@ -1,6 +1,6 @@
 import autofit as af
 
-from autolens.array.mapping import reshape_returned_array
+from autolens.array import mapping
 
 
 class GalaxyFit(af.DataFit):
@@ -35,36 +35,36 @@ class GalaxyFit(af.DataFit):
     def grid(self):
         return self.galaxy_data.grid
 
-    @reshape_returned_array
-    def image(self, return_in_2d=True, return_masked=True):
+    @mapping.reshape_returned_array_no_input
+    def image(self):
         return self._data
 
-    @reshape_returned_array
-    def noise_map(self, return_in_2d=True, return_masked=True):
+    @mapping.reshape_returned_array_no_input
+    def noise_map(self):
         return self._noise_map
 
     @property
     def mask(self):
         return self.mapping.mask
 
-    @reshape_returned_array
-    def signal_to_noise_map(self, return_in_2d=True, return_masked=True):
+    @mapping.reshape_returned_array_no_input
+    def signal_to_noise_map(self):
         return self._signal_to_noise_map
 
-    @reshape_returned_array
-    def model_image(self, return_in_2d=True):
+    @mapping.reshape_returned_array_no_input
+    def model_image(self):
         return self._model_data
 
-    @reshape_returned_array
-    def residual_map(self, return_in_2d=True):
+    @mapping.reshape_returned_array_no_input
+    def residual_map(self):
         return self._residual_map
 
-    @reshape_returned_array
-    def normalized_residual_map(self, return_in_2d=True):
+    @mapping.reshape_returned_array_no_input
+    def normalized_residual_map(self):
         return self._normalized_residual_map
 
-    @reshape_returned_array
-    def chi_squared_map(self, return_in_2d=True):
+    @mapping.reshape_returned_array_no_input
+    def chi_squared_map(self):
         return self._chi_squared_map
 
     @property

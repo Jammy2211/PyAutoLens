@@ -2,8 +2,8 @@ import numpy as np
 import scipy.spatial
 
 from autolens import exc
-from autolens.array import scaled_array
 from autolens.array import grids
+from autolens.array import scaled_array
 from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 
@@ -49,7 +49,7 @@ class Rectangular(Pixelization):
 
     class Geometry(scaled_array.RectangularArrayGeometry):
         def __init__(
-            self, shape, pixel_scales, origin, pixel_neighbors, pixel_neighbors_size
+                self, shape, pixel_scales, origin, pixel_neighbors, pixel_neighbors_size
         ):
             """The geometry of a rectangular grid.
 
@@ -115,11 +115,11 @@ class Rectangular(Pixelization):
         return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
 
     def mapper_from_grid_and_pixelization_grid(
-        self,
-        grid,
-        pixelization_grid=None,
-        inversion_uses_border=False,
-        hyper_image=None,
+            self,
+            grid,
+            pixelization_grid=None,
+            inversion_uses_border=False,
+            hyper_image=None,
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
@@ -154,7 +154,7 @@ class Rectangular(Pixelization):
         )
 
     def pixelization_grid_from_grid(
-        self, grid, cluster_grid=None, hyper_image=None, seed=1
+            self, grid, cluster_grid=None, hyper_image=None, seed=1
     ):
         return None
 
@@ -171,12 +171,12 @@ class Voronoi(Pixelization):
 
     class Geometry(scaled_array.ArrayGeometry):
         def __init__(
-            self,
-            shape_arcsec,
-            pixel_centres,
-            origin,
-            pixel_neighbors,
-            pixel_neighbors_size,
+                self,
+                shape_arcsec,
+                pixel_centres,
+                origin,
+                pixel_neighbors,
+                pixel_neighbors_size,
         ):
             """The geometry of a Voronoi pixelization.
 
@@ -202,7 +202,7 @@ class Voronoi(Pixelization):
             self.pixel_neighbors_size = pixel_neighbors_size.astype("int")
 
     def geometry_from_grid(
-        self, grid, pixel_centres, pixel_neighbors, pixel_neighbors_size, buffer=1e-8
+            self, grid, pixel_centres, pixel_neighbors, pixel_neighbors_size, buffer=1e-8
     ):
         """Determine the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
         grid plus a small buffer.
@@ -269,11 +269,11 @@ class Voronoi(Pixelization):
         )
 
     def mapper_from_grid_and_pixelization_grid(
-        self,
-        grid,
-        pixelization_grid=None,
-        inversion_uses_border=False,
-        hyper_image=None,
+            self,
+            grid,
+            pixelization_grid=None,
+            inversion_uses_border=False,
+            hyper_image=None,
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
@@ -348,9 +348,8 @@ class VoronoiMagnification(Voronoi):
         self.pixels = self.shape[0] * self.shape[1]
 
     def pixelization_grid_from_grid(
-        self, grid, cluster_grid=None, hyper_image=None, seed=1
+            self, grid, cluster_grid=None, hyper_image=None, seed=1
     ):
-
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
@@ -378,17 +377,15 @@ class VoronoiBrightnessImage(Voronoi):
         self.weight_power = weight_power
 
     def cluster_weight_map_from_hyper_image(self, hyper_image):
-
         cluster_weight_map = (hyper_image - np.min(hyper_image)) / (
-            np.max(hyper_image) - np.min(hyper_image)
+                np.max(hyper_image) - np.min(hyper_image)
         ) + self.weight_floor * np.max(hyper_image)
 
         return np.power(cluster_weight_map, self.weight_power)
 
     def pixelization_grid_from_grid(
-        self, grid, cluster_grid=None, hyper_image=None, seed=0
+            self, grid, hyper_image, cluster_grid=None, seed=0
     ):
-
         cluster_weight_map = self.cluster_weight_map_from_hyper_image(
             hyper_image=hyper_image
         )
