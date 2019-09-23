@@ -96,7 +96,7 @@ def make_pipeline(
     )
 
     return al.PipelineImaging(
-        name, phase6, phase7, hyper_mode=False
+        name, phase1, phase6, phase7, hyper_mode=False
     )
 
 
