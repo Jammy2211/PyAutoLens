@@ -579,7 +579,6 @@ def make_phase_data(mask_function_7x7):
     return al.PhaseData(
         optimizer_class=mock_pipeline.MockNLO,
         phase_tag="",
-        mask_function=mask_function_7x7,
         phase_name="test_phase",
     )
 
