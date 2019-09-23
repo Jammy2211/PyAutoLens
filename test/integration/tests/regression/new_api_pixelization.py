@@ -19,14 +19,17 @@ def make_pipeline(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)
+            lens=al.GalaxyModel(
+                redshift=0.5,
+                light=al.light_profiles.SphericalExponential
+            )
         ),
         optimizer_class=optimizer_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
-    phase1.optimizer.n_live_points = 30
-    phase1.optimizer.sampling_efficiency = 0.3
+    phase1.optimizer.n_live_points = 20
+    phase1.optimizer.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
