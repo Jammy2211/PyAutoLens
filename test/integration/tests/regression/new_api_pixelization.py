@@ -20,19 +20,19 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             source=al.GalaxyModel(
-                redshift=0.5,
+                redshift=1.0,
                 light=al.light_profiles.SphericalExponential
             ),
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.mass_profiles.SphericalExponential
+                light=al.mass_profiles.EllipticalIsothermal()
             )
         ),
         optimizer_class=optimizer_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
-    phase1.optimizer.n_live_points = 25
+    phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
