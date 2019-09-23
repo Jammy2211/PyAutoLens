@@ -235,9 +235,7 @@ class PhaseImaging(PhaseData):
         )
 
         modified_image = self.modify_image(
-            image=mask.mapping.scaled_array_2d_from_array_1d(
-                array_1d=data.image
-            ),
+            image=data.image,
             results=results,
         )
 
