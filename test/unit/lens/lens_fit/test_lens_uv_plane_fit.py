@@ -17,8 +17,8 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-            lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+        fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
+            lens_data=lens_uv_plane_data_7, tracer=tracer
         )
 
         assert fit.total_inversions == 0
@@ -31,8 +31,8 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-            lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+        fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
+            lens_data=lens_uv_plane_data_7, tracer=tracer
         )
 
         assert fit.total_inversions == 1
@@ -57,8 +57,8 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-            lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+        fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
+            lens_data=lens_uv_plane_data_7, tracer=tracer
         )
 
         assert fit.total_inversions == 3
@@ -103,8 +103,8 @@ class TestLikelihood:
         g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-            lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+        fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
+            lens_data=lens_uv_plane_data_7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -181,8 +181,8 @@ class TestLikelihood:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-            lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+        fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
+            lens_data=lens_uv_plane_data_7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -278,8 +278,8 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-            lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+        fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
+            lens_data=lens_uv_plane_data_7, tracer=tracer
         )
 
         assert lens_uv_plane_data_7.noise_map(return_x2=True) == pytest.approx(
@@ -365,13 +365,13 @@ class TestCompareToManualProfilesOnly:
     #         grid=lens_uv_plane_data_7.grid, return_in_2d=False
     #     )
     #     traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-    #         grid=lens_uv_plane_data_7.preload_blurring_grid, return_in_2d=False
+    #         grid=lens_uv_plane_data_7.blurring_grid, return_in_2d=False
     #     )
     #
     #     g0_profile_image_1d = g0.profile_image_from_grid(
     #         grid=traced_grids_of_planes[0], return_in_2d=False, return_binned=True
     #     )
-    #     g0_image_plane_blurring_image_1d = g0.profile_image_from_grid(
+    #     g0_blurring_image_1d = g0.profile_image_from_grid(
     #         grid=traced_blurring_grids_of_planes[0],
     #         return_in_2d=False,
     #         return_binned=True,
@@ -379,13 +379,13 @@ class TestCompareToManualProfilesOnly:
     #
     #     g0_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
     #         image_array=g0_profile_image_1d,
-    #         blurring_array=g0_image_plane_blurring_image_1d,
+    #         blurring_array=g0_blurring_image_1d,
     #     )
     #
     #     g1_profile_image_1d = g1.profile_image_from_grid(
     #         grid=traced_grids_of_planes[1], return_in_2d=False, return_binned=True
     #     )
-    #     g1_image_plane_blurring_image_1d = g1.profile_image_from_grid(
+    #     g1_blurring_image_1d = g1.profile_image_from_grid(
     #         grid=traced_blurring_grids_of_planes[1],
     #         return_in_2d=False,
     #         return_binned=True,
@@ -393,7 +393,7 @@ class TestCompareToManualProfilesOnly:
     #
     #     g1_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
     #         image_array=g1_profile_image_1d,
-    #         blurring_array=g1_image_plane_blurring_image_1d,
+    #         blurring_array=g1_blurring_image_1d,
     #     )
     #
     #     assert fit.galaxy_model_visibilities_dict[g0] == pytest.approx(
@@ -1011,31 +1011,31 @@ class TestCompareToManualProfilesOnly:
 #             grid=lens_uv_plane_data_7.grid
 #         )
 #         traced_blurring_grids = tracer.traced_grids_of_planes_from_grid(
-#             grid=lens_uv_plane_data_7.preload_blurring_grid
+#             grid=lens_uv_plane_data_7.blurring_grid
 #         )
 #
 #         g0_profile_image_1d = g0.profile_image_from_grid(
 #             grid=traced_grids[0], return_in_2d=False, return_binned=True
 #         )
-#         g0_image_plane_blurring_image_1d = g0.profile_image_from_grid(
+#         g0_blurring_image_1d = g0.profile_image_from_grid(
 #             grid=traced_blurring_grids[0], return_in_2d=False, return_binned=False
 #         )
 #
 #         g0_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
 #             image_array=g0_profile_image_1d,
-#             blurring_array=g0_image_plane_blurring_image_1d,
+#             blurring_array=g0_blurring_image_1d,
 #         )
 #
 #         g1_profile_image_1d = g1.profile_image_from_grid(
 #             grid=traced_grids[1], return_in_2d=False, return_binned=True
 #         )
-#         g1_image_plane_blurring_image_1d = g1.profile_image_from_grid(
+#         g1_blurring_image_1d = g1.profile_image_from_grid(
 #             grid=traced_blurring_grids[1], return_in_2d=False, return_binned=False
 #         )
 #
 #         g1_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
 #             image_array=g1_profile_image_1d,
-#             blurring_array=g1_image_plane_blurring_image_1d,
+#             blurring_array=g1_blurring_image_1d,
 #         )
 #
 #         blurred_profile_image_1d = (

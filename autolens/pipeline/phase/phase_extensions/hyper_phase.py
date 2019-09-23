@@ -5,11 +5,7 @@ from autolens.pipeline.phase.phase import AbstractPhase
 
 
 class HyperPhase(object):
-    def __init__(
-            self,
-            phase: AbstractPhase,
-            hyper_name: str
-    ):
+    def __init__(self, phase: AbstractPhase, hyper_name: str):
         """
         Abstract HyperPhase. Wraps a phase, performing that phase before performing the action
         specified by the run_hyper.

@@ -6,9 +6,7 @@ from autolens.pipeline.plotters import phase_plotters, hyper_plotters
 
 
 def setting(section, name):
-    return af.conf.instance.visualize.get(
-        section, name, bool
-    )
+    return af.conf.instance.visualize.get(section, name, bool)
 
 
 def plot_setting(name):
@@ -27,14 +25,16 @@ class AbstractVisualizer:
         except (FileExistsError, FileNotFoundError):
             pass
         self.plot_units = af.conf.instance.visualize.get(
-            "figures",
-            "plot_units",
-            str
+            "figures", "plot_units", str
         ).strip()
         self.should_plot_mask = figure_setting("plot_mask_on_images")
         self.zoom_around_mask = figure_setting("zoom_around_mask_of_images")
-        self.plot_ray_tracing_all_at_end_png = plot_setting("plot_ray_tracing_all_at_end_png")
-        self.plot_ray_tracing_all_at_end_fits = plot_setting("plot_ray_tracing_all_at_end_fits")
+        self.plot_ray_tracing_all_at_end_png = plot_setting(
+            "plot_ray_tracing_all_at_end_png"
+        )
+        self.plot_ray_tracing_all_at_end_fits = plot_setting(
+            "plot_ray_tracing_all_at_end_fits"
+        )
 
 
 class SubPlotVisualizer(AbstractVisualizer):
@@ -50,20 +50,22 @@ class SubPlotVisualizer(AbstractVisualizer):
 class PhaseGalaxyVisualizer(AbstractVisualizer):
     def __init__(self, image_path):
         super().__init__(image_path)
-        self.plot_galaxy_fit_all_at_end_png = plot_setting("plot_galaxy_fit_all_at_end_png")
-        self.plot_galaxy_fit_all_at_end_fits = plot_setting("plot_galaxy_fit_all_at_end_fits")
+        self.plot_galaxy_fit_all_at_end_png = plot_setting(
+            "plot_galaxy_fit_all_at_end_png"
+        )
+        self.plot_galaxy_fit_all_at_end_fits = plot_setting(
+            "plot_galaxy_fit_all_at_end_fits"
+        )
         self.plot_galaxy_fit_as_subplot = plot_setting("plot_galaxy_fit_as_subplot")
         self.plot_galaxy_fit_image = plot_setting("plot_galaxy_fit_image")
         self.plot_galaxy_fit_noise_map = plot_setting("plot_galaxy_fit_noise_map")
         self.plot_galaxy_fit_model_image = plot_setting("plot_galaxy_fit_model_image")
         self.plot_galaxy_fit_residual_map = plot_setting("plot_galaxy_fit_residual_map")
-        self.plot_galaxy_fit_chi_squared_map = plot_setting("plot_galaxy_fit_chi_squared_map")
+        self.plot_galaxy_fit_chi_squared_map = plot_setting(
+            "plot_galaxy_fit_chi_squared_map"
+        )
 
-    def plot_galaxy_fit_subplot(
-            self,
-            fit,
-            path_suffix=""
-    ):
+    def plot_galaxy_fit_subplot(self, fit, path_suffix=""):
         if self.plot_galaxy_fit_as_subplot:
             galaxy_fit_plotters.plot_fit_subplot(
                 fit=fit,
@@ -75,11 +77,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
             )
 
     def plot_fit_individuals(
-            self,
-            fit,
-            plot_all=False,
-            image_format="png",
-            path_suffix=""
+        self, fit, plot_all=False, image_format="png", path_suffix=""
     ):
         if plot_all:
             should_plot_image = True
@@ -113,59 +111,97 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         super().__init__(image_path)
         self.lens_imaging_data = lens_imaging_data
 
-        self.should_plot_image_plane_pix = figure_setting("plot_image_plane_adaptive_pixelization_grid")
+        self.should_plot_image_plane_pix = figure_setting(
+            "plot_image_plane_adaptive_pixelization_grid"
+        )
         self.plot_data_as_subplot = plot_setting("plot_data_as_subplot")
         self.plot_data_image = plot_setting("plot_data_image")
         self.plot_data_noise_map = plot_setting("plot_data_noise_map")
         self.plot_data_psf = plot_setting("plot_data_psf")
 
-        self.plot_data_signal_to_noise_map = plot_setting("plot_data_signal_to_noise_map")
-        self.plot_data_absolute_signal_to_noise_map = plot_setting("plot_data_absolute_signal_to_noise_map")
-        self.plot_data_potential_chi_squared_map = plot_setting("plot_data_potential_chi_squared_map")
+        self.plot_data_signal_to_noise_map = plot_setting(
+            "plot_data_signal_to_noise_map"
+        )
+        self.plot_data_absolute_signal_to_noise_map = plot_setting(
+            "plot_data_absolute_signal_to_noise_map"
+        )
+        self.plot_data_potential_chi_squared_map = plot_setting(
+            "plot_data_potential_chi_squared_map"
+        )
         self.plot_lens_fit_all_at_end_png = plot_setting("plot_lens_fit_all_at_end_png")
-        self.plot_lens_fit_all_at_end_fits = plot_setting("plot_lens_fit_all_at_end_fits")
+        self.plot_lens_fit_all_at_end_fits = plot_setting(
+            "plot_lens_fit_all_at_end_fits"
+        )
         self.plot_lens_fit_as_subplot = plot_setting("plot_lens_fit_as_subplot")
-        self.plot_lens_fit_of_planes_as_subplot = plot_setting("plot_lens_fit_of_planes_as_subplot")
-        self.plot_lens_fit_inversion_as_subplot = plot_setting("plot_lens_fit_inversion_as_subplot")
+        self.plot_lens_fit_of_planes_as_subplot = plot_setting(
+            "plot_lens_fit_of_planes_as_subplot"
+        )
+        self.plot_lens_fit_inversion_as_subplot = plot_setting(
+            "plot_lens_fit_inversion_as_subplot"
+        )
         self.plot_lens_fit_image = plot_setting("plot_lens_fit_image")
         self.plot_lens_fit_noise_map = plot_setting("plot_lens_fit_noise_map")
-        self.plot_lens_fit_signal_to_noise_map = plot_setting("plot_lens_fit_signal_to_noise_map")
+        self.plot_lens_fit_signal_to_noise_map = plot_setting(
+            "plot_lens_fit_signal_to_noise_map"
+        )
         self.plot_lens_fit_model_image = plot_setting("plot_lens_fit_model_image")
         self.plot_lens_fit_residual_map = plot_setting("plot_lens_fit_residual_map")
-        self.plot_lens_fit_normalized_residual_map = plot_setting("plot_lens_fit_normalized_residual_map")
-        self.plot_lens_fit_chi_squared_map = plot_setting("plot_lens_fit_chi_squared_map")
-        self.plot_lens_fit_contribution_maps = plot_setting("plot_lens_fit_contribution_maps")
-        self.plot_lens_fit_pixelization_residual_map = plot_setting("plot_lens_fit_pixelization_residual_map")
+        self.plot_lens_fit_normalized_residual_map = plot_setting(
+            "plot_lens_fit_normalized_residual_map"
+        )
+        self.plot_lens_fit_chi_squared_map = plot_setting(
+            "plot_lens_fit_chi_squared_map"
+        )
+        self.plot_lens_fit_contribution_maps = plot_setting(
+            "plot_lens_fit_contribution_maps"
+        )
+        self.plot_lens_fit_pixelization_residual_map = plot_setting(
+            "plot_lens_fit_pixelization_residual_map"
+        )
         self.plot_lens_fit_pixelization_normalized_residuals = plot_setting(
-            "plot_lens_fit_pixelization_normalized_residual_map")
+            "plot_lens_fit_pixelization_normalized_residual_map"
+        )
         self.plot_lens_fit_pixelization_chi_squared_map = plot_setting(
-            "plot_lens_fit_pixelization_chi_squared_map")
+            "plot_lens_fit_pixelization_chi_squared_map"
+        )
         self.plot_lens_fit_pixelization_regularization_weights = plot_setting(
-            "plot_lens_fit_pixelization_regularization_weight_map")
+            "plot_lens_fit_pixelization_regularization_weight_map"
+        )
         self.plot_lens_fit_subtracted_images_of_planes = plot_setting(
-            "plot_lens_fit_subtracted_images_of_planes")
-        self.plot_lens_fit_model_images_of_planes = plot_setting("plot_lens_fit_model_images_of_planes")
-        self.plot_lens_fit_plane_images_of_planes = plot_setting("plot_lens_fit_plane_images_of_planes")
+            "plot_lens_fit_subtracted_images_of_planes"
+        )
+        self.plot_lens_fit_model_images_of_planes = plot_setting(
+            "plot_lens_fit_model_images_of_planes"
+        )
+        self.plot_lens_fit_plane_images_of_planes = plot_setting(
+            "plot_lens_fit_plane_images_of_planes"
+        )
         self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
         self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
-        self.plot_binned_hyper_galaxy_images = plot_setting("plot_binned_hyper_galaxy_images")
+        self.plot_binned_hyper_galaxy_images = plot_setting(
+            "plot_binned_hyper_galaxy_images"
+        )
         self.extract_array_from_mask = figure_setting("extract_images_from_mask")
         self.should_plot_positions = figure_setting("plot_positions_on_images")
 
         self.plot_ray_tracing_as_subplot = plot_setting("plot_ray_tracing_as_subplot")
-        self.plot_ray_tracing_profile_image = plot_setting("plot_ray_tracing_profile_image")
-        self.plot_ray_tracing_source_plane = plot_setting("plot_ray_tracing_source_plane_image")
+        self.plot_ray_tracing_profile_image = plot_setting(
+            "plot_ray_tracing_profile_image"
+        )
+        self.plot_ray_tracing_source_plane = plot_setting(
+            "plot_ray_tracing_source_plane_image"
+        )
         self.plot_ray_tracing_convergence = plot_setting("plot_ray_tracing_convergence")
         self.plot_ray_tracing_potential = plot_setting("plot_ray_tracing_potential")
         self.plot_ray_tracing_deflections = plot_setting("plot_ray_tracing_deflections")
-        self.plot_ray_tracing_magnification = plot_setting("plot_ray_tracing_magnification")
+        self.plot_ray_tracing_magnification = plot_setting(
+            "plot_ray_tracing_magnification"
+        )
 
-    def plot_ray_tracing(
-            self,
-            tracer,
-            during_analysis,
-    ):
-        positions = self.lens_imaging_data.positions if self.should_plot_positions else None
+    def plot_ray_tracing(self, tracer, during_analysis):
+        positions = (
+            self.lens_imaging_data.positions if self.should_plot_positions else None
+        )
         mask = self.lens_imaging_data.mask if self.should_plot_mask else None
         phase_plotters.plot_ray_tracing_for_phase(
             tracer=tracer,
@@ -188,12 +224,10 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             subplot_path=self.subplot_path,
         )
 
-    def plot_lens_imaging(
-            self,
-            fit,
-            during_analysis
-    ):
-        positions = self.lens_imaging_data.positions if self.should_plot_positions else None
+    def plot_lens_imaging(self, fit, during_analysis):
+        positions = (
+            self.lens_imaging_data.positions if self.should_plot_positions else None
+        )
         phase_plotters.plot_lens_imaging_fit_for_phase(
             fit=fit,
             during_analysis=during_analysis,
@@ -230,7 +264,9 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
 
     def plot_imaging(self):
         mask = self.lens_imaging_data.mask if self.should_plot_mask else None
-        positions = self.lens_imaging_data.positions if self.should_plot_positions else None
+        positions = (
+            self.lens_imaging_data.positions if self.should_plot_positions else None
+        )
 
         phase_plotters.plot_imaging_for_phase(
             imaging_data=self.lens_imaging_data.imaging_data,
@@ -250,10 +286,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             subplot_path=self.subplot_path,
         )
 
-    def plot_hyper_images(
-            self,
-            last_results
-    ):
+    def plot_hyper_images(self, last_results):
         mask = self.lens_imaging_data.mask
         if self.should_plot_mask and mask is not None and last_results is not None:
             phase_plotters.plot_hyper_images_for_phase(
@@ -282,13 +315,13 @@ class HyperGalaxyVisualizer(SubPlotVisualizer):
         self.plot_hyper_galaxy_subplot = plot_setting("plot_hyper_galaxy_subplot")
 
     def hyper_galaxy_subplot(
-            self,
-            hyper_galaxy_image,
-            contribution_map,
-            noise_map,
-            hyper_noise_map,
-            chi_squared_map,
-            hyper_chi_squared_map
+        self,
+        hyper_galaxy_image,
+        contribution_map,
+        noise_map,
+        hyper_noise_map,
+        chi_squared_map,
+        hyper_chi_squared_map,
     ):
         hyper_plotters.plot_hyper_galaxy_subplot(
             hyper_galaxy_image=hyper_galaxy_image,
