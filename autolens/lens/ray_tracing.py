@@ -793,7 +793,7 @@ class AbstractTracerData(AbstractTracerLensing):
             blurred_profile_images_of_galaxies = plane.blurred_profile_images_of_galaxies_from_grid_and_convolver(
                 grid=traced_grids_of_planes[plane_index],
                 convolver=convolver,
-                blurring_grid=traced_blurring_grids_of_planes[plane_index],
+                preload_blurring_grid=traced_blurring_grids_of_planes[plane_index],
                 return_in_2d=return_in_2d,
             )
             for (galaxy_index, galaxy) in enumerate(plane.galaxies):
