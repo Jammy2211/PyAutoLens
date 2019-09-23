@@ -27,7 +27,7 @@ class MassProfile(object):
     def potential_from_grid(
         self, grid,
     ):
-        raise NotImplementedError("potential_from_grid should be overridden")
+        raise NotImplementedError(f"{self.__class__.__name__} does not implement potential_from_grid")
 
     @reshape_returned_sub_array_from_grid
     def deflections_from_grid(
