@@ -45,7 +45,7 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalExponential(),
+                mass=al.mass_profiles.SphericalIsothermal(),
                 hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
