@@ -53,8 +53,6 @@ class MetaImagingFit(MetaDataFit):
             results,
             modified_image
     ):
-        mask = self.setup_phase_mask(data=data, mask=mask)
-
         self.check_positions(positions=positions)
 
         if self.uses_cluster_inversion:
@@ -93,6 +91,8 @@ class MetaImagingFit(MetaDataFit):
             lens_imaging_data = lens_imaging_data.new_lens_imaging_data_with_binned_up_imaging_data_and_mask(
                 bin_up_factor=self.bin_up_factor
             )
+
+        return lens_imaging_data
 
 
 class PhaseImaging(PhaseData):
@@ -153,20 +153,6 @@ class PhaseImaging(PhaseData):
         super().__init__(
             phase_name=phase_name,
             phase_tag=phase_tag,
-            meta_data_fit=MetaImagingFit(
-                variable=self.variable,
-                bin_up_factor=bin_up_factor,
-                psf_shape=psf_shape,
-                sub_size=sub_size,
-                signal_to_noise_limit=signal_to_noise_limit,
-                positions_threshold=positions_threshold,
-                mask_function=mask_function,
-                inner_mask_radii=inner_mask_radii,
-                pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-                pixel_scale_binned_cluster_grid=pixel_scale_binned_cluster_grid,
-                inversion_uses_border=inversion_uses_border,
-                inversion_pixel_limit=inversion_pixel_limit,
-            ),
             phase_folders=phase_folders,
             galaxies=galaxies,
             optimizer_class=optimizer_class,
@@ -182,6 +168,21 @@ class PhaseImaging(PhaseData):
         )
 
         self.is_hyper_phase = False
+
+        self.meta_data_fit = MetaImagingFit(
+            variable=self.variable,
+            bin_up_factor=bin_up_factor,
+            psf_shape=psf_shape,
+            sub_size=sub_size,
+            signal_to_noise_limit=signal_to_noise_limit,
+            positions_threshold=positions_threshold,
+            mask_function=mask_function,
+            inner_mask_radii=inner_mask_radii,
+            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            pixel_scale_binned_cluster_grid=pixel_scale_binned_cluster_grid,
+            inversion_uses_border=inversion_uses_border,
+            inversion_pixel_limit=inversion_pixel_limit,
+        )
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, results):
@@ -228,9 +229,13 @@ class PhaseImaging(PhaseData):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
+        mask = self.meta_data_fit.setup_phase_mask(
+            data=data,
+            mask=mask
+        )
 
         modified_image = self.modify_image(
-            image=data.image.mapping.scaled_array_2d_from_array_1d(
+            image=mask.mapping.scaled_array_2d_from_array_1d(
                 array_1d=data.image
             ),
             results=results,

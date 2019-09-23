@@ -174,7 +174,6 @@ class PhaseData(AbstractPhase):
             self,
             phase_name,
             phase_tag,
-            meta_data_fit,
             phase_folders=tuple(),
             galaxies=None,
             optimizer_class=af.MultiNest,
@@ -201,9 +200,6 @@ class PhaseData(AbstractPhase):
             cosmology=cosmology,
             auto_link_priors=auto_link_priors,
         )
-
-        self.meta_data_fit = meta_data_fit
-
         self.galaxies = galaxies or []
 
         self.is_hyper_phase = False
