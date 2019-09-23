@@ -83,3 +83,8 @@ Summed regularization
 Stuff combining chi squared with regularization
 
 --ignore-installed astropy
+
+Tutorial Feedback:
+
+- Add link / instructions on how to customize visualization (figsize in particular).
+- Bug, EllipticalIsothermal should not use axis_ratio=1.0 without flagging error.

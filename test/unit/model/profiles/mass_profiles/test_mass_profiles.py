@@ -1202,11 +1202,11 @@ class TestConvergenceViajacobian(object):
         )
 
         convergence_via_calculation = sis.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         convergence_via_jacobian = sis.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
@@ -1238,11 +1238,11 @@ class TestConvergenceViajacobian(object):
         )
 
         convergence_via_calculation = sie.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         convergence_via_jacobian = sie.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)

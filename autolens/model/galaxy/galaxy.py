@@ -6,11 +6,7 @@ from skimage import measure
 import autofit as af
 from autolens import exc, dimensions as dim
 from autolens import text_util
-from autolens.array.mapping import (
-    reshape_returned_sub_array,
-    reshape_returned_array,
-    reshape_returned_grid,
-)
+from autolens.array import mapping
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -157,9 +153,9 @@ class Galaxy(af.ModelObject):
             )
         )
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def profile_image_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         """Calculate the summed image of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
@@ -194,13 +190,13 @@ class Galaxy(af.ModelObject):
         else:
             return np.zeros((grid.shape[0],))
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_from_grid_and_psf
     def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, preload_blurring_grid=None, return_in_2d=True
+        self, grid, psf, preload_blurring_grid=None,
     ):
 
         profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid
         )
 
         if preload_blurring_grid is None:
@@ -209,14 +205,14 @@ class Galaxy(af.ModelObject):
             )
 
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid, return_in_2d=True, return_binned=True
+            grid=preload_blurring_grid, return_binned=True
         )
 
         return psf.convolve(profile_image + blurring_image)
 
-    @reshape_returned_array
+    @mapping.reshape_returned_array_from_grid_and_convolver
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
+        self, grid, convolver, preload_blurring_grid=None,
     ):
 
         if convolver.blurring_mask is None:
@@ -331,9 +327,9 @@ class Galaxy(af.ModelObject):
             )
         return None
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def convergence_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         """Compute the summed convergence of the galaxy's mass profiles using a grid \
         of Cartesian (y,x) coordinates.
@@ -370,9 +366,9 @@ class Galaxy(af.ModelObject):
             )
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def potential_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         """Compute the summed gravitational potential of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
@@ -409,9 +405,9 @@ class Galaxy(af.ModelObject):
             )
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_grid
+    @mapping.reshape_returned_grid_from_grid
     def deflections_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        self, grid,
     ):
         """Compute the summed (y,x) deflection angles of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
@@ -439,9 +435,9 @@ class Galaxy(af.ModelObject):
             )
         return np.full((grid.shape[0], 2), 0.0)
 
-    @reshape_returned_grid
+    @mapping.reshape_returned_grid_from_grid
     def deflections_via_potential_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
         potential_2d = self.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -452,9 +448,9 @@ class Galaxy(af.ModelObject):
 
         return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def lensing_jacobian_a11_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -463,9 +459,9 @@ class Galaxy(af.ModelObject):
 
         return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def lensing_jacobian_a12_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -474,9 +470,9 @@ class Galaxy(af.ModelObject):
 
         return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def lensing_jacobian_a21_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -485,9 +481,9 @@ class Galaxy(af.ModelObject):
 
         return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def lensing_jacobian_a22_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -516,9 +512,9 @@ class Galaxy(af.ModelObject):
 
         return np.array([[a11, a12], [a21, a22]])
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def convergence_via_jacobian_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         jacobian = self.lensing_jacobian_from_grid(
@@ -529,8 +525,8 @@ class Galaxy(af.ModelObject):
 
         return convergence
 
-    @reshape_returned_sub_array
-    def shear_via_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @mapping.reshape_returned_sub_array_from_grid
+    def shear_via_jacobian_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -541,9 +537,9 @@ class Galaxy(af.ModelObject):
 
         return (gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
 
-    @reshape_returned_sub_array
+    @mapping.reshape_returned_sub_array_from_grid
     def tangential_eigen_value_from_grid(
-        self, grid, return_in_2d=True, return_binned=True
+        self, grid
     ):
 
         convergence = self.convergence_via_jacobian_from_grid(
@@ -556,8 +552,8 @@ class Galaxy(af.ModelObject):
 
         return 1 - convergence - shear
 
-    @reshape_returned_sub_array
-    def radial_eigen_value_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @mapping.reshape_returned_sub_array_from_grid
+    def radial_eigen_value_from_grid(self, grid):
 
         convergence = self.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -569,8 +565,8 @@ class Galaxy(af.ModelObject):
 
         return 1 - convergence + shear
 
-    @reshape_returned_sub_array
-    def magnification_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    @mapping.reshape_returned_sub_array_from_grid
+    def magnification_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False

@@ -465,7 +465,7 @@ class PSF(scaled_array.ScaledSquarePixelArray):
         )
 
         gaussian = gaussian.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid
         )
 
         return PSF(array=gaussian, pixel_scale=pixel_scale, renormalize=True)
@@ -499,7 +499,7 @@ class PSF(scaled_array.ScaledSquarePixelArray):
         )
 
         gaussian = gaussian.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid
         )
 
         return PSF(array=gaussian, pixel_scale=pixel_scale, renormalize=True)
@@ -773,7 +773,7 @@ class SimulatedImagingData(ImagingData):
             )
         else:
             image_2d = tracer.profile_image_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+                grid=grid, bypass_decorator=False
             )
 
         return cls.from_image_and_exposure_arrays(

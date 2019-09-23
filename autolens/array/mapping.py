@@ -12,72 +12,53 @@ from autolens.array.mapping_util import (
 from autolens.array import scaled_array
 
 
-def reshape_returned_array(func):
+def reshape_returned_array_no_input(func):
     @wraps(func)
-    def wrapper(obj, return_in_2d=True, bypass_decorator=False, *args, **kwargs):
-        """
-
-        This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
-        (e.g. image, convergences, potentials). Depending on the input variables, it determines whether the
-        returned array is reshaped to 2D from 1D and if a sub-grid is input, it can bin the sub-gridded values to
-        gridded values.
-
-        Parameters
-        ----------
-        obj : autolens.model.geometry_profiles.Profile
-            The profiles that owns the function
-        grid : ndarray or Grid or Grid
-            (y,x) in either cartesian or profiles coordinate system
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
-
-        Returns
-        -------
-            An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
-        """
+    def wrapper(obj, return_in_2d=True, return_masked=True, bypass_decorator=False):
 
         if bypass_decorator:
             return func(obj)
 
-        grid = kwargs["grid"] if "grid" in kwargs else None
-        blurring_grid = kwargs["blurring_grid"] if "blurring_grid" in kwargs else None
-        psf = kwargs["psf"] if "psf" in kwargs else None
-        convolver = kwargs["convolver"] if "convolver" in kwargs else None
-
-        return_masked = kwargs["return_masked"] if "return_masked" in kwargs else True
-
-        if hasattr(obj, "mapping"):
-            mapping = obj.mapping
-        elif hasattr(grid, "mapping"):
-            mapping = grid.mapping
-        else:
-            raise exc.MappingException(
-                "Unable to find mapping object from the functions input object or any of its"
-                "keyword arguments."
-            )
-
-        if grid is not None and psf is not None:
-            array_from_func = func(obj, grid, psf, blurring_grid)
-        elif grid is not None and convolver is not None:
-            array_from_func = func(obj, grid, convolver, blurring_grid)
-        elif grid is not None:
-            array_from_func = func(obj, grid)
-        else:
-            array_from_func = func(obj)
-
         return reshaped_array_from_array_and_mapping(
-            array=array_from_func,
-            mapping=mapping,
+            array=func(obj),
+            mapping=obj.mapping,
             return_in_2d=return_in_2d,
             return_masked=return_masked,
         )
 
     return wrapper
 
+def reshape_returned_array_from_grid_and_psf(func):
+    @wraps(func)
+    def wrapper(obj, grid, psf, blurring_grid, return_in_2d=True, bypass_decorator=False):
+
+        if bypass_decorator:
+            return func(obj, grid, psf, blurring_grid)
+
+        return reshaped_array_from_array_and_mapping(
+            array=func(obj, grid, psf, blurring_grid),
+            mapping=grid.mapping,
+            return_in_2d=return_in_2d,
+            return_masked=True,
+        )
+
+    return wrapper
+
+def reshape_returned_array_from_grid_and_convolver(func):
+    @wraps(func)
+    def wrapper(obj, grid, convolver, blurring_grid, return_in_2d=True, bypass_decorator=False):
+
+        if bypass_decorator:
+            return func(obj, grid, convolver, blurring_grid)
+
+        return reshaped_array_from_array_and_mapping(
+            array=func(obj, grid, convolver, blurring_grid),
+            mapping=grid.mapping,
+            return_in_2d=return_in_2d,
+            return_masked=True,
+        )
+
+    return wrapper
 
 def reshaped_array_from_array_and_mapping(array, mapping, return_in_2d, return_masked):
 
@@ -95,9 +76,9 @@ def reshaped_array_from_array_and_mapping(array, mapping, return_in_2d, return_m
         return mapping.scaled_array_2d_from_array_1d(array_1d=array_1d)
 
 
-def reshape_returned_sub_array(func):
+def reshape_returned_sub_array_from_grid(func):
     @wraps(func)
-    def wrapper(object, grid, *args, **kwargs):
+    def wrapper(object, grid, return_in_2d=True, return_binned=True, bypass_decorator=False):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 1D arrays of physical quantities \
@@ -123,20 +104,12 @@ def reshape_returned_sub_array(func):
             An array of a physical quantity that may be in 1D or 2D and binned up from a sub-grid.
         """
 
-        bypass_decorator = (
-            kwargs["bypass_decorator"] if "bypass_decorator" in kwargs else False
-        )
-
         if bypass_decorator:
             return func(object, grid)
 
-        return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else True
-        return_binned = kwargs["return_binned"] if "return_binned" in kwargs else True
-        sub_array_from_func = func(object, grid)
-
         return reshaped_sub_array_from_sub_array_and_mapping(
             mapping=grid.mapping,
-            sub_array=sub_array_from_func,
+            sub_array=func(object, grid),
             return_in_2d=return_in_2d,
             return_binned=return_binned,
         )
@@ -175,9 +148,9 @@ def reshaped_sub_array_from_sub_array_and_mapping(
         )
 
 
-def reshape_returned_grid(func):
+def reshape_returned_grid_from_grid(func):
     @wraps(func)
-    def wrapper(object, grid, *args, **kwargs):
+    def wrapper(object, grid, return_in_2d=True, return_binned=True, bypass_decorator=False):
         """
 
         This wrapper decorates the _from_grid functions of profiles, which return 2D grids of physical quantities \
@@ -197,43 +170,34 @@ def reshape_returned_grid(func):
             An grid of (y,x) coordinates that may be in 1D or 2D and binned up from a sub-grid.
         """
 
-        bypass_decorator = (
-            kwargs["bypass_decorator"] if "bypass_decorator" in kwargs else False
-        )
-
         if bypass_decorator:
             return func(object, grid)
-
-        return_in_2d = kwargs["return_in_2d"] if "return_in_2d" in kwargs else False
-        return_binned = kwargs["return_binned"] if "return_binned" in kwargs else False
-
-        mapping = grid.mapping
 
         grid_from_func = func(object, grid)
 
         if len(grid_from_func.shape) == 3:
             grid_y = reshaped_sub_array_from_sub_array_and_mapping(
                 sub_array=grid_from_func[:, :, 0],
-                mapping=mapping,
+                mapping=grid.mapping,
                 return_in_2d=return_in_2d,
                 return_binned=return_binned,
             )
             grid_x = reshaped_sub_array_from_sub_array_and_mapping(
                 sub_array=grid_from_func[:, :, 1],
-                mapping=mapping,
+                mapping=grid.mapping,
                 return_in_2d=return_in_2d,
                 return_binned=return_binned,
             )
         elif len(grid_from_func.shape) == 2:
             grid_y = reshaped_sub_array_from_sub_array_and_mapping(
                 sub_array=grid_from_func[:, 0],
-                mapping=mapping,
+                mapping=grid.mapping,
                 return_in_2d=return_in_2d,
                 return_binned=return_binned,
             )
             grid_x = reshaped_sub_array_from_sub_array_and_mapping(
                 sub_array=grid_from_func[:, 1],
-                mapping=mapping,
+                mapping=grid.mapping,
                 return_in_2d=return_in_2d,
                 return_binned=return_binned,
             )
