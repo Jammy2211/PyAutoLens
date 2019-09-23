@@ -22,6 +22,10 @@ def figure_setting(name):
 class AbstractVisualizer:
     def __init__(self, image_path):
         self.image_path = image_path
+        try:
+            os.makedirs(self.image_path)
+        except FileExistsError:
+            pass
         self.plot_units = af.conf.instance.visualize.get(
             "figures",
             "plot_units",
