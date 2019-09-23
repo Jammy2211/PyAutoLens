@@ -40,7 +40,7 @@ class AbstractVisualizer:
 class SubPlotVisualizer(AbstractVisualizer):
     def __init__(self, image_path):
         super().__init__(image_path)
-        self.subplot_path = f"{image_path}subplots"
+        self.subplot_path = f"{image_path}subplots/"
         try:
             os.makedirs(self.subplot_path)
         except FileExistsError:

@@ -161,7 +161,7 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
         gaussian = gaussian.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid
         )
 
         return PrimaryBeam(array=gaussian, pixel_scale=pixel_scale, renormalize=True)
@@ -419,7 +419,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         """
 
         image_2d = tracer.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid
         )
 
         return cls.from_image_and_exposure_arrays(

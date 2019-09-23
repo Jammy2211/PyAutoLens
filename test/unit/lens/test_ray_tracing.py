@@ -1178,7 +1178,7 @@ class TestAbstractTracerLensing(object):
             image_plane = al.Plane(galaxies=[g0])
 
             source_plane_grid = image_plane.traced_grid_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False
+                grid=sub_grid_7x7, bypass_decorator=True
             )
 
             source_plane = al.Plane(galaxies=[g1])
@@ -1188,7 +1188,7 @@ class TestAbstractTracerLensing(object):
             image = image_plane.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=True, return_binned=True
             ) + source_plane.profile_image_from_grid(
-                grid=source_plane_grid, return_in_2d=True, return_binned=True
+                grid=source_plane_grid
             )
 
             tracer_profile_image = tracer.profile_image_from_grid(
@@ -1249,7 +1249,7 @@ class TestAbstractTracerLensing(object):
             image_plane = al.Plane(galaxies=[g0])
 
             source_plane_grid = image_plane.traced_grid_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False
+                grid=sub_grid_7x7, bypass_decorator=True
             )
 
             source_plane = al.Plane(galaxies=[g1])
@@ -1259,7 +1259,7 @@ class TestAbstractTracerLensing(object):
             plane_profile_image = image_plane.profile_image_from_grid(
                 grid=sub_grid_7x7, return_in_2d=True, return_binned=True
             ) + source_plane.profile_image_from_grid(
-                grid=source_plane_grid, return_in_2d=True, return_binned=True
+                grid=source_plane_grid
             )
 
             tracer_profile_image = tracer.profile_image_from_grid(
@@ -1494,15 +1494,15 @@ class TestAbstractTracerLensing(object):
             )
 
             padded_g0_image = g0.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid
             )
 
             padded_g1_image = g1.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid
             )
 
             padded_g2_image = g2.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -1535,15 +1535,15 @@ class TestAbstractTracerLensing(object):
             )
 
             padded_g0_image = g0.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid
             )
 
             padded_g1_image = g1.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid
             )
 
             padded_g2_image = g2.profile_image_from_grid(
-                grid=padded_grid, return_in_2d=True, return_binned=True
+                grid=padded_grid
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -1975,7 +1975,7 @@ class TestAbstractTracerLensing(object):
             )
 
             source_plane_grid = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_7x7,
             )[1]
 
             assert (grid_at_redshift == source_plane_grid).all()
@@ -2254,9 +2254,9 @@ class TestAbstractTracerData(object):
                 return_in_2d=False,
             )
 
-            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
             source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
-                grid=blurring_grid_7x7
+                grid=blurring_grid_7x7, bypass_decorator=True
             )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_psf(
@@ -2316,9 +2316,9 @@ class TestAbstractTracerData(object):
                 return_in_2d=False,
             )
 
-            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
             source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
-                grid=blurring_grid_7x7
+                grid=blurring_grid_7x7, bypass_decorator=True
             )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_psf(
@@ -2390,14 +2390,14 @@ class TestAbstractTracerData(object):
                 return_in_2d=False,
             )
 
-            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
             source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
-                grid=blurring_grid_7x7
+                grid=blurring_grid_7x7, bypass_decorator=True
             )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_convolver(
                 grid=source_grid_7x7,
-                psf=convolver_7x7,
+                convolver=convolver_7x7,
                 blurring_grid=source_blurring_grid_7x7,
                 return_in_2d=False,
             )
@@ -2452,14 +2452,14 @@ class TestAbstractTracerData(object):
                 return_in_2d=False,
             )
 
-            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
             source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
-                grid=blurring_grid_7x7
+                grid=blurring_grid_7x7, bypass_decorator=True
             )
 
             blurred_image_1d_1 = plane_1.blurred_profile_image_from_grid_and_convolver(
                 grid=source_grid_7x7,
-                psf=convolver_7x7,
+                convolver=convolver_7x7,
                 blurring_grid=source_blurring_grid_7x7,
                 return_in_2d=False,
             )
