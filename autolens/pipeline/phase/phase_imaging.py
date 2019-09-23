@@ -53,6 +53,11 @@ class MetaImagingFit(MetaDataFit):
             results,
             modified_image
     ):
+        mask = self.setup_phase_mask(
+            data=data,
+            mask=mask
+        )
+
         self.check_positions(positions=positions)
 
         if self.uses_cluster_inversion:
@@ -229,11 +234,6 @@ class PhaseImaging(PhaseData):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        mask = self.meta_data_fit.setup_phase_mask(
-            data=data,
-            mask=mask
-        )
-
         modified_image = self.modify_image(
             image=data.image,
             results=results,
