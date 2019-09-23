@@ -117,7 +117,13 @@ class PhaseImaging(PhaseData):
         """
         return image
 
-    def make_analysis(self, data, results=None, mask=None, positions=None):
+    def make_analysis(
+            self,
+            data,
+            results=None,
+            mask=None,
+            positions=None
+    ):
         """
         Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
         classes to change the behaviour of the phase.
