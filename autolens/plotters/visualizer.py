@@ -21,7 +21,7 @@ def figure_setting(name):
 
 class AbstractVisualizer:
     def __init__(self, image_path):
-        self.image_path = image_path
+        self.image_path = image_path or ""
         try:
             os.makedirs(self.image_path)
         except FileExistsError:
