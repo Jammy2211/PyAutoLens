@@ -157,12 +157,6 @@ class AbstractPlane(object):
 
 
 class AbstractPlaneCosmology(AbstractPlane):
-    def __init__(self, redshift, galaxies, cosmology):
-
-        super(AbstractPlaneCosmology, self).__init__(
-            redshift=redshift, galaxies=galaxies, cosmology=cosmology
-        )
-
     @property
     def arcsec_per_kpc(self):
         return cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
@@ -190,11 +184,6 @@ class AbstractPlaneCosmology(AbstractPlane):
 
 
 class AbstractPlaneLensing(AbstractPlaneCosmology):
-    def __init__(self, redshift, galaxies, cosmology):
-        super(AbstractPlaneCosmology, self).__init__(
-            redshift=redshift, galaxies=galaxies, cosmology=cosmology
-        )
-
     @reshape_returned_sub_array
     def profile_image_from_grid(
         self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
