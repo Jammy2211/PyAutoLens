@@ -32,7 +32,7 @@ def make_pipeline(
     )
 
     phase1.optimizer.const_efficiency_mode = True
-    phase1.optimizer.n_live_points = 20
+    phase1.optimizer.n_live_points = 25
     phase1.optimizer.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
