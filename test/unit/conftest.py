@@ -5,6 +5,7 @@ import pytest
 
 import autofit as af
 import autolens as al
+from autolens.array import mask
 from test.unit.mock.data import mock_convolution
 from test.unit.mock.data import mock_data
 from test.unit.mock.data import mock_grids
@@ -71,13 +72,13 @@ def make_positions_7x7():
 
 @pytest.fixture(name="imaging_data_7x7")
 def make_imaging_data_7x7(
-    image_7x7,
-    psf_3x3,
-    noise_map_7x7,
-    background_noise_map_7x7,
-    poisson_noise_map_7x7,
-    exposure_time_map_7x7,
-    background_sky_map_7x7,
+        image_7x7,
+        psf_3x3,
+        noise_map_7x7,
+        background_noise_map_7x7,
+        poisson_noise_map_7x7,
+        exposure_time_map_7x7,
+        background_sky_map_7x7,
 ):
     return mock_data.MockImagingData(
         image=image_7x7,
@@ -137,7 +138,7 @@ def make_uv_wavelengths_7():
 
 @pytest.fixture(name="uv_plane_data_7")
 def make_uv_plane_data_7(
-    visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
+        visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
 ):
     return mock_data.MockUVPlaneData(
         shape=(7, 7),
@@ -174,7 +175,7 @@ def make_mask_7x7():
         ]
     )
 
-    return mock_mask.MockMask(array=array, sub_size=1)
+    return mask.Mask(array=array, pixel_scale=1.0, sub_size=1)
 
 
 @pytest.fixture(name="sub_mask_7x7")
@@ -462,12 +463,12 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 
 @pytest.fixture(name="lens_imaging_data_7x7")
 def make_lens_imaging_data_7x7(
-    imaging_data_7x7,
-    mask_7x7,
-    sub_grid_7x7,
-    blurring_grid_7x7,
-    convolver_7x7,
-    binned_grid_7x7,
+        imaging_data_7x7,
+        mask_7x7,
+        sub_grid_7x7,
+        blurring_grid_7x7,
+        convolver_7x7,
+        binned_grid_7x7,
 ):
     return mock_lens_data.MockLensImagingData(
         imaging_data=imaging_data_7x7,
@@ -481,7 +482,7 @@ def make_lens_imaging_data_7x7(
 
 @pytest.fixture(name="lens_uv_plane_data_7")
 def make_lens_uv_plane_data_7(
-    uv_plane_data_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
+        uv_plane_data_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
 ):
     return mock_lens_data.MockLensUVPlaneData(
         uv_plane_data=uv_plane_data_7,
@@ -569,7 +570,7 @@ def make_mask_function_7x7():
             ]
         )
 
-        return mock_mask.MockMask(array=array, sub_size=sub_size)
+        return mask.Mask(array=array, pixel_scale=1.0, sub_size=sub_size)
 
     return mask_function_7x7
 
@@ -609,7 +610,7 @@ def make_hyper_galaxy_image_1_7x7(grid_7x7):
 
 @pytest.fixture(name="contribution_map_7x7")
 def make_contribution_map_7x7(
-    hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
+        hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
 ):
     return hyper_galaxy.contribution_map_from_hyper_images(
         hyper_model_image=hyper_model_image_7x7,
@@ -627,7 +628,7 @@ def make_hyper_noise_map_7x7(noise_map_7x7, contribution_map_7x7, hyper_galaxy):
 
 @pytest.fixture(name="results_7x7")
 def make_results(
-    mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
+        mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
 ):
     return mock_pipeline.MockResults(
         model_image=hyper_model_image_7x7,
