@@ -47,7 +47,7 @@ def plot_profile_image(
 ):
 
     profile_image = plane.profile_image_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        grid=grid, bypass_decorator=False
     )
 
     if plane.has_mass_profile:
@@ -214,7 +214,7 @@ def plot_convergence(
 ):
 
     convergence = plane.convergence_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        grid=grid, bypass_decorator=False
     )
 
     lines = plotter_util.get_critical_curve_and_caustic(
@@ -291,7 +291,7 @@ def plot_potential(
 ):
 
     potential = plane.potential_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        grid=grid, bypass_decorator=False
     )
 
     lines = plotter_util.get_critical_curve_and_caustic(
@@ -528,7 +528,7 @@ def plot_magnification(
 ):
 
     magnification = plane.magnification_from_grid(
-        grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+        grid=grid, bypass_decorator=False
     )
 
     lines = plotter_util.get_critical_curve_and_caustic(

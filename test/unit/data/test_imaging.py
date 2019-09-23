@@ -1916,7 +1916,7 @@ class TestPSF(object):
                 centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
             )
             profile_gaussian = gaussian.profile_image_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+                grid=grid, bypass_decorator=False
             )
 
             profile_psf = al.PSF(
@@ -2596,10 +2596,6 @@ class TestSimulateImaging(object):
     def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer(
         self
     ):
-        psf = al.PSF(
-            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
-            pixel_scale=1.0,
-        )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(10, 10), pixel_scale=1.0, sub_size=1
@@ -2617,7 +2613,7 @@ class TestSimulateImaging(object):
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         deflections = tracer.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid, return_in_2d=True, return_binned=False
         )
 
         imaging_data_simulated_via_deflections = al.SimulatedImagingData.from_deflections_galaxies_and_exposure_arrays(
@@ -2631,7 +2627,7 @@ class TestSimulateImaging(object):
         )
 
         tracer_profile_image = tracer.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True
+            grid=grid
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(

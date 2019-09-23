@@ -491,7 +491,7 @@ class TestPrimaryBeam(object):
                 centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
             )
             profile_gaussian = gaussian.profile_image_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+                grid=grid, bypass_decorator=False
             )
 
             profile_psf = al.PrimaryBeam(
@@ -637,7 +637,7 @@ class TestSimulateUVPlaneData(object):
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         deflections = tracer.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         uv_plane_data_simulated_via_deflections = al.SimulatedUVPlaneData.from_deflections_galaxies_and_exposure_arrays(
@@ -652,7 +652,7 @@ class TestSimulateUVPlaneData(object):
         )
 
         tracer_profile_image = tracer.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid, bypass_decorator=False
         )
 
         uv_plane_data_simulated = al.SimulatedUVPlaneData.from_image_and_exposure_arrays(
@@ -710,7 +710,7 @@ class TestSimulateUVPlaneData(object):
 
         uv_plane_data_simulated = al.SimulatedUVPlaneData.from_image_and_exposure_arrays(
             image=tracer.profile_image_from_grid(
-                grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+                grid=grid, bypass_decorator=False
             ),
             pixel_scale=0.1,
             exposure_time=10000.0,

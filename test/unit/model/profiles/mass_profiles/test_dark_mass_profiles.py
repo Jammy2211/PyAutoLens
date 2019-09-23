@@ -967,7 +967,7 @@ class TestGeneralizedNFW(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = gNFW.deflections_from_grid(grid=regular_with_interp)
+        interp_deflections = gNFW.deflections_from_grid(grid=regular_with_interp, bypass_decorator=True)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -1228,7 +1228,7 @@ class TestTruncatedNFW(object):
             pixel_scale_interpolation_grid=0.5
         )
         interp_deflections = truncated_nfw.deflections_from_grid(
-            grid=regular_with_interp
+            grid=regular_with_interp, bypass_decorator=True
         )
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
@@ -1835,7 +1835,7 @@ class TestNFW(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
+        interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp, bypass_decorator=True)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -1879,7 +1879,7 @@ class TestNFW(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
+        interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp, bypass_decorator=True)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5

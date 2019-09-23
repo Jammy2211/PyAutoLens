@@ -549,7 +549,6 @@ class TestAbstractPlaneLensing(object):
         ):
             galaxy_image = gal_x1_lp.profile_image_from_grid(
                 grid=sub_grid_7x7,
-                galaxies=[gal_x1_lp],
                 return_in_2d=False,
                 return_binned=False,
             )
@@ -927,8 +926,8 @@ class TestAbstractPlaneLensing(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.deflections_from_grid(grid=sub_grid_7x7)
-            mp1_sub_image = mp1.deflections_from_grid(grid=sub_grid_7x7)
+            mp0_sub_image = mp0.deflections_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
+            mp1_sub_image = mp1.deflections_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
 
             # Perform sub gridding average manually
             mp0_image_pixel_0x = (
@@ -3336,7 +3335,7 @@ class TestPlane(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            plane_traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7)
+            plane_traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
 
             assert plane_traced_grid == pytest.approx(traced_grid, 1.0e-4)
 
@@ -3345,7 +3344,7 @@ class TestPlane(object):
         ):
             plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 
-            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7_simple)
+            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7_simple, bypass_decorator=True)
 
             assert traced_grid[0] == pytest.approx(
                 np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3
@@ -3361,7 +3360,7 @@ class TestPlane(object):
         ):
             plane = al.Plane(galaxies=[], redshift=1.0)
 
-            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7)
+            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
 
             assert (traced_grid == sub_grid_7x7).all()
 
