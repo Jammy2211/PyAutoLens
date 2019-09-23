@@ -20,14 +20,12 @@ class MassProfile(object):
     def convergence_from_grid(
         self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     ):
-        pass
-        # raise NotImplementedError("surface_density_from_grid should be overridden")
+        raise NotImplementedError("surface_density_from_grid should be overridden")
 
     def potential_from_grid(
         self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
     ):
-        pass
-        # raise NotImplementedError("potential_from_grid should be overridden")
+        raise NotImplementedError("potential_from_grid should be overridden")
 
     def deflections_from_grid(
         self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False

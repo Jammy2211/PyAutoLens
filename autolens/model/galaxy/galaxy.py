@@ -159,7 +159,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_sub_array
     def profile_image_from_grid(
-            self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            self, grid
     ):
         """Calculate the summed image of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
@@ -196,7 +196,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_psf(
-            self, grid, psf, preload_blurring_grid=None, return_in_2d=True
+            self, grid, psf, preload_blurring_grid=None
     ):
 
         profile_image = self.profile_image_from_grid(
@@ -216,7 +216,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_array
     def blurred_profile_image_from_grid_and_convolver(
-            self, grid, convolver, preload_blurring_grid=None, return_in_2d=True
+            self, grid, convolver, preload_blurring_grid=None
     ):
 
         if convolver.blurring_mask is None:
@@ -271,7 +271,8 @@ class Galaxy(af.ModelObject):
         unit_luminosity : str
             The units the luminosity is returned in (eps | counts).
         exposure_time : float
-            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
+            The exposure time of the observation, which converts luminosity from electrons per second units to
+            counts.
         """
         if self.has_light_profile:
             return sum(
@@ -333,7 +334,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_sub_array
     def convergence_from_grid(
-            self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            self, grid
     ):
         """Compute the summed convergence of the galaxy's mass profiles using a grid \
         of Cartesian (y,x) coordinates.
@@ -349,12 +350,6 @@ class Galaxy(af.ModelObject):
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
         """
         if self.has_mass_profile:
             return sum(
@@ -372,7 +367,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_sub_array
     def potential_from_grid(
-            self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            self, grid
     ):
         """Compute the summed gravitational potential of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
@@ -381,19 +376,13 @@ class Galaxy(af.ModelObject):
 
         See *profiles.mass_profiles* module for details of how this is performed.
 
-                The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
-        *grids.reshape_returned_array* for a description of the output.
+                The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on.
+                See *grids.reshape_returned_array* for a description of the output.
 
         Parameters
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
         """
         if self.has_mass_profile:
             return sum(
@@ -411,7 +400,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_grid
     def deflections_from_grid(
-            self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            self, grid
     ):
         """Compute the summed (y,x) deflection angles of the galaxy's mass profiles \
         using a grid of Cartesian (y,x) coordinates.
@@ -441,7 +430,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_grid
     def deflections_via_potential_from_grid(
-            self, grid, return_in_2d=True, return_binned=True
+            self, grid
     ):
         potential_2d = self.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -454,7 +443,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a11_from_grid(
-            self, grid, return_in_2d=True, return_binned=True
+            self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -476,7 +465,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a21_from_grid(
-            self, grid, return_in_2d=True, return_binned=True
+            self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -487,7 +476,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_sub_array
     def lensing_jacobian_a22_from_grid(
-            self, grid, return_in_2d=True, return_binned=True
+            self, grid
     ):
 
         deflections_2d = self.deflections_from_grid(
@@ -518,7 +507,7 @@ class Galaxy(af.ModelObject):
 
     @reshape_returned_sub_array
     def convergence_via_jacobian_from_grid(
-            self, grid, return_in_2d=True, return_binned=True
+            self, grid
     ):
 
         jacobian = self.lensing_jacobian_from_grid(
