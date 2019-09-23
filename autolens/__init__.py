@@ -139,4 +139,4 @@ from autolens.pipeline.pipeline import (
 from autolens.pipeline.plotters import hyper_plotters, phase_plotters
 from autolens.plotters import array_plotters, grid_plotters, plotter_util
 
-__version__ = '0.31.7'
+__version__ = '0.31.8'
