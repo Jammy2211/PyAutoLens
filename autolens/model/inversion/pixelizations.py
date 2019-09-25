@@ -3,7 +3,7 @@ import scipy.spatial
 
 from autolens import exc
 from autolens.array import grids
-from autolens.array import scaled_array
+from autolens.array import geometry
 from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 
@@ -47,7 +47,7 @@ class Rectangular(Pixelization):
         self.pixels = self.shape[0] * self.shape[1]
         super(Rectangular, self).__init__()
 
-    class Geometry(scaled_array.RectangularArrayGeometry):
+    class Geometry(geometry.Geometry):
         def __init__(
                 self, shape, pixel_scales, origin, pixel_neighbors, pixel_neighbors_size
         ):
@@ -169,7 +169,7 @@ class Voronoi(Pixelization):
          """
         super(Voronoi, self).__init__()
 
-    class Geometry(scaled_array.ArrayGeometry):
+    class Geometry(geometry.Geometry):
         def __init__(
                 self,
                 shape_arcsec,

@@ -166,7 +166,7 @@ def plot_array(
         )
 
     if zoom_around_mask and mask is not None:
-        array = array.zoomed_scaled_array_around_mask(mask=mask, buffer=2)
+        array = array.new_scaled_array_zoomed_from_mask(mask=mask, buffer=2)
         zoom_offset_pixels = np.asarray(mask.zoom_offset_pixels)
         zoom_offset_arcsec = np.asarray(mask.zoom_offset_arcsec)
     else:
@@ -680,7 +680,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
 
         plt.gca()
         edge_pixels = (
-            mask.mapping.mask_1d_index_tomask_index[mask.edge_1d_indexes] + 0.5
+                mask.mapping.mask_1d_index_to_mask_2d_index[mask.edge_1d_indexes] + 0.5
         )
 
         if zoom_offset_pixels is not None:

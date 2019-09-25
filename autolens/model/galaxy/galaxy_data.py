@@ -20,9 +20,9 @@ class GalaxyData(object):
 
         Parameters
         ----------
-        image : scaled_array.ScaledSquarePixelArray
+        image : scaled_array.ScaledArray
             An image of the quantity of the galaxy that is being fitted (e.g. its image, convergence, etc.).
-        noise_map : scaled_array.ScaledSquarePixelArray
+        noise_map : scaled_array.ScaledArray
             The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
         """
         self.image = image
@@ -74,12 +74,12 @@ class GalaxyFitData(object):
         self.mapping = mask.mapping
         self.pixel_scale = galaxy_data.pixel_scale
 
-        self._image_1d = mask.mapping.array_1d_from_array_2d(array_2d=galaxy_data.image)
-        self._noise_map_1d = mask.mapping.array_1d_from_array_2d(
+        self._image_1d = mask.mapping.scaled_array_from_array_2d(array_2d=galaxy_data.image)
+        self._noise_map_1d = mask.mapping.scaled_array_from_array_2d(
             array_2d=galaxy_data.noise_map
         )
         self.signal_to_noise_map_1d = self._image_1d / self._noise_map_1d
-        self._mask_1d = mask.mapping.array_1d_from_array_2d(array_2d=mask)
+        self._mask_1d = mask.mapping.scaled_array_from_array_2d(array_2d=mask)
 
         self.sub_size = mask.sub_size
 
@@ -132,11 +132,11 @@ class GalaxyFitData(object):
         self.use_deflections_y = use_deflections_y
         self.use_deflections_x = use_deflections_x
 
-    @mapping.reshape_returned_array_no_input
+    
     def image(self):
         return self.galaxy_data.image
 
-    @mapping.reshape_returned_array_no_input
+    
     def noise_map(self):
         return self.galaxy_data.noise_map
 

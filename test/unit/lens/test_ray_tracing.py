@@ -2279,7 +2279,7 @@ class TestAbstractTracerData(object):
                 blurred_image_1d_0 + blurred_image_1d_1, 1.0e-4
             )
 
-            blurred_image_2d = sub_grid_7x7.mapping.array_2d_from_array_1d(
+            blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
                 array_1d=blurred_image_1d
             )
 
@@ -2415,7 +2415,7 @@ class TestAbstractTracerData(object):
                 blurred_image_1d_0 + blurred_image_1d_1, 1.0e-4
             )
 
-            blurred_image_2d = sub_grid_7x7.mapping.array_2d_from_array_1d(
+            blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
                 array_1d=blurred_image_1d
             )
 
@@ -2621,15 +2621,15 @@ class TestAbstractTracerData(object):
         def test__unmasked_images_of_tracer_planes_and_galaxies(self):
 
             psf = al.PSF(
-                array=(np.array([[0.0, 3.0, 0.0], [0.0, 1.0, 2.0], [0.0, 0.0, 0.0]])),
-                pixel_scale=1.0,
+                array_1d=(np.array([[0.0, 3.0, 0.0], [0.0, 1.0, 2.0], [0.0, 0.0, 0.0]])),
+                pixel_scales=1.0,
             )
 
             mask = al.Mask(
-                array=np.array(
+                array_2d=np.array(
                     [[True, True, True], [True, False, True], [True, True, True]]
                 ),
-                pixel_scale=1.0,
+                pixel_scales=1.0,
                 sub_size=1,
             )
 

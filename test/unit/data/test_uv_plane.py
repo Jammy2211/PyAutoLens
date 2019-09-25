@@ -18,7 +18,7 @@ class TestNewUVPlaneDataFrom(object):
             shape=(2, 2),
             visibilities=np.array([[1, 1]]),
             pixel_scale=1.0,
-            primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scale=1.0),
+            primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scales=1.0),
             noise_map=1,
             exposure_time_map=1,
             uv_wavelengths=1,
@@ -37,7 +37,7 @@ class TestNewUVPlaneDataFrom(object):
             shape=(2, 2),
             visibilities=np.array([[1, 1]]),
             pixel_scale=1.0,
-            primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scale=1.0),
+            primary_beam=al.PrimaryBeam(np.zeros((5, 5)), pixel_scales=1.0),
             noise_map=1,
             exposure_time_map=2,
             uv_wavelengths=3,
@@ -99,20 +99,20 @@ class TestPrimaryBeam(object):
             self
         ):
             psf = al.PrimaryBeam(
-                array=np.ones((3, 3)), pixel_scale=1.0, renormalize=False
+                array_1d=np.ones((3, 3)), pixel_scales=1.0, renormalize=False
             )
 
             assert psf.shape == (3, 3)
-            assert psf.pixel_scale == 1.0
+            assert psf.pixel_scales == 1.0
             assert (psf == np.ones((3, 3))).all()
             assert psf.origin == (0.0, 0.0)
 
             psf = al.PrimaryBeam(
-                array=np.ones((4, 3)), pixel_scale=1.0, renormalize=False
+                array_1d=np.ones((4, 3)), pixel_scales=1.0, renormalize=False
             )
 
             assert (psf == np.ones((4, 3))).all()
-            assert psf.pixel_scale == 1.0
+            assert psf.pixel_scales == 1.0
             assert psf.shape == (4, 3)
             assert psf.origin == (0.0, 0.0)
 
@@ -140,7 +140,7 @@ class TestPrimaryBeam(object):
             primary_beam_data = np.ones((3, 3)) / 9.0
 
             psf = al.PrimaryBeam(
-                array=primary_beam_data, pixel_scale=1.0, renormalize=True
+                array_1d=primary_beam_data, pixel_scales=1.0, renormalize=True
             )
 
             assert psf == pytest.approx(primary_beam_data, 1e-3)
@@ -150,7 +150,7 @@ class TestPrimaryBeam(object):
             primary_beam_data = np.ones((3, 3))
 
             psf = al.PrimaryBeam(
-                array=primary_beam_data, pixel_scale=1.0, renormalize=True
+                array_1d=primary_beam_data, pixel_scales=1.0, renormalize=True
             )
 
             assert psf == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
@@ -159,7 +159,7 @@ class TestPrimaryBeam(object):
             primary_beam_data = np.ones((3, 3))
 
             psf = al.PrimaryBeam(
-                array=primary_beam_data, pixel_scale=1.0, renormalize=False
+                array_1d=primary_beam_data, pixel_scales=1.0, renormalize=False
             )
 
             assert psf == pytest.approx(np.ones((3, 3)), 1e-3)
@@ -170,7 +170,7 @@ class TestPrimaryBeam(object):
         ):
 
             array_2d = np.ones((6, 6))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -178,7 +178,7 @@ class TestPrimaryBeam(object):
             assert psf == (1.0 / 9.0) * np.ones((3, 3))
 
             array_2d = np.ones((9, 9))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.333333333333333, renormalize=True
             )
@@ -186,7 +186,7 @@ class TestPrimaryBeam(object):
             assert psf == (1.0 / 9.0) * np.ones((3, 3))
 
             array_2d = np.ones((18, 6))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -194,7 +194,7 @@ class TestPrimaryBeam(object):
             assert psf == (1.0 / 27.0) * np.ones((9, 3))
 
             array_2d = np.ones((6, 18))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -206,7 +206,7 @@ class TestPrimaryBeam(object):
         ):
 
             array_2d = np.ones((2, 2))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=2.0, renormalize=True
             )
@@ -214,7 +214,7 @@ class TestPrimaryBeam(object):
             assert psf == (1.0 / 25.0) * np.ones((5, 5))
 
             array_2d = np.ones((40, 40))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.1, renormalize=True
             )
@@ -222,7 +222,7 @@ class TestPrimaryBeam(object):
             assert psf == (1.0 / 25.0) * np.ones((5, 5))
 
             array_2d = np.ones((2, 4))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=2.0, renormalize=True
             )
@@ -230,7 +230,7 @@ class TestPrimaryBeam(object):
             assert psf == (1.0 / 45.0) * np.ones((5, 9))
 
             array_2d = np.ones((4, 2))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=2.0, renormalize=True
             )
@@ -242,7 +242,7 @@ class TestPrimaryBeam(object):
         ):
 
             array_2d = np.ones((6, 4))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -250,7 +250,7 @@ class TestPrimaryBeam(object):
             assert psf == (1.0 / 9.0) * np.ones((3, 3))
 
             array_2d = np.ones((9, 12))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.33333333333, renormalize=True
             )
@@ -258,7 +258,7 @@ class TestPrimaryBeam(object):
             assert psf == (1.0 / 15.0) * np.ones((3, 5))
 
             array_2d = np.ones((4, 6))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -266,7 +266,7 @@ class TestPrimaryBeam(object):
             assert psf == (1.0 / 9.0) * np.ones((3, 3))
 
             array_2d = np.ones((12, 9))
-            psf = al.PrimaryBeam(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PrimaryBeam(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_primary_beam_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.33333333333, renormalize=True
             )
@@ -279,7 +279,7 @@ class TestPrimaryBeam(object):
             primary_beam_data = np.ones((3, 3)) / 9.0
 
             psf = al.PrimaryBeam(
-                array=primary_beam_data, pixel_scale=1.0, renormalize=False
+                array_1d=primary_beam_data, pixel_scales=1.0, renormalize=False
             )
 
             primary_beam_new = psf.new_primary_beam_with_renormalized_array()
@@ -291,7 +291,7 @@ class TestPrimaryBeam(object):
             primary_beam_data = np.ones((3, 3))
 
             psf = al.PrimaryBeam(
-                array=primary_beam_data, pixel_scale=1.0, renormalize=False
+                array_1d=primary_beam_data, pixel_scales=1.0, renormalize=False
             )
 
             primary_beam_new = psf.new_primary_beam_with_renormalized_array()
@@ -302,7 +302,7 @@ class TestPrimaryBeam(object):
         def test__kernel_is_not_odd_x_odd__raises_error(self):
             kernel = np.array([[0.0, 1.0], [1.0, 2.0]])
 
-            psf = al.PrimaryBeam(array=kernel, pixel_scale=1.0)
+            psf = al.PrimaryBeam(array_1d=kernel, pixel_scales=1.0)
 
             with pytest.raises(exc.ConvolutionException):
                 psf.convolve(np.ones((5, 5)))
@@ -314,7 +314,7 @@ class TestPrimaryBeam(object):
 
             kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-            psf = al.PrimaryBeam(array=kernel, pixel_scale=1.0)
+            psf = al.PrimaryBeam(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -334,7 +334,7 @@ class TestPrimaryBeam(object):
 
             kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-            psf = al.PrimaryBeam(array=kernel, pixel_scale=1.0)
+            psf = al.PrimaryBeam(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -359,7 +359,7 @@ class TestPrimaryBeam(object):
 
             kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-            psf = al.PrimaryBeam(array=kernel, pixel_scale=1.0)
+            psf = al.PrimaryBeam(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -379,7 +379,7 @@ class TestPrimaryBeam(object):
 
             kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-            psf = al.PrimaryBeam(array=kernel, pixel_scale=1.0)
+            psf = al.PrimaryBeam(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -404,7 +404,7 @@ class TestPrimaryBeam(object):
 
             kernel = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]])
 
-            psf = al.PrimaryBeam(array=kernel, pixel_scale=1.0)
+            psf = al.PrimaryBeam(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -434,7 +434,7 @@ class TestPrimaryBeam(object):
 
             kernel = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]])
 
-            psf = al.PrimaryBeam(array=kernel, pixel_scale=1.0)
+            psf = al.PrimaryBeam(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -464,7 +464,7 @@ class TestPrimaryBeam(object):
 
             kernel = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]])
 
-            psf = al.PrimaryBeam(array=kernel, pixel_scale=1.0)
+            psf = al.PrimaryBeam(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -495,7 +495,7 @@ class TestPrimaryBeam(object):
             )
 
             profile_psf = al.PrimaryBeam(
-                array=profile_gaussian, pixel_scale=1.0, renormalize=True
+                array_1d=profile_gaussian, pixel_scales=1.0, renormalize=True
             )
 
             imaging_psf = al.PrimaryBeam.from_gaussian(
@@ -514,7 +514,7 @@ class TestSimulateUVPlaneData(object):
     def test__setup_with_all_features_off(self, transformer_7x7_7):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -542,11 +542,11 @@ class TestSimulateUVPlaneData(object):
     ):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
-        background_sky_map = al.ScaledSquarePixelArray.single_value(
+        background_sky_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=2.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -580,7 +580,7 @@ class TestSimulateUVPlaneData(object):
     def test__setup_with_noise(self, transformer_7x7_7):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=20.0, pixel_scale=0.1, shape=image.shape
         )
 

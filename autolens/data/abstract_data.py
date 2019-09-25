@@ -28,9 +28,9 @@ class AbstractData(object):
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
             preferably in units of electrons per second.
-        exposure_time_map : scaled_array.ScaledSquarePixelArray
+        exposure_time_map : scaled_array.ScaledArray
             An array describing the effective exposure time in each imaging pixel.
-        background_sky_map : scaled_array.ScaledSquarePixelArray
+        background_sky_map : scaled_array.ScaledArray
             An array describing the background sky.
         """
         self._data = data
@@ -42,7 +42,7 @@ class AbstractData(object):
     @staticmethod
     def bin_up_scaled_array(scaled_array, bin_up_factor, method):
         if scaled_array is not None:
-            return scaled_array.binned_up_array_from_array(
+            return scaled_array.new_scaled_array_binned_from_bin_up_factor(
                 bin_up_factor=bin_up_factor, method=method
             )
         else:
@@ -53,7 +53,7 @@ class AbstractData(object):
         scaled_array, new_shape, new_centre_pixels=None, new_centre_arcsec=None
     ):
         if scaled_array is not None:
-            return scaled_array.resized_scaled_array_from_array(
+            return scaled_array.new_scaled_array_resized_from_new_shape(
                 new_shape=new_shape,
                 new_centre_pixels=new_centre_pixels,
                 new_centre_arcsec=new_centre_arcsec,
@@ -139,7 +139,7 @@ class AbstractData(object):
         return self.array_from_electrons_per_second_to_counts(self._data)
 
 
-class AbstractNoiseMap(scaled_array.ScaledSquarePixelArray):
+class AbstractNoiseMap(scaled_array.ScaledArray):
     @classmethod
     def from_weight_map(cls, pixel_scale, weight_map):
         """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and \
@@ -187,7 +187,7 @@ class AbstractNoiseMap(scaled_array.ScaledSquarePixelArray):
         return cls(array=noise_map, pixel_scale=pixel_scale)
 
 
-class ExposureTimeMap(scaled_array.ScaledSquarePixelArray):
+class ExposureTimeMap(scaled_array.ScaledArray):
     @classmethod
     def from_exposure_time_and_inverse_noise_map(
         cls, pixel_scale, exposure_time, inverse_noise_map
@@ -211,7 +211,7 @@ def load_image(image_path, image_hdu, pixel_scale):
     pixel_scale : float
         The size of each pixel in arc seconds..
     """
-    return scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(
+    return scaled_array.ScaledArray.from_fits_with_pixel_scale(
         file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale
     )
 
@@ -260,7 +260,7 @@ def load_exposure_time_map(
     if exposure_time_map_options == 0:
 
         if exposure_time is not None and exposure_time_map_path is None:
-            return ExposureTimeMap.single_value(
+            return ExposureTimeMap.from_single_value_shape_and_pixel_scale(
                 value=exposure_time, pixel_scale=pixel_scale, shape=shape
             )
         elif exposure_time is None and exposure_time_map_path is not None:

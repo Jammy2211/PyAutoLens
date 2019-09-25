@@ -20,7 +20,7 @@ class TestImagingData:
         def test__setup_image__correct_attributes(self):
             array = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
 
-            psf = al.PSF(array=3.0 * np.ones((3, 3)), pixel_scale=1.0)
+            psf = al.PSF(array_1d=3.0 * np.ones((3, 3)), pixel_scales=1.0)
             noise_map = 5.0 * np.ones((3, 3))
 
             imaging_data = al.ImagingData(
@@ -61,7 +61,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -88,7 +88,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -116,7 +116,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -128,8 +128,8 @@ class TestImagingData:
         ):
             array = np.array([[5.0, 3.0], [10.0, 20.0]])
 
-            exposure_time = al.ScaledSquarePixelArray(
-                np.array([[1.0, 2.0], [3.0, 4.0]]), pixel_scale=1.0
+            exposure_time = al.ScaledArray(
+                np.array([[1.0, 2.0], [3.0, 4.0]]), pixel_scales=1.0
             )
 
             background_noise = np.zeros((2, 2))
@@ -137,7 +137,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -173,7 +173,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -203,7 +203,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -238,7 +238,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -274,7 +274,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -304,7 +304,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -336,7 +336,7 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=array,
                 pixel_scale=1.0,
-                psf=al.PSF(array=np.ones((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -480,33 +480,33 @@ class TestImagingData:
 
     class TestNewImagingDataResized:
         def test__all_components_resized__psf_is_not(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array = al.ScaledArray(np.ones((6, 6)), pixel_scales=1.0)
             image_array[3, 3] = 2.0
 
-            noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            noise_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             noise_map_array[3, 3] = 3.0
 
-            background_noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            background_noise_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             background_noise_map_array[3, 3] = 4.0
 
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            exposure_time_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             exposure_time_map_array[3, 3] = 5.0
 
-            background_sky_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            background_sky_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             background_sky_map_array[3, 3] = 6.0
 
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 exposure_time_map=exposure_time_map_array,
@@ -580,12 +580,12 @@ class TestImagingData:
             assert imaging_data.origin == (0.0, 0.0)
 
         def test__resize_psf(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array = al.ScaledArray(np.ones((6, 6)), pixel_scales=1.0)
 
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
             )
 
             imaging_data = imaging_data.new_imaging_data_with_resized_psf(
@@ -598,33 +598,33 @@ class TestImagingData:
             assert imaging_data.origin == (0.0, 0.0)
 
         def test__input_new_centre_pixels__arrays_use_new_centre__psf_does_not(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array = al.ScaledArray(np.ones((6, 6)), pixel_scales=1.0)
             image_array[3, 3] = 2.0
 
-            noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            noise_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             noise_map_array[3, 3] = 3.0
 
-            background_noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            background_noise_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             background_noise_map_array[3, 3] = 4.0
 
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            exposure_time_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             exposure_time_map_array[3, 3] = 5.0
 
-            background_sky_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            background_sky_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             background_sky_map_array[3, 3] = 6.0
 
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 exposure_time_map=exposure_time_map_array,
@@ -663,33 +663,33 @@ class TestImagingData:
             assert imaging_data.origin == (0.0, 0.0)
 
         def test__input_new_centre_arcsec__arrays_use_new_centre__psf_does_not(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array = al.ScaledArray(np.ones((6, 6)), pixel_scales=1.0)
             image_array[3, 3] = 2.0
 
-            noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            noise_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             noise_map_array[3, 3] = 3.0
 
-            background_noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            background_noise_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             background_noise_map_array[3, 3] = 4.0
 
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            exposure_time_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             exposure_time_map_array[3, 3] = 5.0
 
-            background_sky_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            background_sky_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             background_sky_map_array[3, 3] = 6.0
 
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 exposure_time_map=exposure_time_map_array,
@@ -728,11 +728,11 @@ class TestImagingData:
             assert imaging_data.origin == (0.0, 0.0)
 
         def test__input_both_centres__raises_error(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array = al.ScaledArray(np.ones((6, 6)), pixel_scales=1.0)
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
             )
 
             with pytest.raises(exc.DataException):
@@ -744,40 +744,40 @@ class TestImagingData:
 
     class TestNewImagingModifiedImage:
         def test__imaging_data_returns_with_modified_image(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            image_array = al.ScaledArray(np.ones((4, 4)), pixel_scales=1.0)
             image_array[2, 2] = 2.0
 
-            noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((4, 4)), pixel_scale=1.0
+            noise_map_array = al.ScaledArray(
+                np.ones((4, 4)), pixel_scales=1.0
             )
             noise_map_array[2, 2] = 3.0
 
-            background_noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((4, 4)), pixel_scale=1.0
+            background_noise_map_array = al.ScaledArray(
+                np.ones((4, 4)), pixel_scales=1.0
             )
             background_noise_map_array[2, 2] = 4.0
 
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                np.ones((4, 4)), pixel_scale=1.0
+            exposure_time_map_array = al.ScaledArray(
+                np.ones((4, 4)), pixel_scales=1.0
             )
             exposure_time_map_array[2, 2] = 5.0
 
-            background_sky_map_array = al.ScaledSquarePixelArray(
-                np.ones((4, 4)), pixel_scale=1.0
+            background_sky_map_array = al.ScaledArray(
+                np.ones((4, 4)), pixel_scales=1.0
             )
             background_sky_map_array[2, 2] = 6.0
 
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 exposure_time_map=exposure_time_map_array,
                 background_sky_map=background_sky_map_array,
             )
 
-            modified_image = al.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            modified_image = al.ScaledArray(np.ones((4, 4)), pixel_scales=1.0)
             modified_image[2, 2] = 10.0
 
             imaging_data = imaging_data.new_imaging_data_with_modified_image(
@@ -848,45 +848,45 @@ class TestImagingData:
 
     class TestNewImagingBinnedUp:
         def test__all_components_binned_up_correct(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array = al.ScaledArray(np.ones((6, 6)), pixel_scales=1.0)
             image_array[3:5, 3] = 2.0
             binned_image_util = al.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=image_array, bin_up_factor=2
             )
 
-            noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            noise_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             noise_map_array[3, 3:5] = 3.0
             binned_noise_map_util = al.binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
                 array_2d=noise_map_array, bin_up_factor=2
             )
 
-            background_noise_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            background_noise_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             background_noise_map_array[3:5, 3] = 4.0
             binned_background_noise_map_util = al.binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
                 array_2d=background_noise_map_array, bin_up_factor=2
             )
 
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            exposure_time_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             exposure_time_map_array[3, 3:5] = 5.0
             binned_exposure_time_map_util = al.binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
                 array_2d=exposure_time_map_array, bin_up_factor=2
             )
 
-            background_sky_map_array = al.ScaledSquarePixelArray(
-                np.ones((6, 6)), pixel_scale=1.0
+            background_sky_map_array = al.ScaledArray(
+                np.ones((6, 6)), pixel_scales=1.0
             )
             background_sky_map_array[3, 3:5] = 6.0
             binned_background_sky_map_util = al.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=background_sky_map_array, bin_up_factor=2
             )
 
-            psf = al.PSF(array=np.ones((3, 5)), pixel_scale=1.0)
+            psf = al.PSF(array_1d=np.ones((3, 5)), pixel_scales=1.0)
             psf_util = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5
             )
@@ -933,20 +933,20 @@ class TestImagingData:
         def test__signal_to_noise_limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
             self
         ):
-            image_array = al.ScaledSquarePixelArray(
-                20.0 * np.ones((2, 2)), pixel_scale=1.0
+            image_array = al.ScaledArray(
+                20.0 * np.ones((2, 2)), pixel_scales=1.0
             )
             image_array[1, 1] = 5.0
 
-            noise_map_array = al.ScaledSquarePixelArray(
-                5.0 * np.ones((2, 2)), pixel_scale=1.0
+            noise_map_array = al.ScaledArray(
+                5.0 * np.ones((2, 2)), pixel_scales=1.0
             )
             noise_map_array[1, 1] = 2.0
 
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
                 noise_map=noise_map_array,
                 background_noise_map=1.0 * np.ones((2, 2)),
                 exposure_time_map=2.0 * np.ones((2, 2)),
@@ -974,20 +974,20 @@ class TestImagingData:
         def test__signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
             self
         ):
-            image_array = al.ScaledSquarePixelArray(
-                20.0 * np.ones((2, 2)), pixel_scale=1.0
+            image_array = al.ScaledArray(
+                20.0 * np.ones((2, 2)), pixel_scales=1.0
             )
             image_array[1, 1] = 5.0
 
-            noise_map_array = al.ScaledSquarePixelArray(
-                5.0 * np.ones((2, 2)), pixel_scale=1.0
+            noise_map_array = al.ScaledArray(
+                5.0 * np.ones((2, 2)), pixel_scales=1.0
             )
             noise_map_array[1, 1] = 2.0
 
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
                 noise_map=noise_map_array,
                 background_noise_map=1.0 * np.ones((2, 2)),
                 exposure_time_map=2.0 * np.ones((2, 2)),
@@ -1051,24 +1051,24 @@ class TestImagingData:
 
     class TestNewImageConvertedFrom:
         def test__counts__all_arrays_in_units_of_flux_are_converted(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((3, 3)), pixel_scale=1.0)
-            noise_map_array = al.ScaledSquarePixelArray(
-                2.0 * np.ones((3, 3)), pixel_scale=1.0
+            image_array = al.ScaledArray(np.ones((3, 3)), pixel_scales=1.0)
+            noise_map_array = al.ScaledArray(
+                2.0 * np.ones((3, 3)), pixel_scales=1.0
             )
-            background_noise_map_array = al.ScaledSquarePixelArray(
-                3.0 * np.ones((3, 3)), pixel_scale=1.0
+            background_noise_map_array = al.ScaledArray(
+                3.0 * np.ones((3, 3)), pixel_scales=1.0
             )
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                0.5 * np.ones((3, 3)), pixel_scale=1.0
+            exposure_time_map_array = al.ScaledArray(
+                0.5 * np.ones((3, 3)), pixel_scales=1.0
             )
-            background_sky_map_array = al.ScaledSquarePixelArray(
-                6.0 * np.ones((3, 3)), pixel_scale=1.0
+            background_sky_map_array = al.ScaledArray(
+                6.0 * np.ones((3, 3)), pixel_scales=1.0
             )
 
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 poisson_noise_map=None,
@@ -1086,24 +1086,24 @@ class TestImagingData:
             assert imaging_data.origin == (0.0, 0.0)
 
         def test__adus__all_arrays_in_units_of_flux_are_converted(self):
-            image_array = al.ScaledSquarePixelArray(np.ones((3, 3)), pixel_scale=1.0)
-            noise_map_array = al.ScaledSquarePixelArray(
-                2.0 * np.ones((3, 3)), pixel_scale=1.0
+            image_array = al.ScaledArray(np.ones((3, 3)), pixel_scales=1.0)
+            noise_map_array = al.ScaledArray(
+                2.0 * np.ones((3, 3)), pixel_scales=1.0
             )
-            background_noise_map_array = al.ScaledSquarePixelArray(
-                3.0 * np.ones((3, 3)), pixel_scale=1.0
+            background_noise_map_array = al.ScaledArray(
+                3.0 * np.ones((3, 3)), pixel_scales=1.0
             )
-            exposure_time_map_array = al.ScaledSquarePixelArray(
-                0.5 * np.ones((3, 3)), pixel_scale=1.0
+            exposure_time_map_array = al.ScaledArray(
+                0.5 * np.ones((3, 3)), pixel_scales=1.0
             )
-            background_sky_map_array = al.ScaledSquarePixelArray(
-                6.0 * np.ones((3, 3)), pixel_scale=1.0
+            background_sky_map_array = al.ScaledArray(
+                6.0 * np.ones((3, 3)), pixel_scales=1.0
             )
 
             imaging_data = al.ImagingData(
                 image=image_array,
                 pixel_scale=1.0,
-                psf=al.PSF(np.zeros((3, 3)), pixel_scale=1.0),
+                psf=al.PSF(np.zeros((3, 3)), pixel_scales=1.0),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 poisson_noise_map=None,
@@ -1126,7 +1126,7 @@ class TestImagingData:
 
     class TestNewImageWithPoissonNoiseAdded:
         def test__mock_image_all_1s__poisson_noise_is_added_correct(self):
-            psf = al.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
+            psf = al.PSF(array_1d=np.ones((3, 3)), pixel_scales=3.0, renormalize=False)
             imaging_data = al.ImagingData(
                 image=np.ones((4, 4)),
                 pixel_scale=3.0,
@@ -1528,17 +1528,17 @@ class TestPSF(object):
         def test__init__input_psf__all_attributes_correct_including_data_inheritance(
             self
         ):
-            psf = al.PSF(array=np.ones((3, 3)), pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=np.ones((3, 3)), pixel_scales=1.0, renormalize=False)
 
             assert psf.shape == (3, 3)
-            assert psf.pixel_scale == 1.0
+            assert psf.pixel_scales == 1.0
             assert (psf == np.ones((3, 3))).all()
             assert psf.origin == (0.0, 0.0)
 
-            psf = al.PSF(array=np.ones((4, 3)), pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=np.ones((4, 3)), pixel_scales=1.0, renormalize=False)
 
             assert (psf == np.ones((4, 3))).all()
-            assert psf.pixel_scale == 1.0
+            assert psf.pixel_scales == 1.0
             assert psf.shape == (4, 3)
             assert psf.origin == (0.0, 0.0)
 
@@ -1565,21 +1565,21 @@ class TestPSF(object):
         def test__input_is_already_normalized__no_change(self):
             psf_data = np.ones((3, 3)) / 9.0
 
-            psf = al.PSF(array=psf_data, pixel_scale=1.0, renormalize=True)
+            psf = al.PSF(array_1d=psf_data, pixel_scales=1.0, renormalize=True)
 
             assert psf == pytest.approx(psf_data, 1e-3)
 
         def test__input_is_above_normalization_so_is_normalized(self):
             psf_data = np.ones((3, 3))
 
-            psf = al.PSF(array=psf_data, pixel_scale=1.0, renormalize=True)
+            psf = al.PSF(array_1d=psf_data, pixel_scales=1.0, renormalize=True)
 
             assert psf == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
         def test__same_as_above__renomalized_false_does_not_renormalize(self):
             psf_data = np.ones((3, 3))
 
-            psf = al.PSF(array=psf_data, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=psf_data, pixel_scales=1.0, renormalize=False)
 
             assert psf == pytest.approx(np.ones((3, 3)), 1e-3)
 
@@ -1588,7 +1588,7 @@ class TestPSF(object):
             self
         ):
             array_2d = np.ones((6, 6))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -1596,7 +1596,7 @@ class TestPSF(object):
             assert psf == (1.0 / 9.0) * np.ones((3, 3))
 
             array_2d = np.ones((9, 9))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.333333333333333, renormalize=True
             )
@@ -1604,7 +1604,7 @@ class TestPSF(object):
             assert psf == (1.0 / 9.0) * np.ones((3, 3))
 
             array_2d = np.ones((18, 6))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -1612,7 +1612,7 @@ class TestPSF(object):
             assert psf == (1.0 / 27.0) * np.ones((9, 3))
 
             array_2d = np.ones((6, 18))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -1623,7 +1623,7 @@ class TestPSF(object):
             self
         ):
             array_2d = np.ones((2, 2))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=2.0, renormalize=True
             )
@@ -1631,7 +1631,7 @@ class TestPSF(object):
             assert psf == (1.0 / 25.0) * np.ones((5, 5))
 
             array_2d = np.ones((40, 40))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.1, renormalize=True
             )
@@ -1639,7 +1639,7 @@ class TestPSF(object):
             assert psf == (1.0 / 25.0) * np.ones((5, 5))
 
             array_2d = np.ones((2, 4))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=2.0, renormalize=True
             )
@@ -1647,7 +1647,7 @@ class TestPSF(object):
             assert psf == (1.0 / 45.0) * np.ones((5, 9))
 
             array_2d = np.ones((4, 2))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=2.0, renormalize=True
             )
@@ -1658,7 +1658,7 @@ class TestPSF(object):
             self
         ):
             array_2d = np.ones((6, 4))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -1666,7 +1666,7 @@ class TestPSF(object):
             assert psf == (1.0 / 9.0) * np.ones((3, 3))
 
             array_2d = np.ones((9, 12))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.33333333333, renormalize=True
             )
@@ -1674,7 +1674,7 @@ class TestPSF(object):
             assert psf == (1.0 / 15.0) * np.ones((3, 5))
 
             array_2d = np.ones((4, 6))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.5, renormalize=True
             )
@@ -1682,7 +1682,7 @@ class TestPSF(object):
             assert psf == (1.0 / 9.0) * np.ones((3, 3))
 
             array_2d = np.ones((12, 9))
-            psf = al.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=array_2d, pixel_scales=1.0, renormalize=False)
             psf = psf.new_psf_with_rescaled_odd_dimensioned_array(
                 rescale_factor=0.33333333333, renormalize=True
             )
@@ -1693,7 +1693,7 @@ class TestPSF(object):
         def test__input_is_already_normalized__no_change(self):
             psf_data = np.ones((3, 3)) / 9.0
 
-            psf = al.PSF(array=psf_data, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=psf_data, pixel_scales=1.0, renormalize=False)
 
             psf_new = psf.new_psf_with_renormalized_array()
 
@@ -1702,7 +1702,7 @@ class TestPSF(object):
         def test__input_is_above_normalization_so_is_normalized(self):
             psf_data = np.ones((3, 3))
 
-            psf = al.PSF(array=psf_data, pixel_scale=1.0, renormalize=False)
+            psf = al.PSF(array_1d=psf_data, pixel_scales=1.0, renormalize=False)
 
             psf_new = psf.new_psf_with_renormalized_array()
 
@@ -1712,7 +1712,7 @@ class TestPSF(object):
         def test__kernel_is_not_odd_x_odd__raises_error(self):
             kernel = np.array([[0.0, 1.0], [1.0, 2.0]])
 
-            psf = al.PSF(array=kernel, pixel_scale=1.0)
+            psf = al.PSF(array_1d=kernel, pixel_scales=1.0)
 
             with pytest.raises(exc.ConvolutionException):
                 psf.convolve(np.ones((5, 5)))
@@ -1724,7 +1724,7 @@ class TestPSF(object):
 
             kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-            psf = al.PSF(array=kernel, pixel_scale=1.0)
+            psf = al.PSF(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -1744,7 +1744,7 @@ class TestPSF(object):
 
             kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-            psf = al.PSF(array=kernel, pixel_scale=1.0)
+            psf = al.PSF(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -1769,7 +1769,7 @@ class TestPSF(object):
 
             kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-            psf = al.PSF(array=kernel, pixel_scale=1.0)
+            psf = al.PSF(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -1789,7 +1789,7 @@ class TestPSF(object):
 
             kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-            psf = al.PSF(array=kernel, pixel_scale=1.0)
+            psf = al.PSF(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -1814,7 +1814,7 @@ class TestPSF(object):
 
             kernel = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]])
 
-            psf = al.PSF(array=kernel, pixel_scale=1.0)
+            psf = al.PSF(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -1844,7 +1844,7 @@ class TestPSF(object):
 
             kernel = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]])
 
-            psf = al.PSF(array=kernel, pixel_scale=1.0)
+            psf = al.PSF(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -1874,7 +1874,7 @@ class TestPSF(object):
 
             kernel = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]])
 
-            psf = al.PSF(array=kernel, pixel_scale=1.0)
+            psf = al.PSF(array_1d=kernel, pixel_scales=1.0)
 
             blurred_image = psf.convolve(image)
 
@@ -1920,7 +1920,7 @@ class TestPSF(object):
             )
 
             profile_psf = al.PSF(
-                array=profile_gaussian, pixel_scale=1.0, renormalize=True
+                array_1d=profile_gaussian, pixel_scales=1.0, renormalize=True
             )
 
             imaging_psf = al.PSF.from_gaussian(
@@ -2198,7 +2198,7 @@ class TestSimulateImaging(object):
     def test__setup_image__correct_attributes(self):
         array = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
 
-        psf = al.PSF(array=3.0 * np.ones((3, 3)), pixel_scale=1.0)
+        psf = al.PSF(array_1d=3.0 * np.ones((3, 3)), pixel_scales=1.0)
         noise_map = 5.0 * np.ones((3, 3))
 
         imaging_data = al.SimulatedImagingData(
@@ -2224,7 +2224,7 @@ class TestSimulateImaging(object):
     def test__setup_with_all_features_off(self):
         image = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -2249,11 +2249,11 @@ class TestSimulateImaging(object):
     ):
         image = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
-        background_sky_map = al.ScaledSquarePixelArray.single_value(
+        background_sky_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=16.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -2286,11 +2286,11 @@ class TestSimulateImaging(object):
     ):
         image = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
-        background_sky_map = al.ScaledSquarePixelArray.single_value(
+        background_sky_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=16.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -2339,11 +2339,11 @@ class TestSimulateImaging(object):
         )
 
         psf = al.PSF(
-            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
-            pixel_scale=1.0,
+            array_1d=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -2377,15 +2377,15 @@ class TestSimulateImaging(object):
         )
 
         psf = al.PSF(
-            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
-            pixel_scale=1.0,
+            array_1d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
-        background_sky_map = al.ScaledSquarePixelArray.single_value(
+        background_sky_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=16.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -2415,7 +2415,7 @@ class TestSimulateImaging(object):
     def test__setup_with_noise(self):
         image = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=20.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -2462,11 +2462,11 @@ class TestSimulateImaging(object):
         )
 
         psf = al.PSF(
-            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
-            pixel_scale=1.0,
+            array_1d=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=20.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -2512,15 +2512,15 @@ class TestSimulateImaging(object):
         )
 
         psf = al.PSF(
-            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
-            pixel_scale=1.0,
+            array_1d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
-        background_sky_map = al.ScaledSquarePixelArray.single_value(
+        background_sky_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=16.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -2573,11 +2573,11 @@ class TestSimulateImaging(object):
 
         psf = al.PSF.from_gaussian(shape=(3, 3), sigma=0.1, pixel_scale=0.2)
 
-        exposure_time_map = al.ScaledSquarePixelArray.single_value(
+        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
-        background_sky_map = al.ScaledSquarePixelArray.single_value(
+        background_sky_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -2660,8 +2660,8 @@ class TestSimulateImaging(object):
 
     def test__from_tracer__same_as_manual_tracer_input(self):
         psf = al.PSF(
-            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
-            pixel_scale=1.0,
+            array_1d=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
         grid = al.Grid.from_shape_pixel_scale_and_sub_size(
@@ -2727,7 +2727,7 @@ class TestSimulatePoissonNoise(object):
     def test__input_image_all_0s__exposure_time_all_1s__all_noise_values_are_0s(self):
         image = np.zeros((2, 2))
 
-        exposure_time = al.ScaledSquarePixelArray.single_value(
+        exposure_time = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             1.0, image.shape, pixel_scale=0.1
         )
         simulated_poisson_image = image + al.generate_poisson_noise(
@@ -2742,7 +2742,7 @@ class TestSimulatePoissonNoise(object):
     ):
         image = np.array([[10.0, 0.0], [0.0, 10.0]])
 
-        exposure_time = al.ScaledSquarePixelArray.single_value(
+        exposure_time = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             1.0, image.shape, pixel_scale=0.1
         )
         poisson_noise_map = al.generate_poisson_noise(image, exposure_time, seed=1)
@@ -2763,7 +2763,7 @@ class TestSimulatePoissonNoise(object):
     ):
         image = np.array([[10.0, 10.0], [10.0, 10.0]])
 
-        exposure_time = al.ScaledSquarePixelArray.single_value(
+        exposure_time = al.ScaledArray.from_single_value_shape_and_pixel_scale(
             1.0, image.shape, pixel_scale=0.1
         )
         poisson_noise_map = al.generate_poisson_noise(image, exposure_time, seed=1)
@@ -2783,8 +2783,8 @@ class TestSimulatePoissonNoise(object):
     ):
         image = np.array([[10000000.0, 0.0], [0.0, 10000000.0]])
 
-        exposure_time = al.ScaledSquarePixelArray(
-            array=np.ones((2, 2)), pixel_scale=0.1
+        exposure_time = al.ScaledArray(
+            sub_array_1d=np.ones((2, 2)), pixel_scales=0.1
         )
 
         poisson_noise_map = al.generate_poisson_noise(image, exposure_time, seed=2)
@@ -2808,14 +2808,14 @@ class TestSimulatePoissonNoise(object):
     ):
         image_0 = np.array([[10.0, 0.0], [0.0, 10.0]])
 
-        exposure_time_0 = al.ScaledSquarePixelArray(
-            array=np.ones((2, 2)), pixel_scale=0.1
+        exposure_time_0 = al.ScaledArray(
+            sub_array_1d=np.ones((2, 2)), pixel_scales=0.1
         )
 
         image_1 = np.array([[5.0, 0.0], [0.0, 5.0]])
 
-        exposure_time_1 = al.ScaledSquarePixelArray(
-            array=2.0 * np.ones((2, 2)), pixel_scale=0.1
+        exposure_time_1 = al.ScaledArray(
+            sub_array_1d=2.0 * np.ones((2, 2)), pixel_scales=0.1
         )
 
         simulated_poisson_image_0 = image_0 + al.generate_poisson_noise(
@@ -2830,14 +2830,14 @@ class TestSimulatePoissonNoise(object):
     def test__same_as_above_but_range_of_image_values_and_exposure_times(self):
         image_0 = np.array([[10.0, 20.0], [30.0, 40.0]])
 
-        exposure_time_0 = al.ScaledSquarePixelArray(
-            array=np.array([[2.0, 2.0], [3.0, 4.0]]), pixel_scale=0.1
+        exposure_time_0 = al.ScaledArray(
+            sub_array_1d=np.array([[2.0, 2.0], [3.0, 4.0]]), pixel_scales=0.1
         )
 
         image_1 = np.array([[20.0, 20.0], [45.0, 20.0]])
 
-        exposure_time_1 = al.ScaledSquarePixelArray(
-            array=np.array([[1.0, 2.0], [2.0, 8.0]]), pixel_scale=0.1
+        exposure_time_1 = al.ScaledArray(
+            sub_array_1d=np.array([[1.0, 2.0], [2.0, 8.0]]), pixel_scales=0.1
         )
 
         simulated_poisson_image_0 = image_0 + al.generate_poisson_noise(

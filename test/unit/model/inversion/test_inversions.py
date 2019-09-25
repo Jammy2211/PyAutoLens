@@ -143,10 +143,10 @@ class TestReconstructedDataVectorAndImage:
         matrix_shape = (3, 3)
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -188,10 +188,10 @@ class TestReconstructedDataVectorAndImage:
         matrix_shape = (3, 3)
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 

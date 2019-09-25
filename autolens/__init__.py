@@ -21,13 +21,11 @@ from autolens.array.grids import (
     SparseToGrid,
     Interpolator,
 )
+from autolens.array.geometry import (
+    Geometry,
+)
 from autolens.array.scaled_array import (
-    ArrayGeometry,
-    RectangularArrayGeometry,
-    Array,
     ScaledArray,
-    ScaledSquarePixelArray,
-    ScaledRectangularPixelArray,
 )
 from autolens.array.convolution import Convolver
 from autolens.array.fourier_transform import Transformer

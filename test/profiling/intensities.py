@@ -25,7 +25,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
     )
     mask = al.Mask.circular(
         shape=imaging_data.shape,
-        pixel_scale=imaging_data.pixel_scale,
+        pixel_scales=imaging_data.pixel_scale,
         radius_arcsec=radius_arcsec,
     )
     lens_data = al.LensData(imaging_data=imaging_data, mask=mask, sub_size=sub_size)

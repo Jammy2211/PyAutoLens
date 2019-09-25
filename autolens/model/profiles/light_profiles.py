@@ -107,7 +107,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             centre=centre, axis_ratio=axis_ratio, phi=phi
         )
 
-    @mapping.reshape_returned_array_from_grid_and_psf
+    
     def blurred_profile_image_from_grid_and_psf(
         self, grid, psf, blurring_grid
     ):
@@ -125,7 +125,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
         return psf.convolve(profile_image + blurring_image)
 
-    @mapping.reshape_returned_array_from_grid_and_convolver
+
     def blurred_profile_image_from_grid_and_convolver(
         self, grid, convolver, blurring_grid
     ):
@@ -135,8 +135,8 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         )
 
         if convolver.blurring_mask is None:
-            blurring_mask = grid.mask.blurring_mask_from_psf_shape(
-                psf_shape=convolver.psf.shape
+            blurring_mask = grid.mask.blurring_mask_from_kernel_shape(
+                kernel_shape=convolver.psf.shape
             )
             convolver = convolver.convolver_with_blurring_mask_added(
                 blurring_mask=blurring_mask
@@ -327,7 +327,7 @@ class EllipticalGaussian(EllipticalLightProfile):
             np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))),
         )
 
-    @mapping.reshape_returned_sub_array_from_grid
+    
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def profile_image_from_grid(
@@ -526,7 +526,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
             ),
         )
 
-    @mapping.reshape_returned_sub_array_from_grid
+    
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def profile_image_from_grid(

@@ -1,6 +1,10 @@
 import autofit as af
 
 
+class GeometryException(Exception):
+    pass
+
+
 class ScaledArrayException(Exception):
     pass
 

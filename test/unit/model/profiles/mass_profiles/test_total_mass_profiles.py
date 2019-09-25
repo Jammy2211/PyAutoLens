@@ -142,7 +142,7 @@ class TestPointMass(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -572,7 +572,7 @@ class TestCoredPowerLaw(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
         true_deflections = cored_power_law.deflections_from_grid(grid=grid, bypass_decorator=True)
@@ -621,7 +621,7 @@ class TestCoredPowerLaw(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
         true_deflections = cored_power_law.deflections_from_grid(grid=grid, bypass_decorator=True)
@@ -1035,7 +1035,7 @@ class TestPowerLaw(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1079,7 +1079,7 @@ class TestPowerLaw(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1464,7 +1464,7 @@ class TestCoredIsothermal(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1509,7 +1509,7 @@ class TestCoredIsothermal(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1834,7 +1834,7 @@ class TestIsothermal(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1877,7 +1877,7 @@ class TestIsothermal(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 

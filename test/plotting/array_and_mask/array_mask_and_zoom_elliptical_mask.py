@@ -14,7 +14,7 @@ array = imaging_data.image
 
 mask = al.Mask.elliptical(
     shape=imaging_data.shape,
-    pixel_scale=imaging_data.pixel_scale,
+    pixel_scales=imaging_data.pixel_scale,
     major_axis_radius_arcsec=6.0,
     axis_ratio=0.5,
     phi=0.0,
@@ -36,7 +36,7 @@ array = imaging_data.image
 
 mask = al.Mask.elliptical(
     shape=imaging_data.shape,
-    pixel_scale=imaging_data.pixel_scale,
+    pixel_scales=imaging_data.pixel_scale,
     major_axis_radius_arcsec=6.0,
     axis_ratio=0.5,
     phi=0.0,

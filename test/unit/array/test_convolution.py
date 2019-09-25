@@ -1459,19 +1459,19 @@ class TestCompareToFull2dConv:
         # Setup a blurred datas_, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
 
         im = np.arange(900).reshape(30, 30)
-        psf = al.PSF(array=np.arange(49).reshape(7, 7), pixel_scale=1.0)
+        psf = al.PSF(array_1d=np.arange(49).reshape(7, 7), pixel_scales=1.0)
         blurred_im = psf.convolve(im)
         mask = al.Mask.circular(
-            shape=(30, 30), pixel_scale=1.0, sub_size=1, radius_arcsec=4.0
+            shape=(30, 30), pixel_scales=1.0, sub_size=1, radius_arcsec=4.0
         )
-        blurred_masked_im_0 = mask.mapping.array_1d_from_array_2d(blurred_im)
+        blurred_masked_im_0 = mask.mapping.scaled_array_from_array_2d(blurred_im)
 
         # Now reproduce this datas_ using the frame convolver_image
 
-        blurring_mask = mask.blurring_mask_from_psf_shape(psf.shape)
+        blurring_mask = mask.blurring_mask_from_kernel_shape(psf.shape)
         convolver = al.Convolver(mask=mask, blurring_mask=blurring_mask, psf=psf)
-        im_1d = mask.mapping.array_1d_from_array_2d(im)
-        blurring_im_1d = blurring_mask.mapping.array_1d_from_array_2d(im)
+        im_1d = mask.mapping.scaled_array_from_array_2d(im)
+        blurring_im_1d = blurring_mask.mapping.scaled_array_from_array_2d(im)
         blurred_masked_im_1 = convolver.convolve_image(
             image_array=im_1d, blurring_array=blurring_im_1d
         )

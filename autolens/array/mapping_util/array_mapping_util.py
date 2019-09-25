@@ -193,30 +193,30 @@ def sub_array_2d_from_sub_array_1d_mask_and_sub_size(sub_array_1d, mask, sub_siz
 
     sub_shape = (mask.shape[0] * sub_size, mask.shape[1] * sub_size)
 
-    sub_one_to_two = mask_mapping_util.sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(
+    sub_one_to_two = mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_size(
         mask=mask, sub_size=sub_size
     ).astype(
         "int"
     )
 
-    return sub_array_2d_from_sub_array_1d_sub_shape_and_sub_mask_1d_index_to_submask_index(
+    return sub_array_2d_from_sub_array_1d_sub_shape_and_sub_mask_1d_index_to_sub_mask_2d_index(
         sub_array_1d=sub_array_1d,
         sub_shape=sub_shape,
-        sub_mask_1d_index_to_submask_index=sub_one_to_two,
+        sub_mask_1d_index_to_sub_mask_2d_index=sub_one_to_two,
     )
 
 
 @decorator_util.jit()
-def sub_array_2d_from_sub_array_1d_sub_shape_and_sub_mask_1d_index_to_submask_index(
-    sub_array_1d, sub_shape, sub_mask_1d_index_to_submask_index
+def sub_array_2d_from_sub_array_1d_sub_shape_and_sub_mask_1d_index_to_sub_mask_2d_index(
+    sub_array_1d, sub_shape, sub_mask_1d_index_to_sub_mask_2d_index
 ):
 
     array_2d = np.zeros(sub_shape)
 
-    for index in range(len(sub_mask_1d_index_to_submask_index)):
+    for index in range(len(sub_mask_1d_index_to_sub_mask_2d_index)):
         array_2d[
-            sub_mask_1d_index_to_submask_index[index, 0],
-            sub_mask_1d_index_to_submask_index[index, 1],
+            sub_mask_1d_index_to_sub_mask_2d_index[index, 0],
+            sub_mask_1d_index_to_sub_mask_2d_index[index, 1],
         ] = sub_array_1d[index]
 
     return array_2d

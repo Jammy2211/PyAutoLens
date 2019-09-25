@@ -7,9 +7,6 @@ from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
-from autolens.array.mapping import reshape_returned_sub_array_from_grid, reshape_returned_grid_from_grid
-
-
 class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
     @af.map_types
     def __init__(self, centre: dim.Position = (0.0, 0.0), kappa: float = 0.0):
@@ -26,19 +23,19 @@ class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
         super(MassSheet, self).__init__(centre=centre)
         self.kappa = kappa
 
-    @reshape_returned_sub_array_from_grid
+
     def convergence_from_grid(
         self, grid, bypass_decorator=False
     ):
         return np.full(shape=grid.shape[0], fill_value=self.kappa)
 
-    @reshape_returned_sub_array_from_grid
+
     def potential_from_grid(
         self, grid, bypass_decorator=False
     ):
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_grid_from_grid
+
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(
@@ -88,19 +85,19 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
     ):
         return 0.0
 
-    @reshape_returned_sub_array_from_grid
+
     def convergence_from_grid(
         self, grid, bypass_decorator=False
     ):
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_sub_array_from_grid
+
     def potential_from_grid(
         self, grid, bypass_decorator=False
     ):
         return np.zeros((grid.shape[0],))
 
-    @reshape_returned_grid_from_grid
+
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(

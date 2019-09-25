@@ -95,8 +95,8 @@ class TestLikelihood:
         # Thus the chi squared is 4.0**2.0 + 3.0**2.0 = 25.0
 
         psf = al.PSF(
-            array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
-            pixel_scale=1.0,
+            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            pixel_scales=1.0,
         )
 
         imaging_data = al.ImagingData(
@@ -105,14 +105,14 @@ class TestLikelihood:
         imaging_data.image[1, 2] = 4.0
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, True, True],
                     [True, False, False, True],
                     [True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -198,8 +198,8 @@ class TestLikelihood:
         # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
         psf = al.PSF(
-            array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
-            pixel_scale=1.0,
+            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
+            pixel_scales=1.0,
         )
 
         imaging_data = al.ImagingData(
@@ -208,14 +208,14 @@ class TestLikelihood:
         imaging_data.image[1, 2] = 4.0
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, True, True],
                     [True, False, False, True],
                     [True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -307,8 +307,8 @@ class TestLikelihood:
         # This reduces the chi squared to 2.0 instead of 4.0
 
         psf = al.PSF(
-            array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
-            pixel_scale=1.0,
+            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
+            pixel_scales=1.0,
         )
 
         imaging_data = al.ImagingData(
@@ -317,14 +317,14 @@ class TestLikelihood:
         imaging_data.image[1, 2] = 4.0
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, True, True],
                     [True, False, False, True],
                     [True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -417,8 +417,8 @@ class TestLikelihood:
     def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
         psf = al.PSF(
-            array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
-            pixel_scale=1.0,
+            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            pixel_scales=1.0,
         )
 
         imaging_data = al.ImagingData(
@@ -427,14 +427,14 @@ class TestLikelihood:
         imaging_data.image[1, 2] = 4.0
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, True, True],
                     [True, False, False, True],
                     [True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -523,8 +523,8 @@ class TestLikelihood:
     ):
 
         psf = al.PSF(
-            array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
-            pixel_scale=1.0,
+            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            pixel_scales=1.0,
         )
 
         imaging_data = al.ImagingData(
@@ -533,14 +533,14 @@ class TestLikelihood:
         imaging_data.image[1, 2] = 4.0
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, True, True],
                     [True, False, False, True],
                     [True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -627,8 +627,8 @@ class TestLikelihood:
     def test__hyper_noise_map_max_changes_noise_map__reflected_in_likelihood(self):
 
         psf = al.PSF(
-            array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
-            pixel_scale=1.0,
+            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            pixel_scales=1.0,
         )
 
         imaging_data = al.ImagingData(
@@ -637,14 +637,14 @@ class TestLikelihood:
         imaging_data.image[1, 2] = 4.0
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, True, True],
                     [True, False, False, True],
                     [True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 

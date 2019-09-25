@@ -265,7 +265,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @mapping.reshape_returned_sub_array_from_grid
+    
     def profile_image_from_grid(
         self, grid,
     ):
@@ -316,7 +316,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             bypass_decorator=False,
         )
 
-    @mapping.reshape_returned_sub_array_from_grid
+    
     def convergence_from_grid(
         self, grid,
     ):
@@ -332,7 +332,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             ]
         )
 
-    @mapping.reshape_returned_sub_array_from_grid
+    
     def potential_from_grid(
         self, grid,
     ):
@@ -348,7 +348,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             ]
         )
 
-    @mapping.reshape_returned_grid_from_grid
+    
     def deflections_from_grid(
         self, grid,
     ):
@@ -422,7 +422,7 @@ class AbstractTracerData(AbstractTracerLensing):
     def __init__(self, planes, cosmology):
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
 
-    @mapping.reshape_returned_array_from_grid_and_psf
+    
     def blurred_profile_image_from_grid_and_psf(
         self, grid, psf, blurring_grid,
     ):
@@ -479,7 +479,7 @@ class AbstractTracerData(AbstractTracerLensing):
             for (plane_index, plane) in enumerate(self.planes)
         ]
 
-    @mapping.reshape_returned_array_from_grid_and_convolver
+
     def blurred_profile_image_from_grid_and_convolver(
         self, grid, convolver, blurring_grid,
     ):
@@ -499,8 +499,8 @@ class AbstractTracerData(AbstractTracerLensing):
         )
 
         if convolver.blurring_mask is None:
-            blurring_mask = grid.mask.blurring_mask_from_psf_shape(
-                psf_shape=convolver.psf.shape
+            blurring_mask = grid.mask.blurring_mask_from_kernel_shape(
+                kernel_shape=convolver.psf.shape
             )
             convolver = convolver.convolver_with_blurring_mask_added(
                 blurring_mask=blurring_mask

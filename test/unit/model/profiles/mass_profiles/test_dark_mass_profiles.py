@@ -960,7 +960,7 @@ class TestGeneralizedNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1220,7 +1220,7 @@ class TestTruncatedNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1828,7 +1828,7 @@ class TestNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1872,7 +1872,7 @@ class TestNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 

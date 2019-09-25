@@ -40,7 +40,7 @@ imaging_data = simulation_util.load_test_imaging_data(
 # The phase is passed the mask we setup below using the radii specified above.
 mask = al.Mask.circular_annular(
     shape=imaging_data.shape,
-    pixel_scale=imaging_data.pixel_scale,
+    pixel_scales=imaging_data.pixel_scale,
     inner_radius_arcsec=inner_radius_arcsec,
     outer_radius_arcsec=outer_radius_arcsec,
 )

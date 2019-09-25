@@ -83,10 +83,10 @@ def make_pipeline(
 
             ## Lens Mass, Move centre priors to centre of lens light ###
 
-            self.galaxies.lens.mass.centre = (
+            self.galaxies.lens.mass.mask_centre = (
                 results.from_phase("phase_1__lens_sersic")
                 .variable_absolute(a=0.1)
-                .galaxies.lens.light.centre
+                .galaxies.lens.light.mask_centre
             )
 
     phase2 = LensSubtractedPhase(
@@ -178,9 +178,9 @@ def make_pipeline(
 
             ### Lens Light, Sersic -> Sersic ###
 
-            self.galaxies.lens.light_mass.centre = results.from_phase(
+            self.galaxies.lens.light_mass.mask_centre = results.from_phase(
                 "phase_3__lens_sersic_sie__source_sersic"
-            ).variable.galaxies.lens.light.centre
+            ).variable.galaxies.lens.light.mask_centre
 
             self.galaxies.lens.light_mass.axis_ratio = results.from_phase(
                 "phase_3__lens_sersic_sie__source_sersic"
@@ -206,14 +206,14 @@ def make_pipeline(
 
             if pipeline_align_light_dark_centre:
 
-                self.galaxies.lens.dark.centre = self.galaxies.light_mass.centre
+                self.galaxies.lens.dark.mask_centre = self.galaxies.light_mass.mask_centre
 
             elif not pipeline_align_light_dark_centre:
 
-                self.galaxies.lens.dark.centre = (
+                self.galaxies.lens.dark.mask_centre = (
                     results.from_phase("phase_3__lens_sersic_sie__source_sersic")
                     .variable_absolute(a=0.05)
-                    .galaxies.lens.mass.centre
+                    .galaxies.lens.mass.mask_centre
                 )
 
             ### Lens Shear, Shear -> Shear ###

@@ -8,25 +8,25 @@ class MockGalaxy(object):
         self.value = value
         self.shape = shape
 
-    @reshape_returned_sub_array_from_grid
+
     def profile_image_from_grid(
         self, grid, bypass_decorator=False
     ):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    @reshape_returned_sub_array_from_grid
+
     def convergence_from_grid(
         self, grid, bypass_decorator=False
     ):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    @reshape_returned_sub_array_from_grid
+
     def potential_from_grid(
         self, grid, bypass_decorator=False
     ):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    @reshape_returned_grid_from_grid
+
     def deflections_from_grid(
         self, grid, bypass_decorator=False
     ):

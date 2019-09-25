@@ -124,23 +124,23 @@ class NoiseMap(abstract_data.AbstractNoiseMap):
     pass
 
 
-class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
+class PrimaryBeam(scaled_array.ScaledArray):
 
     # noinspection PyUnusedLocal
-    def __init__(self, array, pixel_scale, renormalize=False, **kwargs):
+    def __init__(self, array_1d, pixel_scales, renormalize=False, **kwargs):
         """
         Class storing a 2D Point Spread Function (PrimaryBeam), including its blurring kernel.
 
         Parameters
         ----------
-        array : ndarray
+        array_1d : ndarray
             The 2d PrimaryBeam blurring kernel.
         renormalize : bool
             Renormalize the PrimaryBeam such that he sum of kernel values total 1.0?
         """
 
         # noinspection PyArgumentList
-        super().__init__(array=array, pixel_scale=pixel_scale)
+        super().__init__(array_1d=array_1d, pixel_scales=pixel_scales)
         if renormalize:
             self[:, :] = np.divide(self, np.sum(self))
 
@@ -164,7 +164,7 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
             grid=grid
         )
 
-        return PrimaryBeam(array=gaussian, pixel_scale=pixel_scale, renormalize=True)
+        return PrimaryBeam(array_1d=gaussian, pixel_scales=pixel_scale, renormalize=True)
 
     @classmethod
     def from_fits_renormalized(cls, file_path, hdu, pixel_scale):
@@ -262,18 +262,18 @@ class PrimaryBeam(scaled_array.ScaledSquarePixelArray):
             self.shape[1] / primary_beam_rescaled.shape[1],
         )
         pixel_scale = (
-            self.pixel_scale * pixel_scale_factors[0],
-            self.pixel_scale * pixel_scale_factors[1],
+            self.pixel_scales * pixel_scale_factors[0],
+            self.pixel_scales * pixel_scale_factors[1],
         )
         return PrimaryBeam(
-            array=primary_beam_rescaled,
-            pixel_scale=np.max(pixel_scale),
+            array_1d=primary_beam_rescaled,
+            pixel_scales=np.max(pixel_scale),
             renormalize=renormalize,
         )
 
     def new_primary_beam_with_renormalized_array(self):
         """Renormalize the PrimaryBeam such that its data_vector values sum to unity."""
-        return PrimaryBeam(array=self, pixel_scale=self.pixel_scale, renormalize=True)
+        return PrimaryBeam(array_1d=self, pixel_scales=self.pixel_scales, renormalize=True)
 
     def convolve(self, array_2d):
         """
@@ -476,13 +476,13 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = scaled_array.ScaledSquarePixelArray.single_value(
+            exposure_time_map = scaled_array.ScaledArray.from_single_value_shape_and_pixel_scale(
                 value=exposure_time, shape=image.shape, pixel_scale=pixel_scale
             )
 
         if background_sky_map is None:
 
-            background_sky_map = scaled_array.ScaledSquarePixelArray.single_value(
+            background_sky_map = scaled_array.ScaledArray.from_single_value_shape_and_pixel_scale(
                 value=background_sky_level, shape=image.shape, pixel_scale=pixel_scale
             )
 
@@ -500,11 +500,11 @@ class SimulatedUVPlaneData(UVPlaneData):
                 shape=visibilities.shape, sigma=noise_sigma, noise_seed=noise_seed
             )
             visibilities = visibilities + noise_map_realization
-            noise_map = NoiseMap.single_value(
+            noise_map = NoiseMap.from_single_value_shape_and_pixel_scale(
                 value=noise_sigma, shape=visibilities.shape, pixel_scale=pixel_scale
             )
         else:
-            noise_map = NoiseMap.single_value(
+            noise_map = NoiseMap.from_single_value_shape_and_pixel_scale(
                 value=noise_if_add_noise_false,
                 shape=visibilities.shape,
                 pixel_scale=pixel_scale,

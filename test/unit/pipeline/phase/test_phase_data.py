@@ -60,7 +60,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.mask_function = None
 
         mask_input = al.Mask.circular(
-            shape=imaging_data_7x7.shape, pixel_scale=1, sub_size=1, radius_arcsec=1.5
+            shape=imaging_data_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -73,7 +73,7 @@ class TestPhase(object):
 
         def mask_function(image, sub_size):
             return al.Mask.circular(
-                shape=image.shape, pixel_scale=1, sub_size=sub_size, radius_arcsec=0.3
+                shape=image.shape, pixel_scales=1, sub_size=sub_size, radius_arcsec=0.3
             )
 
         mask_from_function = mask_function(image=imaging_data_7x7.image, sub_size=1)
@@ -103,7 +103,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.inner_mask_radii = 0.5
 
         mask_input = al.Mask.circular(
-            shape=imaging_data_7x7.shape, pixel_scale=1, sub_size=1, radius_arcsec=1.5
+            shape=imaging_data_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -120,7 +120,7 @@ class TestPhase(object):
 
         def mask_function(image, sub_size):
             return al.Mask.circular(
-                shape=image.shape, pixel_scale=1, sub_size=sub_size, radius_arcsec=1.4
+                shape=image.shape, pixel_scales=1, sub_size=sub_size, radius_arcsec=1.4
             )
 
         mask_from_function = mask_function(image=imaging_data_7x7.image, sub_size=1)
@@ -153,7 +153,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.mask_function = None
 
         mask_input = al.Mask.circular(
-            shape=imaging_data_7x7.shape, pixel_scale=1, sub_size=1, radius_arcsec=1.5
+            shape=imaging_data_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
         phase_imaging_7x7.meta_data_fit.sub_size = 1

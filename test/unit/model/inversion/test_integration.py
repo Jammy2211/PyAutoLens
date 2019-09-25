@@ -20,12 +20,12 @@ class TestRectangular:
             ]
         )
 
-        mask = al.Mask(array=mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(array_2d=mask, pixel_scales=1.0, sub_size=1)
 
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
 
         grid = al.Grid(
-            arr=np.array(
+            sub_grid_1d=np.array(
                 [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
             ),
             mask=mask,
@@ -102,12 +102,12 @@ class TestRectangular:
             ]
         )
 
-        mask = al.Mask(array=mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(array_2d=mask, pixel_scales=1.0, sub_size=1)
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
         grid = al.Grid(
-            arr=np.array(
+            sub_grid_1d=np.array(
                 [
                     [0.9, -0.9],
                     [1.0, -1.0],
@@ -202,14 +202,14 @@ class TestRectangular:
             ]
         )
 
-        mask = al.Mask(array=mask, pixel_scale=2.0, sub_size=2)
+        mask = al.Mask(array_2d=mask, pixel_scales=2.0, sub_size=2)
 
         # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
         # happen for a real lensing calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
         grid = al.Grid(
-            arr=np.array(
+            sub_grid_1d=np.array(
                 [
                     [1.0, -1.0],
                     [1.0, -1.0],
@@ -300,10 +300,10 @@ class TestRectangular:
             ]
         )
 
-        mask = al.Mask(array=mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(array_2d=mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid(
-            arr=np.array(
+            sub_grid_1d=np.array(
                 [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]]
             ),
             mask=mask,
@@ -363,10 +363,10 @@ class TestVoronoiMagnification:
     def test__3x3_simple_grid(self):
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -384,7 +384,7 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = al.Grid(arr=grid, mask=mask)
+        grid = al.Grid(sub_grid_1d=grid, mask=mask)
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
@@ -453,16 +453,16 @@ class TestVoronoiMagnification:
     def test__3x3_simple_grid__include_mask(self):
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
         grid = np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
 
-        grid = al.Grid(arr=grid, mask=mask)
+        grid = al.Grid(sub_grid_1d=grid, mask=mask)
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
@@ -519,10 +519,10 @@ class TestVoronoiMagnification:
     def test__3x3_simple_grid__include_mask_and_sub_grid(self):
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=2,
         )
 
@@ -551,7 +551,7 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = al.Grid(arr=grid, mask=mask)
+        grid = al.Grid(sub_grid_1d=grid, mask=mask)
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
@@ -608,7 +608,7 @@ class TestVoronoiMagnification:
     def test__3x3_simple_grid__include_mask_with_offset_centre(self):
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, True, False, True],
                     [True, True, False, False, False],
@@ -617,13 +617,13 @@ class TestVoronoiMagnification:
                     [True, True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
         grid = np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
 
-        grid = al.Grid(arr=grid, mask=mask, sub_size=1)
+        grid = al.Grid(sub_grid_1d=grid, mask=mask, sub_size=1)
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(

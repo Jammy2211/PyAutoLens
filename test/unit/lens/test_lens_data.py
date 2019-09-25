@@ -277,8 +277,8 @@ class TestLensImagingData(object):
             psf=psf,
             noise_map=2.0 * np.ones((19, 19)),
         )
-        mask = al.Mask.unmasked_from_shape_pixel_scale_and_sub_size(
-            shape=(19, 19), pixel_scale=1.0, invert=True, sub_size=8
+        mask = al.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+            shape=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         mask[9, 9] = False
 
@@ -483,8 +483,8 @@ class TestLensUVPlaneData(object):
             noise_map=2.0 * np.ones((19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
-        mask = al.Mask.unmasked_from_shape_pixel_scale_and_sub_size(
-            shape=(19, 19), pixel_scale=1.0, invert=True, sub_size=8
+        mask = al.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+            shape=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         mask[9, 9] = False
 

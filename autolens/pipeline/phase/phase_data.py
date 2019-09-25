@@ -11,7 +11,7 @@ from autolens.pipeline.phase.phase import AbstractPhase
 
 def default_mask_function(image):
     return msk.Mask.circular(
-        shape=image.shape, pixel_scale=image.pixel_scale, sub_size=1, radius_arcsec=3.0
+        shape=image.shape, pixel_scales=image.pixel_scale, sub_size=1, radius_arcsec=3.0
     )
 
 
@@ -73,7 +73,7 @@ class MetaDataFit:
         if self.inner_mask_radii is not None:
             inner_mask = msk.Mask.circular(
                 shape=mask.shape,
-                pixel_scale=mask.pixel_scale,
+                pixel_scales=mask.pixel_scale,
                 radius_arcsec=self.inner_mask_radii,
                 sub_size=self.sub_size,
                 invert=True,

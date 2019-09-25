@@ -2,7 +2,7 @@ from autolens import decorator_util
 import numpy as np
 
 from autolens.array.util import mask_util
-from autolens.array.mapping_util import array_mapping_util, grid_mapping_util
+from autolens.array.mapping_util import grid_mapping_util
 
 
 @decorator_util.jit()

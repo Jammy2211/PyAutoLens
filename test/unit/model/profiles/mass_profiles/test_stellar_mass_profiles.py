@@ -285,7 +285,7 @@ class TestSersic(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -333,7 +333,7 @@ class TestSersic(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -616,7 +616,7 @@ class TestExponential(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -663,7 +663,7 @@ class TestExponential(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -932,7 +932,7 @@ class TestDevVaucouleurs(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -979,7 +979,7 @@ class TestDevVaucouleurs(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1408,7 +1408,7 @@ class TestSersicMassRadialGradient(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1457,7 +1457,7 @@ class TestSersicMassRadialGradient(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scale=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 

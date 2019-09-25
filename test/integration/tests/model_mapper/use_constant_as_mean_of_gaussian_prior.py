@@ -31,11 +31,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             centre_value = results.from_phase(
                 "phase_1"
-            ).constant.galaxies.lens.light.centre
-            self.galaxies.lens.light.centre.centre_0 = af.GaussianPrior(
+            ).constant.galaxies.lens.light.mask_centre
+            self.galaxies.lens.light.mask_centre.centre_0 = af.GaussianPrior(
                 mean=centre_value[0], sigma=0.5
             )
-            self.galaxies.lens.light.centre.centre_1 = af.GaussianPrior(
+            self.galaxies.lens.light.mask_centre.centre_1 = af.GaussianPrior(
                 mean=centre_value[1], sigma=0.5
             )
 
