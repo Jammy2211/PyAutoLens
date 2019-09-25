@@ -355,7 +355,7 @@ class VoronoiMagnification(Voronoi):
         )
 
         return grids.PixelizationGrid(
-            arr=sparse_to_grid.sparse,
+            grid_1d=sparse_to_grid.sparse,
             mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
         )
 
@@ -398,6 +398,6 @@ class VoronoiBrightnessImage(Voronoi):
         )
 
         return grids.PixelizationGrid(
-            arr=sparse_to_grid.sparse,
+            grid_1d=sparse_to_grid.sparse,
             mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
         )

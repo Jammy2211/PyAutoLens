@@ -3,24 +3,20 @@ import autolens as al
 import numpy as np
 
 from autolens import exc
-from autolens.array import mapping
+from autolens.array import geometry, mapping
 from autolens.array.util import mask_util
 
 
 class MockMask(al.Mask):
-    def __new__(cls, array_2d, pixel_scale=1.0, sub_size=1, *args, **kwargs):
+    def __new__(cls, array_2d, pixel_scales=(1.0, 1.0), sub_size=1, origin=(0.0, 0.0), *args, **kwargs):
 
-        obj = np.array(array_2d, dtype="bool").view(cls)
-        obj.pixel_scale = pixel_scale
-        obj.sub_size = sub_size
-        obj.sub_length = int(sub_size ** 2.0)
-        obj.sub_fraction = 1.0 / obj.sub_length
-        obj.origin = (0.0, 0.0)
+        obj = array_2d.view(cls)
+        obj.geometry = geometry.Geometry(shape=obj.shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
         obj.mapping = mapping.Mapping(mask=obj)
-
         return obj
 
-    def __init__(self, array_2d, pixel_scales=1.0, sub_size=1):
+
+    def __init__(self, array_2d, pixel_scales=(1.0, 1.0), sub_size=1, origin=(0.0, 0.0), *args, **kwargs):
         pass
 
     def blurring_mask_from_kernel_shape(self, kernel_shape):
@@ -40,7 +36,7 @@ class MockMask(al.Mask):
             self, kernel_shape
         )
 
-        return MockMask(array_2d=blurring_mask, pixel_scales=self.pixel_scale)
+        return MockMask(array_2d=blurring_mask, pixel_scales=self.pixel_scales)
 
 
 class MockMask1D(np.ndarray):

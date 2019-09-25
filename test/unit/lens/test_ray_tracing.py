@@ -1478,7 +1478,7 @@ class TestAbstractTracerLensing(object):
         def test__x1_plane__padded_image__compare_to_galaxy_images_using_padded_grid_stack(
             self, sub_grid_7x7
         ):
-            padded_grid = sub_grid_7x7.padded_grid_from_psf_shape(psf_shape=(3, 3))
+            padded_grid = sub_grid_7x7.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
 
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1519,7 +1519,7 @@ class TestAbstractTracerLensing(object):
         def test__x3_planes__padded_2d_image_from_plane__mapped_correctly(
             self, sub_grid_7x7
         ):
-            padded_grid = sub_grid_7x7.padded_grid_from_psf_shape(psf_shape=(3, 3))
+            padded_grid = sub_grid_7x7.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
 
             g0 = al.Galaxy(
                 redshift=0.1,
@@ -2654,7 +2654,7 @@ class TestAbstractTracerData(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, g3])
 
-            padded_grid = grid.padded_grid_from_psf_shape(psf_shape=psf.shape)
+            padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.shape)
 
             traced_padded_grids = tracer.traced_grids_of_planes_from_grid(
                 grid=padded_grid

@@ -505,7 +505,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         if len(tangential_critical_curve_indices) == 0:
             return []
 
-        return grid.marching_squares_grid_pixels_to_grid_arcsec(
+        return grid.geometry.marching_squares_grid_pixels_to_grid_arcsec(
             grid_pixels=tangential_critical_curve_indices[0],
             shape=lambda_tangential_2d.shape,
         )
@@ -521,7 +521,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         if len(radial_critical_curve_indices) == 0:
             return []
 
-        return grid.marching_squares_grid_pixels_to_grid_arcsec(
+        return grid.geometry.marching_squares_grid_pixels_to_grid_arcsec(
             grid_pixels=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape
         )
 
@@ -857,7 +857,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
     def plane_image_from_grid(self, grid):
         return lens_util.plane_image_of_galaxies_from_grid(
             shape=grid.mask.shape,
-            grid=grid.unlensed_unsubbed_1d,
+            grid=grid.geometry.grid_1d,
             galaxies=self.galaxies,
         )
 

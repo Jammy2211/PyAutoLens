@@ -154,8 +154,8 @@ class LensImagingData(AbstractLensData):
             ),
         )
 
-        self.blurring_grid = grids.Grid.blurring_grid_from_mask_and_psf_shape(
-            mask=mask, psf_shape=self.trimmed_psf_shape
+        self.blurring_grid = grids.Grid.blurring_grid_from_mask_and_kernel_shape(
+            mask=mask, kernel_shape=self.trimmed_psf_shape
         )
 
         if pixel_scale_interpolation_grid is not None:

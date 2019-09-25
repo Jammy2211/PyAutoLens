@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 
-class TestMapping:
+class TestMappingScaledArray:
 
     def test__mask_1d_index_to_mask_2d_index__compare_to_array_util(self):
 
@@ -333,6 +333,8 @@ class TestMapping:
 
         assert (sub_array_1d == scaled_array.in_1d).all()
 
+class TestMappingGrids:
+
     def test__grid_from_grid_2d__compare_to_util(self):
 
         grid_2d = np.array(
@@ -504,7 +506,6 @@ class TestMapping:
                                     [[10.5, 10.5], [14.5, 14.5]]])
         ).all()
 
-
     def test__sub_grid_2d_from_sub_grid_1d(self):
 
         mask = np.array([[False, False, True], [False, True, False]])
@@ -617,3 +618,64 @@ class TestMapping:
         )
         ).all()
 
+class TestMappingPaddedTrimmedGrids:
+
+    def test__trimmed_array_2d_from_padded_array_1d_and_image_shape(self):
+        mask = al.Mask(array_2d=np.full((4, 4), False), pixel_scales=(1.0, 1.0), sub_size=1)
+
+        mapping = al.Mapping(mask=mask)
+
+        array_1d = np.array(
+            [
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                5.0,
+                6.0,
+                7.0,
+                8.0,
+                9.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                5.0,
+                6.0,
+                7.0,
+            ]
+        )
+
+        array_2d = mapping.trimmed_array_2d_from_padded_array_1d_and_image_shape(
+            padded_array_1d=array_1d, image_shape=(2, 2)
+        )
+
+        assert (array_2d == np.array([[6.0, 7.0], [1.0, 2.0]])).all()
+
+        mask = al.Mask(array_2d=np.full((5, 3), False), pixel_scales=(1.0, 1.0), sub_size=1)
+
+        mapping = al.Mapping(mask=mask)
+
+        array_1d = np.array(
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+        )
+
+        array_2d = mapping.trimmed_array_2d_from_padded_array_1d_and_image_shape(
+            padded_array_1d=array_1d, image_shape=(3, 1)
+        )
+
+        assert (array_2d == np.array([[5.0], [8.0], [2.0]])).all()
+
+        mask = al.Mask(array_2d=np.full((3, 5), False), pixel_scales=(1.0, 1.0), sub_size=1)
+
+        mapping = al.Mapping(mask=mask)
+
+        array_1d = np.array(
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+        )
+
+        array_2d = mapping.trimmed_array_2d_from_padded_array_1d_and_image_shape(
+            padded_array_1d=array_1d, image_shape=(1, 3)
+        )
+
+        assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()

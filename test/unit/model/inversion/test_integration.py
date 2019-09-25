@@ -388,7 +388,7 @@ class TestVoronoiMagnification:
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
+            unmasked_sparse_shape=pix.shape, grid=grid.geometry.grid_1d
         )
 
         pixelization_grid = MockPixelizationGrid(
@@ -466,7 +466,7 @@ class TestVoronoiMagnification:
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
+            unmasked_sparse_shape=pix.shape, grid=grid.geometry.grid_1d
         )
 
         pixelization_grid = MockPixelizationGrid(
@@ -555,7 +555,7 @@ class TestVoronoiMagnification:
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
+            unmasked_sparse_shape=pix.shape, grid=grid.geometry.grid_1d
         )
 
         pixelization_grid = MockPixelizationGrid(
@@ -627,7 +627,7 @@ class TestVoronoiMagnification:
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=grid.unlensed_unsubbed_1d
+            unmasked_sparse_shape=pix.shape, grid=grid.geometry.grid_1d
         )
 
         pixelization_grid = MockPixelizationGrid(

@@ -33,9 +33,6 @@ class Mask(np.ndarray):
         # noinspection PyArgumentList
 
         obj = array_2d.view(cls)
-
-
-
         obj.geometry = geometry.Geometry(shape=obj.shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
         obj.mapping = mapping.Mapping(mask=obj)
         return obj

@@ -200,8 +200,8 @@ class Galaxy(af.ModelObject):
         )
 
         if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
-                psf_shape=psf.shape
+            preload_blurring_grid = grid.blurring_grid_from_kernel_shape(
+                kernel_shape=psf.shape
             )
 
         blurring_image = self.profile_image_from_grid(
@@ -228,8 +228,8 @@ class Galaxy(af.ModelObject):
         )
 
         if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_psf_shape(
-                psf_shape=convolver.psf.shape
+            preload_blurring_grid = grid.blurring_grid_from_kernel_shape(
+                kernel_shape=convolver.psf.shape
             )
 
         blurring_image = self.profile_image_from_grid(
@@ -589,7 +589,7 @@ class Galaxy(af.ModelObject):
         if len(tangential_critical_curve_indices) == 0:
             return []
 
-        return grid.marching_squares_grid_pixels_to_grid_arcsec(
+        return grid.geometry.marching_squares_grid_pixels_to_grid_arcsec(
             grid_pixels=tangential_critical_curve_indices[0],
             shape=lambda_tangential_2d.shape,
         )
@@ -605,7 +605,7 @@ class Galaxy(af.ModelObject):
         if len(radial_critical_curve_indices) == 0:
             return []
 
-        return grid.marching_squares_grid_pixels_to_grid_arcsec(
+        return grid.geometry.marching_squares_grid_pixels_to_grid_arcsec(
             grid_pixels=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape
         )
 
