@@ -4,21 +4,19 @@ import autolens as al
 
 
 class MockGrid(al.Grid):
-    def __new__(cls, mask, pixel_scale=1.0, sub_size=2, *args, **kwargs):
-        grid = al.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask, pixel_scales=(pixel_scale, pixel_scale), sub_size=sub_size
+    def __new__(cls, mask, *args, **kwargs):
+        sub_grid_1d = al.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+            mask=mask, pixel_scales=(mask.geometry.pixel_scale, mask.geometry.pixel_scale), sub_size=mask.geometry.sub_size
         )
 
-        obj = grid.view(cls)
+        obj = sub_grid_1d.view(cls)
         obj.mask = mask
-        obj.sub_size = sub_size
-        obj.sub_length = int(obj.sub_size ** 2.0)
-        obj.sub_fraction = 1.0 / obj.sub_length
+        obj.sub_border_1d_indexes = mask.sub_border_1d_indexes
         obj.interpolator = None
-
+        obj.binned = None
         return obj
 
-    def __init__(self, mask, pixel_scale=1.0, sub_size=2):
+    def __init__(self, mask):
         pass
 
 

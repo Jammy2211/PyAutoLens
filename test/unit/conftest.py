@@ -175,7 +175,7 @@ def make_mask_7x7():
         ]
     )
 
-    return mask.Mask(array_2d=array, pixel_scales=1.0, sub_size=1)
+    return mask.Mask(array_2d=array, pixel_scales=(1.0, 1.0), sub_size=1)
 
 
 @pytest.fixture(name="sub_mask_7x7")

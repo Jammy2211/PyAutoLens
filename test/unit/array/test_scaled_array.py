@@ -10,17 +10,6 @@ test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
-
-@pytest.fixture(name="array_grid")
-def make_array_grid():
-    return al.ScaledArray.from_array_2d_and_pixel_scale(np.zeros((5, 5)), pixel_scales=0.5)
-
-
-@pytest.fixture(name="array_grid_rectangular")
-def make_array_grid_rectangular():
-    return al.ScaledArray.from_array_2d_and_pixel_scale(np.zeros((5, 5)), pixel_scales=(1.0, 0.5))
-
-
 class TestConstructorMethods:
 
     def test__square_pixel_array__input_scaled_array__centre_is_origin(self):

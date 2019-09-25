@@ -169,6 +169,23 @@ class Geometry(object):
             origin=self.origin,
         )
 
+    def marching_squares_grid_pixels_to_grid_arcsec(self, grid_pixels, shape):
+
+        grid_arcsec = grid_util.grid_pixels_1d_to_grid_arcsec_1d(
+            grid_pixels_1d=grid_pixels,
+            shape=shape,
+            pixel_scales=(
+                self.pixel_scales[0] / self.sub_size,
+                self.pixel_scales[1] / self.sub_size,
+            ),
+            origin=self.origin,
+        )
+
+        grid_arcsec[:, 0] -= self.pixel_scales[0] / (2.0 * self.sub_size)
+        grid_arcsec[:, 1] += self.pixel_scales[1] / (2.0 * self.sub_size)
+
+        return grid_arcsec
+
     @property
     def grid_1d(self):
         """ The arc second-grid of (y,x) coordinates of every pixel.

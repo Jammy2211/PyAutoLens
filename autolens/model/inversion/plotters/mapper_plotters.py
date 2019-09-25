@@ -62,7 +62,7 @@ def plot_image_and_mapper(
     )
 
     image_grid = convert_grid(
-        grid=mapper.grid.unlensed_unsubbed_1d,
+        grid=mapper.grid.geometry.grid_1d,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
     )
