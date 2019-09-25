@@ -6,51 +6,51 @@ from autolens.array import fourier_transform
 
 class MockImage(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return al.ScaledSquarePixelArray(
-            array=value * np.ones(shape=shape), pixel_scale=pixel_scale
+        return al.ScaledArray(
+            sub_array_1d=value * np.ones(shape=shape), pixel_scales=pixel_scale
         )
 
 
 class MockNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return al.ScaledSquarePixelArray(
-            array=value * np.ones(shape=shape), pixel_scale=pixel_scale
+        return al.ScaledArray(
+            sub_array_1d=value * np.ones(shape=shape), pixel_scales=pixel_scale
         )
 
 
 class MockBackgroundNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return al.ScaledSquarePixelArray(
-            array=value * np.ones(shape=shape), pixel_scale=pixel_scale
+        return al.ScaledArray(
+            sub_array_1d=value * np.ones(shape=shape), pixel_scales=pixel_scale
         )
 
 
 class MockPoissonNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return al.ScaledSquarePixelArray(
-            array=value * np.ones(shape=shape), pixel_scale=pixel_scale
+        return al.ScaledArray(
+            sub_array_1d=value * np.ones(shape=shape), pixel_scales=pixel_scale
         )
 
 
 class MockExposureTimeMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return al.ScaledSquarePixelArray(
-            array=value * np.ones(shape=shape), pixel_scale=pixel_scale
+        return al.ScaledArray(
+            sub_array_1d=value * np.ones(shape=shape), pixel_scales=pixel_scale
         )
 
 
 class MockBackgrondSkyMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return al.ScaledSquarePixelArray(
-            array=value * np.ones(shape=shape), pixel_scale=pixel_scale
+        return al.ScaledArray(
+            sub_array_1d=value * np.ones(shape=shape), pixel_scales=pixel_scale
         )
 
 
 class MockPSF(object):
     def __new__(cls, shape, value, pixel_scale=1.0, *args, **kwargs):
         return al.PSF(
-            array=value * np.ones(shape=shape),
-            pixel_scale=pixel_scale,
+            array_1d=value * np.ones(shape=shape),
+            pixel_scales=pixel_scale,
             origin=(0.0, 0.0),
         )
 
@@ -106,8 +106,8 @@ class MockImagingData(al.ImagingData):
 class MockPrimaryBeam(object):
     def __new__(cls, shape, value, pixel_scale=1.0, *args, **kwargs):
         return al.PSF(
-            array=value * np.ones(shape=shape),
-            pixel_scale=pixel_scale,
+            array_1d=value * np.ones(shape=shape),
+            pixel_scales=pixel_scale,
             origin=(0.0, 0.0),
         )
 

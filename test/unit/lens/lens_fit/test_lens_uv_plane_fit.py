@@ -83,14 +83,14 @@ class TestLikelihood:
         uv_plane_data.visibilities[0, 1] = 4.0
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, True, True],
                     [True, False, False, True],
                     [True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -150,14 +150,14 @@ class TestLikelihood:
         )
 
         mask = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, True, True, True],
                     [True, False, False, False, True],
                     [True, True, True, True, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 

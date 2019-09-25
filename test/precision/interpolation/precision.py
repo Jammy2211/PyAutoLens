@@ -31,7 +31,7 @@ for data_resolution in ["HST_Up"]:
     )
     mask = al.Mask.circular_annular(
         shape=imaging_data.shape,
-        pixel_scale=imaging_data.pixel_scale,
+        pixel_scales=imaging_data.pixel_scale,
         inner_radius_arcsec=inner_radius_arcsec,
         outer_radius_arcsec=outer_radius_arcsec,
     )
@@ -69,10 +69,10 @@ for data_resolution in ["HST_Up"]:
 
     true_deflections = mass_profile.deflections_from_grid(grid=lens_data.grid)
 
-    true_deflections_y_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    true_deflections_y_2d = lens_data.grid.scaled_array_from_sub_array_1d(
         sub_array_1d=true_deflections[:, 0]
     )
-    true_deflections_x_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    true_deflections_x_2d = lens_data.grid.scaled_array_from_sub_array_1d(
         sub_array_1d=true_deflections[:, 1]
     )
 
@@ -86,10 +86,10 @@ for data_resolution in ["HST_Up"]:
     print("interpolation x uncertainty: ", np.std(difference_x))
     print("interpolation x max error: ", np.max(difference_x))
 
-    difference_y_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    difference_y_2d = lens_data.grid.scaled_array_from_sub_array_1d(
         sub_array_1d=difference_y
     )
-    difference_x_2d = lens_data.grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+    difference_x_2d = lens_data.grid.scaled_array_from_sub_array_1d(
         sub_array_1d=difference_x
     )
 

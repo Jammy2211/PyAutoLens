@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 
 from autolens import decorator_util
 from autolens import exc
-from autolens.array import mask as msk, scaled_array
+from autolens.array import mask as msk, geometry
 from autolens.array.util import grid_util, array_util, mask_util, binning_util
 from autolens.array.mapping_util import (
     array_mapping_util,
@@ -15,7 +15,7 @@ from autolens.array.mapping_util import (
 
 
 class Grid(np.ndarray):
-    def __new__(cls, arr, mask, binned=None, *args, **kwargs):
+    def __new__(cls, sub_grid_1d, mask, binned=None, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right. 
         
@@ -127,7 +127,7 @@ class Grid(np.ndarray):
                  grid[8] = [0.25, -0.25]
 
         """
-        obj = arr.view(cls)
+        obj = sub_grid_1d.view(cls)
         obj.mask = mask
         obj.sub_border_1d_indexes = mask.sub_border_1d_indexes
         obj.interpolator = None
@@ -159,7 +159,7 @@ class Grid(np.ndarray):
             mask=mask, pixel_scales=mask.pixel_scales, sub_size=mask.sub_size
         )
 
-        return Grid(arr=sub_grid_masked, mask=mask)
+        return Grid(sub_grid_1d=sub_grid_masked, mask=mask)
 
     @classmethod
     def from_shape_pixel_scale_and_sub_size(cls, shape, pixel_scale, sub_size):
@@ -179,15 +179,15 @@ class Grid(np.ndarray):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         """
 
-        mask = msk.Mask.unmasked_from_shape_pixel_scale_and_sub_size(
-            shape=shape, pixel_scale=pixel_scale, sub_size=sub_size
+        mask = msk.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+            shape=shape, pixel_scales=pixel_scale, sub_size=sub_size
         )
 
         grid = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask, pixel_scales=mask.pixel_scales, sub_size=sub_size
         )
 
-        return Grid(arr=grid, mask=mask)
+        return Grid(sub_grid_1d=grid, mask=mask)
 
     @classmethod
     def blurring_grid_from_mask_and_psf_shape(cls, mask, psf_shape):
@@ -249,7 +249,7 @@ class Grid(np.ndarray):
         |x|x|x|x|x|x|x|x|x|
         """
 
-        blurring_mask = mask.blurring_mask_from_psf_shape(psf_shape=psf_shape)
+        blurring_mask = mask.blurring_mask_from_kernel_shape(kernel_shape=psf_shape)
 
         return Grid.from_mask(mask=blurring_mask)
 
@@ -261,9 +261,28 @@ class Grid(np.ndarray):
     def mapping(self):
         return self.mask.mapping
 
+    @classmethod
+    def from_sub_grid_2d_and_mapping(cls, sub_grid_2d, mapping):
+        sub_grid_1d = mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
+        return MappingGrid(sub_grid_1d=sub_grid_1d, mapping=mapping)
+
+    @property
+    def in_1d(self):
+        return self
+
     @property
     def in_2d(self):
-        return self.mapping.sub_grid_2d_with_sub_dimensions_from_sub_grid_1d(
+        return self.mapping.sub_grid_2d_from_sub_grid_1d(
+            sub_grid_1d=self
+        )
+
+    @property
+    def in_1d_binned(self):
+        return self.mapping.grid_1d_binned_from_sub_grid_1d(sub_grid_1d=self)
+
+    @property
+    def in_2d_binned(self):
+        return self.mapping.grid_2d_binned_from_sub_grid_1d(
             sub_grid_1d=self
         )
 
@@ -271,7 +290,7 @@ class Grid(np.ndarray):
     @array_util.Memoizer()
     def unlensed_unsubbed_1d(self):
         return Grid(
-            arr=grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+            sub_grid_1d=grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
                 mask=self.mask, pixel_scales=self.mask.pixel_scales, sub_size=1
             ),
             mask=self.mask,
@@ -281,7 +300,7 @@ class Grid(np.ndarray):
     @property
     def unlensed_1d(self):
         return Grid(
-            arr=grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+            sub_grid_1d=grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
                 mask=self.mask,
                 pixel_scales=self.mask.pixel_scales,
                 sub_size=self.sub_size,
@@ -305,7 +324,7 @@ class Grid(np.ndarray):
     @property
     def unlensed_2d(self):
         return Grid(
-            arr=grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+            sub_grid_1d=grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
                 sub_grid_1d=self.unlensed_1d, mask=self.mask, sub_size=self.sub_size
             ),
             mask=self.mask,
@@ -315,7 +334,7 @@ class Grid(np.ndarray):
     @property
     def unlensed_unmasked_2d(self):
         return Grid(
-            arr=grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+            sub_grid_1d=grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
                 mask=np.full(self.mask.shape, False),
                 sub_grid_1d=self.unlensed_unmasked_1d,
                 sub_size=self.sub_size,
@@ -334,7 +353,7 @@ class Grid(np.ndarray):
 
     def blurring_grid_from_psf_shape(self, psf_shape):
 
-        blurring_mask = self.mask.blurring_mask_from_psf_shape(psf_shape=psf_shape)
+        blurring_mask = self.mask.blurring_mask_from_kernel_shape(kernel_shape=psf_shape)
 
         return Grid.from_mask(mask=blurring_mask)
 
@@ -379,9 +398,9 @@ class Grid(np.ndarray):
 
         padded_shape = (shape[0] + psf_shape[0] - 1, shape[1] + psf_shape[1] - 1)
 
-        padded_mask = msk.Mask.unmasked_from_shape_pixel_scale_and_sub_size(
+        padded_mask = msk.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=padded_shape,
-            pixel_scale=self.mask.pixel_scale,
+            pixel_scales=self.mask.pixel_scale,
             sub_size=self.sub_size,
         )
 
@@ -407,7 +426,7 @@ class Grid(np.ndarray):
 
         # TODO : Raise error if padded grid not used here.
 
-        padded_array_2d = self.mapping.array_2d_from_array_1d(array_1d=padded_array_1d)
+        padded_array_2d = self.mapping.scaled_array_from_array_1d(array_1d=padded_array_1d)
         pad_size_0 = self.mask.shape[0] - image_shape[0]
         pad_size_1 = self.mask.shape[1] - image_shape[1]
         return padded_array_2d[
@@ -464,7 +483,7 @@ class Grid(np.ndarray):
 
         blurred_image_2d = psf.convolve(array_2d=padded_array_2d)
 
-        blurred_image_1d = self.mapping.array_1d_from_array_2d(
+        blurred_image_1d = self.mapping.scaled_array_from_array_2d(
             array_2d=blurred_image_2d
         )
 
@@ -490,7 +509,7 @@ class Grid(np.ndarray):
         """
 
         return Grid(
-            arr=self.relocated_grid_from_grid_jit(
+            sub_grid_1d=self.relocated_grid_from_grid_jit(
                 grid=grid, border_grid=self.sub_border_grid
             ),
             mask=grid.mask,
@@ -663,7 +682,7 @@ class BinnedGrid(Grid):
         )
 
         binned_grid = Grid.from_mask(mask=binned_mask)
-        binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.binned_masked_array_1d_to_masked_array_1d_all_frommask_and_bin_up_factor(
+        binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
             mask_2d=mask, bin_up_factor=bin_up_factor
         )
 
@@ -731,7 +750,7 @@ class PixelizationGrid(np.ndarray):
             self.interpolator = obj.interpolator
 
 
-class SparseToGrid(scaled_array.RectangularArrayGeometry):
+class SparseToGrid(geometry.Geometry):
     def __init__(self, sparse_grid, mask_1d_index_to_sparse_1d_index):
         """A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a \
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such \
@@ -786,7 +805,7 @@ class SparseToGrid(scaled_array.RectangularArrayGeometry):
             (grid.masked_shape_arcsec[1] + pixel_scale) / (unmasked_sparse_shape[1]),
         )
 
-        origin = grid.mask.centre
+        origin = grid.mask.mask_centre
 
         unmasked_sparse_grid = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
             shape=unmasked_sparse_shape,
@@ -917,7 +936,7 @@ class Interpolator(object):
 
         rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
 
-        rescaled_mask = mask_util.rescaledmask_frommask_and_rescale_factor(
+        rescaled_mask = mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=rescale_factor
         )
 

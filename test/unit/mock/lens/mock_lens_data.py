@@ -12,17 +12,17 @@ class MockLensImagingData(object):
 
         self.mapping = mask.mapping
         self.mask = mask
-        self._mask_1d = self.mask.mapping.array_1d_from_array_2d(array_2d=self.mask)
+        self._mask_1d = self.mask.mapping.scaled_array_from_array_2d(array_2d=self.mask)
 
         self.grid = grid
         self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
         self.sub_size = self.grid.sub_size
         self.convolver = convolver
 
-        self._image_1d = self.mask.mapping.array_1d_from_array_2d(
+        self._image_1d = self.mask.mapping.scaled_array_from_array_2d(
             array_2d=imaging_data.image
         )
-        self._noise_map_1d = self.mask.mapping.array_1d_from_array_2d(
+        self._noise_map_1d = self.mask.mapping.scaled_array_from_array_2d(
             array_2d=imaging_data.noise_map
         )
 
@@ -37,15 +37,15 @@ class MockLensImagingData(object):
         self.blurring_grid = blurring_grid
         self.preload_pixelization_grids_of_planes = None
 
-    @mapping.reshape_returned_array_no_input
+    
     def image(self):
         return self._image_1d
 
-    @mapping.reshape_returned_array_no_input
+    
     def noise_map(self):
         return self._noise_map_1d
 
-    @mapping.reshape_returned_array_no_input
+    
     def signal_to_noise_map(self):
         return self._image_1d / self._noise_map_1d
 
@@ -57,7 +57,7 @@ class MockLensUVPlaneData(object):
         self.pixel_scale = uv_plane_data.pixel_scale
 
         self.mask = mask
-        self._mask_1d = self.mask.mapping.array_1d_from_array_2d(array_2d=self.mask)
+        self._mask_1d = self.mask.mapping.scaled_array_from_array_2d(array_2d=self.mask)
 
         self.grid = grid
         self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)

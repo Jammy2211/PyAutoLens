@@ -943,7 +943,7 @@ class TestBlurredProfileImages(object):
 
         assert blurred_image_1d == pytest.approx(light_profile_blurred_image_1d, 1.0e-4)
 
-        blurred_image_2d = sub_grid_7x7.mapping.array_2d_from_array_1d(
+        blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
             array_1d=blurred_image_1d
         )
 
@@ -985,7 +985,7 @@ class TestBlurredProfileImages(object):
 
         assert blurred_image_1d == pytest.approx(light_profile_blurred_image_1d, 1.0e-4)
 
-        blurred_image_2d = sub_grid_7x7.mapping.array_2d_from_array_1d(
+        blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
             array_1d=blurred_image_1d
         )
 

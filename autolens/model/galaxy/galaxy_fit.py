@@ -35,11 +35,11 @@ class GalaxyFit(af.DataFit):
     def grid(self):
         return self.galaxy_data.grid
 
-    @mapping.reshape_returned_array_no_input
+    
     def image(self):
         return self._data
 
-    @mapping.reshape_returned_array_no_input
+    
     def noise_map(self):
         return self._noise_map
 
@@ -47,23 +47,23 @@ class GalaxyFit(af.DataFit):
     def mask(self):
         return self.mapping.mask
 
-    @mapping.reshape_returned_array_no_input
+    
     def signal_to_noise_map(self):
         return self._signal_to_noise_map
 
-    @mapping.reshape_returned_array_no_input
+    
     def model_image(self):
         return self._model_data
 
-    @mapping.reshape_returned_array_no_input
+    
     def residual_map(self):
         return self._residual_map
 
-    @mapping.reshape_returned_array_no_input
+    
     def normalized_residual_map(self):
         return self._normalized_residual_map
 
-    @mapping.reshape_returned_array_no_input
+    
     def chi_squared_map(self):
         return self._chi_squared_map
 

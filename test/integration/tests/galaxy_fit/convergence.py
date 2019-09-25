@@ -34,8 +34,8 @@ def galaxy_fit_phase():
         galaxies=[galaxy], grid=grid, return_in_2d=True, bypass_decorator=False
     )
 
-    noise_map = al.ScaledSquarePixelArray(
-        array=np.ones(convergence.shape), pixel_scale=pixel_scale
+    noise_map = al.ScaledArray(
+        sub_array_1d=np.ones(convergence.shape), pixel_scales=pixel_scale
     )
 
     data = al.GalaxyData(

@@ -13,6 +13,13 @@ Big Picture:
 
 - RJLens pipelines.
 
+PyAutoArray:
+
+- Make ScaledArray have a mask, all False if None as default.
+- Move ArrayMappinng classes to ScaledArray, Grids.
+- Remove ArrayRectangularGeometry.
+
+
 UV Plane:
 
 - Model Image / Unmasked Image / visiblities in lens_uv_plane_fit.

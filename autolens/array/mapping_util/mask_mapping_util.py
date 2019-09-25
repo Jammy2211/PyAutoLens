@@ -86,7 +86,7 @@ def mask_1d_index_to_sub_mask_1d_indexes_from_mask(mask, sub_size):
 
 
 @decorator_util.jit()
-def submask_index_to_sub_mask_1d_index_from_sub_mask(sub_mask):
+def sub_mask_2d_index_to_sub_mask_1d_index_from_sub_mask(sub_mask):
     """Create a 2D array which maps every False entry of a 2D mask to its 1D mask array index 2D binned mask. Every \
     True entry is given a value -1.
 
@@ -117,24 +117,24 @@ def submask_index_to_sub_mask_1d_index_from_sub_mask(sub_mask):
     Examples
     --------
     mask_2d = np.full(fill_value=False, shape=(9,9))
-    sub_two_to_one = mask_2d_to_mask_1d_index_frommask(mask_2d=mask_2d)
+    sub_two_to_one = mask_2d_to_mask_1d_index_from_mask_2d(mask_2d=mask_2d)
     """
 
-    submask_index_to_1d_index = np.full(fill_value=-1, shape=sub_mask.shape)
+    sub_mask_2d_index_to_1d_index = np.full(fill_value=-1, shape=sub_mask.shape)
 
     sub_mask_1d_index = 0
 
     for sub_mask_y in range(sub_mask.shape[0]):
         for sub_mask_x in range(sub_mask.shape[1]):
             if sub_mask[sub_mask_y, sub_mask_x] == False:
-                submask_index_to_1d_index[sub_mask_y, sub_mask_x] = sub_mask_1d_index
+                sub_mask_2d_index_to_1d_index[sub_mask_y, sub_mask_x] = sub_mask_1d_index
                 sub_mask_1d_index += 1
 
-    return submask_index_to_1d_index
+    return sub_mask_2d_index_to_1d_index
 
 
 @decorator_util.jit()
-def sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(mask, sub_size):
+def sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_size(mask, sub_size):
     """Compute a 1D array that maps every unmasked sub-pixel to its corresponding 2d pixel using its (y,x) pixel indexes.
 
     For example, for a sub-grid size of 2, f pixel [2,5] corresponds to the first pixel in the masked 1D array:
@@ -169,7 +169,7 @@ def sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(mask, sub_size):
     total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_size(
         mask=mask, sub_size=sub_size
     )
-    sub_mask_1d_index_to_submask_index = np.zeros(shape=(total_sub_pixels, 2))
+    sub_mask_1d_index_to_sub_mask_2d_index = np.zeros(shape=(total_sub_pixels, 2))
     sub_mask_1d_index = 0
 
     for y in range(mask.shape[0]):
@@ -177,10 +177,10 @@ def sub_mask_1d_index_to_submask_index_from_mask_and_sub_size(mask, sub_size):
             if not mask[y, x]:
                 for y1 in range(sub_size):
                     for x1 in range(sub_size):
-                        sub_mask_1d_index_to_submask_index[sub_mask_1d_index, :] = (
+                        sub_mask_1d_index_to_sub_mask_2d_index[sub_mask_1d_index, :] = (
                             (y * sub_size) + y1,
                             (x * sub_size) + x1,
                         )
                         sub_mask_1d_index += 1
 
-    return sub_mask_1d_index_to_submask_index
+    return sub_mask_1d_index_to_sub_mask_2d_index

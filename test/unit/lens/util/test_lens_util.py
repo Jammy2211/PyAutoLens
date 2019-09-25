@@ -20,11 +20,11 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array=np.full(shape=(3, 3), fill_value=False), pixel_scale=1.0, sub_size=1
+            array_2d=np.full(shape=(3, 3), fill_value=False), pixel_scales=1.0, sub_size=1
         )
 
         grid = al.Grid(
-            arr=np.array(
+            sub_grid_1d=np.array(
                 [
                     [-1.0, -1.0],
                     [-1.0, 0.0],
@@ -69,11 +69,11 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array=np.full(shape=(3, 3), fill_value=False), pixel_scale=1.0, sub_size=1
+            array_2d=np.full(shape=(3, 3), fill_value=False), pixel_scales=1.0, sub_size=1
         )
 
         grid = al.Grid(
-            arr=np.array(
+            sub_grid_1d=np.array(
                 [
                     [-1.0, -1.0],
                     [-1.0, 0.0],
@@ -107,11 +107,11 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array=np.full(shape=(2, 3), fill_value=False), pixel_scale=1.0, sub_size=1
+            array_2d=np.full(shape=(2, 3), fill_value=False), pixel_scales=1.0, sub_size=1
         )
 
         grid = al.Grid(
-            arr=np.array(
+            sub_grid_1d=np.array(
                 [
                     [-0.75, -1.0],
                     [-0.75, 0.0],
@@ -142,11 +142,11 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array=np.full(shape=(3, 2), fill_value=False), pixel_scale=1.0, sub_size=1
+            array_2d=np.full(shape=(3, 2), fill_value=False), pixel_scales=1.0, sub_size=1
         )
 
         grid = al.Grid(
-            arr=np.array(
+            sub_grid_1d=np.array(
                 [
                     [-1.0, -0.75],
                     [-1.0, 0.75],
@@ -177,11 +177,11 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array=np.full(shape=(3, 3), fill_value=False), pixel_scale=1.0, sub_size=1
+            array_2d=np.full(shape=(3, 3), fill_value=False), pixel_scales=1.0, sub_size=1
         )
 
         grid = al.Grid(
-            arr=np.array(
+            sub_grid_1d=np.array(
                 [
                     [-1.0, -1.0],
                     [-1.0, 0.0],

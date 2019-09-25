@@ -18,14 +18,14 @@ def do_something():
     )
 
 
-mask_x1 = al.Mask(array=np.array([[False]]), pixel_scale=1.0, sub_size=1)
-grid_10 = al.Grid(arr=np.array([[1.0, 0.0]]), mask=mask_x1)
-grid_01 = al.Grid(arr=np.array([[0.0, 1.0]]), mask=mask_x1)
-grid_11 = al.Grid(arr=np.array([[1.0, 1.0]]), mask=mask_x1)
-grid_00 = al.Grid(arr=np.array([[0.0, 0.0]]), mask=mask_x1)
-grid_minus_11 = al.Grid(arr=np.array([[-1.0, -1.0]]), mask=mask_x1)
-grid_03 = al.Grid(arr=np.array([[0.0, 3.0]]), mask=mask_x1)
-grid_34 = al.Grid(arr=np.array([[3.0, 4.0]]), mask=mask_x1)
+mask_x1 = al.Mask(array_2d=np.array([[False]]), pixel_scales=1.0, sub_size=1)
+grid_10 = al.Grid(sub_grid_1d=np.array([[1.0, 0.0]]), mask=mask_x1)
+grid_01 = al.Grid(sub_grid_1d=np.array([[0.0, 1.0]]), mask=mask_x1)
+grid_11 = al.Grid(sub_grid_1d=np.array([[1.0, 1.0]]), mask=mask_x1)
+grid_00 = al.Grid(sub_grid_1d=np.array([[0.0, 0.0]]), mask=mask_x1)
+grid_minus_11 = al.Grid(sub_grid_1d=np.array([[-1.0, -1.0]]), mask=mask_x1)
+grid_03 = al.Grid(sub_grid_1d=np.array([[0.0, 3.0]]), mask=mask_x1)
+grid_34 = al.Grid(sub_grid_1d=np.array([[3.0, 4.0]]), mask=mask_x1)
 
 
 class TestMemoize(object):

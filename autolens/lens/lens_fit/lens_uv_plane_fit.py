@@ -155,7 +155,7 @@ class LensUVPlaneFit(UVPlaneFit):
             grid=self.grid, transformer=self.transformer, return_in_2d=False
         )
 
-    @mapping.reshape_returned_array_no_input
+    
     def profile_subtracted_visibilities(self):
         return self.visibilities() - self.profile_visibilities()
 

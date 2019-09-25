@@ -452,10 +452,10 @@ class TestImagePassing(object):
 
         instance = analysis.associate_images(instance=instance)
 
-        hyper_lens_image_1d = lens_imaging_data_7x7.mapping.array_1d_from_array_2d(
+        hyper_lens_image_1d = lens_imaging_data_7x7.mapping.scaled_array_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
-        hyper_source_image_1d = lens_imaging_data_7x7.mapping.array_1d_from_array_2d(
+        hyper_source_image_1d = lens_imaging_data_7x7.mapping.scaled_array_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
@@ -495,10 +495,10 @@ class TestImagePassing(object):
 
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        hyper_lens_image_1d = lens_imaging_data_7x7.mapping.array_1d_from_array_2d(
+        hyper_lens_image_1d = lens_imaging_data_7x7.mapping.scaled_array_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
-        hyper_source_image_1d = lens_imaging_data_7x7.mapping.array_1d_from_array_2d(
+        hyper_source_image_1d = lens_imaging_data_7x7.mapping.scaled_array_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 

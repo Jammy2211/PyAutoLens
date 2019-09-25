@@ -2381,7 +2381,7 @@ class TestAbstractPlaneData(object):
                 blurred_g0_image_1d + blurred_g1_image_1d, 1.0e-4
             )
 
-            blurred_image_2d = sub_grid_7x7.mapping.array_2d_from_array_1d(
+            blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
                 array_1d=blurred_image_1d
             )
 
@@ -2509,7 +2509,7 @@ class TestAbstractPlaneData(object):
                 blurred_g0_image_1d + blurred_g1_image_1d, 1.0e-4
             )
 
-            blurred_image_2d = sub_grid_7x7.mapping.array_2d_from_array_1d(
+            blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
                 array_1d=blurred_image_1d
             )
 
@@ -2858,7 +2858,7 @@ class TestAbstractPlaneData(object):
             # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
             # index 0 of the 1D grid and (0,0) of the 2d plane datas_.
 
-            mask = al.Mask(array=np.full((5, 5), False), pixel_scale=1.0, sub_size=1)
+            mask = al.Mask(array_2d=np.full((5, 5), False), pixel_scales=1.0, sub_size=1)
 
             grid = al.Grid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask)
 

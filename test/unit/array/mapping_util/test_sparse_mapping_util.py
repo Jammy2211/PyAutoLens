@@ -15,10 +15,10 @@ class TestSparseToUnmaskedSparse:
     ):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -46,10 +46,10 @@ class TestSparseToUnmaskedSparse:
     ):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -73,10 +73,10 @@ class TestSparseToUnmaskedSparse:
     def test__mask_is_cross__some_pix_pixels_are_masked__omitted_from_mapping(self):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -100,10 +100,10 @@ class TestSparseToUnmaskedSparse:
     def test__same_as_above__different_mask_and_centres(self):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -127,14 +127,14 @@ class TestSparseToUnmaskedSparse:
     def test__same_as_above__but_3x4_mask(self):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, False, True],
                     [False, False, False, False],
                     [True, True, False, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -158,7 +158,7 @@ class TestSparseToUnmaskedSparse:
     def test__same_as_above__but_4x3_mask(self):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, False, True],
                     [True, False, True],
@@ -166,7 +166,7 @@ class TestSparseToUnmaskedSparse:
                     [True, False, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -194,10 +194,10 @@ class TestUnmaskedSparseToSparse:
     ):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -220,10 +220,10 @@ class TestUnmaskedSparseToSparse:
     ):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -242,10 +242,10 @@ class TestUnmaskedSparseToSparse:
     def test__mask_is_cross__some_pix_pixels_are_masked__omitted_from_mapping(self):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -266,10 +266,10 @@ class TestUnmaskedSparseToSparse:
     def test__same_as_above__different_mask_and_centres(self):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -288,14 +288,14 @@ class TestUnmaskedSparseToSparse:
     def test__same_as_above__but_3x4_mask(self):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, True, False, True],
                     [False, False, False, False],
                     [True, True, False, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 
@@ -314,7 +314,7 @@ class TestUnmaskedSparseToSparse:
     def test__same_as_above__but_4x3_mask(self):
 
         ma = al.Mask(
-            array=np.array(
+            array_2d=np.array(
                 [
                     [True, False, True],
                     [True, False, True],
@@ -322,7 +322,7 @@ class TestUnmaskedSparseToSparse:
                     [True, False, True],
                 ]
             ),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             sub_size=1,
         )
 

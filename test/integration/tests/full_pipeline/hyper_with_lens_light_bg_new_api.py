@@ -38,10 +38,10 @@ def make_pipeline(
 
             ## Lens Mass, Move centre priors to centre of lens light ###
 
-            self.galaxies.lens.mass.centre = (
+            self.galaxies.lens.mass.mask_centre = (
                 results.from_phase("phase_1__lens_sersic")
                 .variable_absolute(a=0.1)
-                .galaxies.lens.light.centre
+                .galaxies.lens.light.mask_centre
             )
 
     phase2 = LensSubtractedPhase(

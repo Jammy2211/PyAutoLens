@@ -22,7 +22,7 @@ class AbstractLensData(object):
     ):
 
         self.mask = mask
-        self._mask_1d = mask.mapping.array_1d_from_array_2d(array_2d=mask)
+        self._mask_1d = mask.mapping.scaled_array_from_array_2d(array_2d=mask)
         self.sub_size = mask.sub_size
 
         ### GRIDS ###
@@ -146,10 +146,10 @@ class LensImagingData(AbstractLensData):
 
         self.convolver = Convolver(
             mask=mask,
-            blurring_mask=mask.blurring_mask_from_psf_shape(
-                psf_shape=self.trimmed_psf_shape
+            blurring_mask=mask.blurring_mask_from_kernel_shape(
+                kernel_shape=self.trimmed_psf_shape
             ),
-            psf=self.psf.resized_scaled_array_from_array(
+            psf=self.psf.new_scaled_array_resized_from_new_shape(
                 new_shape=self.trimmed_psf_shape
             ),
         )
@@ -164,11 +164,11 @@ class LensImagingData(AbstractLensData):
                 pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
 
-    @mapping.reshape_returned_array_no_input
+    
     def image(self):
         return self.imaging_data.image
 
-    @mapping.reshape_returned_array_no_input
+    
     def noise_map(self):
         return self.imaging_data.noise_map
 
@@ -176,7 +176,7 @@ class LensImagingData(AbstractLensData):
     def psf(self):
         return self.imaging_data.psf
 
-    @mapping.reshape_returned_array_no_input
+    
     def signal_to_noise_map(self):
         return self.imaging_data.image / self.imaging_data.noise_map
 

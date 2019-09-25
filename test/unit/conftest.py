@@ -175,7 +175,7 @@ def make_mask_7x7():
         ]
     )
 
-    return mask.Mask(array=array, pixel_scale=1.0, sub_size=1)
+    return mask.Mask(array_2d=array, pixel_scales=1.0, sub_size=1)
 
 
 @pytest.fixture(name="sub_mask_7x7")
@@ -192,7 +192,7 @@ def make_sub_mask_7x7():
         ]
     )
 
-    return mock_mask.MockMask(array=array, sub_size=2)
+    return mock_mask.MockMask(array_2d=array, sub_size=2)
 
 
 @pytest.fixture(name="mask_7x7_1_pix")
@@ -209,7 +209,7 @@ def make_mask_7x7_1_pix():
         ]
     )
 
-    return mock_mask.MockMask(array=array)
+    return mock_mask.MockMask(array_2d=array)
 
 
 @pytest.fixture(name="blurring_mask_7x7")
@@ -226,7 +226,7 @@ def make_blurring_mask_7x7():
         ]
     )
 
-    return mock_mask.MockMask(array=array)
+    return mock_mask.MockMask(array_2d=array)
 
 
 @pytest.fixture(name="mask_6x6")
@@ -242,7 +242,7 @@ def make_mask_6x6():
         ]
     )
 
-    return mock_mask.MockMask(array=array)
+    return mock_mask.MockMask(array_2d=array)
 
 
 # MASKED DATA #
@@ -250,12 +250,12 @@ def make_mask_6x6():
 
 @pytest.fixture(name="image_1d_7x7")
 def make_image_1d_7x7(image_7x7, mask_7x7):
-    return mask_7x7.mapping.array_1d_from_array_2d(array_2d=image_7x7)
+    return mask_7x7.mapping.scaled_array_from_array_2d(array_2d=image_7x7)
 
 
 @pytest.fixture(name="noise_map_1d_7x7")
 def make_noise_map_1d_7x7(noise_map_7x7, mask_7x7):
-    return mask_7x7.mapping.array_1d_from_array_2d(array_2d=noise_map_7x7)
+    return mask_7x7.mapping.scaled_array_from_array_2d(array_2d=noise_map_7x7)
 
 
 # GRIDS #
@@ -288,7 +288,7 @@ def make_blurring_grid_7x7(blurring_mask_7x7):
 @pytest.fixture(name="binned_grid_7x7")
 def make_binned_grid_7x7(mask_7x7):
     return mock_grids.MockBinnedGrid.from_mask_and_pixel_scale_binned_grid(
-        mask=mask_7x7, pixel_scale_binned_grid=mask_7x7.pixel_scale
+        mask=mask_7x7, pixel_scale_binned_grid=mask_7x7.pixel_scales
     )
 
 
@@ -549,7 +549,7 @@ def make_mask_function_7x7_1_pix():
             ]
         )
 
-        return mock_mask.MockMask(array=array, sub_size=sub_size)
+        return mock_mask.MockMask(array_2d=array, sub_size=sub_size)
 
     return mask_function_7x7_1_pix
 
@@ -570,7 +570,7 @@ def make_mask_function_7x7():
             ]
         )
 
-        return mask.Mask(array=array, pixel_scale=1.0, sub_size=sub_size)
+        return mask.Mask(array_2d=array, pixel_scales=1.0, sub_size=sub_size)
 
     return mask_function_7x7
 

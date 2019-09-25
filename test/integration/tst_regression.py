@@ -83,7 +83,7 @@ class TestAdvancedModelMapper(object):
         mapper.galaxy_model = galaxy_model
 
         assert light_profile.name_for_prior(light_profile.axis_ratio) == "axis_ratio"
-        assert light_profile.name_for_prior(light_profile.centre.centre_0) == "centre_0"
+        assert light_profile.name_for_prior(light_profile.mask_centre.centre_0) == "centre_0"
 
         assert (
             galaxy_model.name_for_prior(light_profile.axis_ratio)

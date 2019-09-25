@@ -10,8 +10,8 @@ from autolens import array_util
 
 def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
     psf = al.PSF(
-        array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
-        pixel_scale=0.2,
+        array_1d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+        pixel_scales=0.2,
     )
 
     grid = al.Grid.from_shape_pixel_scale_and_sub_size(
@@ -73,7 +73,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     )
 
     mask = al.Mask.circular(
-        shape=imaging_data.image.shape, pixel_scale=0.2, sub_size=2, radius_arcsec=0.8
+        shape=imaging_data.image.shape, pixel_scales=0.2, sub_size=2, radius_arcsec=0.8
     )
 
     lens_data = al.LensImagingData(imaging_data=imaging_data, mask=mask)
@@ -155,7 +155,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     )
 
     mask = al.Mask.circular(
-        shape=imaging_data.image.shape, pixel_scale=0.2, sub_size=1, radius_arcsec=0.8
+        shape=imaging_data.image.shape, pixel_scales=0.2, sub_size=1, radius_arcsec=0.8
     )
 
     lens_data = al.LensImagingData(imaging_data=imaging_data, mask=mask)
