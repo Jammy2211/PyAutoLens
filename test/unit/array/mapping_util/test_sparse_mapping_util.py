@@ -18,7 +18,7 @@ class TestSparseToUnmaskedSparse:
             array_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -49,7 +49,7 @@ class TestSparseToUnmaskedSparse:
             array_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -76,7 +76,7 @@ class TestSparseToUnmaskedSparse:
             array_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -103,7 +103,7 @@ class TestSparseToUnmaskedSparse:
             array_2d=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -134,7 +134,7 @@ class TestSparseToUnmaskedSparse:
                     [True, True, False, True],
                 ]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -166,7 +166,7 @@ class TestSparseToUnmaskedSparse:
                     [True, False, True],
                 ]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -197,7 +197,7 @@ class TestUnmaskedSparseToSparse:
             array_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -223,7 +223,7 @@ class TestUnmaskedSparseToSparse:
             array_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -245,7 +245,7 @@ class TestUnmaskedSparseToSparse:
             array_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -269,7 +269,7 @@ class TestUnmaskedSparseToSparse:
             array_2d=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -295,7 +295,7 @@ class TestUnmaskedSparseToSparse:
                     [True, True, False, True],
                 ]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 
@@ -322,7 +322,7 @@ class TestUnmaskedSparseToSparse:
                     [True, False, True],
                 ]
             ),
-            pixel_scales=1.0,
+            pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
 

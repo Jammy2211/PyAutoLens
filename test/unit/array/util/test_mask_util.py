@@ -53,7 +53,7 @@ class TestTotalPixels:
                         [False, False, False],
                     ]
                 ),
-                pixel_scales=1.0,
+                pixel_scales=(1.0, 1.0),
                 sub_size=1,
             )
 
@@ -83,7 +83,7 @@ class TestTotalPixels:
                 array_2d=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
-                pixel_scales=1.0,
+                pixel_scales=(1.0, 1.0),
                 sub_size=1,
             )
 
@@ -115,7 +115,7 @@ class TestTotalPixels:
                         [True, True, False, True],
                     ]
                 ),
-                pixel_scales=1.0,
+                pixel_scales=(1.0, 1.0),
                 sub_size=1,
             )
 
@@ -148,7 +148,7 @@ class TestTotalPixels:
                         [True, False, True],
                     ]
                 ),
-                pixel_scales=1.0,
+                pixel_scales=(1.0, 1.0),
                 sub_size=1,
             )
 
@@ -315,7 +315,7 @@ class TestMaskCircular(object):
     def test__origin_shifts__downwards__right__diagonal(self):
 
         mask = al.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scale=3.0, radius_arcsec=0.5, centre=(-3, 0)
+            shape=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(-3, 0)
         )
 
         assert mask.shape == (3, 3)
@@ -325,7 +325,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = al.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scale=3.0, radius_arcsec=0.5, centre=(0.0, 3.0)
+            shape=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(0.0, 3.0)
         )
 
         assert mask.shape == (3, 3)
@@ -335,7 +335,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = al.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scale=3.0, radius_arcsec=0.5, centre=(3, 3)
+            shape=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(3, 3)
         )
 
         assert (
@@ -394,18 +394,20 @@ class TestMaskAnnular(object):
         mask = al.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
             shape=(4, 4),
             pixel_scales=(0.5, 1.0),
-            inner_radius_arcsec=0.81,
+            inner_radius_arcsec=1.1,
             outer_radius_arcsec=2.0,
         )
+
+        print(mask)
 
         assert (
             mask
             == np.array(
                 [
-                    [True, True, True, True],
-                    [False, False, False, False],
-                    [False, False, False, False],
-                    [True, True, True, True],
+                    [False, True, True, False],
+                    [False, True, True, False],
+                    [False, True, True, False],
+                    [False, True, True, False],
                 ]
             )
         ).all()
@@ -474,7 +476,7 @@ class TestMaskAnnular(object):
 
         mask = al.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
             shape=(3, 3),
-            pixel_scales=3.0,
+            pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=9.0,
             centre=(3.0, 0.0),
@@ -490,7 +492,7 @@ class TestMaskAnnular(object):
 
         mask = al.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
             shape=(3, 3),
-            pixel_scales=3.0,
+            pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=9.0,
             centre=(0.0, 3.0),
@@ -506,7 +508,7 @@ class TestMaskAnnular(object):
 
         mask = al.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
             shape=(3, 3),
-            pixel_scales=3.0,
+            pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=9.0,
             centre=(-3.0, 3.0),
@@ -648,7 +650,7 @@ class TestMaskAntiAnnular(object):
 
         mask = al.mask_util.mask_circular_anti_annular_from_shape_pixel_scales_and_radii(
             shape=(7, 7),
-            pixel_scales=3.0,
+            pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=1.5,
             outer_radius_arcsec=4.5,
             outer_radius_2_arcsec=8.7,
@@ -967,7 +969,7 @@ class TestMaskElliptical(object):
 
         mask = al.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
             shape=(3, 3),
-            pixel_scales=3.0,
+            pixel_scales=(3.0, 3.0),
             major_axis_radius_arcsec=4.8,
             axis_ratio=0.1,
             phi=45.0,
@@ -981,7 +983,7 @@ class TestMaskElliptical(object):
 
         mask = al.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
             shape=(3, 3),
-            pixel_scales=3.0,
+            pixel_scales=(3.0, 3.0),
             major_axis_radius_arcsec=4.8,
             axis_ratio=0.1,
             phi=45.0,
@@ -995,7 +997,7 @@ class TestMaskElliptical(object):
 
         mask = al.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
             shape=(3, 3),
-            pixel_scales=3.0,
+            pixel_scales=(3.0, 3.0),
             major_axis_radius_arcsec=4.8,
             axis_ratio=0.1,
             phi=45.0,

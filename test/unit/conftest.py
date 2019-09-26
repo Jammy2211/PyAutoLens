@@ -298,7 +298,7 @@ def make_binned_grid_7x7(mask_7x7):
 @pytest.fixture(name="convolver_7x7")
 def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
     return mock_convolution.MockConvolver(
-        mask=mask_7x7, blurring_mask=blurring_mask_7x7, psf=psf_3x3
+        mask=mask_7x7, blurring_mask=blurring_mask_7x7, kernel=psf_3x3
     )
 
 
