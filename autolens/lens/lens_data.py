@@ -149,7 +149,7 @@ class LensImagingData(AbstractLensData):
             blurring_mask=mask.blurring_mask_from_kernel_shape(
                 kernel_shape=self.trimmed_psf_shape
             ),
-            psf=self.psf.new_scaled_array_resized_from_new_shape(
+            kernel=self.psf.new_scaled_array_resized_from_new_shape(
                 new_shape=self.trimmed_psf_shape
             ),
         )

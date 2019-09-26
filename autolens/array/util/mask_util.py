@@ -190,7 +190,7 @@ def mask_circular_annular_from_shape_pixel_scales_and_radii(
      ----------
     shape : (int, int)
         The (y,x) shape of the mask in units of pixels.
-    pixel_scales: float
+    pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
     inner_radius_arcsec : float
         The radius (in arc seconds) of the inner circle outside of which pixels are unmasked.
@@ -291,7 +291,7 @@ def mask_elliptical_from_shape_pixel_scales_and_radius(
      ----------
     shape: (int, int)
         The (y,x) shape of the mask in units of pixels.
-    pixel_scales: float
+    pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
     major_axis_radius_arcsec : float
         The major-axis (in arc seconds) of the ellipse within which pixels are unmasked.
