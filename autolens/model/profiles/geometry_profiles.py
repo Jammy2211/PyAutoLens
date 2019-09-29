@@ -37,12 +37,25 @@ def transform_grid(func):
             A value or coordinate in the same coordinate system as those passed in.
         """
         if not isinstance(grid, TransformedGrid):
-            return func(
+            result = func(
                 profile,
                 profile.transform_grid_to_reference_frame(grid),
                 *args,
                 **kwargs,
             )
+
+            # TODO : Clean this up.
+
+            if hasattr(grid, "mask"):
+                if len(result.shape) == 1:
+                    return grid.mask.scaled_array_from_sub_array_1d(
+                        sub_array_1d=result
+                    )
+                else:
+                    return grid.mask.grid_from_sub_grid_1d(sub_grid_1d=result)
+            else:
+                return result
+
         else:
             return func(profile, grid, *args, **kwargs)
 

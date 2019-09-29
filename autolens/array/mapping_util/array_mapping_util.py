@@ -11,7 +11,7 @@ logger.level = logging.DEBUG
 
 
 @decorator_util.jit()
-def map_1d_indexes_to_2d_indexes_for_shape(indexes_1d, shape):
+def index_2d_for_index_1d_for_shape(indexes_1d, shape):
     """For pixels on a 2D array of shape (rows, columns), map an array of 1D pixel indexes to 2D pixel indexes.
 
     Indexing is defined from the top-left corner rightwards and downwards, whereby the top-left pixel on the 2D array
@@ -41,17 +41,17 @@ def map_1d_indexes_to_2d_indexes_for_shape(indexes_1d, shape):
     indexes_1d = np.array([0, 1, 2, 5])
     indexes_2d = map_1d_indexes_to_2d_indexes_for_shape(indexes_1d=indexes_1d, shape=(3,3))
     """
-    indexes_2d = np.zeros((indexes_1d.shape[0], 2))
+    index_2d_for_index_1d = np.zeros((indexes_1d.shape[0], 2))
 
     for i, index_1d in enumerate(indexes_1d):
-        indexes_2d[i, 0] = int(index_1d / shape[1])
-        indexes_2d[i, 1] = int(index_1d % shape[1])
+        index_2d_for_index_1d[i, 0] = int(index_1d / shape[1])
+        index_2d_for_index_1d[i, 1] = int(index_1d % shape[1])
 
-    return indexes_2d
+    return index_2d_for_index_1d
 
 
 @decorator_util.jit()
-def map_2d_indexes_to_1d_indexes_for_shape(indexes_2d, shape):
+def index_1d_for_index_2d_for_shape(indexes_2d, shape):
     """For pixels on a 2D array of shape (rows, colums), map an array of 2D pixel indexes to 1D pixel indexes.
 
     Indexing is defined from the top-left corner rightwards and downwards, whereby the top-left pixel on the 2D array
@@ -81,16 +81,16 @@ def map_2d_indexes_to_1d_indexes_for_shape(indexes_2d, shape):
     indexes_2d = np.array([[0,0], [1,0], [2,0], [2,2]])
     indexes_1d = map_1d_indexes_to_1d_indexes_for_shape(indexes_2d=indexes_2d, shape=(3,3))
     """
-    indexes_1d = np.zeros(indexes_2d.shape[0])
+    index_1d_for_index_2d = np.zeros(indexes_2d.shape[0])
 
     for i in range(indexes_2d.shape[0]):
-        indexes_1d[i] = int((indexes_2d[i, 0]) * shape[1] + indexes_2d[i, 1])
+        index_1d_for_index_2d[i] = int((indexes_2d[i, 0]) * shape[1] + indexes_2d[i, 1])
 
-    return indexes_1d
+    return index_1d_for_index_2d
 
 
 @decorator_util.jit()
-def sub_array_1d_from_sub_array_2d_mask_and_sub_size(sub_array_2d, mask, sub_size):
+def sub_array_1d_for_sub_array_2d_mask_and_sub_size(sub_array_2d, mask, sub_size):
     """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
     A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the grid) \
@@ -156,7 +156,7 @@ def sub_array_1d_from_sub_array_2d_mask_and_sub_size(sub_array_2d, mask, sub_siz
     return sub_array_1d
 
 
-def sub_array_2d_from_sub_array_1d_mask_and_sub_size(sub_array_1d, mask, sub_size):
+def sub_array_2d_for_sub_array_1d_mask_and_sub_size(sub_array_1d, mask, sub_size):
     """For a 1D array that was computed by mapping_util unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -193,30 +193,30 @@ def sub_array_2d_from_sub_array_1d_mask_and_sub_size(sub_array_1d, mask, sub_siz
 
     sub_shape = (mask.shape[0] * sub_size, mask.shape[1] * sub_size)
 
-    sub_one_to_two = mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_size(
+    sub_one_to_two = mask_mapping_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
         mask=mask, sub_size=sub_size
     ).astype(
         "int"
     )
 
-    return sub_array_2d_from_sub_array_1d_sub_shape_and_sub_mask_1d_index_to_sub_mask_2d_index(
+    return sub_array_2d_from_sub_array_1d_sub_shape_and_sub_mask_2d_index_for_sub_mask_1d_index(
         sub_array_1d=sub_array_1d,
         sub_shape=sub_shape,
-        sub_mask_1d_index_to_sub_mask_2d_index=sub_one_to_two,
+        sub_mask_2d_index_for_sub_mask_1d_index=sub_one_to_two,
     )
 
 
 @decorator_util.jit()
-def sub_array_2d_from_sub_array_1d_sub_shape_and_sub_mask_1d_index_to_sub_mask_2d_index(
-    sub_array_1d, sub_shape, sub_mask_1d_index_to_sub_mask_2d_index
+def sub_array_2d_from_sub_array_1d_sub_shape_and_sub_mask_2d_index_for_sub_mask_1d_index(
+    sub_array_1d, sub_shape, sub_mask_2d_index_for_sub_mask_1d_index
 ):
 
     array_2d = np.zeros(sub_shape)
 
-    for index in range(len(sub_mask_1d_index_to_sub_mask_2d_index)):
+    for index in range(len(sub_mask_2d_index_for_sub_mask_1d_index)):
         array_2d[
-            sub_mask_1d_index_to_sub_mask_2d_index[index, 0],
-            sub_mask_1d_index_to_sub_mask_2d_index[index, 1],
+            sub_mask_2d_index_for_sub_mask_1d_index[index, 0],
+            sub_mask_2d_index_for_sub_mask_1d_index[index, 1],
         ] = sub_array_1d[index]
 
     return array_2d

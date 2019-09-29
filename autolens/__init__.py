@@ -11,8 +11,6 @@ from autolens.dimensions import (
     convert_units_to_input_units,
 )
 from autolens.array.mask import Mask, load_mask_from_fits, output_mask_to_fits
-from autolens.array.mapping import Mapping
-from autolens.array import mapping
 from autolens.array import grids
 from autolens.array.grids import (
     Grid,
@@ -21,12 +19,7 @@ from autolens.array.grids import (
     SparseToGrid,
     Interpolator,
 )
-from autolens.array.geometry import (
-    Geometry,
-)
-from autolens.array.scaled_array import (
-    ScaledArray,
-)
+from autolens.array.scaled_array import Scaled
 from autolens.array.convolution import Convolver
 from autolens.array.fourier_transform import Transformer
 from autolens.array.util import array_util, binning_util, grid_util, mask_util
@@ -137,4 +130,4 @@ from autolens.pipeline.pipeline import (
 from autolens.pipeline.plotters import hyper_plotters, phase_plotters
 from autolens.plotters import array_plotters, grid_plotters, plotter_util
 
-__version__ = '0.31.8'
+__version__ = "0.31.8"

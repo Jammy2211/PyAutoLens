@@ -62,9 +62,7 @@ def plot_image_and_mapper(
     )
 
     image_grid = convert_grid(
-        grid=mapper.grid.geometry.grid_1d,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        grid=mapper.grid.unmasked_grid, units=units, kpc_per_arcsec=kpc_per_arcsec
     )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
@@ -448,26 +446,26 @@ def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
     if units in "arcsec" or kpc_per_arcsec is None:
 
         ys = np.linspace(
-            mapper.geometry.arc_second_minima[0],
-            mapper.geometry.arc_second_maxima[0],
+            mapper.arc_second_minima[0],
+            mapper.arc_second_maxima[0],
             mapper.shape[0] + 1,
         )
         xs = np.linspace(
-            mapper.geometry.arc_second_minima[1],
-            mapper.geometry.arc_second_maxima[1],
+            mapper.arc_second_minima[1],
+            mapper.arc_second_maxima[1],
             mapper.shape[1] + 1,
         )
 
     elif units in "kpc":
 
         ys = np.linspace(
-            mapper.geometry.arc_second_minima[0] * kpc_per_arcsec,
-            mapper.geometry.arc_second_maxima[0] * kpc_per_arcsec,
+            mapper.arc_second_minima[0] * kpc_per_arcsec,
+            mapper.arc_second_maxima[0] * kpc_per_arcsec,
             mapper.shape[0] + 1,
         )
         xs = np.linspace(
-            mapper.geometry.arc_second_minima[1] * kpc_per_arcsec,
-            mapper.geometry.arc_second_maxima[1] * kpc_per_arcsec,
+            mapper.arc_second_minima[1] * kpc_per_arcsec,
+            mapper.arc_second_maxima[1] * kpc_per_arcsec,
             mapper.shape[1] + 1,
         )
 
@@ -485,10 +483,10 @@ def set_axis_limits(mapper, units, kpc_per_arcsec):
         grid_plotters.set_axis_limits(
             axis_limits=np.asarray(
                 [
-                    mapper.geometry.arc_second_minima[1],
-                    mapper.geometry.arc_second_maxima[1],
-                    mapper.geometry.arc_second_minima[0],
-                    mapper.geometry.arc_second_maxima[0],
+                    mapper.arc_second_minima[1],
+                    mapper.arc_second_maxima[1],
+                    mapper.arc_second_minima[0],
+                    mapper.arc_second_maxima[0],
                 ]
             ),
             grid=None,
@@ -500,10 +498,10 @@ def set_axis_limits(mapper, units, kpc_per_arcsec):
         grid_plotters.set_axis_limits(
             axis_limits=np.asarray(
                 [
-                    mapper.geometry.arc_second_minima[1] * kpc_per_arcsec,
-                    mapper.geometry.arc_second_maxima[1] * kpc_per_arcsec,
-                    mapper.geometry.arc_second_minima[0] * kpc_per_arcsec,
-                    mapper.geometry.arc_second_maxima[0] * kpc_per_arcsec,
+                    mapper.arc_second_minima[1] * kpc_per_arcsec,
+                    mapper.arc_second_maxima[1] * kpc_per_arcsec,
+                    mapper.arc_second_minima[0] * kpc_per_arcsec,
+                    mapper.arc_second_maxima[0] * kpc_per_arcsec,
                 ]
             ),
             grid=None,
@@ -533,11 +531,11 @@ def plot_centres(should_plot_centres, mapper, units, kpc_per_arcsec):
 
         if units in "arcsec" or kpc_per_arcsec is None:
 
-            pixel_centres = mapper.geometry.pixel_centres
+            pixel_centres = mapper.pixel_centres
 
         elif units in "kpc":
 
-            pixel_centres = mapper.geometry.pixel_centres * kpc_per_arcsec
+            pixel_centres = mapper.pixel_centres * kpc_per_arcsec
 
         plt.scatter(y=pixel_centres[:, 0], x=pixel_centres[:, 1], s=3, c="r")
 
@@ -636,7 +634,7 @@ def plot_image_plane_source_pixels(grid, mapper, source_pixels, point_colors):
                 plt.scatter(
                     y=np.asarray(
                         grid[
-                            mapper.sub_mask_1d_index_to_pixelization_1d_index[
+                            mapper.pixelization_1d_index_for_sub_mask_1d_index[
                                 source_pixel
                             ],
                             0,
@@ -644,7 +642,7 @@ def plot_image_plane_source_pixels(grid, mapper, source_pixels, point_colors):
                     ),
                     x=np.asarray(
                         grid[
-                            mapper.sub_mask_1d_index_to_pixelization_1d_index[
+                            mapper.pixelization_1d_index_for_sub_mask_1d_index[
                                 source_pixel
                             ],
                             1,
@@ -679,7 +677,7 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
                 plt.scatter(
                     y=np.asarray(
                         grid[
-                            mapper.sub_mask_1d_index_to_pixelization_1d_index[
+                            mapper.pixelization_1d_index_for_sub_mask_1d_index[
                                 source_pixel
                             ],
                             0,
@@ -687,7 +685,7 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
                     ),
                     x=np.asarray(
                         grid[
-                            mapper.sub_mask_1d_index_to_pixelization_1d_index[
+                            mapper.pixelization_1d_index_for_sub_mask_1d_index[
                                 source_pixel
                             ],
                             1,

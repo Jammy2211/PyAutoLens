@@ -20,7 +20,9 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array_2d=np.full(shape=(3, 3), fill_value=False), pixel_scales=1.0, sub_size=1
+            array_2d=np.full(shape=(3, 3), fill_value=False),
+            pixel_scales=1.0,
+            sub_size=1,
         )
 
         grid = al.Grid(
@@ -40,9 +42,7 @@ class TestPlaneImageFromGrid:
             mask=mask,
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid
-        )
+        plane_image_galaxy = galaxy.profile_image_from_grid(grid)
 
         assert (plane_image == plane_image_galaxy).all()
 
@@ -69,7 +69,9 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array_2d=np.full(shape=(3, 3), fill_value=False), pixel_scales=1.0, sub_size=1
+            array_2d=np.full(shape=(3, 3), fill_value=False),
+            pixel_scales=1.0,
+            sub_size=1,
         )
 
         grid = al.Grid(
@@ -107,7 +109,9 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array_2d=np.full(shape=(2, 3), fill_value=False), pixel_scales=1.0, sub_size=1
+            array_2d=np.full(shape=(2, 3), fill_value=False),
+            pixel_scales=1.0,
+            sub_size=1,
         )
 
         grid = al.Grid(
@@ -124,9 +128,7 @@ class TestPlaneImageFromGrid:
             mask=mask,
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=grid
-        )
+        plane_image_galaxy = galaxy.profile_image_from_grid(grid=grid)
 
         assert (plane_image == plane_image_galaxy).all()
 
@@ -142,7 +144,9 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array_2d=np.full(shape=(3, 2), fill_value=False), pixel_scales=1.0, sub_size=1
+            array_2d=np.full(shape=(3, 2), fill_value=False),
+            pixel_scales=1.0,
+            sub_size=1,
         )
 
         grid = al.Grid(
@@ -159,9 +163,7 @@ class TestPlaneImageFromGrid:
             mask=mask,
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=grid
-        )
+        plane_image_galaxy = galaxy.profile_image_from_grid(grid=grid)
 
         assert (plane_image == plane_image_galaxy).all()
 
@@ -177,7 +179,9 @@ class TestPlaneImageFromGrid:
         )
 
         mask = al.Mask(
-            array_2d=np.full(shape=(3, 3), fill_value=False), pixel_scales=1.0, sub_size=1
+            array_2d=np.full(shape=(3, 3), fill_value=False),
+            pixel_scales=1.0,
+            sub_size=1,
         )
 
         grid = al.Grid(
@@ -197,9 +201,7 @@ class TestPlaneImageFromGrid:
             mask=mask,
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=grid
-        )
+        plane_image_galaxy = galaxy.profile_image_from_grid(grid=grid)
 
         assert (plane_image == plane_image_galaxy).all()
 

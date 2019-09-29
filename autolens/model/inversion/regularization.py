@@ -166,8 +166,8 @@ class Constant(Regularization):
 
     def regularization_matrix_from_mapper(self, mapper):
         return self.regularization_matrix_from_pixel_neighbors(
-            pixel_neighbors=mapper.geometry.pixel_neighbors,
-            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size,
+            pixel_neighbors=mapper.pixel_neighbors,
+            pixel_neighbors_size=mapper.pixel_neighbors_size,
         )
 
 
@@ -223,15 +223,15 @@ class AdaptiveBrightness(Regularization):
     def pixel_signals_from_images(
         self,
         pixels,
-        sub_mask_1d_index_to_pixelization_1d_index,
-        sub_mask_1d_index_to_mask_1d_index,
+        pixelization_1d_index_for_sub_mask_1d_index,
+        mask_1d_index_for_sub_mask_1d_index,
         hyper_image,
     ):
         return regularization_util.adaptive_pixel_signals_from_images(
             pixels=pixels,
             signal_scale=self.signal_scale,
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             hyper_image=hyper_image,
         )
 
@@ -255,8 +255,8 @@ class AdaptiveBrightness(Regularization):
 
         pixel_signals = self.pixel_signals_from_images(
             pixels=mapper.pixels,
-            sub_mask_1d_index_to_pixelization_1d_index=mapper.sub_mask_1d_index_to_pixelization_1d_index,
-            sub_mask_1d_index_to_mask_1d_index=mapper.grid.mapping.sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_for_sub_mask_1d_index=mapper.pixelization_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
             hyper_image=mapper.hyper_image,
         )
 
@@ -270,8 +270,8 @@ class AdaptiveBrightness(Regularization):
 
         return self.regularization_matrix_from_regularization_weights_and_pixel_neighbors(
             regularization_weights=regularization_weights,
-            pixel_neighbors=mapper.geometry.pixel_neighbors,
-            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size,
+            pixel_neighbors=mapper.pixel_neighbors,
+            pixel_neighbors_size=mapper.pixel_neighbors_size,
         )
 
     @property

@@ -10,26 +10,20 @@ from autolens import dimensions as dim
 from autolens import text_util
 from autolens.model.profiles import geometry_profiles
 
+
 class MassProfile(object):
     def convergence_func(self, eta):
         raise NotImplementedError("surface_density_func should be overridden")
 
-
-    def convergence_from_grid(
-        self, grid,
-    ):
+    def convergence_from_grid(self, grid):
         raise NotImplementedError("surface_density_from_grid should be overridden")
 
+    def potential_from_grid(self, grid):
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not implement potential_from_grid"
+        )
 
-    def potential_from_grid(
-        self, grid,
-    ):
-        raise NotImplementedError(f"{self.__class__.__name__} does not implement potential_from_grid")
-
-
-    def deflections_from_grid(
-        self, grid,
-    ):
+    def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
     def mass_within_circle_in_units(
@@ -39,7 +33,7 @@ class MassProfile(object):
         redshift_source=None,
         unit_mass="solMass",
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         raise NotImplementedError()
 
@@ -50,7 +44,7 @@ class MassProfile(object):
         redshift_source=None,
         unit_mass="solMass",
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         raise NotImplementedError()
 
@@ -65,7 +59,7 @@ class MassProfile(object):
         redshift_profile=None,
         redshift_source=None,
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         return NotImplementedError()
 
@@ -79,7 +73,7 @@ class MassProfile(object):
         redshift_source=None,
         cosmology=cosmo.Planck15,
         whitespace=80,
-        **kwargs
+        **kwargs,
     ):
         return ["Mass Profile = {}\n".format(self.__class__.__name__)]
 
@@ -123,7 +117,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         redshift_profile=None,
         redshift_source=None,
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
         specified radius. This is centred on the mass profile.
@@ -167,7 +161,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         redshift_profile=None,
         redshift_source=None,
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
         specified major axis. This is centred on the mass profile.
@@ -220,7 +214,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         redshift_profile=None,
         redshift_source=None,
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         """Calculate the mass between two circular annuli and compute the density by dividing by the annuli surface
         area.
@@ -270,7 +264,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         unit_length="arcsec",
         redshift_profile=None,
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         """The radius a critical curve forms for this mass profile, e.g. where the mean convergence is equal to 1.0.
 
@@ -312,7 +306,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         unit_length="arcsec",
         redshift_profile=None,
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         einstein_radius = self.average_convergence_of_1_radius_in_units(
             unit_length=unit_length,
@@ -330,7 +324,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         redshift_profile=None,
         redshift_source=None,
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         einstein_radius = self.einstein_radius_in_units(
             unit_length=self.unit_length,
@@ -348,10 +342,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             kwargs=kwargs,
         )
 
-
-    def deflections_via_potential_from_grid(
-        self, grid
-    ):
+    def deflections_via_potential_from_grid(self, grid):
 
         potential_2d = self.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -362,10 +353,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
 
-
-    def lensing_jacobian_a11_from_grid(
-        self, grid
-    ):
+    def lensing_jacobian_a11_from_grid(self, grid):
 
         deflections_2d = self.deflections_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -373,10 +361,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
 
-
-    def lensing_jacobian_a12_from_grid(
-        self, grid
-    ):
+    def lensing_jacobian_a12_from_grid(self, grid):
 
         deflections_2d = self.deflections_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -384,10 +369,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
 
-
-    def lensing_jacobian_a21_from_grid(
-        self, grid
-    ):
+    def lensing_jacobian_a21_from_grid(self, grid):
 
         deflections_2d = self.deflections_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -395,10 +377,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
 
-
-    def lensing_jacobian_a22_from_grid(
-        self, grid
-    ):
+    def lensing_jacobian_a22_from_grid(self, grid):
 
         deflections_2d = self.deflections_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
@@ -426,10 +405,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return np.array([[a11, a12], [a21, a22]])
 
-
-    def convergence_via_jacobian_from_grid(
-        self, grid
-    ):
+    def convergence_via_jacobian_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -438,7 +414,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
 
         return convergence
-
 
     def shear_via_jacobian_from_grid(self, grid):
 
@@ -451,10 +426,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return (gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
 
-
-    def tangential_eigen_value_from_grid(
-        self, grid
-    ):
+    def tangential_eigen_value_from_grid(self, grid):
 
         convergence = self.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -465,7 +437,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         )
 
         return 1 - convergence - shear
-
 
     def radial_eigen_value_from_grid(self, grid):
 
@@ -478,7 +449,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         )
 
         return 1 - convergence + shear
-
 
     def magnification_from_grid(self, grid):
 
@@ -503,8 +473,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         if len(tangential_critical_curve_indices) == 0:
             return []
 
-        return grid.geometry.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=tangential_critical_curve_indices[0],
+        return grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+            grid_pixels_1d=tangential_critical_curve_indices[0],
             shape=lambda_tangential_2d.shape,
         )
 
@@ -519,8 +489,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         if len(radial_critical_curve_indices) == 0:
             return []
 
-        return grid.geometry.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape
+        return grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+            grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape
         )
 
     def tangential_caustic_from_grid(self, grid):
@@ -531,7 +501,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             return []
 
         deflections_1d = self.deflections_from_grid(
-            grid=tangential_critical_curve, bypass_decorator=True
+            grid=tangential_critical_curve
         )
 
         return tangential_critical_curve - deflections_1d
@@ -544,7 +514,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             return []
 
         deflections_1d = self.deflections_from_grid(
-            grid=radial_critical_curve, bypass_decorator=True
+            grid=radial_critical_curve
         )
 
         return radial_critical_curve - deflections_1d
@@ -572,7 +542,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         redshift_profile=None,
         redshift_source=None,
         cosmology=cosmo.Planck15,
-        **kwargs
+        **kwargs,
     ):
         summary = super().summarize_in_units(
             radii=radii,

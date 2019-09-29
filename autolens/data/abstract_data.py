@@ -7,13 +7,13 @@ from autolens.array import scaled_array
 
 class AbstractData(object):
     def __init__(
-        self, data, pixel_scale, noise_map, exposure_time_map=None, origin=(0.0, 0.0)
+        self, data, pixel_scale, noise_map, exposure_time_map=None,
     ):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
         ----------
-        data : scaled_array.ScaledArraySquarePixels
+        data : scaled_array.ScaledSquarePixels
             The array of the image data_type, in units of electrons per second.
         pixel_scale : float
             The size of each pixel in arc seconds.
@@ -28,16 +28,19 @@ class AbstractData(object):
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
             preferably in units of electrons per second.
-        exposure_time_map : scaled_array.ScaledArray
+        exposure_time_map : scaled_array.Scaled
             An array describing the effective exposure time in each imaging pixel.
-        background_sky_map : scaled_array.ScaledArray
+        background_sky_map : scaled_array.Scaled
             An array describing the background sky.
         """
         self._data = data
         self.pixel_scale = pixel_scale
         self.noise_map = noise_map
         self.exposure_time_map = exposure_time_map
-        self.origin = origin
+
+    @property
+    def origin(self):
+        return self._data.mask.origin
 
     @staticmethod
     def bin_up_scaled_array(scaled_array, bin_up_factor, method):
@@ -139,7 +142,7 @@ class AbstractData(object):
         return self.array_from_electrons_per_second_to_counts(self._data)
 
 
-class AbstractNoiseMap(scaled_array.ScaledArray):
+class AbstractNoiseMap(scaled_array.Scaled):
     @classmethod
     def from_weight_map(cls, pixel_scale, weight_map):
         """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and \
@@ -160,9 +163,9 @@ class AbstractNoiseMap(scaled_array.ScaledArray):
             The weight-value of each pixel which is converted to a variance.
         """
         np.seterr(divide="ignore")
-        noise_map = 1.0 / np.sqrt(weight_map)
+        noise_map = 1.0 / np.sqrt(weight_map.in_2d)
         noise_map[noise_map == np.inf] = 1.0e8
-        return cls(array=noise_map, pixel_scale=pixel_scale)
+        return cls.from_2d(array_2d=noise_map, pixel_scale=pixel_scale)
 
     @classmethod
     def from_inverse_noise_map(cls, pixel_scale, inverse_noise_map):
@@ -183,18 +186,18 @@ class AbstractNoiseMap(scaled_array.ScaledArray):
         inverse_noise_map : ndarray
             The inverse noise_map value of each pixel which is converted to a variance.
         """
-        noise_map = 1.0 / inverse_noise_map
-        return cls(array=noise_map, pixel_scale=pixel_scale)
+        noise_map = 1.0 / inverse_noise_map.in_2d
+        return cls.from_2d(array_2d=noise_map, pixel_scale=pixel_scale)
 
 
-class ExposureTimeMap(scaled_array.ScaledArray):
+class ExposureTimeMap(scaled_array.Scaled):
     @classmethod
     def from_exposure_time_and_inverse_noise_map(
         cls, pixel_scale, exposure_time, inverse_noise_map
     ):
-        relative_background_noise_map = inverse_noise_map / np.max(inverse_noise_map)
-        return ExposureTimeMap(
-            array=np.abs(exposure_time * (relative_background_noise_map)),
+        relative_background_noise_map = inverse_noise_map.in_2d / np.max(inverse_noise_map)
+        return ExposureTimeMap.from_2d(
+            array_2d=np.abs(exposure_time * (relative_background_noise_map)),
             pixel_scale=pixel_scale,
         )
 
@@ -211,7 +214,7 @@ def load_image(image_path, image_hdu, pixel_scale):
     pixel_scale : float
         The size of each pixel in arc seconds..
     """
-    return scaled_array.ScaledArray.from_fits_with_pixel_scale(
+    return scaled_array.Scaled.from_fits_with_pixel_scale(
         file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale
     )
 

@@ -9,24 +9,22 @@ data_resolution = "LSST"
 
 
 def make_pipeline(
-        name,
-        phase_folders,
-        pipeline_pixelization=al.pixelizations.VoronoiBrightnessImage,
-        pipeline_regularization=al.regularization.AdaptiveBrightness,
-        optimizer_class=af.MultiNest,
+    name,
+    phase_folders,
+    pipeline_pixelization=al.pixelizations.VoronoiBrightnessImage,
+    pipeline_regularization=al.regularization.AdaptiveBrightness,
+    optimizer_class=af.MultiNest,
 ):
     phase1 = al.PhaseImaging(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
             source=al.GalaxyModel(
-                redshift=1.0,
-                light=al.light_profiles.SphericalExponential
+                redshift=1.0, light=al.light_profiles.SphericalExponential
             ),
             lens=al.GalaxyModel(
-                redshift=0.5,
-                light=al.mass_profiles.SphericalIsothermal()
-            )
+                redshift=0.5, light=al.mass_profiles.SphericalIsothermal()
+            ),
         ),
         optimizer_class=optimizer_class,
     )
@@ -102,9 +100,7 @@ def make_pipeline(
         inversion=True,
     )
 
-    return al.PipelineImaging(
-        name, phase1, phase6, phase7, hyper_mode=False
-    )
+    return al.PipelineImaging(name, phase1, phase6, phase7, hyper_mode=False)
 
 
 if __name__ == "__main__":

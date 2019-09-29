@@ -133,7 +133,10 @@ class TestGalaxyModel:
         assert len(mapper.prior_model_tuples) == 2
 
     def test_align_centres(self, galaxy_model):
-        assert galaxy_model.light_profile.mask_centre != galaxy_model.mass_profile.mask_centre
+        assert (
+            galaxy_model.light_profile.mask_centre
+            != galaxy_model.mass_profile.mask_centre
+        )
 
         galaxy_model = al.GalaxyModel(
             redshift=al.Redshift,
@@ -142,7 +145,10 @@ class TestGalaxyModel:
             align_centres=True,
         )
 
-        assert galaxy_model.light_profile.mask_centre == galaxy_model.mass_profile.mask_centre
+        assert (
+            galaxy_model.light_profile.mask_centre
+            == galaxy_model.mass_profile.mask_centre
+        )
 
     def test_align_axis_ratios(self, galaxy_model):
         assert (

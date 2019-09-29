@@ -10,122 +10,144 @@ test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
-class TestConstructorMethods:
 
+class TestConstructorMethods:
     def test__square_pixel_array__input_scaled_array__centre_is_origin(self):
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scale(
+        scaled_array = al.Scaled.from_2d(
             array_2d=np.ones((3, 3)), pixel_scale=1.0
         )
 
         assert (scaled_array.in_1d == np.ones((9,))).all()
-        assert (scaled_array.in_2d == np.ones((3,3))).all()
-        assert scaled_array.geometry.pixel_scale == 1.0
-        assert scaled_array.geometry.shape == (3, 3)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
-        assert scaled_array.geometry.arc_second_maxima == (1.5, 1.5)
-        assert scaled_array.geometry.arc_second_minima == (-1.5, -1.5)
+        assert (scaled_array.in_2d == np.ones((3, 3))).all()
+        assert scaled_array.mask.pixel_scale == 1.0
+        assert scaled_array.in_2d.shape == (3, 3)
+        assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.0)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((3.0, 3.0))
+        assert scaled_array.mask.arc_second_maxima == (1.5, 1.5)
+        assert scaled_array.mask.arc_second_minima == (-1.5, -1.5)
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scale(
+        scaled_array = al.Scaled.from_2d(
             array_2d=np.ones((3, 4)), pixel_scale=0.1
         )
 
         assert (scaled_array.in_1d == np.ones((12,))).all()
         assert (scaled_array.in_2d == np.ones((3, 4))).all()
-        assert scaled_array.geometry.pixel_scale == 0.1
-        assert scaled_array.geometry.shape == (3, 4)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.0, 1.5)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((0.3, 0.4))
-        assert scaled_array.geometry.arc_second_maxima == pytest.approx((0.15, 0.2), 1e-4)
-        assert scaled_array.geometry.arc_second_minima == pytest.approx((-0.15, -0.2), 1e-4)
+        assert scaled_array.mask.pixel_scale == 0.1
+        assert scaled_array.in_2d.shape == (3, 4)
+        assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.5)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((0.3, 0.4))
+        assert scaled_array.mask.arc_second_maxima == pytest.approx(
+            (0.15, 0.2), 1e-4
+        )
+        assert scaled_array.mask.arc_second_minima == pytest.approx(
+            (-0.15, -0.2), 1e-4
+        )
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scale(
+        scaled_array = al.Scaled.from_2d(
             array_2d=np.ones((4, 3)), pixel_scale=0.1, origin=(1.0, 1.0)
         )
 
         assert (scaled_array.in_1d == np.ones((12,))).all()
         assert (scaled_array.in_2d == np.ones((4, 3))).all()
-        assert scaled_array.geometry.pixel_scale == 0.1
-        assert scaled_array.geometry.shape == (4, 3)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.5, 1.0)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((0.4, 0.3))
-        assert scaled_array.geometry.arc_second_maxima == pytest.approx((1.2, 1.15), 1e-4)
-        assert scaled_array.geometry.arc_second_minima == pytest.approx((0.8, 0.85), 1e-4)
+        assert scaled_array.mask.pixel_scale == 0.1
+        assert scaled_array.in_2d.shape == (4, 3)
+        assert scaled_array.mask.central_pixel_coordinates == (1.5, 1.0)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((0.4, 0.3))
+        assert scaled_array.mask.arc_second_maxima == pytest.approx(
+            (1.2, 1.15), 1e-4
+        )
+        assert scaled_array.mask.arc_second_minima == pytest.approx(
+            (0.8, 0.85), 1e-4
+        )
 
     def test__rectangular_pixel_array__input_scaled_array(self):
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scales(
+        scaled_array = al.Scaled.from_array_2d_and_pixel_scales(
             array_2d=np.ones((3, 3)), pixel_scales=(2.0, 1.0)
         )
 
-        assert scaled_array.in_1d == pytest.approx(np.ones((9, )), 1e-4)
+        assert scaled_array.in_1d == pytest.approx(np.ones((9,)), 1e-4)
         assert scaled_array.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
-        assert scaled_array.geometry.pixel_scales == (2.0, 1.0)
-        assert scaled_array.geometry.shape == (3, 3)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
-        assert scaled_array.geometry.arc_second_maxima == pytest.approx((3.0, 1.5), 1e-4)
-        assert scaled_array.geometry.arc_second_minima == pytest.approx((-3.0, -1.5), 1e-4)
+        assert scaled_array.mask.pixel_scales == (2.0, 1.0)
+        assert scaled_array.in_2d.shape == (3, 3)
+        assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.0)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((6.0, 3.0))
+        assert scaled_array.mask.arc_second_maxima == pytest.approx(
+            (3.0, 1.5), 1e-4
+        )
+        assert scaled_array.mask.arc_second_minima == pytest.approx(
+            (-3.0, -1.5), 1e-4
+        )
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scales(
+        scaled_array = al.Scaled.from_array_2d_and_pixel_scales(
             array_2d=np.ones((4, 3)), pixel_scales=(0.2, 0.1)
         )
 
         assert scaled_array.in_1d == pytest.approx(np.ones((12,)), 1e-4)
         assert scaled_array.in_2d == pytest.approx(np.ones((4, 3)), 1e-4)
-        assert scaled_array.geometry.pixel_scales == (0.2, 0.1)
-        assert scaled_array.geometry.shape == (4, 3)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.5, 1.0)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((0.8, 0.3), 1e-3)
-        assert scaled_array.geometry.arc_second_maxima == pytest.approx((0.4, 0.15), 1e-4)
-        assert scaled_array.geometry.arc_second_minima == pytest.approx((-0.4, -0.15), 1e-4)
+        assert scaled_array.mask.pixel_scales == (0.2, 0.1)
+        assert scaled_array.in_2d.shape == (4, 3)
+        assert scaled_array.mask.central_pixel_coordinates == (1.5, 1.0)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((0.8, 0.3), 1e-3)
+        assert scaled_array.mask.arc_second_maxima == pytest.approx(
+            (0.4, 0.15), 1e-4
+        )
+        assert scaled_array.mask.arc_second_minima == pytest.approx(
+            (-0.4, -0.15), 1e-4
+        )
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scales(
+        scaled_array = al.Scaled.from_array_2d_and_pixel_scales(
             array_2d=np.ones((3, 4)), pixel_scales=(0.1, 0.2)
         )
 
-        assert scaled_array.in_1d == pytest.approx(np.ones((12, )), 1e-4)
+        assert scaled_array.in_1d == pytest.approx(np.ones((12,)), 1e-4)
         assert scaled_array.in_2d == pytest.approx(np.ones((3, 4)), 1e-4)
-        assert scaled_array.geometry.pixel_scales == (0.1, 0.2)
-        assert scaled_array.geometry.shape == (3, 4)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.0, 1.5)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((0.3, 0.8), 1e-3)
-        assert scaled_array.geometry.arc_second_maxima == pytest.approx((0.15, 0.4), 1e-4)
-        assert scaled_array.geometry.arc_second_minima == pytest.approx((-0.15, -0.4), 1e-4)
+        assert scaled_array.mask.pixel_scales == (0.1, 0.2)
+        assert scaled_array.in_2d.shape == (3, 4)
+        assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.5)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((0.3, 0.8), 1e-3)
+        assert scaled_array.mask.arc_second_maxima == pytest.approx(
+            (0.15, 0.4), 1e-4
+        )
+        assert scaled_array.mask.arc_second_minima == pytest.approx(
+            (-0.15, -0.4), 1e-4
+        )
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scales(
+        scaled_array = al.Scaled.from_array_2d_and_pixel_scales(
             array_2d=np.ones((3, 3)), pixel_scales=(2.0, 1.0), origin=(-1.0, -2.0)
         )
 
-        assert scaled_array.in_1d == pytest.approx(np.ones((9, )), 1e-4)
+        assert scaled_array.in_1d == pytest.approx(np.ones((9,)), 1e-4)
         assert scaled_array.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
-        assert scaled_array.geometry.pixel_scales == (2.0, 1.0)
-        assert scaled_array.geometry.shape == (3, 3)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
-        assert scaled_array.geometry.origin == (-1.0, -2.0)
-        assert scaled_array.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
-        assert scaled_array.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
+        assert scaled_array.mask.pixel_scales == (2.0, 1.0)
+        assert scaled_array.in_2d.shape == (3, 3)
+        assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.0)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((6.0, 3.0))
+        assert scaled_array.mask.origin == (-1.0, -2.0)
+        assert scaled_array.mask.arc_second_maxima == pytest.approx(
+            (2.0, -0.5), 1e-4
+        )
+        assert scaled_array.mask.arc_second_minima == pytest.approx(
+            (-4.0, -3.5), 1e-4
+        )
 
     def test__init__input_scaled_array_single_value__all_attributes_correct_including_data_inheritance(
         self
     ):
-        scaled_array = al.ScaledArray.from_single_value_shape_and_pixel_scale(
+        scaled_array = al.Scaled.from_single_value_shape_and_pixel_scale(
             value=5.0, shape=(3, 3), pixel_scale=1.0, origin=(1.0, 1.0)
         )
 
         assert (scaled_array.in_2d == 5.0 * np.ones((3, 3))).all()
-        assert scaled_array.geometry.pixel_scale == 1.0
-        assert scaled_array.geometry.shape == (3, 3)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
-        assert scaled_array.geometry.origin == (1.0, 1.0)
+        assert scaled_array.mask.pixel_scale == 1.0
+        assert scaled_array.in_2d.shape == (3, 3)
+        assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.0)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((3.0, 3.0))
+        assert scaled_array.mask.origin == (1.0, 1.0)
 
-    def test__from_fits__all_attributes_correct_including_data_inheritance(
-        self
-    ):
-        scaled_array = al.ScaledArray.from_fits_with_pixel_scale(
+    def test__from_fits__all_attributes_correct_including_data_inheritance(self):
+        scaled_array = al.Scaled.from_fits_with_pixel_scale(
             file_path=test_data_dir + "3x3_ones.fits",
             hdu=0,
             pixel_scale=1.0,
@@ -133,70 +155,79 @@ class TestConstructorMethods:
         )
 
         assert (scaled_array.in_2d == np.ones((3, 3))).all()
-        assert scaled_array.geometry.pixel_scale == 1.0
-        assert scaled_array.geometry.shape == (3, 3)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
-        assert scaled_array.geometry.origin == (1.0, 1.0)
+        assert scaled_array.mask.pixel_scale == 1.0
+        assert scaled_array.in_2d.shape == (3, 3)
+        assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.0)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((3.0, 3.0))
+        assert scaled_array.mask.origin == (1.0, 1.0)
 
-        scaled_array = al.ScaledArray.from_fits_with_pixel_scale(
+        scaled_array = al.Scaled.from_fits_with_pixel_scale(
             file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scale=0.1
         )
 
         assert (scaled_array.in_2d == np.ones((4, 3))).all()
-        assert scaled_array.geometry.pixel_scale == 0.1
-        assert scaled_array.geometry.shape == (4, 3)
-        assert scaled_array.geometry.central_pixel_coordinates == (1.5, 1.0)
-        assert scaled_array.geometry.shape_arcsec == pytest.approx((0.4, 0.3))
+        assert scaled_array.mask.pixel_scale == 0.1
+        assert scaled_array.in_2d.shape == (4, 3)
+        assert scaled_array.mask.central_pixel_coordinates == (1.5, 1.0)
+        assert scaled_array.mask.shape_arcsec == pytest.approx((0.4, 0.3))
 
 
-class TestNewScaledArrayResized:
+class TestNewScaledResized:
     def test__pad__compare_to_array_util(self):
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scale(array_2d=array_2d, pixel_scale=1.0)
+        scaled_array = al.Scaled.from_2d(
+            array_2d=array_2d, pixel_scale=1.0
+        )
 
         scaled_array = scaled_array.new_scaled_array_resized_from_new_shape(
             new_shape=(7, 7), new_centre_pixels=(1, 1)
         )
 
-        scaled_array_resized_manual = np.array([[0., 0., 0., 0., 0., 0., 0.],
-                                                [0., 0., 0., 0., 0., 0., 0.],
-                                                [0., 0., 1., 1., 1., 1., 1.],
-                                                [0. ,0., 1., 1., 1., 1., 1.],
-                                                [0., 0., 1., 1., 2., 1., 1.],
-                                                [0., 0., 1., 1., 1., 1., 1.],
-                                                [0., 0., 1., 1., 1., 1., 1.]])
+        scaled_array_resized_manual = np.array(
+            [
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 1.0, 1.0, 2.0, 1.0, 1.0],
+                [0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        )
 
-        assert type(scaled_array) == al.ScaledArray
+        assert type(scaled_array) == al.Scaled
         assert (scaled_array.in_2d == scaled_array_resized_manual).all()
-        assert scaled_array.geometry.pixel_scale == 1.0
+        assert scaled_array.mask.pixel_scale == 1.0
 
     def test__trim__compare_to_array_util(self):
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scale(array_2d=array_2d, pixel_scale=1.0)
+        scaled_array = al.Scaled.from_2d(
+            array_2d=array_2d, pixel_scale=1.0
+        )
 
         scaled_array = scaled_array.new_scaled_array_resized_from_new_shape(
             new_shape=(3, 3), new_centre_pixels=(4, 4)
         )
 
-        scaled_array_resized_manual = np.array([[1., 1., 0.],
-                                                [1., 1., 0.],
-                                                [0., 0., 0.]])
+        scaled_array_resized_manual = np.array(
+            [[1.0, 1.0, 0.0], [1.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
+        )
 
-
-        assert type(scaled_array) == al.ScaledArray
+        assert type(scaled_array) == al.Scaled
         assert (scaled_array.in_2d == scaled_array_resized_manual).all()
-        assert scaled_array.geometry.pixel_scale == 1.0
+        assert scaled_array.mask.pixel_scale == 1.0
 
     def test__new_centre_is_in_arcsec(self):
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        array = al.ScaledArray.from_array_2d_and_pixel_scale(array_2d=array_2d, pixel_scale=3.0)
+        array = al.Scaled.from_2d(
+            array_2d=array_2d, pixel_scale=3.0
+        )
 
         scaled_array = array.new_scaled_array_resized_from_new_shape(
             new_shape=(3, 3), new_centre_arcsec=(6.0, 6.0)
@@ -239,7 +270,53 @@ class TestNewScaledArrayResized:
         assert (scaled_array.in_2d == scaled_array_util).all()
 
 
-class TestNewScaledArrayZoomed:
+class TestNewScaledTrimmedKernelEdges:
+
+    def test__trim_edges_where_extra_psf_blurring_is_performed(self):
+        array_2d = np.ones((5, 5))
+        array_2d[2, 2] = 2.0
+
+        scaled_array = al.Scaled.from_2d(
+            array_2d=array_2d, pixel_scale=1.0
+        )
+
+        new_scaled_array = scaled_array.new_scaled_array_trimmed_from_kernel_shape(
+            kernel_shape=(3,3)
+        )
+
+        assert type(new_scaled_array) == al.Scaled
+        assert (new_scaled_array.in_2d == np.array([[1.0, 1.0, 1.0],
+                                                [1.0, 2.0, 1.0],
+                                                [1.0, 1.0, 1.0]])).all()
+        assert new_scaled_array.mask.pixel_scale == 1.0
+
+        new_scaled_array = scaled_array.new_scaled_array_trimmed_from_kernel_shape(
+            kernel_shape=(5,5)
+        )
+
+        assert type(new_scaled_array) == al.Scaled
+        assert (new_scaled_array.in_2d == np.array([[2.0]])).all()
+        assert new_scaled_array.mask.pixel_scale == 1.0
+
+        array_2d = np.ones((9, 9))
+        array_2d[4, 4] = 2.0
+
+        scaled_array = al.Scaled.from_2d(
+            array_2d=array_2d, pixel_scale=1.0
+        )
+
+        new_scaled_array = scaled_array.new_scaled_array_trimmed_from_kernel_shape(
+            kernel_shape=(7,7)
+        )
+
+        assert type(new_scaled_array) == al.Scaled
+        assert (new_scaled_array.in_2d == np.array([[1.0, 1.0, 1.0],
+                                                [1.0, 2.0, 1.0],
+                                                [1.0, 1.0, 1.0]])).all()
+        assert new_scaled_array.mask.pixel_scale == 1.0
+
+
+class TestNewScaledZoomed:
     def test__2d_array_zoomed__uses_the_limits_of_the_mask(self):
         array_2d = np.array(
             [
@@ -250,7 +327,9 @@ class TestNewScaledArrayZoomed:
             ]
         )
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scale(array_2d=array_2d, pixel_scale=1.0)
+        scaled_array = al.Scaled.from_2d(
+            array_2d=array_2d, pixel_scale=1.0
+        )
 
         mask = al.Mask(
             array_2d=np.array(
@@ -265,7 +344,9 @@ class TestNewScaledArrayZoomed:
             sub_size=1,
         )
 
-        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(mask=mask, buffer=0)
+        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(
+            mask=mask, buffer=0
+        )
         assert (scaled_array_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0]])).all()
 
         mask = al.Mask(
@@ -281,7 +362,9 @@ class TestNewScaledArrayZoomed:
             sub_size=1,
         )
 
-        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(mask=mask, buffer=0)
+        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(
+            mask=mask, buffer=0
+        )
         assert (
             scaled_array_zoomed.in_2d == np.array([[6.0, 7.0, 8.0], [10.0, 11.0, 12.0]])
         ).all()
@@ -299,9 +382,12 @@ class TestNewScaledArrayZoomed:
             sub_size=1,
         )
 
-        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(mask=mask, buffer=0)
+        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(
+            mask=mask, buffer=0
+        )
         assert (
-            scaled_array_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0], [14.0, 15.0]])
+            scaled_array_zoomed.in_2d
+            == np.array([[6.0, 7.0], [10.0, 11.0], [14.0, 15.0]])
         ).all()
 
         mask = al.Mask(
@@ -317,7 +403,9 @@ class TestNewScaledArrayZoomed:
             sub_size=1,
         )
 
-        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(mask=mask, buffer=0)
+        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(
+            mask=mask, buffer=0
+        )
         assert (
             scaled_array_zoomed.in_2d == np.array([[5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
         ).all()
@@ -335,9 +423,12 @@ class TestNewScaledArrayZoomed:
             sub_size=1,
         )
 
-        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(mask=mask, buffer=0)
+        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(
+            mask=mask, buffer=0
+        )
         assert (
-            scaled_array_zoomed.in_2d == np.array([[2.0, 3.0], [6.0, 7.0], [10.0, 11.0]])
+            scaled_array_zoomed.in_2d
+            == np.array([[2.0, 3.0], [6.0, 7.0], [10.0, 11.0]])
         ).all()
 
         mask = al.Mask(
@@ -353,7 +444,9 @@ class TestNewScaledArrayZoomed:
             sub_size=1,
         )
 
-        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(mask=mask, buffer=1)
+        scaled_array_zoomed = scaled_array.new_scaled_array_zoomed_from_mask(
+            mask=mask, buffer=1
+        )
         assert (
             scaled_array_zoomed.in_2d
             == np.array(
@@ -367,7 +460,7 @@ class TestNewScaledArrayZoomed:
         ).all()
 
 
-class TestNewScaledArrayBinnedUp:
+class TestNewScaledBinnedUp:
     def test__compare_all_extract_methods_to_array_util(self):
         array_2d = np.array(
             [
@@ -377,7 +470,9 @@ class TestNewScaledArrayBinnedUp:
             ]
         )
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scale(array_2d=array_2d, pixel_scale=0.1)
+        scaled_array = al.Scaled.from_2d(
+            array_2d=array_2d, pixel_scale=0.1
+        )
 
         scaled_array_binned_util = al.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
             array_2d=array_2d, bin_up_factor=4
@@ -412,34 +507,36 @@ class TestNewScaledArrayBinnedUp:
             ]
         )
 
-        scaled_array = al.ScaledArray.from_array_2d_and_pixel_scale(array_2d=scaled_array, pixel_scale=0.1)
+        scaled_array = al.Scaled.from_2d(
+            array_2d=scaled_array, pixel_scale=0.1
+        )
 
         scaled_array_binned = scaled_array.new_scaled_array_binned_from_bin_up_factor(
             bin_up_factor=4, method="mean"
         )
-        assert scaled_array_binned.geometry.pixel_scale == pytest.approx(0.4, 1.0e-4)
+        assert scaled_array_binned.mask.pixel_scale == pytest.approx(0.4, 1.0e-4)
         scaled_array_binned = scaled_array.new_scaled_array_binned_from_bin_up_factor(
             bin_up_factor=6, method="mean"
         )
-        assert scaled_array_binned.geometry.pixel_scale == pytest.approx(0.6, 1.0e-4)
+        assert scaled_array_binned.mask.pixel_scale == pytest.approx(0.6, 1.0e-4)
 
         scaled_array_binned = scaled_array.new_scaled_array_binned_from_bin_up_factor(
             bin_up_factor=4, method="quadrature"
         )
-        assert scaled_array_binned.geometry.pixel_scale == pytest.approx(0.4, 1.0e-4)
+        assert scaled_array_binned.mask.pixel_scale == pytest.approx(0.4, 1.0e-4)
         scaled_array_binned = scaled_array.new_scaled_array_binned_from_bin_up_factor(
             bin_up_factor=6, method="quadrature"
         )
-        assert scaled_array_binned.geometry.pixel_scale == pytest.approx(0.6, 1.0e-4)
+        assert scaled_array_binned.mask.pixel_scale == pytest.approx(0.6, 1.0e-4)
 
         scaled_array_binned = scaled_array.new_scaled_array_binned_from_bin_up_factor(
             bin_up_factor=4, method="sum"
         )
-        assert scaled_array_binned.geometry.pixel_scale == pytest.approx(0.4, 1.0e-4)
+        assert scaled_array_binned.mask.pixel_scale == pytest.approx(0.4, 1.0e-4)
         scaled_array_binned = scaled_array.new_scaled_array_binned_from_bin_up_factor(
             bin_up_factor=6, method="sum"
         )
-        assert scaled_array_binned.geometry.pixel_scale == pytest.approx(0.6, 1.0e-4)
+        assert scaled_array_binned.mask.pixel_scale == pytest.approx(0.6, 1.0e-4)
 
     def test__invalid_method__raises_exception(self):
         array_2d = np.array(
@@ -450,6 +547,10 @@ class TestNewScaledArrayBinnedUp:
             ]
         )
 
-        array_2d = al.ScaledArray.from_array_2d_and_pixel_scale(array_2d=array_2d, pixel_scale=0.1)
+        array_2d = al.Scaled.from_2d(
+            array_2d=array_2d, pixel_scale=0.1
+        )
         with pytest.raises(exc.DataException):
-            array_2d.new_scaled_array_binned_from_bin_up_factor(bin_up_factor=4, method="wrong")
+            array_2d.new_scaled_array_binned_from_bin_up_factor(
+                bin_up_factor=4, method="wrong"
+            )

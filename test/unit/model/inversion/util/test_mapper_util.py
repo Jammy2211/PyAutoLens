@@ -18,14 +18,14 @@ def make_five_pixels():
 class TestMappingMatrix:
     def test__3_image_pixels__6_pixel_pixels__sub_grid_1x1(self, three_pixels):
 
-        sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2])
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
+        mask_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
 
-        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
+        mapping_matrix = al.mapper_util.mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=6,
             total_mask_pixels=3,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             sub_fraction=1.0,
         )
 
@@ -42,14 +42,14 @@ class TestMappingMatrix:
 
     def test__5_image_pixels__8_pixel_pixels__sub_grid_1x1(self, five_pixels):
 
-        sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2, 7, 6])
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 3, 4])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2, 7, 6])
+        mask_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2, 3, 4])
 
-        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
+        mapping_matrix = al.mapper_util.mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=8,
             total_mask_pixels=5,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             sub_fraction=1.0,
         )
 
@@ -88,17 +88,17 @@ class TestMappingMatrix:
         self, five_pixels
     ):
 
-        sub_mask_1d_index_to_pixelization_1d_index = np.array(
+        pixelization_1d_index_for_sub_mask_1d_index = np.array(
             [0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2]
         )
-        sub_mask_1d_index_to_mask_1d_index = np.array(
+        mask_1d_index_for_sub_mask_1d_index = np.array(
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
-        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
+        mapping_matrix = al.mapper_util.mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=8,
             total_mask_pixels=5,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             sub_fraction=0.25,
         )
 
@@ -119,18 +119,18 @@ class TestMappingMatrix:
         self, five_pixels
     ):
 
-        sub_mask_1d_index_to_pixelization_1d_index = np.array(
+        pixelization_1d_index_for_sub_mask_1d_index = np.array(
             [0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2]
         )
-        sub_mask_1d_index_to_mask_1d_index = np.array(
+        mask_1d_index_for_sub_mask_1d_index = np.array(
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
 
-        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
+        mapping_matrix = al.mapper_util.mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=8,
             total_mask_pixels=5,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             sub_fraction=0.25,
         )
 
@@ -149,7 +149,7 @@ class TestMappingMatrix:
 
     def test__3_image_pixels__6_pixel_pixels__sub_grid_4x4(self, three_pixels):
 
-        sub_mask_1d_index_to_pixelization_1d_index = np.array(
+        pixelization_1d_index_for_sub_mask_1d_index = np.array(
             [
                 0,
                 0,
@@ -202,7 +202,7 @@ class TestMappingMatrix:
             ]
         )
 
-        sub_mask_1d_index_to_mask_1d_index = np.array(
+        mask_1d_index_for_sub_mask_1d_index = np.array(
             [
                 0,
                 0,
@@ -255,11 +255,11 @@ class TestMappingMatrix:
             ]
         )
 
-        mapping_matrix = al.mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
+        mapping_matrix = al.mapper_util.mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=6,
             total_mask_pixels=3,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             sub_fraction=1.0 / 16.0,
         )
 

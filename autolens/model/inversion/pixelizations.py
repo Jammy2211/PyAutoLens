@@ -3,7 +3,6 @@ import scipy.spatial
 
 from autolens import exc
 from autolens.array import grids
-from autolens.array import geometry
 from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 
@@ -47,9 +46,9 @@ class Rectangular(Pixelization):
         self.pixels = self.shape[0] * self.shape[1]
         super(Rectangular, self).__init__()
 
-    class Geometry(geometry.Geometry):
+    class Geometry(object):
         def __init__(
-                self, shape, pixel_scales, origin, pixel_neighbors, pixel_neighbors_size
+            self, shape, pixel_scales, origin, pixel_neighbors, pixel_neighbors_size
         ):
             """The geometry of a rectangular grid.
 
@@ -88,7 +87,7 @@ class Rectangular(Pixelization):
         Parameters
         -----------
         grid : ndarray
-            The (y,x) grid of coordinates over which the rectangular pixelization is placed to determine its geometry.
+            The (y,x) grid of coordinates over which the rectangular pixelization is placed to determine its 
         buffer : float
             The size the pixelization is buffered relative to the grid.
         """
@@ -115,11 +114,11 @@ class Rectangular(Pixelization):
         return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
 
     def mapper_from_grid_and_pixelization_grid(
-            self,
-            grid,
-            pixelization_grid=None,
-            inversion_uses_border=False,
-            hyper_image=None,
+        self,
+        grid,
+        pixelization_grid=None,
+        inversion_uses_border=False,
+        hyper_image=None,
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
@@ -147,14 +146,14 @@ class Rectangular(Pixelization):
         return mappers.RectangularMapper(
             pixels=self.pixels,
             grid=relocated_grid,
-            pixelization_grid=geometry.pixel_centres,
+            pixelization_grid=pixel_centres,
             shape=self.shape,
             geometry=geometry,
             hyper_image=hyper_image,
         )
 
     def pixelization_grid_from_grid(
-            self, grid, cluster_grid=None, hyper_image=None, seed=1
+        self, grid, cluster_grid=None, hyper_image=None, seed=1
     ):
         return None
 
@@ -169,14 +168,14 @@ class Voronoi(Pixelization):
          """
         super(Voronoi, self).__init__()
 
-    class Geometry(geometry.Geometry):
+    class Geometry(object):
         def __init__(
-                self,
-                shape_arcsec,
-                pixel_centres,
-                origin,
-                pixel_neighbors,
-                pixel_neighbors_size,
+            self,
+            shape_arcsec,
+            pixel_centres,
+            origin,
+            pixel_neighbors,
+            pixel_neighbors_size,
         ):
             """The geometry of a Voronoi pixelization.
 
@@ -202,7 +201,7 @@ class Voronoi(Pixelization):
             self.pixel_neighbors_size = pixel_neighbors_size.astype("int")
 
     def geometry_from_grid(
-            self, grid, pixel_centres, pixel_neighbors, pixel_neighbors_size, buffer=1e-8
+        self, grid, pixel_centres, pixel_neighbors, pixel_neighbors_size, buffer=1e-8
     ):
         """Determine the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
         grid plus a small buffer.
@@ -210,7 +209,7 @@ class Voronoi(Pixelization):
         Parameters
         -----------
         grid : ndarray
-            The (y,x) grid of coordinates which determine the Voronoi pixelization's geometry.
+            The (y,x) grid of coordinates which determine the Voronoi pixelization's 
         pixel_centres : ndarray
             The (y,x) centre of every Voronoi pixel in arc-seconds.
         origin : (float, float)
@@ -269,11 +268,11 @@ class Voronoi(Pixelization):
         )
 
     def mapper_from_grid_and_pixelization_grid(
-            self,
-            grid,
-            pixelization_grid=None,
-            inversion_uses_border=False,
-            hyper_image=None,
+        self,
+        grid,
+        pixelization_grid=None,
+        inversion_uses_border=False,
+        hyper_image=None,
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
@@ -348,7 +347,7 @@ class VoronoiMagnification(Voronoi):
         self.pixels = self.shape[0] * self.shape[1]
 
     def pixelization_grid_from_grid(
-            self, grid, cluster_grid=None, hyper_image=None, seed=1
+        self, grid, cluster_grid=None, hyper_image=None, seed=1
     ):
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
@@ -356,7 +355,7 @@ class VoronoiMagnification(Voronoi):
 
         return grids.PixelizationGrid(
             grid_1d=sparse_to_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
 
 
@@ -378,14 +377,12 @@ class VoronoiBrightnessImage(Voronoi):
 
     def cluster_weight_map_from_hyper_image(self, hyper_image):
         cluster_weight_map = (hyper_image - np.min(hyper_image)) / (
-                np.max(hyper_image) - np.min(hyper_image)
+            np.max(hyper_image) - np.min(hyper_image)
         ) + self.weight_floor * np.max(hyper_image)
 
         return np.power(cluster_weight_map, self.weight_power)
 
-    def pixelization_grid_from_grid(
-            self, grid, hyper_image, cluster_grid=None, seed=0
-    ):
+    def pixelization_grid_from_grid(self, grid, hyper_image, cluster_grid=None, seed=0):
         cluster_weight_map = self.cluster_weight_map_from_hyper_image(
             hyper_image=hyper_image
         )
@@ -399,5 +396,5 @@ class VoronoiBrightnessImage(Voronoi):
 
         return grids.PixelizationGrid(
             grid_1d=sparse_to_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )

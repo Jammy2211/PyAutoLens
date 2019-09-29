@@ -420,9 +420,7 @@ def plot_profile_image(
     output_filename="tracer_profile_image",
 ):
 
-    profile_image = tracer.profile_image_from_grid(
-        grid=grid, bypass_decorator=False
-    )
+    profile_image = tracer.profile_image_from_grid(grid=grid)
 
     array_plotters.plot_array(
         array=profile_image,
@@ -490,9 +488,7 @@ def plot_convergence(
     output_filename="tracer_convergence",
 ):
 
-    convergence = tracer.convergence_from_grid(
-        grid=grid, bypass_decorator=False
-    )
+    convergence = tracer.convergence_from_grid(grid=grid)
 
     array_plotters.plot_array(
         array=convergence,
@@ -557,9 +553,7 @@ def plot_potential(
     output_filename="tracer_potential",
 ):
 
-    potential = tracer.potential_from_grid(
-        grid=grid, bypass_decorator=False
-    )
+    potential = tracer.potential_from_grid(grid=grid)
 
     array_plotters.plot_array(
         array=potential,
@@ -624,10 +618,8 @@ def plot_deflections_y(
     output_filename="tracer_deflections_y",
 ):
 
-    deflections = tracer.deflections_from_grid(
-        grid=grid, return_in_2d=False, return_binned=True
-    )
-    deflections_y = grid.mapping.scaled_array_2d_from_array_1d(
+    deflections = tracer.deflections_from_grid(grid=grid)
+    deflections_y = grid.mask.scaled_array_2d_from_array_1d(
         array_1d=deflections[:, 0]
     )
 
@@ -694,10 +686,8 @@ def plot_deflections_x(
     output_filename="tracer_deflections_x",
 ):
 
-    deflections = tracer.deflections_from_grid(
-        grid=grid, return_in_2d=False, return_binned=True
-    )
-    deflections_x = grid.mapping.scaled_array_2d_from_array_1d(
+    deflections = tracer.deflections_from_grid(grid=grid)
+    deflections_x = grid.mask.scaled_array_2d_from_array_1d(
         array_1d=deflections[:, 1]
     )
 

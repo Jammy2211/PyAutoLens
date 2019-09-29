@@ -2,8 +2,6 @@ from autolens import exc
 from autolens.array import grids, scaled_array
 from autolens.array import mask as msk
 
-from autolens.array import mapping
-
 
 class GalaxyData(object):
     def __init__(self, image, noise_map, pixel_scale):
@@ -20,9 +18,9 @@ class GalaxyData(object):
 
         Parameters
         ----------
-        image : scaled_array.ScaledArray
+        image : scaled_array.Scaled
             An image of the quantity of the galaxy that is being fitted (e.g. its image, convergence, etc.).
-        noise_map : scaled_array.ScaledArray
+        noise_map : scaled_array.Scaled
             The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
         """
         self.image = image
@@ -74,12 +72,14 @@ class GalaxyFitData(object):
         self.mapping = mask.mapping
         self.pixel_scale = galaxy_data.pixel_scale
 
-        self._image_1d = mask.mapping.scaled_array_from_array_2d(array_2d=galaxy_data.image)
-        self._noise_map_1d = mask.mapping.scaled_array_from_array_2d(
+        self._image_1d = mask.scaled_array_from_array_2d(
+            array_2d=galaxy_data.image
+        )
+        self._noise_map_1d = mask.scaled_array_from_array_2d(
             array_2d=galaxy_data.noise_map
         )
         self.signal_to_noise_map_1d = self._image_1d / self._noise_map_1d
-        self._mask_1d = mask.mapping.scaled_array_from_array_2d(array_2d=mask)
+        self._mask_1d = mask.scaled_array_from_array_2d(array_2d=mask)
 
         self.sub_size = mask.sub_size
 
@@ -132,11 +132,9 @@ class GalaxyFitData(object):
         self.use_deflections_y = use_deflections_y
         self.use_deflections_x = use_deflections_x
 
-    
     def image(self):
         return self.galaxy_data.image
 
-    
     def noise_map(self):
         return self.galaxy_data.noise_map
 
@@ -162,48 +160,19 @@ class GalaxyFitData(object):
 
         if self.use_image:
             return sum(
-                map(
-                    lambda g: g.profile_image_from_grid(
-                        grid=self.grid, return_in_2d=False, return_binned=True
-                    ),
-                    galaxies,
-                )
+                map(lambda g: g.profile_image_from_grid(grid=self.grid), galaxies)
             )
         elif self.use_convergence:
-            return sum(
-                map(
-                    lambda g: g.convergence_from_grid(
-                        grid=self.grid, return_in_2d=False, return_binned=True
-                    ),
-                    galaxies,
-                )
-            )
+            return sum(map(lambda g: g.convergence_from_grid(grid=self.grid), galaxies))
         elif self.use_potential:
-            return sum(
-                map(
-                    lambda g: g.potential_from_grid(
-                        grid=self.grid, return_in_2d=False, return_binned=True
-                    ),
-                    galaxies,
-                )
-            )
+            return sum(map(lambda g: g.potential_from_grid(grid=self.grid), galaxies))
         elif self.use_deflections_y:
             return sum(
-                map(
-                    lambda g: g.deflections_from_grid(
-                        grid=self.grid, return_in_2d=False, return_binned=True
-                    ),
-                    galaxies,
-                )
+                map(lambda g: g.deflections_from_grid(grid=self.grid), galaxies)
             )[:, 0]
         elif self.use_deflections_x:
             return sum(
-                map(
-                    lambda g: g.deflections_from_grid(
-                        grid=self.grid, return_in_2d=False, return_binned=True
-                    ),
-                    galaxies,
-                )
+                map(lambda g: g.deflections_from_grid(grid=self.grid), galaxies)
             )[:, 1]
 
     def mask(self, return_in_2d=True):

@@ -1,6 +1,9 @@
 import numpy as np
 
-from autolens.array.mapping import reshape_returned_sub_array_from_grid, reshape_returned_grid_from_grid
+from autolens.array.mapping import (
+    reshape_returned_sub_array_from_grid,
+    reshape_returned_grid_from_grid,
+)
 
 
 class MockGalaxy(object):
@@ -8,28 +11,16 @@ class MockGalaxy(object):
         self.value = value
         self.shape = shape
 
-
-    def profile_image_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def profile_image_from_grid(self, grid):
         return np.full(shape=self.shape, fill_value=self.value)
 
-
-    def convergence_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def convergence_from_grid(self, grid):
         return np.full(shape=self.shape, fill_value=self.value)
 
-
-    def potential_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def potential_from_grid(self, grid):
         return np.full(shape=self.shape, fill_value=self.value)
 
-
-    def deflections_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def deflections_from_grid(self, grid):
         return np.full(shape=(self.shape, 2), fill_value=self.value)
 
 

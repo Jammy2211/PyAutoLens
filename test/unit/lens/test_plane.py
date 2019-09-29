@@ -29,8 +29,8 @@ def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid.geometry.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=pixel_coord, shape=magnification_2d.shape
+        critical_curve = grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+            grid_pixels_1d=pixel_coord, shape=magnification_2d.shape
         )
 
         critical_curves.append(critical_curve)
@@ -49,7 +49,7 @@ def caustics_via_magnification_from_plane_and_grid(plane, grid):
         critical_curve = critical_curves[i]
 
         deflections_1d = plane.deflections_from_grid(
-            grid=critical_curve, bypass_decorator=True
+            grid=critical_curve
         )
 
         caustic = critical_curve - deflections_1d
@@ -502,7 +502,7 @@ class TestAbstractPlaneLensing(object):
             light_profile = gal_x1_lp.light_profiles[0]
 
             lp_sub_image_1d = light_profile.profile_image_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
 
             # Perform sub gridding average manually
@@ -521,26 +521,14 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[gal_x1_lp], redshift=None)
 
-            profile_image_1d = plane.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            profile_image_1d = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
             assert (profile_image_1d[0] == lp_image_pixel_0).all()
             assert (profile_image_1d[1] == lp_image_pixel_1).all()
 
-            lp_sub_image_2d = light_profile.profile_image_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=True,
-                return_binned=True,
-                bypass_decorator=False,
-            )
+            lp_sub_image_2d = light_profile.profile_image_from_grid(grid=sub_grid_7x7)
 
-            profile_image_2d = plane.profile_image_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=True,
-                return_binned=True,
-                bypass_decorator=False,
-            )
+            profile_image_2d = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
             assert (profile_image_2d == lp_sub_image_2d).all()
 
@@ -548,15 +536,13 @@ class TestAbstractPlaneLensing(object):
             self, sub_grid_7x7, gal_x1_lp
         ):
             galaxy_image = gal_x1_lp.profile_image_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=False,
-                return_binned=False,
+                grid=sub_grid_7x7, return_in_2d=False, return_binned=False
             )
 
             plane = al.Plane(galaxies=[gal_x1_lp], redshift=None)
 
             profile_image_1d = plane.profile_image_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
 
             assert profile_image_1d == pytest.approx(galaxy_image, 1.0e-4)
@@ -578,10 +564,10 @@ class TestAbstractPlaneLensing(object):
             lp1 = g1.light_profiles[0]
 
             lp0_sub_image = lp0.profile_image_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
             lp1_sub_image = lp1.profile_image_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
 
             # Perform sub gridding average manually
@@ -612,9 +598,7 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            profile_image = plane.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            profile_image = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
             assert profile_image[0] == pytest.approx(
                 lp0_image_pixel_0 + lp1_image_pixel_0, 1.0e-4
@@ -624,7 +608,7 @@ class TestAbstractPlaneLensing(object):
             )
 
             profile_image_of_galaxies = plane.profile_images_of_galaxies_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+                grid=sub_grid_7x7
             )
 
             assert profile_image_of_galaxies[0][0] == lp0_image_pixel_0
@@ -645,19 +629,13 @@ class TestAbstractPlaneLensing(object):
                 light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
             )
 
-            g0_image = g0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g0_image = g0.profile_image_from_grid(grid=sub_grid_7x7)
 
-            g1_image = g1.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g1_image = g1.profile_image_from_grid(grid=sub_grid_7x7)
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            profile_image = plane.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            profile_image = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
             assert profile_image == pytest.approx(g0_image + g1_image, 1.0e-4)
 
@@ -666,12 +644,7 @@ class TestAbstractPlaneLensing(object):
         ):
             plane = al.Plane(galaxies=[], redshift=0.5)
 
-            profile_image = plane.profile_image_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=True,
-                return_binned=True,
-                bypass_decorator=False,
-            )
+            profile_image = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
             assert profile_image.shape == (7, 7)
             assert (profile_image[1, 1] == 0.0).all()
@@ -703,10 +676,10 @@ class TestAbstractPlaneLensing(object):
             mp1 = g1.mass_profiles[0]
 
             mp0_sub_convergence = mp0.convergence_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
             mp1_sub_convergence = mp1.convergence_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
 
             mp_sub_convergence = mp0_sub_convergence + mp1_sub_convergence
@@ -728,12 +701,7 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            convergence = plane.convergence_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=True,
-                return_binned=True,
-                bypass_decorator=False,
-            )
+            convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
             assert convergence[2, 2] == pytest.approx(mp_convergence_pixel_0, 1.0e-4)
             assert convergence[2, 3] == pytest.approx(mp_convergence_pixel_1, 1.0e-4)
@@ -750,19 +718,13 @@ class TestAbstractPlaneLensing(object):
                 mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_convergence = g0.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g0_convergence = g0.convergence_from_grid(grid=sub_grid_7x7)
 
-            g1_convergence = g1.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g1_convergence = g1.convergence_from_grid(grid=sub_grid_7x7)
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            convergence = plane.convergence_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
             assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
 
@@ -772,7 +734,7 @@ class TestAbstractPlaneLensing(object):
             plane = al.Plane(galaxies=[], redshift=0.5)
 
             convergence = plane.convergence_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
 
             assert convergence.shape[0] == sub_grid_7x7.shape[0]
@@ -783,12 +745,7 @@ class TestAbstractPlaneLensing(object):
 
             assert convergence.shape == (14, 14)
 
-            convergence = plane.convergence_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=True,
-                return_binned=True,
-                bypass_decorator=False,
-            )
+            convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
             assert convergence.shape == (7, 7)
 
@@ -818,10 +775,10 @@ class TestAbstractPlaneLensing(object):
             mp1 = g1.mass_profiles[0]
 
             mp0_sub_potential = mp0.potential_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
             mp1_sub_potential = mp1.potential_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
 
             mp_sub_potential = mp0_sub_potential + mp1_sub_potential
@@ -843,12 +800,7 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            potential = plane.potential_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=True,
-                return_binned=True,
-                bypass_decorator=False,
-            )
+            potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
             assert potential[2, 2] == pytest.approx(mp_potential_pixel_0, 1.0e-4)
             assert potential[2, 3] == pytest.approx(mp_potential_pixel_1, 1.0e-4)
@@ -865,19 +817,13 @@ class TestAbstractPlaneLensing(object):
                 mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_potential = g0.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g0_potential = g0.potential_from_grid(grid=sub_grid_7x7)
 
-            g1_potential = g1.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g1_potential = g1.potential_from_grid(grid=sub_grid_7x7)
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            potential = plane.potential_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
             assert potential == pytest.approx(g0_potential + g1_potential, 1.0e-8)
 
@@ -887,7 +833,7 @@ class TestAbstractPlaneLensing(object):
             plane = al.Plane(galaxies=[], redshift=0.5)
 
             potential = plane.potential_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
 
             assert potential.shape[0] == sub_grid_7x7.shape[0]
@@ -898,12 +844,7 @@ class TestAbstractPlaneLensing(object):
 
             assert potential.shape == (14, 14)
 
-            potential = plane.potential_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=True,
-                return_binned=True,
-                bypass_decorator=False,
-            )
+            potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
             assert potential.shape == (7, 7)
 
@@ -926,8 +867,12 @@ class TestAbstractPlaneLensing(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.deflections_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
-            mp1_sub_image = mp1.deflections_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
+            mp0_sub_image = mp0.deflections_from_grid(
+                grid=sub_grid_7x7
+            )
+            mp1_sub_image = mp1.deflections_from_grid(
+                grid=sub_grid_7x7
+            )
 
             # Perform sub gridding average manually
             mp0_image_pixel_0x = (
@@ -982,9 +927,7 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            deflections = plane.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            deflections = plane.deflections_from_grid(grid=sub_grid_7x7)
 
             assert deflections[0, 0] == pytest.approx(
                 mp0_image_pixel_0x + mp1_image_pixel_0x, 1.0e-4
@@ -1014,19 +957,13 @@ class TestAbstractPlaneLensing(object):
                 mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_deflections = g0.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g0_deflections = g0.deflections_from_grid(grid=sub_grid_7x7)
 
-            g1_deflections = g1.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g1_deflections = g1.deflections_from_grid(grid=sub_grid_7x7)
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            deflections = plane.deflections_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            deflections = plane.deflections_from_grid(grid=sub_grid_7x7)
 
             assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
 
@@ -1036,7 +973,7 @@ class TestAbstractPlaneLensing(object):
             plane = al.Plane(galaxies=[gal_x2_mp], redshift=None)
 
             deflections = plane.deflections_from_grid(
-                grid=grid_7x7, bypass_decorator=True
+                grid=grid_7x7
             )
 
             assert deflections[0:2] == pytest.approx(
@@ -1046,7 +983,7 @@ class TestAbstractPlaneLensing(object):
             plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 
             deflections = plane.deflections_from_grid(
-                grid=grid_7x7, bypass_decorator=True
+                grid=grid_7x7
             )
 
             assert deflections[0:2] == pytest.approx(
@@ -1058,12 +995,7 @@ class TestAbstractPlaneLensing(object):
         ):
             plane = al.Plane(redshift=0.5, galaxies=[])
 
-            deflections = plane.deflections_from_grid(
-                grid=sub_grid_7x7,
-                return_in_2d=True,
-                return_binned=True,
-                bypass_decorator=False,
-            )
+            deflections = plane.deflections_from_grid(grid=sub_grid_7x7)
 
             assert deflections.shape == (7, 7, 2)
             assert (deflections[0, 0] == 0.0).all()
@@ -1089,12 +1021,10 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            deflections_via_calculation = plane.deflections_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            deflections_via_calculation = plane.deflections_from_grid(grid=grid)
 
             deflections_via_potential = plane.deflections_via_potential_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
+                grid=grid
             )
 
             mean_error = np.mean(
@@ -1119,19 +1049,13 @@ class TestAbstractPlaneLensing(object):
                 mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_deflections = g0.deflections_via_potential_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            g0_deflections = g0.deflections_via_potential_from_grid(grid=grid)
 
-            g1_deflections = g1.deflections_via_potential_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            g1_deflections = g1.deflections_via_potential_from_grid(grid=grid)
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            deflections = plane.deflections_via_potential_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            deflections = plane.deflections_via_potential_from_grid(grid=grid)
 
             assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
 
@@ -1166,9 +1090,7 @@ class TestAbstractPlaneLensing(object):
 
             assert mean_error < 1e-4
 
-            jacobian = plane.lensing_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            jacobian = plane.lensing_jacobian_from_grid(grid=grid)
 
             A_12 = jacobian[0, 1]
             A_21 = jacobian[1, 0]
@@ -1198,9 +1120,7 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            jacobian_binned_reg_grid = plane.lensing_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            jacobian_binned_reg_grid = plane.lensing_jacobian_from_grid(grid=grid)
             a11_binned_reg_grid = jacobian_binned_reg_grid[0, 0]
 
             jacobian_sub_grid = plane.lensing_jacobian_from_grid(
@@ -1251,12 +1171,10 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            lambda_t_binned_reg_grid = plane.tangential_eigen_value_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            lambda_t_binned_reg_grid = plane.tangential_eigen_value_from_grid(grid=grid)
 
             lambda_t_sub_grid = plane.tangential_eigen_value_from_grid(
-                grid=grid, bypass_decorator=True
+                grid=grid
             )
 
             pixel_1_reg_grid = lambda_t_binned_reg_grid[0]
@@ -1303,12 +1221,10 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            lambda_r_binned_reg_grid = plane.radial_eigen_value_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            lambda_r_binned_reg_grid = plane.radial_eigen_value_from_grid(grid=grid)
 
             lambda_r_sub_grid = plane.radial_eigen_value_from_grid(
-                grid=grid, bypass_decorator=True
+                grid=grid
             )
 
             pixel_1_reg_grid = lambda_r_binned_reg_grid[0]
@@ -1357,11 +1273,11 @@ class TestAbstractPlaneLensing(object):
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
             convergence_via_calculation = plane.convergence_from_grid(
-                grid=grid, bypass_decorator=True
+                grid=grid
             )
 
             convergence_via_jacobian = plane.convergence_via_jacobian_from_grid(
-                grid=grid, bypass_decorator=True
+                grid=grid
             )
 
             mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
@@ -1390,7 +1306,7 @@ class TestAbstractPlaneLensing(object):
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
             convergence_binned_reg_grid = plane.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
+                grid=grid
             )
 
             convergence_sub_grid = plane.convergence_via_jacobian_from_grid(
@@ -1420,12 +1336,10 @@ class TestAbstractPlaneLensing(object):
                 pixel_10000_from_av_sub_grid, 1e-4
             )
 
-            convergence_via_calculation = plane.convergence_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            convergence_via_calculation = plane.convergence_from_grid(grid=grid)
 
             convergence_via_jacobian = plane.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
+                grid=grid
             )
 
             mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
@@ -1447,19 +1361,13 @@ class TestAbstractPlaneLensing(object):
                 mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_convergence = g0.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            g0_convergence = g0.convergence_via_jacobian_from_grid(grid=grid)
 
-            g1_convergence = g1.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            g1_convergence = g1.convergence_via_jacobian_from_grid(grid=grid)
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            convergence = plane.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            convergence = plane.convergence_via_jacobian_from_grid(grid=grid)
 
             assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
 
@@ -1485,9 +1393,7 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            shear_binned_reg_grid = plane.shear_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            shear_binned_reg_grid = plane.shear_via_jacobian_from_grid(grid=grid)
 
             shear_sub_grid = plane.shear_via_jacobian_from_grid(
                 grid=grid, return_in_2d=False, return_binned=False
@@ -1530,19 +1436,13 @@ class TestAbstractPlaneLensing(object):
                 mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_shear = g0.shear_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            g0_shear = g0.shear_via_jacobian_from_grid(grid=grid)
 
-            g1_shear = g1.shear_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            g1_shear = g1.shear_via_jacobian_from_grid(grid=grid)
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            shear = plane.shear_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=True
-            )
+            shear = plane.shear_via_jacobian_from_grid(grid=grid)
 
             assert shear == pytest.approx(g0_shear + g1_shear, 1.0e-8)
 
@@ -2358,23 +2258,18 @@ class TestAbstractPlaneData(object):
                 grid=sub_grid_7x7,
                 blurring_grid=blurring_grid_7x7,
                 convolver=convolver_7x7,
-                return_in_2d=False,
             )
 
             blurred_g1_image_1d = g1.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 blurring_grid=blurring_grid_7x7,
                 convolver=convolver_7x7,
-                return_in_2d=False,
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
 
             blurred_image_1d = plane.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7,
-                blurring_grid=blurring_grid_7x7,
-                psf=psf_3x3,
-                return_in_2d=False,
+                grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3
             )
 
             assert blurred_image_1d == pytest.approx(
@@ -2407,26 +2302,17 @@ class TestAbstractPlaneData(object):
             )
 
             blurred_g0_image_1d = g0.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7,
-                blurring_grid=blurring_grid_7x7,
-                psf=psf_3x3,
-                return_in_2d=False,
+                grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3
             )
 
             blurred_g1_image_1d = g1.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7,
-                blurring_grid=blurring_grid_7x7,
-                psf=psf_3x3,
-                return_in_2d=False,
+                grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
 
             blurred_images_1d_of_galaxies = plane.blurred_profile_images_of_galaxies_from_grid_and_psf(
-                grid=sub_grid_7x7,
-                blurring_grid=blurring_grid_7x7,
-                psf=psf_3x3,
-                return_in_2d=False,
+                grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3
             )
 
             assert blurred_g0_image_1d.shape[0] == 9
@@ -2486,14 +2372,12 @@ class TestAbstractPlaneData(object):
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
                 blurring_grid=blurring_grid_7x7,
-                return_in_2d=False,
             )
 
             blurred_g1_image_1d = g1.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
                 blurring_grid=blurring_grid_7x7,
-                return_in_2d=False,
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
@@ -2502,7 +2386,6 @@ class TestAbstractPlaneData(object):
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
                 blurring_grid=blurring_grid_7x7,
-                return_in_2d=False,
             )
 
             assert blurred_image_1d == pytest.approx(
@@ -2538,14 +2421,12 @@ class TestAbstractPlaneData(object):
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
                 blurring_grid=blurring_grid_7x7,
-                return_in_2d=False,
             )
 
             blurred_g1_image_1d = g1.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
                 blurring_grid=blurring_grid_7x7,
-                return_in_2d=False,
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
@@ -2556,7 +2437,6 @@ class TestAbstractPlaneData(object):
                 grid=sub_grid_7x7,
                 blurring_grid=blurring_grid_7x7,
                 convolver=convolver_7x7,
-                return_in_2d=False,
             )
 
             assert blurred_g0_image_1d.shape[0] == 9
@@ -2609,9 +2489,7 @@ class TestAbstractPlaneData(object):
                 light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
             )
 
-            image_1d = g0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            image_1d = g0.profile_image_from_grid(grid=sub_grid_7x7)
 
             visibilities = transformer_7x7_7.visibilities_from_image_1d(
                 image_1d=image_1d
@@ -2631,10 +2509,8 @@ class TestAbstractPlaneData(object):
             )
 
             image_1d = g0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            ) + g1.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+                grid=sub_grid_7x7
+            ) + g1.profile_image_from_grid(grid=sub_grid_7x7)
 
             visibilities = transformer_7x7_7.visibilities_from_image_1d(
                 image_1d=image_1d
@@ -2661,13 +2537,9 @@ class TestAbstractPlaneData(object):
                 light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
             )
 
-            g0_image_1d = g0.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g0_image_1d = g0.profile_image_from_grid(grid=sub_grid_7x7)
 
-            g1_image_1d = g1.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-            )
+            g1_image_1d = g1.profile_image_from_grid(grid=sub_grid_7x7)
 
             g0_visibilities = transformer_7x7_7.visibilities_from_image_1d(
                 image_1d=g0_image_1d
@@ -2858,7 +2730,9 @@ class TestAbstractPlaneData(object):
             # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
             # index 0 of the 1D grid and (0,0) of the 2d plane datas_.
 
-            mask = al.Mask(array_2d=np.full((5, 5), False), pixel_scales=1.0, sub_size=1)
+            mask = al.Mask(
+                array_2d=np.full((5, 5), False), pixel_scales=1.0, sub_size=1
+            )
 
             grid = al.Grid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask)
 
@@ -3324,18 +3198,20 @@ class TestPlane(object):
             )
 
             g0_deflections = g0.deflections_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
 
             g1_deflections = g1.deflections_from_grid(
-                grid=sub_grid_7x7, bypass_decorator=True
+                grid=sub_grid_7x7
             )
 
             traced_grid = sub_grid_7x7 - (g0_deflections + g1_deflections)
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            plane_traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
+            plane_traced_grid = plane.traced_grid_from_grid(
+                grid=sub_grid_7x7
+            )
 
             assert plane_traced_grid == pytest.approx(traced_grid, 1.0e-4)
 
@@ -3344,7 +3220,9 @@ class TestPlane(object):
         ):
             plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 
-            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7_simple, bypass_decorator=True)
+            traced_grid = plane.traced_grid_from_grid(
+                grid=sub_grid_7x7_simple
+            )
 
             assert traced_grid[0] == pytest.approx(
                 np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3
@@ -3360,7 +3238,9 @@ class TestPlane(object):
         ):
             plane = al.Plane(galaxies=[], redshift=1.0)
 
-            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7, bypass_decorator=True)
+            traced_grid = plane.traced_grid_from_grid(
+                grid=sub_grid_7x7
+            )
 
             assert (traced_grid == sub_grid_7x7).all()
 

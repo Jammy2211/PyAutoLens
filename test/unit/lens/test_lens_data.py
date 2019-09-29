@@ -221,7 +221,7 @@ class TestLensImagingData(object):
         self, lens_imaging_data_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
     ):
 
-        assert (lens_imaging_data_7x7.grid.geometry.grid_1d == grid_7x7).all()
+        assert (lens_imaging_data_7x7.grid.unmasked_grid == grid_7x7).all()
         assert (lens_imaging_data_7x7.grid == sub_grid_7x7).all()
         assert (lens_imaging_data_7x7.blurring_grid == blurring_grid_7x7).all()
 
@@ -465,7 +465,7 @@ class TestLensUVPlaneData(object):
         assert lens_uv_plane_data_7.uv_plane_data.uv_wavelengths[0, 0] == -55636.4609375
 
     def test__grids(self, lens_uv_plane_data_7, grid_7x7, sub_grid_7x7):
-        assert (lens_uv_plane_data_7.grid.geometry.grid_1d == grid_7x7).all()
+        assert (lens_uv_plane_data_7.grid.unmasked_grid == grid_7x7).all()
         assert (lens_uv_plane_data_7.grid == sub_grid_7x7).all()
 
     def test__transformer(self, lens_uv_plane_data_7):

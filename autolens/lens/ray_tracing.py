@@ -8,8 +8,6 @@ from autolens.model import cosmology_util
 from autolens.model.inversion import inversions as inv
 from autolens.model.galaxy import galaxy as g
 
-from autolens.array import mapping
-
 
 class AbstractTracer(object):
     def __init__(self, planes, cosmology):
@@ -228,12 +226,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
                     return traced_grids
 
             traced_deflections.append(
-                plane.deflections_from_grid(
-                    grid=scaled_grid,
-                    return_in_2d=False,
-                    return_binned=False,
-                    bypass_decorator=True,
-                )
+                plane.deflections_from_grid(grid=scaled_grid)
             )
 
         return traced_grids
@@ -265,21 +258,13 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    
-    def profile_image_from_grid(
-        self, grid,
-    ):
+    def profile_image_from_grid(self, grid):
         return sum(
-            self.profile_images_of_planes_from_grid(
-                grid=grid,
-                return_in_2d=False,
-                return_binned=False,
-                bypass_decorator=True,
-            )
+            self.profile_images_of_planes_from_grid(grid=grid)
         )
 
     def profile_images_of_planes_from_grid(
-        self, grid, return_in_2d=True, return_binned=True, bypass_decorator=False,
+        self, grid, return_in_2d=True, return_binned=True
     ):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
@@ -290,7 +275,6 @@ class AbstractTracerLensing(AbstractTracerCosmology):
                 grid=traced_grids_of_planes[plane_index],
                 return_in_2d=return_in_2d,
                 return_binned=return_binned,
-                bypass_decorator=bypass_decorator,
             )
             for plane_index in range(len(traced_grids_of_planes))
         ]
@@ -309,57 +293,28 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf_shape)
 
-        return self.profile_image_from_grid(
-            grid=padded_grid,
-            return_in_2d=True,
-            return_binned=True,
-            bypass_decorator=False,
-        )
+        return self.profile_image_from_grid(grid=padded_grid)
 
-    
-    def convergence_from_grid(
-        self, grid,
-    ):
+    def convergence_from_grid(self, grid):
         return sum(
             [
-                plane.convergence_from_grid(
-                    grid=grid,
-                    return_in_2d=False,
-                    return_binned=False,
-                    bypass_decorator=True,
-                )
+                plane.convergence_from_grid(grid=grid)
                 for plane in self.planes
             ]
         )
 
-    
-    def potential_from_grid(
-        self, grid,
-    ):
+    def potential_from_grid(self, grid):
         return sum(
             [
-                plane.potential_from_grid(
-                    grid=grid,
-                    return_in_2d=False,
-                    return_binned=False,
-                    bypass_decorator=True,
-                )
+                plane.potential_from_grid(grid=grid)
                 for plane in self.planes
             ]
         )
 
-    
-    def deflections_from_grid(
-        self, grid,
-    ):
+    def deflections_from_grid(self, grid):
         return sum(
             [
-                plane.deflections_from_grid(
-                    grid=grid,
-                    return_in_2d=False,
-                    return_binned=False,
-                    bypass_decorator=True,
-                )
+                plane.deflections_from_grid(grid=grid)
                 for plane in self.planes
             ]
         )
@@ -422,10 +377,7 @@ class AbstractTracerData(AbstractTracerLensing):
     def __init__(self, planes, cosmology):
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
 
-    
-    def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, blurring_grid,
-    ):
+    def blurred_profile_image_from_grid_and_psf(self, grid, psf, blurring_grid):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a psf (see imaging.convolution).
 
@@ -437,18 +389,11 @@ class AbstractTracerData(AbstractTracerLensing):
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
-        profile_image = self.profile_image_from_grid(
-            grid=grid, bypass_decorator=False
-        )
+        profile_image = self.profile_image_from_grid(grid=grid)
 
-        blurring_image = self.profile_image_from_grid(
-            grid=blurring_grid,
-            return_in_2d=True,
-            return_binned=True,
-            bypass_decorator=False,
-        )
+        blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
-        return psf.convolve(profile_image + blurring_image)
+        return psf.convolved_array_2d_from_array_2d(profile_image + blurring_image)
 
     def blurred_profile_images_of_planes_from_grid_and_psf(
         self, grid, psf, blurring_grid, return_in_2d=False
@@ -479,9 +424,8 @@ class AbstractTracerData(AbstractTracerLensing):
             for (plane_index, plane) in enumerate(self.planes)
         ]
 
-
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, blurring_grid,
+        self, grid, convolver, blurring_grid
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a convolver (see imaging.convolution).
@@ -494,9 +438,7 @@ class AbstractTracerData(AbstractTracerLensing):
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
-        image_array = self.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        image_array = self.profile_image_from_grid(grid=grid)
 
         if convolver.blurring_mask is None:
             blurring_mask = grid.mask.blurring_mask_from_kernel_shape(
@@ -506,11 +448,9 @@ class AbstractTracerData(AbstractTracerLensing):
                 blurring_mask=blurring_mask
             )
 
-        blurring_array = self.profile_image_from_grid(
-            grid=blurring_grid, return_in_2d=False, return_binned=True
-        )
+        blurring_array = self.profile_image_from_grid(grid=blurring_grid)
 
-        return convolver.convolve_image(
+        return convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=image_array, blurring_array=blurring_array
         )
 
@@ -547,9 +487,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.shape)
 
-        padded_image_1d = self.profile_image_from_grid(
-            grid=padded_grid, return_in_2d=False, return_binned=True
-        )
+        padded_image_1d = self.profile_image_from_grid(grid=padded_grid)
 
         return padded_grid.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
             padded_array_1d=padded_image_1d, psf=psf, image_shape=grid.mask.shape
@@ -565,9 +503,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         for plane, traced_padded_grid in zip(self.planes, traced_padded_grids):
 
-            padded_image_1d = plane.profile_image_from_grid(
-                grid=traced_padded_grid, return_in_2d=False, return_binned=True
-            )
+            padded_image_1d = plane.profile_image_from_grid(grid=traced_padded_grid)
 
             unmasked_blurred_array_2d = padded_grid.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
                 padded_array_1d=padded_image_1d, psf=psf, image_shape=grid.mask.shape
@@ -590,7 +526,7 @@ class AbstractTracerData(AbstractTracerLensing):
         for plane, traced_padded_grid in zip(self.planes, traced_padded_grids):
 
             padded_image_1d_of_galaxies = plane.profile_images_of_galaxies_from_grid(
-                grid=traced_padded_grid, return_in_2d=False, return_binned=True
+                grid=traced_padded_grid
             )
 
             unmasked_blurred_array_2d_of_galaxies = list(
@@ -612,18 +548,14 @@ class AbstractTracerData(AbstractTracerLensing):
 
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
-        profile_image_1d = self.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        profile_image_1d = self.profile_image_from_grid(grid=grid)
         return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
 
     def profile_visibilities_of_planes_from_grid_and_transformer(
         self, grid, transformer
     ):
 
-        profile_images_1d_of_planes = self.profile_images_of_planes_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        profile_images_1d_of_planes = self.profile_images_of_planes_from_grid(grid=grid)
         return [
             transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
             for profile_image_1d in profile_images_1d_of_planes
@@ -741,7 +673,7 @@ class AbstractTracerData(AbstractTracerLensing):
         ]
 
     def galaxy_profile_image_dict_from_grid(
-        self, grid, return_in_2d=True, return_binned=True,
+        self, grid, return_in_2d=True, return_binned=True
     ) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
@@ -767,7 +699,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return galaxy_profile_image_dict
 
     def galaxy_blurred_profile_image_dict_from_grid_and_convolver(
-        self, grid, convolver, blurring_grid, return_in_2d=True,
+        self, grid, convolver, blurring_grid, return_in_2d=True
     ) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
@@ -798,7 +730,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return galaxy_blurred_profile_image_dict
 
     def galaxy_profile_visibilities_dict_from_grid_and_transformer(
-        self, grid, transformer,
+        self, grid, transformer
     ) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images

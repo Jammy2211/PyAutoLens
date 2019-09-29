@@ -15,8 +15,8 @@ Big Picture:
 
 PyAutoArray:
 
-- Make ScaledArray have a mask, all False if None as default.
-- Move ArrayMappinng classes to ScaledArray, Grids.
+- Make Scaled have a mask, all False if None as default.
+- Move ArrayMappinng classes to Scaled, Grids.
 - Remove ArrayRectangularGeometry.
 
 

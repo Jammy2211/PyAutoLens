@@ -4,7 +4,6 @@ from autolens.array import grids
 from autolens.array import mask as msk
 from autolens.array.convolution import Convolver
 from autolens.array.fourier_transform import Transformer
-from autolens.array import mapping
 
 
 class AbstractLensData(object):
@@ -22,7 +21,7 @@ class AbstractLensData(object):
     ):
 
         self.mask = mask
-        self._mask_1d = mask.mapping.scaled_array_from_array_2d(array_2d=mask)
+        self._mask_1d = mask.scaled_array_from_array_2d(array_2d=mask)
         self.sub_size = mask.sub_size
 
         ### GRIDS ###
@@ -164,11 +163,9 @@ class LensImagingData(AbstractLensData):
                 pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
 
-    
     def image(self):
         return self.imaging_data.image
 
-    
     def noise_map(self):
         return self.imaging_data.noise_map
 
@@ -176,7 +173,6 @@ class LensImagingData(AbstractLensData):
     def psf(self):
         return self.imaging_data.psf
 
-    
     def signal_to_noise_map(self):
         return self.imaging_data.image / self.imaging_data.noise_map
 

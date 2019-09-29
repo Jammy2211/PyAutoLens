@@ -727,13 +727,9 @@ class TestDeflectionsViaPotential(object):
             shape=(10, 10), pixel_scale=0.05, sub_size=1
         )
 
-        deflections_via_calculation = sis.deflections_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        deflections_via_calculation = sis.deflections_from_grid(grid=grid)
 
-        deflections_via_potential = sis.deflections_via_potential_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        deflections_via_potential = sis.deflections_via_potential_from_grid(grid=grid)
 
         mean_error = np.mean(deflections_via_potential - deflections_via_calculation)
 
@@ -749,13 +745,9 @@ class TestDeflectionsViaPotential(object):
             shape=(10, 10), pixel_scale=0.05, sub_size=1
         )
 
-        deflections_via_calculation = sie.deflections_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        deflections_via_calculation = sie.deflections_from_grid(grid=grid)
 
-        deflections_via_potential = sie.deflections_via_potential_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        deflections_via_potential = sie.deflections_via_potential_from_grid(grid=grid)
 
         mean_error = np.mean(deflections_via_potential - deflections_via_calculation)
 
@@ -771,13 +763,9 @@ class TestDeflectionsViaPotential(object):
             shape=(10, 10), pixel_scale=0.05, sub_size=1
         )
 
-        deflections_via_calculation = sie.deflections_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        deflections_via_calculation = sie.deflections_from_grid(grid=grid)
 
-        deflections_via_potential = sie.deflections_via_potential_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        deflections_via_potential = sie.deflections_via_potential_from_grid(grid=grid)
 
         mean_error = np.mean(deflections_via_potential - deflections_via_calculation)
 
@@ -793,9 +781,7 @@ class TestDeflectionsViaPotential(object):
             shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
-        deflections_binned_reg_grid = sie.deflections_via_potential_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        deflections_binned_reg_grid = sie.deflections_via_potential_from_grid(grid=grid)
 
         deflections_sub_grid = sie.deflections_via_potential_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -848,9 +834,7 @@ class TestJacobianandMagnification(object):
             shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
-        jacobian = sie.lensing_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        jacobian = sie.lensing_jacobian_from_grid(grid=grid)
 
         A_12 = jacobian[0, 1]
         A_21 = jacobian[1, 0]
@@ -991,9 +975,7 @@ class TestJacobianandMagnification(object):
             shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
-        jacobian_binned_reg_grid = sie.lensing_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        jacobian_binned_reg_grid = sie.lensing_jacobian_from_grid(grid=grid)
         a11_binned_reg_grid = jacobian_binned_reg_grid[0, 0]
 
         jacobian_sub_grid = sie.lensing_jacobian_from_grid(
@@ -1031,9 +1013,7 @@ class TestJacobianandMagnification(object):
             shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
-        shear_binned_reg_grid = sie.shear_via_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        shear_binned_reg_grid = sie.shear_via_jacobian_from_grid(grid=grid)
 
         shear_sub_grid = sie.shear_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -1070,9 +1050,7 @@ class TestJacobianandMagnification(object):
             shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
-        lambda_t_binned_reg_grid = sie.tangential_eigen_value_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        lambda_t_binned_reg_grid = sie.tangential_eigen_value_from_grid(grid=grid)
 
         lambda_t_sub_grid = sie.tangential_eigen_value_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -1109,9 +1087,7 @@ class TestJacobianandMagnification(object):
             shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
-        lambda_r_binned_reg_grid = sie.radial_eigen_value_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        lambda_r_binned_reg_grid = sie.radial_eigen_value_from_grid(grid=grid)
 
         lambda_r_sub_grid = sie.radial_eigen_value_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -1158,8 +1134,8 @@ def critical_curve_via_magnification_from_mass_profile_and_grid(mass_profile, gr
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid.geometry.marching_squares_grid_pixels_to_grid_arcsec(
-            grid_pixels=pixel_coord, shape=magnification_2d.shape
+        critical_curve = grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+            grid_pixels_1d=pixel_coord, shape=magnification_2d.shape
         )
 
         critical_curves.append(critical_curve)
@@ -1180,7 +1156,7 @@ def caustics_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
         critical_curve = critical_curves[i]
 
         deflections_1d = mass_profile.deflections_from_grid(
-            grid=critical_curve, bypass_decorator=True
+            grid=critical_curve
         )
 
         caustic = critical_curve - deflections_1d
@@ -1202,11 +1178,11 @@ class TestConvergenceViajacobian(object):
         )
 
         convergence_via_calculation = sis.convergence_from_grid(
-            grid=grid, bypass_decorator=False
+            grid=grid
         )
 
         convergence_via_jacobian = sis.convergence_via_jacobian_from_grid(
-            grid=grid, bypass_decorator=False
+            grid=grid
         )
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
@@ -1214,13 +1190,9 @@ class TestConvergenceViajacobian(object):
         assert convergence_via_jacobian.shape == (20, 20)
         assert mean_error < 1e-1
 
-        convergence_via_calculation = sis.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        convergence_via_calculation = sis.convergence_from_grid(grid=grid)
 
-        convergence_via_jacobian = sis.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        convergence_via_jacobian = sis.convergence_via_jacobian_from_grid(grid=grid)
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
 
@@ -1238,11 +1210,11 @@ class TestConvergenceViajacobian(object):
         )
 
         convergence_via_calculation = sie.convergence_from_grid(
-            grid=grid, bypass_decorator=False
+            grid=grid
         )
 
         convergence_via_jacobian = sie.convergence_via_jacobian_from_grid(
-            grid=grid, bypass_decorator=False
+            grid=grid
         )
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
@@ -1259,9 +1231,7 @@ class TestConvergenceViajacobian(object):
             shape=(20, 20), pixel_scale=0.05, sub_size=2
         )
 
-        convergence_binned_reg_grid = sie.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        convergence_binned_reg_grid = sie.convergence_via_jacobian_from_grid(grid=grid)
 
         convergence_sub_grid = sie.convergence_via_jacobian_from_grid(
             grid=grid, return_in_2d=False, return_binned=False
@@ -1288,13 +1258,9 @@ class TestConvergenceViajacobian(object):
 
         assert pixel_10000_reg_grid == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
 
-        convergence_via_calculation = sie.convergence_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        convergence_via_calculation = sie.convergence_from_grid(grid=grid)
 
-        convergence_via_jacobian = sie.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        convergence_via_jacobian = sie.convergence_via_jacobian_from_grid(grid=grid)
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
 

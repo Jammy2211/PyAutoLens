@@ -40,8 +40,8 @@ def constant_regularization_matrix_from_pixel_neighbors(
 def adaptive_pixel_signals_from_images(
     pixels,
     signal_scale,
-    sub_mask_1d_index_to_pixelization_1d_index,
-    sub_mask_1d_index_to_mask_1d_index,
+    pixelization_1d_index_for_sub_mask_1d_index,
+    mask_1d_index_for_sub_mask_1d_index,
     hyper_image,
 ):
     """Compute the (hyper) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
@@ -74,12 +74,12 @@ def adaptive_pixel_signals_from_images(
     pixel_signals = np.zeros((pixels,))
     pixel_sizes = np.zeros((pixels,))
 
-    for sub_mask_1d_index in range(len(sub_mask_1d_index_to_pixelization_1d_index)):
-        mask_1d_index = sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index]
+    for sub_mask_1d_index in range(len(pixelization_1d_index_for_sub_mask_1d_index)):
+        mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
         pixel_signals[
-            sub_mask_1d_index_to_pixelization_1d_index[sub_mask_1d_index]
+            pixelization_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
         ] += hyper_image[mask_1d_index]
-        pixel_sizes[sub_mask_1d_index_to_pixelization_1d_index[sub_mask_1d_index]] += 1
+        pixel_sizes[pixelization_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]] += 1
 
     pixel_sizes[pixel_sizes == 0] = 1
     pixel_signals /= pixel_sizes

@@ -3,24 +3,24 @@ from autolens import decorator_util
 
 
 @decorator_util.jit()
-def mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
-    sub_mask_1d_index_to_pixelization_1d_index,
+def mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
+    pixelization_1d_index_for_sub_mask_1d_index,
     pixels,
     total_mask_pixels,
-    sub_mask_1d_index_to_mask_1d_index,
+    mask_1d_index_for_sub_mask_1d_index,
     sub_fraction,
 ):
     """Computes the mapping_util matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
     Parameters
     -----------
-    sub_mask_1d_index_to_pixelization_1d_index : ndarray
+    pixelization_1d_index_for_sub_mask_1d_index : ndarray
         The mappings between the observed grid's sub-pixels and pixelization's pixels.
     pixels : int
         The number of pixels in the pixelization.
     total_mask_pixels : int
         The number of datas pixels in the observed datas and thus on the grid.
-    sub_mask_1d_index_to_mask_1d_index : ndarray
+    mask_1d_index_for_sub_mask_1d_index : ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
     sub_fraction : float
         The fractional area each sub-pixel takes up in an pixel.
@@ -28,20 +28,20 @@ def mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
 
     mapping_matrix = np.zeros((total_mask_pixels, pixels))
 
-    for sub_mask_1d_index in range(sub_mask_1d_index_to_mask_1d_index.shape[0]):
+    for sub_mask_1d_index in range(mask_1d_index_for_sub_mask_1d_index.shape[0]):
         mapping_matrix[
-            sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index],
-            sub_mask_1d_index_to_pixelization_1d_index[sub_mask_1d_index],
+            mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index],
+            pixelization_1d_index_for_sub_mask_1d_index[sub_mask_1d_index],
         ] += sub_fraction
 
     return mapping_matrix
 
 
 @decorator_util.jit()
-def voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
+def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
     grid,
-    mask_1d_index_to_nearest_pixelization_1d_index,
-    sub_mask_1d_index_to_mask_1d_index,
+    nearest_pixelization_1d_index_for_mask_1d_index,
+    mask_1d_index_for_sub_mask_1d_index,
     pixel_centres,
     pixel_neighbors,
     pixel_neighbors_size,
@@ -59,7 +59,7 @@ def voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
     grid : Grid
         The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
         to an irgrid via lens.
-    mask_1d_index_to_nearest_pixelization_1d_index : ndarray
+    nearest_pixelization_1d_index_for_mask_1d_index : ndarray
         A 1D array that maps every grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
         2D array).
     pixel_centres : (float, float)
@@ -72,12 +72,12 @@ def voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
         Voronoi grid.
      """
 
-    sub_mask_1d_index_to_pixeliztion_1d_index = np.zeros((grid.shape[0]))
+    pixelization_1d_index_for_sub_mask_1d_index = np.zeros((grid.shape[0]))
 
     for sub_mask_1d_index in range(grid.shape[0]):
 
-        nearest_pixelization_1d_index = mask_1d_index_to_nearest_pixelization_1d_index[
-            sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index]
+        nearest_pixelization_1d_index = nearest_pixelization_1d_index_for_mask_1d_index[
+            mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
         ]
 
         while True:
@@ -128,11 +128,11 @@ def voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
                 sub_pixel_to_nearest_pixelization_distance
                 <= sub_pixel_to_neighboring_pixelization_distance
             ):
-                sub_mask_1d_index_to_pixeliztion_1d_index[
+                pixelization_1d_index_for_sub_mask_1d_index[
                     sub_mask_1d_index
                 ] = nearest_pixelization_1d_index
                 break
             else:
                 nearest_pixelization_1d_index = neighboring_pixelization_1d_index
 
-    return sub_mask_1d_index_to_pixeliztion_1d_index
+    return pixelization_1d_index_for_sub_mask_1d_index

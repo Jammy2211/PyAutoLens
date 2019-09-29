@@ -46,9 +46,7 @@ def plot_profile_image(
     output_filename="plane_profile_image",
 ):
 
-    profile_image = plane.profile_image_from_grid(
-        grid=grid, bypass_decorator=False
-    )
+    profile_image = plane.profile_image_from_grid(grid=grid)
 
     if plane.has_mass_profile:
         lines = plotter_util.get_critical_curve_and_caustic(
@@ -213,9 +211,7 @@ def plot_convergence(
     output_filename="plane_convergence",
 ):
 
-    convergence = plane.convergence_from_grid(
-        grid=grid, bypass_decorator=False
-    )
+    convergence = plane.convergence_from_grid(grid=grid)
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
@@ -290,9 +286,7 @@ def plot_potential(
     output_filename="plane_potential",
 ):
 
-    potential = plane.potential_from_grid(
-        grid=grid, bypass_decorator=False
-    )
+    potential = plane.potential_from_grid(grid=grid)
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
@@ -367,10 +361,8 @@ def plot_deflections_y(
     output_filename="plane_deflections_y",
 ):
 
-    deflections = plane.deflections_from_grid(
-        grid=grid, return_in_2d=False, return_binned=True
-    )
-    deflections_y = grid.mapping.scaled_array_2d_from_array_1d(
+    deflections = plane.deflections_from_grid(grid=grid)
+    deflections_y = grid.mask.scaled_array_2d_from_array_1d(
         array_1d=deflections[:, 0]
     )
 
@@ -447,10 +439,8 @@ def plot_deflections_x(
     output_filename="plane_deflections_x",
 ):
 
-    deflections = plane.deflections_from_grid(
-        grid=grid, return_in_2d=False, return_binned=True
-    )
-    deflections_x = grid.mapping.scaled_array_2d_from_array_1d(
+    deflections = plane.deflections_from_grid(grid=grid)
+    deflections_x = grid.mask.scaled_array_2d_from_array_1d(
         array_1d=deflections[:, 1]
     )
 
@@ -527,9 +517,7 @@ def plot_magnification(
     output_filename="plane_magnification",
 ):
 
-    magnification = plane.magnification_from_grid(
-        grid=grid, bypass_decorator=False
-    )
+    magnification = plane.magnification_from_grid(grid=grid)
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,

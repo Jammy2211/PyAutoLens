@@ -124,7 +124,7 @@ class NoiseMap(abstract_data.AbstractNoiseMap):
     pass
 
 
-class PrimaryBeam(scaled_array.ScaledArray):
+class PrimaryBeam(scaled_array.Scaled):
 
     # noinspection PyUnusedLocal
     def __init__(self, array_1d, pixel_scales, renormalize=False, **kwargs):
@@ -160,11 +160,11 @@ class PrimaryBeam(scaled_array.ScaledArray):
         grid = grids.Grid.from_shape_pixel_scale_and_sub_size(
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
-        gaussian = gaussian.profile_image_from_grid(
-            grid=grid
-        )
+        gaussian = gaussian.profile_image_from_grid(grid=grid)
 
-        return PrimaryBeam(array_1d=gaussian, pixel_scales=pixel_scale, renormalize=True)
+        return PrimaryBeam(
+            array_1d=gaussian, pixel_scales=pixel_scale, renormalize=True
+        )
 
     @classmethod
     def from_fits_renormalized(cls, file_path, hdu, pixel_scale):
@@ -273,7 +273,9 @@ class PrimaryBeam(scaled_array.ScaledArray):
 
     def new_primary_beam_with_renormalized_array(self):
         """Renormalize the PrimaryBeam such that its data_vector values sum to unity."""
-        return PrimaryBeam(array_1d=self, pixel_scales=self.pixel_scales, renormalize=True)
+        return PrimaryBeam(
+            array_1d=self, pixel_scales=self.pixel_scales, renormalize=True
+        )
 
     def convolve(self, array_2d):
         """
@@ -418,9 +420,7 @@ class SimulatedUVPlaneData(UVPlaneData):
             A seed for random noise_maps generation
         """
 
-        image_2d = tracer.profile_image_from_grid(
-            grid=grid
-        )
+        image_2d = tracer.profile_image_from_grid(grid=grid)
 
         return cls.from_image_and_exposure_arrays(
             image=image_2d,
@@ -476,18 +476,18 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = scaled_array.ScaledArray.from_single_value_shape_and_pixel_scale(
+            exposure_time_map = scaled_array.Scaled.from_single_value_shape_and_pixel_scale(
                 value=exposure_time, shape=image.shape, pixel_scale=pixel_scale
             )
 
         if background_sky_map is None:
 
-            background_sky_map = scaled_array.ScaledArray.from_single_value_shape_and_pixel_scale(
+            background_sky_map = scaled_array.Scaled.from_single_value_shape_and_pixel_scale(
                 value=background_sky_level, shape=image.shape, pixel_scale=pixel_scale
             )
 
         image += background_sky_map
-        image_1d = array_mapping_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        image_1d = array_mapping_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
             sub_array_2d=image,
             mask=np.full(fill_value=False, shape=image.shape),
             sub_size=1,

@@ -7,6 +7,7 @@ from autolens.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
+
 class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
     @af.map_types
     def __init__(self, centre: dim.Position = (0.0, 0.0), kappa: float = 0.0):
@@ -23,24 +24,15 @@ class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
         super(MassSheet, self).__init__(centre=centre)
         self.kappa = kappa
 
-
-    def convergence_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def convergence_from_grid(self, grid):
         return np.full(shape=grid.shape[0], fill_value=self.kappa)
 
-
-    def potential_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def potential_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
-
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def deflections_from_grid(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return self.grid_to_grid_cartesian(grid=grid, radius=self.kappa * grid_radii)
 
@@ -85,24 +77,15 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
     ):
         return 0.0
 
-
-    def convergence_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def convergence_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
-
-    def potential_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def potential_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
-
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
