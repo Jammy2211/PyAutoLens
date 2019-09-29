@@ -83,9 +83,7 @@ class TestGalaxyFitData(object):
 
     def test__pixel_scale_interpolation_grid(self, image_7x7, sub_mask_7x7):
 
-        noise_map = al.ScaledArray(
-            sub_array_1d=2.0 * np.ones((7, 7)), pixel_scales=3.0
-        )
+        noise_map = al.Scaled(sub_array_1d=2.0 * np.ones((7, 7)), pixel_scales=3.0)
         gal_data_7x7 = al.GalaxyData(
             image=image_7x7, noise_map=noise_map, pixel_scale=3.0
         )
@@ -177,9 +175,7 @@ class TestGalaxyFitData(object):
             redshift=0.5, light=al.light_profiles.SphericalSersic(intensity=1.0)
         )
 
-        image_gal = galaxy.profile_image_from_grid(
-            grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=True
-        )
+        image_gal = galaxy.profile_image_from_grid(grid=galaxy_fit_data.grid)
 
         image_gd = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])
 
@@ -260,9 +256,7 @@ class TestGalaxyFitData(object):
             redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
-        convergence_gal = galaxy.convergence_from_grid(
-            grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=True
-        )
+        convergence_gal = galaxy.convergence_from_grid(grid=galaxy_fit_data.grid)
 
         convergence_gd = galaxy_fit_data.profile_quantity_from_galaxies(
             galaxies=[galaxy]
@@ -345,9 +339,7 @@ class TestGalaxyFitData(object):
             redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
-        potential_gal = galaxy.potential_from_grid(
-            grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=True
-        )
+        potential_gal = galaxy.potential_from_grid(grid=galaxy_fit_data.grid)
 
         potential_gd = galaxy_fit_data.profile_quantity_from_galaxies(galaxies=[galaxy])
 
@@ -429,13 +421,15 @@ class TestGalaxyFitData(object):
             redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
-        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=False)
+        deflections_gal = galaxy.deflections_from_grid(
+            grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=False
+        )
         deflections_gal = np.asarray(
             [
-                galaxy_fit_data.grid.mapping.scaled_array_binned_from_sub_array_1d(
+                galaxy_fit_data.grid.mask.scaled_array_binned_from_sub_array_1d(
                     deflections_gal[:, 0]
                 ),
-                galaxy_fit_data.grid.mapping.scaled_array_binned_from_sub_array_1d(
+                galaxy_fit_data.grid.mask.scaled_array_binned_from_sub_array_1d(
                     deflections_gal[:, 1]
                 ),
             ]
@@ -524,13 +518,15 @@ class TestGalaxyFitData(object):
             redshift=0.5, mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
         )
 
-        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=False)
+        deflections_gal = galaxy.deflections_from_grid(
+            grid=galaxy_fit_data.grid, return_in_2d=False, return_binned=False
+        )
         deflections_gal = np.asarray(
             [
-                galaxy_fit_data.grid.mapping.scaled_array_binned_from_sub_array_1d(
+                galaxy_fit_data.grid.mask.scaled_array_binned_from_sub_array_1d(
                     deflections_gal[:, 0]
                 ),
-                galaxy_fit_data.grid.mapping.scaled_array_binned_from_sub_array_1d(
+                galaxy_fit_data.grid.mask.scaled_array_binned_from_sub_array_1d(
                     deflections_gal[:, 1]
                 ),
             ]

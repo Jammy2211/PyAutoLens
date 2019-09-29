@@ -491,7 +491,7 @@ class TestPrimaryBeam(object):
                 centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
             )
             profile_gaussian = gaussian.profile_image_from_grid(
-                grid=grid, bypass_decorator=False
+                grid=grid
             )
 
             profile_psf = al.PrimaryBeam(
@@ -514,7 +514,7 @@ class TestSimulateUVPlaneData(object):
     def test__setup_with_all_features_off(self, transformer_7x7_7):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
+        exposure_time_map = al.Scaled.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -542,11 +542,11 @@ class TestSimulateUVPlaneData(object):
     ):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
+        exposure_time_map = al.Scaled.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
-        background_sky_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
+        background_sky_map = al.Scaled.from_single_value_shape_and_pixel_scale(
             value=2.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -580,7 +580,7 @@ class TestSimulateUVPlaneData(object):
     def test__setup_with_noise(self, transformer_7x7_7):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = al.ScaledArray.from_single_value_shape_and_pixel_scale(
+        exposure_time_map = al.Scaled.from_single_value_shape_and_pixel_scale(
             value=20.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -636,9 +636,7 @@ class TestSimulateUVPlaneData(object):
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        deflections = tracer.deflections_from_grid(
-            grid=grid, bypass_decorator=False
-        )
+        deflections = tracer.deflections_from_grid(grid=grid)
 
         uv_plane_data_simulated_via_deflections = al.SimulatedUVPlaneData.from_deflections_galaxies_and_exposure_arrays(
             deflections=deflections,
@@ -652,7 +650,7 @@ class TestSimulateUVPlaneData(object):
         )
 
         tracer_profile_image = tracer.profile_image_from_grid(
-            grid=grid, bypass_decorator=False
+            grid=grid
         )
 
         uv_plane_data_simulated = al.SimulatedUVPlaneData.from_image_and_exposure_arrays(
@@ -709,9 +707,7 @@ class TestSimulateUVPlaneData(object):
         )
 
         uv_plane_data_simulated = al.SimulatedUVPlaneData.from_image_and_exposure_arrays(
-            image=tracer.profile_image_from_grid(
-                grid=grid, bypass_decorator=False
-            ),
+            image=tracer.profile_image_from_grid(grid=grid),
             pixel_scale=0.1,
             exposure_time=10000.0,
             background_sky_level=100.0,

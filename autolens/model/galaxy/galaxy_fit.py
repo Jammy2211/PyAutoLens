@@ -1,7 +1,5 @@
 import autofit as af
 
-from autolens.array import mapping
-
 
 class GalaxyFit(af.DataFit):
     def __init__(self, galaxy_data, model_galaxies):
@@ -35,11 +33,9 @@ class GalaxyFit(af.DataFit):
     def grid(self):
         return self.galaxy_data.grid
 
-    
     def image(self):
         return self._data
 
-    
     def noise_map(self):
         return self._noise_map
 
@@ -47,23 +43,18 @@ class GalaxyFit(af.DataFit):
     def mask(self):
         return self.mapping.mask
 
-    
     def signal_to_noise_map(self):
         return self._signal_to_noise_map
 
-    
     def model_image(self):
         return self._model_data
 
-    
     def residual_map(self):
         return self._residual_map
 
-    
     def normalized_residual_map(self):
         return self._normalized_residual_map
 
-    
     def chi_squared_map(self):
         return self._chi_squared_map
 

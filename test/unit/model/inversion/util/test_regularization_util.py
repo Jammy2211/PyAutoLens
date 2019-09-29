@@ -159,15 +159,15 @@ class TestRegularizationConstantMatrix:
 class TestRegularizationWeightedPixelSignals:
     def test__x3_image_pixels_signals_1s__pixel_scale_1__pixel_signals_all_1s(self):
 
-        sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2])
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
+        mask_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
         galaxy_image = np.array([1.0, 1.0, 1.0])
 
         pixel_signals = al.regularization_util.adaptive_pixel_signals_from_images(
             pixels=3,
             signal_scale=1.0,
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             hyper_image=galaxy_image,
         )
 
@@ -175,15 +175,15 @@ class TestRegularizationWeightedPixelSignals:
 
     def test__x4_image_pixels_signals_1s__pixel_signals_still_all_1s(self):
 
-        sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2, 0])
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2, 0])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2, 0])
+        mask_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2, 0])
         galaxy_image = np.array([1.0, 1.0, 1.0, 1.0])
 
         pixel_signals = al.regularization_util.adaptive_pixel_signals_from_images(
             pixels=3,
             signal_scale=1.0,
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             hyper_image=galaxy_image,
         )
 
@@ -193,15 +193,15 @@ class TestRegularizationWeightedPixelSignals:
         self
     ):
 
-        sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2])
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
+        mask_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
         galaxy_image = np.array([2.0, 1.0, 1.0])
 
         pixel_signals = al.regularization_util.adaptive_pixel_signals_from_images(
             pixels=3,
             signal_scale=1.0,
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             hyper_image=galaxy_image,
         )
 
@@ -209,15 +209,15 @@ class TestRegularizationWeightedPixelSignals:
 
     def test__same_as_above_but_pixel_scale_2__scales_pixel_signals(self):
 
-        sub_mask_1d_index_to_pixelization_1d_index = np.array([0, 1, 2])
-        sub_mask_1d_index_to_mask_1d_index = np.array([0, 1, 2])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
+        mask_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
         galaxy_image = np.array([2.0, 1.0, 1.0])
 
         pixel_signals = al.regularization_util.adaptive_pixel_signals_from_images(
             pixels=3,
             signal_scale=2.0,
-            sub_mask_1d_index_to_pixelization_1d_index=sub_mask_1d_index_to_pixelization_1d_index,
-            sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+            pixelization_1d_index_for_sub_mask_1d_index=pixelization_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             hyper_image=galaxy_image,
         )
 

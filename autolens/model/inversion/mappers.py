@@ -80,38 +80,38 @@ class Mapper(object):
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
         [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
         """
-        return mapper_util.mapping_matrix_from_sub_mask_1d_index_to_pixelization_1d_index(
-            sub_mask_1d_index_to_pixelization_1d_index=self.sub_mask_1d_index_to_pixelization_1d_index,
+        return mapper_util.mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
+            pixelization_1d_index_for_sub_mask_1d_index=self.pixelization_1d_index_for_sub_mask_1d_index,
             pixels=self.pixels,
             total_mask_pixels=self.grid.mask.pixels_in_mask,
-            sub_mask_1d_index_to_mask_1d_index=self.grid.mapping.sub_mask_1d_index_to_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.grid.mask._mask_1d_index_for_sub_mask_1d_index,
             sub_fraction=self.grid.mask.sub_fraction,
         )
 
     @property
-    def sub_mask_1d_index_to_pixelization_1d_index(self):
+    def pixelization_1d_index_for_sub_mask_1d_index(self):
         raise NotImplementedError("sub_to_pixelization should be overridden")
 
     @property
-    def pixelization_1d_index_to_all_sub_mask_1d_indexes(self):
+    def all_sub_mask_1d_indexes_for_pixelization_1d_index(self):
         """Compute the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings \
         are determined after the grid is used to determine the pixelization.
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
         represent these mappings"""
 
-        pixelization_1d_index_to_all_sub_mask_1d_indexes = [
+        all_sub_mask_1d_indexes_for_pixelization_1d_index = [
             [] for _ in range(self.pixels)
         ]
 
         for mask_1d_index, pixelization_1d_index in enumerate(
-            self.sub_mask_1d_index_to_pixelization_1d_index
+            self.pixelization_1d_index_for_sub_mask_1d_index
         ):
-            pixelization_1d_index_to_all_sub_mask_1d_indexes[
+            all_sub_mask_1d_indexes_for_pixelization_1d_index[
                 pixelization_1d_index
             ].append(mask_1d_index)
 
-        return pixelization_1d_index_to_all_sub_mask_1d_indexes
+        return all_sub_mask_1d_indexes_for_pixelization_1d_index
 
 
 class RectangularMapper(Mapper):
@@ -150,24 +150,24 @@ class RectangularMapper(Mapper):
         return False
 
     @property
-    def sub_mask_1d_index_to_pixelization_1d_index(self):
+    def pixelization_1d_index_for_sub_mask_1d_index(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return self.geometry.grid_arcsec_1d_to_grid_pixel_indexes_1d(
-            grid_arcsec=self.grid
+        return self.grid_pixels_from_grid_arcsec_1d(
+            grid_arcsec_1d=self.grid
         )
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
-        recon = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        recon = array_mapping_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
             sub_array_1d=solution_vector,
             mask=np.full(fill_value=False, shape=self.shape),
             sub_size=1,
         )
-        return scaled_array.ScaledArray(
+        return scaled_array.Scaled(
             array=recon,
-            pixel_scales=self.geometry.pixel_scales,
-            origin=self.geometry.origin,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
 
 
@@ -190,7 +190,7 @@ class VoronoiMapper(Mapper):
         border : grid.GridBorder
             The border of the grid's grid.
         voronoi : scipy.spatial.Voronoi
-            Class storing the Voronoi grid's geometry.
+            Class storing the Voronoi grid's 
         geometry : pixelization.Voronoi.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the Vornoi pixelization.
         hyper_image : ndarray
@@ -210,15 +210,15 @@ class VoronoiMapper(Mapper):
         return True
 
     @property
-    def sub_mask_1d_index_to_pixelization_1d_index(self):
+    def pixelization_1d_index_for_sub_mask_1d_index(self):
         """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
-        return mapper_util.voronoi_sub_mask_1d_index_to_pixeliztion_1d_index_from_grids_and_geometry(
+        return mapper_util.pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
             grid=self.grid,
-            mask_1d_index_to_nearest_pixelization_1d_index=self.pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index,
-            sub_mask_1d_index_to_mask_1d_index=self.grid.mapping.sub_mask_1d_index_to_mask_1d_index,
-            pixel_centres=self.geometry.pixel_centres,
-            pixel_neighbors=self.geometry.pixel_neighbors,
-            pixel_neighbors_size=self.geometry.pixel_neighbors_size,
+            nearest_pixelization_1d_index_for_mask_1d_index=self.pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            pixel_centres=self.pixel_centres,
+            pixel_neighbors=self.pixel_neighbors,
+            pixel_neighbors_size=self.pixel_neighbors_size,
         ).astype(
             "int"
         )

@@ -206,7 +206,9 @@ def make_pipeline(
 
             if pipeline_align_light_dark_centre:
 
-                self.galaxies.lens.dark.mask_centre = self.galaxies.light_mass.mask_centre
+                self.galaxies.lens.dark.mask_centre = (
+                    self.galaxies.light_mass.mask_centre
+                )
 
             elif not pipeline_align_light_dark_centre:
 

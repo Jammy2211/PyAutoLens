@@ -101,7 +101,7 @@ class Inversion(object):
 
     @property
     def reconstructed_data_2d(self):
-        return self.mapper.grid.mapping.scaled_array_2d_from_array_1d(
+        return self.mapper.grid.mask.scaled_array_2d_from_array_1d(
             array_1d=np.asarray(self.reconstructed_data_1d)
         )
 
@@ -125,8 +125,8 @@ class Inversion(object):
         return inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.pixelization_values,
             reconstructed_data_1d=self.reconstructed_data_1d,
-            sub_mask_1d_index_to_mask_1d_index=self.mapper.grid.mapping.sub_mask_1d_index_to_mask_1d_index,
-            pixelization_1d_index_to_all_sub_mask_1d_indexes=self.mapper.pixelization_1d_index_to_all_sub_mask_1d_indexes,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
 
     @property
@@ -135,8 +135,8 @@ class Inversion(object):
             pixelization_values=self.pixelization_values,
             reconstructed_data_1d=self.reconstructed_data_1d,
             noise_map_1d=self.noise_map_1d,
-            sub_mask_1d_index_to_mask_1d_index=self.mapper.grid.mapping.sub_mask_1d_index_to_mask_1d_index,
-            pixelization_1d_index_to_all_sub_mask_1d_indexes=self.mapper.pixelization_1d_index_to_all_sub_mask_1d_indexes,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
 
     @property
@@ -145,8 +145,8 @@ class Inversion(object):
             pixelization_values=self.pixelization_values,
             reconstructed_data_1d=self.reconstructed_data_1d,
             noise_map_1d=self.noise_map_1d,
-            sub_mask_1d_index_to_mask_1d_index=self.mapper.grid.mapping.sub_mask_1d_index_to_mask_1d_index,
-            pixelization_1d_index_to_all_sub_mask_1d_indexes=self.mapper.pixelization_1d_index_to_all_sub_mask_1d_indexes,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
 
     @property

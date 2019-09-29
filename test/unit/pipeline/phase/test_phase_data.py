@@ -397,7 +397,9 @@ class TestPhase(object):
             regularization=al.regularization.Constant,
         )
 
-        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale
+        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = (
+            mask_7x7.pixel_scale
+        )
         phase_imaging_7x7.meta_data_fit.inversion_pixel_limit = 5
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
@@ -409,7 +411,9 @@ class TestPhase(object):
         # There are 9 pixels in the mask, so to meet the inversoin pixel limit the pixel scale will be rescaled to the
         # masks's pixel scale
 
-        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale * 2.0
+        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = (
+            mask_7x7.pixel_scale * 2.0
+        )
         phase_imaging_7x7.meta_data_fit.inversion_pixel_limit = 5
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
@@ -420,7 +424,9 @@ class TestPhase(object):
 
         # This image cannot meet the requirement, so will raise an error.
 
-        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale * 2.0
+        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = (
+            mask_7x7.pixel_scale * 2.0
+        )
         phase_imaging_7x7.meta_data_fit.inversion_pixel_limit = 10
 
         with pytest.raises(exc.DataException):
@@ -453,7 +459,9 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        assert isinstance(phase_imaging_7x7.meta_data_fit.pixelization, al.pixelizations.Rectangular)
+        assert isinstance(
+            phase_imaging_7x7.meta_data_fit.pixelization, al.pixelizations.Rectangular
+        )
 
         source_galaxy = al.GalaxyModel(
             redshift=0.5,
@@ -1020,7 +1028,9 @@ class TestResult(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_data_7x7.image, sub_size=2)
+        mask = phase_imaging_7x7.meta_data_fit.mask_function(
+            image=imaging_data_7x7.image, sub_size=2
+        )
         lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImagingFit.from_lens_data_and_tracer(
@@ -1052,7 +1062,9 @@ class TestResult(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_data_7x7.image, sub_size=2)
+        mask = phase_imaging_7x7.meta_data_fit.mask_function(
+            image=imaging_data_7x7.image, sub_size=2
+        )
         lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImagingFit.from_lens_data_and_tracer(

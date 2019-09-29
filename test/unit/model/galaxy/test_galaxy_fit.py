@@ -8,9 +8,9 @@ from test.unit.mock.model.mock_galaxy import MockGalaxy
 
 class TestLikelihood:
     def test__1x1_image__light_profile_fits_data_perfectly__lh_is_noise(self):
-        image = al.ScaledArray(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
+        image = al.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
 
-        noise_map = al.ScaledArray(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
+        noise_map = al.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
 
         galaxy_data = al.GalaxyData(image=image, noise_map=noise_map, pixel_scale=3.0)
 
@@ -59,12 +59,10 @@ class TestLikelihood:
         assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
     def test__1x2_image__noise_not_1__alls_correct(self):
-        image = al.ScaledArray(sub_array_1d=5.0 * np.ones((3, 4)), pixel_scales=1.0)
+        image = al.Scaled(sub_array_1d=5.0 * np.ones((3, 4)), pixel_scales=1.0)
         image[1, 2] = 4.0
 
-        noise_map = al.ScaledArray(
-            sub_array_1d=2.0 * np.ones((3, 4)), pixel_scales=1.0
-        )
+        noise_map = al.Scaled(sub_array_1d=2.0 * np.ones((3, 4)), pixel_scales=1.0)
 
         galaxy_data = al.GalaxyData(image=image, noise_map=noise_map, pixel_scale=3.0)
 
@@ -151,12 +149,7 @@ class TestCompareToManual:
 
         assert fit.model_galaxies == [galaxy]
 
-        model_data_2d = galaxy.profile_image_from_grid(
-            grid=galaxy_fit_data.grid,
-            return_in_2d=True,
-            return_binned=True,
-            bypass_decorator=False,
-        )
+        model_data_2d = galaxy.profile_image_from_grid(grid=galaxy_fit_data.grid)
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),
@@ -208,12 +201,7 @@ class TestCompareToManual:
 
         assert fit.model_galaxies == [galaxy]
 
-        model_data_2d = galaxy.convergence_from_grid(
-            grid=galaxy_fit_data.grid,
-            return_in_2d=True,
-            return_binned=True,
-            bypass_decorator=False,
-        )
+        model_data_2d = galaxy.convergence_from_grid(grid=galaxy_fit_data.grid)
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),
@@ -264,12 +252,7 @@ class TestCompareToManual:
 
         assert fit.model_galaxies == [galaxy]
 
-        model_data_2d = galaxy.potential_from_grid(
-            grid=galaxy_fit_data.grid,
-            return_in_2d=True,
-            return_binned=True,
-            bypass_decorator=False,
-        )
+        model_data_2d = galaxy.potential_from_grid(grid=galaxy_fit_data.grid)
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),
@@ -323,12 +306,7 @@ class TestCompareToManual:
 
         assert fit.model_galaxies == [galaxy]
 
-        model_data_2d = galaxy.deflections_from_grid(
-            grid=galaxy_fit_data.grid,
-            return_in_2d=True,
-            return_binned=True,
-            bypass_decorator=False,
-        )[:, :, 0]
+        model_data_2d = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)[:, :, 0]
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),
@@ -381,12 +359,7 @@ class TestCompareToManual:
 
         assert fit.model_galaxies == [galaxy]
 
-        model_data_2d = galaxy.deflections_from_grid(
-            grid=galaxy_fit_data.grid,
-            return_in_2d=True,
-            return_binned=True,
-            bypass_decorator=False,
-        )[:, :, 1]
+        model_data_2d = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)[:, :, 1]
 
         residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),

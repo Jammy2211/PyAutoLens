@@ -52,11 +52,11 @@ class HyperGalaxyPhase(HyperPhase):
                     instance=instance
                 )
 
-                hyper_model_image_2d = self.lens_data.grid.mapping.scaled_array_2d_from_array_1d(
+                hyper_model_image_2d = self.lens_data.grid.mask.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_model_image_1d
                 )
 
-                hyper_galaxy_image_2d = self.lens_data.grid.mapping.scaled_array_2d_from_array_1d(
+                hyper_galaxy_image_2d = self.lens_data.grid.mask.scaled_array_2d_from_array_1d(
                     array_1d=self.hyper_galaxy_image_1d
                 )
 

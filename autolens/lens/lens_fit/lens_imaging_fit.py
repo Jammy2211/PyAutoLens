@@ -3,8 +3,6 @@ import numpy as np
 import autofit as af
 from autolens.model.galaxy import galaxy as g
 
-from autolens.array import mapping
-
 
 class ImagingFit(af.DataFit):
     def __init__(self, image, noise_map, mask, model_image, mapping, inversion):
@@ -16,11 +14,9 @@ class ImagingFit(af.DataFit):
         self.mapping = mapping
         self.inversion = inversion
 
-    
     def image(self):
         return self._data
 
-    
     def noise_map(self):
         return self._noise_map
 
@@ -28,23 +24,18 @@ class ImagingFit(af.DataFit):
     def mask(self):
         return self.mapping.mask
 
-    
     def signal_to_noise_map(self):
         return self._signal_to_noise_map
 
-    
     def model_image(self, return_in_2d=True):
         return self._model_data
 
-    
     def residual_map(self, return_in_2d=True):
         return self._residual_map
 
-    
     def normalized_residual_map(self, return_in_2d=True):
         return self._normalized_residual_map
 
-    
     def chi_squared_map(self, return_in_2d=True):
         return self._chi_squared_map
 
@@ -136,7 +127,6 @@ class LensImagingFit(ImagingFit):
             grid=lens_data.grid,
             convolver=lens_data.convolver,
             blurring_grid=lens_data.blurring_grid,
-            return_in_2d=False,
         )
 
         profile_subtracted_image_1d = image_1d - blurred_profile_image_1d
@@ -172,16 +162,11 @@ class LensImagingFit(ImagingFit):
             positions=lens_data.positions,
         )
 
-    
     def blurred_profile_image(self, return_in_2d=True):
         return self.tracer.blurred_profile_image_from_grid_and_psf(
-            grid=self.grid,
-            psf=self.psf,
-            blurring_grid=self.blurring_grid,
-            return_in_2d=False,
+            grid=self.grid, psf=self.psf, blurring_grid=self.blurring_grid
         )
 
-    
     def profile_subtracted_image(self, return_in_2d=True):
         return self.image(return_in_2d=False) - self.blurred_profile_image(
             return_in_2d=False
@@ -193,10 +178,7 @@ class LensImagingFit(ImagingFit):
         A dictionary associating galaxies with their corresponding model images
         """
         galaxy_model_image_dict = self.tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
-            grid=self.grid,
-            convolver=self.convolver,
-            blurring_grid=self.blurring_grid,
-            return_in_2d=False,
+            grid=self.grid, convolver=self.convolver, blurring_grid=self.blurring_grid
         )
 
         # TODO : Extend to multiple inversioons across Planes
@@ -225,7 +207,7 @@ class LensImagingFit(ImagingFit):
 
             galaxy_model_image_2d_dict[
                 galalxy
-            ] = self.grid.mapping.scaled_array_2d_from_array_1d(array_1d=galaxy_image)
+            ] = self.grid.mask.scaled_array_2d_from_array_1d(array_1d=galaxy_image)
 
         return galaxy_model_image_2d_dict
 

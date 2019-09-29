@@ -47,8 +47,8 @@ class TestRectangular:
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
             mapper.mapping_matrix
@@ -67,8 +67,8 @@ class TestRectangular:
 
         reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            pixel_neighbors=mapper.geometry.pixel_neighbors,
-            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size,
+            pixel_neighbors=mapper.pixel_neighbors,
+            pixel_neighbors_size=mapper.pixel_neighbors_size,
         )
 
         assert (
@@ -139,8 +139,8 @@ class TestRectangular:
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.2, 2.2), 1.0e-4)
-        assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.shape_arcsec == pytest.approx((2.2, 2.2), 1.0e-4)
+        assert mapper.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
             mapper.mapping_matrix
@@ -168,7 +168,7 @@ class TestRectangular:
 
         reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
+            mapper.pixel_neighbors, mapper.pixel_neighbors_size
         )
 
         assert (
@@ -247,8 +247,8 @@ class TestRectangular:
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
             mapper.mapping_matrix
@@ -266,7 +266,7 @@ class TestRectangular:
 
         reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
+            mapper.pixel_neighbors, mapper.pixel_neighbors_size
         )
 
         assert (
@@ -319,8 +319,8 @@ class TestRectangular:
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
             mapper.mapping_matrix
@@ -338,7 +338,7 @@ class TestRectangular:
 
         reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
+            mapper.pixel_neighbors, mapper.pixel_neighbors_size
         )
 
         assert (
@@ -388,12 +388,12 @@ class TestVoronoiMagnification:
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=grid.geometry.grid_1d
+            unmasked_sparse_shape=pix.shape, grid=grid.grid_1d
         )
 
         pixelization_grid = MockPixelizationGrid(
             arr=sparse_to_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
@@ -404,9 +404,9 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == sparse_to_grid.sparse).all()
-        assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert (mapper.pixel_centres == sparse_to_grid.sparse).all()
+        assert mapper.origin == pytest.approx((0.0, 0.0), 1.0e-4)
         assert (mapper.hyper_image == np.ones((2, 2))).all()
 
         assert isinstance(mapper, al.VoronoiMapper)
@@ -430,7 +430,7 @@ class TestVoronoiMagnification:
 
         reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
+            mapper.pixel_neighbors, mapper.pixel_neighbors_size
         )
 
         assert (
@@ -466,12 +466,12 @@ class TestVoronoiMagnification:
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=grid.geometry.grid_1d
+            unmasked_sparse_shape=pix.shape, grid=grid.grid_1d
         )
 
         pixelization_grid = MockPixelizationGrid(
             arr=grid,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
@@ -479,9 +479,9 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == sparse_to_grid.sparse).all()
-        assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert (mapper.pixel_centres == sparse_to_grid.sparse).all()
+        assert mapper.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert isinstance(mapper, al.VoronoiMapper)
 
@@ -500,7 +500,7 @@ class TestVoronoiMagnification:
 
         reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
+            mapper.pixel_neighbors, mapper.pixel_neighbors_size
         )
 
         assert (
@@ -555,12 +555,12 @@ class TestVoronoiMagnification:
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=grid.geometry.grid_1d
+            unmasked_sparse_shape=pix.shape, grid=grid.grid_1d
         )
 
         pixelization_grid = MockPixelizationGrid(
             arr=sparse_to_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
@@ -568,9 +568,9 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.02, 2.01), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == sparse_to_grid.sparse).all()
-        assert mapper.geometry.origin == pytest.approx((0.0, 0.005), 1.0e-4)
+        assert mapper.shape_arcsec == pytest.approx((2.02, 2.01), 1.0e-4)
+        assert (mapper.pixel_centres == sparse_to_grid.sparse).all()
+        assert mapper.origin == pytest.approx((0.0, 0.005), 1.0e-4)
 
         assert isinstance(mapper, al.VoronoiMapper)
 
@@ -589,7 +589,7 @@ class TestVoronoiMagnification:
 
         reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
+            mapper.pixel_neighbors, mapper.pixel_neighbors_size
         )
 
         assert (
@@ -627,12 +627,12 @@ class TestVoronoiMagnification:
 
         pix = al.pixelizations.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = al.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=pix.shape, grid=grid.geometry.grid_1d
+            unmasked_sparse_shape=pix.shape, grid=grid.grid_1d
         )
 
         pixelization_grid = MockPixelizationGrid(
             arr=sparse_to_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
@@ -640,9 +640,9 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.geometry.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == sparse_to_grid.sparse).all()
-        assert mapper.geometry.origin == pytest.approx((1.0, 1.0), 1.0e-4)
+        assert mapper.shape_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert (mapper.pixel_centres == sparse_to_grid.sparse).all()
+        assert mapper.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
         assert isinstance(mapper, al.VoronoiMapper)
 
@@ -661,7 +661,7 @@ class TestVoronoiMagnification:
 
         reg = al.regularization.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(
-            mapper.geometry.pixel_neighbors, mapper.geometry.pixel_neighbors_size
+            mapper.pixel_neighbors, mapper.pixel_neighbors_size
         )
 
         assert (

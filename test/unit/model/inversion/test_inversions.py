@@ -256,4 +256,4 @@ class TestReconstructedDataVectorAndImage:
 #         pixelization_residuals_util = \
 #             al.inversion_util.pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
 #                 pixelization_values=inv.pixelization_values, reconstructed_data_1d=inv.reconstructed_data_1d,
-#                 sub_mask_1d_index_to_mask_1d_index=inv.mapper.sub_mask_1d_index_to_mask_1d_index, pixelization_1d_index_to_all_sub_mask_1d_indexes=inv.mapper.pixelization_1d_index_to_all_sub_mask_1d_indexes)
+#                 mask_1d_index_for_sub_mask_1d_index=inv.mapper.mask_1d_index_for_sub_mask_1d_index, all_sub_mask_1d_indexes_for_pixelization_1d_index=inv.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index)

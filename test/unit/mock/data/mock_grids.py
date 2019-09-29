@@ -6,12 +6,14 @@ import autolens as al
 class MockGrid(al.Grid):
     def __new__(cls, mask, *args, **kwargs):
         sub_grid_1d = al.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask, pixel_scales=(mask.geometry.pixel_scale, mask.geometry.pixel_scale), sub_size=mask.geometry.sub_size
+            mask=mask,
+            pixel_scales=(mask.pixel_scale, mask.pixel_scale),
+            sub_size=mask.sub_size,
         )
 
         obj = sub_grid_1d.view(cls)
         obj.mask = mask
-        obj.sub_border_1d_indexes = mask.sub_border_1d_indexes
+        obj._sub_border_1d_indexes = mask._sub_border_1d_indexes
         obj.interpolator = None
         obj.binned = None
         return obj
@@ -28,8 +30,8 @@ class MockPixelizationGrid(np.ndarray):
     def __new__(
         cls,
         arr,
-        mask_1d_index_to_nearest_pixelization_1d_index=None,
-        sub_mask_1d_index_to_mask_1d_index=None,
+        nearest_pixelization_1d_index_for_mask_1d_index=None,
+        mask_1d_index_for_sub_mask_1d_index=None,
         sub_size=1,
         *args,
         **kwargs
@@ -49,14 +51,14 @@ class MockPixelizationGrid(np.ndarray):
         pix_grid : ndarray
             The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        mask_1d_index_to_nearest_pixelization_1d_index : ndarray
+        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
         obj = arr.view(cls)
-        obj.mask_1d_index_to_nearest_pixelization_1d_index = (
-            mask_1d_index_to_nearest_pixelization_1d_index
+        obj.nearest_pixelization_1d_index_for_mask_1d_index = (
+            nearest_pixelization_1d_index_for_mask_1d_index
         )
-        obj.sub_mask_1d_index_to_mask_1d_index = sub_mask_1d_index_to_mask_1d_index
+        obj._mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index
         obj.sub_size = sub_size
         obj.sub_length = int(sub_size ** 2.0)
         obj.sub_fraction = 1.0 / obj.sub_length

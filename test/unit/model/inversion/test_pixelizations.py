@@ -28,20 +28,20 @@ class TestRectangular:
 
             geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
 
-            assert geometry.shape == (3, 3)
-            assert geometry.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
-            assert (geometry.pixel_neighbors[0] == [1, 3, -1, -1]).all()
-            assert (geometry.pixel_neighbors[1] == [0, 2, 4, -1]).all()
-            assert (geometry.pixel_neighbors[2] == [1, 5, -1, -1]).all()
-            assert (geometry.pixel_neighbors[3] == [0, 4, 6, -1]).all()
-            assert (geometry.pixel_neighbors[4] == [1, 3, 5, 7]).all()
-            assert (geometry.pixel_neighbors[5] == [2, 4, 8, -1]).all()
-            assert (geometry.pixel_neighbors[6] == [3, 7, -1, -1]).all()
-            assert (geometry.pixel_neighbors[7] == [4, 6, 8, -1]).all()
-            assert (geometry.pixel_neighbors[8] == [5, 7, -1, -1]).all()
+            assert shape == (3, 3)
+            assert pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
+            assert (pixel_neighbors[0] == [1, 3, -1, -1]).all()
+            assert (pixel_neighbors[1] == [0, 2, 4, -1]).all()
+            assert (pixel_neighbors[2] == [1, 5, -1, -1]).all()
+            assert (pixel_neighbors[3] == [0, 4, 6, -1]).all()
+            assert (pixel_neighbors[4] == [1, 3, 5, 7]).all()
+            assert (pixel_neighbors[5] == [2, 4, 8, -1]).all()
+            assert (pixel_neighbors[6] == [3, 7, -1, -1]).all()
+            assert (pixel_neighbors[7] == [4, 6, 8, -1]).all()
+            assert (pixel_neighbors[8] == [5, 7, -1, -1]).all()
 
             assert (
-                geometry.pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
+                pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
             ).all()
 
         def test__3x3_grid__same_as_above_change_buffer(self):
@@ -63,8 +63,8 @@ class TestRectangular:
 
             geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-4)
 
-            assert geometry.shape == (3, 3)
-            assert geometry.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
+            assert shape == (3, 3)
+            assert pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
 
         def test__5x4_grid__buffer_is_small(self):
 
@@ -86,8 +86,8 @@ class TestRectangular:
 
             geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
 
-            assert geometry.shape == (5, 4)
-            assert geometry.pixel_scales == pytest.approx((2.0 / 5.0, 2.0 / 4.0), 1e-2)
+            assert shape == (5, 4)
+            assert pixel_scales == pytest.approx((2.0 / 5.0, 2.0 / 4.0), 1e-2)
 
         def test__3x3_grid__larger_range_of_grid(self):
 
@@ -99,8 +99,8 @@ class TestRectangular:
 
             geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
 
-            assert geometry.shape == (3, 3)
-            assert geometry.pixel_scales == pytest.approx((6.0 / 3.0, 6.0 / 3.0), 1e-2)
+            assert shape == (3, 3)
+            assert pixel_scales == pytest.approx((6.0 / 3.0, 6.0 / 3.0), 1e-2)
 
     class TestPixelCentres:
         def test__3x3_grid__pixel_centres(self):
@@ -123,7 +123,7 @@ class TestRectangular:
 
             geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
 
-            assert geometry.pixel_centres == pytest.approx(
+            assert pixel_centres == pytest.approx(
                 np.array(
                     [
                         [2.0 / 3.0, -2.0 / 3.0],
@@ -159,7 +159,7 @@ class TestRectangular:
 
             geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
 
-            assert geometry.pixel_centres == pytest.approx(
+            assert pixel_centres == pytest.approx(
                 np.array(
                     [
                         [0.75, -2.0 / 3.0],
@@ -412,8 +412,8 @@ class TestVoronoiMagnification:
 
         assert (pixelization_grid_manual == pixelization_grid).all()
         assert (
-            pixelization_grid_manual.mask_1d_index_to_nearest_pixelization_1d_index
-            == pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index
+            pixelization_grid_manual.nearest_pixelization_1d_index_for_mask_1d_index
+            == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
         ).all()
 
 
@@ -530,11 +530,11 @@ class TestVoronoiBrightness:
 
         pixelization_grid_manual = al.PixelizationGrid(
             grid_1d=sparse_to_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_to_grid.mask_1d_index_to_sparse_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()
         assert (
-            pixelization_grid_manual.mask_1d_index_to_nearest_pixelization_1d_index
-            == pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index
+            pixelization_grid_manual.nearest_pixelization_1d_index_for_mask_1d_index
+            == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
         ).all()

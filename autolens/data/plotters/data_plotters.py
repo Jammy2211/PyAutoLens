@@ -738,7 +738,7 @@ def get_origin(array, plot_origin):
 
     Parameters
     -----------
-    array : data_type.array.scaled_array.ScaledArray
+    array : data_type.array.scaled_array.Scaled
         The array from which the origin is extracted.
     plot_origin : True
         If true, the origin of the data's coordinate system is returned.

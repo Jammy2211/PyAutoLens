@@ -7,7 +7,6 @@ from autolens import dimensions as dim
 from autolens import text_util
 from autolens.model.profiles import geometry_profiles
 
-from autolens.array import mapping
 
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
@@ -24,14 +23,7 @@ class LightProfile(object):
         raise NotImplementedError("intensity_at_radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
-    def profile_image_from_grid(
-        self,
-        grid,
-        return_in_2d=True,
-        return_binned=True,
-        bypass_decorator=False,
-        grid_radial_minimum=None,
-    ):
+    def profile_image_from_grid(self, grid, grid_radial_minimum=None):
         """
         Abstract method for obtaining intensity at a grid of Cartesian (y,x) coordinates.
 
@@ -107,54 +99,32 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             centre=centre, axis_ratio=axis_ratio, phi=phi
         )
 
-    
-    def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, blurring_grid
-    ):
+    def blurred_profile_image_from_grid_and_psf(self, grid, psf, blurring_grid):
 
         profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=True, bypass_decorator=False
+            grid=grid,
         )
 
-        blurring_image = self.profile_image_from_grid(
-            grid=blurring_grid,
-            return_in_2d=True,
-            return_binned=True,
-            bypass_decorator=False,
-        )
+        blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
-        return psf.convolve(profile_image + blurring_image)
-
+        return psf.convolved_scaled_array_from_array_2d_and_mask(
+            array_2d=profile_image.in_2d_binned + blurring_image.in_2d_binned, mapping=grid.mapping)
 
     def blurred_profile_image_from_grid_and_convolver(
         self, grid, convolver, blurring_grid
     ):
 
-        profile_image = self.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        profile_image = self.profile_image_from_grid(grid=grid)
 
-        if convolver.blurring_mask is None:
-            blurring_mask = grid.mask.blurring_mask_from_kernel_shape(
-                kernel_shape=convolver.psf.shape
-            )
-            convolver = convolver.convolver_with_blurring_mask_added(
-                blurring_mask=blurring_mask
-            )
+        blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
-        blurring_image = self.profile_image_from_grid(
-            grid=blurring_grid, return_in_2d=False, return_binned=True
-        )
-
-        return convolver.convolve_image(
-            image_array=profile_image, blurring_array=blurring_image
+        return convolver.convolved_scaled_array_from_image_array_and_blurring_array(
+            image_array=profile_image.in_1d_binned, blurring_array=blurring_image.in_1d_binned
         )
 
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
-        profile_image_1d = self.profile_image_from_grid(
-            grid=grid, return_in_2d=False, return_binned=True
-        )
+        profile_image_1d = self.profile_image_from_grid(grid=grid)
 
         return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
 
@@ -327,17 +297,9 @@ class EllipticalGaussian(EllipticalLightProfile):
             np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))),
         )
 
-    
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def profile_image_from_grid(
-        self,
-        grid,
-        return_in_2d=True,
-        return_binned=True,
-        bypass_decorator=False,
-        grid_radial_minimum=None,
-    ):
+    def profile_image_from_grid(self, grid, grid_radial_minimum=None):
         """
         Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
@@ -526,17 +488,9 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
             ),
         )
 
-    
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def profile_image_from_grid(
-        self,
-        grid,
-        return_in_2d=True,
-        return_binned=True,
-        bypass_decorator=False,
-        grid_radial_minimum=None,
-    ):
+    def profile_image_from_grid(self, grid, grid_radial_minimum=None):
         """ Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.

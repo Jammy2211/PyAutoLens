@@ -361,4 +361,4 @@ def numpy_array_2d_from_fits(file_path, hdu):
     array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
     """
     hdu_list = fits.open(file_path)
-    return np.flipud(np.array(hdu_list[hdu].data))
+    return np.flipud(np.array(hdu_list[hdu].data)).astype('float64')

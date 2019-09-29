@@ -105,7 +105,7 @@ class TestGaussian:
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=1.0
         )
         assert gaussian.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
+            grid=np.array([[0.0, 1.0]])
         ) == pytest.approx(0.24197, 1e-2)
 
         gaussian = al.light_profiles.EllipticalGaussian(
@@ -113,7 +113,7 @@ class TestGaussian:
         )
 
         assert gaussian.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
+            grid=np.array([[0.0, 1.0]])
         ) == pytest.approx(2.0 * 0.24197, 1e-2)
 
         gaussian = al.light_profiles.EllipticalGaussian(
@@ -121,7 +121,7 @@ class TestGaussian:
         )
 
         assert gaussian.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
+            grid=np.array([[0.0, 1.0]])
         ) == pytest.approx(0.1760, 1e-2)
 
         gaussian = al.light_profiles.EllipticalGaussian(
@@ -129,7 +129,7 @@ class TestGaussian:
         )
 
         assert gaussian.profile_image_from_grid(
-            grid=np.array([[0.0, 3.0]]), bypass_decorator=True
+            grid=np.array([[0.0, 3.0]])
         ) == pytest.approx(0.0647, 1e-2)
 
     def test__intensity_from_grid__change_geometry(self):
@@ -137,14 +137,14 @@ class TestGaussian:
             centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=1.0
         )
         assert gaussian.profile_image_from_grid(
-            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
+            grid=np.array([[1.0, 0.0]])
         ) == pytest.approx(0.24197, 1e-2)
 
         gaussian = al.light_profiles.EllipticalGaussian(
             centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, intensity=1.0, sigma=1.0
         )
         assert gaussian.profile_image_from_grid(
-            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
+            grid=np.array([[1.0, 0.0]])
         ) == pytest.approx(0.05399, 1e-2)
 
         gaussian_0 = al.light_profiles.EllipticalGaussian(
@@ -156,14 +156,10 @@ class TestGaussian:
         )
 
         assert gaussian_0.profile_image_from_grid(
-            grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]]),
-            return_in_2d=False,
-            return_binned=False,
-            bypass_decorator=True,
+            grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]])
         ) == pytest.approx(
             gaussian_1.profile_image_from_grid(
-                grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]]),
-                bypass_decorator=True,
+                grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]])
             ),
             1e-4,
         )
@@ -177,14 +173,10 @@ class TestGaussian:
         )
 
         assert gaussian_0.profile_image_from_grid(
-            grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]]),
-            return_in_2d=False,
-            return_binned=False,
-            bypass_decorator=True,
+            grid=np.array([[0.0, 0.0], [0.0, 1.0], [0.0, -1.0]])
         ) == pytest.approx(
             gaussian_1.profile_image_from_grid(
-                grid=np.array([[0.0, 0.0], [0.0, -1.0], [0.0, 1.0]]),
-                bypass_decorator=True,
+                grid=np.array([[0.0, 0.0], [0.0, -1.0], [0.0, 1.0]])
             ),
             1e-4,
         )
@@ -196,30 +188,26 @@ class TestGaussian:
         spherical = al.light_profiles.SphericalGaussian(intensity=3.0, sigma=2.0)
 
         assert (
-            elliptical.profile_image_from_grid(grid=grid, bypass_decorator=True)
-            == spherical.profile_image_from_grid(grid=grid, bypass_decorator=True)
+            elliptical.profile_image_from_grid(grid=grid)
+            == spherical.profile_image_from_grid(grid=grid)
         ).all()
 
-    def test__reshape_decorators(self):
+    def test__reshape_results(self):
         grid = al.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         gaussian = al.light_profiles.EllipticalGaussian()
 
-        image = gaussian.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = gaussian.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
         gaussian = al.light_profiles.SphericalGaussian()
 
-        image = gaussian.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = gaussian.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
 
 class TestSersic:
@@ -322,7 +310,7 @@ class TestSersic:
             sersic_index=2.0,
         )
         assert sersic.profile_image_from_grid(
-            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
+            grid=np.array([[1.0, 0.0]])
         ) == pytest.approx(5.38066670129, 1e-3)
 
     def test__intensity_from_grid__change_geometry(self):
@@ -343,10 +331,8 @@ class TestSersic:
         )
 
         assert sersic_0.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
-        ) == sersic_1.profile_image_from_grid(
-            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
-        )
+            grid=np.array([[0.0, 1.0]])
+        ) == sersic_1.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
 
     def test__spherical_and_elliptical_match(self):
         elliptical = al.light_profiles.EllipticalSersic(
@@ -362,8 +348,8 @@ class TestSersic:
         )
 
         assert (
-            elliptical.profile_image_from_grid(grid=grid, bypass_decorator=True)
-            == spherical.profile_image_from_grid(grid=grid, bypass_decorator=True)
+            elliptical.profile_image_from_grid(grid=grid)
+            == spherical.profile_image_from_grid(grid=grid)
         ).all()
 
     def test__summarize_in_units(self):
@@ -401,19 +387,15 @@ class TestSersic:
 
         sersic = al.light_profiles.EllipticalSersic()
 
-        image = sersic.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = sersic.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
         sersic = al.light_profiles.SphericalSersic()
 
-        image = sersic.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = sersic.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
 
 class TestExponential:
@@ -502,21 +484,21 @@ class TestExponential:
             axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0
         )
         assert exponential.profile_image_from_grid(
-            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
+            grid=np.array([[1.0, 0.0]])
         ) == pytest.approx(4.9047, 1e-3)
 
         exponential = al.light_profiles.EllipticalExponential(
             axis_ratio=0.5, phi=90.0, intensity=2.0, effective_radius=3.0
         )
         assert exponential.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
+            grid=np.array([[0.0, 1.0]])
         ) == pytest.approx(4.8566, 1e-3)
 
         exponential = al.light_profiles.EllipticalExponential(
             axis_ratio=0.5, phi=90.0, intensity=4.0, effective_radius=3.0
         )
         assert exponential.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
+            grid=np.array([[0.0, 1.0]])
         ) == pytest.approx(2.0 * 4.8566, 1e-3)
 
     def test__intensity_from_grid__change_geometry(self):
@@ -529,10 +511,8 @@ class TestExponential:
         )
 
         assert exponential_0.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
-        ) == exponential_1.profile_image_from_grid(
-            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
-        )
+            grid=np.array([[0.0, 1.0]])
+        ) == exponential_1.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
 
     def test__spherical_and_elliptical_match(self):
         elliptical = al.light_profiles.EllipticalExponential(
@@ -544,8 +524,8 @@ class TestExponential:
         )
 
         assert (
-            elliptical.profile_image_from_grid(grid=grid, bypass_decorator=True)
-            == spherical.profile_image_from_grid(grid=grid, bypass_decorator=True)
+            elliptical.profile_image_from_grid(grid=grid)
+            == spherical.profile_image_from_grid(grid=grid)
         ).all()
 
     def test__reshape_decorators(self):
@@ -555,19 +535,15 @@ class TestExponential:
 
         exponential = al.light_profiles.EllipticalExponential()
 
-        image = exponential.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = exponential.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
         exponential = al.light_profiles.SphericalExponential()
 
-        image = exponential.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = exponential.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
 
 class TestDevVaucouleurs:
@@ -656,7 +632,7 @@ class TestDevVaucouleurs:
             axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0
         )
         assert dev_vaucouleurs.profile_image_from_grid(
-            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
+            grid=np.array([[1.0, 0.0]])
         ) == pytest.approx(5.6697, 1e-3)
 
         dev_vaucouleurs = al.light_profiles.EllipticalDevVaucouleurs(
@@ -664,14 +640,14 @@ class TestDevVaucouleurs:
         )
 
         assert dev_vaucouleurs.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
+            grid=np.array([[0.0, 1.0]])
         ) == pytest.approx(7.4455, 1e-3)
 
         dev_vaucouleurs = al.light_profiles.EllipticalDevVaucouleurs(
             axis_ratio=0.5, phi=90.0, intensity=4.0, effective_radius=3.0
         )
         assert dev_vaucouleurs.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
+            grid=np.array([[0.0, 1.0]])
         ) == pytest.approx(2.0 * 7.4455, 1e-3)
 
     def test__intensity_from_grid__change_geometry(self):
@@ -684,10 +660,8 @@ class TestDevVaucouleurs:
         )
 
         assert dev_vaucouleurs_0.profile_image_from_grid(
-            grid=np.array([[0.0, 1.0]]), bypass_decorator=True
-        ) == dev_vaucouleurs_1.profile_image_from_grid(
-            grid=np.array([[1.0, 0.0]]), bypass_decorator=True
-        )
+            grid=np.array([[0.0, 1.0]])
+        ) == dev_vaucouleurs_1.profile_image_from_grid(grid=np.array([[1.0, 0.0]]))
 
     def test__spherical_and_elliptical_match(self):
         elliptical = al.light_profiles.EllipticalDevVaucouleurs(
@@ -699,8 +673,8 @@ class TestDevVaucouleurs:
         )
 
         assert (
-            elliptical.profile_image_from_grid(grid=grid, bypass_decorator=True)
-            == spherical.profile_image_from_grid(grid=grid, bypass_decorator=True)
+            elliptical.profile_image_from_grid(grid=grid)
+            == spherical.profile_image_from_grid(grid=grid)
         ).all()
 
     def test__reshape_decorators(self):
@@ -710,19 +684,15 @@ class TestDevVaucouleurs:
 
         dev_vaucouleurs = al.light_profiles.EllipticalDevVaucouleurs()
 
-        image = dev_vaucouleurs.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = dev_vaucouleurs.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
         dev_vaucouleurs = al.light_profiles.SphericalDevVaucouleurs()
 
-        image = dev_vaucouleurs.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = dev_vaucouleurs.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
 
 class TestCoreSersic(object):
@@ -869,8 +839,8 @@ class TestCoreSersic(object):
         )
 
         assert (
-            elliptical.profile_image_from_grid(grid=grid, bypass_decorator=True)
-            == spherical.profile_image_from_grid(grid=grid, bypass_decorator=True)
+            elliptical.profile_image_from_grid(grid=grid)
+            == spherical.profile_image_from_grid(grid=grid)
         ).all()
 
     def test__reshape_decorators(self):
@@ -880,19 +850,15 @@ class TestCoreSersic(object):
 
         core_sersic = al.light_profiles.EllipticalCoreSersic()
 
-        image = core_sersic.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = core_sersic.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
         core_sersic = al.light_profiles.SphericalCoreSersic()
 
-        image = core_sersic.profile_image_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
-        )
+        image = core_sersic.profile_image_from_grid(grid=grid)
 
-        assert image.shape == (2, 2)
+        assert image.in_2d.shape == (2, 2)
 
 
 def luminosity_from_radius_and_profile(radius, profile):
@@ -922,39 +888,22 @@ class TestBlurredProfileImages(object):
 
         light_profile = al.light_profiles.EllipticalSersic(intensity=1.0)
 
-        image_1d = light_profile.profile_image_from_grid(
-            grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+        image = light_profile.profile_image_from_grid(grid=sub_grid_7x7)
+
+        blurring_image = light_profile.profile_image_from_grid(
+            grid=blurring_grid_7x7
         )
 
-        blurring_image_1d = light_profile.profile_image_from_grid(
-            grid=blurring_grid_7x7, return_in_2d=False, return_binned=True
+        blurred_image = convolver_7x7.convolved_scaled_array_from_image_array_and_blurring_array(
+            image_array=image.in_1d_binned, blurring_array=blurring_image.in_1d_binned
         )
 
-        blurred_image_1d = convolver_7x7.convolve_image(
-            image_array=image_1d, blurring_array=blurring_image_1d
+        light_profile_blurred_image = light_profile.blurred_profile_image_from_grid_and_psf(
+            grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3
         )
 
-        light_profile_blurred_image_1d = light_profile.blurred_profile_image_from_grid_and_psf(
-            grid=sub_grid_7x7,
-            blurring_grid=blurring_grid_7x7,
-            psf=psf_3x3,
-            return_in_2d=False,
-        )
-
-        assert blurred_image_1d == pytest.approx(light_profile_blurred_image_1d, 1.0e-4)
-
-        blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
-            array_1d=blurred_image_1d
-        )
-
-        light_profile_blurred_image_2d = light_profile.blurred_profile_image_from_grid_and_psf(
-            grid=sub_grid_7x7,
-            blurring_grid=blurring_grid_7x7,
-            psf=psf_3x3,
-            return_in_2d=True,
-        )
-
-        assert blurred_image_2d == pytest.approx(light_profile_blurred_image_2d, 1.0e-4)
+        assert blurred_image.in_1d == pytest.approx(light_profile_blurred_image.in_1d, 1.0e-4)
+        assert blurred_image.in_2d == pytest.approx(light_profile_blurred_image.in_2d, 1.0e-4)
 
     def test__blurred_image_from_grid_and_convolver(
         self, sub_grid_7x7, blurring_grid_7x7, convolver_7x7
@@ -962,42 +911,22 @@ class TestBlurredProfileImages(object):
 
         light_profile = al.light_profiles.EllipticalSersic(intensity=1.0)
 
-        image_1d = light_profile.profile_image_from_grid(
-            grid=sub_grid_7x7, return_in_2d=False, return_binned=True
+        image = light_profile.profile_image_from_grid(grid=sub_grid_7x7)
+
+        blurring_image = light_profile.profile_image_from_grid(
+            grid=blurring_grid_7x7
         )
 
-        blurring_image_1d = light_profile.profile_image_from_grid(
-            grid=blurring_grid_7x7, return_in_2d=False, return_binned=True
+        blurred_image = convolver_7x7.convolved_image_1d_from_image_array_and_blurring_array(
+            image_array=image.in_1d_binned, blurring_array=blurring_image.in_1d_binned
         )
 
-        blurred_image_1d = convolver_7x7.convolve_image(
-            image_array=image_1d, blurring_array=blurring_image_1d
+        light_profile_blurred_image = light_profile.blurred_profile_image_from_grid_and_convolver(
+            grid=sub_grid_7x7, convolver=convolver_7x7, blurring_grid=blurring_grid_7x7
         )
 
-        convolver_7x7.blurring_mask = None
-
-        light_profile_blurred_image_1d = light_profile.blurred_profile_image_from_grid_and_convolver(
-            grid=sub_grid_7x7,
-            convolver=convolver_7x7,
-            blurring_grid=blurring_grid_7x7,
-            return_in_2d=False,
-        )
-
-        assert blurred_image_1d == pytest.approx(light_profile_blurred_image_1d, 1.0e-4)
-
-        blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
-            array_1d=blurred_image_1d
-        )
-
-        light_profile_blurred_image_2d = light_profile.blurred_profile_image_from_grid_and_convolver(
-            grid=sub_grid_7x7,
-            blurring_grid=blurring_grid_7x7,
-            convolver=convolver_7x7,
-            return_in_2d=True,
-        )
-
-        assert blurred_image_2d == pytest.approx(light_profile_blurred_image_2d, 1.0e-4)
-
+        assert blurred_image.in_1d == pytest.approx(light_profile_blurred_image.in_1d, 1.0e-4)
+        assert blurred_image.in_2d == pytest.approx(light_profile_blurred_image.in_2d, 1.0e-4)
 
 class TestVisibilities(object):
     def test__visibilities_from_grid_and_transformer(
@@ -1005,11 +934,9 @@ class TestVisibilities(object):
     ):
         light_profile = al.light_profiles.EllipticalSersic(intensity=1.0)
 
-        image_1d = light_profile.profile_image_from_grid(
-            grid=sub_grid_7x7, return_in_2d=False, return_binned=True
-        )
+        image = light_profile.profile_image_from_grid(grid=sub_grid_7x7)
 
-        visibilities = transformer_7x7_7.visibilities_from_image_1d(image_1d=image_1d)
+        visibilities = transformer_7x7_7.visibilities_from_image(image=image)
 
         light_profile_visibilities = light_profile.profile_visibilities_from_grid_and_transformer(
             grid=sub_grid_7x7, transformer=transformer_7x7_7
@@ -1237,11 +1164,6 @@ class TestGrids(object):
     def test__intensity_from_grid(self):
         elliptical = al.light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0)
 
-        assert elliptical.profile_image_from_grid(
-            np.array([[1, 1]]), bypass_decorator=True
-        ) == pytest.approx(
-            elliptical.profile_image_from_grid(
-                np.array([[-1, -1]]), bypass_decorator=True
-            ),
-            1e-4,
+        assert elliptical.profile_image_from_grid(np.array([[1, 1]])) == pytest.approx(
+            elliptical.profile_image_from_grid(np.array([[-1, -1]])), 1e-4
         )

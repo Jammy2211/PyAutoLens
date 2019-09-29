@@ -95,7 +95,7 @@ class TestLikelihood:
         # Thus the chi squared is 4.0**2.0 + 3.0**2.0 = 25.0
 
         psf = al.PSF(
-            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
             pixel_scales=1.0,
         )
 
@@ -198,7 +198,7 @@ class TestLikelihood:
         # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
         psf = al.PSF(
-            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
             pixel_scales=1.0,
         )
 
@@ -307,7 +307,7 @@ class TestLikelihood:
         # This reduces the chi squared to 2.0 instead of 4.0
 
         psf = al.PSF(
-            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
             pixel_scales=1.0,
         )
 
@@ -417,7 +417,7 @@ class TestLikelihood:
     def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
         psf = al.PSF(
-            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
             pixel_scales=1.0,
         )
 
@@ -523,7 +523,7 @@ class TestLikelihood:
     ):
 
         psf = al.PSF(
-            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
             pixel_scales=1.0,
         )
 
@@ -627,7 +627,7 @@ class TestLikelihood:
     def test__hyper_noise_map_max_changes_noise_map__reflected_in_likelihood(self):
 
         psf = al.PSF(
-            array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
             pixel_scales=1.0,
         )
 
@@ -759,7 +759,6 @@ class TestCompareToManualProfilesOnly:
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
             blurring_grid=lens_imaging_data_7x7.blurring_grid,
-            return_in_2d=False,
         )
         model_image_2d = lens_imaging_data_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=model_image_1d
@@ -855,29 +854,21 @@ class TestCompareToManualProfilesOnly:
             grid=lens_imaging_data_7x7.blurring_grid, return_in_2d=False
         )
 
-        g0_image_1d = g0.profile_image_from_grid(
-            grid=traced_grids_of_planes[0], return_in_2d=False, return_binned=True
-        )
+        g0_image_1d = g0.profile_image_from_grid(grid=traced_grids_of_planes[0])
         g0_blurring_image_1d = g0.profile_image_from_grid(
-            grid=traced_blurring_grids_of_planes[0],
-            return_in_2d=False,
-            return_binned=True,
+            grid=traced_blurring_grids_of_planes[0], return_binned=True
         )
 
-        g0_blurred_image_1d = lens_imaging_data_7x7.convolver.convolve_image(
+        g0_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
         )
 
-        g1_image_1d = g1.profile_image_from_grid(
-            grid=traced_grids_of_planes[1], return_in_2d=False, return_binned=True
-        )
+        g1_image_1d = g1.profile_image_from_grid(grid=traced_grids_of_planes[1])
         g1_blurring_image_1d = g1.profile_image_from_grid(
-            grid=traced_blurring_grids_of_planes[1],
-            return_in_2d=False,
-            return_binned=True,
+            grid=traced_blurring_grids_of_planes[1], return_binned=True
         )
 
-        g1_blurred_image_1d = lens_imaging_data_7x7.convolver.convolve_image(
+        g1_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
         )
 
@@ -980,7 +971,6 @@ class TestCompareToManualProfilesOnly:
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
             blurring_grid=lens_imaging_data_7x7.blurring_grid,
-            return_in_2d=False,
         )
 
         model_image_2d = lens_imaging_data_7x7.mapping.scaled_array_2d_from_array_1d(
@@ -1480,7 +1470,6 @@ class TestCompareToManualProfilesAndInversion:
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
             blurring_grid=lens_imaging_data_7x7.blurring_grid,
-            return_in_2d=False,
         )
 
         blurred_profile_image_2d = lens_imaging_data_7x7.mapping.scaled_array_2d_from_array_1d(
@@ -1638,25 +1627,21 @@ class TestCompareToManualProfilesAndInversion:
             grid=lens_imaging_data_7x7.blurring_grid
         )
 
-        g0_image_1d = g0.profile_image_from_grid(
-            grid=traced_grids[0], return_in_2d=False, return_binned=True
-        )
+        g0_image_1d = g0.profile_image_from_grid(grid=traced_grids[0])
         g0_blurring_image_1d = g0.profile_image_from_grid(
             grid=traced_blurring_grids[0], return_in_2d=False, return_binned=False
         )
 
-        g0_blurred_image_1d = lens_imaging_data_7x7.convolver.convolve_image(
+        g0_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
         )
 
-        g1_image_1d = g1.profile_image_from_grid(
-            grid=traced_grids[1], return_in_2d=False, return_binned=True
-        )
+        g1_image_1d = g1.profile_image_from_grid(grid=traced_grids[1])
         g1_blurring_image_1d = g1.profile_image_from_grid(
             grid=traced_blurring_grids[1], return_in_2d=False, return_binned=False
         )
 
-        g1_blurred_image_1d = lens_imaging_data_7x7.convolver.convolve_image(
+        g1_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
         )
 
@@ -1783,7 +1768,6 @@ class TestCompareToManualProfilesAndInversion:
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
             blurring_grid=lens_imaging_data_7x7.blurring_grid,
-            return_in_2d=False,
         )
 
         blurred_profile_image_2d = lens_imaging_data_7x7.mapping.scaled_array_2d_from_array_1d(
@@ -1931,7 +1915,6 @@ class TestCompareToManualProfilesAndInversion:
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
             blurring_grid=lens_imaging_data_7x7.blurring_grid,
-            return_in_2d=False,
         )
 
         blurred_profile_image_2d = lens_imaging_data_7x7.mapping.scaled_array_2d_from_array_1d(

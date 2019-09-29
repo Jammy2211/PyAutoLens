@@ -4,7 +4,7 @@ from skimage.transform import rescale
 from autolens import decorator_util
 from autolens import exc
 from autolens.array.util import grid_util
-from autolens.array.mapping_util import mask_mapping_util
+from autolens.array.mapping_util import array_mapping_util, mask_mapping_util
 
 
 @decorator_util.jit()
@@ -420,7 +420,7 @@ def mask_elliptical_annular_from_shape_pixel_scales_and_radius(
 
 
 @decorator_util.jit()
-def blurring_mask_from_mask_and_psf_shape(mask, psf_shape):
+def blurring_mask_from_mask_and_kernel_shape(mask, kernel_shape):
     """Compute a blurring mask from an input mask and psf shape.
 
     The blurring mask corresponds to all pixels which are outside of the mask but will have a fraction of their \
@@ -433,7 +433,7 @@ def blurring_mask_from_mask_and_psf_shape(mask, psf_shape):
     -----------
     mask : ndarray
         A 2D array of bools, where *False* values are unmasked.
-    psf_shape : (int, int)
+    kernel_shape : (int, int)
         The 2D shape of the PSF which is used to compute the blurring mask.
         
     Returns
@@ -457,8 +457,8 @@ def blurring_mask_from_mask_and_psf_shape(mask, psf_shape):
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
-                for y1 in range((-psf_shape[0] + 1) // 2, (psf_shape[0] + 1) // 2):
-                    for x1 in range((-psf_shape[1] + 1) // 2, (psf_shape[1] + 1) // 2):
+                for y1 in range((-kernel_shape[0] + 1) // 2, (kernel_shape[0] + 1) // 2):
+                    for x1 in range((-kernel_shape[1] + 1) // 2, (kernel_shape[1] + 1) // 2):
                         if (
                             0 <= x + x1 <= mask.shape[1] - 1
                             and 0 <= y + y1 <= mask.shape[0] - 1
@@ -475,7 +475,9 @@ def blurring_mask_from_mask_and_psf_shape(mask, psf_shape):
 
 
 @decorator_util.jit()
-def mask_from_shape_and_mask_1d_index_to_maskk_2d_index(shape, mask_1d_index_to_maskk_2d_index):
+def mask_from_shape_and_mask_2d_index_for_mask_1d_index(
+    shape, mask_2d_index_for_mask_1d_index
+):
     """For a 1D array that was computed by mapping_util unmasked values from a 2D array of shape (rows, columns), map its \
     indexes back to the original 2D array to create the origianl 2D mask.
 
@@ -490,7 +492,7 @@ def mask_from_shape_and_mask_1d_index_to_maskk_2d_index(shape, mask_1d_index_to_
      ----------
     shape : (int, int)
         The shape of the 2D array which the pixels are defined on.
-    mask_1d_index_to_maskk_2d_index : ndarray
+    mask_2d_index_for_mask_1d_index : ndarray
         An array describing the 2D array index that every 1D array index maps too.
 
     Returns
@@ -507,9 +509,10 @@ def mask_from_shape_and_mask_1d_index_to_maskk_2d_index(shape, mask_1d_index_to_
 
     mask = np.ones(shape)
 
-    for index in range(len(mask_1d_index_to_maskk_2d_index)):
+    for index in range(len(mask_2d_index_for_mask_1d_index)):
         mask[
-            mask_1d_index_to_maskk_2d_index[index, 0], mask_1d_index_to_maskk_2d_index[index, 1]
+            mask_2d_index_for_mask_1d_index[index, 0],
+            mask_2d_index_for_mask_1d_index[index, 1],
         ] = False
 
     return mask
@@ -572,11 +575,11 @@ def edge_1d_indexes_from_mask(mask):
 
 
 @decorator_util.jit()
-def check_if_border_pixel(mask, edge_pixel_1d, mask_1d_index_to_maskk_2d_index):
+def check_if_border_pixel(mask, edge_pixel_1d, mask_2d_index_for_mask_1d_index):
     edge_pixel_index = int(edge_pixel_1d)
 
-    y = int(mask_1d_index_to_maskk_2d_index[edge_pixel_index, 0])
-    x = int(mask_1d_index_to_maskk_2d_index[edge_pixel_index, 1])
+    y = int(mask_2d_index_for_mask_1d_index[edge_pixel_index, 0])
+    x = int(mask_2d_index_for_mask_1d_index[edge_pixel_index, 1])
 
     if (
         np.sum(mask[0:y, x]) == y
@@ -591,7 +594,7 @@ def check_if_border_pixel(mask, edge_pixel_1d, mask_1d_index_to_maskk_2d_index):
 
 @decorator_util.jit()
 def total_border_pixels_from_mask_and_edge_pixels(
-    mask, edge_pixels, mask_1d_index_to_maskk_2d_index
+    mask, edge_pixels, mask_2d_index_for_mask_1d_index
 ):
     """Compute the total number of borders-pixels in a mask."""
 
@@ -599,7 +602,7 @@ def total_border_pixels_from_mask_and_edge_pixels(
 
     for i in range(edge_pixels.shape[0]):
 
-        if check_if_border_pixel(mask, edge_pixels[i], mask_1d_index_to_maskk_2d_index):
+        if check_if_border_pixel(mask, edge_pixels[i], mask_2d_index_for_mask_1d_index):
             border_pixel_total += 1
 
     return border_pixel_total
@@ -617,14 +620,14 @@ def border_1d_indexes_from_mask(mask):
      pixels in an annular mask are edge pixels but not borders pixels."""
 
     edge_pixels = edge_1d_indexes_from_mask(mask=mask)
-    mask_1d_index_to_maskk_2d_index = mask_mapping_util.sub_mask_1d_index_to_sub_mask_2d_index_from_mask_and_sub_size(
+    mask_2d_index_for_mask_1d_index = mask_mapping_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
         mask=mask, sub_size=1
     )
 
     border_pixel_total = total_border_pixels_from_mask_and_edge_pixels(
         mask=mask,
         edge_pixels=edge_pixels,
-        mask_1d_index_to_maskk_2d_index=mask_1d_index_to_maskk_2d_index,
+        mask_2d_index_for_mask_1d_index=mask_2d_index_for_mask_1d_index,
     )
 
     border_pixels = np.zeros(border_pixel_total)
@@ -636,14 +639,13 @@ def border_1d_indexes_from_mask(mask):
         if check_if_border_pixel(
             mask=mask,
             edge_pixel_1d=edge_pixels[edge_pixel_index],
-            mask_1d_index_to_maskk_2d_index=mask_1d_index_to_maskk_2d_index,
+            mask_2d_index_for_mask_1d_index=mask_2d_index_for_mask_1d_index,
         ):
 
             border_pixels[border_pixel_index] = edge_pixels[edge_pixel_index]
             border_pixel_index += 1
 
     return border_pixels
-
 
 def sub_border_pixel_1d_indexes_from_mask_and_sub_size(mask, sub_size):
     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
@@ -659,7 +661,7 @@ def sub_border_pixel_1d_indexes_from_mask_and_sub_size(mask, sub_size):
 
     sub_border_pixels = np.zeros(shape=border_pixels.shape[0])
 
-    mask_1d_index_to_sub_mask_2d_indexes = mask_mapping_util.mask_1d_index_to_sub_mask_1d_indexes_from_mask(
+    mask_1d_index_to_sub_mask_2d_indexes = mask_mapping_util.sub_mask_1d_indexes_for_mask_1d_index_from_mask(
         mask=mask, sub_size=sub_size
     )
 

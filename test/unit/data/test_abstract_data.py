@@ -81,8 +81,8 @@ class TestAbstractNoiseMap(object):
                 weight_map=weight_map, pixel_scale=1.0
             )
 
-            assert (noise_map == np.array([[1.0, 0.5, 0.25], [1.0, 0.5, 0.25]])).all()
-            assert noise_map.origin == (0.0, 0.0)
+            assert (noise_map.in_2d == np.array([[1.0, 0.5, 0.25], [1.0, 0.5, 0.25]])).all()
+            assert noise_map.mask.origin == (0.0, 0.0)
 
         def test__weight_map_no_zeros__zeros_set_to_10000000(self):
             weight_map = np.array([[1.0, 4.0, 0.0], [1.0, 4.0, 16.0]])
@@ -91,8 +91,8 @@ class TestAbstractNoiseMap(object):
                 weight_map=weight_map, pixel_scale=1.0
             )
 
-            assert (noise_map == np.array([[1.0, 0.5, 1.0e8], [1.0, 0.5, 0.25]])).all()
-            assert noise_map.origin == (0.0, 0.0)
+            assert (noise_map.in_2d == np.array([[1.0, 0.5, 1.0e8], [1.0, 0.5, 0.25]])).all()
+            assert noise_map.mask.origin == (0.0, 0.0)
 
     class TestFromInverseAbstractNoiseMap:
         def test__inverse_noise_map_no_zeros__uses_1_over_value(self):
@@ -103,9 +103,9 @@ class TestAbstractNoiseMap(object):
             )
 
             assert (
-                noise_map == np.array([[1.0, 0.25, 0.0625], [1.0, 0.25, 0.0625]])
+                noise_map.in_2d == np.array([[1.0, 0.25, 0.0625], [1.0, 0.25, 0.0625]])
             ).all()
-            assert noise_map.origin == (0.0, 0.0)
+            assert noise_map.mask.origin == (0.0, 0.0)
 
 
 class TestExposureTimeMap(object):
@@ -120,9 +120,9 @@ class TestExposureTimeMap(object):
             )
 
             assert (
-                exposure_time_map == np.array([[0.125, 0.5, 1.0], [0.125, 0.5, 1.0]])
+                exposure_time_map.in_2d == np.array([[0.125, 0.5, 1.0], [0.125, 0.5, 1.0]])
             ).all()
-            assert exposure_time_map.origin == (0.0, 0.0)
+            assert exposure_time_map.mask.origin == (0.0, 0.0)
 
             exposure_time_map = al.ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
                 pixel_scale=0.1,
@@ -131,9 +131,9 @@ class TestExposureTimeMap(object):
             )
 
             assert (
-                exposure_time_map == np.array([[0.375, 1.5, 3.0], [0.375, 1.5, 3.0]])
+                exposure_time_map.in_2d == np.array([[0.375, 1.5, 3.0], [0.375, 1.5, 3.0]])
             ).all()
-            assert exposure_time_map.origin == (0.0, 0.0)
+            assert exposure_time_map.mask.origin == (0.0, 0.0)
 
 
 class TestPositionsToFile(object):

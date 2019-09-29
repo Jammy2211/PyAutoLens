@@ -33,13 +33,7 @@ class TestMemoize(object):
         class MyProfile(object):
             # noinspection PyMethodMayBeStatic
             @al.geometry_profiles.cache
-            def my_method(
-                self,
-                grid,
-                return_in_2d=False,
-                return_binned=False,
-                grid_radial_minimum=None,
-            ):
+            def my_method(self, grid, grid_radial_minimum=None):
                 return grid
 
         profile = MyProfile()
@@ -63,13 +57,7 @@ class TestMemoize(object):
                 self.count = 0
 
             @al.geometry_profiles.cache
-            def my_method(
-                self,
-                grid,
-                return_in_2d=False,
-                return_binned=False,
-                grid_radial_minimum=None,
-            ):
+            def my_method(self, grid, grid_radial_minimum=None):
                 self.count += 1
                 return self.count
 
@@ -84,23 +72,11 @@ class TestMemoize(object):
     def test_multiple_cached_methods(self):
         class MultiMethodProfile(object):
             @al.geometry_profiles.cache
-            def method_one(
-                self,
-                grid,
-                return_in_2d=False,
-                return_binned=False,
-                grid_radial_minimum=None,
-            ):
+            def method_one(self, grid, grid_radial_minimum=None):
                 return grid
 
             @al.geometry_profiles.cache
-            def method_two(
-                self,
-                grid,
-                return_in_2d=False,
-                return_binned=False,
-                grid_radial_minimum=None,
-            ):
+            def method_two(self, grid, grid_radial_minimum=None):
                 return grid
 
         profile = MultiMethodProfile()
@@ -562,9 +538,7 @@ class MockGridRadialMinimum(object):
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
     @al.geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(
-        self, grid, bypass_decorator=False
-    ):
+    def deflections_from_grid(self, grid):
         return grid
 
 

@@ -81,7 +81,7 @@ for data_resolution in ["LSST", "Euclid", "HST", "HST_Up", "AO"]:
             blurring_image_1d=tracer.profile_blurring_image,
             convolver=lens_data.convolver,
         )
-        blurred_profile_image = lens_data.grid.mapping.scaled_array_2d_from_array_1d(
+        blurred_profile_image = lens_data.grid.mask.scaled_array_2d_from_array_1d(
             array_1d=blurred_profile_image_1d
         )
     diff = time.time() - start

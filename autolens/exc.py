@@ -5,7 +5,7 @@ class GeometryException(Exception):
     pass
 
 
-class ScaledArrayException(Exception):
+class ScaledException(Exception):
     pass
 
 

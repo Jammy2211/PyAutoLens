@@ -290,7 +290,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         mask = self.lens_imaging_data.mask
         if self.should_plot_mask and mask is not None and last_results is not None:
             phase_plotters.plot_hyper_images_for_phase(
-                hyper_model_image_2d=mask.mapping.scaled_array_2d_from_array_1d(
+                hyper_model_image_2d=mask.scaled_array_2d_from_array_1d(
                     array_1d=last_results.hyper_model_image_1d
                 ),
                 hyper_galaxy_image_2d_path_dict=last_results.hyper_galaxy_image_2d_path_dict,

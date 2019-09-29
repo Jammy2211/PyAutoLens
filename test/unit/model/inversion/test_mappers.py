@@ -70,7 +70,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -83,11 +83,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [2],
@@ -127,7 +127,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -140,11 +140,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [2],
@@ -182,7 +182,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -195,11 +195,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [],
                 [2],
@@ -244,7 +244,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -257,11 +257,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 2, 3, 8, 11])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [2],
@@ -308,7 +308,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -321,11 +321,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 2, 6, 9, 11])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [2],
@@ -358,7 +358,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -371,11 +371,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 2, 7, 8])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [2],
@@ -403,7 +403,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -416,11 +416,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 3, 5, 8])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [],
@@ -449,7 +449,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -462,11 +462,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 3, 10, 11])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [],
@@ -495,7 +495,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -510,11 +510,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 4, 10, 11])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [],
@@ -569,7 +569,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_sub_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -582,11 +582,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [2],
@@ -626,7 +626,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -639,11 +639,11 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
 
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [2],
@@ -672,7 +672,7 @@ class TestRectangularMapper:
 
             grid = MockPixelizationGrid(
                 pixelization_grid,
-                sub_mask_1d_index_to_mask_1d_index=np.ones((1)),
+                mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
             )
 
@@ -685,10 +685,10 @@ class TestRectangularMapper:
             )
 
             assert (
-                pix.sub_mask_1d_index_to_pixelization_1d_index
+                pix.pixelization_1d_index_for_sub_mask_1d_index
                 == np.array([0, 1, 3, 10, 11])
             ).all()
-            assert pix.pixelization_1d_index_to_all_sub_mask_1d_indexes == [
+            assert pix.all_sub_mask_1d_indexes_for_pixelization_1d_index == [
                 [0],
                 [1],
                 [],
@@ -757,7 +757,7 @@ class TestRectangularMapper:
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+            recon_pix_util = al.array_mapping_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(4, 3)),
                 sub_size=1,
@@ -778,7 +778,7 @@ class TestRectangularMapper:
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = al.array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+            recon_pix_util = al.array_mapping_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(3, 4)),
                 sub_size=1,
@@ -906,22 +906,22 @@ class TestVoronoiMapper:
                 grid, pixel_centers
             )
 
-            sub_mask_1d_index_to_mask_1d_index = np.array(
+            mask_1d_index_for_sub_mask_1d_index = np.array(
                 [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
             )
-            mask_1d_index_to_nearest_pixelization_1d_index = np.array(
+            nearest_pixelization_1d_index_for_mask_1d_index = np.array(
                 [0, 0, 1, 0, 0, 1, 2, 2, 3]
             )
 
             grid = MockPixelizationGrid(
                 arr=grid,
-                sub_mask_1d_index_to_mask_1d_index=sub_mask_1d_index_to_mask_1d_index,
+                mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
                 sub_size=1,
             )
 
             pixelization_grid = MockPixelizationGrid(
                 arr=pixel_centers,
-                mask_1d_index_to_nearest_pixelization_1d_index=mask_1d_index_to_nearest_pixelization_1d_index,
+                nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
             pix = al.pixelizations.Voronoi()
@@ -943,6 +943,6 @@ class TestVoronoiMapper:
             )
 
             assert (
-                mapper.sub_mask_1d_index_to_pixelization_1d_index
+                mapper.pixelization_1d_index_for_sub_mask_1d_index
                 == sub_to_pix_nearest_neighbour
             ).all()

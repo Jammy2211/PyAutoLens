@@ -125,21 +125,21 @@ def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
 def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
-    sub_mask_1d_index_to_mask_1d_index,
-    pixelization_1d_index_to_all_sub_mask_1d_indexes,
+    mask_1d_index_for_sub_mask_1d_index,
+    all_sub_mask_1d_indexes_for_pixelization_1d_index,
 ):
 
     pixelization_residuals = np.zeros(
-        shape=len(pixelization_1d_index_to_all_sub_mask_1d_indexes)
+        shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
     )
 
     reconstructed_data_1d = reconstructed_data_1d
 
     for pixelization_1d_index, sub_mask_1d_indexes in enumerate(
-        pixelization_1d_index_to_all_sub_mask_1d_indexes
+        all_sub_mask_1d_indexes_for_pixelization_1d_index
     ):
         for sub_mask_1d_index in sub_mask_1d_indexes:
-            mask_1d_index = sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index]
+            mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
             residual = (
                 reconstructed_data_1d[mask_1d_index]
                 - pixelization_values[pixelization_1d_index]
@@ -153,21 +153,21 @@ def pixelization_normalized_residual_map_from_pixelization_values_and_reconstruc
     pixelization_values,
     reconstructed_data_1d,
     noise_map_1d,
-    sub_mask_1d_index_to_mask_1d_index,
-    pixelization_1d_index_to_all_sub_mask_1d_indexes,
+    mask_1d_index_for_sub_mask_1d_index,
+    all_sub_mask_1d_indexes_for_pixelization_1d_index,
 ):
 
     pixelization_normalized_residuals = np.zeros(
-        shape=len(pixelization_1d_index_to_all_sub_mask_1d_indexes)
+        shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
     )
 
     reconstructed_data_1d = reconstructed_data_1d
 
     for pixelization_1d_index, sub_mask_1d_indexes in enumerate(
-        pixelization_1d_index_to_all_sub_mask_1d_indexes
+        all_sub_mask_1d_indexes_for_pixelization_1d_index
     ):
         for sub_mask_1d_index in sub_mask_1d_indexes:
-            mask_1d_index = sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index]
+            mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
             residual = (
                 reconstructed_data_1d[mask_1d_index]
                 - pixelization_values[pixelization_1d_index]
@@ -183,21 +183,21 @@ def pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data
     pixelization_values,
     reconstructed_data_1d,
     noise_map_1d,
-    sub_mask_1d_index_to_mask_1d_index,
-    pixelization_1d_index_to_all_sub_mask_1d_indexes,
+    mask_1d_index_for_sub_mask_1d_index,
+    all_sub_mask_1d_indexes_for_pixelization_1d_index,
 ):
 
     pixelization_chi_squareds = np.zeros(
-        shape=len(pixelization_1d_index_to_all_sub_mask_1d_indexes)
+        shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
     )
 
     reconstructed_data_1d = reconstructed_data_1d
 
     for pixelization_1d_index, sub_mask_1d_indexes in enumerate(
-        pixelization_1d_index_to_all_sub_mask_1d_indexes
+        all_sub_mask_1d_indexes_for_pixelization_1d_index
     ):
         for sub_mask_1d_index in sub_mask_1d_indexes:
-            mask_1d_index = sub_mask_1d_index_to_mask_1d_index[sub_mask_1d_index]
+            mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
             residual = (
                 reconstructed_data_1d[mask_1d_index]
                 - pixelization_values[pixelization_1d_index]

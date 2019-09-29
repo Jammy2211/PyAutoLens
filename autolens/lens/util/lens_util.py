@@ -29,16 +29,13 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
     image_1d = sum(
         map(
             lambda g: g.profile_image_from_grid(
-                grid=uniform_grid,
-                return_in_2d=False,
-                return_binned=False,
-                bypass_decorator=True,
+                grid=uniform_grid
             ),
             galaxies,
         )
     )
 
-    image_2d = array_mapping_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+    image_2d = array_mapping_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
         sub_array_1d=image_1d, mask=np.full(fill_value=False, shape=shape), sub_size=1
     )
 

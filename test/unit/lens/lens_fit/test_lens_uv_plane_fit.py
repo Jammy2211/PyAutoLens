@@ -172,9 +172,7 @@ class TestLikelihood:
             light_profile=al.light_profiles.EllipticalSersic(intensity=0.001),
         )
 
-        profile_image = g0.profile_image_from_grid(
-            grid=lens_uv_plane_data_7.grid, return_in_2d=False, return_binned=True
-        )
+        profile_image = g0.profile_image_from_grid(grid=lens_uv_plane_data_7.grid)
         model_visibilities_manual = transformer.visibilities_from_image_1d(
             image_1d=profile_image
         )
@@ -369,7 +367,7 @@ class TestCompareToManualProfilesOnly:
     #     )
     #
     #     g0_profile_image_1d = g0.profile_image_from_grid(
-    #         grid=traced_grids_of_planes[0], return_in_2d=False, return_binned=True
+    #         grid=traced_grids_of_planes[0],
     #     )
     #     g0_blurring_image_1d = g0.profile_image_from_grid(
     #         grid=traced_blurring_grids_of_planes[0],
@@ -383,7 +381,7 @@ class TestCompareToManualProfilesOnly:
     #     )
     #
     #     g1_profile_image_1d = g1.profile_image_from_grid(
-    #         grid=traced_grids_of_planes[1], return_in_2d=False, return_binned=True
+    #         grid=traced_grids_of_planes[1],
     #     )
     #     g1_blurring_image_1d = g1.profile_image_from_grid(
     #         grid=traced_blurring_grids_of_planes[1],
@@ -856,7 +854,7 @@ class TestCompareToManualProfilesOnly:
 #         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
 #             grid=lens_uv_plane_data_7.grid,
 #             convolver=lens_uv_plane_data_7.convolver,
-#             return_in_2d=False,
+#
 #         )
 #
 #         blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
@@ -1015,7 +1013,7 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         g0_profile_image_1d = g0.profile_image_from_grid(
-#             grid=traced_grids[0], return_in_2d=False, return_binned=True
+#             grid=traced_grids[0],
 #         )
 #         g0_blurring_image_1d = g0.profile_image_from_grid(
 #             grid=traced_blurring_grids[0], return_in_2d=False, return_binned=False
@@ -1027,7 +1025,7 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         g1_profile_image_1d = g1.profile_image_from_grid(
-#             grid=traced_grids[1], return_in_2d=False, return_binned=True
+#             grid=traced_grids[1],
 #         )
 #         g1_blurring_image_1d = g1.profile_image_from_grid(
 #             grid=traced_blurring_grids[1], return_in_2d=False, return_binned=False
@@ -1158,7 +1156,7 @@ class TestCompareToManualProfilesOnly:
 #         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
 #             grid=lens_uv_plane_data_7.grid,
 #             convolver=lens_uv_plane_data_7.convolver,
-#             return_in_2d=False,
+#
 #         )
 #
 #         blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
@@ -1303,7 +1301,7 @@ class TestCompareToManualProfilesOnly:
 #         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
 #             grid=lens_uv_plane_data_7.grid,
 #             convolver=lens_uv_plane_data_7.convolver,
-#             return_in_2d=False,
+#
 #         )
 #
 #         blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(

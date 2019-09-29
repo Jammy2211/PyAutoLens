@@ -5,11 +5,9 @@ from sklearn.cluster import KMeans
 
 from autolens import decorator_util
 from autolens import exc
-from autolens.array import mask as msk, geometry
+from autolens.array import mask as msk
 from autolens.array.util import grid_util, array_util, mask_util, binning_util
 from autolens.array.mapping_util import (
-    array_mapping_util,
-    grid_mapping_util,
     sparse_mapping_util,
 )
 
@@ -129,7 +127,7 @@ class Grid(np.ndarray):
         """
         obj = sub_grid_1d.view(cls)
         obj.mask = mask
-        obj.sub_border_1d_indexes = mask.sub_border_1d_indexes
+        obj._sub_border_1d_indexes = mask._sub_border_1d_indexes
         obj.interpolator = None
         obj.binned = None
         return obj
@@ -138,17 +136,9 @@ class Grid(np.ndarray):
 
         if isinstance(obj, Grid):
             self.mask = obj.mask
-            self.sub_border_1d_indexes = obj.sub_border_1d_indexes
+            self._sub_border_1d_indexes = obj._sub_border_1d_indexes
             self.interpolator = obj.interpolator
             self.binned = obj.binned
-
-    @property
-    def mapping(self):
-        return self.mask.mapping
-
-    @property
-    def geometry(self):
-        return self.mask.geometry
 
     @classmethod
     def from_mask(cls, mask):
@@ -164,7 +154,9 @@ class Grid(np.ndarray):
         """
 
         sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask, pixel_scales=mask.geometry.pixel_scales, sub_size=mask.geometry.sub_size
+            mask=mask,
+            pixel_scales=mask.pixel_scales,
+            sub_size=mask.sub_size,
         )
 
         return Grid(sub_grid_1d=sub_grid_1d, mask=mask)
@@ -192,7 +184,7 @@ class Grid(np.ndarray):
         )
 
         sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask, pixel_scales=mask.geometry.pixel_scales, sub_size=sub_size
+            mask=mask, pixel_scales=mask.pixel_scales, sub_size=sub_size
         )
 
         return Grid(sub_grid_1d=sub_grid_1d, mask=mask)
@@ -263,7 +255,7 @@ class Grid(np.ndarray):
 
     @classmethod
     def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
-        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
+        return mask.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
     @property
     def in_1d(self):
@@ -271,19 +263,15 @@ class Grid(np.ndarray):
 
     @property
     def in_2d(self):
-        return self.mapping.sub_grid_2d_from_sub_grid_1d(
-            sub_grid_1d=self
-        )
+        return self.mask.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=self)
 
     @property
     def in_1d_binned(self):
-        return self.mapping.grid_binned_from_sub_grid_1d(sub_grid_1d=self)
+        return self.mask.grid_binned_from_sub_grid_1d(sub_grid_1d=self)
 
     @property
     def in_2d_binned(self):
-        return self.mapping.grid_2d_binned_from_sub_grid_1d(
-            sub_grid_1d=self
-        )
+        return self.mask.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=self)
 
     @property
     def total_pixels(self):
@@ -309,7 +297,9 @@ class Grid(np.ndarray):
 
     def blurring_grid_from_kernel_shape(self, kernel_shape):
 
-        blurring_mask = self.mask.blurring_mask_from_kernel_shape(kernel_shape=kernel_shape)
+        blurring_mask = self.mask.blurring_mask_from_kernel_shape(
+            kernel_shape=kernel_shape
+        )
 
         return Grid.from_mask(mask=blurring_mask)
 
@@ -321,8 +311,8 @@ class Grid(np.ndarray):
 
         padded_mask = msk.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=padded_shape,
-            pixel_scales=self.mask.geometry.pixel_scales,
-            sub_size=self.geometry.sub_size,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
         )
 
         padded_sub_grid = Grid.from_mask(mask=padded_mask)
@@ -336,7 +326,7 @@ class Grid(np.ndarray):
 
     @property
     def sub_border_grid(self):
-        return self[self.mask.sub_border_1d_indexes]
+        return self[self.mask._sub_border_1d_indexes]
 
     def relocated_grid_from_grid(self, grid):
         """Determine a set of relocated grid from an input set of grid, by relocating their pixels based on the \
@@ -356,7 +346,7 @@ class Grid(np.ndarray):
                 grid=grid, border_grid=self.sub_border_grid
             ),
             mask=grid.mask,
-            sub_size=grid.geometry.sub_size,
+            sub_size=grid.mask.sub_size,
         )
 
     def relocated_pixelization_grid_from_pixelization_grid(self, pixelization_grid):
@@ -376,7 +366,7 @@ class Grid(np.ndarray):
             grid_1d=self.relocated_grid_from_grid_jit(
                 grid=pixelization_grid, border_grid=self.sub_border_grid
             ),
-            mask_1d_index_to_nearest_pixelization_1d_index=pixelization_grid.mask_1d_index_to_nearest_pixelization_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
         )
 
     @staticmethod
@@ -512,9 +502,9 @@ class BinnedGrid(Grid):
     @classmethod
     def from_mask_and_pixel_scale_binned_grid(cls, mask, pixel_scale_binned_grid):
 
-        if pixel_scale_binned_grid > mask.geometry.pixel_scale:
+        if pixel_scale_binned_grid > mask.pixel_scale:
 
-            bin_up_factor = int(pixel_scale_binned_grid / mask.geometry.pixel_scale)
+            bin_up_factor = int(pixel_scale_binned_grid / mask.pixel_scale)
 
         else:
 
@@ -525,7 +515,7 @@ class BinnedGrid(Grid):
         )
 
         binned_grid = Grid.from_mask(mask=binned_mask)
-        binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.binned_masked_array_1d_to_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
+        binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
             mask_2d=mask, bin_up_factor=bin_up_factor
         )
 
@@ -545,7 +535,7 @@ class BinnedGrid(Grid):
 
 class PixelizationGrid(np.ndarray):
     def __new__(
-        cls, grid_1d, mask_1d_index_to_nearest_pixelization_1d_index, *args, **kwargs
+        cls, grid_1d, nearest_pixelization_1d_index_for_mask_1d_index, *args, **kwargs
     ):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
@@ -562,12 +552,12 @@ class PixelizationGrid(np.ndarray):
         pix_grid : ndarray
             The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        mask_1d_index_to_nearest_pixelization_1d_index : ndarray
+        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
         obj = grid_1d.view(cls)
-        obj.mask_1d_index_to_nearest_pixelization_1d_index = (
-            mask_1d_index_to_nearest_pixelization_1d_index
+        obj.nearest_pixelization_1d_index_for_mask_1d_index = (
+            nearest_pixelization_1d_index_for_mask_1d_index
         )
         obj.interpolator = None
         return obj
@@ -581,20 +571,20 @@ class PixelizationGrid(np.ndarray):
 
         return PixelizationGrid(
             grid_1d=sparse_grid.sparse,
-            mask_1d_index_to_nearest_pixelization_1d_index=sparse_grid.mask_1d_index_to_sparse_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
     def __array_finalize__(self, obj):
-        if hasattr(obj, "mask_1d_index_to_nearest_pixelization_1d_index"):
-            self.mask_1d_index_to_nearest_pixelization_1d_index = (
-                obj.mask_1d_index_to_nearest_pixelization_1d_index
+        if hasattr(obj, "nearest_pixelization_1d_index_for_mask_1d_index"):
+            self.nearest_pixelization_1d_index_for_mask_1d_index = (
+                obj.nearest_pixelization_1d_index_for_mask_1d_index
             )
         if hasattr(obj, "interpolator"):
             self.interpolator = obj.interpolator
 
 
-class SparseToGrid(geometry.Geometry):
-    def __init__(self, sparse_grid, mask_1d_index_to_sparse_1d_index):
+class SparseToGrid(object):
+    def __init__(self, sparse_grid, sparse_1d_index_for_mask_1d_index):
         """A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a \
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such \
         that all sparse-grid pixels which map inside of an unmasked grid pixel are included on the sparse grid.
@@ -627,7 +617,7 @@ class SparseToGrid(geometry.Geometry):
             The centre of the unmasked sparse grid, which matches the centre of the mask.
         """
         self.sparse = sparse_grid
-        self.mask_1d_index_to_sparse_1d_index = mask_1d_index_to_sparse_1d_index
+        self.sparse_1d_index_for_mask_1d_index = sparse_1d_index_for_mask_1d_index
 
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(cls, grid, unmasked_sparse_shape):
@@ -641,7 +631,7 @@ class SparseToGrid(geometry.Geometry):
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
-        pixel_scale = grid.mask.geometry.pixel_scale
+        pixel_scale = grid.mask.pixel_scale
 
         pixel_scales = (
             (grid.shape_arcsec[0] + pixel_scale) / (unmasked_sparse_shape[0]),
@@ -650,23 +640,22 @@ class SparseToGrid(geometry.Geometry):
 
         origin = grid.mask.mask_centre
 
-        unmasked_sparse_grid = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
+        unmasked_sparse_grid_1d = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
             shape=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             sub_size=1,
             origin=origin,
         )
 
-        unmasked_sparse_grid_pixel_centres = grid.mask.geometry.grid_arcsec_to_grid_pixel_centres(
-            grid_arcsec=unmasked_sparse_grid
-        )
+        unmasked_sparse_grid_pixel_centres = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
+            grid_arcsec_1d=unmasked_sparse_grid_1d, shape=grid.mask.shape, pixel_scales=grid.mask.pixel_scales).astype('int')
 
         total_sparse_pixels = mask_util.total_sparse_pixels_from_mask(
             mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        unmasked_sparse_to_sparse = sparse_mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(
+        sparse_for_unmasked_sparse = sparse_mapping_util.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
             mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=total_sparse_pixels,
@@ -674,7 +663,7 @@ class SparseToGrid(geometry.Geometry):
             "int"
         )
 
-        sparse_to_unmasked_sparse = sparse_mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_for_sparse = sparse_mapping_util.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
             total_sparse_pixels=total_sparse_pixels,
             mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
@@ -682,28 +671,28 @@ class SparseToGrid(geometry.Geometry):
             "int"
         )
 
-        regular_to_unmasked_sparse = grid_util.grid_arcsec_1d_to_grid_pixel_indexes_1d(
+        regular_to_unmasked_sparse = grid_util.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
             grid_arcsec_1d=grid,
             shape=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             origin=origin,
         ).astype("int")
 
-        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_sparse_mappings(
+        sparse_1d_index_for_mask_1d_index = sparse_mapping_util.sparse_1d_index_for_mask_1d_index_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            unmasked_sparse_to_sparse=unmasked_sparse_to_sparse,
+            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
         ).astype(
             "int"
         )
 
         sparse_grid = sparse_mapping_util.sparse_grid_from_unmasked_sparse_grid(
-            unmasked_sparse_grid=unmasked_sparse_grid,
-            sparse_to_unmasked_sparse=sparse_to_unmasked_sparse,
+            unmasked_sparse_grid=unmasked_sparse_grid_1d,
+            unmasked_sparse_for_sparse=unmasked_sparse_for_sparse,
         )
 
         return SparseToGrid(
             sparse_grid=sparse_grid,
-            mask_1d_index_to_sparse_1d_index=mask_1d_index_to_sparse_1d_index,
+            sparse_1d_index_for_mask_1d_index=sparse_1d_index_for_mask_1d_index,
         )
 
     @classmethod
@@ -735,7 +724,7 @@ class SparseToGrid(geometry.Geometry):
 
         kmeans = kmeans.fit(X=binned_grid, sample_weight=binned_weight_map)
 
-        mask_1d_index_to_sparse_1d_index = sparse_mapping_util.mask_1d_index_to_sparse_1d_index_from_binned_grid(
+        sparse_1d_index_for_mask_1d_index = sparse_mapping_util.sparse_1d_index_for_mask_1d_index_from_binned_grid(
             sparse_labels=kmeans.labels_,
             binned_mask_1d_index_to_mask_1d_indexes=binned_grid.binned_mask_1d_index_to_mask_1d_indexes,
             binned_mask_1d_index_to_mask_1d_sizes=binned_grid.binned_mask_1d_index_to_mask_1d_sizes,
@@ -744,7 +733,7 @@ class SparseToGrid(geometry.Geometry):
 
         return SparseToGrid(
             sparse_grid=kmeans.cluster_centers_,
-            mask_1d_index_to_sparse_1d_index=mask_1d_index_to_sparse_1d_index.astype(
+            sparse_1d_index_for_mask_1d_index=sparse_1d_index_for_mask_1d_index.astype(
                 "int"
             ),
         )
@@ -777,7 +766,7 @@ class Interpolator(object):
         cls, mask, grid, pixel_scale_interpolation_grid
     ):
 
-        rescale_factor = mask.geometry.pixel_scale / pixel_scale_interpolation_grid
+        rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
 
         rescaled_mask = mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=rescale_factor
@@ -794,7 +783,7 @@ class Interpolator(object):
                 pixel_scale_interpolation_grid,
             ),
             sub_size=1,
-            origin=mask.geometry.origin,
+            origin=mask.origin,
         )
 
         return Interpolator(

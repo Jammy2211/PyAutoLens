@@ -50,12 +50,12 @@ def plot_inversion_subplot(
 
     ratio = float(
         (
-            inversion.mapper.geometry.arc_second_maxima[1]
-            - inversion.mapper.geometry.arc_second_minima[1]
+            inversion.mapper.arc_second_maxima[1]
+            - inversion.mapper.arc_second_minima[1]
         )
         / (
-            inversion.mapper.geometry.arc_second_maxima[0]
-            - inversion.mapper.geometry.arc_second_minima[0]
+            inversion.mapper.arc_second_maxima[0]
+            - inversion.mapper.arc_second_minima[0]
         )
     )
 
