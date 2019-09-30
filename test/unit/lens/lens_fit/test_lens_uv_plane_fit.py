@@ -360,10 +360,10 @@ class TestCompareToManualProfilesOnly:
     #     )
     #
     #     traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-    #         grid=lens_uv_plane_data_7.grid, return_in_2d=False
+    #         grid=lens_uv_plane_data_7.grid
     #     )
     #     traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-    #         grid=lens_uv_plane_data_7.blurring_grid, return_in_2d=False
+    #         grid=lens_uv_plane_data_7.blurring_grid
     #     )
     #
     #     g0_profile_image_1d = g0.profile_image_from_grid(
@@ -372,7 +372,7 @@ class TestCompareToManualProfilesOnly:
     #     g0_blurring_image_1d = g0.profile_image_from_grid(
     #         grid=traced_blurring_grids_of_planes[0],
     #         return_in_2d=False,
-    #         return_binned=True,
+    #
     #     )
     #
     #     g0_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
@@ -386,7 +386,7 @@ class TestCompareToManualProfilesOnly:
     #     g1_blurring_image_1d = g1.profile_image_from_grid(
     #         grid=traced_blurring_grids_of_planes[1],
     #         return_in_2d=False,
-    #         return_binned=True,
+    #
     #     )
     #
     #     g1_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
@@ -1016,7 +1016,7 @@ class TestCompareToManualProfilesOnly:
 #             grid=traced_grids[0],
 #         )
 #         g0_blurring_image_1d = g0.profile_image_from_grid(
-#             grid=traced_blurring_grids[0], return_in_2d=False, return_binned=False
+#             grid=traced_blurring_grids[0]
 #         )
 #
 #         g0_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
@@ -1028,7 +1028,7 @@ class TestCompareToManualProfilesOnly:
 #             grid=traced_grids[1],
 #         )
 #         g1_blurring_image_1d = g1.profile_image_from_grid(
-#             grid=traced_blurring_grids[1], return_in_2d=False, return_binned=False
+#             grid=traced_blurring_grids[1]
 #         )
 #
 #         g1_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(

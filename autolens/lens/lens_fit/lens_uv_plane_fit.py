@@ -150,7 +150,7 @@ class LensUVPlaneFit(UVPlaneFit):
 
     def profile_visibilities(self):
         return self.tracer.tracer.profile_visibilities_from_grid_and_transformer(
-            grid=self.grid, transformer=self.transformer, return_in_2d=False
+            grid=self.grid, transformer=self.transformer
         )
 
     def profile_subtracted_visibilities(self):

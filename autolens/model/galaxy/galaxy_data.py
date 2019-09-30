@@ -175,7 +175,7 @@ class GalaxyFitData(object):
                 map(lambda g: g.deflections_from_grid(grid=self.grid), galaxies)
             )[:, 1]
 
-    def mask(self, return_in_2d=True):
+    def mask(self):
         if return_in_2d:
             return self.mask
         else:

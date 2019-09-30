@@ -64,12 +64,7 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
         return self.convergence_func(self.grid_to_eccentric_radii(grid))
 
@@ -162,12 +157,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
 
         def calculate_deflection_component(npow, index):
@@ -445,12 +435,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
         return self.convergence_func(self.grid_to_eccentric_radii(grid))
 
@@ -466,12 +451,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
 
         def calculate_deflection_component(npow, index):

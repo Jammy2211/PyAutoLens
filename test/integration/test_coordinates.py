@@ -19,29 +19,29 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
     )
 
     sersic = al.light_profiles.SphericalSersic(centre=(2.0, -2.0))
-    image_1d = sersic.profile_image_from_grid(grid=grid, return_in_2d=False)
-    image_2d = sersic.profile_image_from_grid(grid=grid, return_in_2d=True)
+    image_1d = sersic.profile_image_from_grid(grid=grid)
+    image_2d = sersic.profile_image_from_grid(grid=grid)
 
     assert image_1d.argmax() == 0
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 0)
 
     sersic = al.light_profiles.SphericalSersic(centre=(2.0, 2.0))
-    image_1d = sersic.profile_image_from_grid(grid=grid, return_in_2d=False)
-    image_2d = sersic.profile_image_from_grid(grid=grid, return_in_2d=True)
+    image_1d = sersic.profile_image_from_grid(grid=grid)
+    image_2d = sersic.profile_image_from_grid(grid=grid)
 
     assert image_1d.argmax() == 4
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 4)
 
     sersic = al.light_profiles.SphericalSersic(centre=(-2.0, -2.0))
-    image_1d = sersic.profile_image_from_grid(grid=grid, return_in_2d=False)
-    image_2d = sersic.profile_image_from_grid(grid=grid, return_in_2d=True)
+    image_1d = sersic.profile_image_from_grid(grid=grid)
+    image_2d = sersic.profile_image_from_grid(grid=grid)
 
     assert image_1d.argmax() == 20
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 0)
 
     sersic = al.light_profiles.SphericalSersic(centre=(-2.0, 2.0))
-    image_1d = sersic.profile_image_from_grid(grid=grid, return_in_2d=False)
-    image_2d = sersic.profile_image_from_grid(grid=grid, return_in_2d=True)
+    image_1d = sersic.profile_image_from_grid(grid=grid)
+    image_2d = sersic.profile_image_from_grid(grid=grid)
 
     assert image_1d.argmax() == 24
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 4)
@@ -54,29 +54,29 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
     )
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(2.0, -2.0))
-    density_1d = sis.convergence_from_grid(grid=grid, return_in_2d=False)
-    density_2d = sis.convergence_from_grid(grid=grid, return_in_2d=True)
+    density_1d = sis.convergence_from_grid(grid=grid)
+    density_2d = sis.convergence_from_grid(grid=grid)
 
     assert density_1d.argmax() == 0
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (0, 0)
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(2.0, 2.0))
-    density_1d = sis.convergence_from_grid(grid=grid, return_in_2d=False)
-    density_2d = sis.convergence_from_grid(grid=grid, return_in_2d=True)
+    density_1d = sis.convergence_from_grid(grid=grid)
+    density_2d = sis.convergence_from_grid(grid=grid)
 
     assert density_1d.argmax() == 4
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (0, 4)
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(-2.0, -2.0))
-    density_1d = sis.convergence_from_grid(grid=grid, return_in_2d=False)
-    density_2d = sis.convergence_from_grid(grid=grid, return_in_2d=True)
+    density_1d = sis.convergence_from_grid(grid=grid)
+    density_2d = sis.convergence_from_grid(grid=grid)
 
     assert density_1d.argmax() == 20
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (4, 0)
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(-2.0, 2.0))
-    density_1d = sis.convergence_from_grid(grid=grid, return_in_2d=False)
-    density_2d = sis.convergence_from_grid(grid=grid, return_in_2d=True)
+    density_1d = sis.convergence_from_grid(grid=grid)
+    density_2d = sis.convergence_from_grid(grid=grid)
 
     assert density_1d.argmax() == 24
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (4, 4)
@@ -89,8 +89,8 @@ def test__deflection_angles():
     )
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
-    deflections_1d = sis.deflections_from_grid(grid=grid, return_in_2d=False)
-    deflections_y_2d = sis.deflections_from_grid(grid=grid, return_in_2d=True)[:, :, 0]
+    deflections_1d = sis.deflections_from_grid(grid=grid)
+    deflections_y_2d = sis.deflections_from_grid(grid=grid)[:, :, 0]
 
     assert deflections_y_2d[0, 0] == pytest.approx(-1.0 * deflections_y_2d[4, 0], 1e-2)
     assert deflections_y_2d[1, 1] == pytest.approx(-1.0 * deflections_y_2d[3, 1], 1e-2)
@@ -99,8 +99,8 @@ def test__deflection_angles():
     assert deflections_y_2d[2, 0] == pytest.approx(deflections_y_2d[2, 4], 1e-2)
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
-    deflections_1d = sis.deflections_from_grid(grid=grid, return_in_2d=False)
-    deflections_x_2d = sis.deflections_from_grid(grid=grid, return_in_2d=True)[:, :, 1]
+    deflections_1d = sis.deflections_from_grid(grid=grid)
+    deflections_x_2d = sis.deflections_from_grid(grid=grid)[:, :, 1]
 
     assert deflections_x_2d[0, 0] == pytest.approx(-1.0 * deflections_x_2d[0, 4], 1e-2)
     assert deflections_x_2d[1, 1] == pytest.approx(-1.0 * deflections_x_2d[1, 3], 1e-2)

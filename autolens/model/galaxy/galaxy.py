@@ -164,15 +164,10 @@ class Galaxy(af.ModelObject):
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
         if self.has_light_profile:
-            return sum(
+            profile_image = sum(
                 map(
                     lambda p: p.profile_image_from_grid(
                         grid=grid
@@ -180,56 +175,41 @@ class Galaxy(af.ModelObject):
                     self.light_profiles,
                 )
             )
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=profile_image.in_1d)
         else:
-            return np.zeros((grid.shape[0],))
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=np.zeros((grid.shape[0],)))
 
     def blurred_profile_image_from_grid_and_psf(
-        self, grid, psf, preload_blurring_grid=None
+        self, grid, psf, blurring_grid=None
     ):
 
         profile_image = self.profile_image_from_grid(grid=grid)
-
-        if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_kernel_shape(
-                kernel_shape=psf.shape
-            )
 
         blurring_image = self.profile_image_from_grid(
-            grid=preload_blurring_grid, return_binned=True
+            grid=blurring_grid,
         )
 
-        return psf.convolved_array_2d_from_array_2d(profile_image + blurring_image)
+        return psf.convolved_scaled_array_from_array_2d_and_mask(
+            array_2d=profile_image.in_2d_binned + blurring_image.in_2d_binned,
+            mask=grid.mask)
 
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, preload_blurring_grid=None
+        self, grid, convolver, blurring_grid
     ):
-
-        if convolver.blurring_mask is None:
-            blurring_mask = grid.mask.blurring_mask_from_kernel_shape(
-                kernel_shape=convolver.psf.shape
-            )
-            convolver = convolver.convolver_with_blurring_mask_added(
-                blurring_mask=blurring_mask
-            )
 
         profile_image = self.profile_image_from_grid(grid=grid)
 
-        if preload_blurring_grid is None:
-            preload_blurring_grid = grid.blurring_grid_from_kernel_shape(
-                kernel_shape=convolver.psf.shape
-            )
+        blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
-        blurring_image = self.profile_image_from_grid(grid=preload_blurring_grid)
-
-        return convolver.convolve_image(
-            image_array=profile_image, blurring_array=blurring_image
+        return convolver.convolved_scaled_array_from_image_array_and_blurring_array(
+            image_array=profile_image.in_1d_binned, blurring_array=blurring_image.in_1d_binned
         )
 
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
-        profile_image_1d = self.profile_image_from_grid(grid=grid)
+        profile_image = self.profile_image_from_grid(grid=grid)
 
-        return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
+        return transformer.visibilities_from_image_1d(image_1d=profile_image.in_1d_binned)
 
     def luminosity_within_circle_in_units(
         self,
@@ -325,12 +305,7 @@ class Galaxy(af.ModelObject):
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
         if self.has_mass_profile:
             return sum(
@@ -356,12 +331,7 @@ class Galaxy(af.ModelObject):
         ----------
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
         if self.has_mass_profile:
             return sum(
@@ -396,7 +366,7 @@ class Galaxy(af.ModelObject):
 
     def deflections_via_potential_from_grid(self, grid):
         potential_2d = self.potential_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
         deflections_y_2d = np.gradient(potential_2d, grid.in_2d[:, 0, 0], axis=0)
@@ -407,7 +377,7 @@ class Galaxy(af.ModelObject):
     def lensing_jacobian_a11_from_grid(self, grid):
 
         deflections_2d = self.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
         return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
@@ -415,7 +385,7 @@ class Galaxy(af.ModelObject):
     def lensing_jacobian_a12_from_grid(self, grid):
 
         deflections_2d = self.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
         return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
@@ -423,7 +393,7 @@ class Galaxy(af.ModelObject):
     def lensing_jacobian_a21_from_grid(self, grid):
 
         deflections_2d = self.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
         return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
@@ -431,27 +401,27 @@ class Galaxy(af.ModelObject):
     def lensing_jacobian_a22_from_grid(self, grid):
 
         deflections_2d = self.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
         return 1 - np.gradient(deflections_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
 
-    def lensing_jacobian_from_grid(self, grid, return_in_2d=True, return_binned=True):
+    def lensing_jacobian_from_grid(self, grid):
 
         a11 = self.lensing_jacobian_a11_from_grid(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=grid
         )
 
         a12 = self.lensing_jacobian_a12_from_grid(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=grid
         )
 
         a21 = self.lensing_jacobian_a21_from_grid(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=grid
         )
 
         a22 = self.lensing_jacobian_a22_from_grid(
-            grid=grid, return_in_2d=return_in_2d, return_binned=return_binned
+            grid=grid
         )
 
         return np.array([[a11, a12], [a21, a22]])
@@ -459,7 +429,7 @@ class Galaxy(af.ModelObject):
     def convergence_via_jacobian_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid
         )
 
         convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
@@ -469,7 +439,7 @@ class Galaxy(af.ModelObject):
     def shear_via_jacobian_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
         gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
@@ -480,11 +450,11 @@ class Galaxy(af.ModelObject):
     def tangential_eigen_value_from_grid(self, grid):
 
         convergence = self.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid
         )
 
         shear = self.shear_via_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid
         )
 
         return 1 - convergence - shear
@@ -492,11 +462,11 @@ class Galaxy(af.ModelObject):
     def radial_eigen_value_from_grid(self, grid):
 
         convergence = self.convergence_via_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid
         )
 
         shear = self.shear_via_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid
         )
 
         return 1 - convergence + shear
@@ -504,7 +474,7 @@ class Galaxy(af.ModelObject):
     def magnification_from_grid(self, grid):
 
         jacobian = self.lensing_jacobian_from_grid(
-            grid=grid, return_in_2d=False, return_binned=False
+            grid=grid
         )
 
         det_jacobian = jacobian[0, 0] * jacobian[1, 1] - jacobian[0, 1] * jacobian[1, 0]
@@ -514,7 +484,7 @@ class Galaxy(af.ModelObject):
     def tangential_critical_curve_from_grid(self, grid):
 
         lambda_tangential_2d = self.tangential_eigen_value_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
         tangential_critical_curve_indices = measure.find_contours(
@@ -532,7 +502,7 @@ class Galaxy(af.ModelObject):
     def radial_critical_curve_from_grid(self, grid):
 
         lambda_radial_2d = self.radial_eigen_value_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
         radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)

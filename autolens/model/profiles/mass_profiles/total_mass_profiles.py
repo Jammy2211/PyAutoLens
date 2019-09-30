@@ -99,12 +99,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
 
         covnergence_grid = np.zeros(grid.shape[0])
@@ -126,12 +121,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
 
         potential_grid = quad_grid(
@@ -156,12 +146,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
 
         def calculate_deflection_component(npow, index):
@@ -298,12 +283,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
         eta = self.grid_to_grid_radii(grid=grid)
         deflection = np.multiply(
@@ -591,12 +571,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
         factor = (
             2.0
@@ -653,12 +628,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
         eta = self.grid_to_elliptical_radii(grid)
         return 2.0 * self.einstein_radius_rescaled * eta
@@ -673,12 +643,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
         return self.grid_to_grid_cartesian(
             grid=grid,
@@ -731,12 +696,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
 
         covnergence_grid = np.zeros(grid.shape[0])
@@ -758,12 +718,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
 
         f_prime = np.sqrt(1 - self.axis_ratio ** 2)
@@ -790,12 +745,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         ----------
         grid : grids.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
-        return_in_2d : bool
-            If *True*, the returned array is mapped to its unmasked 2D shape, if *False* it is the masked 1D shape.
-        return_binned : bool
-            If *True*, the returned array which is computed on a sub-grid is binned up to the grid dimensions \
-            by taking the mean of all sub-gridded values. If *False*, the array is returned on the dimensions of the \
-            sub-grid.
+
         """
 
         factor = (
