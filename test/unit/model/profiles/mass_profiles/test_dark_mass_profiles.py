@@ -960,7 +960,7 @@ class TestGeneralizedNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1020,17 +1020,17 @@ class TestGeneralizedNFW(object):
         # convergence = gnfw.convergence_from_grid(
         #     grid=grid, return_in_2d=True, return_binned=False)
         #
-        # assert convergence.shape == (2, 2)
+        # assert convergence.in_2d.shape == (2, 2)
         #
         # potential = gnfw.potential_from_grid(
         #     grid=grid, return_in_2d=True, return_binned=False)
         #
-        # assert potential.shape == (2, 2)
+        # assert potential.in_2d.shape == (2, 2)
         #
         # deflections = gnfw.deflections_from_grid(
         #     grid=grid, return_in_2d=True, return_binned=False)
         #
-        # assert deflections.shape == (2, 2, 2)
+        # assert deflections.in_2d.shape == (2, 2, 2)
 
         gnfw = al.mass_profiles.SphericalGeneralizedNFW()
 
@@ -1038,19 +1038,19 @@ class TestGeneralizedNFW(object):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         potential = gnfw.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert potential.shape == (2, 2)
+        assert potential.in_2d.shape == (2, 2)
 
         deflections = gnfw.deflections_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
 
 class TestTruncatedNFW(object):
@@ -1222,7 +1222,7 @@ class TestTruncatedNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1395,19 +1395,19 @@ class TestTruncatedNFW(object):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         potential = truncated_nfw.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert potential.shape == (2, 2)
+        assert potential.in_2d.shape == (2, 2)
 
         deflections = truncated_nfw.deflections_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
 
 class TestTruncatedNFWChallenge(object):
@@ -1610,19 +1610,19 @@ class TestTruncatedNFWMassToConcentration(object):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         potential = truncated_nfw.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert potential.shape == (2, 2)
+        assert potential.in_2d.shape == (2, 2)
 
         deflections = truncated_nfw.deflections_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
 
 class TestNFW(object):
@@ -1830,7 +1830,7 @@ class TestNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1876,7 +1876,7 @@ class TestNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1917,19 +1917,19 @@ class TestNFW(object):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         potential = nfw.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert potential.shape == (2, 2)
+        assert potential.in_2d.shape == (2, 2)
 
         deflections = nfw.deflections_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
         nfw = al.mass_profiles.SphericalNFW()
 
@@ -1937,16 +1937,16 @@ class TestNFW(object):
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         potential = nfw.potential_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert potential.shape == (2, 2)
+        assert potential.in_2d.shape == (2, 2)
 
         deflections = nfw.deflections_from_grid(
             grid=grid, return_in_2d=True, return_binned=False
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)

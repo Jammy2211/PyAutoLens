@@ -131,7 +131,7 @@ class Scaled(np.ndarray):
 
     @property
     def in_2d_binned(self):
-        return self.mask.sub_array_2d_binned_from_sub_array_1d(sub_array_1d=self)
+        return self.mask.array_2d_binned_from_sub_array_1d(sub_array_1d=self)
 
     def new_with_array(self, array):
         """

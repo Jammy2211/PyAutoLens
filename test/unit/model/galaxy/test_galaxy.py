@@ -1313,15 +1313,15 @@ class TestMassProfiles(object):
             a11_sub_grid = jacobian_sub_grid[0, 0]
 
             pixel_1_reg_grid = a11_binned_reg_grid[0]
-            pixel_1_from_av_sub_grid = (
+            first_pixel_binned_up = (
                 a11_sub_grid[0] + a11_sub_grid[1] + a11_sub_grid[2] + a11_sub_grid[3]
             ) / 4
 
             assert jacobian_binned_reg_grid.shape == (2, 2, 100)
             assert jacobian_sub_grid.shape == (2, 2, 400)
-            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
 
-            pixel_10000_reg_grid = a11_binned_reg_grid[99]
+            last_pixel_binned_up = a11_binned_reg_grid[99]
 
             pixel_10000_from_av_sub_grid = (
                 a11_sub_grid[399]
@@ -1330,7 +1330,7 @@ class TestMassProfiles(object):
                 + a11_sub_grid[396]
             ) / 4
 
-            assert pixel_10000_reg_grid == pytest.approx(
+            assert last_pixel_binned_up == pytest.approx(
                 pixel_10000_from_av_sub_grid, 1e-4
             )
 
@@ -1357,16 +1357,16 @@ class TestMassProfiles(object):
             )
 
             pixel_1_reg_grid = lambda_t_binned_reg_grid[0]
-            pixel_1_from_av_sub_grid = (
+            first_pixel_binned_up = (
                 lambda_t_sub_grid[0]
                 + lambda_t_sub_grid[1]
                 + lambda_t_sub_grid[2]
                 + lambda_t_sub_grid[3]
             ) / 4
 
-            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
 
-            pixel_10000_reg_grid = lambda_t_binned_reg_grid[99]
+            last_pixel_binned_up = lambda_t_binned_reg_grid[99]
 
             pixel_10000_from_av_sub_grid = (
                 lambda_t_sub_grid[399]
@@ -1375,7 +1375,7 @@ class TestMassProfiles(object):
                 + lambda_t_sub_grid[396]
             ) / 4
 
-            assert pixel_10000_reg_grid == pytest.approx(
+            assert last_pixel_binned_up == pytest.approx(
                 pixel_10000_from_av_sub_grid, 1e-4
             )
 
@@ -1400,16 +1400,16 @@ class TestMassProfiles(object):
             )
 
             pixel_1_reg_grid = lambda_r_binned_reg_grid[0]
-            pixel_1_from_av_sub_grid = (
+            first_pixel_binned_up = (
                 lambda_r_sub_grid[0]
                 + lambda_r_sub_grid[1]
                 + lambda_r_sub_grid[2]
                 + lambda_r_sub_grid[3]
             ) / 4
 
-            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
 
-            pixel_10000_reg_grid = lambda_r_binned_reg_grid[99]
+            last_pixel_binned_up = lambda_r_binned_reg_grid[99]
 
             pixel_10000_from_av_sub_grid = (
                 lambda_r_sub_grid[399]
@@ -1418,7 +1418,7 @@ class TestMassProfiles(object):
                 + lambda_r_sub_grid[396]
             ) / 4
 
-            assert pixel_10000_reg_grid == pytest.approx(
+            assert last_pixel_binned_up == pytest.approx(
                 pixel_10000_from_av_sub_grid, 1e-4
             )
 
@@ -1495,16 +1495,16 @@ class TestMassProfiles(object):
             )
 
             pixel_1_reg_grid = convergence_binned_reg_grid[0]
-            pixel_1_from_av_sub_grid = (
+            first_pixel_binned_up = (
                 convergence_sub_grid[0]
                 + convergence_sub_grid[1]
                 + convergence_sub_grid[2]
                 + convergence_sub_grid[3]
             ) / 4
 
-            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
 
-            pixel_10000_reg_grid = convergence_binned_reg_grid[99]
+            last_pixel_binned_up = convergence_binned_reg_grid[99]
 
             pixel_10000_from_av_sub_grid = (
                 convergence_sub_grid[399]
@@ -1513,7 +1513,7 @@ class TestMassProfiles(object):
                 + convergence_sub_grid[396]
             ) / 4
 
-            assert pixel_10000_reg_grid == pytest.approx(
+            assert last_pixel_binned_up == pytest.approx(
                 pixel_10000_from_av_sub_grid, 1e-4
             )
 
@@ -1598,16 +1598,16 @@ class TestMassProfiles(object):
             )
 
             pixel_1_reg_grid = shear_binned_reg_grid[0]
-            pixel_1_from_av_sub_grid = (
+            first_pixel_binned_up = (
                 shear_sub_grid[0]
                 + shear_sub_grid[1]
                 + shear_sub_grid[2]
                 + shear_sub_grid[3]
             ) / 4
 
-            assert pixel_1_reg_grid == pytest.approx(pixel_1_from_av_sub_grid, 1e-4)
+            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
 
-            pixel_10000_reg_grid = shear_binned_reg_grid[99]
+            last_pixel_binned_up = shear_binned_reg_grid[99]
 
             pixel_10000_from_av_sub_grid = (
                 shear_sub_grid[399]
@@ -1616,7 +1616,7 @@ class TestMassProfiles(object):
                 + shear_sub_grid[396]
             ) / 4
 
-            assert pixel_10000_reg_grid == pytest.approx(
+            assert last_pixel_binned_up == pytest.approx(
                 pixel_10000_from_av_sub_grid, 1e-4
             )
 

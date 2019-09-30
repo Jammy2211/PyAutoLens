@@ -1380,7 +1380,7 @@ class TestMappingScaled:
             ]
         )
 
-        sub_array_2d = mask.sub_array_2d_binned_from_sub_array_1d(
+        sub_array_2d = mask.array_2d_binned_from_sub_array_1d(
             sub_array_1d=sub_array_1d
         )
 
@@ -1703,7 +1703,7 @@ class TestMappingGrids:
             ]
         )
 
-        sub_grid_2d_binned = mask.sub_grid_2d_binned_from_sub_grid_1d(
+        sub_grid_2d_binned = mask.grid_2d_binned_from_sub_grid_1d(
             sub_grid_1d=sub_grid_1d
         )
 
