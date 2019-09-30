@@ -215,22 +215,22 @@ class TestMassSheet(object):
         mass_sheet = al.mass_profiles.MassSheet()
 
         convergence = mass_sheet.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         potential = mass_sheet.potential_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert potential.shape == (2, 2)
+        assert potential.in_2d.shape == (2, 2)
 
         deflections = mass_sheet.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
 
 class TestExternalShear(object):
@@ -248,26 +248,26 @@ class TestExternalShear(object):
 
         shear = al.mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
         convergence = shear.convergence_from_grid(
-            grid=np.array([0.1])
+            grid=np.array([[0.1, 0.1]])
         )
         assert (convergence == np.array([0.0])).all()
 
         shear = al.mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
         convergence = shear.convergence_from_grid(
-            grid=np.array([0.1, 0.2, 0.3])
+            grid=np.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
         )
         assert (convergence == np.array([0.0, 0.0, 0.0])).all()
 
     def test__potential_returns_zeros(self):
         shear = al.mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
         potential = shear.potential_from_grid(
-            grid=np.array([0.1])
+            grid=np.array([[0.1, 0.1]])
         )
-        assert (potential == np.array([0.0])).all()
+        assert (potential == np.array([[0.0, 0.0]])).all()
 
         shear = al.mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
         potential = shear.potential_from_grid(
-            grid=np.array([0.1, 0.2, 0.3])
+            grid=np.array([[0.1, 0.1], [0.2, 0.2], [0.3, 0.3]])
         )
         assert (potential == np.array([0.0, 0.0, 0.0])).all()
 
@@ -295,19 +295,19 @@ class TestExternalShear(object):
         shear = al.mass_profiles.ExternalShear()
 
         convergence = shear.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         potential = shear.potential_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert potential.shape == (2, 2)
+        assert potential.in_2d.shape == (2, 2)
 
         deflections = shear.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)

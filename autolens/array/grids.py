@@ -257,6 +257,18 @@ class Grid(np.ndarray):
     def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
         return mask.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
+    @classmethod
+    def from_2d(cls, grid_2d, pixel_scale, origin=(0.0, 0.0)):
+
+        mask = msk.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+            shape=(grid_2d.shape[0], grid_2d.shape[1]),
+            pixel_scales=(pixel_scale, pixel_scale),
+            sub_size=1,
+            origin=origin,
+        )
+
+        return mask.grid_from_sub_grid_2d(sub_grid_2d=grid_2d)
+
     @property
     def in_1d(self):
         return self

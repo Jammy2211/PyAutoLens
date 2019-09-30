@@ -824,7 +824,7 @@ class Mask(np.ndarray):
             sub_array_1d=sub_array_1d, mask=self, sub_size=self.sub_size
         )
 
-    def sub_array_2d_binned_from_sub_array_1d(self, sub_array_1d):
+    def array_2d_binned_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
         a hyper array.
 
@@ -930,7 +930,7 @@ class Mask(np.ndarray):
             sub_grid_1d=sub_grid_1d, mask=self, sub_size=self.sub_size
         )
 
-    def sub_grid_2d_binned_from_sub_grid_1d(self, sub_grid_1d):
+    def grid_2d_binned_from_sub_grid_1d(self, sub_grid_1d):
         """ Map a 1D sub-grid the same dimension as the sub-grid to its original masked 2D sub-grid and return it as
         a hyper grid.
 

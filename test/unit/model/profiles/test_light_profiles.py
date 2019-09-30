@@ -930,19 +930,19 @@ class TestBlurredProfileImages(object):
 
 class TestVisibilities(object):
     def test__visibilities_from_grid_and_transformer(
-        self, sub_grid_7x7, transformer_7x7_7
+        self, grid_7x7, sub_grid_7x7, transformer_7x7_7
     ):
         light_profile = al.light_profiles.EllipticalSersic(intensity=1.0)
 
-        image = light_profile.profile_image_from_grid(grid=sub_grid_7x7)
+        image = light_profile.profile_image_from_grid(grid=grid_7x7)
 
-        visibilities = transformer_7x7_7.visibilities_from_image(image=image)
+        visibilities = transformer_7x7_7.visibilities_from_image_1d(image_1d=image.in_1d_binned)
 
         light_profile_visibilities = light_profile.profile_visibilities_from_grid_and_transformer(
-            grid=sub_grid_7x7, transformer=transformer_7x7_7
+            grid=grid_7x7, transformer=transformer_7x7_7
         )
 
-        assert (visibilities == light_profile_visibilities).all()
+        assert visibilities == pytest.approx(light_profile_visibilities, 1.0e-4)
 
 
 class TestLuminosityWithinCircle(object):

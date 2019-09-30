@@ -154,7 +154,7 @@ def make_uv_plane_data_7(
 def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
     return mock_data.MockTransformer(
         uv_wavelengths=uv_wavelengths_7,
-        grid_radians=grid_7x7.unmasked_grid.in_radians,
+        grid_radians=grid_7x7.mask.masked_grid.in_radians,
     )
 
 

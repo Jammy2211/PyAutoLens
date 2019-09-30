@@ -285,7 +285,7 @@ class TestSersic(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -335,7 +335,7 @@ class TestSersic(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -372,40 +372,40 @@ class TestSersic(object):
         sersic = al.mass_profiles.EllipticalSersic()
 
         convergence = sersic.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         # potential = sersic.potential_from_grid(
-        #     grid=grid, return_in_2d=True, return_binned=False)
+        #     grid=grid)
         #
         # assert potential.shape == (2, 2)
 
         deflections = sersic.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
         sersic = al.mass_profiles.SphericalSersic()
 
         convergence = sersic.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         # potential = sersic.potential_from_grid(
-        #     grid=grid, return_in_2d=True, return_binned=False)
+        #     grid=grid)
         #
         # assert potential.shape == (2, 2)
 
         deflections = sersic.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
 
 class TestExponential(object):
@@ -620,7 +620,7 @@ class TestExponential(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -669,7 +669,7 @@ class TestExponential(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -706,40 +706,40 @@ class TestExponential(object):
         exponential = al.mass_profiles.EllipticalExponential()
 
         convergence = exponential.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         # potential = exponential.potential_from_grid(
-        #     grid=grid, return_in_2d=True, return_binned=False)
+        #     grid=grid)
         #
         # assert potential.shape == (2, 2)
 
         deflections = exponential.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
         exponential = al.mass_profiles.SphericalExponential()
 
         convergence = exponential.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         # potential = exponential.potential_from_grid(
-        #     grid=grid, return_in_2d=True, return_binned=False)
+        #     grid=grid)
         #
         # assert potential.shape == (2, 2)
 
         deflections = exponential.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
 
 class TestDevVaucouleurs(object):
@@ -940,7 +940,7 @@ class TestDevVaucouleurs(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -989,7 +989,7 @@ class TestDevVaucouleurs(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1026,40 +1026,40 @@ class TestDevVaucouleurs(object):
         dev_vaucouleurs = al.mass_profiles.EllipticalDevVaucouleurs()
 
         convergence = dev_vaucouleurs.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         # potential = dev_vaucouleurs.potential_from_grid(
-        #     grid=grid, return_in_2d=True, return_binned=False)
+        #     grid=grid)
         #
         # assert potential.shape == (2, 2)
 
         deflections = dev_vaucouleurs.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
         dev_vaucouleurs = al.mass_profiles.SphericalDevVaucouleurs()
 
         convergence = dev_vaucouleurs.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         # potential = dev_vaucouleurs.potential_from_grid(
-        #     grid=grid, return_in_2d=True, return_binned=False)
+        #     grid=grid)
         #
         # assert potential.shape == (2, 2)
 
         deflections = dev_vaucouleurs.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
 
 class TestSersicMassRadialGradient(object):
@@ -1420,7 +1420,7 @@ class TestSersicMassRadialGradient(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1471,7 +1471,7 @@ class TestSersicMassRadialGradient(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=1.0, sub_size=1)
+        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = al.Grid.from_mask(mask=mask)
 
@@ -1508,37 +1508,37 @@ class TestSersicMassRadialGradient(object):
         sersic = al.mass_profiles.EllipticalSersicRadialGradient()
 
         convergence = sersic.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         # potential = sersic.potential_from_grid(
-        #     grid=grid, return_in_2d=True, return_binned=False)
+        #     grid=grid)
         #
         # assert potential.shape == (2, 2)
 
         deflections = sersic.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)
 
         sersic = al.mass_profiles.SphericalSersicRadialGradient()
 
         convergence = sersic.convergence_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert convergence.shape == (2, 2)
+        assert convergence.in_2d.shape == (2, 2)
 
         # potential = sersic.potential_from_grid(
-        #     grid=grid, return_in_2d=True, return_binned=False)
+        #     grid=grid)
         #
         # assert potential.shape == (2, 2)
 
         deflections = sersic.deflections_from_grid(
-            grid=grid, return_in_2d=True, return_binned=False
+            grid=grid
         )
 
-        assert deflections.shape == (2, 2, 2)
+        assert deflections.in_2d.shape == (2, 2, 2)

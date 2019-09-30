@@ -24,7 +24,6 @@ class MockMask(al.Mask):
         obj.sub_fraction = 1.0 / obj.sub_length
         obj.origin = origin
 
-        obj.mapping = mapping.Mapping(mask=obj)
         return obj
 
     def __init__(

@@ -24,9 +24,11 @@ class MassSheet(geometry_profiles.SphericalProfile, mp.MassProfile):
         super(MassSheet, self).__init__(centre=centre)
         self.kappa = kappa
 
+    @geometry_profiles.transform_grid
     def convergence_from_grid(self, grid):
         return np.full(shape=grid.shape[0], fill_value=self.kappa)
 
+    @geometry_profiles.transform_grid
     def potential_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
@@ -77,9 +79,11 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
     ):
         return 0.0
 
+    @geometry_profiles.transform_grid
     def convergence_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
+    @geometry_profiles.transform_grid
     def potential_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
