@@ -361,7 +361,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         image_2d = sum(
             map(
                 lambda g: g.profile_image_from_grid(
-                    grid=deflected_grid_1d, return_in_2d=True, return_binned=False
+                    grid=deflected_grid_1d
                 ),
                 galaxies,
             )

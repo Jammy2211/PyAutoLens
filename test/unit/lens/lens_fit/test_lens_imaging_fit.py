@@ -141,7 +141,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image(return_in_2d=True, return_masked=True)
+            fit.image( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -149,7 +149,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([1.0, 1.0])).all()
         assert (
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -244,7 +244,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image(return_in_2d=True, return_masked=True)
+            fit.image( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -252,7 +252,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([1.0, 1.0])).all()
         assert (
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -363,7 +363,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image(return_in_2d=True, return_masked=True)
+            fit.image( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -371,7 +371,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([2.0, 2.0])).all()
         assert (
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 2.0, 2.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -467,7 +467,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([6.0, 5.0])).all()
         assert (
-            fit.image(return_in_2d=True, return_masked=True)
+            fit.image( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 6.0, 5.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -475,7 +475,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([1.0, 1.0])).all()
         assert (
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -573,7 +573,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image(return_in_2d=True, return_masked=True)
+            fit.image( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -581,7 +581,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([2.0, 2.0])).all()
         assert (
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 2.0, 2.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -679,7 +679,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image(return_in_2d=True, return_masked=True)
+            fit.image( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -687,7 +687,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([1.0, 1.0])).all()
         assert (
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -752,7 +752,7 @@ class TestCompareToManualProfilesOnly:
         )
 
         assert lens_imaging_data_7x7.noise_map(return_in_2d=True) == pytest.approx(
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
         )
 
         model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
@@ -848,15 +848,15 @@ class TestCompareToManualProfilesOnly:
         )
 
         traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-            grid=lens_imaging_data_7x7.grid, return_in_2d=False
+            grid=lens_imaging_data_7x7.grid
         )
         traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-            grid=lens_imaging_data_7x7.blurring_grid, return_in_2d=False
+            grid=lens_imaging_data_7x7.blurring_grid
         )
 
         g0_image_1d = g0.profile_image_from_grid(grid=traced_grids_of_planes[0])
         g0_blurring_image_1d = g0.profile_image_from_grid(
-            grid=traced_blurring_grids_of_planes[0], return_binned=True
+            grid=traced_blurring_grids_of_planes[0]
         )
 
         g0_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
@@ -865,7 +865,7 @@ class TestCompareToManualProfilesOnly:
 
         g1_image_1d = g1.profile_image_from_grid(grid=traced_grids_of_planes[1])
         g1_blurring_image_1d = g1.profile_image_from_grid(
-            grid=traced_blurring_grids_of_planes[1], return_binned=True
+            grid=traced_blurring_grids_of_planes[1]
         )
 
         g1_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
@@ -964,7 +964,7 @@ class TestCompareToManualProfilesOnly:
 
         assert hyper_noise_map_1d == pytest.approx(fit._noise_map, 1e-4)
         assert hyper_noise_map_2d == pytest.approx(
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
         )
 
         model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
@@ -1064,7 +1064,7 @@ class TestCompareToManualProfilesOnly:
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
             blurring_grid=lens_imaging_data_7x7.blurring_grid,
-            return_in_2d=True,
+            
         )
 
         model_images_of_planes = fit.model_images_of_planes(return_in_2d=True)
@@ -1319,7 +1319,7 @@ class TestCompareToManualInversionOnly:
         )
         assert hyper_noise_map_1d == pytest.approx(fit._noise_map, 1e-4)
         assert hyper_noise_map_2d == pytest.approx(
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
@@ -1629,7 +1629,7 @@ class TestCompareToManualProfilesAndInversion:
 
         g0_image_1d = g0.profile_image_from_grid(grid=traced_grids[0])
         g0_blurring_image_1d = g0.profile_image_from_grid(
-            grid=traced_blurring_grids[0], return_in_2d=False, return_binned=False
+            grid=traced_blurring_grids[0]
         )
 
         g0_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
@@ -1638,7 +1638,7 @@ class TestCompareToManualProfilesAndInversion:
 
         g1_image_1d = g1.profile_image_from_grid(grid=traced_grids[1])
         g1_blurring_image_1d = g1.profile_image_from_grid(
-            grid=traced_blurring_grids[1], return_in_2d=False, return_binned=False
+            grid=traced_blurring_grids[1]
         )
 
         g1_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
@@ -1761,7 +1761,7 @@ class TestCompareToManualProfilesAndInversion:
 
         assert hyper_noise_map_1d == pytest.approx(fit._noise_map, 1e-4)
         assert hyper_noise_map_2d == pytest.approx(
-            fit.noise_map(return_in_2d=True, return_masked=True)
+            fit.noise_map( return_masked=True)
         )
 
         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(

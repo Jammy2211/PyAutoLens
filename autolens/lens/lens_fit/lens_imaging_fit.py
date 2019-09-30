@@ -27,16 +27,16 @@ class ImagingFit(af.DataFit):
     def signal_to_noise_map(self):
         return self._signal_to_noise_map
 
-    def model_image(self, return_in_2d=True):
+    def model_image(self):
         return self._model_data
 
-    def residual_map(self, return_in_2d=True):
+    def residual_map(self):
         return self._residual_map
 
-    def normalized_residual_map(self, return_in_2d=True):
+    def normalized_residual_map(self):
         return self._normalized_residual_map
 
-    def chi_squared_map(self, return_in_2d=True):
+    def chi_squared_map(self):
         return self._chi_squared_map
 
     @property
@@ -162,12 +162,12 @@ class LensImagingFit(ImagingFit):
             positions=lens_data.positions,
         )
 
-    def blurred_profile_image(self, return_in_2d=True):
+    def blurred_profile_image(self):
         return self.tracer.blurred_profile_image_from_grid_and_psf(
             grid=self.grid, psf=self.psf, blurring_grid=self.blurring_grid
         )
 
-    def profile_subtracted_image(self, return_in_2d=True):
+    def profile_subtracted_image(self):
         return self.image(return_in_2d=False) - self.blurred_profile_image(
             return_in_2d=False
         )
@@ -211,13 +211,13 @@ class LensImagingFit(ImagingFit):
 
         return galaxy_model_image_2d_dict
 
-    def model_images_of_planes(self, return_in_2d=True):
+    def model_images_of_planes(self):
 
         model_images_of_planes = self.tracer.blurred_profile_images_of_planes_from_grid_and_psf(
             grid=self.grid,
             psf=self.psf,
             blurring_grid=self.blurring_grid,
-            return_in_2d=return_in_2d,
+
         )
 
         for plane_index in self.tracer.plane_indexes_with_pixelizations:

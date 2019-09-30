@@ -44,11 +44,11 @@ class TestPhase(object):
 
         assert analysis.last_results is None
         assert (
-            analysis.lens_imaging_data.image(return_in_2d=True, return_masked=False)
+            analysis.lens_imaging_data.image( return_masked=False)
             == imaging_data_7x7.image
         )
         assert (
-            analysis.lens_imaging_data.noise_map(return_in_2d=True, return_masked=False)
+            analysis.lens_imaging_data.noise_map( return_masked=False)
             == imaging_data_7x7.noise_map
         )
 

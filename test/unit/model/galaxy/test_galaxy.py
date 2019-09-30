@@ -8,7 +8,7 @@ from test.unit.mock.model import mock_cosmology
 
 
 class TestLightProfiles(object):
-    class TestIntensity:
+    class TestProfileImage:
         def test__no_light_profiles__profile_image_returned_as_0s_of_shape_grid(
             self, sub_grid_7x7
         ):
@@ -26,10 +26,10 @@ class TestLightProfiles(object):
             galaxy = al.Galaxy(redshift=0.5)
 
             profile_image = galaxy.profile_image_from_grid(
-                grid=sub_grid_7x7, return_in_2d=True, return_binned=True
+                grid=sub_grid_7x7
             )
 
-            assert (profile_image == np.zeros(shape=(7, 7))).all()
+            assert (profile_image.in_2d_binned == np.zeros(shape=(7, 7))).all()
 
             profile_image = galaxy.profile_image_from_grid(
                 grid=sub_grid_7x7
@@ -39,7 +39,7 @@ class TestLightProfiles(object):
 
             profile_image = galaxy.profile_image_from_grid(grid=sub_grid_7x7)
 
-            assert (profile_image == np.zeros(shape=sub_grid_7x7.shape[0] // 4)).all()
+            assert (profile_image.in_1d_binned == np.zeros(shape=sub_grid_7x7.shape[0] // 4)).all()
 
         def test__galaxies_with_x1_and_x2_light_profiles__profile_image_is_same_individual_profiles(
             self, lp_0, gal_x1_lp, lp_1, gal_x2_lp
@@ -313,36 +313,24 @@ class TestLightProfiles(object):
                 redshift=0.5,
             )
 
-            image_1d = galaxy.profile_image_from_grid(grid=sub_grid_7x7)
+            image = galaxy.profile_image_from_grid(grid=sub_grid_7x7)
 
-            blurring_image_1d = galaxy.profile_image_from_grid(grid=blurring_grid_7x7)
+            blurring_image = galaxy.profile_image_from_grid(grid=blurring_grid_7x7)
 
-            blurred_image_1d = convolver_7x7.convolved_image_1d_from_image_array_and_blurring_array(
-                image_array=image_1d, blurring_array=blurring_image_1d
+            blurred_image = convolver_7x7.convolved_image_1d_from_image_array_and_blurring_array(
+                image_array=image.in_1d_binned, blurring_array=blurring_image.in_1d_binned
             )
 
-            light_profile_blurred_image_1d = galaxy.blurred_profile_image_from_grid_and_psf(
+            light_profile_blurred_image = galaxy.blurred_profile_image_from_grid_and_psf(
                 grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3
             )
 
-            assert blurred_image_1d == pytest.approx(
-                light_profile_blurred_image_1d, 1.0e-4
+            assert blurred_image.in_1d == pytest.approx(
+                light_profile_blurred_image.in_1d, 1.0e-4
             )
 
-            blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
-                array_1d=blurred_image_1d
-            )
-
-            light_profile_blurred_image_2d = galaxy.blurred_profile_image_from_grid_and_psf(
-                grid=sub_grid_7x7,
-                psf=psf_3x3,
-                blurring_grid=blurring_grid_7x7,
-                return_in_2d=True,
-                
-            )
-
-            assert blurred_image_2d == pytest.approx(
-                light_profile_blurred_image_2d, 1.0e-4
+            assert blurred_image.in_2d == pytest.approx(
+                light_profile_blurred_image.in_2d, 1.0e-4
             )
 
         def test__blurred_image_from_grid_and_convolver(
@@ -357,40 +345,26 @@ class TestLightProfiles(object):
                 redshift=0.5,
             )
 
-            image_1d = galaxy.profile_image_from_grid(grid=sub_grid_7x7)
+            image = galaxy.profile_image_from_grid(grid=sub_grid_7x7)
 
-            blurring_image_1d = galaxy.profile_image_from_grid(grid=blurring_grid_7x7)
+            blurring_image = galaxy.profile_image_from_grid(grid=blurring_grid_7x7)
 
-            blurred_image_1d = convolver_7x7.convolved_image_1d_from_image_array_and_blurring_array(
-                image_array=image_1d, blurring_array=blurring_image_1d
+            blurred_image = convolver_7x7.convolved_image_1d_from_image_array_and_blurring_array(
+                image_array=image.in_1d_binned, blurring_array=blurring_image.in_1d_binned
             )
 
-            convolver_7x7.blurring_mask = None
-
-            light_profile_blurred_image_1d = galaxy.blurred_profile_image_from_grid_and_convolver(
+            light_profile_blurred_image = galaxy.blurred_profile_image_from_grid_and_convolver(
                 grid=sub_grid_7x7,
                 convolver=convolver_7x7,
                 blurring_grid=blurring_grid_7x7,
             )
 
-            assert blurred_image_1d == pytest.approx(
-                light_profile_blurred_image_1d, 1.0e-4
+            assert blurred_image.in_1d == pytest.approx(
+                light_profile_blurred_image.in_1d, 1.0e-4
             )
 
-            blurred_image_2d = sub_grid_7x7.mapping.scaled_array_from_array_1d(
-                array_1d=blurred_image_1d
-            )
-
-            light_profile_blurred_image_2d = galaxy.blurred_profile_image_from_grid_and_convolver(
-                grid=sub_grid_7x7,
-                convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
-                return_in_2d=True,
-                
-            )
-
-            assert blurred_image_2d == pytest.approx(
-                light_profile_blurred_image_2d, 1.0e-4
+            assert blurred_image.in_2d == pytest.approx(
+                light_profile_blurred_image.in_2d, 1.0e-4
             )
 
     class TestVisibilities(object):
@@ -424,7 +398,7 @@ class TestLightProfiles(object):
 
 def critical_curve_via_magnification_from_galaxy_and_grid(galaxy, grid):
     magnification_2d = galaxy.magnification_from_grid(
-        grid=grid, return_in_2d=True, return_binned=False
+        grid=grid
     )
 
     inverse_magnification_2d = 1 / magnification_2d
@@ -1232,7 +1206,7 @@ class TestMassProfiles(object):
                 shape=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
-            jacobian = galaxy.lensing_jacobian_from_grid(grid=grid, return_in_2d=False)
+            jacobian = galaxy.lensing_jacobian_from_grid(grid=grid)
 
             A_12 = jacobian[0, 1]
             A_21 = jacobian[1, 0]
@@ -1268,7 +1242,7 @@ class TestMassProfiles(object):
                 shape=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
-            jacobian = galaxy.lensing_jacobian_from_grid(grid=grid, return_in_2d=False)
+            jacobian = galaxy.lensing_jacobian_from_grid(grid=grid)
 
             A_12 = jacobian[0, 1]
             A_21 = jacobian[1, 0]
@@ -1308,7 +1282,7 @@ class TestMassProfiles(object):
             a11_binned_reg_grid = jacobian_binned_reg_grid[0, 0]
 
             jacobian_sub_grid = galaxy.lensing_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=False
+                grid=grid
             )
             a11_sub_grid = jacobian_sub_grid[0, 0]
 
@@ -1491,7 +1465,7 @@ class TestMassProfiles(object):
             )
 
             convergence_sub_grid = galaxy.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=False
+                grid=grid
             )
 
             pixel_1_reg_grid = convergence_binned_reg_grid[0]
@@ -1594,7 +1568,7 @@ class TestMassProfiles(object):
             shear_binned_reg_grid = galaxy.shear_via_jacobian_from_grid(grid=grid)
 
             shear_sub_grid = galaxy.shear_via_jacobian_from_grid(
-                grid=grid, return_in_2d=False, return_binned=False
+                grid=grid
             )
 
             pixel_1_reg_grid = shear_binned_reg_grid[0]
@@ -1637,15 +1611,15 @@ class TestMassProfiles(object):
             )
 
             magnification_via_determinant = galaxy.magnification_from_grid(
-                grid=grid, return_in_2d=True
+                grid=grid
             )
 
             tangential_eigen_value = galaxy.tangential_eigen_value_from_grid(
-                grid=grid, return_in_2d=True
+                grid=grid
             )
 
             radal_eigen_value = galaxy.radial_eigen_value_from_grid(
-                grid=grid, return_in_2d=True
+                grid=grid
             )
 
             magnification_via_eigen_values = 1 / (
@@ -1663,15 +1637,15 @@ class TestMassProfiles(object):
             )
 
             magnification_via_determinant = galaxy.magnification_from_grid(
-                grid=grid, return_in_2d=True, return_binned=False
+                grid=grid
             )
 
             tangential_eigen_value = galaxy.tangential_eigen_value_from_grid(
-                grid=grid, return_in_2d=True, return_binned=False
+                grid=grid
             )
 
             radal_eigen_value = galaxy.radial_eigen_value_from_grid(
-                grid=grid, return_in_2d=True, return_binned=False
+                grid=grid
             )
 
             magnification_via_eigen_values = 1 / (
@@ -1700,14 +1674,14 @@ class TestMassProfiles(object):
             )
 
             magnification_via_determinant = galaxy.magnification_from_grid(
-                grid=grid, return_in_2d=True
+                grid=grid
             )
 
             convergence = galaxy.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=True
+                grid=grid
             )
 
-            shear = galaxy.shear_via_jacobian_from_grid(grid=grid, return_in_2d=True)
+            shear = galaxy.shear_via_jacobian_from_grid(grid=grid)
 
             magnification_via_convergence_and_shear = 1 / (
                 (1 - convergence) ** 2 - shear ** 2
@@ -1724,15 +1698,15 @@ class TestMassProfiles(object):
             )
 
             magnification_via_determinant = galaxy.magnification_from_grid(
-                grid=grid, return_in_2d=True, return_binned=False
+                grid=grid
             )
 
             convergence = galaxy.convergence_via_jacobian_from_grid(
-                grid=grid, return_in_2d=True, return_binned=False
+                grid=grid
             )
 
             shear = galaxy.shear_via_jacobian_from_grid(
-                grid=grid, return_in_2d=True, return_binned=False
+                grid=grid
             )
 
             magnification_via_convergence_and_shear = 1 / (

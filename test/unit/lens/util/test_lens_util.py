@@ -92,7 +92,7 @@ class TestPlaneImageFromGrid:
         )
 
         plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=grid, return_binned=True, return_in_2d=True
+            grid=grid
         )
 
         assert (plane_image == plane_image_galaxy).all()
