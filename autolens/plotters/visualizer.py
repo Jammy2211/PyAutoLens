@@ -19,7 +19,11 @@ def figure_setting(name):
 
 class AbstractVisualizer:
     def __init__(self, image_path):
-        self.image_path = image_path
+        self.image_path = image_path or ""
+        try:
+            os.makedirs(self.image_path)
+        except (FileExistsError, FileNotFoundError):
+            pass
         self.plot_units = af.conf.instance.visualize.get(
             "figures", "plot_units", str
         ).strip()
@@ -36,7 +40,7 @@ class AbstractVisualizer:
 class SubPlotVisualizer(AbstractVisualizer):
     def __init__(self, image_path):
         super().__init__(image_path)
-        self.subplot_path = f"{image_path}subplots"
+        self.subplot_path = f"{image_path}subplots/"
         try:
             os.makedirs(self.subplot_path)
         except FileExistsError:
