@@ -1,14 +1,5 @@
-from autolens.array import mask as msk
-from autolens.model.profiles import mass_profiles as mp
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
-from autolens.model.galaxy import galaxy as g
-from autolens.lens import ray_tracing
-from autolens.lens.lens_fit import lens_imaging_fit
-from autolens.lens import lens_data as ld
-from autolens.data.plotters import imaging_plotters
 from autolens.lens.plotters import lens_imaging_fit_plotters
-from test.simulation import simulation_util
+from test import simulation_util
 
 imaging_data = simulation_util.load_test_imaging_data(
     data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"

@@ -1,13 +1,9 @@
 import time
 
-from autolens.model.profiles import light_profiles as lp
-from autolens.array import mask as msk
-from autolens.lens import lens_data as ld
+from test import simulation_util
 
-from test.simulation import simulation_util
-
-# Although we could test the image without using an image (e.al. by just making a grid), we have chosen to
-# set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
+# Although we could test_autoarray the image without using an image (e.al. by just making a grid), we have chosen to
+# set this test_autoarray up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
 # analysis
 
 sub_size = 4

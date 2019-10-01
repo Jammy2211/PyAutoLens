@@ -4,7 +4,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 
-from test.unit.mock.model import mock_inversion as mock_inv
+from test import mock_inversion as mock_inv
 
 
 class TestAbstractTracer(object):
@@ -942,7 +942,7 @@ class TestAbstractTracerLensing(object):
                 grid=sub_grid_7x7_simple
             )
 
-            # The scaling factors are as follows and were computed independently from the test.
+            # The scaling factors are as follows and were computed independently from the test_autoarray.
             beta_01 = 0.9348
             beta_02 = 0.9839601
             # Beta_03 = 1.0
@@ -1055,7 +1055,7 @@ class TestAbstractTracerLensing(object):
                 grid=sub_grid_7x7_simple, plane_index_limit=1
             )
 
-            # The scaling factors are as follows and were computed independently from the test.
+            # The scaling factors are as follows and were computed independently from the test_autoarray.
             beta_01 = 0.9348
             beta_02 = 0.9839601
             # Beta_03 = 1.0
@@ -3192,7 +3192,7 @@ class TestTracer(object):
         #     deflections_between_planes = tracer.deflections_between_planes_from_grid(
         #         grid=sub_grid_7x7_simple, plane_i=0, plane_j=1)
         #
-        #     # The scaling factors are as follows and were computed independently from the test.
+        #     # The scaling factors are as follows and were computed independently from the test_autoarray.
         #     beta_01 = 0.9348
         #     beta_02 = 0.9839601
         #     # Beta_03 = 1.0
@@ -3540,10 +3540,10 @@ class TestTacerFixedSlices(object):
                 grid=sub_grid_7x7_simple
             )
 
-            # This test is essentially the same as the TracerMulti test, we just slightly change how many galaxies go
+            # This test_autoarray is essentially the same as the TracerMulti test_autoarray, we just slightly change how many galaxies go
             # in each plane and therefore change the factor in front of val for different planes.
 
-            # The scaling factors are as follows and were computed indepedently from the test.
+            # The scaling factors are as follows and were computed indepedently from the test_autoarray.
             beta_01 = 0.57874474423
             beta_02 = 0.91814281
             # Beta_03 = 1.0
@@ -3710,7 +3710,7 @@ class TestTracerPositions(object):
             positions=[np.array([[1.0, 1.0]])]
         )
 
-        # From unit test below:
+        # From unit test_autoarray below:
         # Beta_01 = 0.9348
         beta_02 = 0.9839601
         # Beta_03 = 1.0
@@ -3785,7 +3785,7 @@ class TestTracerPositions(object):
             positions=[np.array([[1.0, 1.0]]), np.array([[1.0, 1.0]])]
         )
 
-        # From unit test below:
+        # From unit test_autoarray below:
         # Beta_01 = 0.9348
         beta_02 = 0.9839601
         # Beta_03 = 1.0

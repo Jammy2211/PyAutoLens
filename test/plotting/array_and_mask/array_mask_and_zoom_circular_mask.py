@@ -1,5 +1,4 @@
-from autolens.array import mask as msk
-from test.simulation import simulation_util
+from test import simulation_util
 from autolens.plotters import array_plotters
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use

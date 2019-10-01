@@ -2,8 +2,6 @@ import autolens as al
 import numpy as np
 import pytest
 
-from test.unit.mock.data.mock_grids import MockPixelizationGrid
-
 
 @pytest.fixture(name="three_pixels")
 def make_three_pixels():

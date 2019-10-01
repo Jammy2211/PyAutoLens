@@ -4,7 +4,7 @@ from skimage import measure
 
 import autolens as al
 from autolens import exc
-from test.unit.mock.model import mock_cosmology
+from test import mock_cosmology
 
 
 class TestLightProfiles(object):

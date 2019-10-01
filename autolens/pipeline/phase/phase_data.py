@@ -2,7 +2,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens import exc
-from autolens.array import mask as msk
+from autoarray import mask as msk
 from autolens.lens import lens_fit
 from autolens.model.inversion import pixelizations as pix
 from autolens.pipeline.phase import phase_extensions

@@ -4,10 +4,9 @@ import shutil
 
 import autofit as af
 import autolens as al
-from autolens.array.util import array_util
-from autolens.model.galaxy import galaxy, galaxy_model as gm
-from autolens.pipeline.phase import phase_imaging
-from test.integration import integration_util
+from autoarray.util import array_util
+from autolens.model.galaxy import galaxy
+from test import integration_util
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 af.conf.instance = af.conf.Config(
@@ -17,7 +16,7 @@ af.conf.instance = af.conf.Config(
 dirpath = os.path.dirname(dirpath)
 output_path = "{}/output".format(dirpath)
 
-test_name = "test"
+test_name = "test_autoarray"
 
 
 def simulate_integration_image(test_name, pixel_scale, galaxies):

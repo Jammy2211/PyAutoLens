@@ -1,10 +1,10 @@
-from autolens.array import grids
+from autoarray import grids
 from autolens.model.profiles import mass_profiles as mp
 
-# This numerics test determines the range of plausible values a power-law mass profile can take and not crash due to
+# This numerics test_autoarray determines the range of plausible values a power-law mass profile can take and not crash due to
 # numerical integration. This informs us the limits config file for this profile.
 
-# In this test, we'll pass a grid to a power-law profile and compute deflection angles. We will check if
+# In this test_autoarray, we'll pass a grid to a power-law profile and compute deflection angles. We will check if
 # the pyquad integrator crashes for certain values of (y,x) coordinates.
 grid = al.Grid.from_shape_pixel_scale_and_sub_size(shape=(25, 25), pixel_scale=0.005)
 

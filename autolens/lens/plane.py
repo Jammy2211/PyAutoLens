@@ -4,7 +4,7 @@ from skimage import measure
 
 import autofit as af
 from autolens import exc, dimensions as dim
-from autolens.array import scaled_array
+from autoarray import scaled_array
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 

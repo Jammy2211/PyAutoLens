@@ -1,5 +1,5 @@
-from test.integration.tests.phase_features import pixel_scale_interpolation_grid
-from test.integration.tests.runner import run_a_mock
+from test import pixel_scale_interpolation_grid
+from test import run_a_mock
 
 
 class TestCase:

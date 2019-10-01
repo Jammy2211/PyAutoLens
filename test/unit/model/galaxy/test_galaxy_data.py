@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 
-from test.unit.mock.model import mock_galaxy
+from test import mock_galaxy
 from autolens import exc
 
 

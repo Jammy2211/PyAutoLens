@@ -1,15 +1,11 @@
-from autolens.array import grids, mask as msk
-from autolens.model.profiles import mass_profiles as mp
-from autolens.lens import lens_data as ld
-
 from autolens.plotters import array_plotters
 
-from test.simulation import simulation_util
+from test import simulation_util
 
 import numpy as np
 
-# Although we could test the deflection angles without using an image (e.al. by just making a grid), we have chosen to
-# set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
+# Although we could test_autoarray the deflection angles without using an image (e.al. by just making a grid), we have chosen to
+# set this test_autoarray up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
 # analysis
 
 sub_size = 2

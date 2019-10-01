@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 import autofit as af
-from test.unit.mock.model.mock_galaxy import MockGalaxy
+from test import MockGalaxy
 
 
 class TestLikelihood:

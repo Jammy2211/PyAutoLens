@@ -28,7 +28,7 @@ class RunTests(Command):
 
     def run(self):
         """Run all tests!"""
-        errno = call(["py.test", "--cov=autolens", "--cov-report=term-missing"])
+        errno = call(["py.test_autoarray", "--cov=autolens", "--cov-report=term-missing"])
         raise SystemExit(errno)
 
 
@@ -60,7 +60,7 @@ setup(
     keywords="cli",
     packages=find_packages(exclude=["docs", "tests*", "workspace", "workspace_jam"]),
     install_requires=requirements,
-    extras_require={"test": ["coverage", "pytest", "pytest-cov"]},
+    extras_require={"test_autoarray": ["coverage", "pytest", "pytest-cov"]},
     entry_points={"console_scripts": ["autolens=autolens.cli:main"]},
-    cmdclass={"test": RunTests},
+    cmdclass={"test_autoarray": RunTests},
 )

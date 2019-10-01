@@ -10,20 +10,20 @@ from autolens.dimensions import (
     Position,
     convert_units_to_input_units,
 )
-from autolens.array.mask import Mask, load_mask_from_fits, output_mask_to_fits
-from autolens.array import grids
-from autolens.array.grids import (
+from autoarray.mask import Mask, load_mask_from_fits, output_mask_to_fits
+from autoarray import grids
+from autoarray.grids import (
     Grid,
     BinnedGrid,
     PixelizationGrid,
     SparseToGrid,
     Interpolator,
 )
-from autolens.array.scaled_array import Scaled
-from autolens.array.convolution import Convolver
-from autolens.array.fourier_transform import Transformer
-from autolens.array.util import array_util, binning_util, grid_util, mask_util
-from autolens.array.mapping_util import (
+from autoarray.scaled_array import Scaled
+from autoarray.convolution import Convolver
+from autoarray.fourier_transform import Transformer
+from autoarray.util import array_util, binning_util, grid_util, mask_util
+from autoarray.mapping_util import (
     array_mapping_util,
     grid_mapping_util,
     mask_mapping_util,

@@ -1,7 +1,7 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autolens.array import grids
+from autoarray import grids
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util

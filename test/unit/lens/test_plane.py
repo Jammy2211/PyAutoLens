@@ -5,8 +5,8 @@ from skimage import measure
 
 import autolens as al
 from autolens import exc
-from test.unit.mock.model import mock_inversion as mock_inv
-from test.unit.mock.model.mock_cosmology import MockCosmology
+from test import mock_inversion as mock_inv
+from test import MockCosmology
 
 planck = cosmo.Planck15
 

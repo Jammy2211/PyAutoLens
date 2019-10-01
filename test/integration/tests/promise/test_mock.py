@@ -1,6 +1,5 @@
-import autolens as al
-from test.integration.tests.promise import lens_mass__source_x2
-from test.integration.tests.runner import run_a_mock
+from test import lens_mass__source_x2
+from test import run_a_mock
 
 
 class TestCase:

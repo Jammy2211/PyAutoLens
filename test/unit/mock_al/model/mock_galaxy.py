@@ -1,6 +1,6 @@
 import numpy as np
 
-from autolens.array.mapping import (
+from autoarray.mapping import (
     reshape_returned_sub_array_from_grid,
     reshape_returned_grid_from_grid,
 )

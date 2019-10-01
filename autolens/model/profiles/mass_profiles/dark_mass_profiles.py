@@ -14,7 +14,7 @@ from scipy import special
 import autofit as af
 from autolens import dimensions as dim
 from autolens import decorator_util
-from autolens.array import grids
+from autoarray import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
