@@ -355,13 +355,6 @@ class Grid(np.ndarray):
 
         return grid_arcsec
 
-    def new_grid_with_binned_grid(self, binned_grid):
-        # noinspection PyAttributeOutsideInit
-        # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
-        # TODO: on which the function was called but with a new interpolator set.
-        self.binned = binned_grid
-        return self
-
     def new_grid_with_interpolator(self, pixel_scale_interpolation_grid):
         # noinspection PyAttributeOutsideInit
         # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid

@@ -35,7 +35,7 @@ class AbstractLensData(object):
             binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
                 mask=mask, pixel_scale_binned_grid=pixel_scale_binned_grid
             )
-            self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
+            self.grid.binned = binned_grid
 
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 

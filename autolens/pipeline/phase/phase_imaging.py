@@ -18,26 +18,26 @@ class PhaseImaging(PhaseData):
     hyper_background_noise = af.PhaseProperty("hyper_background_noise")
 
     def __init__(
-        self,
-        phase_name,
-        phase_folders=tuple(),
-        galaxies=None,
-        hyper_image_sky=None,
-        hyper_background_noise=None,
-        optimizer_class=af.MultiNest,
-        cosmology=cosmo.Planck15,
-        sub_size=2,
-        signal_to_noise_limit=None,
-        bin_up_factor=None,
-        psf_shape=None,
-        positions_threshold=None,
-        mask_function=None,
-        inner_mask_radii=None,
-        pixel_scale_interpolation_grid=None,
-        pixel_scale_binned_cluster_grid=None,
-        inversion_uses_border=True,
-        inversion_pixel_limit=None,
-        auto_link_priors=False,
+            self,
+            phase_name,
+            phase_folders=tuple(),
+            galaxies=None,
+            hyper_image_sky=None,
+            hyper_background_noise=None,
+            optimizer_class=af.MultiNest,
+            cosmology=cosmo.Planck15,
+            sub_size=2,
+            signal_to_noise_limit=None,
+            bin_up_factor=None,
+            psf_shape=None,
+            positions_threshold=None,
+            mask_function=None,
+            inner_mask_radii=None,
+            pixel_scale_interpolation_grid=None,
+            pixel_scale_binned_cluster_grid=None,
+            inversion_uses_border=True,
+            inversion_pixel_limit=None,
+            auto_link_priors=False,
     ):
 
         """
@@ -215,11 +215,11 @@ class PhaseImaging(PhaseData):
             phase_info.close()
 
     def extend_with_multiple_hyper_phases(
-        self,
-        hyper_galaxy=False,
-        inversion=False,
-        include_background_sky=False,
-        include_background_noise=False,
+            self,
+            hyper_galaxy=False,
+            inversion=False,
+            include_background_sky=False,
+            include_background_noise=False,
     ):
         hyper_phase_classes = []
 
@@ -359,7 +359,7 @@ class PhaseImaging(PhaseData):
             """
             if hasattr(self, "hyper_galaxy_image_1d_path_dict"):
                 for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                    g.Galaxy
+                        g.Galaxy
                 ):
                     if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
                         galaxy.hyper_model_image_1d = self.hyper_model_image_1d
@@ -367,8 +367,8 @@ class PhaseImaging(PhaseData):
                             galaxy_path
                         ]
                         if (
-                            hasattr(self, "binned_hyper_galaxy_image_1d_path_dict")
-                            and self.binned_hyper_galaxy_image_1d_path_dict is not None
+                                hasattr(self, "binned_hyper_galaxy_image_1d_path_dict")
+                                and self.binned_hyper_galaxy_image_1d_path_dict is not None
                         ):
                             galaxy.binned_hyper_galaxy_image_1d = self.binned_hyper_galaxy_image_1d_path_dict[
                                 galaxy_path
@@ -390,7 +390,7 @@ class PhaseImaging(PhaseData):
                 return None
 
         def lens_imaging_fit_for_tracer(
-            self, tracer, hyper_image_sky, hyper_background_noise
+                self, tracer, hyper_image_sky, hyper_background_noise
         ):
 
             return lens_fit.LensImagingFit.from_lens_data_and_tracer(
@@ -506,7 +506,7 @@ class PhaseImaging(PhaseData):
                     minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image_1d)
                     galaxy_image_1d[
                         galaxy_image_1d < minimum_galaxy_value
-                    ] = minimum_galaxy_value
+                        ] = minimum_galaxy_value
 
                 hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
 
@@ -574,7 +574,7 @@ class PhaseImaging(PhaseData):
                     )
                     binned_galaxy_image_1d[
                         binned_galaxy_image_1d < minimum_hyper_value
-                    ] = minimum_hyper_value
+                        ] = minimum_hyper_value
 
                     binned_hyper_galaxy_image_path_dict[path] = binned_galaxy_image_1d
 
