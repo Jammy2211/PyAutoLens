@@ -629,22 +629,6 @@ class TestGrid:
         assert (grid.interpolator.vtx == interpolator_manual.vtx).all()
         assert (grid.interpolator.wts == interpolator_manual.wts).all()
 
-    def test__new_grid__with_binned__returns_grid_with_binned(self):
-        mask = np.array(
-            [
-                [True, True, False, False],
-                [True, False, True, True],
-                [True, True, False, False],
-            ]
-        )
-        mask = al.Mask(array=mask, pixel_scale=2.0, sub_size=1)
-
-        grid = al.Grid.from_mask(mask=mask)
-
-        grid_binned = grid.new_grid_with_binned_grid(binned_grid=1)
-
-        assert grid.binned == 1
-
 
 class TestGridBorder(object):
     def test__border_grid_for_simple_mask(self):

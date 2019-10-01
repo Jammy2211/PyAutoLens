@@ -367,9 +367,7 @@ class VoronoiBrightnessImage(Voronoi):
 
         Parameters
         ----------
-        shape : (int, int)
-            The shape of the unmasked sparse-grid which is laid over the masked image, in order to derive the \
-            adaptive-magnification pixelization (see *ImagePlanePixelization*)
+
         """
         super(VoronoiBrightnessImage, self).__init__()
         self.pixels = int(pixels)
