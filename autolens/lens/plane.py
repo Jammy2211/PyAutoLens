@@ -248,14 +248,15 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             The galaxies whose mass profiles are used to compute the surface densities.
         """
         if self.galaxies:
-            return sum(
+            convergence = sum(
                 map(
                     lambda g: g.convergence_from_grid(grid=grid),
                     self.galaxies,
                 )
             )
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=convergence)
         else:
-            return np.full((grid.shape[0]), 0.0)
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=np.full((grid.shape[0]), 0.0))
 
     def potential_from_grid(self, grid):
         """Compute the potential of the list of galaxies of the plane's sub-grid, by summing the individual potentials \
@@ -276,74 +277,77 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             The galaxies whose mass profiles are used to compute the surface densities.
         """
         if self.galaxies:
-            return sum(
+            potential = sum(
                 map(
                     lambda g: g.potential_from_grid(grid=grid),
                     self.galaxies,
                 )
             )
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=potential)
         else:
-            return np.full((grid.shape[0]), 0.0)
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=np.full((grid.shape[0]), 0.0))
 
     def deflections_from_grid(self, grid):
         if self.galaxies:
-            return sum(
+            deflections = sum(
                 map(
                     lambda g: g.deflections_from_grid(grid=grid),
                     self.galaxies,
                 )
             )
+            return grid.mask.grid_from_sub_grid_1d(sub_grid_1d=deflections)
         else:
-            return np.full((grid.shape[0], 2), 0.0)
+            return grid.mask.grid_from_sub_grid_1d(sub_grid_1d=np.full((grid.shape[0], 2), 0.0))
 
     def traced_grid_from_grid(self, grid):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
 
-        return grid - self.deflections_from_grid(
+        traced_grid = grid - self.deflections_from_grid(
             grid=grid
         )
+        return grid.mask.grid_from_sub_grid_1d(sub_grid_1d=traced_grid)
 
     def deflections_via_potential_from_grid(self, grid):
-        potential_2d = self.potential_from_grid(
+        potential = self.potential_from_grid(
             grid=grid
         )
 
-        deflections_y_2d = np.gradient(potential_2d, grid.in_2d[:, 0, 0], axis=0)
-        deflections_x_2d = np.gradient(potential_2d, grid.in_2d[0, :, 1], axis=1)
+        deflections_y_2d = np.gradient(potential.in_2d, grid.in_2d[:, 0, 0], axis=0)
+        deflections_x_2d = np.gradient(potential.in_2d, grid.in_2d[0, :, 1], axis=1)
 
-        return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
+        return grid.mask.grid_from_sub_grid_2d(sub_grid_2d=np.stack((deflections_y_2d, deflections_x_2d), axis=-1))
 
     def lensing_jacobian_a11_from_grid(self, grid):
 
-        deflections_2d = self.deflections_from_grid(
+        deflections = self.deflections_from_grid(
             grid=grid
         )
 
-        return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
+        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=1.0 - np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1))
 
     def lensing_jacobian_a12_from_grid(self, grid):
 
-        deflections_2d = self.deflections_from_grid(
+        deflections = self.deflections_from_grid(
             grid=grid
         )
 
-        return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
+        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=-1.0 * np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0))
 
     def lensing_jacobian_a21_from_grid(self, grid):
 
-        deflections_2d = self.deflections_from_grid(
+        deflections = self.deflections_from_grid(
             grid=grid
         )
 
-        return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
+        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=-1.0 * np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1))
 
     def lensing_jacobian_a22_from_grid(self, grid):
 
-        deflections_2d = self.deflections_from_grid(
+        deflections = self.deflections_from_grid(
             grid=grid
         )
 
-        return 1 - np.gradient(deflections_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
+        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=1 - np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0))
 
     def lensing_jacobian_from_grid(self, grid):
 
@@ -363,7 +367,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid
         )
 
-        return np.array([[a11, a12], [a21, a22]])
+        return [[a11, a12], [a21, a22]]
 
     def convergence_via_jacobian_from_grid(self, grid):
 
@@ -371,9 +375,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid
         )
 
-        convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
+        convergence = 1 - 0.5 * (jacobian[0][0] + jacobian[1][1])
 
-        return convergence
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=convergence)
 
     def shear_via_jacobian_from_grid(self, grid):
 
@@ -381,10 +385,10 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid
         )
 
-        gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
-        gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
+        gamma_1 = 0.5 * (jacobian[1][1] - jacobian[0][0])
+        gamma_2 = -0.5 * (jacobian[0][1] + jacobian[1][0])
 
-        return (gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=(gamma_1 ** 2 + gamma_2 ** 2) ** 0.5)
 
     def tangential_eigen_value_from_grid(self, grid):
 
@@ -396,7 +400,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid
         )
 
-        return 1 - convergence - shear
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=1 - convergence - shear)
 
     def radial_eigen_value_from_grid(self, grid):
 
@@ -408,7 +412,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid
         )
 
-        return 1 - convergence + shear
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=1 - convergence + shear)
 
     def magnification_from_grid(self, grid):
 
@@ -416,18 +420,18 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             grid=grid
         )
 
-        det_jacobian = jacobian[0, 0] * jacobian[1, 1] - jacobian[0, 1] * jacobian[1, 0]
+        det_jacobian = jacobian[0][0] * jacobian[1][1] - jacobian[0][1] * jacobian[1][0]
 
-        return 1 / det_jacobian
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=1 / det_jacobian)
 
     def tangential_critical_curve_from_grid(self, grid):
 
-        lambda_tangential_2d = self.tangential_eigen_value_from_grid(
+        tangential_eigen_values = self.tangential_eigen_value_from_grid(
             grid=grid
         )
 
         tangential_critical_curve_indices = measure.find_contours(
-            lambda_tangential_2d, 0
+            tangential_eigen_values.in_2d, 0
         )
 
         if len(tangential_critical_curve_indices) == 0:
@@ -435,22 +439,22 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         return grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=tangential_critical_curve_indices[0],
-            shape=lambda_tangential_2d.shape,
+            shape=tangential_eigen_values.in_2d.shape,
         )
 
     def radial_critical_curve_from_grid(self, grid):
 
-        lambda_radial_2d = self.radial_eigen_value_from_grid(
+        radial_eigen_values = self.radial_eigen_value_from_grid(
             grid=grid
         )
 
-        radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
+        radial_critical_curve_indices = measure.find_contours(radial_eigen_values.in_2d, 0)
 
         if len(radial_critical_curve_indices) == 0:
             return []
 
         return grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
-            grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape
+            grid_pixels_1d=radial_critical_curve_indices[0], shape=radial_eigen_values.in_2d.shape
         )
 
     def tangential_caustic_from_grid(self, grid):
@@ -473,11 +477,11 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         if len(radial_critical_curve) == 0:
             return []
 
-        deflections_1d = self.deflections_from_grid(
+        deflections_critical_curve = self.deflections_from_grid(
             grid=radial_critical_curve
         )
 
-        return radial_critical_curve - deflections_1d
+        return radial_critical_curve - deflections_critical_curve
 
     def critical_curves_from_grid(self, grid):
         return [
