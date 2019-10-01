@@ -196,7 +196,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         self, grid, return_in_2d=True, plane_index_limit=None
     ):
 
-        grid_calc = grid.copy()
+        grid_calc = grid.copy()  # TODO looks unnecessary? Probably pretty expensive too
 
         traced_grids = []
         traced_deflections = []
