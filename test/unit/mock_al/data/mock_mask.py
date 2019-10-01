@@ -3,7 +3,7 @@ import autolens as al
 import numpy as np
 
 from autolens import exc
-from autolens.array.util import mask_util
+from autoarray.util import mask_util
 
 
 class MockMask(al.Mask):

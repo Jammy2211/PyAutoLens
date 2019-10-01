@@ -2,7 +2,7 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.array.util import binning_util
+from autoarray.util import binning_util
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g

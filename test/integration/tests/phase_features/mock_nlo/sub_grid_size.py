@@ -1,5 +1,5 @@
-from test.integration.tests.phase_features import sub_size
-from test.integration.tests.runner import run_a_mock
+from test import sub_size
+from test import run_a_mock
 
 
 class TestCase:

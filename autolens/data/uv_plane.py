@@ -4,13 +4,13 @@ import scipy.signal
 from skimage.transform import resize, rescale
 
 from autolens import exc
-from autolens.array import grids
+from autoarray import grids
 from autolens.data import abstract_data
-from autolens.array.mapping_util import grid_mapping_util
+from autoarray.mapping_util import grid_mapping_util
 
-from autolens.array.util import array_util
-from autolens.array.mapping_util import array_mapping_util
-from autolens.array import scaled_array
+from autoarray.util import array_util
+from autoarray.mapping_util import array_mapping_util
+from autoarray import scaled_array
 
 logger = logging.getLogger(__name__)
 
@@ -155,7 +155,7 @@ class PrimaryBeam(scaled_array.Scaled):
             centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma
         )
 
-        from autolens.array import grids
+        from autoarray import grids
 
         grid = grids.Grid.from_shape_pixel_scale_and_sub_size(
             shape=shape, pixel_scale=pixel_scale, sub_size=1

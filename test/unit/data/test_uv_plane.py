@@ -747,7 +747,7 @@ class TestSimulateUVPlaneData(object):
                 shape=(9,), sigma=1.0, noise_seed=1
             )
 
-            # Use seed to give us a known gaussian noises map we'll test for
+            # Use seed to give us a known gaussian noises map we'll test_autoarray for
 
             assert simulate_gaussian_noise == pytest.approx(
                 np.array([1.62, -0.61, -0.53, -1.07, 0.87, -2.30, 1.74, -0.76, 0.32]),

@@ -9,8 +9,8 @@ af.conf.instance = af.conf.Config(config_path=test_path)
 import numpy as np
 import pytest
 
-from autolens.array import mask as msk
-from autolens.array import grids
+from autoarray import mask as msk
+from autoarray import grids
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 

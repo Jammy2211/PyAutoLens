@@ -5,7 +5,7 @@ import pytest
 
 import autofit as af
 import autolens as al
-from autolens.array import mask
+from autoarray import mask
 from test.unit.mock.data import mock_convolution
 from test.unit.mock.data import mock_data
 from test.unit.mock.data import mock_grids

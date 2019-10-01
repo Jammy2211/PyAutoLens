@@ -1,5 +1,5 @@
-from test.integration.tests.lens__source_inversion.rectangular import lens_both__source
-from test.integration.tests.runner import run_a_mock
+from test import lens_both__source
+from test import run_a_mock
 
 
 class TestCase:

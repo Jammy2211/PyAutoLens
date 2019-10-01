@@ -2,7 +2,7 @@ import ast
 import numpy as np
 
 from autolens import exc
-from autolens.array import scaled_array
+from autoarray import scaled_array
 
 
 class AbstractData(object):

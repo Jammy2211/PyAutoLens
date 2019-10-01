@@ -264,7 +264,7 @@ class TestImagingData:
         def test__same_as_above_but_different_image_values_in_each_pixel_and_new_background_values(
             self
         ):
-            # Can use pattern from previous test for values
+            # Can use pattern from previous test_autoarray for values
 
             image = al.Scaled.from_2d(array_2d=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]), pixel_scale=1.0)
 

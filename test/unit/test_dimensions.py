@@ -3,7 +3,7 @@ from autolens import exc
 import pytest
 
 
-from test.unit.mock.model.mock_cosmology import MockCosmology
+from test import MockCosmology
 
 
 class TestLength(object):

@@ -1,5 +1,5 @@
-from test.integration.tests.phase_features import bin_up_factor
-from test.integration.tests.runner import run_a_mock
+from test import bin_up_factor
+from test import run_a_mock
 
 
 class TestCase:

@@ -1,6 +1,6 @@
 import autofit as af
 import autolens as al
-from test.integration.tests import runner
+from test import runner
 
 test_type = "phase_features"
 test_name = "positions__offset_centre"

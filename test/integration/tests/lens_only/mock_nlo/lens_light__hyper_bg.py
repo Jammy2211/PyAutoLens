@@ -1,5 +1,5 @@
-from test.integration.tests.lens_only import lens_light__hyper_bg
-from test.integration.tests.runner import run_a_mock
+from test import lens_light__hyper_bg
+from test import run_a_mock
 
 
 class TestCase:

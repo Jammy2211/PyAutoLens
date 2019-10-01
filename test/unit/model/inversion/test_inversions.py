@@ -2,7 +2,7 @@ import autolens as al
 import numpy as np
 import pytest
 
-from test.unit.mock.model import mock_inversion
+from test import mock_inversion
 from autolens import exc
 
 

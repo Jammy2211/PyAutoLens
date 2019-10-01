@@ -1,5 +1,5 @@
-from autolens.array.mapping_util import array_mapping_util
-from autolens.array import scaled_array
+from autoarray.mapping_util import array_mapping_util
+from autoarray import scaled_array
 from autolens.model.inversion.util import mapper_util
 
 import numpy as np

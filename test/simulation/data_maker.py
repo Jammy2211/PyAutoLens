@@ -1,6 +1,6 @@
-from test.simulation import makers
+from test import makers
 
-# Welcome to the PyAutoLens test suite data_type maker. Here, we'll make the suite of data_type that we use to test and profile
+# Welcome to the PyAutoLens test_autoarray suite data_type maker. Here, we'll make the suite of data_type that we use to test_autoarray and profile
 # PyAutoLens. This consists of the following sets of images:
 
 # A lens only image, where the lens is an elliptical Dev Vaucouleurs profile.

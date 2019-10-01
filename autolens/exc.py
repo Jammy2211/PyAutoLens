@@ -1,7 +1,7 @@
 import autofit as af
 
 
-class GeometryException(Exception):
+class MaskException(Exception):
     pass
 
 

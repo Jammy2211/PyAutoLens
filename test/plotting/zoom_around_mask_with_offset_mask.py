@@ -1,11 +1,5 @@
-from autolens.array import mask as msk
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.galaxy import galaxy as g
-from autolens.lens import ray_tracing
-from autolens.lens.lens_fit import lens_imaging_fit
-from autolens.lens import lens_data as ld
 from autolens.lens.plotters import lens_imaging_fit_plotters
-from test.simulation import simulation_util
+from test import simulation_util
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
 # uniform grid of rectangular pixels, but instead uses ir'Voronoi' pixels. So, why would we want to do that?

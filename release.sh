@@ -21,7 +21,7 @@ set +e
 git commit -m "Incremented version number"
 set -e
 
-python setup.py test sdist bdist_wheel
+python setup.py test_autoarray sdist bdist_wheel
 twine upload dist/* --skip-existing --username $PYPI_USERNAME --password $PYPI_PASSWORD
 
 git flow release finish $VERSION

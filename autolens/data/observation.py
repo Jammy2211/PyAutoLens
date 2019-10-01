@@ -1,6 +1,6 @@
 import autofit as af
 from autolens.data import imaging
-from autolens.array import grids
+from autoarray import grids
 from autolens.lens import ray_tracing
 from autolens.data.plotters import imaging_plotters
 

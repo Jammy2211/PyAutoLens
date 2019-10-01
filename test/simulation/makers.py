@@ -1,6 +1,6 @@
 import autofit as af
 import autolens as al
-from test.simulation import simulation_util
+from test import simulation_util
 
 import os
 
@@ -47,7 +47,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         grid=image_plane_grid,
     )
 
-    # Now, lets output this simulated imaging-data to the test/data folder.
+    # Now, lets output this simulated imaging-data to the test_autoarray/data folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(

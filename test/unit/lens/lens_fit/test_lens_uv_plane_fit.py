@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 import autofit as af
-from test.unit.mock.model.mock_profiles import MockLightProfile
+from test import MockLightProfile
 
 
 class TestFitProperties:

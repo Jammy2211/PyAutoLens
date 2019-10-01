@@ -1,5 +1,5 @@
-from test.integration.tests.phase_features import image_psf_shape
-from test.integration.tests.runner import run_a_mock
+from test import image_psf_shape
+from test import run_a_mock
 
 
 class TestCase:

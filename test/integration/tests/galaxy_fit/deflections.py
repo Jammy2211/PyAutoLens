@@ -3,7 +3,7 @@ import numpy as np
 
 import autofit as af
 import autolens as al
-from test.integration import integration_util
+from test import integration_util
 
 test_type = "galaxy_fit"
 test_name = "deflections"

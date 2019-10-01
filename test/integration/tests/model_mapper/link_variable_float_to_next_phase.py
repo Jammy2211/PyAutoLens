@@ -1,6 +1,6 @@
 import autofit as af
 import autolens as al
-from test.integration.tests import runner
+from test import runner
 
 test_type = "model_mapper"
 test_name = "link_variable_float_to_next_phase"

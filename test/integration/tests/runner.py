@@ -1,9 +1,9 @@
 import os
 
 import autofit as af
-from test.integration import integration_util
+from test import integration_util
 from autofit.optimize.non_linear.mock_nlo import MockNLO
-from test.simulation import simulation_util
+from test import simulation_util
 
 
 def run(

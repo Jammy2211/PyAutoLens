@@ -4,7 +4,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 
-from test.unit.mock.model import mock_cosmology
+from test import mock_cosmology
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 

@@ -1,9 +1,9 @@
-from test.integration.tests.lens__source import lens_light_mass__source
-from test.integration.tests.lens__source import lens_light_mass__source__hyper
-from test.integration.tests.lens__source import lens_light_mass__source__hyper_bg
-from test.integration.tests.lens__source import lens_mass__source_x2
-from test.integration.tests.lens__source import lens_mass__source_x2__hyper
-from test.integration.tests.runner import run_a_mock
+from test import lens_light_mass__source
+from test import lens_light_mass__source__hyper
+from test import lens_light_mass__source__hyper_bg
+from test import lens_mass__source_x2
+from test import lens_mass__source_x2__hyper
+from test import run_a_mock
 
 
 class TestCase:

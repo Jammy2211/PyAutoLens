@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 
 import autolens as al
-from test.unit.mock.data.mock_grids import MockPixelizationGrid
-from test.unit.mock.model.mock_inversion import MockGeometry
+from test import MockPixelizationGrid
+from test import MockGeometry
 
 
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):

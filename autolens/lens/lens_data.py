@@ -1,9 +1,9 @@
 import numpy as np
 
-from autolens.array import grids
-from autolens.array import mask as msk
-from autolens.array.convolution import Convolver
-from autolens.array.fourier_transform import Transformer
+from autoarray import grids
+from autoarray import mask as msk
+from autoarray.convolution import Convolver
+from autoarray.fourier_transform import Transformer
 
 
 class AbstractLensData(object):

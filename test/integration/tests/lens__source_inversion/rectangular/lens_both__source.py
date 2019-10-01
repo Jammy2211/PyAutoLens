@@ -1,7 +1,6 @@
 import autofit as af
-from autolens.model.inversion import pixelizations as pix, regularization as reg
 import autolens as al
-from test.integration.tests import runner
+from test import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_both__source_rectangular"

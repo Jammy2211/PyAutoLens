@@ -1,6 +1,6 @@
 from autolens import exc
-from autolens.array import grids, scaled_array
-from autolens.array import mask as msk
+from autoarray import grids, scaled_array
+from autoarray import mask as msk
 
 
 class GalaxyData(object):

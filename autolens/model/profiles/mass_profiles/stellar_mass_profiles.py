@@ -4,7 +4,7 @@ import numpy as np
 
 import autofit as af
 from autolens import dimensions as dim
-from autolens.array import grids
+from autoarray import grids
 from autolens.model.profiles import geometry_profiles
 
 from autolens.model.profiles import mass_profiles as mp
