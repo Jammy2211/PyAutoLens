@@ -295,28 +295,31 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         return self.profile_image_from_grid(grid=padded_grid)
 
     def convergence_from_grid(self, grid):
-        return sum(
+        convergence = sum(
             [
                 plane.convergence_from_grid(grid=grid)
                 for plane in self.planes
             ]
         )
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=convergence)
 
     def potential_from_grid(self, grid):
-        return sum(
+        potential = sum(
             [
                 plane.potential_from_grid(grid=grid)
                 for plane in self.planes
             ]
         )
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=potential)
 
     def deflections_from_grid(self, grid):
-        return sum(
+        deflections = sum(
             [
                 plane.deflections_from_grid(grid=grid)
                 for plane in self.planes
             ]
         )
+        return grid.mask.grid_from_sub_grid_1d(sub_grid_1d=deflections)
 
     def einstein_radius_of_plane_in_units(self, i, unit_length="arcsec"):
         return self.planes[i].einstein_radius_in_units(unit_length=unit_length)

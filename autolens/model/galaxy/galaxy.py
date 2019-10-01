@@ -175,7 +175,7 @@ class Galaxy(af.ModelObject):
                     self.light_profiles,
                 )
             )
-            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=profile_image.in_1d)
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=profile_image)
         else:
             return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=np.zeros((grid.shape[0],)))
 
@@ -308,13 +308,15 @@ class Galaxy(af.ModelObject):
 
         """
         if self.has_mass_profile:
-            return sum(
+            convergence = sum(
                 map(
                     lambda p: p.convergence_from_grid(grid=grid),
                     self.mass_profiles,
                 )
             )
-        return np.zeros((grid.shape[0],))
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=convergence)
+        else:
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=np.zeros((grid.shape[0],)))
 
     def potential_from_grid(self, grid):
         """Compute the summed gravitational potential of the galaxy's mass profiles \
@@ -334,13 +336,15 @@ class Galaxy(af.ModelObject):
 
         """
         if self.has_mass_profile:
-            return sum(
+            potential = sum(
                 map(
                     lambda p: p.potential_from_grid(grid=grid),
                     self.mass_profiles,
                 )
             )
-        return np.zeros((grid.shape[0],))
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=potential)
+        else:
+            return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=np.zeros((grid.shape[0],)))
 
     def deflections_from_grid(self, grid):
         """Compute the summed (y,x) deflection angles of the galaxy's mass profiles \
@@ -356,55 +360,56 @@ class Galaxy(af.ModelObject):
             The (y, x) coordinates in the original reference frame of the grid.
         """
         if self.has_mass_profile:
-            return sum(
+            deflections = sum(
                 map(
                     lambda p: p.deflections_from_grid(grid=grid),
                     self.mass_profiles,
                 )
             )
-        return np.full((grid.shape[0], 2), 0.0)
+            return grid.mask.grid_from_sub_grid_1d(sub_grid_1d=deflections)
+        return grid.mask.scaled_array_from_sub_grid_1d(sub_grid_1d=np.full((grid.shape[0], 2), 0.0))
 
     def deflections_via_potential_from_grid(self, grid):
-        potential_2d = self.potential_from_grid(
+        potential = self.potential_from_grid(
             grid=grid
         )
 
-        deflections_y_2d = np.gradient(potential_2d, grid.in_2d[:, 0, 0], axis=0)
-        deflections_x_2d = np.gradient(potential_2d, grid.in_2d[0, :, 1], axis=1)
+        deflections_y_2d = np.gradient(potential.in_2d, grid.in_2d[:, 0, 0], axis=0)
+        deflections_x_2d = np.gradient(potential.in_2d, grid.in_2d[0, :, 1], axis=1)
 
-        return np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
+        return grid.mask.grid_from_sub_grid_2d(sub_grid_2d=np.stack((deflections_y_2d, deflections_x_2d), axis=-1))
 
     def lensing_jacobian_a11_from_grid(self, grid):
 
-        deflections_2d = self.deflections_from_grid(
+        deflections = self.deflections_from_grid(
             grid=grid
         )
 
-        return 1.0 - np.gradient(deflections_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
+        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=1.0 - np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1))
 
     def lensing_jacobian_a12_from_grid(self, grid):
 
-        deflections_2d = self.deflections_from_grid(
+        deflections = self.deflections_from_grid(
             grid=grid
         )
 
-        return -1.0 * np.gradient(deflections_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
+        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=-1.0 * np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0))
 
     def lensing_jacobian_a21_from_grid(self, grid):
 
-        deflections_2d = self.deflections_from_grid(
+        deflections = self.deflections_from_grid(
             grid=grid
         )
 
-        return -1.0 * np.gradient(deflections_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
+        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=-1.0 * np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1))
 
     def lensing_jacobian_a22_from_grid(self, grid):
 
-        deflections_2d = self.deflections_from_grid(
+        deflections = self.deflections_from_grid(
             grid=grid
         )
 
-        return 1 - np.gradient(deflections_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
+        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=1 - np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0))
 
     def lensing_jacobian_from_grid(self, grid):
 
@@ -424,7 +429,7 @@ class Galaxy(af.ModelObject):
             grid=grid
         )
 
-        return np.array([[a11, a12], [a21, a22]])
+        return [[a11, a12], [a21, a22]]
 
     def convergence_via_jacobian_from_grid(self, grid):
 
@@ -432,9 +437,9 @@ class Galaxy(af.ModelObject):
             grid=grid
         )
 
-        convergence = 1 - 0.5 * (jacobian[0, 0] + jacobian[1, 1])
+        convergence = 1 - 0.5 * (jacobian[0][0] + jacobian[1][1])
 
-        return convergence
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=convergence)
 
     def shear_via_jacobian_from_grid(self, grid):
 
@@ -442,10 +447,10 @@ class Galaxy(af.ModelObject):
             grid=grid
         )
 
-        gamma_1 = 0.5 * (jacobian[1, 1] - jacobian[0, 0])
-        gamma_2 = -0.5 * (jacobian[0, 1] + jacobian[1, 0])
+        gamma_1 = 0.5 * (jacobian[1][1] - jacobian[0][0])
+        gamma_2 = -0.5 * (jacobian[0][1] + jacobian[1][0])
 
-        return (gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=(gamma_1 ** 2 + gamma_2 ** 2) ** 0.5)
 
     def tangential_eigen_value_from_grid(self, grid):
 
@@ -457,7 +462,7 @@ class Galaxy(af.ModelObject):
             grid=grid
         )
 
-        return 1 - convergence - shear
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=1 - convergence - shear)
 
     def radial_eigen_value_from_grid(self, grid):
 
@@ -477,18 +482,18 @@ class Galaxy(af.ModelObject):
             grid=grid
         )
 
-        det_jacobian = jacobian[0, 0] * jacobian[1, 1] - jacobian[0, 1] * jacobian[1, 0]
+        det_jacobian = jacobian[0][0] * jacobian[1][1] - jacobian[0][1] * jacobian[1][0]
 
-        return 1 / det_jacobian
+        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=1 / det_jacobian)
 
     def tangential_critical_curve_from_grid(self, grid):
 
-        lambda_tangential_2d = self.tangential_eigen_value_from_grid(
+        tangential_eigen_values = self.tangential_eigen_value_from_grid(
             grid=grid
         )
 
         tangential_critical_curve_indices = measure.find_contours(
-            lambda_tangential_2d, 0
+            tangential_eigen_values.in_2d, 0
         )
 
         if len(tangential_critical_curve_indices) == 0:
@@ -496,22 +501,22 @@ class Galaxy(af.ModelObject):
 
         return grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=tangential_critical_curve_indices[0],
-            shape=lambda_tangential_2d.shape,
+            shape=tangential_eigen_values.in_2d.shape,
         )
 
     def radial_critical_curve_from_grid(self, grid):
 
-        lambda_radial_2d = self.radial_eigen_value_from_grid(
+        radial_eigen_values = self.radial_eigen_value_from_grid(
             grid=grid
         )
 
-        radial_critical_curve_indices = measure.find_contours(lambda_radial_2d, 0)
+        radial_critical_curve_indices = measure.find_contours(radial_eigen_values.in_2d, 0)
 
         if len(radial_critical_curve_indices) == 0:
             return []
 
         return grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
-            grid_pixels_1d=radial_critical_curve_indices[0], shape=lambda_radial_2d.shape
+            grid_pixels_1d=radial_critical_curve_indices[0], shape=radial_eigen_values.in_2d.shape
         )
 
     def tangential_caustic_from_grid(self, grid):
@@ -521,11 +526,11 @@ class Galaxy(af.ModelObject):
         if len(tangential_critical_curve) == 0:
             return []
 
-        deflections_1d = self.deflections_from_grid(
+        deflections_critical_curve = self.deflections_from_grid(
             grid=tangential_critical_curve
         )
 
-        return tangential_critical_curve - deflections_1d
+        return tangential_critical_curve - deflections_critical_curve
 
     def radial_caustic_from_grid(self, grid):
 
