@@ -63,7 +63,6 @@ class CombinedHyperPhase(HyperPhase):
         result
             The result of the phase, with hyper_galaxies results attached by associated hyper_galaxies names
         """
-
         results = results.copy() if results is not None else af.ResultsCollection()
         result = self.phase.run(
             data, results=results, mask=mask, positions=positions, **kwargs

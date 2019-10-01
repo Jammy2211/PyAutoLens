@@ -2,27 +2,157 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens.model.galaxy import galaxy_fit, galaxy_data as gd
-from autolens.pipeline.phase.phase import AbstractPhase
+from autolens.pipeline.phase import phase
 from autolens.plotters import visualizer
+
+
+class Analysis(phase.AbstractAnalysis):
+    def __init__(self, cosmology, results, image_path):
+        super().__init__(cosmology=cosmology, results=results)
+        self.visualizer = visualizer.PhaseGalaxyVisualizer(image_path)
+
+
+# noinspection PyAbstractClass
+class AnalysisSingle(Analysis):
+    def __init__(self, galaxy_data, cosmology, image_path: str, results=None):
+        super().__init__(
+            cosmology=cosmology, image_path=image_path, results=results
+        )
+
+        self.galaxy_data = galaxy_data
+
+    def fit(self, instance):
+        fit = self.fit_for_instance(instance=instance)
+        return fit.figure_of_merit
+
+    def visualize(self, instance, during_analysis):
+        fit = self.fit_for_instance(instance=instance)
+
+        self.visualizer.plot_galaxy_fit_subplot(fit)
+
+        if during_analysis:
+            self.visualizer.plot_fit_individuals(fit)
+        else:
+
+            if self.visualizer.plot_ray_tracing_all_at_end_png:
+                self.visualizer.plot_fit_individuals(
+                    fit=fit, plot_all=True, image_format="png"
+                )
+
+            if self.visualizer.plot_ray_tracing_all_at_end_fits:
+                self.visualizer.plot_fit_individuals(
+                    fit=fit,
+                    plot_all=True,
+                    image_format="fits",
+                    path_suffix="/fits/",
+                )
+
+        return fit
+
+    def fit_for_instance(self, instance):
+        """
+        Determine the fit of a lens galaxy and source galaxy to the lens_data in
+        this lens.
+
+        Parameters
+        ----------
+        instance
+            A model instance with attributes
+
+        Returns
+        -------
+        fit: Fit
+            A fractional value indicating how well this model fit and the model
+            lens_data itself
+        """
+        return galaxy_fit.GalaxyFit(
+            galaxy_data=self.galaxy_data, model_galaxies=instance.galaxies
+        )
+
+
+# noinspection PyAbstractClass
+class AnalysisDeflections(Analysis):
+    def __init__(
+            self, galaxy_data_y, galaxy_data_x, cosmology, image_path, results=None
+    ):
+        super().__init__(
+            cosmology=cosmology, image_path=image_path, results=results
+        )
+
+        self.galaxy_data_y = galaxy_data_y
+        self.galaxy_data_x = galaxy_data_x
+
+    def fit(self, instance):
+        fit_y, fit_x = self.fit_for_instance(instance=instance)
+        return fit_y.figure_of_merit + fit_x.figure_of_merit
+
+    def visualize(self, instance, during_analysis):
+
+        fit_y, fit_x = self.fit_for_instance(instance=instance)
+
+        if self.visualizer.plot_galaxy_fit_as_subplot:
+            self.visualizer.plot_galaxy_fit_subplot(fit_y, path_suffix="/fit_y_")
+            self.visualizer.plot_galaxy_fit_subplot(fit_x, path_suffix="/fit_x_")
+
+        if during_analysis:
+            self.visualizer.plot_fit_individuals(fit_y, path_suffix="/fit_y")
+            self.visualizer.plot_fit_individuals(fit_x, path_suffix="/fit_x")
+        else:
+            if self.visualizer.plot_ray_tracing_all_at_end_png:
+                self.visualizer.plot_fit_individuals(
+                    fit_y, path_suffix="/fits/fit_y", plot_all=True
+                )
+                self.visualizer.plot_fit_individuals(
+                    fit_x, path_suffix="/fits/fit_x", plot_all=True
+                )
+
+            if self.visualizer.plot_ray_tracing_all_at_end_fits:
+                self.visualizer.plot_fit_individuals(
+                    fit_y,
+                    path_suffix="/fits/fit_y",
+                    plot_all=True,
+                    image_format="fits",
+                )
+                self.visualizer.plot_fit_individuals(
+                    fit_x,
+                    path_suffix="/fits/fit_x",
+                    plot_all=True,
+                    image_format="fits",
+                )
+
+        return fit_y, fit_x
+
+    def fit_for_instance(self, instance):
+
+        fit_y = galaxy_fit.GalaxyFit(
+            galaxy_data=self.galaxy_data_y, model_galaxies=instance.galaxies
+        )
+        fit_x = galaxy_fit.GalaxyFit(
+            galaxy_data=self.galaxy_data_x, model_galaxies=instance.galaxies
+        )
+
+        return fit_y, fit_x
 
 
 class PhaseGalaxy(af.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
+    Analysis = Analysis
+
     def __init__(
-        self,
-        phase_name,
-        phase_folders=tuple(),
-        galaxies=None,
-        use_image=False,
-        use_convergence=False,
-        use_potential=False,
-        use_deflections=False,
-        optimizer_class=af.MultiNest,
-        sub_size=2,
-        pixel_scale_interpolation_grid=None,
-        mask_function=None,
-        cosmology=cosmo.Planck15,
+            self,
+            phase_name,
+            phase_folders=tuple(),
+            galaxies=None,
+            use_image=False,
+            use_convergence=False,
+            use_potential=False,
+            use_deflections=False,
+            optimizer_class=af.MultiNest,
+            sub_size=2,
+            pixel_scale_interpolation_grid=None,
+            mask_function=None,
+            cosmology=cosmo.Planck15,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
@@ -121,7 +251,7 @@ class PhaseGalaxy(af.AbstractPhase):
                 use_deflections_x=self.use_deflections,
             )
 
-            return self.AnalysisSingle(
+            return AnalysisSingle(
                 galaxy_data=galaxy_data,
                 cosmology=self.cosmology,
                 image_path=self.optimizer.image_path,
@@ -152,7 +282,7 @@ class PhaseGalaxy(af.AbstractPhase):
                 use_deflections_x=self.use_deflections,
             )
 
-            return self.AnalysisDeflections(
+            return AnalysisDeflections(
                 galaxy_data_y=galaxy_data_y,
                 galaxy_data_x=galaxy_data_x,
                 cosmology=self.cosmology,
@@ -161,127 +291,3 @@ class PhaseGalaxy(af.AbstractPhase):
             )
 
     # noinspection PyAbstractClass
-    class Analysis(AbstractPhase.Analysis):
-        def __init__(self, cosmology, results, image_path):
-            super().__init__(cosmology=cosmology, results=results)
-            self.visualizer = visualizer.PhaseGalaxyVisualizer(image_path)
-
-    # noinspection PyAbstractClass
-    class AnalysisSingle(Analysis):
-        def __init__(self, galaxy_data, cosmology, image_path: str, results=None):
-            super().__init__(
-                cosmology=cosmology, image_path=image_path, results=results
-            )
-
-            self.galaxy_data = galaxy_data
-
-        def fit(self, instance):
-            fit = self.fit_for_instance(instance=instance)
-            return fit.figure_of_merit
-
-        def visualize(self, instance, during_analysis):
-            fit = self.fit_for_instance(instance=instance)
-
-            self.visualizer.plot_galaxy_fit_subplot(fit)
-
-            if during_analysis:
-                self.visualizer.plot_fit_individuals(fit)
-            else:
-
-                if self.visualizer.plot_ray_tracing_all_at_end_png:
-                    self.visualizer.plot_fit_individuals(
-                        fit=fit, plot_all=True, image_format="png"
-                    )
-
-                if self.visualizer.plot_ray_tracing_all_at_end_fits:
-                    self.visualizer.plot_fit_individuals(
-                        fit=fit,
-                        plot_all=True,
-                        image_format="fits",
-                        path_suffix="/fits/",
-                    )
-
-            return fit
-
-        def fit_for_instance(self, instance):
-            """
-            Determine the fit of a lens galaxy and source galaxy to the lens_data in
-            this lens.
-
-            Parameters
-            ----------
-            instance
-                A model instance with attributes
-
-            Returns
-            -------
-            fit: Fit
-                A fractional value indicating how well this model fit and the model
-                lens_data itself
-            """
-            return galaxy_fit.GalaxyFit(
-                galaxy_data=self.galaxy_data, model_galaxies=instance.galaxies
-            )
-
-    # noinspection PyAbstractClass
-    class AnalysisDeflections(Analysis):
-        def __init__(
-            self, galaxy_data_y, galaxy_data_x, cosmology, image_path, results=None
-        ):
-            super().__init__(
-                cosmology=cosmology, image_path=image_path, results=results
-            )
-
-            self.galaxy_data_y = galaxy_data_y
-            self.galaxy_data_x = galaxy_data_x
-
-        def fit(self, instance):
-            fit_y, fit_x = self.fit_for_instance(instance=instance)
-            return fit_y.figure_of_merit + fit_x.figure_of_merit
-
-        def visualize(self, instance, during_analysis):
-
-            fit_y, fit_x = self.fit_for_instance(instance=instance)
-
-            if self.visualizer.plot_galaxy_fit_as_subplot:
-                self.visualizer.plot_galaxy_fit_subplot(fit_y, path_suffix="/fit_y_")
-                self.visualizer.plot_galaxy_fit_subplot(fit_x, path_suffix="/fit_x_")
-
-            if during_analysis:
-                self.visualizer.plot_fit_individuals(fit_y, path_suffix="/fit_y")
-                self.visualizer.plot_fit_individuals(fit_x, path_suffix="/fit_x")
-            else:
-                if self.visualizer.plot_ray_tracing_all_at_end_png:
-                    self.visualizer.plot_fit_individuals(
-                        fit_y, path_suffix="/fits/fit_y", plot_all=True
-                    )
-                    self.visualizer.plot_fit_individuals(
-                        fit_x, path_suffix="/fits/fit_x", plot_all=True
-                    )
-
-                if self.visualizer.plot_ray_tracing_all_at_end_fits:
-                    self.visualizer.plot_fit_individuals(
-                        fit_y,
-                        path_suffix="/fits/fit_y",
-                        plot_all=True,
-                        image_format="fits",
-                    )
-                    self.visualizer.plot_fit_individuals(
-                        fit_x,
-                        path_suffix="/fits/fit_x",
-                        plot_all=True,
-                        image_format="fits",
-                    )
-
-            return fit_y, fit_x
-
-        def fit_for_instance(self, instance):
-
-            fit_y = galaxy_fit.GalaxyFit(
-                galaxy_data=self.galaxy_data_y, model_galaxies=instance.galaxies
-            )
-            fit_x = galaxy_fit.GalaxyFit(
-                galaxy_data=self.galaxy_data_x, model_galaxies=instance.galaxies
-            )
-
-            return fit_y, fit_x
