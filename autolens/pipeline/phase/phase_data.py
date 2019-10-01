@@ -96,7 +96,7 @@ class Result(phase.AbstractResult):
     def most_likely_pixelization_grids_of_planes(self):
         return self.most_likely_tracer.pixelization_grids_of_planes_from_grid(
             grid=self.most_likely_fit.grid
-        )[-1]
+        )
 
 
 class MetaDataFit:
