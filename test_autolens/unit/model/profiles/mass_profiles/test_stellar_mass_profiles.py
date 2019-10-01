@@ -285,9 +285,9 @@ class TestSersic(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -335,9 +335,9 @@ class TestSersic(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -365,7 +365,7 @@ class TestSersic(object):
         assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__reshape_decorators(self):
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -620,9 +620,9 @@ class TestExponential(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -669,9 +669,9 @@ class TestExponential(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -699,7 +699,7 @@ class TestExponential(object):
         assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__reshape_decorators(self):
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -940,9 +940,9 @@ class TestDevVaucouleurs(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -989,9 +989,9 @@ class TestDevVaucouleurs(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1019,7 +1019,7 @@ class TestDevVaucouleurs(object):
         assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__reshape_decorators(self):
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -1420,9 +1420,9 @@ class TestSersicMassRadialGradient(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1471,9 +1471,9 @@ class TestSersicMassRadialGradient(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1501,7 +1501,7 @@ class TestSersicMassRadialGradient(object):
         assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__reshape_decorators(self):
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 

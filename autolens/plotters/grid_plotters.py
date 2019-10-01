@@ -43,7 +43,7 @@ def plot_grid(
 
     Parameters
     -----------
-    grid : data_type.array.grids.Grid
+    grid : data_type.array.aa.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
     axis_limits : []
         The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
@@ -142,7 +142,7 @@ def convert_grid_units(grid_arcsec, units, kpc_per_arcsec):
 
     Parameters
     -----------
-    grid_arcsec : ndarray or data_type.array.grids.Grid
+    grid_arcsec : ndarray or data_type.array.aa.Grid
         The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -221,7 +221,7 @@ def plot_points(grid, points, pointcolor):
 
     Parameters
     -----------
-    grid : ndarray or data_type.array.grids.Grid
+    grid : ndarray or data_type.array.aa.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
     points : []
         A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \

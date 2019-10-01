@@ -2499,7 +2499,7 @@ class TestAbstractTracerData(object):
                 pixel_scales=1.0,
             )
 
-            mask = al.Mask(
+            mask = aa.Mask(
                 array_2d=np.array(
                     [[True, True, True], [True, False, True], [True, True, True]]
                 ),
@@ -2507,7 +2507,7 @@ class TestAbstractTracerData(object):
                 sub_size=1,
             )
 
-            grid = al.Grid.from_mask(mask=mask)
+            grid = aa.Grid.from_mask(mask=mask)
 
             g0 = al.Galaxy(
                 redshift=0.5,

@@ -104,7 +104,7 @@ class TestLikelihood:
         )
         imaging_data.image[1, 2] = 4.0
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [
                     [True, True, True, True],
@@ -207,7 +207,7 @@ class TestLikelihood:
         )
         imaging_data.image[1, 2] = 4.0
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [
                     [True, True, True, True],
@@ -316,7 +316,7 @@ class TestLikelihood:
         )
         imaging_data.image[1, 2] = 4.0
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [
                     [True, True, True, True],
@@ -426,7 +426,7 @@ class TestLikelihood:
         )
         imaging_data.image[1, 2] = 4.0
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [
                     [True, True, True, True],
@@ -532,7 +532,7 @@ class TestLikelihood:
         )
         imaging_data.image[1, 2] = 4.0
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [
                     [True, True, True, True],
@@ -636,7 +636,7 @@ class TestLikelihood:
         )
         imaging_data.image[1, 2] = 4.0
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [
                     [True, True, True, True],

@@ -193,7 +193,7 @@ class TestGaussian:
         ).all()
 
     def test__reshape_results(self):
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -381,7 +381,7 @@ class TestSersic:
         i += 1
 
     def test__reshape_decorators(self):
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -529,7 +529,7 @@ class TestExponential:
         ).all()
 
     def test__reshape_decorators(self):
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -678,7 +678,7 @@ class TestDevVaucouleurs:
         ).all()
 
     def test__reshape_decorators(self):
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -844,7 +844,7 @@ class TestCoreSersic(object):
         ).all()
 
     def test__reshape_decorators(self):
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 

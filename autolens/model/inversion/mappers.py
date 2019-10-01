@@ -1,5 +1,4 @@
-from autoarray.mapping_util import array_mapping_util
-from autoarray import scaled_array
+import autoarray as aa
 from autolens.model.inversion.util import mapper_util
 
 import numpy as np
@@ -164,7 +163,7 @@ class RectangularMapper(Mapper):
             mask=np.full(fill_value=False, shape=self.shape),
             sub_size=1,
         )
-        return scaled_array.Scaled(
+        return aa.Scaled(
             array=recon,
             pixel_scales=self.pixel_scales,
             origin=self.origin,

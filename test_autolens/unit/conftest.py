@@ -3,9 +3,9 @@ from os import path
 import numpy as np
 import pytest
 
+import autoarray as aa
 import autofit as af
 import autolens as al
-from autoarray import mask
 from test_autolens.unit.mock.data import mock_convolution, mock_mask, mock_data, mock_grids
 from test_autolens.unit.mock.lens import mock_lens_data
 from test_autolens.unit.mock.pipeline import mock_pipeline
@@ -260,12 +260,12 @@ def make_noise_map_1d_7x7(noise_map_7x7, mask_7x7):
 
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7(mask_7x7):
-    return al.Grid.from_mask(mask=mask_7x7)
+    return aa.Grid.from_mask(mask=mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7(sub_mask_7x7):
-    return al.Grid.from_mask(mask=sub_mask_7x7)
+    return aa.Grid.from_mask(mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7_simple")
@@ -279,12 +279,12 @@ def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
-    return al.Grid.from_mask(mask=blurring_mask_7x7)
+    return aa.Grid.from_mask(mask=blurring_mask_7x7)
 
 
 @pytest.fixture(name="binned_grid_7x7")
 def make_binned_grid_7x7(mask_7x7):
-    return mock_grids.MockBinnedGrid.from_mask_and_pixel_scale_binned_grid(
+    return mock_aa.MockBinnedGrid.from_mask_and_pixel_scale_binned_grid(
         mask=mask_7x7, pixel_scale_binned_grid=mask_7x7.pixel_scales
     )
 

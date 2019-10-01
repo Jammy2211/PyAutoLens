@@ -8,13 +8,13 @@ from test import MockGalaxy
 
 class TestLikelihood:
     def test__1x1_image__light_profile_fits_data_perfectly__lh_is_noise(self):
-        image = al.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
+        image = aa.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
 
-        noise_map = al.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
+        noise_map = aa.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
 
         galaxy_data = al.GalaxyData(image=image, noise_map=noise_map, pixel_scale=3.0)
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [[True, True, True], [True, False, True], [True, True, True]]
             ),
@@ -59,14 +59,14 @@ class TestLikelihood:
         assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
     def test__1x2_image__noise_not_1__alls_correct(self):
-        image = al.Scaled(sub_array_1d=5.0 * np.ones((3, 4)), pixel_scales=1.0)
+        image = aa.Scaled(sub_array_1d=5.0 * np.ones((3, 4)), pixel_scales=1.0)
         image[1, 2] = 4.0
 
-        noise_map = al.Scaled(sub_array_1d=2.0 * np.ones((3, 4)), pixel_scales=1.0)
+        noise_map = aa.Scaled(sub_array_1d=2.0 * np.ones((3, 4)), pixel_scales=1.0)
 
         galaxy_data = al.GalaxyData(image=image, noise_map=noise_map, pixel_scale=3.0)
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [
                     [True, True, True, True],

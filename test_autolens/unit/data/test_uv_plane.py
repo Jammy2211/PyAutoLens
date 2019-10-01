@@ -483,7 +483,7 @@ class TestPrimaryBeam(object):
     class TestFromGaussian(object):
         def test__identical_to_gaussian_light_profile(self):
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(3, 3), pixel_scale=1.0, sub_size=1
             )
 
@@ -514,7 +514,7 @@ class TestSimulateUVPlaneData(object):
     def test__setup_with_all_features_off(self, transformer_7x7_7):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = al.Scaled.from_single_value_shape_and_pixel_scale(
+        exposure_time_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -542,11 +542,11 @@ class TestSimulateUVPlaneData(object):
     ):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = al.Scaled.from_single_value_shape_and_pixel_scale(
+        exposure_time_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
-        background_sky_map = al.Scaled.from_single_value_shape_and_pixel_scale(
+        background_sky_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
             value=2.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -580,7 +580,7 @@ class TestSimulateUVPlaneData(object):
     def test__setup_with_noise(self, transformer_7x7_7):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = al.Scaled.from_single_value_shape_and_pixel_scale(
+        exposure_time_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
             value=20.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -621,7 +621,7 @@ class TestSimulateUVPlaneData(object):
         self, transformer_7x7_7
     ):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(10, 10), pixel_scale=1.0, sub_size=1
         )
 
@@ -679,7 +679,7 @@ class TestSimulateUVPlaneData(object):
 
     def test__from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(20, 20), pixel_scale=0.05, sub_size=1
         )
 

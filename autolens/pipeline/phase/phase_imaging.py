@@ -1,8 +1,8 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
+import autoarray as aa
 import autofit as af
-from autoarray.util import binning_util
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g
@@ -186,14 +186,14 @@ class PhaseImaging(PhaseData):
 
         Parameters
         ----------
-        image: scaled_array.ScaledSquarePixelArray
+        image: aa.ScaledSquarePixelArray
             An lens_data that has been masked
         results: autofit.tools.pipeline.ResultsCollection
             The result of the previous lens
 
         Returns
         -------
-        lens_data: scaled_array.ScaledSquarePixelArray
+        lens_data: aa.ScaledSquarePixelArray
             The modified image (not changed by default)
         """
         return image

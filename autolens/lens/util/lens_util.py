@@ -1,6 +1,5 @@
+import autoarray as aa
 from autolens import exc
-from autoarray.util import grid_util
-from autoarray.mapping_util import array_mapping_util
 from autolens.lens import plane as pl
 
 import numpy as np

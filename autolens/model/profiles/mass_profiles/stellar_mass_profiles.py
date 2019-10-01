@@ -2,9 +2,9 @@ from pyquad import quad_grid
 
 import numpy as np
 
+import autoarray as aa
 import autofit as af
 from autolens import dimensions as dim
-from autoarray import grids
 from autolens.model.profiles import geometry_profiles
 
 from autolens.model.profiles import mass_profiles as mp
@@ -62,7 +62,7 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
 
         """
@@ -145,7 +145,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
             / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
         )
 
-    @grids.grid_interpolate
+    @aa.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -155,7 +155,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -433,13 +433,13 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
 
         """
         return self.convergence_func(self.grid_to_eccentric_radii(grid))
 
-    @grids.grid_interpolate
+    @aa.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -449,7 +449,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """

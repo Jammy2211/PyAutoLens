@@ -3,14 +3,10 @@ import numpy as np
 import scipy.signal
 from skimage.transform import resize, rescale
 
-from autolens import exc
-from autoarray import grids
-from autolens.data import abstract_data
-from autoarray.mapping_util import grid_mapping_util
+import autoarray as aa
 
-from autoarray.util import array_util
-from autoarray.mapping_util import array_mapping_util
-from autoarray import scaled_array
+from autolens import exc
+from autolens.data import abstract_data
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +120,7 @@ class NoiseMap(abstract_data.AbstractNoiseMap):
     pass
 
 
-class PrimaryBeam(scaled_array.Scaled):
+class PrimaryBeam(aa.Scaled):
 
     # noinspection PyUnusedLocal
     def __init__(self, array_1d, pixel_scales, renormalize=False, **kwargs):
@@ -155,9 +151,7 @@ class PrimaryBeam(scaled_array.Scaled):
             centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma
         )
 
-        from autoarray import grids
-
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
         gaussian = gaussian.profile_image_from_grid(grid=grid)
@@ -201,7 +195,7 @@ class PrimaryBeam(scaled_array.Scaled):
             The HDU the PrimaryBeam is stored in the .fits file.
         """
         return cls(
-            array=array_util.numpy_array_2d_from_fits(file_path, hdu),
+            array=aa.array_util.numpy_array_2d_from_fits(file_path, hdu),
             pixel_scale=pixel_scale,
         )
 
@@ -346,7 +340,7 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid_1d = grids.Grid.from_shape_pixel_scale_and_sub_size(
+        grid_1d = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
 
@@ -476,13 +470,13 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = scaled_array.Scaled.from_single_value_shape_and_pixel_scale(
+            exposure_time_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
                 value=exposure_time, shape=image.shape, pixel_scale=pixel_scale
             )
 
         if background_sky_map is None:
 
-            background_sky_map = scaled_array.Scaled.from_single_value_shape_and_pixel_scale(
+            background_sky_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
                 value=background_sky_level, shape=image.shape, pixel_scale=pixel_scale
             )
 
@@ -755,14 +749,14 @@ def load_uv_plane_data_from_fits(
 def load_visibilities(visibilities_path, visibilities_hdu):
 
     if visibilities_path is not None:
-        return array_util.numpy_array_1d_from_fits(
+        return aa.array_util.numpy_array_1d_from_fits(
             file_path=visibilities_path, hdu=visibilities_hdu
         )
 
 
 def load_visibilities_noise_map(noise_map_path, noise_map_hdu):
     if noise_map_path is not None:
-        return array_util.numpy_array_1d_from_fits(
+        return aa.array_util.numpy_array_1d_from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu
         )
 
@@ -806,7 +800,7 @@ def output_uv_plane_data_to_fits(
 ):
 
     if primary_beam_path is not None:
-        array_util.numpy_array_2d_to_fits(
+        aa.array_util.numpy_array_2d_to_fits(
             array_2d=uv_plane_data.primary_beam,
             file_path=primary_beam_path,
             overwrite=overwrite,
@@ -816,14 +810,14 @@ def output_uv_plane_data_to_fits(
         uv_plane_data.exposure_time_map is not None
         and exposure_time_map_path is not None
     ):
-        array_util.numpy_array_2d_to_fits(
+        aa.array_util.numpy_array_2d_to_fits(
             array_2d=uv_plane_data.exposure_time_map,
             file_path=exposure_time_map_path,
             overwrite=overwrite,
         )
 
     if uv_plane_data.visibilities is not None and real_visibilities_path is not None:
-        array_util.numpy_array_1d_to_fits(
+        aa.array_util.numpy_array_1d_to_fits(
             array_1d=uv_plane_data.visibilities[:, 0],
             file_path=real_visibilities_path,
             overwrite=overwrite,
@@ -833,28 +827,28 @@ def output_uv_plane_data_to_fits(
         uv_plane_data.visibilities is not None
         and imaginary_visibilities_path is not None
     ):
-        array_util.numpy_array_1d_to_fits(
+        aa.array_util.numpy_array_1d_to_fits(
             array_1d=uv_plane_data.visibilities[:, 1],
             file_path=imaginary_visibilities_path,
             overwrite=overwrite,
         )
 
     if uv_plane_data.noise_map is not None and noise_map_path is not None:
-        array_util.numpy_array_1d_to_fits(
+        aa.array_util.numpy_array_1d_to_fits(
             array_1d=uv_plane_data.noise_map,
             file_path=noise_map_path,
             overwrite=overwrite,
         )
 
     if uv_plane_data.uv_wavelengths is not None and u_wavelengths_path is not None:
-        array_util.numpy_array_1d_to_fits(
+        aa.array_util.numpy_array_1d_to_fits(
             array_1d=uv_plane_data.uv_wavelengths[:, 0],
             file_path=u_wavelengths_path,
             overwrite=overwrite,
         )
 
     if uv_plane_data.uv_wavelengths is not None and v_wavelengths_path is not None:
-        array_util.numpy_array_1d_to_fits(
+        aa.array_util.numpy_array_1d_to_fits(
             array_1d=uv_plane_data.uv_wavelengths[:, 1],
             file_path=v_wavelengths_path,
             overwrite=overwrite,

@@ -1,9 +1,6 @@
 import numpy as np
 
-from autoarray import grids
-from autoarray import mask as msk
-from autoarray.convolution import Convolver
-from autoarray.fourier_transform import Transformer
+import autoarray as aa
 
 
 class AbstractLensData(object):
@@ -26,12 +23,12 @@ class AbstractLensData(object):
 
         ### GRIDS ###
 
-        self.grid = grids.Grid.from_mask(mask=mask)
+        self.grid = aa.Grid.from_mask(mask=mask)
 
         self.pixel_scale_binned_grid = pixel_scale_binned_grid
 
         if pixel_scale_binned_grid is not None:
-            binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
                 mask=mask, pixel_scale_binned_grid=pixel_scale_binned_grid
             )
             self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
@@ -97,7 +94,7 @@ class LensImagingData(AbstractLensData):
         ----------
         imaging_data: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
-        mask: msk.Mask
+        mask: aa.Mask
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
@@ -110,7 +107,7 @@ class LensImagingData(AbstractLensData):
             used to speed up the non-linear sampling.
         pixel_scale_interpolation_grid : float
             If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
+            interpolated to the grid, sub and blurring aa.
         inversion_pixel_limit : int or None
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
             up run.
@@ -153,7 +150,7 @@ class LensImagingData(AbstractLensData):
             ),
         )
 
-        self.blurring_grid = grids.Grid.blurring_grid_from_mask_and_kernel_shape(
+        self.blurring_grid = aa.Grid.blurring_grid_from_mask_and_kernel_shape(
             mask=mask, kernel_shape=self.trimmed_psf_shape
         )
 
@@ -286,7 +283,7 @@ class LensUVPlaneData(AbstractLensData):
         ----------
         imaging_data: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, primary_beam, etc.)
-        mask: msk.Mask
+        mask: aa.Mask
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
@@ -299,7 +296,7 @@ class LensUVPlaneData(AbstractLensData):
             used to speed up the non-linear sampling.
         pixel_scale_interpolation_grid : float
             If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
+            interpolated to the grid, sub and blurring aa.
         inversion_pixel_limit : int or None
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
             up run.

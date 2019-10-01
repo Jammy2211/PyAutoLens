@@ -1,11 +1,11 @@
 import numpy as np
 
-import autolens as al
+import autoarray as aa
 
 
-class MockGrid(al.Grid):
+class MockGrid(aa.Grid):
     def __new__(cls, mask, *args, **kwargs):
-        sub_grid_1d = al.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+        sub_grid_1d = aa.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask,
             pixel_scales=(mask.pixel_scale, mask.pixel_scale),
             sub_size=mask.sub_size,
@@ -22,7 +22,7 @@ class MockGrid(al.Grid):
         pass
 
 
-class MockBinnedGrid(al.BinnedGrid):
+class MockBinnedGrid(aa.BinnedGrid):
     pass
 
 

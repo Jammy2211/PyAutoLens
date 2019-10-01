@@ -1,8 +1,8 @@
 from astropy import cosmology as cosmo
 
+import autoarray as aa
 import autofit as af
 from autolens import exc
-from autoarray import mask as msk
 from autolens.lens import lens_fit
 from autolens.model.inversion import pixelizations as pix
 from autolens.pipeline.phase import phase_extensions
@@ -10,7 +10,7 @@ from autolens.pipeline.phase.phase import AbstractPhase
 
 
 def default_mask_function(image):
-    return msk.Mask.circular(
+    return aa.Mask.circular(
         shape=image.shape, pixel_scales=image.pixel_scale, sub_size=1, radius_arcsec=3.0
     )
 
@@ -69,7 +69,7 @@ class MetaDataFit:
             mask = mask.new_mask_with_new_sub_size(sub_size=self.sub_size)
 
         if self.inner_mask_radii is not None:
-            inner_mask = msk.Mask.circular(
+            inner_mask = aa.Mask.circular(
                 shape=mask.shape,
                 pixel_scales=mask.pixel_scale,
                 radius_arcsec=self.inner_mask_radii,
@@ -208,7 +208,7 @@ class PhaseData(AbstractPhase):
             The default masks passed in by the pipeline
         results: autofit.tools.pipeline.ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
-        data: scaled_array.ScaledSquarePixelArray
+        data: aa.ScaledSquarePixelArray
             An lens_data that has been masked
 
         Returns

@@ -1,9 +1,9 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
+import autoarray as aa
 import autofit as af
 from autolens import dimensions as dim
-from autoarray import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
@@ -95,7 +95,7 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """

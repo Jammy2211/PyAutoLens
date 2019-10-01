@@ -1,8 +1,8 @@
 import ast
 import numpy as np
 
+import autoarray as aa
 from autolens import exc
-from autoarray import scaled_array
 
 
 class AbstractData(object):
@@ -13,7 +13,7 @@ class AbstractData(object):
 
         Parameters
         ----------
-        data : scaled_array.ScaledSquarePixels
+        data : aa.ScaledSquarePixels
             The array of the image data_type, in units of electrons per second.
         pixel_scale : float
             The size of each pixel in arc seconds.
@@ -28,9 +28,9 @@ class AbstractData(object):
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
             preferably in units of electrons per second.
-        exposure_time_map : scaled_array.Scaled
+        exposure_time_map : aa.Scaled
             An array describing the effective exposure time in each imaging pixel.
-        background_sky_map : scaled_array.Scaled
+        background_sky_map : aa.Scaled
             An array describing the background sky.
         """
         self._data = data
@@ -142,7 +142,7 @@ class AbstractData(object):
         return self.array_from_electrons_per_second_to_counts(self._data)
 
 
-class AbstractNoiseMap(scaled_array.Scaled):
+class AbstractNoiseMap(aa.Scaled):
     @classmethod
     def from_weight_map(cls, pixel_scale, weight_map):
         """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and \
@@ -190,7 +190,7 @@ class AbstractNoiseMap(scaled_array.Scaled):
         return cls.from_2d(array_2d=noise_map, pixel_scale=pixel_scale)
 
 
-class ExposureTimeMap(scaled_array.Scaled):
+class ExposureTimeMap(aa.Scaled):
     @classmethod
     def from_exposure_time_and_inverse_noise_map(
         cls, pixel_scale, exposure_time, inverse_noise_map
@@ -214,7 +214,7 @@ def load_image(image_path, image_hdu, pixel_scale):
     pixel_scale : float
         The size of each pixel in arc seconds..
     """
-    return scaled_array.Scaled.from_fits_with_pixel_scale(
+    return aa.Scaled.from_fits_with_pixel_scale(
         file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale
     )
 

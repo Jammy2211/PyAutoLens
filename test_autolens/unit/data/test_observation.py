@@ -106,7 +106,7 @@ class TestObservation:
             ),
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(11, 11), pixel_scale=0.2, sub_size=1
         )
 
@@ -220,7 +220,7 @@ class TestObservation:
             ),
         )
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(11, 11), pixel_scale=0.2, sub_size=1
         )
 

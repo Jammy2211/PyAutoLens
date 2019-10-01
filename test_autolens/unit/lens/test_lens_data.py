@@ -27,7 +27,7 @@ class TestAbstractLensData(object):
             mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
         )
 
-        grid = al.Grid.from_mask(mask=sub_mask_7x7)
+        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (lens_imaging_data_7x7.grid == new_grid).all()
@@ -235,10 +235,10 @@ class TestLensImagingData(object):
             pixel_scale_interpolation_grid=1.0,
         )
 
-        grid = al.Grid.from_mask(mask=sub_mask_7x7)
+        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
-        blurring_grid = al.Grid.blurring_grid_from_mask_and_kernel_shape(
+        blurring_grid = aa.Grid.blurring_grid_from_mask_and_kernel_shape(
             mask=sub_mask_7x7, kernel_shape=(3, 3)
         )
         new_blurring_grid = blurring_grid.new_grid_with_interpolator(
@@ -264,7 +264,7 @@ class TestLensImagingData(object):
         ).all()
 
     def test__convolvers(self, lens_imaging_data_7x7):
-        assert type(lens_imaging_data_7x7.convolver) == al.Convolver
+        assert type(lens_imaging_data_7x7.convolver) == aa.Convolver
 
     def test__different_imaging_data_without_mock_objects__customize_constructor_inputs(
         self
@@ -277,7 +277,7 @@ class TestLensImagingData(object):
             psf=psf,
             noise_map=2.0 * np.ones((19, 19)),
         )
-        mask = al.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+        mask = aa.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         mask[9, 9] = False
@@ -483,7 +483,7 @@ class TestLensUVPlaneData(object):
             noise_map=2.0 * np.ones((19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
-        mask = al.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+        mask = aa.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         mask[9, 9] = False

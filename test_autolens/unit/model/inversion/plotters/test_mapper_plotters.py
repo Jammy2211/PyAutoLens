@@ -14,7 +14,7 @@ def make_mapper_plotter_setup():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = al.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
+    image = aa.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
     noise_map = al.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
     psf = al.PSF(sub_array_1d=3.0 * np.ones((3, 3)), pixel_scales=1.0)
 
@@ -23,7 +23,7 @@ def make_image():
 
 @pytest.fixture(name="mask")
 def make_mask():
-    return al.Mask.circular(shape=((3, 3)), pixel_scales=0.1, radius_arcsec=0.1)
+    return aa.Mask.circular(shape=((3, 3)), pixel_scales=0.1, radius_arcsec=0.1)
 
 
 @pytest.fixture(name="galaxy_light")
@@ -42,7 +42,7 @@ def make_galaxy_mass():
 
 @pytest.fixture(name="grid")
 def make_grid():
-    return al.Grid.from_shape_pixel_scale_and_sub_size(
+    return aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=(100, 100), pixel_scale=0.05, sub_size=2
     )
 

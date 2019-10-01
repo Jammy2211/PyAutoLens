@@ -14,7 +14,7 @@ import pytest
 
 def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=(5, 5), pixel_scale=1.0, sub_size=1
     )
 
@@ -49,7 +49,7 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
 def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index():
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=(5, 5), pixel_scale=1.0, sub_size=1
     )
 
@@ -84,7 +84,7 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
 
 def test__deflection_angles():
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=(5, 5), pixel_scale=1.0, sub_size=1
     )
 

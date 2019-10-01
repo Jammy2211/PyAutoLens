@@ -208,7 +208,7 @@ class TestMassSheet(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -288,7 +288,7 @@ class TestExternalShear(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 

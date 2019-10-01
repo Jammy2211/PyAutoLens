@@ -960,9 +960,9 @@ class TestGeneralizedNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1011,7 +1011,7 @@ class TestGeneralizedNFW(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -1222,9 +1222,9 @@ class TestTruncatedNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1385,7 +1385,7 @@ class TestTruncatedNFW(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -1600,7 +1600,7 @@ class TestTruncatedNFWMassToConcentration(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -1830,9 +1830,9 @@ class TestNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1876,9 +1876,9 @@ class TestNFW(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1907,7 +1907,7 @@ class TestNFW(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 

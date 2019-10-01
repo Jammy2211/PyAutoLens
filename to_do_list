@@ -16,7 +16,7 @@ Big Picture:
 PyAutoArray:
 
 - Make Scaled have a mask, all False if None as default.
-- Move ArrayMappinng classes to Scaled, Grids.
+- Move ArrayMappinng classes to Scaled, aa.
 - Remove ArrayRectangularGeometry.
 
 
@@ -32,7 +32,7 @@ Small Picture:
 - Blurring grid not a required input again? Think aabout traced grids!
 - Acceptance ratio override on MultiNest run. This may require a new error estimator :(
 - Simulated lensed image from discrete image grid.
-- Iterator grids.
+- Iterator aa.
 - Unmasked bool decorator.
 - PSF in light profiles, etc.
 - Plot plane image as square, not rectangle
@@ -43,7 +43,7 @@ Small Picture:
 - point source ray tracing, modeling, etc.
 - classmethods using realistic lens units.
 - Lensing example test data suites.
-- Units for images, grids.
+- Units for images, aa.
 - Multinest MPI.
 - Memory lite.
 - Make mass calculations faster.

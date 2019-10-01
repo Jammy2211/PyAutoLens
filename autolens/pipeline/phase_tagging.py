@@ -141,7 +141,7 @@ def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
     pixel_scale_interpolation_grid
 ):
     """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the interpolation \
-    grid that deflection angles are computed on before interpolating to the and sub grids.
+    grid that deflection angles are computed on before interpolating to the and sub aa.
 
     This changes the phase name 'phase_name' as follows:
 
@@ -159,7 +159,7 @@ def pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(
     pixel_scale_binned_cluster_grid
 ):
     """Generate an clusterolation pixel scale tag, to customize phase names based on the resolution of the clusterolation \
-    grid that deflection angles are computed on before clusterolating to the and sub grids.
+    grid that deflection angles are computed on before clusterolating to the and sub aa.
 
     This changes the phase name 'phase_name' as follows:
 

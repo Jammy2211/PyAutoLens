@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.spatial
 
+import autoarray as aa
 from autolens import exc
-from autoarray import grids
 from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 
@@ -128,9 +128,9 @@ class Rectangular(Pixelization):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grids.GridBorder | None
+        border : aa.GridBorder | None
             The border of the grid's grid.
         hyper_image : ndarray
             A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
@@ -288,9 +288,9 @@ class Voronoi(Pixelization):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
-        border : grids.GridBorder
+        border : aa.GridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
         hyper_image : ndarray
             A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
@@ -349,11 +349,11 @@ class VoronoiMagnification(Voronoi):
     def pixelization_grid_from_grid(
         self, grid, cluster_grid=None, hyper_image=None, seed=1
     ):
-        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_to_grid = aa.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
-        return grids.PixelizationGrid(
+        return aa.PixelizationGrid(
             grid_1d=sparse_to_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -387,14 +387,14 @@ class VoronoiBrightnessImage(Voronoi):
             hyper_image=hyper_image
         )
 
-        sparse_to_grid = grids.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
+        sparse_to_grid = aa.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
             total_pixels=self.pixels,
             binned_grid=cluster_grid,
             binned_weight_map=cluster_weight_map,
             seed=seed,
         )
 
-        return grids.PixelizationGrid(
+        return aa.PixelizationGrid(
             grid_1d=sparse_to_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )

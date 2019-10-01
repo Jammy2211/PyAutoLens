@@ -1,6 +1,7 @@
 import autofit as af
+import autoarray as aa
+
 from autolens.data import imaging
-from autoarray import grids
 from autolens.lens import ray_tracing
 from autolens.data.plotters import imaging_plotters
 
@@ -54,7 +55,7 @@ class ImagingObservation(object):
         5) Output the data to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
-        grid = grids.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=self.shape, pixel_scale=self.psf.pixel_scale, sub_size=sub_size
         )
 
