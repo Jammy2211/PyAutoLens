@@ -583,6 +583,7 @@ class PhaseImaging(PhaseData):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
+        self.meta_data_fit.variable = self.variable
         modified_image = self.modify_image(
             image=data.image,
             results=results,
