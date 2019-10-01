@@ -185,23 +185,23 @@ class HyperGalaxyPhase(HyperPhase):
         lens_data = ld.LensImagingData(
             imaging_data=data,
             mask=results.last.mask,
-            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
+            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
             positions=results.last.positions,
             positions_threshold=cast(
                 phase_imaging.PhaseImaging, phase
-            ).positions_threshold,
+            ).meta_data_fit.positions_threshold,
             pixel_scale_interpolation_grid=cast(
                 phase_imaging.PhaseImaging, phase
-            ).pixel_scale_interpolation_grid,
+            ).meta_data_fit.pixel_scale_interpolation_grid,
             pixel_scale_binned_grid=cast(
                 phase_imaging.PhaseImaging, phase
-            ).pixel_scale_binned_cluster_grid,
+            ).meta_data_fit.pixel_scale_binned_cluster_grid,
             inversion_pixel_limit=cast(
                 phase_imaging.PhaseImaging, phase
-            ).inversion_pixel_limit,
+            ).meta_data_fit.inversion_pixel_limit,
             inversion_uses_border=cast(
                 phase_imaging.PhaseImaging, phase
-            ).inversion_uses_border,
+            ).meta_data_fit.inversion_uses_border,
             hyper_noise_map_max=cast(
                 phase_imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
@@ -344,23 +344,23 @@ class HyperGalaxyAllPhase(HyperPhase):
         lens_data = ld.LensImagingData(
             imaging_data=data,
             mask=results.last.mask,
-            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).psf_shape,
+            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
             positions=results.last.positions,
             positions_threshold=cast(
                 phase_imaging.PhaseImaging, phase
-            ).positions_threshold,
+            ).meta_data_fit.positions_threshold,
             pixel_scale_interpolation_grid=cast(
                 phase_imaging.PhaseImaging, phase
-            ).pixel_scale_interpolation_grid,
+            ).meta_data_fit.pixel_scale_interpolation_grid,
             pixel_scale_binned_grid=cast(
                 phase_imaging.PhaseImaging, phase
-            ).pixel_scale_binned_cluster_grid,
+            ).meta_data_fit.pixel_scale_binned_cluster_grid,
             inversion_pixel_limit=cast(
                 phase_imaging.PhaseImaging, phase
-            ).inversion_pixel_limit,
+            ).meta_data_fit.inversion_pixel_limit,
             inversion_uses_border=cast(
                 phase_imaging.PhaseImaging, phase
-            ).inversion_uses_border,
+            ).meta_data_fit.inversion_uses_border,
             hyper_noise_map_max=cast(
                 phase_imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
