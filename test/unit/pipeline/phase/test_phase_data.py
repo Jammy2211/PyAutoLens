@@ -976,7 +976,7 @@ class TestResult(object):
 
         result = phase_imaging_7x7.run(data=imaging_data_7x7)
 
-        assert result.most_likely_pixelization_grids_of_planes == None
+        assert result.most_likely_pixelization_grids_of_planes == [None]
 
         phase_imaging_7x7 = al.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
@@ -1000,7 +1000,7 @@ class TestResult(object):
 
         result = phase_imaging_7x7.run(data=imaging_data_7x7)
 
-        assert result.most_likely_pixelization_grids_of_planes.shape == (6, 2)
+        assert result.most_likely_pixelization_grids_of_planes[-1].shape == (6, 2)
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, imaging_data_7x7, mask_function_7x7
