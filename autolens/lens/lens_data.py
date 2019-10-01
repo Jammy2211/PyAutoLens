@@ -180,26 +180,6 @@ class LensImagingData(AbstractLensData):
     def signal_to_noise_map(self):
         return self.imaging_data.image / self.imaging_data.noise_map
 
-    def new_lens_imaging_data_with_modified_image(self, modified_image):
-
-        imaging_data_with_modified_image = self.imaging_data.new_imaging_data_with_modified_image(
-            modified_image=modified_image
-        )
-
-        return LensImagingData(
-            imaging_data=imaging_data_with_modified_image,
-            mask=self.mask,
-            positions=self.positions,
-            positions_threshold=self.positions_threshold,
-            trimmed_psf_shape=self.trimmed_psf_shape,
-            pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
-            pixel_scale_binned_grid=self.pixel_scale_binned_grid,
-            inversion_pixel_limit=self.inversion_pixel_limit,
-            inversion_uses_border=self.inversion_uses_border,
-            hyper_noise_map_max=self.hyper_noise_map_max,
-            preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
-        )
-
     def new_lens_imaging_data_with_binned_up_imaging_data_and_mask(self, bin_up_factor):
 
         binned_up_imaging_data = self.imaging_data.new_imaging_data_with_binned_up_arrays(
@@ -240,28 +220,6 @@ class LensImagingData(AbstractLensData):
             hyper_noise_map_max=self.hyper_noise_map_max,
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
         )
-
-    def __array_finalize__(self, obj):
-        if isinstance(obj, LensImagingData):
-            self.imaging_data = obj.imaging_data
-            self.mask = obj.mask
-            self._mask_1d = obj._mask_1d
-            self._image_1d = obj._image_1d
-            self._noise_map_1d = obj._noise_map_1d
-            self.trimmed_psf_shape = obj.trimmed_psf_shape
-            self.sub_size = obj.sub_size
-            self.convolver = obj.convolver
-            self.grid = obj.grid
-            self.positions = obj.positions
-            self.pixel_scale_interpolation_grid = obj.pixel_scale_interpolation_grid
-            self.pixel_scale_binned_grid = obj.pixel_scale_binned_grid
-            self.inversion_uses_border = obj.inversion_uses_border
-            self.inversion_pixel_limit = obj.inversion_pixel_limit
-            self.hyper_noise_map_max = obj.hyper_noise_map_max
-            self.blurring_grid = obj.blurring_grid
-            self.preload_pixelization_grids_of_planes = (
-                obj.preload_pixelization_grids_of_planes
-            )
 
 
 class LensUVPlaneData(AbstractLensData):

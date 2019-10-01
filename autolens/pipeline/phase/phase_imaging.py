@@ -418,7 +418,9 @@ class MetaImagingFit(MetaDataFit):
         )
 
         lens_imaging_data = ld.LensImagingData(
-            imaging_data=data,
+            imaging_data=data.new_imaging_data_with_modified_image(
+                modified_image
+            ),
             mask=mask,
             trimmed_psf_shape=self.psf_shape,
             positions=positions,
@@ -429,10 +431,6 @@ class MetaImagingFit(MetaDataFit):
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
             preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
-        )
-
-        lens_imaging_data = lens_imaging_data.new_lens_imaging_data_with_modified_image(
-            modified_image=modified_image
         )
 
         if self.signal_to_noise_limit is not None:

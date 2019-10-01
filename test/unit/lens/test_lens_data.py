@@ -307,34 +307,6 @@ class TestLensImagingData(object):
 
         assert lens_imaging_data_7x7.trimmed_psf_shape == (7, 7)
 
-    def test__lens_imaging_data_7x7_with_modified_image(self, lens_imaging_data_7x7):
-
-        lens_imaging_data_7x7 = lens_imaging_data_7x7.new_lens_imaging_data_with_modified_image(
-            modified_image=8.0 * np.ones((7, 7))
-        )
-
-        assert (
-            lens_imaging_data_7x7.image(return_in_2d=True, return_masked=False)
-            == 8.0 * np.ones((7, 7))
-        ).all()
-
-        assert (lens_imaging_data_7x7._image_1d == 8.0 * np.ones(9)).all()
-
-        assert (
-            lens_imaging_data_7x7.image(return_in_2d=True, return_masked=True)
-            == np.array(
-                [
-                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 8.0, 8.0, 8.0, 0.0, 0.0],
-                    [0.0, 0.0, 8.0, 8.0, 8.0, 0.0, 0.0],
-                    [0.0, 0.0, 8.0, 8.0, 8.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                ]
-            )
-        ).all()
-
     def test__lens_imaging_data_6x6_with_binned_up_imaging_data(
         self, lens_imaging_data_6x6
     ):
