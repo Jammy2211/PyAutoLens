@@ -130,11 +130,12 @@ class PhaseData(AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper_galaxies.
         """
+        self.variable = self.variable.populate(results)
+
         analysis = self.make_analysis(
             data=data, results=results, mask=mask, positions=positions
         )
 
-        self.variable = self.variable.populate(results)
         self.customize_priors(results)
         self.assert_and_save_pickle()
 
