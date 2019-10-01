@@ -6,7 +6,7 @@ from autolens.array import mask as msk
 from autolens.lens import lens_fit
 from autolens.model.inversion import pixelizations as pix
 from autolens.pipeline.phase import phase_extensions
-from autolens.pipeline.phase.phase import AbstractPhase
+from autolens.pipeline.phase import phase
 
 
 def default_mask_function(image):
@@ -21,6 +21,82 @@ def isinstance_or_prior(obj, cls):
     if isinstance(obj, af.PriorModel) and obj.cls == cls:
         return True
     return False
+
+
+# noinspection PyAbstractClass
+class Analysis(phase.AbstractAnalysis):
+    @property
+    def lens_data(self):
+        raise NotImplementedError()
+
+    def check_positions_trace_within_threshold_via_tracer(self, tracer):
+
+        if (
+                self.lens_data.positions is not None
+                and self.lens_data.positions_threshold is not None
+        ):
+
+            traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
+                positions=self.lens_data.positions
+            )
+
+            fit = lens_fit.LensPositionFit(
+                positions=traced_positions_of_planes[-1],
+                noise_map=self.lens_data.pixel_scale,
+            )
+
+            if not fit.maximum_separation_within_threshold(
+                    self.lens_data.positions_threshold
+            ):
+                raise exc.RayTracingException
+
+    def check_inversion_pixels_are_below_limit_via_tracer(self, tracer):
+
+        if self.lens_data.inversion_pixel_limit is not None:
+            pixelizations = list(filter(None, tracer.pixelizations_of_planes))
+            if pixelizations:
+                for pixelization in pixelizations:
+                    if pixelization.pixels > self.lens_data.inversion_pixel_limit:
+                        raise exc.PixelizationException
+
+
+class Result(phase.AbstractResult):
+    @property
+    def most_likely_fit(self):
+
+        hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
+            instance=self.constant
+        )
+
+        hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
+            instance=self.constant
+        )
+
+        return self.analysis.lens_imaging_fit_for_tracer(
+            tracer=self.most_likely_tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
+
+    @property
+    def mask(self):
+        return self.most_likely_fit.mask
+
+    @property
+    def positions(self):
+        return self.most_likely_fit.positions
+
+    @property
+    def pixelization(self):
+        for galaxy in self.most_likely_fit.tracer.galaxies:
+            if galaxy.pixelization is not None:
+                return galaxy.pixelization
+
+    @property
+    def most_likely_pixelization_grids_of_planes(self):
+        return self.most_likely_tracer.pixelization_grids_of_planes_from_grid(
+            grid=self.most_likely_fit.grid
+        )[-1]
 
 
 class MetaDataFit:
@@ -167,8 +243,11 @@ class MetaDataFit:
         return None
 
 
-class PhaseData(AbstractPhase):
+class PhaseData(phase.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
+
+    Result = Result
+    Analysis = Analysis
 
     def __init__(
             self,
@@ -180,7 +259,6 @@ class PhaseData(AbstractPhase):
             cosmology=cosmo.Planck15,
             auto_link_priors=False,
     ):
-
         """
 
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper_galaxies
@@ -260,77 +338,3 @@ class PhaseData(AbstractPhase):
 
     def extend_with_inversion_phase(self):
         return phase_extensions.InversionPhase(phase=self)
-
-    # noinspection PyAbstractClass
-    class Analysis(AbstractPhase.Analysis):
-        @property
-        def lens_data(self):
-            raise NotImplementedError()
-
-        def check_positions_trace_within_threshold_via_tracer(self, tracer):
-
-            if (
-                    self.lens_data.positions is not None
-                    and self.lens_data.positions_threshold is not None
-            ):
-
-                traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-                    positions=self.lens_data.positions
-                )
-
-                fit = lens_fit.LensPositionFit(
-                    positions=traced_positions_of_planes[-1],
-                    noise_map=self.lens_data.pixel_scale,
-                )
-
-                if not fit.maximum_separation_within_threshold(
-                        self.lens_data.positions_threshold
-                ):
-                    raise exc.RayTracingException
-
-        def check_inversion_pixels_are_below_limit_via_tracer(self, tracer):
-
-            if self.lens_data.inversion_pixel_limit is not None:
-                pixelizations = list(filter(None, tracer.pixelizations_of_planes))
-                if pixelizations:
-                    for pixelization in pixelizations:
-                        if pixelization.pixels > self.lens_data.inversion_pixel_limit:
-                            raise exc.PixelizationException
-
-    class Result(AbstractPhase.Result):
-        @property
-        def most_likely_fit(self):
-
-            hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
-                instance=self.constant
-            )
-
-            hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
-                instance=self.constant
-            )
-
-            return self.analysis.lens_imaging_fit_for_tracer(
-                tracer=self.most_likely_tracer,
-                hyper_image_sky=hyper_image_sky,
-                hyper_background_noise=hyper_background_noise,
-            )
-
-        @property
-        def mask(self):
-            return self.most_likely_fit.mask
-
-        @property
-        def positions(self):
-            return self.most_likely_fit.positions
-
-        @property
-        def pixelization(self):
-            for galaxy in self.most_likely_fit.tracer.galaxies:
-                if galaxy.pixelization is not None:
-                    return galaxy.pixelization
-
-        @property
-        def most_likely_pixelization_grids_of_planes(self):
-            return self.most_likely_tracer.pixelization_grids_of_planes_from_grid(
-                grid=self.most_likely_fit.grid
-            )[-1]
