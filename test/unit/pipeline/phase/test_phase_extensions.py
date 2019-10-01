@@ -635,7 +635,7 @@ class TestHyperGalaxyPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
 
-        mask = phase_imaging_7x7.mask_function(image=imaging_data_7x7.image, sub_size=2)
+        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_data_7x7.image, sub_size=2)
         lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImagingFit.from_lens_data_and_tracer(
