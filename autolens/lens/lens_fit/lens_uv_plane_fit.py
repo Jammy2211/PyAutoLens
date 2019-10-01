@@ -1,7 +1,4 @@
-import numpy as np
-
 import autofit as af
-from autolens.model.galaxy import galaxy as g
 
 
 class UVPlaneFit(af.DataFit):

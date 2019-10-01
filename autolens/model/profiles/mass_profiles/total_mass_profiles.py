@@ -4,9 +4,9 @@ from pyquad import quad_grid
 import numpy as np
 from astropy import cosmology as cosmo
 
+import autoarray as aa
 import autofit as af
 from autolens import dimensions as dim
-from autoarray import grids
 from autolens.model.profiles import geometry_profiles
 
 from autolens.model.profiles import mass_profiles as mp
@@ -93,11 +93,11 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
-        *grids.reshape_returned_array* for a description of the output.
+        *aa.reshape_returned_array* for a description of the output.
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
 
         """
@@ -119,7 +119,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -134,7 +134,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         return self.einstein_radius_rescaled * self.axis_ratio * potential_grid
 
-    @grids.grid_interpolate
+    @aa.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -144,7 +144,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -281,7 +281,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -352,7 +352,7 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
     ​
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
@@ -569,7 +569,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -626,7 +626,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -641,7 +641,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -690,11 +690,11 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
-        *grids.reshape_returned_array* for a description of the output.
+        *aa.reshape_returned_array* for a description of the output.
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
 
         """
@@ -716,7 +716,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -733,7 +733,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             + grid[:, 0] * np.arcsinh((f_prime / self.axis_ratio) * cos_phi)
         )
 
-    @grids.grid_interpolate
+    @aa.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -743,7 +743,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """

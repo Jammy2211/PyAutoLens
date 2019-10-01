@@ -11,10 +11,10 @@ from numba.types import intc, CPointer, float64
 from scipy import LowLevelCallable
 from scipy import special
 
+import autoarray as aa
 import autofit as af
 from autolens import dimensions as dim
 from autolens import decorator_util
-from autoarray import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import mass_profiles as mp
 
@@ -138,7 +138,7 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
 
         Parameters
         -----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the potential / deflection_stacks are computed on.
         tabulate_bins : int
             The number of bins to tabulate the inner integral of this profile.
@@ -159,7 +159,7 @@ class AbstractEllipticalGeneralizedNFW(mp.EllipticalMassProfile, mp.MassProfile)
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
 
         """
@@ -523,7 +523,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         tabulate_bins : int
             The number of bins to tabulate the inner integral of this profile.
@@ -587,7 +587,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
         return potential_grid
 
-    @grids.grid_interpolate
+    @aa.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -597,7 +597,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         tabulate_bins : int
             The number of bins to tabulate the inner integral of this profile.
@@ -767,7 +767,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
             scale_radius=scale_radius,
         )
 
-    @grids.grid_interpolate
+    @aa.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -777,7 +777,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
@@ -893,7 +893,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
@@ -1153,7 +1153,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -1168,7 +1168,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         return potential_grid
 
-    @grids.grid_interpolate
+    @aa.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -1178,7 +1178,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -1303,7 +1303,7 @@ class SphericalNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -1320,7 +1320,7 @@ class SphericalNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : grids.Grid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """

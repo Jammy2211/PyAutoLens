@@ -142,7 +142,7 @@ class TestReconstructedDataVectorAndImage:
 
         matrix_shape = (3, 3)
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
@@ -150,7 +150,7 @@ class TestReconstructedDataVectorAndImage:
             sub_size=1,
         )
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         inv = al.Inversion.from_data_1d_mapper_and_regularization(
             image_1d=np.ones(9),
@@ -187,7 +187,7 @@ class TestReconstructedDataVectorAndImage:
 
         matrix_shape = (3, 3)
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
@@ -195,7 +195,7 @@ class TestReconstructedDataVectorAndImage:
             sub_size=1,
         )
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         inv = al.Inversion.from_data_1d_mapper_and_regularization(
             image_1d=np.ones(9),
@@ -235,11 +235,11 @@ class TestReconstructedDataVectorAndImage:
 #
 #         matrix_shape = (3,3)
 #
-#         mask = al.Mask(array=np.array([[True, True, True],
+#         mask = aa.Mask(array=np.array([[True, True, True],
 #                                         [False, False, False],
 #                                         [True, True, True]]), pixel_scale=1.0)
 #
-#         grid = grids.grid_stack_from_mask_sub_size_and_psf_shape(
+#         grid = aa.grid_stack_from_mask_sub_size_and_psf_shape(
 #             mask=mask, sub_size=1, psf_shape=(1,1))
 #
 #         inv = al.Inversion(

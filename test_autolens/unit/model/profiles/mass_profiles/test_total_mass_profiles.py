@@ -142,9 +142,9 @@ class TestPointMass(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -181,7 +181,7 @@ class TestPointMass(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -574,9 +574,9 @@ class TestCoredPowerLaw(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
         true_deflections = cored_power_law.deflections_from_grid(
             grid=grid
         )
@@ -625,9 +625,9 @@ class TestCoredPowerLaw(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
         true_deflections = cored_power_law.deflections_from_grid(
             grid=grid
         )
@@ -699,7 +699,7 @@ class TestCoredPowerLaw(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -1041,9 +1041,9 @@ class TestPowerLaw(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1087,9 +1087,9 @@ class TestPowerLaw(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1118,7 +1118,7 @@ class TestPowerLaw(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -1474,9 +1474,9 @@ class TestCoredIsothermal(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1519,9 +1519,9 @@ class TestCoredIsothermal(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1549,7 +1549,7 @@ class TestCoredIsothermal(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -1844,9 +1844,9 @@ class TestIsothermal(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1889,9 +1889,9 @@ class TestIsothermal(object):
             ]
         )
 
-        mask = al.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask(mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
@@ -1919,7 +1919,7 @@ class TestIsothermal(object):
 
     def test__reshape_decorators(self):
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
@@ -1966,7 +1966,7 @@ class TestIsothermal(object):
 
 def test__reshape_decorators():
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=(2, 2), pixel_scale=1.0, sub_size=1
     )
 
@@ -1986,7 +1986,7 @@ def test__reshape_decorators():
     assert deflections.in_2d.shape == (2, 2, 2)
     assert deflections.shape == (4, 2)
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=(3, 3), pixel_scale=1.0, sub_size=2
     )
 

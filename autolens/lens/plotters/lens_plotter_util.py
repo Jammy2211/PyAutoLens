@@ -1,5 +1,4 @@
 from autolens.plotters import array_plotters
-from autolens import exc
 
 
 def plot_image(

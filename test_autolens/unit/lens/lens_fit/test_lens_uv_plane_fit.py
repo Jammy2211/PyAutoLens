@@ -82,7 +82,7 @@ class TestLikelihood:
         )
         uv_plane_data.visibilities[0, 1] = 4.0
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [
                     [True, True, True, True],
@@ -149,7 +149,7 @@ class TestLikelihood:
             primary_beam=None,
         )
 
-        mask = al.Mask(
+        mask = aa.Mask(
             array_2d=np.array(
                 [
                     [True, True, True, True, True],

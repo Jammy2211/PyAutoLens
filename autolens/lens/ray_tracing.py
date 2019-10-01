@@ -1,7 +1,7 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autoarray import grids
+import autoarray as aa
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
@@ -219,7 +219,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
                     scaled_grid -= scaled_deflections
 
-            traced_grids.append(scaled_grid)
+            traced_aa.append(scaled_grid)
 
             if plane_index_limit is not None:
                 if plane_index == plane_index_limit:
@@ -339,7 +339,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         Parameters
         ----------
-        grid : ndsrray or grids.Grid
+        grid : ndsrray or aa.Grid
             The image-plane grid which is traced to the redshift.
         redshift : float
             The redshift the image-plane grid is traced to.

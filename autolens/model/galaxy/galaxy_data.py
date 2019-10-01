@@ -1,6 +1,5 @@
+import autoarray as aa
 from autolens import exc
-from autoarray import grids, scaled_array
-from autoarray import mask as msk
 
 
 class GalaxyData(object):
@@ -18,9 +17,9 @@ class GalaxyData(object):
 
         Parameters
         ----------
-        image : scaled_array.Scaled
+        image : aa.Scaled
             An image of the quantity of the galaxy that is being fitted (e.g. its image, convergence, etc.).
-        noise_map : scaled_array.Scaled
+        noise_map : aa.Scaled
             The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
         """
         self.image = image
@@ -55,7 +54,7 @@ class GalaxyFitData(object):
         ----------
         galaxy_data : GalaxyData
             The collection of data_type about the galaxy (image of its profile map, noise-map, etc.) that is fitted.
-        mask: msk.Mask
+        mask: aa.Mask
             The 2D masks that is applied to image fit data_type.
         sub_size : int
             The size of the sub-grid used for computing the SubGrid (see imaging.masks.SubGrid).
@@ -83,7 +82,7 @@ class GalaxyFitData(object):
 
         self.sub_size = mask.sub_size
 
-        self.grid = grids.Grid.from_mask(mask=mask)
+        self.grid = aa.Grid.from_mask(mask=mask)
 
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 

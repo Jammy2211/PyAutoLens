@@ -1124,7 +1124,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
@@ -1152,7 +1152,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
@@ -1171,7 +1171,7 @@ class TestMassProfiles(object):
         def test__galaxies_with_x1_and_x2_mass_profiles__deflections_via_potential_is_same_individual_profiles(
             self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
@@ -1202,7 +1202,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
@@ -1215,7 +1215,7 @@ class TestMassProfiles(object):
 
             assert mean_error < 1e-4
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=2
             )
 
@@ -1238,7 +1238,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
@@ -1251,7 +1251,7 @@ class TestMassProfiles(object):
 
             assert mean_error < 1e-4
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=2
             )
 
@@ -1272,7 +1272,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=1
             )
 
@@ -1300,7 +1300,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=1
             )
 
@@ -1317,7 +1317,7 @@ class TestMassProfiles(object):
         def test__galaxies_with_x1_and_x2_mass_profiles__convergence_via_jacobian_is_same_individual_profiles(
             self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
@@ -1342,7 +1342,7 @@ class TestMassProfiles(object):
         def test__galaxies_with_x1_and_x2_mass_profiles__shear_via_jacobian_is_same_individual_profiles(
             self, mp_0, gal_x1_mp, mp_1, gal_x2_mp
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
@@ -1375,7 +1375,7 @@ class TestMassProfiles(object):
             )
             galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
@@ -1401,7 +1401,7 @@ class TestMassProfiles(object):
 
             assert mean_error < 1e-4
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=2
             )
 
@@ -1438,7 +1438,7 @@ class TestMassProfiles(object):
             )
             galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
@@ -1462,7 +1462,7 @@ class TestMassProfiles(object):
 
             assert mean_error < 1e-4
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=2
             )
 
@@ -1501,7 +1501,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.25, sub_size=1
             )
 
@@ -1519,7 +1519,7 @@ class TestMassProfiles(object):
                 critical_curve_tangential_from_magnification, 5e-1
             )
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.5, sub_size=2
             )
 
@@ -1549,7 +1549,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.25, sub_size=1
             )
 
@@ -1567,7 +1567,7 @@ class TestMassProfiles(object):
                 sum(critical_curve_radial_from_magnification), 5e-1
             )
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.5, sub_size=2
             )
 
@@ -1597,7 +1597,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.25, sub_size=1
             )
 
@@ -1613,7 +1613,7 @@ class TestMassProfiles(object):
                 caustic_tangential_from_magnification, 5e-1
             )
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.5, sub_size=2
             )
 
@@ -1641,7 +1641,7 @@ class TestMassProfiles(object):
 
             galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(120, 120), pixel_scale=0.25, sub_size=2
             )
 
@@ -1980,7 +1980,7 @@ class TestBinningUp(object):
 
         galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
@@ -2024,7 +2024,7 @@ class TestBinningUp(object):
 
         galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
@@ -2069,7 +2069,7 @@ class TestBinningUp(object):
 
         galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
@@ -2112,7 +2112,7 @@ class TestBinningUp(object):
 
         galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(20, 20), pixel_scale=0.05, sub_size=2
         )
 
@@ -2168,7 +2168,7 @@ class TestBinningUp(object):
 
         galaxy = al.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, redshift=1)
 
-        grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 

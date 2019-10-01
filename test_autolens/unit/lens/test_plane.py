@@ -1005,7 +1005,7 @@ class TestAbstractPlaneLensing(object):
 
     class TestDeflectionAnglesviaPotential(object):
         def test__compare_plane_deflections_via_potential_and_calculation(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
@@ -1036,7 +1036,7 @@ class TestAbstractPlaneLensing(object):
         def test__deflections_via_potential_same_as_its_galaxy___use_multiple_galaxies(
             self
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
@@ -1061,7 +1061,7 @@ class TestAbstractPlaneLensing(object):
 
     class TestJacobian(object):
         def test__jacobian_components__two_component_galaxy_plane(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=1
             )
 
@@ -1100,7 +1100,7 @@ class TestAbstractPlaneLensing(object):
             assert mean_error < 1e-4
 
         def test__jacobian_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
@@ -1151,7 +1151,7 @@ class TestAbstractPlaneLensing(object):
             )
 
         def test_lambda_t_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
@@ -1201,7 +1201,7 @@ class TestAbstractPlaneLensing(object):
             )
 
         def test_lambda_r_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
@@ -1252,7 +1252,7 @@ class TestAbstractPlaneLensing(object):
 
     class TestConvergenceviaJacobian(object):
         def test__compare_plane_convergence_via_jacobian_and_calculation(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=1
             )
 
@@ -1285,7 +1285,7 @@ class TestAbstractPlaneLensing(object):
             assert mean_error < 1e-1
 
         def test__convergence_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
@@ -1348,7 +1348,7 @@ class TestAbstractPlaneLensing(object):
             assert mean_error < 1e-1
 
         def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
@@ -1373,7 +1373,7 @@ class TestAbstractPlaneLensing(object):
 
     class TestShearviaJacobian(object):
         def test__shear_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
@@ -1423,7 +1423,7 @@ class TestAbstractPlaneLensing(object):
             )
 
         def test__plane_shear_via_jacobian_same_as_multiple_galaxies(self):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
@@ -1450,7 +1450,7 @@ class TestAbstractPlaneLensing(object):
         def test__compare_magnification_from_eigen_values_and_from_determinant__two_component_galaxy_plane(
             self
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
@@ -1492,7 +1492,7 @@ class TestAbstractPlaneLensing(object):
 
             assert mean_error < 1e-4
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
@@ -1523,7 +1523,7 @@ class TestAbstractPlaneLensing(object):
         def test__compare_magnification_from_determinant_and_from_convergence_and_shear__two_component_galaxy(
             self
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
@@ -1563,7 +1563,7 @@ class TestAbstractPlaneLensing(object):
 
             assert mean_error < 1e-4
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
@@ -1595,7 +1595,7 @@ class TestAbstractPlaneLensing(object):
         def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
@@ -1629,7 +1629,7 @@ class TestAbstractPlaneLensing(object):
                 critical_curve_tangential_from_magnification, 1e-4
             )
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=2
             )
 
@@ -1652,7 +1652,7 @@ class TestAbstractPlaneLensing(object):
         def test__compare_radial_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
@@ -1686,7 +1686,7 @@ class TestAbstractPlaneLensing(object):
                 sum(critical_curve_radial_from_magnification), 1e-2
             )
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(100, 100), pixel_scale=0.05, sub_size=2
             )
 
@@ -1709,7 +1709,7 @@ class TestAbstractPlaneLensing(object):
         def test__compare_tangential_caustic_from_magnification_and_lambda_t__two_component_galaxy(
             self
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.25, sub_size=1
             )
 
@@ -1741,7 +1741,7 @@ class TestAbstractPlaneLensing(object):
                 caustic_tangential_from_magnification, 5e-1
             )
 
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(20, 20), pixel_scale=0.5, sub_size=2
             )
 
@@ -1760,7 +1760,7 @@ class TestAbstractPlaneLensing(object):
         def test__compare_radial_caustic_from_magnification_and_lambda_t__two_component_galaxy(
             self
         ):
-            grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
                 shape=(60, 60), pixel_scale=0.5, sub_size=2
             )
 
@@ -2660,11 +2660,11 @@ class TestAbstractPlaneData(object):
             # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
             # index 0 of the 1D grid and (0,0) of the 2d plane datas_.
 
-            mask = al.Mask(
+            mask = aa.Mask(
                 array_2d=np.full((5, 5), False), pixel_scales=1.0, sub_size=1
             )
 
-            grid = al.Grid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask)
+            grid = aa.Grid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask)
 
             g0 = al.Galaxy(
                 redshift=0.5,

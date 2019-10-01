@@ -299,7 +299,7 @@ class Galaxy(af.ModelObject):
         See *profiles.mass_profiles* module for details of how this is performed.
 
         The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
-        *grids.reshape_returned_array* for a description of the output.
+        *aa.reshape_returned_array* for a description of the output.
 
         Parameters
         ----------
@@ -327,7 +327,7 @@ class Galaxy(af.ModelObject):
         See *profiles.mass_profiles* module for details of how this is performed.
 
                 The *reshape_returned_array* decorator reshapes the NumPy array the convergence is outputted on. See \
-        *grids.reshape_returned_array* for a description of the output.
+        *aa.reshape_returned_array* for a description of the output.
 
         Parameters
         ----------

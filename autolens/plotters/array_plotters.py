@@ -61,7 +61,7 @@ def plot_array(
 
     Parameters
     -----------
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
     origin : (float, float).
         The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
@@ -77,7 +77,7 @@ def plot_array(
         If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     positions : [[]]
         Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-    grid : data_type.array.grids.Grid
+    grid : data_type.array.aa.Grid
         A grid of (y,x) coordinates which may be plotted over the plotted array.
     as_subplot : bool
         Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
@@ -295,7 +295,7 @@ def plot_figure(
 
     Parameters
     -----------
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
     as_subplot : bool
         Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
@@ -361,7 +361,7 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
 
     Parameters
     -----------
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -417,7 +417,7 @@ def get_normalization_min_max(array, norm_min, norm_max):
 
     Parameters
     -----------
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
@@ -442,7 +442,7 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
 
     Parameters
     -----------
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
@@ -524,9 +524,9 @@ def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):
 
     Parameters
     -----------
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted, the shape of which is used for converting the grid to units of pixels.
-    grid_arcsec : ndarray or data_type.array.grids.Grid
+    grid_arcsec : ndarray or data_type.array.aa.Grid
         The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -551,7 +551,7 @@ def plot_origin(array, origin, units, kpc_per_arcsec, zoom_offset_arcsec):
     
     Parameters
     -----------
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
     origin : (float, float).
         The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
@@ -581,7 +581,7 @@ def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
 
     Parameters
     -----------
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
     centres : [[tuple]]
         The list of centres; centres in the same list entry are colored the same.
@@ -619,7 +619,7 @@ def plot_ellipses(
 
     Parameters
     -----------
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
     centres : [[tuple]]
         The list of centres; centres in the same list entry are colored the same.
@@ -746,7 +746,7 @@ def plot_points(
     -----------
     positions : [[]]
         Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-    array : data_type.array.scaled_array.Scaled
+    array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -788,9 +788,9 @@ def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_
 
      Parameters
      -----------.
-     grid_arcsec : ndarray or data_type.array.grids.Grid
+     grid_arcsec : ndarray or data_type.array.aa.Grid
          A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
-     array : data_type.array.scaled_array.Scaled
+     array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
      units : str
          The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').

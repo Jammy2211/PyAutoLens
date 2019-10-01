@@ -33,7 +33,7 @@ imaging_data = al.load_imaging_data_from_fits(
     pixel_scale=0.1)
 
 # Create a mask for the data, which we setup as a 3.0" circle.
-mask = al.Mask.circular(shape=imaging_data.shape, pixel_scale=imaging_data.pixel_scale, radius_arcsec=3.0)
+mask = aa.Mask.circular(shape=imaging_data.shape, pixel_scale=imaging_data.pixel_scale, radius_arcsec=3.0)
 
 # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) & our source galaxy 
 # a light profile (an elliptical Sersic).
@@ -68,7 +68,7 @@ Unfortunately, Slack is invitation-only, so first send me an [email](https://git
 
 - **Galaxies** - Use light & mass profiles to make galaxies & perform lensing calculations.
 - **Pipelines** - Write automated analysis pipelines to fit complex lens models to large samples of strong lenses.
-- **Extended Sources** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
+- **Extended Sources** - Reconstruct complex source galaxy morphologies on a variety of pixel-aa.
 - **Adaption** - Adapt the lensing analysis to the features of the observed strong lens imaging.
 - **Multi-Plane** - Perform multi-plane ray-tracing & model multi-plane lens systems.
 - **Visualization** - Custom visualization libraries for plotting physical lensing quantities & modeling results.

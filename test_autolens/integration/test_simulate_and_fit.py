@@ -14,7 +14,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         pixel_scales=0.2,
     )
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=(11, 11), pixel_scale=0.2, sub_size=2
     )
 
@@ -57,13 +57,13 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     if os.path.exists(path) is False:
         os.makedirs(path)
 
-    array_util.numpy_array_2d_to_fits(
+    aa.array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.image, file_path=path + "/image.fits"
     )
-    array_util.numpy_array_2d_to_fits(
+    aa.array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.noise_map, file_path=path + "/noise_map.fits"
     )
-    array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
+    aa.array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
 
     imaging_data = al.load_imaging_data_from_fits(
         image_path=path + "/image.fits",
@@ -72,7 +72,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         pixel_scale=0.2,
     )
 
-    mask = al.Mask.circular(
+    mask = aa.Mask.circular(
         shape=imaging_data.image.shape, pixel_scales=0.2, sub_size=2, radius_arcsec=0.8
     )
 
@@ -98,7 +98,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     psf = al.PSF.from_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=(11, 11), pixel_scale=0.2, sub_size=1
     )
 
@@ -139,13 +139,13 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     if os.path.exists(path) is False:
         os.makedirs(path)
 
-    array_util.numpy_array_2d_to_fits(
+    aa.array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.image, file_path=path + "/image.fits"
     )
-    array_util.numpy_array_2d_to_fits(
+    aa.array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.noise_map, file_path=path + "/noise_map.fits"
     )
-    array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
+    aa.array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
 
     imaging_data = al.load_imaging_data_from_fits(
         image_path=path + "/image.fits",
@@ -154,7 +154,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         pixel_scale=0.2,
     )
 
-    mask = al.Mask.circular(
+    mask = aa.Mask.circular(
         shape=imaging_data.image.shape, pixel_scales=0.2, sub_size=1, radius_arcsec=0.8
     )
 

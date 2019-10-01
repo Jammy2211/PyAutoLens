@@ -32,7 +32,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
         shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale
     )
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=image_shape, pixel_scale=pixel_scale, sub_size=1
     )
 
@@ -52,20 +52,20 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    array_util.numpy_array_2d_to_fits(
+    aa.array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.image,
         file_path=output_path + "/image.fits",
         overwrite=True,
     )
-    array_util.numpy_array_2d_to_fits(
+    aa.array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.noise_map,
         file_path=output_path + "/noise_map.fits",
         overwrite=True,
     )
-    array_util.numpy_array_2d_to_fits(
+    aa.array_util.numpy_array_2d_to_fits(
         array_2d=psf, file_path=output_path + "/psf.fits", overwrite=True
     )
-    array_util.numpy_array_2d_to_fits(
+    aa.array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.exposure_time_map,
         file_path=output_path + "/exposure_map.fits",
         overwrite=True,

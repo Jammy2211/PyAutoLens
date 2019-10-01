@@ -21,7 +21,7 @@ def galaxy_fit_phase():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
         shape=image_shape, pixel_scale=pixel_scale, sub_size=4
     )
 
@@ -36,7 +36,7 @@ def galaxy_fit_phase():
         galaxies=[galaxy], grid=grid
     )
 
-    noise_map = al.Scaled(
+    noise_map = aa.Scaled(
         sub_array_1d=np.ones(deflections[:, 0].shape), pixel_scales=pixel_scale
     )
 
