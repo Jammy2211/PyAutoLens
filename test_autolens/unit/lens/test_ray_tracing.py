@@ -4,7 +4,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 
-from test import mock_inversion as mock_inv
+from test_autolens.unit.mock.model import mock_inversion
 
 
 class TestAbstractTracer(object):
