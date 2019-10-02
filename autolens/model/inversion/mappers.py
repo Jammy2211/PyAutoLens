@@ -9,7 +9,7 @@ class Mapper(object):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxies.array.grid* module) to discretized pixels in a pixelization.
 
-        1D arrays are used to represent these mappings, for example between the different grid in a grid \
+        1D structures are used to represent these mappings, for example between the different grid in a grid \
         (e.g. the / sub grid). This follows the syntax grid_to_grid, whereby the index of a value on one grid \
         equals that of another grid, for example:
 

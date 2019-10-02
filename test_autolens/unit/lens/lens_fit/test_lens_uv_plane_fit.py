@@ -2,7 +2,6 @@ import autolens as al
 import numpy as np
 import pytest
 
-import autofit as af
 from test_autolens.unit.mock.model.mock_profiles import MockLightProfile
 
 
@@ -291,7 +290,7 @@ class TestCompareToManualProfilesOnly:
         assert model_visibilities == pytest.approx(fit._model_data, 1e-4)
         assert model_visibilities == pytest.approx(fit.model_visibilities(), 1e-4)
 
-        residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=lens_uv_plane_data_7.visibilities(),
             mask=lens_uv_plane_data_7.visibilities_mask,
             model_data=model_visibilities,
@@ -300,7 +299,7 @@ class TestCompareToManualProfilesOnly:
         assert residual_map == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map == pytest.approx(fit.residual_map(), 1e-4)
 
-        normalized_residual_map = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+        normalized_residual_map = autoarray.fit.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map,
             mask=lens_uv_plane_data_7.visibilities_mask,
             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
@@ -313,7 +312,7 @@ class TestCompareToManualProfilesOnly:
             fit.normalized_residual_map(), 1e-4
         )
 
-        chi_squared_map = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map,
             mask=lens_uv_plane_data_7.visibilities_mask,
             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
@@ -322,17 +321,17 @@ class TestCompareToManualProfilesOnly:
         assert chi_squared_map == pytest.approx(fit._chi_squared_map, 1e-4)
         assert chi_squared_map == pytest.approx(fit.chi_squared_map(), 1e-4)
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=fit._chi_squared_map,
             mask=lens_uv_plane_data_7.visibilities_mask,
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
             mask=lens_uv_plane_data_7.visibilities_mask,
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 

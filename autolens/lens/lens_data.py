@@ -87,7 +87,7 @@ class LensImagingData(AbstractLensData):
         The lens data is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D structures of each \
         for lensing calculations.
 
         Parameters
@@ -276,7 +276,7 @@ class LensUVPlaneData(AbstractLensData):
         The lens data is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D structures of each \
         for lensing calculations.
 
         Parameters

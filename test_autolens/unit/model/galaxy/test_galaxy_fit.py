@@ -2,7 +2,6 @@ import autolens as al
 import numpy as np
 import pytest
 
-import autofit as af
 from test import MockGalaxy
 
 
@@ -151,7 +150,7 @@ class TestCompareToManual:
 
         model_data_2d = galaxy.profile_image_from_grid(grid=galaxy_fit_data.grid)
 
-        residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_2d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),
             mask=galaxy_fit_data.mask,
             model_data=model_data_2d,
@@ -161,7 +160,7 @@ class TestCompareToManual:
             fit.residual_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_2d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d,
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
@@ -171,16 +170,16 @@ class TestCompareToManual:
             fit.chi_squared_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=sub_mask_7x7
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -203,7 +202,7 @@ class TestCompareToManual:
 
         model_data_2d = galaxy.convergence_from_grid(grid=galaxy_fit_data.grid)
 
-        residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_2d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),
             mask=galaxy_fit_data.mask,
             model_data=model_data_2d,
@@ -212,7 +211,7 @@ class TestCompareToManual:
             fit.residual_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_2d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d,
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
@@ -221,16 +220,16 @@ class TestCompareToManual:
             fit.chi_squared_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=sub_mask_7x7
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -254,7 +253,7 @@ class TestCompareToManual:
 
         model_data_2d = galaxy.potential_from_grid(grid=galaxy_fit_data.grid)
 
-        residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_2d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),
             mask=galaxy_fit_data.mask,
             model_data=model_data_2d,
@@ -264,7 +263,7 @@ class TestCompareToManual:
             fit.residual_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_2d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d,
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
@@ -274,16 +273,16 @@ class TestCompareToManual:
             fit.chi_squared_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=sub_mask_7x7
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -308,7 +307,7 @@ class TestCompareToManual:
 
         model_data_2d = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)[:, :, 0]
 
-        residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_2d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),
             mask=galaxy_fit_data.mask,
             model_data=model_data_2d,
@@ -318,7 +317,7 @@ class TestCompareToManual:
             fit.residual_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_2d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d,
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
@@ -328,16 +327,16 @@ class TestCompareToManual:
             fit.chi_squared_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=sub_mask_7x7
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -361,7 +360,7 @@ class TestCompareToManual:
 
         model_data_2d = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid)[:, :, 1]
 
-        residual_map_2d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_2d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=galaxy_fit_data.image(return_in_2d=True),
             mask=galaxy_fit_data.mask,
             model_data=model_data_2d,
@@ -371,7 +370,7 @@ class TestCompareToManual:
             fit.residual_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared_map_2d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_2d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_2d,
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
@@ -381,16 +380,16 @@ class TestCompareToManual:
             fit.chi_squared_map(return_in_2d=True), 1e-4
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=sub_mask_7x7
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=galaxy_fit_data.mask,
             noise_map=galaxy_fit_data.noise_map(return_in_2d=True),
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 

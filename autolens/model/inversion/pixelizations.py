@@ -29,7 +29,7 @@ class Rectangular(Pixelization):
         """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape \ 
         (rows, columns).
 
-        Like arrays, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+        Like structures, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 
         Parameters
         -----------

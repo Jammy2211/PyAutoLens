@@ -1067,11 +1067,11 @@ def load_imaging_data_from_fits(
     image_hdu : int
         The hdu the image is contained in the .fits file that *image_path* points too.
     resized_imaging_shape : (int, int) | None
-        If input, the imaging arrays that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
+        If input, the imaging structures that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
     resized_imaging_origin_pixels : (int, int) | None
-        If the imaging arrays are resized, this defines a new origin (in pixels) around which recentering occurs.
+        If the imaging structures are resized, this defines a new origin (in pixels) around which recentering occurs.
     resized_imaging_origin_arcsec : (float, float) | None
-        If the imaging arrays are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
+        If the imaging structures are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
     psf_path : str
         The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')        
     psf_hdu : int
