@@ -608,11 +608,11 @@ def load_uv_plane_data_from_fits(
     image_hdu : int
         The hdu the image is contained in the .fits file that *image_path* points too.
     resized_uv_plane_shape : (int, int) | None
-        If input, the uv_plane arrays that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
+        If input, the uv_plane structures that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
     resized_uv_plane_origin_pixels : (int, int) | None
-        If the uv_plane arrays are resized, this defines a new origin (in pixels) around which recentering occurs.
+        If the uv_plane structures are resized, this defines a new origin (in pixels) around which recentering occurs.
     resized_uv_plane_origin_arcsec : (float, float) | None
-        If the uv_plane arrays are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
+        If the uv_plane structures are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
     primary_beam_path : str
         The path to the primary_beam .fits file containing the primary_beam (e.g. '/path/to/primary_beam.fits')        
     primary_beam_hdu : int

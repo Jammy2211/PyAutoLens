@@ -2,7 +2,6 @@ import autolens as al
 import numpy as np
 import pytest
 
-import autofit as af
 from autolens.lens.lens_fit.lens_imaging_fit import (
     likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization,
 )
@@ -767,7 +766,7 @@ class TestCompareToManualProfilesOnly:
         assert model_image_1d == pytest.approx(fit._model_data, 1e-4)
         assert model_image_2d == pytest.approx(fit.model_image(return_in_2d=True))
 
-        residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=lens_imaging_data_7x7._image_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             model_data=model_image_1d,
@@ -779,7 +778,7 @@ class TestCompareToManualProfilesOnly:
         assert residual_map_1d == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map_2d == pytest.approx(fit.residual_map(return_in_2d=True))
 
-        normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+        normalized_residual_map_1d = autoarray.fit.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=lens_imaging_data_7x7._noise_map_1d,
@@ -796,7 +795,7 @@ class TestCompareToManualProfilesOnly:
             fit.normalized_residual_map(return_in_2d=True)
         )
 
-        chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_1d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=lens_imaging_data_7x7._noise_map_1d,
@@ -811,16 +810,16 @@ class TestCompareToManualProfilesOnly:
             fit.chi_squared_map(return_in_2d=True)
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=lens_imaging_data_7x7.mask
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             noise_map=lens_imaging_data_7x7.noise_map(return_in_2d=True),
             mask=lens_imaging_data_7x7.mask,
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -980,7 +979,7 @@ class TestCompareToManualProfilesOnly:
         assert model_image_1d == pytest.approx(fit._model_data, 1e-4)
         assert model_image_2d == pytest.approx(fit.model_image(return_in_2d=True))
 
-        residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=image_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             model_data=model_image_1d,
@@ -992,7 +991,7 @@ class TestCompareToManualProfilesOnly:
         assert residual_map_1d == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map_2d == pytest.approx(fit.residual_map(return_in_2d=True))
 
-        normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+        normalized_residual_map_1d = autoarray.fit.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
@@ -1009,7 +1008,7 @@ class TestCompareToManualProfilesOnly:
             fit.normalized_residual_map(return_in_2d=True)
         )
 
-        chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_1d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
@@ -1024,15 +1023,15 @@ class TestCompareToManualProfilesOnly:
             fit.chi_squared_map(return_in_2d=True)
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=lens_imaging_data_7x7.mask
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             noise_map=hyper_noise_map_2d, mask=lens_imaging_data_7x7.mask
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -1139,7 +1138,7 @@ class TestCompareToManualInversionOnly:
         assert inversion.reconstructed_data_1d == pytest.approx(fit._model_data, 1e-4)
         assert inversion.reconstructed_data_2d == fit.model_image(return_in_2d=True)
 
-        residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=lens_imaging_data_7x7._image_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             model_data=inversion.reconstructed_data_1d,
@@ -1151,7 +1150,7 @@ class TestCompareToManualInversionOnly:
         assert residual_map_1d == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map_2d == pytest.approx(fit.residual_map(return_in_2d=True))
 
-        normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+        normalized_residual_map_1d = autoarray.fit.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=lens_imaging_data_7x7._noise_map_1d,
@@ -1168,7 +1167,7 @@ class TestCompareToManualInversionOnly:
             fit.normalized_residual_map(return_in_2d=True)
         )
 
-        chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_1d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=lens_imaging_data_7x7._noise_map_1d,
@@ -1182,16 +1181,16 @@ class TestCompareToManualInversionOnly:
             fit.chi_squared_map(return_in_2d=True)
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=lens_imaging_data_7x7.mask
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=lens_imaging_data_7x7.mask,
             noise_map=lens_imaging_data_7x7.noise_map(return_in_2d=True),
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -1336,7 +1335,7 @@ class TestCompareToManualInversionOnly:
         assert inversion.reconstructed_data_1d == pytest.approx(fit._model_data, 1e-4)
         assert inversion.reconstructed_data_2d == fit.model_image(return_in_2d=True)
 
-        residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=image_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             model_data=inversion.reconstructed_data_1d,
@@ -1348,7 +1347,7 @@ class TestCompareToManualInversionOnly:
         assert residual_map_1d == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map_2d == pytest.approx(fit.residual_map(return_in_2d=True))
 
-        normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+        normalized_residual_map_1d = autoarray.fit.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
@@ -1365,7 +1364,7 @@ class TestCompareToManualInversionOnly:
             fit.normalized_residual_map(return_in_2d=True)
         )
 
-        chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_1d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
@@ -1379,15 +1378,15 @@ class TestCompareToManualInversionOnly:
             fit.chi_squared_map(return_in_2d=True)
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=lens_imaging_data_7x7.mask
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=lens_imaging_data_7x7.mask, noise_map=hyper_noise_map_2d
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -1517,7 +1516,7 @@ class TestCompareToManualProfilesAndInversion:
         assert model_image_1d == pytest.approx(fit._model_data, 1e-4)
         assert model_image_2d == pytest.approx(fit.model_image(return_in_2d=True))
 
-        residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=lens_imaging_data_7x7._image_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             model_data=model_image_1d,
@@ -1529,7 +1528,7 @@ class TestCompareToManualProfilesAndInversion:
         assert residual_map_1d == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map_2d == pytest.approx(fit.residual_map(return_in_2d=True))
 
-        normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+        normalized_residual_map_1d = autoarray.fit.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=lens_imaging_data_7x7._noise_map_1d,
@@ -1546,7 +1545,7 @@ class TestCompareToManualProfilesAndInversion:
             fit.normalized_residual_map(return_in_2d=True)
         )
 
-        chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_1d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=lens_imaging_data_7x7._noise_map_1d,
@@ -1560,16 +1559,16 @@ class TestCompareToManualProfilesAndInversion:
             fit.chi_squared_map(return_in_2d=True)
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=lens_imaging_data_7x7.mask
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=lens_imaging_data_7x7.mask,
             noise_map=lens_imaging_data_7x7.noise_map(return_in_2d=True),
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -1813,7 +1812,7 @@ class TestCompareToManualProfilesAndInversion:
         assert model_image_1d == pytest.approx(fit._model_data, 1e-4)
         assert model_image_2d == pytest.approx(fit.model_image(return_in_2d=True))
 
-        residual_map_1d = af.fit_util.residual_map_from_data_mask_and_model_data(
+        residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=image_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             model_data=model_image_1d,
@@ -1826,7 +1825,7 @@ class TestCompareToManualProfilesAndInversion:
         assert residual_map_1d == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map_2d == pytest.approx(fit.residual_map(return_in_2d=True))
 
-        normalized_residual_map_1d = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
+        normalized_residual_map_1d = autoarray.fit.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
@@ -1843,7 +1842,7 @@ class TestCompareToManualProfilesAndInversion:
             fit.normalized_residual_map(return_in_2d=True)
         )
 
-        chi_squared_map_1d = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map_1d = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
             mask=lens_imaging_data_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
@@ -1858,15 +1857,15 @@ class TestCompareToManualProfilesAndInversion:
             fit.chi_squared_map(return_in_2d=True)
         )
 
-        chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=chi_squared_map_2d, mask=lens_imaging_data_7x7.mask
         )
 
-        noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
             mask=lens_imaging_data_7x7.mask, noise_map=hyper_noise_map_2d
         )
 
-        likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
