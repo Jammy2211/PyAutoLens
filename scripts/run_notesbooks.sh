@@ -4,7 +4,7 @@ error_log=notebook_error.log
 
 echo "" > $error_log
 
-for notebook in `find workspace/howtolens -name *pynb | sort`  
+for notebook in `find autolens_workspace/howtolens -name *pynb | sort`
 do 
 	dir=$(dirname ${notebook})
 	filename=$(basename ${notebook})
