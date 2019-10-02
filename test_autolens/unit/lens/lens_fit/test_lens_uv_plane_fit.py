@@ -116,7 +116,7 @@ class TestLikelihood:
         assert (fit.model_visibilities() == np.array([2.0, 0.0])).all()
         assert (fit._residual_map == np.array([3.0, 4.0])).all()
         assert (fit.residual_map() == np.array([3.0, 4.0])).all()
-        assert (fit._normalized_residual_map == np.array([3.0, 4.0])).all()
+        assert (fit.normalized_residual_map == np.array([3.0, 4.0])).all()
         assert (fit.normalized_residual_map() == np.array([3.0, 4.0])).all()
         assert (fit._chi_squared_map == np.array([9.0, 16.0])).all()
         assert (fit.chi_squared_map() == np.array([9.0, 16.0])).all()
@@ -208,7 +208,7 @@ class TestLikelihood:
         assert fit.residual_map() == pytest.approx(
             np.array([[3.0519, 5.0], [3.0519, 5.0], [3.0519, 5.0]]), 1.0e-4
         )
-        assert fit._normalized_residual_map == pytest.approx(
+        assert fit.normalized_residual_map == pytest.approx(
             np.array(
                 [
                     [3.0519 / 2.0, 5.0 / 2.0],
@@ -306,7 +306,7 @@ class TestCompareToManualProfilesOnly:
         )
 
         assert normalized_residual_map == pytest.approx(
-            fit._normalized_residual_map, 1e-4
+            fit.normalized_residual_map, 1e-4
         )
         assert normalized_residual_map == pytest.approx(
             fit.normalized_residual_map(), 1e-4
