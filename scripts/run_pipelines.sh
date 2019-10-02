@@ -2,7 +2,7 @@
 
 export PYTHONPATH=$PYTHONPATH:`cwd`
 
-pipeline_directory=workspace/howtolens/chapter_3_pipelines
+pipeline_directory=autolens_workspace/howtolens/chapter_3_pipelines
 error_log=pipeline_error.log
 
 echo "" > $error_log
