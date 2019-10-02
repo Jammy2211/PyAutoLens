@@ -344,7 +344,7 @@ class SimulatedUVPlaneData(UVPlaneData):
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
 
-        deflections_1d = grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
+        deflections_1d = grid_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
             sub_grid_2d=deflections,
             mask=np.full(shape=shape, fill_value=False),
             sub_size=1,
@@ -481,7 +481,7 @@ class SimulatedUVPlaneData(UVPlaneData):
             )
 
         image += background_sky_map
-        image_1d = array_mapping_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        image_1d = array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
             sub_array_2d=image,
             mask=np.full(fill_value=False, shape=image.shape),
             sub_size=1,

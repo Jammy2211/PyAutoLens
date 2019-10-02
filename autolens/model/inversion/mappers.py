@@ -36,8 +36,8 @@ class Mapper(object):
 
     @property
     def mapping_matrix(self):
-        """The mapping_util matrix is a matrix representing the mapping_util between every unmasked pixel of a grid and \
-        the pixels of a pixelization. Non-zero entries signify a mapping_util, whereas zeros signify no mapping_util.
+        """The util matrix is a matrix representing the util between every unmasked pixel of a grid and \
+        the pixels of a pixelization. Non-zero entries signify a util, whereas zeros signify no util.
 
         For example, if the grid has 5 pixels and the pixelization 3 pixels, with the following mappings:
 
@@ -47,7 +47,7 @@ class Mapper(object):
         pixel 3 -> pixelization pixel 1
         pixel 4 -> pixelization pixel 2
 
-        The mapping_util matrix (which is of dimensions regular_pixels x pixelization_pixels) would appear as follows:
+        The util matrix (which is of dimensions regular_pixels x pixelization_pixels) would appear as follows:
 
         [1, 0, 0] [0->0]
         [1, 0, 0] [1->0]
@@ -55,9 +55,9 @@ class Mapper(object):
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        The mapping_util matrix is in fact built using the sub-grid of the grid, whereby each pixel is \
+        The util matrix is in fact built using the sub-grid of the grid, whereby each pixel is \
         divided into a grid of sub-pixels which are all paired to pixels in the pixelization. The entires \
-        in the mapping_util matrix now become fractional values dependent on the sub-grid size. For example, for a 2x2 \
+        in the util matrix now become fractional values dependent on the sub-grid size. For example, for a 2x2 \
         sub-grid in each pixel (which means the fraction value is 1.0/(2.0^2) = 0.25, if we have the following mappings:
 
         pixel 0 -> sub pixel 0 -> pixelization pixel 0
@@ -73,7 +73,7 @@ class Mapper(object):
         pixel 2 -> sub pixel 2 -> pixelization pixel 3
         pixel 2 -> sub pixel 3 -> pixelization pixel 3
 
-        The mapping_util matrix (which is still of dimensions regular_pixels x source_pixels) would appear as follows:
+        The util matrix (which is still of dimensions regular_pixels x source_pixels) would appear as follows:
 
         [0.25, 0.75, 0.0, 0.0] [1 sub-pixel maps to pixel 0, 3 map to pixel 1]
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
@@ -158,7 +158,7 @@ class RectangularMapper(Mapper):
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
-        recon = array_mapping_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
+        recon = array_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
             sub_array_1d=solution_vector,
             mask=np.full(fill_value=False, shape=self.shape),
             sub_size=1,

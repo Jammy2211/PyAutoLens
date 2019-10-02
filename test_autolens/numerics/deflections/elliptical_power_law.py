@@ -1,6 +1,3 @@
-from autoarray import grids
-from autolens.model.profiles import mass_profiles as mp
-
 # This numerics test_autoarray determines the range of plausible values a power-law mass profile can take and not crash due to
 # numerical integration. This informs us the limits config file for this profile.
 
