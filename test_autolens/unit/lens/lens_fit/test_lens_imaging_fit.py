@@ -170,7 +170,7 @@ class TestLikelihood:
             )
         ).all()
 
-        assert (fit._normalized_residual_map == np.array([4.0, 3.0])).all()
+        assert (fit.normalized_residual_map == np.array([4.0, 3.0])).all()
         assert (
             fit.normalized_residual_map(return_in_2d=True)
             == np.array(
@@ -273,7 +273,7 @@ class TestLikelihood:
             )
         ).all()
 
-        assert (fit._normalized_residual_map == np.array([4.0, 0.0])).all()
+        assert (fit.normalized_residual_map == np.array([4.0, 0.0])).all()
         assert (
             fit.normalized_residual_map(return_in_2d=True)
             == np.array(
@@ -392,7 +392,7 @@ class TestLikelihood:
             )
         ).all()
 
-        assert (fit._normalized_residual_map == np.array([2.0, 0.0])).all()
+        assert (fit.normalized_residual_map == np.array([2.0, 0.0])).all()
         assert (
             fit.normalized_residual_map(return_in_2d=True)
             == np.array(
@@ -496,7 +496,7 @@ class TestLikelihood:
             )
         ).all()
 
-        assert (fit._normalized_residual_map == np.array([5.0, 4.0])).all()
+        assert (fit.normalized_residual_map == np.array([5.0, 4.0])).all()
         assert (
             fit.normalized_residual_map(return_in_2d=True)
             == np.array(
@@ -602,7 +602,7 @@ class TestLikelihood:
             )
         ).all()
 
-        assert (fit._normalized_residual_map == np.array([2.0, 1.5])).all()
+        assert (fit.normalized_residual_map == np.array([2.0, 1.5])).all()
         assert (
             fit.normalized_residual_map(return_in_2d=True)
             == np.array(
@@ -708,7 +708,7 @@ class TestLikelihood:
             )
         ).all()
 
-        assert (fit._normalized_residual_map == np.array([4.0, 3.0])).all()
+        assert (fit.normalized_residual_map == np.array([4.0, 3.0])).all()
         assert (
             fit.normalized_residual_map(return_in_2d=True)
             == np.array(
@@ -789,7 +789,7 @@ class TestCompareToManualProfilesOnly:
         )
 
         assert normalized_residual_map_1d == pytest.approx(
-            fit._normalized_residual_map, 1e-4
+            fit.normalized_residual_map, 1e-4
         )
         assert normalized_residual_map_2d == pytest.approx(
             fit.normalized_residual_map(return_in_2d=True)
@@ -1002,7 +1002,7 @@ class TestCompareToManualProfilesOnly:
         )
 
         assert normalized_residual_map_1d == pytest.approx(
-            fit._normalized_residual_map, 1e-4
+            fit.normalized_residual_map, 1e-4
         )
         assert normalized_residual_map_2d == pytest.approx(
             fit.normalized_residual_map(return_in_2d=True)
@@ -1161,7 +1161,7 @@ class TestCompareToManualInversionOnly:
         )
 
         assert normalized_residual_map_1d == pytest.approx(
-            fit._normalized_residual_map, 1e-4
+            fit.normalized_residual_map, 1e-4
         )
         assert normalized_residual_map_2d == pytest.approx(
             fit.normalized_residual_map(return_in_2d=True)
@@ -1358,7 +1358,7 @@ class TestCompareToManualInversionOnly:
         )
 
         assert normalized_residual_map_1d == pytest.approx(
-            fit._normalized_residual_map, 1e-4
+            fit.normalized_residual_map, 1e-4
         )
         assert normalized_residual_map_2d == pytest.approx(
             fit.normalized_residual_map(return_in_2d=True)
@@ -1539,7 +1539,7 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         assert normalized_residual_map_1d == pytest.approx(
-            fit._normalized_residual_map, 1e-4
+            fit.normalized_residual_map, 1e-4
         )
         assert normalized_residual_map_2d == pytest.approx(
             fit.normalized_residual_map(return_in_2d=True)
@@ -1836,7 +1836,7 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         assert normalized_residual_map_1d == pytest.approx(
-            fit._normalized_residual_map, 1e-4
+            fit.normalized_residual_map, 1e-4
         )
         assert normalized_residual_map_2d == pytest.approx(
             fit.normalized_residual_map(return_in_2d=True)
