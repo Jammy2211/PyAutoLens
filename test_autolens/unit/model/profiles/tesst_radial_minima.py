@@ -9,16 +9,9 @@ af.conf.instance = af.conf.Config(config_path=test_path)
 import numpy as np
 import pytest
 
-from autoarray import mask as msk
-from autoarray import grids
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.profiles import mass_profiles as mp
-
 
 class TestGaussian:
     def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
-
-        from autolens.model.profiles import light_profiles as lp
 
         gaussian = al.EllipticalGaussian(centre=(0.0, 0.0))
 

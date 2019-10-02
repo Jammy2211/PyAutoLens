@@ -757,7 +757,7 @@ class TestRectangularMapper:
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = aa.array_mapping_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
+            recon_pix_util = aa.array_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(4, 3)),
                 sub_size=1,
@@ -778,7 +778,7 @@ class TestRectangularMapper:
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = aa.array_mapping_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
+            recon_pix_util = aa.array_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(3, 4)),
                 sub_size=1,

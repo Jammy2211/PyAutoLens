@@ -10,7 +10,7 @@ def mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
     mask_1d_index_for_sub_mask_1d_index,
     sub_fraction,
 ):
-    """Computes the mapping_util matrix, by iterating over the known mappings between the sub-grid and pixelization.
+    """Computes the util matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
     Parameters
     -----------

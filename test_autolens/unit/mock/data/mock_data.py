@@ -2,7 +2,7 @@ import numpy as np
 
 import autoarray as aa
 import autolens as al
-from autoarray import fourier_transform
+from autoarray.operators import fourier_transform
 
 
 class MockImage(object):

@@ -1,5 +1,4 @@
 from autolens.model.profiles import mass_profiles
-from autoarray import grids
 from autolens.model.profiles.plotters import profile_plotters
 
 grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
