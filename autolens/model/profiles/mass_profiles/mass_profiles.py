@@ -344,127 +344,113 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def deflections_via_potential_from_grid(self, grid):
 
-        potential = self.potential_from_grid(
-            grid=grid,
-        )
+        potential = self.potential_from_grid(grid=grid)
 
         deflections_y_2d = np.gradient(potential.in_2d, grid.in_2d[:, 0, 0], axis=0)
         deflections_x_2d = np.gradient(potential.in_2d, grid.in_2d[0, :, 1], axis=1)
 
-        return grid.mask.grid_from_sub_grid_2d(sub_grid_2d=np.stack((deflections_y_2d, deflections_x_2d), axis=-1))
+        return grid.mask.mapping.grid_from_sub_grid_2d(
+            sub_grid_2d=np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
+        )
 
     def lensing_jacobian_a11_from_grid(self, grid):
 
-        deflections = self.deflections_from_grid(
-            grid=grid,
-        )
+        deflections = self.deflections_from_grid(grid=grid)
 
-        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=1.0 - np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1))
+        return grid.mask.mapping.scaled_array_from_sub_array_2d(
+            sub_array_2d=1.0
+            - np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
+        )
 
     def lensing_jacobian_a12_from_grid(self, grid):
 
-        deflections = self.deflections_from_grid(
-            grid=grid,
-        )
+        deflections = self.deflections_from_grid(grid=grid)
 
-        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=-1.0 * np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0))
+        return grid.mask.mapping.scaled_array_from_sub_array_2d(
+            sub_array_2d=-1.0
+            * np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
+        )
 
     def lensing_jacobian_a21_from_grid(self, grid):
 
-        deflections = self.deflections_from_grid(
-            grid=grid,
-        )
+        deflections = self.deflections_from_grid(grid=grid)
 
-        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=-1.0 * np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1))
+        return grid.mask.mapping.scaled_array_from_sub_array_2d(
+            sub_array_2d=-1.0
+            * np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
+        )
 
     def lensing_jacobian_a22_from_grid(self, grid):
 
-        deflections = self.deflections_from_grid(
-            grid=grid,
-        )
+        deflections = self.deflections_from_grid(grid=grid)
 
-        return grid.mask.scaled_array_from_sub_array_2d(sub_array_2d=1 - np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0))
+        return grid.mask.mapping.scaled_array_from_sub_array_2d(
+            sub_array_2d=1
+            - np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
+        )
 
     def lensing_jacobian_from_grid(self, grid):
 
-        a11 = self.lensing_jacobian_a11_from_grid(
-            grid=grid,
-        )
+        a11 = self.lensing_jacobian_a11_from_grid(grid=grid)
 
-        a12 = self.lensing_jacobian_a12_from_grid(
-            grid=grid,
-        )
+        a12 = self.lensing_jacobian_a12_from_grid(grid=grid)
 
-        a21 = self.lensing_jacobian_a21_from_grid(
-            grid=grid,
-        )
+        a21 = self.lensing_jacobian_a21_from_grid(grid=grid)
 
-        a22 = self.lensing_jacobian_a22_from_grid(
-            grid=grid,
-        )
+        a22 = self.lensing_jacobian_a22_from_grid(grid=grid)
 
         return [[a11, a12], [a21, a22]]
 
     def convergence_via_jacobian_from_grid(self, grid):
 
-        jacobian = self.lensing_jacobian_from_grid(
-            grid=grid,
-        )
+        jacobian = self.lensing_jacobian_from_grid(grid=grid)
 
         convergence = 1 - 0.5 * (jacobian[0][0] + jacobian[1][1])
 
-        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=convergence)
+        return grid.mask.mapping.scaled_array_from_sub_array_1d(sub_array_1d=convergence)
 
     def shear_via_jacobian_from_grid(self, grid):
 
-        jacobian = self.lensing_jacobian_from_grid(
-            grid=grid,
-        )
+        jacobian = self.lensing_jacobian_from_grid(grid=grid)
 
         gamma_1 = 0.5 * (jacobian[1][1] - jacobian[0][0])
         gamma_2 = -0.5 * (jacobian[0][1] + jacobian[1][0])
 
-        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=(gamma_1 ** 2 + gamma_2 ** 2) ** 0.5)
+        return grid.mask.mapping.scaled_array_from_sub_array_1d(
+            sub_array_1d=(gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
+        )
 
     def tangential_eigen_value_from_grid(self, grid):
 
-        convergence = self.convergence_via_jacobian_from_grid(
-            grid=grid,
-        )
+        convergence = self.convergence_via_jacobian_from_grid(grid=grid)
 
-        shear = self.shear_via_jacobian_from_grid(
-            grid=grid,
-        )
+        shear = self.shear_via_jacobian_from_grid(grid=grid)
 
-        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=1 - convergence - shear)
+        return grid.mask.mapping.scaled_array_from_sub_array_1d(
+            sub_array_1d=1 - convergence - shear
+        )
 
     def radial_eigen_value_from_grid(self, grid):
 
-        convergence = self.convergence_via_jacobian_from_grid(
-            grid=grid,
-        )
+        convergence = self.convergence_via_jacobian_from_grid(grid=grid)
 
-        shear = self.shear_via_jacobian_from_grid(
-            grid=grid,
-        )
+        shear = self.shear_via_jacobian_from_grid(grid=grid)
 
-        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=1 - convergence + shear)
+        return grid.mask.mapping.scaled_array_from_sub_array_1d(
+            sub_array_1d=1 - convergence + shear
+        )
 
     def magnification_from_grid(self, grid):
 
-        jacobian = self.lensing_jacobian_from_grid(
-            grid=grid,
-        )
+        jacobian = self.lensing_jacobian_from_grid(grid=grid)
 
         det_jacobian = jacobian[0][0] * jacobian[1][1] - jacobian[0][1] * jacobian[1][0]
 
-        return grid.mask.scaled_array_from_sub_array_1d(sub_array_1d=1 / det_jacobian)
+        return grid.mask.mapping.scaled_array_from_sub_array_1d(sub_array_1d=1 / det_jacobian)
 
     def tangential_critical_curve_from_grid(self, grid):
 
-        tangential_eigen_values = self.tangential_eigen_value_from_grid(
-            grid=grid,
-        )
+        tangential_eigen_values = self.tangential_eigen_value_from_grid(grid=grid)
 
         tangential_critical_curve_indices = measure.find_contours(
             tangential_eigen_values.in_2d, 0
@@ -473,24 +459,25 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         if len(tangential_critical_curve_indices) == 0:
             return []
 
-        return grid.mask.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+        return grid.mask.mapping.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=tangential_critical_curve_indices[0],
             shape=tangential_eigen_values.in_2d.shape,
         )
 
     def radial_critical_curve_from_grid(self, grid):
 
-        radial_eigen_values = self.radial_eigen_value_from_grid(
-            grid=grid,
-        )
+        radial_eigen_values = self.radial_eigen_value_from_grid(grid=grid)
 
-        radial_critical_curve_indices = measure.find_contours(radial_eigen_values.in_2d, 0)
+        radial_critical_curve_indices = measure.find_contours(
+            radial_eigen_values.in_2d, 0
+        )
 
         if len(radial_critical_curve_indices) == 0:
             return []
 
-        return grid.mask.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
-            grid_pixels_1d=radial_critical_curve_indices[0], shape=radial_eigen_values.in_2d.shape
+        return grid.mask.mapping.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+            grid_pixels_1d=radial_critical_curve_indices[0],
+            shape=radial_eigen_values.in_2d.shape,
         )
 
     def tangential_caustic_from_grid(self, grid):

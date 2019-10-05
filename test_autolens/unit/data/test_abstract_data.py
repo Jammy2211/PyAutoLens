@@ -81,7 +81,9 @@ class TestAbstractNoiseMap(object):
                 weight_map=weight_map, pixel_scale=1.0
             )
 
-            assert (noise_map.in_2d == np.array([[1.0, 0.5, 0.25], [1.0, 0.5, 0.25]])).all()
+            assert (
+                noise_map.in_2d == np.array([[1.0, 0.5, 0.25], [1.0, 0.5, 0.25]])
+            ).all()
             assert noise_map.mask.origin == (0.0, 0.0)
 
         def test__weight_map_no_zeros__zeros_set_to_10000000(self):
@@ -91,7 +93,9 @@ class TestAbstractNoiseMap(object):
                 weight_map=weight_map, pixel_scale=1.0
             )
 
-            assert (noise_map.in_2d == np.array([[1.0, 0.5, 1.0e8], [1.0, 0.5, 0.25]])).all()
+            assert (
+                noise_map.in_2d == np.array([[1.0, 0.5, 1.0e8], [1.0, 0.5, 0.25]])
+            ).all()
             assert noise_map.mask.origin == (0.0, 0.0)
 
     class TestFromInverseAbstractNoiseMap:
@@ -120,7 +124,8 @@ class TestExposureTimeMap(object):
             )
 
             assert (
-                exposure_time_map.in_2d == np.array([[0.125, 0.5, 1.0], [0.125, 0.5, 1.0]])
+                exposure_time_map.in_2d
+                == np.array([[0.125, 0.5, 1.0], [0.125, 0.5, 1.0]])
             ).all()
             assert exposure_time_map.mask.origin == (0.0, 0.0)
 
@@ -131,7 +136,8 @@ class TestExposureTimeMap(object):
             )
 
             assert (
-                exposure_time_map.in_2d == np.array([[0.375, 1.5, 3.0], [0.375, 1.5, 3.0]])
+                exposure_time_map.in_2d
+                == np.array([[0.375, 1.5, 3.0], [0.375, 1.5, 3.0]])
             ).all()
             assert exposure_time_map.mask.origin == (0.0, 0.0)
 

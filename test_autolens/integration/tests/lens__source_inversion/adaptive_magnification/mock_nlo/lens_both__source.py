@@ -1,6 +1,4 @@
-from test import (
-    lens_both__source,
-)
+from test import lens_both__source
 from test import run_a_mock
 
 

@@ -10,7 +10,7 @@ from autolens.pipeline.phase.phase import AbstractPhase
 
 
 def default_mask_function(image):
-    return aa.Mask.circular(
+    return aa.AbstractMask.circular(
         shape=image.shape, pixel_scales=image.pixel_scale, sub_size=1, radius_arcsec=3.0
     )
 
@@ -69,7 +69,7 @@ class MetaDataFit:
             mask = mask.new_mask_with_new_sub_size(sub_size=self.sub_size)
 
         if self.inner_mask_radii is not None:
-            inner_mask = aa.Mask.circular(
+            inner_mask = aa.AbstractMask.circular(
                 shape=mask.shape,
                 pixel_scales=mask.pixel_scale,
                 radius_arcsec=self.inner_mask_radii,
@@ -106,7 +106,7 @@ class MetaDataFit:
 
             bin_up_factor = 1
 
-        binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
+        binned_mask = mask.binned_up_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
 
         while binned_mask.pixels_in_mask < self.inversion_pixel_limit:
 
@@ -121,7 +121,7 @@ class MetaDataFit:
                 )
 
             bin_up_factor -= 1
-            binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
+            binned_mask = mask.binned_up_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
 
         return mask.pixel_scale * bin_up_factor
 

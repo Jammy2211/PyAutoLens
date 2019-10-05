@@ -1,7 +1,8 @@
+import autoarray as aa
 import autofit as af
 
 
-class UVPlaneFit(af.DataFit):
+class UVPlaneFit(aa.DataFit):
     def __init__(
         self, visibilities, noise_map, mask, model_visibilities, mapping, inversion
     ):
@@ -186,7 +187,7 @@ class LensUVPlaneFit(UVPlaneFit):
     #
     #     for galalxy, galaxy_visibilities in self.galaxy_visibilities_1d_dict.items():
     #
-    #         galaxy_visibilities_2d_dict[galalxy] = self.grid.mask.scaled_array_2d_from_array_1d(
+    #         galaxy_visibilities_2d_dict[galalxy] = self.grid.mask.mapping.scaled_array_2d_from_array_1d(
     #             array_1d=galaxy_visibilities
     #         )
     #

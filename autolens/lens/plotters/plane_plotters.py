@@ -362,9 +362,7 @@ def plot_deflections_y(
 ):
 
     deflections = plane.deflections_from_grid(grid=grid)
-    deflections_y = grid.mask.scaled_array_2d_from_array_1d(
-        array_1d=deflections[:, 0]
-    )
+    deflections_y = grid.mask.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
@@ -440,9 +438,7 @@ def plot_deflections_x(
 ):
 
     deflections = plane.deflections_from_grid(grid=grid)
-    deflections_x = grid.mask.scaled_array_2d_from_array_1d(
-        array_1d=deflections[:, 1]
-    )
+    deflections_x = grid.mask.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,

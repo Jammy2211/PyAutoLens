@@ -490,9 +490,7 @@ class TestPrimaryBeam(object):
             gaussian = al.light_profiles.EllipticalGaussian(
                 centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
             )
-            profile_gaussian = gaussian.profile_image_from_grid(
-                grid=grid
-            )
+            profile_gaussian = gaussian.profile_image_from_grid(grid=grid)
 
             profile_psf = al.PrimaryBeam(
                 array_1d=profile_gaussian, pixel_scales=1.0, renormalize=True
@@ -649,9 +647,7 @@ class TestSimulateUVPlaneData(object):
             noise_seed=1,
         )
 
-        tracer_profile_image = tracer.profile_image_from_grid(
-            grid=grid
-        )
+        tracer_profile_image = tracer.profile_image_from_grid(grid=grid)
 
         uv_plane_data_simulated = al.SimulatedUVPlaneData.from_image_and_exposure_arrays(
             image=tracer_profile_image,

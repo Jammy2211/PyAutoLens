@@ -717,7 +717,6 @@ class TestDensityBetweenAnnuli(object):
 
 
 class TestDeflectionsViaPotential(object):
-
     def test__compare_sis_deflections_via_potential_and_calculation(self):
 
         sis = al.mass_profiles.SphericalIsothermal(
@@ -816,17 +815,11 @@ class TestJacobianandMagnification(object):
             shape=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
-        magnification_via_determinant = sie.magnification_from_grid(
-            grid=grid,
-        )
+        magnification_via_determinant = sie.magnification_from_grid(grid=grid)
 
-        tangential_eigen_value = sie.tangential_eigen_value_from_grid(
-            grid=grid,
-        )
+        tangential_eigen_value = sie.tangential_eigen_value_from_grid(grid=grid)
 
-        radal_eigen_value = sie.radial_eigen_value_from_grid(
-            grid=grid,
-        )
+        radal_eigen_value = sie.radial_eigen_value_from_grid(grid=grid)
 
         magnification_via_eigen_values = 1 / (
             tangential_eigen_value * radal_eigen_value
@@ -846,17 +839,11 @@ class TestJacobianandMagnification(object):
             shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
-        magnification_via_determinant = sie.magnification_from_grid(
-            grid=grid,
-        )
+        magnification_via_determinant = sie.magnification_from_grid(grid=grid)
 
-        tangential_eigen_value = sie.tangential_eigen_value_from_grid(
-            grid=grid,
-        )
+        tangential_eigen_value = sie.tangential_eigen_value_from_grid(grid=grid)
 
-        radal_eigen_value = sie.radial_eigen_value_from_grid(
-            grid=grid,
-        )
+        radal_eigen_value = sie.radial_eigen_value_from_grid(grid=grid)
 
         magnification_via_eigen_values = 1 / (
             tangential_eigen_value * radal_eigen_value
@@ -880,17 +867,11 @@ class TestJacobianandMagnification(object):
             shape=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
-        magnification_via_determinant = sie.magnification_from_grid(
-            grid=grid,
-        )
+        magnification_via_determinant = sie.magnification_from_grid(grid=grid)
 
-        convergence = sie.convergence_via_jacobian_from_grid(
-            grid=grid,
-        )
+        convergence = sie.convergence_via_jacobian_from_grid(grid=grid)
 
-        shear = sie.shear_via_jacobian_from_grid(
-            grid=grid,
-        )
+        shear = sie.shear_via_jacobian_from_grid(grid=grid)
 
         magnification_via_convergence_and_shear = 1 / (
             (1 - convergence) ** 2 - shear ** 2
@@ -906,17 +887,11 @@ class TestJacobianandMagnification(object):
             shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
-        magnification_via_determinant = sie.magnification_from_grid(
-            grid=grid
-        )
+        magnification_via_determinant = sie.magnification_from_grid(grid=grid)
 
-        convergence = sie.convergence_via_jacobian_from_grid(
-            grid=grid
-        )
+        convergence = sie.convergence_via_jacobian_from_grid(grid=grid)
 
-        shear = sie.shear_via_jacobian_from_grid(
-            grid=grid
-        )
+        shear = sie.shear_via_jacobian_from_grid(grid=grid)
 
         magnification_via_convergence_and_shear = 1 / (
             (1 - convergence) ** 2 - shear ** 2
@@ -931,9 +906,7 @@ class TestJacobianandMagnification(object):
 
 def critical_curve_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
 
-    magnification_2d = mass_profile.magnification_from_grid(
-        grid=grid
-    ).in_2d
+    magnification_2d = mass_profile.magnification_from_grid(grid=grid).in_2d
 
     inverse_magnification_2d = 1 / magnification_2d
 
@@ -949,7 +922,7 @@ def critical_curve_via_magnification_from_mass_profile_and_grid(mass_profile, gr
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid.mask.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+        critical_curve = grid.mask.mapping.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=pixel_coord, shape=magnification_2d.shape
         )
 
@@ -970,9 +943,7 @@ def caustics_via_magnification_from_mass_profile_and_grid(mass_profile, grid):
 
         critical_curve = critical_curves[i]
 
-        deflections_1d = mass_profile.deflections_from_grid(
-            grid=critical_curve
-        )
+        deflections_1d = mass_profile.deflections_from_grid(grid=critical_curve)
 
         caustic = critical_curve - deflections_1d
 
@@ -992,20 +963,20 @@ class TestConvergenceViajacobian(object):
             shape=(20, 20), pixel_scale=0.05, sub_size=1
         )
 
-        convergence_via_calculation = sis.convergence_from_grid(
-            grid=grid
-        )
+        convergence_via_calculation = sis.convergence_from_grid(grid=grid)
 
-        convergence_via_jacobian = sis.convergence_via_jacobian_from_grid(
-            grid=grid
-        )
+        convergence_via_jacobian = sis.convergence_via_jacobian_from_grid(grid=grid)
 
-        mean_error = np.mean(convergence_via_jacobian.in_1d - convergence_via_calculation.in_1d)
+        mean_error = np.mean(
+            convergence_via_jacobian.in_1d - convergence_via_calculation.in_1d
+        )
 
         assert convergence_via_jacobian.in_2d_binned.shape == (20, 20)
         assert mean_error < 1e-1
 
-        mean_error = np.mean(convergence_via_jacobian.in_1d - convergence_via_calculation.in_1d)
+        mean_error = np.mean(
+            convergence_via_jacobian.in_1d - convergence_via_calculation.in_1d
+        )
 
         assert mean_error < 1e-1
 
@@ -1019,13 +990,9 @@ class TestConvergenceViajacobian(object):
             shape=(20, 20), pixel_scale=0.05, sub_size=1
         )
 
-        convergence_via_calculation = sie.convergence_from_grid(
-            grid=grid
-        )
+        convergence_via_calculation = sie.convergence_from_grid(grid=grid)
 
-        convergence_via_jacobian = sie.convergence_via_jacobian_from_grid(
-            grid=grid
-        )
+        convergence_via_jacobian = sie.convergence_via_jacobian_from_grid(grid=grid)
 
         mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
 
@@ -1045,17 +1012,11 @@ class TestCriticalCurvesAndCaustics(object):
             shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
-        magnification_via_determinant = sie.magnification_from_grid(
-            grid=grid
-        )
+        magnification_via_determinant = sie.magnification_from_grid(grid=grid)
 
-        convergence = sie.convergence_via_jacobian_from_grid(
-            grid=grid
-        )
+        convergence = sie.convergence_via_jacobian_from_grid(grid=grid)
 
-        shear = sie.shear_via_jacobian_from_grid(
-            grid=grid
-        )
+        shear = sie.shear_via_jacobian_from_grid(grid=grid)
 
         magnification_via_convergence_and_shear = 1 / (
             (1 - convergence) ** 2 - shear ** 2
@@ -1342,7 +1303,9 @@ class TestCriticalCurvesAndCaustics(object):
         assert 0.3 < y_centre < 0.7
         assert 0.8 < x_centre < 1.2
 
-    def test__compare_tangential_critical_curves_from_magnification_and_eigen_values(self):
+    def test__compare_tangential_critical_curves_from_magnification_and_eigen_values(
+        self
+    ):
 
         sie = al.mass_profiles.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
@@ -1424,7 +1387,9 @@ class TestCriticalCurvesAndCaustics(object):
             0
         ]
 
-        tangential_caustic_from_eigen_values = sie.tangential_caustic_from_grid(grid=grid)
+        tangential_caustic_from_eigen_values = sie.tangential_caustic_from_grid(
+            grid=grid
+        )
 
         assert sum(tangential_caustic_from_eigen_values) == pytest.approx(
             sum(tangential_caustic_from_magnification), 5e-1
@@ -1440,7 +1405,9 @@ class TestCriticalCurvesAndCaustics(object):
             0
         ]
 
-        tangential_caustic_from_eigen_values = sie.tangential_caustic_from_grid(grid=grid)
+        tangential_caustic_from_eigen_values = sie.tangential_caustic_from_grid(
+            grid=grid
+        )
 
         assert sum(tangential_caustic_from_eigen_values) == pytest.approx(
             sum(tangential_caustic_from_magnification), 5e-1
@@ -1486,7 +1453,6 @@ class TestCriticalCurvesAndCaustics(object):
 
 
 class TestBinneGrids:
-
     def deflections_via_potential(self):
 
         sie = al.mass_profiles.EllipticalIsothermal(
@@ -1497,27 +1463,23 @@ class TestBinneGrids:
             shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
-        deflections = sie.deflections_via_potential_from_grid(
-            grid=grid,
-        )
+        deflections = sie.deflections_via_potential_from_grid(grid=grid)
 
         deflections_first_binned_pixel = (
-            deflections[0]
-            + deflections[1]
-            + deflections[2]
-            + deflections[3]
+            deflections[0] + deflections[1] + deflections[2] + deflections[3]
         ) / 4
 
-        assert deflections.in_1d_binned[0] == pytest.approx(deflections_first_binned_pixel, 1e-4)
+        assert deflections.in_1d_binned[0] == pytest.approx(
+            deflections_first_binned_pixel, 1e-4
+        )
 
         deflections_100th_binned_pixel = (
-            deflections[399]
-            + deflections[398]
-            + deflections[397]
-            + deflections[396]
+            deflections[399] + deflections[398] + deflections[397] + deflections[396]
         ) / 4
 
-        assert deflections.in_1d_binned[99] == pytest.approx(deflections_100th_binned_pixel, 1e-4)
+        assert deflections.in_1d_binned[99] == pytest.approx(
+            deflections_100th_binned_pixel, 1e-4
+        )
 
     def test__jacobian(self):
 
@@ -1532,12 +1494,17 @@ class TestBinneGrids:
         jacobian = sie.lensing_jacobian_from_grid(grid=grid)
 
         jacobian_1st_pixel_binned_up = (
-            jacobian[0][0][0] + jacobian[0][0][1] + jacobian[0][0][2] + jacobian[0][0][3]
+            jacobian[0][0][0]
+            + jacobian[0][0][1]
+            + jacobian[0][0][2]
+            + jacobian[0][0][3]
         ) / 4
 
         assert jacobian[0][0].in_2d_binned.shape == (10, 10)
         assert jacobian[0][0].in_2d.shape == (20, 20)
-        assert jacobian[0][0].in_1d_binned[0] == pytest.approx(jacobian_1st_pixel_binned_up, 1e-4)
+        assert jacobian[0][0].in_1d_binned[0] == pytest.approx(
+            jacobian_1st_pixel_binned_up, 1e-4
+        )
 
         jacobian_last_pixel_binned_up = (
             jacobian[0][0][399]
@@ -1546,7 +1513,9 @@ class TestBinneGrids:
             + jacobian[0][0][396]
         ) / 4
 
-        assert jacobian[0][0].in_1d_binned[99] == pytest.approx(jacobian_last_pixel_binned_up, 1e-4)
+        assert jacobian[0][0].in_1d_binned[99] == pytest.approx(
+            jacobian_last_pixel_binned_up, 1e-4
+        )
 
     def test__shear_via_jacobian(self):
 
@@ -1558,9 +1527,7 @@ class TestBinneGrids:
             shape=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
-        shear_via_jacobian = sie.shear_via_jacobian_from_grid(
-            grid=grid
-        )
+        shear_via_jacobian = sie.shear_via_jacobian_from_grid(grid=grid)
 
         shear_1st_pixel_binned_up = (
             shear_via_jacobian[0]
@@ -1569,7 +1536,9 @@ class TestBinneGrids:
             + shear_via_jacobian[3]
         ) / 4
 
-        assert shear_via_jacobian.in_1d_binned[0] == pytest.approx(shear_1st_pixel_binned_up, 1e-4)
+        assert shear_via_jacobian.in_1d_binned[0] == pytest.approx(
+            shear_1st_pixel_binned_up, 1e-4
+        )
 
         shear_last_pixel_binned_up = (
             shear_via_jacobian[399]
@@ -1578,7 +1547,9 @@ class TestBinneGrids:
             + shear_via_jacobian[396]
         ) / 4
 
-        assert shear_via_jacobian.in_1d_binned[99] == pytest.approx(shear_last_pixel_binned_up, 1e-4)
+        assert shear_via_jacobian.in_1d_binned[99] == pytest.approx(
+            shear_last_pixel_binned_up, 1e-4
+        )
 
     def test__tangential_eigen_values(self):
 
@@ -1599,7 +1570,9 @@ class TestBinneGrids:
             + tangential_eigen_values[3]
         ) / 4
 
-        assert tangential_eigen_values.in_1d_binned[0] == pytest.approx(first_pixel_binned_up, 1e-4)
+        assert tangential_eigen_values.in_1d_binned[0] == pytest.approx(
+            first_pixel_binned_up, 1e-4
+        )
 
         pixel_10000_from_av_sub_grid = (
             tangential_eigen_values[399]
@@ -1608,7 +1581,9 @@ class TestBinneGrids:
             + tangential_eigen_values[396]
         ) / 4
 
-        assert tangential_eigen_values.in_1d_binned[99] == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
+        assert tangential_eigen_values.in_1d_binned[99] == pytest.approx(
+            pixel_10000_from_av_sub_grid, 1e-4
+        )
 
     def test__radial_eigen_values(self):
 
@@ -1620,9 +1595,7 @@ class TestBinneGrids:
             shape=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
-        radial_eigen_values = sie.radial_eigen_value_from_grid(
-            grid=grid
-        )
+        radial_eigen_values = sie.radial_eigen_value_from_grid(grid=grid)
 
         first_pixel_binned_up = (
             radial_eigen_values[0]
@@ -1631,7 +1604,9 @@ class TestBinneGrids:
             + radial_eigen_values[3]
         ) / 4
 
-        assert radial_eigen_values.in_1d_binned[0] == pytest.approx(first_pixel_binned_up, 1e-4)
+        assert radial_eigen_values.in_1d_binned[0] == pytest.approx(
+            first_pixel_binned_up, 1e-4
+        )
 
         pixel_10000_from_av_sub_grid = (
             radial_eigen_values[399]
@@ -1640,4 +1615,6 @@ class TestBinneGrids:
             + radial_eigen_values[396]
         ) / 4
 
-        assert radial_eigen_values.in_1d_binned[99] == pytest.approx(pixel_10000_from_av_sub_grid, 1e-4)
+        assert radial_eigen_values.in_1d_binned[99] == pytest.approx(
+            pixel_10000_from_av_sub_grid, 1e-4
+        )

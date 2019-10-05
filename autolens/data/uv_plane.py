@@ -353,12 +353,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         deflected_grid_1d = grid_1d - deflections_1d
 
         image_2d = sum(
-            map(
-                lambda g: g.profile_image_from_grid(
-                    grid=deflected_grid_1d
-                ),
-                galaxies,
-            )
+            map(lambda g: g.profile_image_from_grid(grid=deflected_grid_1d), galaxies)
         )
 
         return cls.from_image_and_exposure_arrays(

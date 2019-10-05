@@ -101,14 +101,14 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     def blurred_profile_image_from_grid_and_psf(self, grid, psf, blurring_grid):
 
-        profile_image = self.profile_image_from_grid(
-            grid=grid,
-        )
+        profile_image = self.profile_image_from_grid(grid=grid)
 
         blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
         return psf.convolved_scaled_array_from_array_2d_and_mask(
-            array_2d=profile_image.in_2d_binned + blurring_image.in_2d_binned, mask=grid.mask)
+            array_2d=profile_image.in_2d_binned + blurring_image.in_2d_binned,
+            mask=grid.mask,
+        )
 
     def blurred_profile_image_from_grid_and_convolver(
         self, grid, convolver, blurring_grid
@@ -119,14 +119,17 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
         return convolver.convolved_scaled_array_from_image_array_and_blurring_array(
-            image_array=profile_image.in_1d_binned, blurring_array=blurring_image.in_1d_binned
+            image_array=profile_image.in_1d_binned,
+            blurring_array=blurring_image.in_1d_binned,
         )
 
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
         profile_image = self.profile_image_from_grid(grid=grid)
 
-        return transformer.visibilities_from_image_1d(image_1d=profile_image.in_1d_binned)
+        return transformer.visibilities_from_image_1d(
+            image_1d=profile_image.in_1d_binned
+        )
 
     @dim.convert_units_to_input_units
     def luminosity_within_circle_in_units(
@@ -425,6 +428,7 @@ class AbstractEllipticalSersic(EllipticalLightProfile):
 
 
 class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
+
     @af.map_types
     def __init__(
         self,

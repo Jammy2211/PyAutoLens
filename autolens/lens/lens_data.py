@@ -18,7 +18,7 @@ class AbstractLensData(object):
     ):
 
         self.mask = mask
-        self._mask_1d = mask.scaled_array_from_array_2d(array_2d=mask)
+        self._mask_1d = mask.mapping.scaled_array_from_array_2d(array_2d=mask)
         self.sub_size = mask.sub_size
 
         ### GRIDS ###
@@ -94,7 +94,7 @@ class LensImagingData(AbstractLensData):
         ----------
         imaging_data: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
-        mask: aa.Mask
+        mask: aa.AbstractMask
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
@@ -198,7 +198,7 @@ class LensImagingData(AbstractLensData):
         binned_up_imaging_data = self.imaging_data.new_imaging_data_with_binned_up_arrays(
             bin_up_factor=bin_up_factor
         )
-        binned_up_mask = self.mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
+        binned_up_mask = self.mask.binned_up_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
 
         return LensImagingData(
             imaging_data=binned_up_imaging_data,
@@ -283,7 +283,7 @@ class LensUVPlaneData(AbstractLensData):
         ----------
         imaging_data: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, primary_beam, etc.)
-        mask: aa.Mask
+        mask: aa.AbstractMask
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \

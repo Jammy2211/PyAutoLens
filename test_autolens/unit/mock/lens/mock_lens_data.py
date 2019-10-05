@@ -11,17 +11,17 @@ class MockLensImagingData(object):
 
         self.mapping = mask.mapping
         self.mask = mask
-        self._mask_1d = self.mask.scaled_array_from_array_2d(array_2d=self.mask)
+        self._mask_1d = self.mask.mapping.scaled_array_from_array_2d(array_2d=self.mask)
 
         self.grid = grid
         self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
         self.sub_size = self.grid.sub_size
         self.convolver = convolver
 
-        self._image_1d = self.mask.scaled_array_from_array_2d(
+        self._image_1d = self.mask.mapping.scaled_array_from_array_2d(
             array_2d=imaging_data.image
         )
-        self._noise_map_1d = self.mask.scaled_array_from_array_2d(
+        self._noise_map_1d = self.mask.mapping.scaled_array_from_array_2d(
             array_2d=imaging_data.noise_map
         )
 
@@ -53,7 +53,7 @@ class MockLensUVPlaneData(object):
         self.pixel_scale = uv_plane_data.pixel_scale
 
         self.mask = mask
-        self._mask_1d = self.mask.scaled_array_from_array_2d(array_2d=self.mask)
+        self._mask_1d = self.mask.mapping.scaled_array_from_array_2d(array_2d=self.mask)
 
         self.grid = grid
         self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)

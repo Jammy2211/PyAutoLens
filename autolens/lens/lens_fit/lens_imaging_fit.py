@@ -1,10 +1,11 @@
 import numpy as np
 
+import autoarray as aa
 import autofit as af
 from autolens.model.galaxy import galaxy as g
 
 
-class ImagingFit(af.DataFit):
+class ImagingFit(aa.DataFit):
     def __init__(self, image, noise_map, mask, model_image, mapping, inversion):
 
         super().__init__(
@@ -207,17 +208,14 @@ class LensImagingFit(ImagingFit):
 
             galaxy_model_image_2d_dict[
                 galalxy
-            ] = self.grid.mask.scaled_array_2d_from_array_1d(array_1d=galaxy_image)
+            ] = self.grid.mask.mapping.scaled_array_2d_from_array_1d(array_1d=galaxy_image)
 
         return galaxy_model_image_2d_dict
 
     def model_images_of_planes(self):
 
         model_images_of_planes = self.tracer.blurred_profile_images_of_planes_from_grid_and_psf(
-            grid=self.grid,
-            psf=self.psf,
-            blurring_grid=self.blurring_grid,
-
+            grid=self.grid, psf=self.psf, blurring_grid=self.blurring_grid
         )
 
         for plane_index in self.tracer.plane_indexes_with_pixelizations:

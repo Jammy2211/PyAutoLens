@@ -392,7 +392,7 @@ def plot_deflections_y(
     """
 
     deflections = mass_profile.deflections_from_grid(grid)
-    deflections_y = grid.mask.scaled_array_2d_from_array_1d(deflections[:, 0])
+    deflections_y = grid.mask.mapping.scaled_array_2d_from_array_1d(deflections[:, 0])
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,
@@ -487,7 +487,7 @@ def plot_deflections_x(
          The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
      """
     deflections = mass_profile.deflections_from_grid(grid)
-    deflections_x = grid.mask.scaled_array_2d_from_array_1d(deflections[:, 1])
+    deflections_x = grid.mask.mapping.scaled_array_2d_from_array_1d(deflections[:, 1])
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,
@@ -581,9 +581,7 @@ def plot_magnification(
     grid : ndarray or hyper_galaxies.array.grid_stacks.Grid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    magnification = mass_profile.magnification_from_grid(
-        grid=grid
-    )
+    magnification = mass_profile.magnification_from_grid(grid=grid)
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,

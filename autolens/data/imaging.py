@@ -326,7 +326,9 @@ class ImagingData(abstract_data.AbstractData):
         estimated_noise_map_1d = self.array_from_counts_to_electrons_per_second(
             self.estimated_noise_map_counts
         )
-        return self._data.mask.scaled_array_from_array_1d(array_1d=estimated_noise_map_1d)
+        return self._data.mask.mapping.scaled_array_from_array_1d(
+            array_1d=estimated_noise_map_1d
+        )
 
     def background_noise_from_edges(self, no_edges):
         """Estimate the background signal_to_noise_ratio by binning data_to_image located at the edge(s) of an image
@@ -406,13 +408,17 @@ class NoiseMap(abstract_data.AbstractNoiseMap):
             )
         elif convert_from_electrons:
             return NoiseMap.from_2d(
-                array_2d=np.sqrt(np.abs(background_noise_map.in_2d ** 2.0 + image.in_2d)),
+                array_2d=np.sqrt(
+                    np.abs(background_noise_map.in_2d ** 2.0 + image.in_2d)
+                ),
                 pixel_scale=pixel_scale,
             )
         elif convert_from_adus:
             return NoiseMap.from_2d(
                 array_2d=np.sqrt(
-                    np.abs((gain * background_noise_map.in_2d) ** 2.0 + gain * image.in_2d)
+                    np.abs(
+                        (gain * background_noise_map.in_2d) ** 2.0 + gain * image.in_2d
+                    )
                 )
                 / gain,
                 pixel_scale=pixel_scale,
@@ -435,7 +441,7 @@ class PSF(aa.Scaled):
             The arc-second origin of the hyper array's coordinate system.
         """
 
-#        obj = aa.Scaled(sub_array_1d=sub_array_1d, mask=mask)
+        #        obj = aa.Scaled(sub_array_1d=sub_array_1d, mask=mask)
 
         obj = super(PSF, cls).__new__(cls=cls, sub_array_1d=sub_array_1d, mask=mask)
 
@@ -447,27 +453,26 @@ class PSF(aa.Scaled):
     @classmethod
     def from_2d(cls, array_2d, pixel_scale, origin=(0.0, 0.0), renormalize=False):
 
-        mask = aa.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+        mask = aa.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=array_2d.shape,
             pixel_scales=(pixel_scale, pixel_scale),
             sub_size=1,
             origin=origin,
         )
 
-        scaled_array = mask.scaled_array_from_array_2d(array_2d=array_2d)
+        scaled_array = mask.mapping.scaled_array_from_array_2d(array_2d=array_2d)
         return PSF(sub_array_1d=scaled_array, mask=mask, renormalize=renormalize)
 
     @classmethod
-    def from_array_2d_and_pixel_scales(cls, array_2d, pixel_scales, origin=(0.0, 0.0), renormalize=False):
+    def from_array_2d_and_pixel_scales(
+        cls, array_2d, pixel_scales, origin=(0.0, 0.0), renormalize=False
+    ):
 
-        mask = aa.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
-            shape=array_2d.shape,
-            pixel_scales=pixel_scales,
-            sub_size=1,
-            origin=origin,
+        mask = aa.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+            shape=array_2d.shape, pixel_scales=pixel_scales, sub_size=1, origin=origin
         )
 
-        scaled_array = mask.scaled_array_from_array_2d(array_2d=array_2d)
+        scaled_array = mask.mapping.scaled_array_from_array_2d(array_2d=array_2d)
         return PSF(sub_array_1d=scaled_array, mask=mask, renormalize=renormalize)
 
     @classmethod
@@ -494,7 +499,9 @@ class PSF(aa.Scaled):
 
         gaussian = gaussian.profile_image_from_grid(grid=grid)
 
-        return PSF.from_2d(array_2d=gaussian.in_2d_binned, pixel_scale=pixel_scale, renormalize=True)
+        return PSF.from_2d(
+            array_2d=gaussian.in_2d_binned, pixel_scale=pixel_scale, renormalize=True
+        )
 
     @classmethod
     def from_as_gaussian_via_alma_fits_header_parameters(
@@ -524,7 +531,9 @@ class PSF(aa.Scaled):
 
         gaussian = gaussian.profile_image_from_grid(grid=grid)
 
-        return PSF.from_2d(array_2d=gaussian.in_2d_binned, pixel_scale=pixel_scale, renormalize=True)
+        return PSF.from_2d(
+            array_2d=gaussian.in_2d_binned, pixel_scale=pixel_scale, renormalize=True
+        )
 
     @classmethod
     def from_fits_renormalized(cls, file_path, hdu, pixel_scale):
@@ -543,7 +552,9 @@ class PSF(aa.Scaled):
         psf: PSF
             A renormalized PSF instance
         """
-        psf = PSF.from_fits_with_scale(file_path=file_path, hdu=hdu, pixel_scale=pixel_scale)
+        psf = PSF.from_fits_with_scale(
+            file_path=file_path, hdu=hdu, pixel_scale=pixel_scale
+        )
         psf[:] = np.divide(psf, np.sum(psf))
         return psf
 
@@ -561,7 +572,9 @@ class PSF(aa.Scaled):
             The HDU the PSF is stored in the .fits file.
         """
         return PSF.from_2d(
-            array_2d=aa.array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
+            array_2d=aa.array_util.numpy_array_2d_from_fits(
+                file_path=file_path, hdu=hdu
+            ),
             pixel_scale=pixel_scale,
         )
 
@@ -608,11 +621,8 @@ class PSF(aa.Scaled):
             self.mask.pixel_scales[1] * pixel_scale_factors[1],
         )
 
-
         return PSF.from_array_2d_and_pixel_scales(
-            array_2d=psf_rescaled,
-            pixel_scales=pixel_scales,
-            renormalize=renormalize,
+            array_2d=psf_rescaled, pixel_scales=pixel_scales, renormalize=renormalize
         )
 
     def new_psf_with_renormalized_array(self):
@@ -660,7 +670,9 @@ class PSF(aa.Scaled):
         ------
         KernelException if either PSF psf dimension is odd
         """
-        return mask.scaled_array_from_array_2d(array_2d=self.convolved_array_2d_from_array_2d(array_2d=array_2d))
+        return mask.mapping.scaled_array_from_array_2d(
+            array_2d=self.convolved_array_2d_from_array_2d(array_2d=array_2d)
+        )
 
 
 class PoissonNoiseMap(NoiseMap):
@@ -676,7 +688,8 @@ class PoissonNoiseMap(NoiseMap):
     ):
         if not convert_from_electrons and not convert_from_adus:
             return PoissonNoiseMap.from_2d(
-                array_2d=np.sqrt(np.abs(image.in_2d) * exposure_time_map.in_2d) / (exposure_time_map.in_2d),
+                array_2d=np.sqrt(np.abs(image.in_2d) * exposure_time_map.in_2d)
+                / (exposure_time_map.in_2d),
                 pixel_scale=pixel_scale,
             )
         elif convert_from_electrons:
@@ -685,7 +698,8 @@ class PoissonNoiseMap(NoiseMap):
             )
         elif convert_from_adus:
             return NoiseMap.from_2d(
-                array_2d=np.sqrt(gain * np.abs(image.in_2d)) / gain, pixel_scale=pixel_scale
+                array_2d=np.sqrt(gain * np.abs(image.in_2d)) / gain,
+                pixel_scale=pixel_scale,
             )
 
 
@@ -746,12 +760,7 @@ class SimulatedImagingData(ImagingData):
         deflected_grid_1d = grid.in_1d - deflections.in_1d
 
         image_2d = sum(
-            map(
-                lambda g: g.profile_image_from_grid(
-                    grid=deflected_grid_1d,
-                ),
-                galaxies,
-            )
+            map(lambda g: g.profile_image_from_grid(grid=deflected_grid_1d), galaxies)
         )
 
         return cls.from_image_and_exposure_arrays(
@@ -881,17 +890,27 @@ class SimulatedImagingData(ImagingData):
         if background_sky_map is None:
 
             background_sky_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
-                value=background_sky_level, shape=image.mask.shape, pixel_scale=pixel_scale
+                value=background_sky_level,
+                shape=image.mask.shape,
+                pixel_scale=pixel_scale,
             )
 
         image += background_sky_map
 
-        image = psf.convolved_scaled_array_from_array_2d_and_mask(array_2d=image.in_2d, mask=image.mask)
+        image = psf.convolved_scaled_array_from_array_2d_and_mask(
+            array_2d=image.in_2d, mask=image.mask
+        )
 
         if image_needs_trimming:
-            image = image.new_scaled_array_trimmed_from_kernel_shape(kernel_shape=psf.mask.shape)
-            exposure_time_map = exposure_time_map.new_scaled_array_trimmed_from_kernel_shape(kernel_shape=psf.mask.shape)
-            background_sky_map = background_sky_map.new_scaled_array_trimmed_from_kernel_shape(kernel_shape=psf.mask.shape)
+            image = image.new_scaled_array_trimmed_from_kernel_shape(
+                kernel_shape=psf.mask.shape
+            )
+            exposure_time_map = exposure_time_map.new_scaled_array_trimmed_from_kernel_shape(
+                kernel_shape=psf.mask.shape
+            )
+            background_sky_map = background_sky_map.new_scaled_array_trimmed_from_kernel_shape(
+                kernel_shape=psf.mask.shape
+            )
 
         if add_noise is True:
             noise_realization = generate_poisson_noise(
@@ -1446,7 +1465,9 @@ def load_background_noise_map(
         and background_noise_map_path is not None
     ):
         weight_map = aa.Scaled.from_fits_with_pixel_scale(
-            file_path=background_noise_map_path, hdu=background_noise_map_hdu, pixel_scale=pixel_scale
+            file_path=background_noise_map_path,
+            hdu=background_noise_map_hdu,
+            pixel_scale=pixel_scale,
         )
         return NoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
     elif (
@@ -1454,7 +1475,9 @@ def load_background_noise_map(
         and background_noise_map_path is not None
     ):
         inverse_noise_map = aa.Scaled.from_fits_with_pixel_scale(
-            file_path=background_noise_map_path, hdu=background_noise_map_hdu, pixel_scale=pixel_scale
+            file_path=background_noise_map_path,
+            hdu=background_noise_map_hdu,
+            pixel_scale=pixel_scale,
         )
         return NoiseMap.from_inverse_noise_map(
             inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale
@@ -1557,7 +1580,9 @@ def load_poisson_noise_map(
         convert_poisson_noise_map_from_weight_map and poisson_noise_map_path is not None
     ):
         weight_map = aa.Scaled.from_fits_with_pixel_scale(
-            file_path=poisson_noise_map_path, hdu=poisson_noise_map_hdu, pixel_scale=pixel_scale
+            file_path=poisson_noise_map_path,
+            hdu=poisson_noise_map_hdu,
+            pixel_scale=pixel_scale,
         )
         return PoissonNoiseMap.from_weight_map(
             weight_map=weight_map, pixel_scale=pixel_scale
@@ -1567,7 +1592,9 @@ def load_poisson_noise_map(
         and poisson_noise_map_path is not None
     ):
         inverse_noise_map = aa.Scaled.from_fits_with_pixel_scale(
-            file_path=poisson_noise_map_path, hdu=poisson_noise_map_hdu, pixel_scale=pixel_scale
+            file_path=poisson_noise_map_path,
+            hdu=poisson_noise_map_hdu,
+            pixel_scale=pixel_scale,
         )
         return PoissonNoiseMap.from_inverse_noise_map(
             inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale

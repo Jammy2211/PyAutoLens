@@ -101,7 +101,7 @@ class Inversion(object):
 
     @property
     def reconstructed_data_2d(self):
-        return self.mapper.grid.mask.scaled_array_2d_from_array_1d(
+        return self.mapper.grid.mask.mapping.scaled_array_2d_from_array_1d(
             array_1d=np.asarray(self.reconstructed_data_1d)
         )
 

@@ -790,16 +790,16 @@ class TestGeneralizedNFW(object):
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(
             centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0
         )
-        assert gnfw.convergence_from_grid(
-            grid=np.array([[2.0, 0.0]])
-        ) == pytest.approx(0.30840, 1e-3)
+        assert gnfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == pytest.approx(
+            0.30840, 1e-3
+        )
 
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(
             centre=(0.0, 0.0), kappa_s=2.0, inner_slope=1.5, scale_radius=1.0
         )
-        assert gnfw.convergence_from_grid(
-            grid=np.array([[2.0, 0.0]])
-        ) == pytest.approx(0.30840 * 2, 1e-3)
+        assert gnfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == pytest.approx(
+            0.30840 * 2, 1e-3
+        )
 
         # gnfw = al.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.5,
         #                                    phi=90.0, inner_slope=1.5, scale_radius=1.0)
@@ -832,18 +832,14 @@ class TestGeneralizedNFW(object):
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(
             centre=(0.0, 0.0), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0
         )
-        deflections = gnfw.deflections_from_grid(
-            grid=np.array([[0.1875, 0.1625]])
-        )
+        deflections = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
         assert deflections[0, 0] == pytest.approx(0.43501, 1e-3)
         assert deflections[0, 1] == pytest.approx(0.37701, 1e-3)
 
         gnfw = al.mass_profiles.SphericalGeneralizedNFW(
             centre=(0.3, 0.2), kappa_s=2.5, inner_slope=1.5, scale_radius=4.0
         )
-        deflections = gnfw.deflections_from_grid(
-            grid=np.array([[0.1875, 0.1625]])
-        )
+        deflections = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
         assert deflections[0, 0] == pytest.approx(-9.31254, 1e-3)
         assert deflections[0, 1] == pytest.approx(-3.10418, 1e-3)
 
@@ -864,17 +860,13 @@ class TestGeneralizedNFW(object):
         gnfw_1 = al.mass_profiles.SphericalGeneralizedNFW(centre=(1.0, 1.0))
         assert gnfw_0.convergence_from_grid(
             grid=np.array([[1.0, 1.0]])
-        ) == gnfw_1.convergence_from_grid(
-            grid=np.array([[0.0, 0.0]])
-        )
+        ) == gnfw_1.convergence_from_grid(grid=np.array([[0.0, 0.0]]))
 
         gnfw_0 = al.mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0))
         gnfw_1 = al.mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0))
         assert gnfw_0.convergence_from_grid(
             grid=np.array([[1.0, 0.0]])
-        ) == gnfw_1.convergence_from_grid(
-            grid=np.array([[0.0, 1.0]])
-        )
+        ) == gnfw_1.convergence_from_grid(grid=np.array([[0.0, 1.0]]))
 
         # gnfw_0 = al.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
         # gnfw_1 = al.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
@@ -886,17 +878,13 @@ class TestGeneralizedNFW(object):
         gnfw_1 = al.mass_profiles.SphericalGeneralizedNFW(centre=(1.0, 1.0))
         assert gnfw_0.potential_from_grid(
             grid=np.array([[1.0, 1.0]])
-        ) == gnfw_1.potential_from_grid(
-            grid=np.array([[0.0, 0.0]])
-        )
+        ) == gnfw_1.potential_from_grid(grid=np.array([[0.0, 0.0]]))
 
         gnfw_0 = al.mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0))
         gnfw_1 = al.mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0))
         assert gnfw_0.potential_from_grid(
             grid=np.array([[1.0, 0.0]])
-        ) == gnfw_1.potential_from_grid(
-            grid=np.array([[0.0, 1.0]])
-        )
+        ) == gnfw_1.potential_from_grid(grid=np.array([[0.0, 1.0]]))
 
         # gnfw_0 = al.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
         # gnfw_1 = al.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
@@ -910,12 +898,8 @@ class TestGeneralizedNFW(object):
         gnfw_1 = al.mass_profiles.SphericalGeneralizedNFW(
             centre=(1.0, 1.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0
         )
-        deflections_0 = gnfw_0.deflections_from_grid(
-            grid=np.array([[1.0, 1.0]])
-        )
-        deflections_1 = gnfw_1.deflections_from_grid(
-            grid=np.array([[0.0, 0.0]])
-        )
+        deflections_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        deflections_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
         assert deflections_0[0, 0] == pytest.approx(-deflections_1[0, 0], 1e-5)
         assert deflections_0[0, 1] == pytest.approx(-deflections_1[0, 1], 1e-5)
 
@@ -925,12 +909,8 @@ class TestGeneralizedNFW(object):
         gnfw_1 = al.mass_profiles.SphericalGeneralizedNFW(
             centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0
         )
-        deflections_0 = gnfw_0.deflections_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        )
-        deflections_1 = gnfw_1.deflections_from_grid(
-            grid=np.array([[0.0, 1.0]])
-        )
+        deflections_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        deflections_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
         assert deflections_0[0, 0] == pytest.approx(deflections_1[0, 1], 1e-5)
         assert deflections_0[0, 1] == pytest.approx(deflections_1[0, 0], 1e-5)
 
@@ -967,9 +947,7 @@ class TestGeneralizedNFW(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = gNFW.deflections_from_grid(
-            grid=regular_with_interp
-        )
+        interp_deflections = gNFW.deflections_from_grid(grid=regular_with_interp)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -1034,21 +1012,15 @@ class TestGeneralizedNFW(object):
 
         gnfw = al.mass_profiles.SphericalGeneralizedNFW()
 
-        convergence = gnfw.convergence_from_grid(
-            grid=grid
-        )
+        convergence = gnfw.convergence_from_grid(grid=grid)
 
         assert convergence.in_2d.shape == (2, 2)
 
-        potential = gnfw.potential_from_grid(
-            grid=grid
-        )
+        potential = gnfw.potential_from_grid(grid=grid)
 
         assert potential.in_2d.shape == (2, 2)
 
-        deflections = gnfw.deflections_from_grid(
-            grid=grid
-        )
+        deflections = gnfw.deflections_from_grid(grid=grid)
 
         assert deflections.in_2d.shape == (2, 2, 2)
 
@@ -1124,24 +1096,18 @@ class TestTruncatedNFW(object):
 
         # factor = (4.0 * kappa_s * scale_radius / (r / scale_radius))
 
-        deflections = truncated_nfw.deflections_from_grid(
-            grid=np.array([[2.0, 0.0]])
-        )
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
 
         factor = (4.0 * 1.0 * 1.0) / (2.0 / 1.0)
         assert deflections[0, 0] == pytest.approx(factor * 0.38209715, 1.0e-4)
         assert deflections[0, 1] == pytest.approx(0.0, 1.0e-4)
 
-        deflections = truncated_nfw.deflections_from_grid(
-            grid=np.array([[0.0, 2.0]])
-        )
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[0.0, 2.0]]))
 
         assert deflections[0, 0] == pytest.approx(0.0, 1.0e-4)
         assert deflections[0, 1] == pytest.approx(factor * 0.38209715, 1.0e-4)
 
-        deflections = truncated_nfw.deflections_from_grid(
-            grid=np.array([[1.0, 1.0]])
-        )
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
 
         factor = (4.0 * 1.0 * 1.0) / (np.sqrt(2) / 1.0)
         assert deflections[0, 0] == pytest.approx(
@@ -1155,9 +1121,7 @@ class TestTruncatedNFW(object):
             centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0, truncation_radius=2.0
         )
 
-        deflections = truncated_nfw.deflections_from_grid(
-            grid=np.array([[2.0, 0.0]])
-        )
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
 
         factor = (4.0 * 2.0 * 1.0) / (2.0 / 1.0)
         assert deflections[0, 0] == pytest.approx(factor * 0.38209715, 1.0e-4)
@@ -1167,9 +1131,7 @@ class TestTruncatedNFW(object):
             centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0, truncation_radius=2.0
         )
 
-        deflections = truncated_nfw.deflections_from_grid(
-            grid=np.array([[2.0, 0.0]])
-        )
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
 
         assert deflections[0, 0] == pytest.approx(2.1702661386, 1.0e-4)
         assert deflections[0, 1] == pytest.approx(0.0, 1.0e-4)
@@ -1391,21 +1353,15 @@ class TestTruncatedNFW(object):
 
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW()
 
-        convergence = truncated_nfw.convergence_from_grid(
-            grid=grid
-        )
+        convergence = truncated_nfw.convergence_from_grid(grid=grid)
 
         assert convergence.in_2d.shape == (2, 2)
 
-        potential = truncated_nfw.potential_from_grid(
-            grid=grid
-        )
+        potential = truncated_nfw.potential_from_grid(grid=grid)
 
         assert potential.in_2d.shape == (2, 2)
 
-        deflections = truncated_nfw.deflections_from_grid(
-            grid=grid
-        )
+        deflections = truncated_nfw.deflections_from_grid(grid=grid)
 
         assert deflections.in_2d.shape == (2, 2, 2)
 
@@ -1606,21 +1562,15 @@ class TestTruncatedNFWMassToConcentration(object):
 
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW()
 
-        convergence = truncated_nfw.convergence_from_grid(
-            grid=grid
-        )
+        convergence = truncated_nfw.convergence_from_grid(grid=grid)
 
         assert convergence.in_2d.shape == (2, 2)
 
-        potential = truncated_nfw.potential_from_grid(
-            grid=grid
-        )
+        potential = truncated_nfw.potential_from_grid(grid=grid)
 
         assert potential.in_2d.shape == (2, 2)
 
-        deflections = truncated_nfw.deflections_from_grid(
-            grid=grid
-        )
+        deflections = truncated_nfw.deflections_from_grid(grid=grid)
 
         assert deflections.in_2d.shape == (2, 2, 2)
 
@@ -1687,37 +1637,37 @@ class TestNFW(object):
         nfw = al.mass_profiles.SphericalNFW(
             centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0
         )
-        assert nfw.convergence_from_grid(
-            grid=np.array([[2.0, 0.0]])
-        ) == pytest.approx(0.263600141, 1e-3)
+        assert nfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == pytest.approx(
+            0.263600141, 1e-3
+        )
 
         nfw = al.mass_profiles.SphericalNFW(
             centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0
         )
-        assert nfw.convergence_from_grid(
-            grid=np.array([[0.5, 0.0]])
-        ) == pytest.approx(1.388511, 1e-3)
+        assert nfw.convergence_from_grid(grid=np.array([[0.5, 0.0]])) == pytest.approx(
+            1.388511, 1e-3
+        )
 
         nfw = al.mass_profiles.SphericalNFW(
             centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0
         )
-        assert nfw.convergence_from_grid(
-            grid=np.array([[0.5, 0.0]])
-        ) == pytest.approx(2.0 * 1.388511, 1e-3)
+        assert nfw.convergence_from_grid(grid=np.array([[0.5, 0.0]])) == pytest.approx(
+            2.0 * 1.388511, 1e-3
+        )
 
         nfw = al.mass_profiles.SphericalNFW(
             centre=(0.0, 0.0), kappa_s=1.0, scale_radius=2.0
         )
-        assert nfw.convergence_from_grid(
-            grid=np.array([[1.0, 0.0]])
-        ) == pytest.approx(1.388511, 1e-3)
+        assert nfw.convergence_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(
+            1.388511, 1e-3
+        )
 
         nfw = al.mass_profiles.EllipticalNFW(
             centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, kappa_s=1.0, scale_radius=1.0
         )
-        assert nfw.convergence_from_grid(
-            grid=np.array([[0.25, 0.0]])
-        ) == pytest.approx(1.388511, 1e-3)
+        assert nfw.convergence_from_grid(grid=np.array([[0.25, 0.0]])) == pytest.approx(
+            1.388511, 1e-3
+        )
 
     def test__potential_correct_values(self):
         nfw = al.mass_profiles.SphericalNFW(
@@ -1780,36 +1730,28 @@ class TestNFW(object):
         nfw = al.mass_profiles.SphericalNFW(
             centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0
         )
-        deflections = nfw.deflections_from_grid(
-            grid=np.array([[0.1625, 0.1625]])
-        )
+        deflections = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
         assert deflections[0, 0] == pytest.approx(0.56194, 1e-3)
         assert deflections[0, 1] == pytest.approx(0.56194, 1e-3)
 
         nfw = al.mass_profiles.SphericalNFW(
             centre=(0.3, 0.2), kappa_s=2.5, scale_radius=4.0
         )
-        deflections = nfw.deflections_from_grid(
-            grid=np.array([[0.1875, 0.1625]])
-        )
+        deflections = nfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
         assert deflections[0, 0] == pytest.approx(-2.08909, 1e-3)
         assert deflections[0, 1] == pytest.approx(-0.69636, 1e-3)
 
         nfw = al.mass_profiles.EllipticalNFW(
             centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=1.0, scale_radius=1.0
         )
-        deflections = nfw.deflections_from_grid(
-            grid=np.array([[0.1625, 0.1625]])
-        )
+        deflections = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
         assert deflections[0, 0] == pytest.approx(0.56194, 1e-3)
         assert deflections[0, 1] == pytest.approx(0.56194, 1e-3)
 
         nfw = al.mass_profiles.EllipticalNFW(
             centre=(0.3, 0.2), axis_ratio=0.7, phi=6.0, kappa_s=2.5, scale_radius=4.0
         )
-        deflections = nfw.deflections_from_grid(
-            grid=np.array([[0.1625, 0.1625]])
-        )
+        deflections = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
         assert deflections[0, 0] == pytest.approx(-2.59480, 1e-3)
         assert deflections[0, 1] == pytest.approx(-0.44204, 1e-3)
 
@@ -1837,9 +1779,7 @@ class TestNFW(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = nfw.deflections_from_grid(
-            grid=regular_with_interp
-        )
+        interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -1883,9 +1823,7 @@ class TestNFW(object):
         regular_with_interp = grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=0.5
         )
-        interp_deflections = nfw.deflections_from_grid(
-            grid=regular_with_interp
-        )
+        interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
 
         interpolator = al.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=grid, pixel_scale_interpolation_grid=0.5
@@ -1913,40 +1851,28 @@ class TestNFW(object):
 
         nfw = al.mass_profiles.EllipticalNFW()
 
-        convergence = nfw.convergence_from_grid(
-            grid=grid
-        )
+        convergence = nfw.convergence_from_grid(grid=grid)
 
         assert convergence.in_2d.shape == (2, 2)
 
-        potential = nfw.potential_from_grid(
-            grid=grid
-        )
+        potential = nfw.potential_from_grid(grid=grid)
 
         assert potential.in_2d.shape == (2, 2)
 
-        deflections = nfw.deflections_from_grid(
-            grid=grid
-        )
+        deflections = nfw.deflections_from_grid(grid=grid)
 
         assert deflections.in_2d.shape == (2, 2, 2)
 
         nfw = al.mass_profiles.SphericalNFW()
 
-        convergence = nfw.convergence_from_grid(
-            grid=grid
-        )
+        convergence = nfw.convergence_from_grid(grid=grid)
 
         assert convergence.in_2d.shape == (2, 2)
 
-        potential = nfw.potential_from_grid(
-            grid=grid
-        )
+        potential = nfw.potential_from_grid(grid=grid)
 
         assert potential.in_2d.shape == (2, 2)
 
-        deflections = nfw.deflections_from_grid(
-            grid=grid
-        )
+        deflections = nfw.deflections_from_grid(grid=grid)
 
         assert deflections.in_2d.shape == (2, 2, 2)
