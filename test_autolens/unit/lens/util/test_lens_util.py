@@ -91,9 +91,7 @@ class TestPlaneImageFromGrid:
             mask=mask,
         )
 
-        plane_image_galaxy = galaxy.profile_image_from_grid(
-            grid=grid
-        )
+        plane_image_galaxy = galaxy.profile_image_from_grid(grid=grid)
 
         assert (plane_image == plane_image_galaxy).all()
 

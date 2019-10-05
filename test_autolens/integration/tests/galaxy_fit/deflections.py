@@ -32,9 +32,7 @@ def galaxy_fit_phase():
         ),
     )
 
-    deflections = galaxy.deflections_from_grid(
-        galaxies=[galaxy], grid=grid
-    )
+    deflections = galaxy.deflections_from_grid(galaxies=[galaxy], grid=grid)
 
     noise_map = aa.Scaled(
         sub_array_1d=np.ones(deflections[:, 0].shape), pixel_scales=pixel_scale

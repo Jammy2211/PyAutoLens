@@ -6,9 +6,7 @@ from autolens import exc
 
 
 class AbstractData(object):
-    def __init__(
-        self, data, pixel_scale, noise_map, exposure_time_map=None,
-    ):
+    def __init__(self, data, pixel_scale, noise_map, exposure_time_map=None):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
@@ -195,7 +193,9 @@ class ExposureTimeMap(aa.Scaled):
     def from_exposure_time_and_inverse_noise_map(
         cls, pixel_scale, exposure_time, inverse_noise_map
     ):
-        relative_background_noise_map = inverse_noise_map.in_2d / np.max(inverse_noise_map)
+        relative_background_noise_map = inverse_noise_map.in_2d / np.max(
+            inverse_noise_map
+        )
         return ExposureTimeMap.from_2d(
             array_2d=np.abs(exposure_time * (relative_background_noise_map)),
             pixel_scale=pixel_scale,

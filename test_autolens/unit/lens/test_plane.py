@@ -12,9 +12,7 @@ planck = cosmo.Planck15
 
 
 def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
-    magnification_2d = plane.magnification_from_grid(
-        grid=grid
-    )
+    magnification_2d = plane.magnification_from_grid(grid=grid)
 
     inverse_magnification_2d = 1 / magnification_2d
 
@@ -48,9 +46,7 @@ def caustics_via_magnification_from_plane_and_grid(plane, grid):
     for i in range(len(critical_curves)):
         critical_curve = critical_curves[i]
 
-        deflections_1d = plane.deflections_from_grid(
-            grid=critical_curve
-        )
+        deflections_1d = plane.deflections_from_grid(grid=critical_curve)
 
         caustic = critical_curve - deflections_1d
 
@@ -501,9 +497,7 @@ class TestAbstractPlaneLensing(object):
         ):
             light_profile = gal_x1_lp.light_profiles[0]
 
-            lp_sub_image_1d = light_profile.profile_image_from_grid(
-                grid=sub_grid_7x7
-            )
+            lp_sub_image_1d = light_profile.profile_image_from_grid(grid=sub_grid_7x7)
 
             # Perform sub gridding average manually
             lp_image_pixel_0 = (
@@ -535,15 +529,11 @@ class TestAbstractPlaneLensing(object):
         def test__profile_image_from_grid__same_as_its_galaxy_image(
             self, sub_grid_7x7, gal_x1_lp
         ):
-            galaxy_image = gal_x1_lp.profile_image_from_grid(
-                grid=sub_grid_7x7
-            )
+            galaxy_image = gal_x1_lp.profile_image_from_grid(grid=sub_grid_7x7)
 
             plane = al.Plane(galaxies=[gal_x1_lp], redshift=None)
 
-            profile_image_1d = plane.profile_image_from_grid(
-                grid=sub_grid_7x7
-            )
+            profile_image_1d = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
             assert profile_image_1d == pytest.approx(galaxy_image, 1.0e-4)
 
@@ -563,12 +553,8 @@ class TestAbstractPlaneLensing(object):
             lp0 = g0.light_profiles[0]
             lp1 = g1.light_profiles[0]
 
-            lp0_sub_image = lp0.profile_image_from_grid(
-                grid=sub_grid_7x7
-            )
-            lp1_sub_image = lp1.profile_image_from_grid(
-                grid=sub_grid_7x7
-            )
+            lp0_sub_image = lp0.profile_image_from_grid(grid=sub_grid_7x7)
+            lp1_sub_image = lp1.profile_image_from_grid(grid=sub_grid_7x7)
 
             # Perform sub gridding average manually
             lp0_image_pixel_0 = (
@@ -675,12 +661,8 @@ class TestAbstractPlaneLensing(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_convergence = mp0.convergence_from_grid(
-                grid=sub_grid_7x7
-            )
-            mp1_sub_convergence = mp1.convergence_from_grid(
-                grid=sub_grid_7x7
-            )
+            mp0_sub_convergence = mp0.convergence_from_grid(grid=sub_grid_7x7)
+            mp1_sub_convergence = mp1.convergence_from_grid(grid=sub_grid_7x7)
 
             mp_sub_convergence = mp0_sub_convergence + mp1_sub_convergence
 
@@ -733,15 +715,11 @@ class TestAbstractPlaneLensing(object):
         ):
             plane = al.Plane(galaxies=[], redshift=0.5)
 
-            convergence = plane.convergence_from_grid(
-                grid=sub_grid_7x7
-            )
+            convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
             assert convergence.shape[0] == sub_grid_7x7.shape[0]
 
-            convergence = plane.convergence_from_grid(
-                grid=sub_grid_7x7
-            )
+            convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
             assert convergence.shape == (14, 14)
 
@@ -774,12 +752,8 @@ class TestAbstractPlaneLensing(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_potential = mp0.potential_from_grid(
-                grid=sub_grid_7x7
-            )
-            mp1_sub_potential = mp1.potential_from_grid(
-                grid=sub_grid_7x7
-            )
+            mp0_sub_potential = mp0.potential_from_grid(grid=sub_grid_7x7)
+            mp1_sub_potential = mp1.potential_from_grid(grid=sub_grid_7x7)
 
             mp_sub_potential = mp0_sub_potential + mp1_sub_potential
 
@@ -832,15 +806,11 @@ class TestAbstractPlaneLensing(object):
         ):
             plane = al.Plane(galaxies=[], redshift=0.5)
 
-            potential = plane.potential_from_grid(
-                grid=sub_grid_7x7
-            )
+            potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
             assert potential.shape[0] == sub_grid_7x7.shape[0]
 
-            potential = plane.potential_from_grid(
-                grid=sub_grid_7x7
-            )
+            potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
             assert potential.shape == (14, 14)
 
@@ -867,12 +837,8 @@ class TestAbstractPlaneLensing(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.deflections_from_grid(
-                grid=sub_grid_7x7
-            )
-            mp1_sub_image = mp1.deflections_from_grid(
-                grid=sub_grid_7x7
-            )
+            mp0_sub_image = mp0.deflections_from_grid(grid=sub_grid_7x7)
+            mp1_sub_image = mp1.deflections_from_grid(grid=sub_grid_7x7)
 
             # Perform sub gridding average manually
             mp0_image_pixel_0x = (
@@ -972,9 +938,7 @@ class TestAbstractPlaneLensing(object):
         ):
             plane = al.Plane(galaxies=[gal_x2_mp], redshift=None)
 
-            deflections = plane.deflections_from_grid(
-                grid=grid_7x7
-            )
+            deflections = plane.deflections_from_grid(grid=grid_7x7)
 
             assert deflections[0:2] == pytest.approx(
                 np.array([[3.0 * 0.707, -3.0 * 0.707], [3.0, 0.0]]), 1e-3
@@ -982,9 +946,7 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 
-            deflections = plane.deflections_from_grid(
-                grid=grid_7x7
-            )
+            deflections = plane.deflections_from_grid(grid=grid_7x7)
 
             assert deflections[0:2] == pytest.approx(
                 np.array([[2.0 * 0.707, -2.0 * 0.707], [2.0, 0.0]]), 1e-3
@@ -1123,9 +1085,7 @@ class TestAbstractPlaneLensing(object):
             jacobian_binned_reg_grid = plane.lensing_jacobian_from_grid(grid=grid)
             a11_binned_reg_grid = jacobian_binned_reg_grid[0, 0]
 
-            jacobian_sub_grid = plane.lensing_jacobian_from_grid(
-                grid=grid
-            )
+            jacobian_sub_grid = plane.lensing_jacobian_from_grid(grid=grid)
             a11_sub_grid = jacobian_sub_grid[0, 0]
 
             pixel_1_reg_grid = a11_binned_reg_grid[0]
@@ -1173,9 +1133,7 @@ class TestAbstractPlaneLensing(object):
 
             lambda_t_binned_reg_grid = plane.tangential_eigen_value_from_grid(grid=grid)
 
-            lambda_t_sub_grid = plane.tangential_eigen_value_from_grid(
-                grid=grid
-            )
+            lambda_t_sub_grid = plane.tangential_eigen_value_from_grid(grid=grid)
 
             pixel_1_reg_grid = lambda_t_binned_reg_grid[0]
             first_pixel_binned_up = (
@@ -1223,9 +1181,7 @@ class TestAbstractPlaneLensing(object):
 
             lambda_r_binned_reg_grid = plane.radial_eigen_value_from_grid(grid=grid)
 
-            lambda_r_sub_grid = plane.radial_eigen_value_from_grid(
-                grid=grid
-            )
+            lambda_r_sub_grid = plane.radial_eigen_value_from_grid(grid=grid)
 
             pixel_1_reg_grid = lambda_r_binned_reg_grid[0]
             first_pixel_binned_up = (
@@ -1272,9 +1228,7 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            convergence_via_calculation = plane.convergence_from_grid(
-                grid=grid
-            )
+            convergence_via_calculation = plane.convergence_from_grid(grid=grid)
 
             convergence_via_jacobian = plane.convergence_via_jacobian_from_grid(
                 grid=grid
@@ -1309,9 +1263,7 @@ class TestAbstractPlaneLensing(object):
                 grid=grid
             )
 
-            convergence_sub_grid = plane.convergence_via_jacobian_from_grid(
-                grid=grid
-            )
+            convergence_sub_grid = plane.convergence_via_jacobian_from_grid(grid=grid)
 
             pixel_1_reg_grid = convergence_binned_reg_grid[0]
             first_pixel_binned_up = (
@@ -1395,9 +1347,7 @@ class TestAbstractPlaneLensing(object):
 
             shear_binned_reg_grid = plane.shear_via_jacobian_from_grid(grid=grid)
 
-            shear_sub_grid = plane.shear_via_jacobian_from_grid(
-                grid=grid
-            )
+            shear_sub_grid = plane.shear_via_jacobian_from_grid(grid=grid)
 
             pixel_1_reg_grid = shear_binned_reg_grid[0]
             first_pixel_binned_up = (
@@ -1470,17 +1420,11 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            magnification_via_determinant = plane.magnification_from_grid(
-                grid=grid
-            )
+            magnification_via_determinant = plane.magnification_from_grid(grid=grid)
 
-            tangential_eigen_value = plane.tangential_eigen_value_from_grid(
-                grid=grid
-            )
+            tangential_eigen_value = plane.tangential_eigen_value_from_grid(grid=grid)
 
-            radal_eigen_value = plane.radial_eigen_value_from_grid(
-                grid=grid
-            )
+            radal_eigen_value = plane.radial_eigen_value_from_grid(grid=grid)
 
             magnification_via_eigen_values = 1 / (
                 tangential_eigen_value * radal_eigen_value
@@ -1498,17 +1442,11 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            magnification_via_determinant = plane.magnification_from_grid(
-                grid=grid
-            )
+            magnification_via_determinant = plane.magnification_from_grid(grid=grid)
 
-            tangential_eigen_value = plane.tangential_eigen_value_from_grid(
-                grid=grid
-            )
+            tangential_eigen_value = plane.tangential_eigen_value_from_grid(grid=grid)
 
-            radal_eigen_value = plane.radial_eigen_value_from_grid(
-                grid=grid
-            )
+            radal_eigen_value = plane.radial_eigen_value_from_grid(grid=grid)
 
             magnification_via_eigen_values = 1 / (
                 tangential_eigen_value * radal_eigen_value
@@ -1543,13 +1481,9 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            magnification_via_determinant = plane.magnification_from_grid(
-                grid=grid
-            )
+            magnification_via_determinant = plane.magnification_from_grid(grid=grid)
 
-            convergence = plane.convergence_via_jacobian_from_grid(
-                grid=grid
-            )
+            convergence = plane.convergence_via_jacobian_from_grid(grid=grid)
 
             shear = plane.shear_via_jacobian_from_grid(grid=grid)
 
@@ -1569,17 +1503,11 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            magnification_via_determinant = plane.magnification_from_grid(
-                grid=grid
-            )
+            magnification_via_determinant = plane.magnification_from_grid(grid=grid)
 
-            convergence = plane.convergence_via_jacobian_from_grid(
-                grid=grid
-            )
+            convergence = plane.convergence_via_jacobian_from_grid(grid=grid)
 
-            shear = plane.shear_via_jacobian_from_grid(
-                grid=grid
-            )
+            shear = plane.shear_via_jacobian_from_grid(grid=grid)
 
             magnification_via_convergence_and_shear = 1 / (
                 (1 - convergence) ** 2 - shear ** 2
@@ -3127,21 +3055,15 @@ class TestPlane(object):
                 mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_deflections = g0.deflections_from_grid(
-                grid=sub_grid_7x7
-            )
+            g0_deflections = g0.deflections_from_grid(grid=sub_grid_7x7)
 
-            g1_deflections = g1.deflections_from_grid(
-                grid=sub_grid_7x7
-            )
+            g1_deflections = g1.deflections_from_grid(grid=sub_grid_7x7)
 
             traced_grid = sub_grid_7x7 - (g0_deflections + g1_deflections)
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            plane_traced_grid = plane.traced_grid_from_grid(
-                grid=sub_grid_7x7
-            )
+            plane_traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7)
 
             assert plane_traced_grid == pytest.approx(traced_grid, 1.0e-4)
 
@@ -3150,9 +3072,7 @@ class TestPlane(object):
         ):
             plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 
-            traced_grid = plane.traced_grid_from_grid(
-                grid=sub_grid_7x7_simple
-            )
+            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7_simple)
 
             assert traced_grid[0] == pytest.approx(
                 np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3
@@ -3168,9 +3088,7 @@ class TestPlane(object):
         ):
             plane = al.Plane(galaxies=[], redshift=1.0)
 
-            traced_grid = plane.traced_grid_from_grid(
-                grid=sub_grid_7x7
-            )
+            traced_grid = plane.traced_grid_from_grid(grid=sub_grid_7x7)
 
             assert (traced_grid == sub_grid_7x7).all()
 

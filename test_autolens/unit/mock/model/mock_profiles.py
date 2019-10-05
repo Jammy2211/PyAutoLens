@@ -8,9 +8,7 @@ class MockLightProfile(al.light_profiles.LightProfile):
         self.value = value
         self.size = size
 
-    def profile_image_from_grid(
-        self, grid
-    ):
+    def profile_image_from_grid(self, grid):
         return np.array(self.size * [self.value])
 
 
@@ -18,17 +16,11 @@ class MockMassProfile(object):
     def __init__(self, value):
         self.value = value
 
-    def surface_density_from_grid(
-        self, grid
-    ):
+    def surface_density_from_grid(self, grid):
         return np.array([self.value])
 
-    def potential_from_grid(
-        self, grid
-    ):
+    def potential_from_grid(self, grid):
         return np.array([self.value])
 
-    def deflections_from_grid(
-        self, grid
-    ):
+    def deflections_from_grid(self, grid):
         return np.array([self.value, self.value])

@@ -619,9 +619,7 @@ def plot_deflections_y(
 ):
 
     deflections = tracer.deflections_from_grid(grid=grid)
-    deflections_y = grid.mask.scaled_array_2d_from_array_1d(
-        array_1d=deflections[:, 0]
-    )
+    deflections_y = grid.mask.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
 
     array_plotters.plot_array(
         array=deflections_y,
@@ -687,9 +685,7 @@ def plot_deflections_x(
 ):
 
     deflections = tracer.deflections_from_grid(grid=grid)
-    deflections_x = grid.mask.scaled_array_2d_from_array_1d(
-        array_1d=deflections[:, 1]
-    )
+    deflections_x = grid.mask.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
 
     array_plotters.plot_array(
         array=deflections_x,

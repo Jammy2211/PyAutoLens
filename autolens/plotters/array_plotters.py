@@ -174,7 +174,7 @@ def plot_array(
         zoom_offset_arcsec = None
 
     if aspect is "square":
-        aspect = float(array.shape_arcsec[1]) / float(array.shape_arcsec[0])
+        aspect = float(array.mask.shape_arcsec[1]) / float(array.mask.shape_arcsec[0])
 
     fig = plot_figure(
         array=array,
@@ -382,10 +382,10 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
     elif units in "arcsec" or kpc_per_arcsec is None:
         return np.asarray(
             [
-                array.arc_second_minima[1],
-                array.arc_second_maxima[1],
-                array.arc_second_minima[0],
-                array.arc_second_maxima[0],
+                array.mask.arc_second_minima[1],
+                array.mask.arc_second_maxima[1],
+                array.mask.arc_second_minima[0],
+                array.mask.arc_second_maxima[0],
             ]
         )
     elif units in "kpc":
@@ -394,10 +394,10 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
                 lambda tick: tick * kpc_per_arcsec,
                 np.asarray(
                     [
-                        array.arc_second_minima[1],
-                        array.arc_second_maxima[1],
-                        array.arc_second_minima[0],
-                        array.arc_second_maxima[0],
+                        array.mask.arc_second_minima[1],
+                        array.mask.arc_second_maxima[1],
+                        array.mask.arc_second_minima[0],
+                        array.mask.arc_second_maxima[0],
                     ]
                 ),
             )
@@ -679,16 +679,16 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
     if mask is not None:
 
         plt.gca()
-        edge_pixels = (
-                mask._mask_2d_index_for_mask_1d_index[mask._edge_1d_indexes] + 0.5
-        )
+        edge_pixels = mask._mask_2d_index_for_mask_1d_index[mask._edge_1d_indexes] + 0.5
 
         if zoom_offset_pixels is not None:
             edge_pixels_plot = edge_pixels - zoom_offset_pixels
         else:
             edge_pixels_plot = edge_pixels
 
-        edge_arcsec = mask.grid_arcsec_from_grid_pixels_1d(grid_pixels_1d=edge_pixels_plot)
+        edge_arcsec = mask.mapping.grid_arcsec_from_grid_pixels_1d(
+            grid_pixels_1d=edge_pixels_plot
+        )
         edge_units = convert_grid_units(
             array=mask,
             grid_arcsec=edge_arcsec,

@@ -30,9 +30,7 @@ def galaxy_fit_phase():
         ),
     )
 
-    convergence = galaxy.convergence_from_grid(
-        galaxies=[galaxy], grid=grid
-    )
+    convergence = galaxy.convergence_from_grid(galaxies=[galaxy], grid=grid)
 
     noise_map = aa.Scaled(
         sub_array_1d=np.ones(convergence.shape), pixel_scales=pixel_scale

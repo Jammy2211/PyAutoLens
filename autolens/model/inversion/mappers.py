@@ -151,9 +151,7 @@ class RectangularMapper(Mapper):
     @property
     def pixelization_1d_index_for_sub_mask_1d_index(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return self.grid_pixels_from_grid_arcsec_1d(
-            grid_arcsec_1d=self.grid
-        )
+        return self.mapping.grid_pixels_from_grid_arcsec_1d(grid_arcsec_1d=self.grid)
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
@@ -164,9 +162,7 @@ class RectangularMapper(Mapper):
             sub_size=1,
         )
         return aa.Scaled(
-            array=recon,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
+            array=recon, pixel_scales=self.pixel_scales, origin=self.origin
         )
 
 

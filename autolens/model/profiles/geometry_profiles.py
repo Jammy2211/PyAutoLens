@@ -48,11 +48,9 @@ def transform_grid(func):
 
             if hasattr(grid, "mask"):
                 if len(result.shape) == 1:
-                    return grid.mask.scaled_array_from_sub_array_1d(
-                        sub_array_1d=result
-                    )
+                    return grid.mask.mapping.scaled_array_from_sub_array_1d(sub_array_1d=result)
                 else:
-                    return grid.mask.grid_from_sub_grid_1d(sub_grid_1d=result)
+                    return grid.mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=result)
             else:
                 return result
 

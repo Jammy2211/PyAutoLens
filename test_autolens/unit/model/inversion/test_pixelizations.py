@@ -40,9 +40,7 @@ class TestRectangular:
             assert (pixel_neighbors[7] == [4, 6, 8, -1]).all()
             assert (pixel_neighbors[8] == [5, 7, -1, -1]).all()
 
-            assert (
-                pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
-            ).all()
+            assert (pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])).all()
 
         def test__3x3_grid__same_as_above_change_buffer(self):
             pix = al.pixelizations.Rectangular(shape=(3, 3))

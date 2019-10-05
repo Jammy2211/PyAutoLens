@@ -94,7 +94,9 @@ class TestLikelihood:
         # Thus the chi squared is 4.0**2.0 + 3.0**2.0 = 25.0
 
         psf = al.PSF(
-            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(
+                np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+            ),
             pixel_scales=1.0,
         )
 
@@ -140,7 +142,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image( return_masked=True)
+            fit.image(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -148,7 +150,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([1.0, 1.0])).all()
         assert (
-            fit.noise_map( return_masked=True)
+            fit.noise_map(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -197,7 +199,9 @@ class TestLikelihood:
         # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
         psf = al.PSF(
-            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(
+                np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])
+            ),
             pixel_scales=1.0,
         )
 
@@ -243,7 +247,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image( return_masked=True)
+            fit.image(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -251,7 +255,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([1.0, 1.0])).all()
         assert (
-            fit.noise_map( return_masked=True)
+            fit.noise_map(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -306,7 +310,9 @@ class TestLikelihood:
         # This reduces the chi squared to 2.0 instead of 4.0
 
         psf = al.PSF(
-            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(
+                np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])
+            ),
             pixel_scales=1.0,
         )
 
@@ -362,7 +368,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image( return_masked=True)
+            fit.image(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -370,7 +376,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([2.0, 2.0])).all()
         assert (
-            fit.noise_map( return_masked=True)
+            fit.noise_map(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 2.0, 2.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -416,7 +422,9 @@ class TestLikelihood:
     def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
         psf = al.PSF(
-            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(
+                np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+            ),
             pixel_scales=1.0,
         )
 
@@ -466,7 +474,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([6.0, 5.0])).all()
         assert (
-            fit.image( return_masked=True)
+            fit.image(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 6.0, 5.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -474,7 +482,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([1.0, 1.0])).all()
         assert (
-            fit.noise_map( return_masked=True)
+            fit.noise_map(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -522,7 +530,9 @@ class TestLikelihood:
     ):
 
         psf = al.PSF(
-            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(
+                np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+            ),
             pixel_scales=1.0,
         )
 
@@ -572,7 +582,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image( return_masked=True)
+            fit.image(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -580,7 +590,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([2.0, 2.0])).all()
         assert (
-            fit.noise_map( return_masked=True)
+            fit.noise_map(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 2.0, 2.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -626,7 +636,9 @@ class TestLikelihood:
     def test__hyper_noise_map_max_changes_noise_map__reflected_in_likelihood(self):
 
         psf = al.PSF(
-            sub_array_1d=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+            sub_array_1d=(
+                np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+            ),
             pixel_scales=1.0,
         )
 
@@ -678,7 +690,7 @@ class TestLikelihood:
 
         assert (fit._data == np.array([5.0, 4.0])).all()
         assert (
-            fit.image( return_masked=True)
+            fit.image(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 4.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -686,7 +698,7 @@ class TestLikelihood:
 
         assert (fit._noise_map == np.array([1.0, 1.0])).all()
         assert (
-            fit.noise_map( return_masked=True)
+            fit.noise_map(return_masked=True)
             == np.array(
                 [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
             )
@@ -751,7 +763,7 @@ class TestCompareToManualProfilesOnly:
         )
 
         assert lens_imaging_data_7x7.noise_map(return_in_2d=True) == pytest.approx(
-            fit.noise_map( return_masked=True)
+            fit.noise_map(return_masked=True)
         )
 
         model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
@@ -962,9 +974,7 @@ class TestCompareToManualProfilesOnly:
         )
 
         assert hyper_noise_map_1d == pytest.approx(fit._noise_map, 1e-4)
-        assert hyper_noise_map_2d == pytest.approx(
-            fit.noise_map( return_masked=True)
-        )
+        assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_masked=True))
 
         model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_imaging_data_7x7.grid,
@@ -1063,7 +1073,6 @@ class TestCompareToManualProfilesOnly:
             grid=lens_imaging_data_7x7.grid,
             convolver=lens_imaging_data_7x7.convolver,
             blurring_grid=lens_imaging_data_7x7.blurring_grid,
-            
         )
 
         model_images_of_planes = fit.model_images_of_planes(return_in_2d=True)
@@ -1317,9 +1326,7 @@ class TestCompareToManualInversionOnly:
             array_1d=hyper_noise_map_1d
         )
         assert hyper_noise_map_1d == pytest.approx(fit._noise_map, 1e-4)
-        assert hyper_noise_map_2d == pytest.approx(
-            fit.noise_map( return_masked=True)
-        )
+        assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_masked=True))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=lens_imaging_data_7x7.grid, inversion_uses_border=False
@@ -1627,18 +1634,14 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         g0_image_1d = g0.profile_image_from_grid(grid=traced_grids[0])
-        g0_blurring_image_1d = g0.profile_image_from_grid(
-            grid=traced_blurring_grids[0]
-        )
+        g0_blurring_image_1d = g0.profile_image_from_grid(grid=traced_blurring_grids[0])
 
         g0_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
         )
 
         g1_image_1d = g1.profile_image_from_grid(grid=traced_grids[1])
-        g1_blurring_image_1d = g1.profile_image_from_grid(
-            grid=traced_blurring_grids[1]
-        )
+        g1_blurring_image_1d = g1.profile_image_from_grid(grid=traced_blurring_grids[1])
 
         g1_blurred_image_1d = lens_imaging_data_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
@@ -1759,9 +1762,7 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         assert hyper_noise_map_1d == pytest.approx(fit._noise_map, 1e-4)
-        assert hyper_noise_map_2d == pytest.approx(
-            fit.noise_map( return_masked=True)
-        )
+        assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_masked=True))
 
         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_imaging_data_7x7.grid,
