@@ -9,7 +9,7 @@ from autolens.lens.lens_fit import lens_imaging_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.model.hyper import hyper_data as hd
 from autolens.pipeline.phase import phase_imaging
-from autolens.plotters import visualizer
+from autolens.pipeline import visualizer
 from .hyper_phase import HyperPhase
 
 

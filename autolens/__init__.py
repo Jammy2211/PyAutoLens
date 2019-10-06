@@ -109,6 +109,6 @@ from autolens.pipeline.pipeline import (
     PipelinePositions,
 )
 from autolens.pipeline.plotters import hyper_plotters, phase_plotters
-from autolens.plotters import array_plotters, grid_plotters, plotter_util
+from autoarray.plotters import grid_plotters
 
 __version__ = "0.31.8"
