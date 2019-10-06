@@ -5,8 +5,8 @@ backend = af.conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
+import autoarray as aa
 from autolens.data.plotters import data_plotters
-from autolens.plotters import plotter_util
 
 
 def plot_uv_plane_subplot(
@@ -56,7 +56,7 @@ def plot_uv_plane_subplot(
         config file is ignored.
     """
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=3
     )
 
@@ -154,7 +154,7 @@ def plot_uv_plane_subplot(
         output_format=output_format,
     )
 
-    plotter_util.output_subplot_array(
+    aa.plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,

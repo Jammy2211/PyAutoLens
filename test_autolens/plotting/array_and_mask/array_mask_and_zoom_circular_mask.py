@@ -17,7 +17,7 @@ mask = aa.Mask.circular(
     radius_arcsec=5.0,
     centre=(0.0, 0.0),
 )
-array_plotters.plot_array(
+aa.plot_array(
     array=array,
     mask=mask,
     positions=[[[1.0, 1.0]]],
@@ -37,10 +37,10 @@ mask = aa.Mask.circular(
     radius_arcsec=5.0,
     centre=(1.0, 1.0),
 )
-array_plotters.plot_array(
+aa.plot_array(
     array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]]
 )
-array_plotters.plot_array(
+aa.plot_array(
     array=array,
     mask=mask,
     positions=[[[2.0, 2.0]]],

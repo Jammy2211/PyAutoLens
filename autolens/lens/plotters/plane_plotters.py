@@ -5,7 +5,7 @@ backend = af.conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autolens.plotters import plotter_util, array_plotters
+from autolens.plotters import aa.plotter_util, array_plotters
 from autoarray.plotters import grid_plotters
 
 
@@ -50,7 +50,7 @@ def plot_profile_image(
     profile_image = plane.profile_image_from_grid(grid=grid)
 
     if plane.has_mass_profile:
-        lines = plotter_util.get_critical_curve_and_caustic(
+        lines = aa.plotter_util.get_critical_curve_and_caustic(
             obj=plane,
             grid=grid,
             plot_critical_curve=plot_critical_curves,
@@ -62,7 +62,7 @@ def plot_profile_image(
     if not plot_grid:
         grid = None
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=profile_image,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -144,7 +144,7 @@ def plot_plane_image(
     else:
         origin = None
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=plane_image,
         origin=origin,
         positions=positions,
@@ -214,14 +214,14 @@ def plot_convergence(
 
     convergence = plane.convergence_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=convergence,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -289,14 +289,14 @@ def plot_potential(
 
     potential = plane.potential_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=potential,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -365,14 +365,14 @@ def plot_deflections_y(
     deflections = plane.deflections_from_grid(grid=grid)
     deflections_y = grid.mask.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=deflections_y,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -441,14 +441,14 @@ def plot_deflections_x(
     deflections = plane.deflections_from_grid(grid=grid)
     deflections_x = grid.mask.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=deflections_x,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -516,14 +516,14 @@ def plot_magnification(
 
     magnification = plane.magnification_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=magnification,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -570,11 +570,11 @@ def plot_image_and_source_plane_subplot(
     output_filename="image_and_source_plane_grids",
 ):
 
-    rows, columns, figsize = plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize = aa.plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=2
     )
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=image_plane, grid=grid, plot_critical_curve=True, plot_caustics=True
     )
 
@@ -633,7 +633,7 @@ def plot_image_and_source_plane_subplot(
         output_format=output_format,
     )
 
-    plotter_util.output_subplot_array(
+    aa.plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -661,7 +661,7 @@ def plot_plane_grid(
     output_filename="plane_grid",
 ):
 
-    grid_plotters.plot_grid(
+    aa.plot_grid(
         grid=grid,
         points=points,
         axis_limits=axis_limits,

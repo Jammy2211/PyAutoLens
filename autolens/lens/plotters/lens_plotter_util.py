@@ -50,7 +50,7 @@ def plot_image(
 
     image = fit.image(return_in_2d=True)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=image,
         grid=grid,
         mask=mask,
@@ -134,7 +134,7 @@ def plot_noise_map(
 
     noise_map = fit.noise_map(return_in_2d=True)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=noise_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -216,7 +216,7 @@ def plot_signal_to_noise_map(
 
     signal_to_noise_map = fit.signal_to_noise_map(return_in_2d=True)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=signal_to_noise_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -303,7 +303,7 @@ def plot_model_data(
 
     model_image = fit.model_image(return_in_2d=True)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=model_image,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -386,7 +386,7 @@ def plot_residual_map(
 
     residual_map = fit.residual_map(return_in_2d=True)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=residual_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -468,7 +468,7 @@ def plot_normalized_residual_map(
 
     normalized_residual_map = fit.normalized_residual_map(return_in_2d=True)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=normalized_residual_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -550,7 +550,7 @@ def plot_chi_squared_map(
 
     chi_squared_map = fit.chi_squared_map(return_in_2d=True)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=chi_squared_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -654,7 +654,7 @@ def plot_subtracted_image_of_plane(
 
         subtracted_image = fit.image(return_in_2d=True)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=subtracted_image,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -743,7 +743,7 @@ def plot_model_image_of_plane(
         plot_mass_profile_centres=plot_mass_profile_centres, fit=fit
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=fit.model_images_of_planes(return_in_2d=True)[plane_index],
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -829,7 +829,7 @@ def plot_contribution_maps(
     else:
         contribution_map = fit.contribution_maps[0]
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=contribution_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,

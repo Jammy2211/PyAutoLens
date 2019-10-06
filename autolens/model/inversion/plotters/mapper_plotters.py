@@ -9,7 +9,7 @@ import numpy as np
 import itertools
 from scipy.spatial import Voronoi
 
-from autolens.plotters import plotter_util
+from autolens.plotters import aa.plotter_util
 from autoarray.plotters import grid_plotters
 from autolens.model.inversion import mappers
 from autolens.data.plotters import imaging_plotters
@@ -32,7 +32,7 @@ def plot_image_and_mapper(
     output_format="show",
 ):
 
-    rows, columns, figsize = plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize = aa.plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=2
     )
     plt.figure(figsize=figsize)
@@ -92,7 +92,7 @@ def plot_image_and_mapper(
         figsize=None,
     )
 
-    plotter_util.output_subplot_array(
+    aa.plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -166,14 +166,14 @@ def plot_rectangular_mapper(
     output_format="show",
 ):
 
-    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    aa.plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     set_axis_limits(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
     plot_rectangular_pixelization_lines(
         mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec
     )
 
-    plotter_util.set_title(title=title, titlesize=titlesize)
+    aa.plotter_util.set_title(title=title, titlesize=titlesize)
     grid_plotters.set_xy_labels(
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -232,14 +232,14 @@ def plot_rectangular_mapper(
         point_colors=point_colors,
     )
 
-    plotter_util.output_figure(
+    aa.plotter_util.output_figure(
         None,
         as_subplot=as_subplot,
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
     )
-    plotter_util.close_figure(as_subplot=as_subplot)
+    aa.plotter_util.close_figure(as_subplot=as_subplot)
 
 
 def plot_voronoi_mapper(
@@ -269,7 +269,7 @@ def plot_voronoi_mapper(
     output_format="show",
 ):
 
-    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    aa.plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     set_axis_limits(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
@@ -292,7 +292,7 @@ def plot_voronoi_mapper(
         col = cmap(color_values[index])
         plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
 
-    plotter_util.set_title(title=title, titlesize=titlesize)
+    aa.plotter_util.set_title(title=title, titlesize=titlesize)
     grid_plotters.set_xy_labels(
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -351,14 +351,14 @@ def plot_voronoi_mapper(
         point_colors=point_colors,
     )
 
-    plotter_util.output_figure(
+    aa.plotter_util.output_figure(
         None,
         as_subplot=as_subplot,
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
     )
-    plotter_util.close_figure(as_subplot=as_subplot)
+    aa.plotter_util.close_figure(as_subplot=as_subplot)
 
 
 def voronoi_finite_polygons_2d(vor, radius=None):
@@ -561,7 +561,7 @@ def plot_plane_grid(
             grid=mapper.grid, units=units, kpc_per_arcsec=kpc_per_arcsec
         )
 
-        grid_plotters.plot_grid(
+        aa.plot_grid(
             grid=grid_units,
             as_subplot=as_subplot,
             units=units,
@@ -596,7 +596,7 @@ def plot_border(
             grid=border_arcsec, units=units, kpc_per_arcsec=kpc_per_arcsec
         )
 
-        grid_plotters.plot_grid(
+        aa.plot_grid(
             grid=border_units,
             as_subplot=as_subplot,
             units=units,

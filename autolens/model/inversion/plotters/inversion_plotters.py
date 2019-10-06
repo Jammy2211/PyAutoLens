@@ -5,7 +5,7 @@ backend = af.conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autolens.plotters import plotter_util, array_plotters
+from autolens.plotters import aa.plotter_util, array_plotters
 from autolens.model.inversion.plotters import mapper_plotters
 from autolens.model.inversion import mappers
 
@@ -41,7 +41,7 @@ def plot_inversion_subplot(
     output_filename="inversion_subplot",
 ):
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
 
@@ -259,7 +259,7 @@ def plot_inversion_subplot(
         output_format=output_format,
     )
 
-    plotter_util.output_subplot_array(
+    aa.plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -301,7 +301,7 @@ def plot_reconstructed_image(
     output_filename="reconstructed_inversion_image",
 ):
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=inversion.reconstructed_data_2d,
         mask=mask,
         positions=positions,
@@ -373,7 +373,7 @@ def plot_pixelization_values(
     if output_format is "fits":
         return
 
-    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    aa.plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     plot_inversion_with_source_values(
         inversion=inversion,
@@ -411,7 +411,7 @@ def plot_pixelization_values(
         output_filename=output_filename,
     )
 
-    plotter_util.close_figure(as_subplot=as_subplot)
+    aa.plotter_util.close_figure(as_subplot=as_subplot)
 
 
 def plot_pixelization_residual_map(
@@ -452,7 +452,7 @@ def plot_pixelization_residual_map(
     if output_format is "fits":
         return
 
-    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    aa.plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     plot_inversion_with_source_values(
         inversion=inversion,
@@ -490,7 +490,7 @@ def plot_pixelization_residual_map(
         output_filename=output_filename,
     )
 
-    plotter_util.close_figure(as_subplot=as_subplot)
+    aa.plotter_util.close_figure(as_subplot=as_subplot)
 
 
 def plot_pixelization_normalized_residual_map(
@@ -531,7 +531,7 @@ def plot_pixelization_normalized_residual_map(
     if output_format is "fits":
         return
 
-    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    aa.plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     plot_inversion_with_source_values(
         inversion=inversion,
@@ -569,7 +569,7 @@ def plot_pixelization_normalized_residual_map(
         output_filename=output_filename,
     )
 
-    plotter_util.close_figure(as_subplot=as_subplot)
+    aa.plotter_util.close_figure(as_subplot=as_subplot)
 
 
 def plot_pixelization_chi_squared_map(
@@ -610,7 +610,7 @@ def plot_pixelization_chi_squared_map(
     if output_format is "fits":
         return
 
-    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    aa.plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     plot_inversion_with_source_values(
         inversion=inversion,
@@ -648,7 +648,7 @@ def plot_pixelization_chi_squared_map(
         output_filename=output_filename,
     )
 
-    plotter_util.close_figure(as_subplot=as_subplot)
+    aa.plotter_util.close_figure(as_subplot=as_subplot)
 
 
 def plot_pixelization_regularization_weights(
@@ -689,7 +689,7 @@ def plot_pixelization_regularization_weights(
     if output_format is "fits":
         return
 
-    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    aa.plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     regularization_weights = inversion.regularization.regularization_weights_from_mapper(
         mapper=inversion.mapper
@@ -731,7 +731,7 @@ def plot_pixelization_regularization_weights(
         output_filename=output_filename,
     )
 
-    plotter_util.close_figure(as_subplot=as_subplot)
+    aa.plotter_util.close_figure(as_subplot=as_subplot)
 
 
 def plot_inversion_with_source_values(
@@ -778,7 +778,7 @@ def plot_inversion_with_source_values(
 
         origin = get_origin(image=reconstructed_pixelization, plot_origin=plot_origin)
 
-        array_plotters.plot_array(
+        aa.plot_array(
             array=reconstructed_pixelization,
             origin=origin,
             positions=positions,
@@ -823,7 +823,7 @@ def plot_inversion_with_source_values(
             xyticksize=xyticksize,
         )
 
-        plotter_util.output_figure(
+        aa.plotter_util.output_figure(
             array=reconstructed_pixelization,
             as_subplot=as_subplot,
             output_path=output_path,
@@ -851,7 +851,7 @@ def plot_inversion_with_source_values(
             xyticksize=xyticksize,
         )
 
-        plotter_util.output_figure(
+        aa.plotter_util.output_figure(
             array=None,
             as_subplot=as_subplot,
             output_path=output_path,
