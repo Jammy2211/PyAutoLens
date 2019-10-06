@@ -3,10 +3,9 @@ import matplotlib
 
 backend = af.conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
-import numpy as np
 
 from autolens.plotters import array_plotters
-from autolens.plotters import grid_plotters
+from autoarray.plotters import grid_plotters
 from autolens.plotters import line_yx_plotters
 
 

@@ -3,7 +3,7 @@ from astropy import cosmology as cosmo
 import autofit as af
 from autolens.model.galaxy import galaxy_fit, galaxy_data as gd
 from autolens.pipeline.phase.phase import AbstractPhase
-from autolens.plotters import visualizer
+from autolens.pipeline import visualizer
 
 
 class PhaseGalaxy(af.AbstractPhase):

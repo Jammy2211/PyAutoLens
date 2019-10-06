@@ -6,10 +6,9 @@ import autofit as af
 from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g
-from autolens.pipeline import phase_tagging
+from autolens.pipeline import phase_tagging, visualizer
 from autolens.pipeline.phase import phase_extensions
 from autolens.pipeline.phase.phase_data import PhaseData, MetaDataFit
-from autolens.plotters import visualizer
 
 
 class MetaImagingFit(MetaDataFit):
