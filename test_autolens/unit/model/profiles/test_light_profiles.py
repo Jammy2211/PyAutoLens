@@ -7,7 +7,7 @@ import scipy.special
 
 import autofit as af
 import autolens as al
-from test import mock_cosmology
+from test_autolens.unit.mock.model import mock_cosmology
 
 
 @pytest.fixture(autouse=True)

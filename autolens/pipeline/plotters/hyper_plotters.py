@@ -7,7 +7,7 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 from autolens.plotters import array_plotters
-from autolens.plotters import plotter_util
+from autolens.plotters import aa.plotter_util
 from autolens.data.plotters import data_plotters
 
 
@@ -47,7 +47,7 @@ def plot_hyper_galaxy_subplot(
     output_filename="hyper_galaxies",
 ):
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
 
@@ -257,7 +257,7 @@ def plot_hyper_galaxy_subplot(
         output_filename=output_filename,
     )
 
-    plotter_util.output_subplot_array(
+    aa.plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -363,7 +363,7 @@ def plot_hyper_galaxy_images_subplot(
     output_format="show",
 ):
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=len(hyper_galaxy_image_path_dict)
     )
 
@@ -416,7 +416,7 @@ def plot_hyper_galaxy_images_subplot(
             output_filename=output_filename,
         )
 
-    plotter_util.output_subplot_array(
+    aa.plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -472,7 +472,7 @@ def plot_hyper_model_image(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=hyper_model_image,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -556,7 +556,7 @@ def plot_hyper_galaxy_image(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=hyper_galaxy_image,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -640,7 +640,7 @@ def plot_contribution_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=contribution_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -724,7 +724,7 @@ def plot_hyper_noise_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=hyper_noise_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -808,7 +808,7 @@ def plot_chi_squared_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=chi_squared_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -892,7 +892,7 @@ def plot_hyper_chi_squared_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=hyper_chi_squared_map,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,

@@ -19,4 +19,4 @@ mask = aa.Mask.elliptical(
     phi=0.0,
     centre=(0.0, 0.0),
 )
-array_plotters.plot_array(array=array)
+aa.plot_array(array=array)

@@ -1,5 +1,5 @@
 from autolens.plotters import array_plotters
-from autolens.plotters import plotter_util
+from autolens.plotters import aa.plotter_util
 from autolens.plotters import quantity_radii_plotters
 
 
@@ -51,7 +51,7 @@ def plot_image(
     """
     image = light_profile.profile_image_from_grid(grid=grid)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=image,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -113,7 +113,7 @@ def plot_luminosity_within_circle_in_electrons_per_second_as_function_of_radius(
     output_filename="luminosity_vs_radius",
 ):
 
-    radii = plotter_util.quantity_radii_from_minimum_and_maximum_radii_and_radii_points(
+    radii = aa.plotter_util.quantity_radii_from_minimum_and_maximum_radii_and_radii_points(
         minimum_radius=minimum_radius,
         maximum_radius=maximum_radius,
         radii_points=radii_bins,
@@ -204,14 +204,14 @@ def plot_convergence(
 
     convergence = mass_profile.convergence_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=convergence,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -298,14 +298,14 @@ def plot_potential(
     """
     potential = mass_profile.potential_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=potential,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -394,14 +394,14 @@ def plot_deflections_y(
     deflections = mass_profile.deflections_from_grid(grid)
     deflections_y = grid.mask.mapping.scaled_array_2d_from_array_1d(deflections[:, 0])
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=deflections_y,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -489,14 +489,14 @@ def plot_deflections_x(
     deflections = mass_profile.deflections_from_grid(grid)
     deflections_x = grid.mask.mapping.scaled_array_2d_from_array_1d(deflections[:, 1])
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=deflections_x,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
@@ -583,14 +583,14 @@ def plot_magnification(
     """
     magnification = mass_profile.magnification_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = aa.plotter_util.get_critical_curve_and_caustic(
         obj=mass_profile,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=magnification,
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,

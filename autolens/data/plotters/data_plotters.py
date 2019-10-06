@@ -4,10 +4,7 @@ import matplotlib
 backend = af.conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 
-from autolens.plotters import array_plotters
-from autoarray.plotters import grid_plotters
-from autolens.plotters import line_yx_plotters
-
+import autoarray as aa
 
 def plot_image(
     image,
@@ -62,7 +59,7 @@ def plot_image(
     """
     origin = get_origin(array=image, plot_origin=plot_origin)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=image,
         origin=origin,
         grid=grid,
@@ -146,7 +143,7 @@ def plot_noise_map(
     """
     origin = get_origin(array=noise_map, plot_origin=plot_origin)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=noise_map,
         origin=origin,
         mask=mask,
@@ -221,7 +218,7 @@ def plot_psf(
     """
     origin = get_origin(array=psf, plot_origin=plot_origin)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=psf,
         origin=origin,
         as_subplot=as_subplot,
@@ -296,7 +293,7 @@ def plot_signal_to_noise_map(
     """
     origin = get_origin(array=signal_to_noise_map, plot_origin=plot_origin)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=signal_to_noise_map,
         origin=origin,
         mask=mask,
@@ -375,7 +372,7 @@ def plot_absolute_signal_to_noise_map(
     """
     origin = get_origin(array=absolute_signal_to_noise_map, plot_origin=plot_origin)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=absolute_signal_to_noise_map,
         origin=origin,
         mask=mask,
@@ -454,7 +451,7 @@ def plot_potential_chi_squared_map(
     """
     origin = get_origin(array=potential_chi_squared_map, plot_origin=plot_origin)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=potential_chi_squared_map,
         origin=origin,
         mask=mask,
@@ -525,7 +522,7 @@ def plot_visibilities(
         over the immage.
     """
 
-    grid_plotters.plot_grid(
+    aa.plot_grid(
         grid=visibilities,
         colors=noise_map,
         as_subplot=as_subplot,
@@ -583,7 +580,7 @@ def plot_u_wavelengths(
         over the immage.
     """
 
-    line_yx_plotters.plot_line(
+    aa.plot_line(
         y=uv_wavelengths[:, 0],
         x=None,
         as_subplot=as_subplot,
@@ -639,7 +636,7 @@ def plot_v_wavelengths(
         over the immage.
     """
 
-    line_yx_plotters.plot_line(
+    aa.plot_line(
         y=uv_wavelengths[:, 1],
         x=None,
         as_subplot=as_subplot,
@@ -702,7 +699,7 @@ def plot_primary_beam(
     """
     origin = get_origin(array=primary_beam, plot_origin=plot_origin)
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=primary_beam,
         origin=origin,
         as_subplot=as_subplot,

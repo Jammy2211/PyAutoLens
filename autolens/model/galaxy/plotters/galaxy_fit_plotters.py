@@ -6,7 +6,7 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 from autolens import exc
-from autolens.plotters import plotter_util, array_plotters
+from autolens.plotters import aa.plotter_util, array_plotters
 from autolens.lens.plotters import lens_plotter_util
 
 
@@ -43,7 +43,7 @@ def plot_fit_subplot(
     output_format="show",
 ):
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=4
     )
 
@@ -193,7 +193,7 @@ def plot_fit_subplot(
         output_format=output_format,
     )
 
-    plotter_util.output_subplot_array(
+    aa.plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -340,7 +340,7 @@ def plot_galaxy_data_array(
             "The galaxy data_type array does not have a True use_profile_type"
         )
 
-    array_plotters.plot_array(
+    aa.plot_array(
         array=galaxy_data.image(return_in_2d=True),
         mask=mask,
         extract_array_from_mask=extract_array_from_mask,
