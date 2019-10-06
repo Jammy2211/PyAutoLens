@@ -120,7 +120,7 @@ class NoiseMap(abstract_data.AbstractNoiseMap):
     pass
 
 
-class PrimaryBeam(aa.Scaled):
+class PrimaryBeam(aa.ScaledArray):
 
     # noinspection PyUnusedLocal
     def __init__(self, array_1d, pixel_scales, renormalize=False, **kwargs):
@@ -465,13 +465,13 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
+            exposure_time_map = aa.ScaledArray.from_single_value_shape_and_pixel_scale(
                 value=exposure_time, shape=image.shape, pixel_scale=pixel_scale
             )
 
         if background_sky_map is None:
 
-            background_sky_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
+            background_sky_map = aa.ScaledArray.from_single_value_shape_and_pixel_scale(
                 value=background_sky_level, shape=image.shape, pixel_scale=pixel_scale
             )
 

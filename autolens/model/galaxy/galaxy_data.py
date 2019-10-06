@@ -17,7 +17,7 @@ class GalaxyData(object):
 
         Parameters
         ----------
-        image : aa.Scaled
+        image : aa.ScaledArray
             An image of the quantity of the galaxy that is being fitted (e.g. its image, convergence, etc.).
         noise_map : aa.Scaled
             The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
