@@ -75,7 +75,7 @@ class MockResults(object):
         image_1d_dict = {}
 
         for galaxy, galaxy_image_2d in self.image_2d_dict.items():
-            image_1d_dict[galaxy] = self.mask_2d.scaled_array_from_array_2d(
+            image_1d_dict[galaxy] = self.mask_2d.mapping.scaled_array_from_array_2d(
                 array_2d=galaxy_image_2d
             )
 
@@ -115,7 +115,7 @@ class MockResults(object):
         for path, galaxy in self.path_galaxy_tuples:
             hyper_galaxy_image_2d_path_dict[
                 path
-            ] = self.mask_2d.scaled_array_2d_from_array_1d(
+            ] = self.mask_2d.mapping.scaled_array_2d_from_array_1d(
                 array_1d=self.hyper_galaxy_image_1d_path_dict[path]
             )
 

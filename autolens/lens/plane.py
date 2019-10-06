@@ -927,7 +927,7 @@ class PlanePositions(object):
         )
 
 
-class PlaneImage(aa.Scaled):
+class PlaneImage(aa.ScaledArray):
     def __init__(self, array, pixel_scales, grid, origin=(0.0, 0.0)):
         self.grid = grid
         super(PlaneImage, self).__init__(
