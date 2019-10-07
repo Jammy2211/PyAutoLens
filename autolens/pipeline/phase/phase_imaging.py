@@ -8,7 +8,7 @@ from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase import phase_data
-from autolens.pipeline.phase import phase_extensions
+from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.phase_data import PhaseData, MetaDataFit
 from autolens.plotters import visualizer
 
@@ -636,43 +636,43 @@ class PhaseImaging(PhaseData):
         if hyper_galaxy:
             if not include_background_sky and not include_background_noise:
                 hyper_phase_classes.append(
-                    phase_extensions.hyper_galaxy_phase.HyperGalaxyPhase
+                    extensions.hyper_galaxy_phase.HyperGalaxyPhase
                 )
             elif include_background_sky and not include_background_noise:
                 hyper_phase_classes.append(
-                    phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
+                    extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
                 )
             elif not include_background_sky and include_background_noise:
                 hyper_phase_classes.append(
-                    phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
+                    extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
                 )
             else:
                 hyper_phase_classes.append(
-                    phase_extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
+                    extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
                 )
 
         if inversion:
             if not include_background_sky and not include_background_noise:
                 hyper_phase_classes.append(
-                    phase_extensions.InversionPhase
+                    extensions.InversionPhase
                 )
             elif include_background_sky and not include_background_noise:
                 hyper_phase_classes.append(
-                    phase_extensions.InversionBackgroundSkyPhase
+                    extensions.InversionBackgroundSkyPhase
                 )
             elif not include_background_sky and include_background_noise:
                 hyper_phase_classes.append(
-                    phase_extensions.InversionBackgroundNoisePhase
+                    extensions.InversionBackgroundNoisePhase
                 )
             else:
                 hyper_phase_classes.append(
-                    phase_extensions.InversionBackgroundBothPhase
+                    extensions.InversionBackgroundBothPhase
                 )
 
         if len(hyper_phase_classes) == 0:
             return self
         else:
-            return phase_extensions.CombinedHyperPhase(
+            return extensions.CombinedHyperPhase(
                 phase=self,
                 hyper_phase_classes=hyper_phase_classes
             )
