@@ -1,15 +1,14 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-import autolens.pipeline.phase.abstract.analysis
 from autolens.model.galaxy import galaxy_fit, galaxy_data as gd
-from autolens.pipeline.phase import abstract
 from autolens.plotters import visualizer
 
 
-class Analysis(autolens.pipeline.phase.abstract.analysis.Analysis):
+class Analysis(af.Analysis):
     def __init__(self, cosmology, results, image_path):
-        super().__init__(cosmology=cosmology, results=results)
+        self.cosmology = cosmology
+        self.results = results
         self.visualizer = visualizer.PhaseGalaxyVisualizer(image_path)
 
 

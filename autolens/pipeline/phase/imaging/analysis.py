@@ -1,15 +1,11 @@
 import autofit as af
 from autolens.lens import lens_fit, ray_tracing
 from autolens.model.galaxy import galaxy as g
-from autolens.pipeline.phase import data
 from autolens.plotters import visualizer
 
 
-class Analysis(data.Analysis):
+class Analysis(af.Analysis):
     def __init__(self, lens_imaging_data, cosmology, image_path=None, results=None):
-        super().__init__(
-            results=results
-        )
         self.cosmology = cosmology
         self.visualizer = visualizer.PhaseImagingVisualizer(
             lens_imaging_data, image_path
@@ -17,20 +13,22 @@ class Analysis(data.Analysis):
 
         self.lens_imaging_data = lens_imaging_data
 
-        self.visualizer.plot_hyper_images(self.last_results)
+        if results is not None and results.last is not None:
+            last_results = results.last
 
-        if self.last_results is not None:
+            self.visualizer.plot_hyper_images(last_results)
+
             self.hyper_galaxy_image_1d_path_dict = (
-                self.last_results.hyper_galaxy_image_1d_path_dict
+                last_results.hyper_galaxy_image_1d_path_dict
             )
 
-            self.hyper_model_image_1d = self.last_results.hyper_model_image_1d
+            self.hyper_model_image_1d = last_results.hyper_model_image_1d
 
-            self.binned_hyper_galaxy_image_1d_path_dict = self.last_results.binned_hyper_galaxy_image_1d_path_dict(
+            self.binned_hyper_galaxy_image_1d_path_dict = last_results.binned_hyper_galaxy_image_1d_path_dict(
                 binned_grid=lens_imaging_data.grid.binned
             )
 
-            self.visualizer.plot_hyper_images(self.last_results)
+            self.visualizer.plot_hyper_images(last_results)
 
     @property
     def lens_data(self):

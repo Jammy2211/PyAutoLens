@@ -42,7 +42,6 @@ class TestPhase(object):
     ):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
 
-        assert analysis.last_results is None
         assert (
             analysis.lens_imaging_data.image(return_in_2d=True, return_masked=False)
             == imaging_data_7x7.image
