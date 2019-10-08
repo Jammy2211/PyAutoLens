@@ -7,14 +7,13 @@ from autolens.lens import lens_data as ld
 from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.pipeline import phase_tagging
-from autolens.pipeline.phase import phase_data
+from autolens.pipeline.phase import data
 from autolens.pipeline.phase import extensions
-from autolens.pipeline.phase.phase_data import PhaseData, MetaDataFit
 from autolens.plotters import visualizer
 
 
 # noinspection PyAbstractClass
-class Analysis(phase_data.Analysis):
+class Analysis(data.Analysis):
     def __init__(self, lens_imaging_data, cosmology, image_path=None, results=None):
         super().__init__(
             cosmology=cosmology, results=results
@@ -163,7 +162,7 @@ class Analysis(phase_data.Analysis):
         self.visualizer.plot_lens_imaging(fit, during_analysis)
 
 
-class Result(PhaseData.Result):
+class Result(data.Result):
     @property
     def most_likely_fit(self):
 
@@ -360,7 +359,7 @@ class Result(PhaseData.Result):
         return hyper_model_image_1d
 
 
-class MetaImagingFit(MetaDataFit):
+class MetaImagingFit(data.MetaDataFit):
     def __init__(
             self,
             variable,
@@ -446,7 +445,7 @@ class MetaImagingFit(MetaDataFit):
         return lens_imaging_data
 
 
-class PhaseImaging(PhaseData):
+class PhaseImaging(data.PhaseData):
     galaxies = af.PhaseProperty("galaxies")
     hyper_image_sky = af.PhaseProperty("hyper_image_sky")
     hyper_background_noise = af.PhaseProperty("hyper_background_noise")
