@@ -16,7 +16,6 @@ class AbstractPhase(af.AbstractPhase):
             phase_tag=None,
             phase_folders=tuple(),
             optimizer_class=af.MultiNest,
-            cosmology=cosmo.Planck15,
             auto_link_priors=False,
     ):
         """
@@ -38,8 +37,6 @@ class AbstractPhase(af.AbstractPhase):
             optimizer_class=optimizer_class,
             auto_link_priors=auto_link_priors,
         )
-
-        self.cosmology = cosmology
 
     @property
     def phase_folders(self):

@@ -2,6 +2,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens.array import mask as msk
+from autolens.lens import ray_tracing
 from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.data.analysis import Analysis
@@ -54,10 +55,10 @@ class PhaseData(abstract.AbstractPhase):
             phase_tag=phase_tag,
             phase_folders=phase_folders,
             optimizer_class=optimizer_class,
-            cosmology=cosmology,
             auto_link_priors=auto_link_priors,
         )
         self.galaxies = galaxies or []
+        self.cosmology = cosmology
 
         self.is_hyper_phase = False
 
