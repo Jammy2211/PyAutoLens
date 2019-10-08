@@ -1,5 +1,5 @@
 import autofit as af
-from autolens.lens import lens_fit
+from autolens.lens import lens_fit, ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.pipeline.phase import data
 from autolens.plotters import visualizer
@@ -8,8 +8,9 @@ from autolens.plotters import visualizer
 class Analysis(data.Analysis):
     def __init__(self, lens_imaging_data, cosmology, image_path=None, results=None):
         super().__init__(
-            cosmology=cosmology, results=results
+            results=results
         )
+        self.cosmology = cosmology
         self.visualizer = visualizer.PhaseImagingVisualizer(
             lens_imaging_data, image_path
         )
@@ -152,3 +153,8 @@ class Analysis(data.Analysis):
         )
         self.visualizer.plot_ray_tracing(fit.tracer, during_analysis)
         self.visualizer.plot_lens_imaging(fit, during_analysis)
+
+    def tracer_for_instance(self, instance):
+        return ray_tracing.Tracer.from_galaxies(
+            galaxies=instance.galaxies, cosmology=self.cosmology
+        )

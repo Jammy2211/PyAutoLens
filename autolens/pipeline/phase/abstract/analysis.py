@@ -1,11 +1,10 @@
 from abc import ABC
 
 import autofit as af
-from autolens.lens import ray_tracing
 
 
 class Analysis(af.Analysis, ABC):
-    def __init__(self, cosmology, results=None):
+    def __init__(self, results=None):
         """
         An lens object
 
@@ -16,7 +15,6 @@ class Analysis(af.Analysis, ABC):
         """
 
         self.results = results
-        self.cosmology = cosmology
 
     @property
     def last_results(self):
@@ -28,8 +26,3 @@ class Analysis(af.Analysis, ABC):
         """
         if self.results is not None:
             return self.results.last
-
-    def tracer_for_instance(self, instance):
-        return ray_tracing.Tracer.from_galaxies(
-            galaxies=instance.galaxies, cosmology=self.cosmology
-        )
