@@ -56,18 +56,6 @@ class AbstractPhase(af.AbstractPhase):
     def path(self):
         return self.optimizer.path
 
-    def customize_priors(self, results):
-        """
-        Perform any prior or constant passing. This could involve setting model
-        attributes equal to priors or constants from a previous phase.
-
-        Parameters
-        ----------
-        results: autofit.tools.pipeline.ResultsCollection
-            The result of the previous phase
-        """
-        pass
-
     def make_result(self, result, analysis):
         return self.Result(
             constant=result.constant,
