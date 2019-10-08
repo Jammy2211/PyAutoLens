@@ -5,7 +5,6 @@ from autolens.array import mask as msk
 from autolens.lens import ray_tracing
 from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase import extensions
-from autolens.pipeline.phase.data.analysis import Analysis
 from autolens.pipeline.phase.data.result import Result
 
 
@@ -27,7 +26,6 @@ class PhaseData(abstract.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
     Result = Result
-    Analysis = Analysis
 
     def __init__(
             self,
