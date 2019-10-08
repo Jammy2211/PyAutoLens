@@ -24,7 +24,7 @@ def isinstance_or_prior(obj, cls):
 
 
 # noinspection PyAbstractClass
-class Analysis(abstract.AbstractAnalysis):
+class Analysis(abstract.analysis.AbstractAnalysis):
     @property
     def lens_data(self):
         raise NotImplementedError()
@@ -60,7 +60,7 @@ class Analysis(abstract.AbstractAnalysis):
                         raise exc.PixelizationException
 
 
-class Result(abstract.AbstractResult):
+class Result(abstract.result.AbstractResult):
     @property
     def most_likely_fit(self):
 

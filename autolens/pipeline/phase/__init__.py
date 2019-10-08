@@ -1,4 +1,4 @@
 from autolens.pipeline.phase.extensions import HyperGalaxyPhase
 from autolens.pipeline.phase.abstract.phase import AbstractPhase
 from autolens.pipeline.phase.phase_imaging import PhaseImaging
-from autolens.pipeline.phase.phase_imaging import PhaseData
+from autolens.pipeline.phase.phase_data import PhaseData
