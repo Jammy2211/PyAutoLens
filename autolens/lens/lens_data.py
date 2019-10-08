@@ -1,24 +1,26 @@
 import numpy as np
 
+from autolens import exc
 from autolens.array import grids
+from autolens.array import mapping
 from autolens.array import mask as msk
 from autolens.array.convolution import Convolver
 from autolens.array.fourier_transform import Transformer
-from autolens.array import mapping
+from autolens.lens import lens_fit
 
 
 class AbstractLensData(object):
     def __init__(
-        self,
-        mask,
-        positions=None,
-        positions_threshold=None,
-        pixel_scale_interpolation_grid=None,
-        pixel_scale_binned_grid=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        hyper_noise_map_max=None,
-        preload_pixelization_grids_of_planes=None,
+            self,
+            mask,
+            positions=None,
+            positions_threshold=None,
+            pixel_scale_interpolation_grid=None,
+            pixel_scale_binned_grid=None,
+            inversion_pixel_limit=None,
+            inversion_uses_border=True,
+            hyper_noise_map_max=None,
+            preload_pixelization_grids_of_planes=None,
     ):
 
         self.mask = mask
@@ -40,7 +42,6 @@ class AbstractLensData(object):
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 
         if pixel_scale_interpolation_grid is not None:
-
             self.grid = self.grid.new_grid_with_interpolator(
                 pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
@@ -74,18 +75,18 @@ class AbstractLensData(object):
 
 class LensImagingData(AbstractLensData):
     def __init__(
-        self,
-        imaging_data,
-        mask,
-        positions=None,
-        positions_threshold=None,
-        trimmed_psf_shape=None,
-        pixel_scale_interpolation_grid=None,
-        pixel_scale_binned_grid=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        hyper_noise_map_max=None,
-        preload_pixelization_grids_of_planes=None,
+            self,
+            imaging_data,
+            mask,
+            positions=None,
+            positions_threshold=None,
+            trimmed_psf_shape=None,
+            pixel_scale_interpolation_grid=None,
+            pixel_scale_binned_grid=None,
+            inversion_pixel_limit=None,
+            inversion_uses_border=True,
+            hyper_noise_map_max=None,
+            preload_pixelization_grids_of_planes=None,
     ):
         """
         The lens data is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
@@ -159,7 +160,6 @@ class LensImagingData(AbstractLensData):
         )
 
         if pixel_scale_interpolation_grid is not None:
-
             self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
                 pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
@@ -221,21 +221,51 @@ class LensImagingData(AbstractLensData):
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
         )
 
+    def check_positions_trace_within_threshold_via_tracer(self, tracer):
+
+        if (
+                self.positions is not None
+                and self.positions_threshold is not None
+        ):
+
+            traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
+                positions=self.positions
+            )
+
+            fit = lens_fit.LensPositionFit(
+                positions=traced_positions_of_planes[-1],
+                noise_map=self.pixel_scale,
+            )
+
+            if not fit.maximum_separation_within_threshold(
+                    self.positions_threshold
+            ):
+                raise exc.RayTracingException
+
+    def check_inversion_pixels_are_below_limit_via_tracer(self, tracer):
+
+        if self.inversion_pixel_limit is not None:
+            pixelizations = list(filter(None, tracer.pixelizations_of_planes))
+            if pixelizations:
+                for pixelization in pixelizations:
+                    if pixelization.pixels > self.inversion_pixel_limit:
+                        raise exc.PixelizationException
+
 
 class LensUVPlaneData(AbstractLensData):
     def __init__(
-        self,
-        uv_plane_data,
-        mask,
-        positions=None,
-        positions_threshold=None,
-        trimmed_primary_beam_shape=None,
-        pixel_scale_interpolation_grid=None,
-        pixel_scale_binned_grid=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        hyper_noise_map_max=None,
-        preload_pixelization_grids_of_planes=None,
+            self,
+            uv_plane_data,
+            mask,
+            positions=None,
+            positions_threshold=None,
+            trimmed_primary_beam_shape=None,
+            pixel_scale_interpolation_grid=None,
+            pixel_scale_binned_grid=None,
+            inversion_pixel_limit=None,
+            inversion_uses_border=True,
+            hyper_noise_map_max=None,
+            preload_pixelization_grids_of_planes=None,
     ):
         """
         The lens data is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
@@ -337,21 +367,3 @@ class LensUVPlaneData(AbstractLensData):
             hyper_noise_map_max=self.hyper_noise_map_max,
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
         )
-
-    def __array_finalize__(self, obj):
-        if isinstance(obj, LensUVPlaneData):
-            self.uv_plane_data = obj.uv_plane_data
-            self.mask = obj.mask
-            self.trimmed_primary_beam_shape = obj.trimmed_primary_beam_shape
-            self.sub_size = obj.sub_size
-            self.transformer = obj.transformer
-            self.grid = obj.grid
-            self.positions = obj.positions
-            self.pixel_scale_interpolation_grid = obj.pixel_scale_interpolation_grid
-            self.pixel_scale_binned_grid = obj.pixel_scale_binned_grid
-            self.inversion_uses_border = obj.inversion_uses_border
-            self.inversion_pixel_limit = obj.inversion_pixel_limit
-            self.hyper_noise_map_max = obj.hyper_noise_map_max
-            self.preload_pixelization_grids_of_planes = (
-                obj.preload_pixelization_grids_of_planes
-            )

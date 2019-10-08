@@ -54,8 +54,12 @@ class Analysis(data.Analysis):
         self.associate_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
-        self.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+        self.lens_imaging_data.check_positions_trace_within_threshold_via_tracer(
+            tracer=tracer
+        )
+        self.lens_imaging_data.check_inversion_pixels_are_below_limit_via_tracer(
+            tracer=tracer
+        )
 
         hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 
