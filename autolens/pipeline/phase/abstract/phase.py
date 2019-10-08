@@ -1,5 +1,3 @@
-from astropy import cosmology as cosmo
-
 import autofit as af
 from autolens.pipeline.phase.abstract.result import Result
 
