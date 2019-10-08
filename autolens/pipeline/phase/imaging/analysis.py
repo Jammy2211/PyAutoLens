@@ -11,7 +11,7 @@ class Analysis(af.Analysis):
             lens_imaging_data, image_path
         )
 
-        self.lens_imaging_data = lens_imaging_data
+        self.lens_data = lens_imaging_data
 
         if results is not None and results.last is not None:
             last_results = results.last
@@ -29,10 +29,6 @@ class Analysis(af.Analysis):
             )
 
             self.visualizer.plot_hyper_images(last_results)
-
-    @property
-    def lens_data(self):
-        return self.lens_imaging_data
 
     def fit(self, instance):
         """
@@ -52,10 +48,10 @@ class Analysis(af.Analysis):
         self.associate_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.lens_imaging_data.check_positions_trace_within_threshold_via_tracer(
+        self.lens_data.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer
         )
-        self.lens_imaging_data.check_inversion_pixels_are_below_limit_via_tracer(
+        self.lens_data.check_inversion_pixels_are_below_limit_via_tracer(
             tracer=tracer
         )
 
@@ -134,7 +130,7 @@ class Analysis(af.Analysis):
     ):
 
         return lens_fit.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=self.lens_imaging_data,
+            lens_data=self.lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,

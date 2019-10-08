@@ -43,11 +43,11 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
 
         assert (
-            analysis.lens_imaging_data.image(return_in_2d=True, return_masked=False)
+            analysis.lens_data.image(return_in_2d=True, return_masked=False)
             == imaging_data_7x7.image
         )
         assert (
-            analysis.lens_imaging_data.noise_map(return_in_2d=True, return_masked=False)
+            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
             == imaging_data_7x7.noise_map
         )
 
