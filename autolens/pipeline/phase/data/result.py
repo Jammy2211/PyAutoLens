@@ -1,7 +1,7 @@
 from autolens.pipeline.phase import abstract
 
 
-class Result(abstract.result.AbstractResult):
+class Result(abstract.result.Result):
     @property
     def most_likely_fit(self):
 

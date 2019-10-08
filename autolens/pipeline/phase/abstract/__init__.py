@@ -1,3 +1,3 @@
 from .phase import AbstractPhase
-from .analysis import AbstractAnalysis
-from .result import AbstractResult
+from .analysis import Analysis
+from .result import Result

@@ -7,7 +7,7 @@ from autolens.pipeline.phase import abstract
 from autolens.plotters import visualizer
 
 
-class Analysis(autolens.pipeline.phase.abstract.analysis.AbstractAnalysis):
+class Analysis(autolens.pipeline.phase.abstract.analysis.Analysis):
     def __init__(self, cosmology, results, image_path):
         super().__init__(cosmology=cosmology, results=results)
         self.visualizer = visualizer.PhaseGalaxyVisualizer(image_path)

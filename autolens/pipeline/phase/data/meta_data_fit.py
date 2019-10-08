@@ -2,7 +2,7 @@ import autofit as af
 from autolens import exc
 from autolens.array import mask as msk
 from autolens.model.inversion import pixelizations as pix
-from autolens.pipeline.phase.data.phase_data import default_mask_function, isinstance_or_prior
+from autolens.pipeline.phase.data.phase import default_mask_function, isinstance_or_prior
 
 
 class MetaDataFit:

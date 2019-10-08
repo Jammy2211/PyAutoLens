@@ -1,8 +1,10 @@
+from abc import ABC
+
 import autofit as af
 from autolens.lens import ray_tracing
 
 
-class AbstractAnalysis(af.Analysis):
+class Analysis(af.Analysis, ABC):
     def __init__(self, cosmology, results=None):
         """
         An lens object

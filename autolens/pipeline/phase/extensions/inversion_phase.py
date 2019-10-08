@@ -3,7 +3,7 @@ from autolens.model.hyper import hyper_data as hd
 from autolens.model.inversion import pixelizations as px
 from autolens.model.inversion import regularization as rg
 from autolens.pipeline.phase import abstract
-from autolens.pipeline.phase.imaging.phase_imaging import PhaseImaging
+from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from .hyper_phase import HyperPhase
 
 

@@ -2,7 +2,7 @@ import autofit as af
 from autolens.model.galaxy import galaxy as g
 
 
-class AbstractResult(af.Result):
+class Result(af.Result):
     def __init__(
             self,
             constant,
