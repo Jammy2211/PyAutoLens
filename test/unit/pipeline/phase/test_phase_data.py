@@ -214,7 +214,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+        analysis.lens_imaging_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
@@ -231,7 +231,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
-            analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            analysis.lens_imaging_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
@@ -254,7 +254,7 @@ class TestPhase(object):
             ]
         )
 
-        analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+        analysis.lens_imaging_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         tracer = al.Tracer.from_galaxies(
             galaxies=[
@@ -267,7 +267,7 @@ class TestPhase(object):
         )
 
         with pytest.raises(exc.RayTracingException):
-            analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            analysis.lens_imaging_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_data_7x7,
@@ -276,7 +276,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+        analysis.lens_imaging_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_data_7x7,
@@ -286,7 +286,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
-            analysis.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            analysis.lens_imaging_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
     def test__make_analysis__inversion_resolution_error_raised_if_above_inversion_pixel_limit(
         self, phase_imaging_7x7, imaging_data_7x7, mask_function_7x7
@@ -310,7 +310,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+        analysis.lens_imaging_data.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -331,7 +331,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+            analysis.lens_imaging_data.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
             analysis.fit(instance=instance)
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -352,7 +352,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+        analysis.lens_imaging_data.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -373,7 +373,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+            analysis.lens_imaging_data.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
             analysis.fit(instance=instance)
 
     def test__make_analysis__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(

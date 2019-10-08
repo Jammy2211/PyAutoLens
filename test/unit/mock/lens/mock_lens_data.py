@@ -49,6 +49,12 @@ class MockLensImagingData(object):
     def signal_to_noise_map(self):
         return self._image_1d / self._noise_map_1d
 
+    def check_positions_trace_within_threshold_via_tracer(self, tracer):
+        pass
+
+    def check_inversion_pixels_are_below_limit_via_tracer(self, tracer):
+        pass
+
 
 class MockLensUVPlaneData(object):
     def __init__(self, uv_plane_data, mask, grid, transformer, binned_grid):
