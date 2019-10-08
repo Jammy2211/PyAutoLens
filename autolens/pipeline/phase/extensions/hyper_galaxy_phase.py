@@ -8,7 +8,7 @@ from autolens.lens import lens_data as ld
 from autolens.lens.lens_fit import lens_imaging_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.model.hyper import hyper_data as hd
-from autolens.pipeline.phase import phase_imaging
+from autolens.pipeline.phase import imaging
 from autolens.plotters import visualizer
 from .hyper_phase import HyperPhase
 
@@ -188,25 +188,25 @@ class HyperGalaxyPhase(HyperPhase):
         lens_data = ld.LensImagingData(
             imaging_data=data,
             mask=results.last.mask,
-            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
+            trimmed_psf_shape=cast(imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
             positions=results.last.positions,
             positions_threshold=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.positions_threshold,
             pixel_scale_interpolation_grid=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.pixel_scale_interpolation_grid,
             pixel_scale_binned_grid=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.pixel_scale_binned_cluster_grid,
             inversion_pixel_limit=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.inversion_pixel_limit,
             inversion_uses_border=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.inversion_uses_border,
             hyper_noise_map_max=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
             preload_pixelization_grids_of_planes=None,
         )
@@ -347,25 +347,25 @@ class HyperGalaxyAllPhase(HyperPhase):
         lens_data = ld.LensImagingData(
             imaging_data=data,
             mask=results.last.mask,
-            trimmed_psf_shape=cast(phase_imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
+            trimmed_psf_shape=cast(imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
             positions=results.last.positions,
             positions_threshold=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.positions_threshold,
             pixel_scale_interpolation_grid=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.pixel_scale_interpolation_grid,
             pixel_scale_binned_grid=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.pixel_scale_binned_cluster_grid,
             inversion_pixel_limit=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.inversion_pixel_limit,
             inversion_uses_border=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).meta_data_fit.inversion_uses_border,
             hyper_noise_map_max=cast(
-                phase_imaging.PhaseImaging, phase
+                imaging.PhaseImaging, phase
             ).hyper_noise_map_max,
             preload_pixelization_grids_of_planes=None,
         )
