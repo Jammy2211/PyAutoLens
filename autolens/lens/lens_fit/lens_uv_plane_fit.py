@@ -1,6 +1,4 @@
 import autoarray as aa
-import autofit as af
-
 
 class UVPlaneFit(aa.DataFit):
     def __init__(

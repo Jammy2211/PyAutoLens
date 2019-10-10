@@ -9,7 +9,7 @@ import numpy as np
 import itertools
 from scipy.spatial import Voronoi
 
-from autolens.plotters import aa.plotter_util
+import autoarray as aa
 from autoarray.plotters import grid_plotters
 from autolens.model.inversion import mappers
 from autolens.data.plotters import imaging_plotters

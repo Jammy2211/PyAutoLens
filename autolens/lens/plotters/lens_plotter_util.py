@@ -1,4 +1,4 @@
-from autolens.plotters import array_plotters
+import autoarray as aa
 
 
 def plot_image(
