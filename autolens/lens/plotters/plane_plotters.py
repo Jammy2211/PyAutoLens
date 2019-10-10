@@ -5,8 +5,7 @@ backend = af.conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autolens.plotters import aa.plotter_util, array_plotters
-from autoarray.plotters import grid_plotters
+import autoarray as aa
 
 
 def plot_profile_image(

@@ -1,7 +1,6 @@
 import numpy as np
 
 import autoarray as aa
-import autofit as af
 from autolens.model.galaxy import galaxy as g
 
 

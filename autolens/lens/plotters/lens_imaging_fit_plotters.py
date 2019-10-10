@@ -5,7 +5,7 @@ backend = af.conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autolens.plotters import aa.plotter_util
+import autoarray as aa
 from autolens.lens.plotters import lens_plotter_util
 from autolens.lens.plotters import plane_plotters
 from autolens.model.inversion.plotters import inversion_plotters

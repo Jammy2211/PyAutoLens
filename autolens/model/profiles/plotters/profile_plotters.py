@@ -1,6 +1,4 @@
-from autolens.plotters import array_plotters
-from autolens.plotters import aa.plotter_util
-from autolens.plotters import quantity_radii_plotters
+import autoarray as aa
 
 
 def plot_image(
@@ -128,7 +126,7 @@ def plot_luminosity_within_circle_in_electrons_per_second_as_function_of_radius(
         )
     )
 
-    quantity_radii_plotters.plot_quantity_as_function_of_radius(
+    aa.plot_quantity_as_function_of_radius(
         quantity=luminosities,
         radii=radii,
         as_subplot=as_subplot,

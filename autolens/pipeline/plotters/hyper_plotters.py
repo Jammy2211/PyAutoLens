@@ -6,8 +6,7 @@ matplotlib.use(backend)
 
 from matplotlib import pyplot as plt
 
-from autolens.plotters import array_plotters
-from autolens.plotters import aa.plotter_util
+import autoarray as aa
 from autolens.data.plotters import data_plotters
 
 
