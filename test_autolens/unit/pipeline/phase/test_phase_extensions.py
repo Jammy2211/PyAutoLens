@@ -99,6 +99,7 @@ class MockPhase(object):
         self.optimizer = MockOptimizer()
         self.phase_folders = [""]
         self.phase_tag = ""
+        self.variable = af.ModelMapper()
 
     # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def run(self, *args, **kwargs):
