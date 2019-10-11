@@ -128,7 +128,7 @@ class Rectangular(Pixelization):
 
         Parameters
         ----------
-        grid : aa.Grid
+        grid : aa.SubGrid
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
         border : aa.GridBorder | None
             The border of the grid's grid.
@@ -288,7 +288,7 @@ class Voronoi(Pixelization):
 
         Parameters
         ----------
-        grid : aa.Grid
+        grid : aa.SubGrid
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : aa.GridBorder
             The borders of the grid_stacks (defined by their image-plane masks).

@@ -26,7 +26,7 @@ class AbstractData(object):
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
             preferably in units of electrons per second.
-        exposure_time_map : aa.ScaledArray
+        exposure_time_map : aa.ScaledSubArray
             An array describing the effective exposure time in each imaging pixel.
         background_sky_map : aa.Scaled
             An array describing the background sky.
@@ -43,7 +43,7 @@ class AbstractData(object):
     @staticmethod
     def bin_up_scaled_array(scaled_array, bin_up_factor, method):
         if scaled_array is not None:
-            return scaled_array.new_scaled_array_binned_from_bin_up_factor(
+            return scaled_array.new_array_binned_from_bin_up_factor(
                 bin_up_factor=bin_up_factor, method=method
             )
         else:
@@ -54,7 +54,7 @@ class AbstractData(object):
         scaled_array, new_shape, new_centre_pixels=None, new_centre_arcsec=None
     ):
         if scaled_array is not None:
-            return scaled_array.new_scaled_array_resized_from_new_shape(
+            return scaled_array.new_array_resized_from_new_shape(
                 new_shape=new_shape,
                 new_centre_pixels=new_centre_pixels,
                 new_centre_arcsec=new_centre_arcsec,
@@ -140,7 +140,7 @@ class AbstractData(object):
         return self.array_from_electrons_per_second_to_counts(self._data)
 
 
-class AbstractNoiseMap(aa.ScaledArray):
+class AbstractNoiseMap(aa.ScaledSubArray):
     @classmethod
     def from_weight_map(cls, pixel_scale, weight_map):
         """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and \
@@ -188,7 +188,7 @@ class AbstractNoiseMap(aa.ScaledArray):
         return cls.from_2d(array_2d=noise_map, pixel_scale=pixel_scale)
 
 
-class ExposureTimeMap(aa.ScaledArray):
+class ExposureTimeMap(aa.ScaledSubArray):
     @classmethod
     def from_exposure_time_and_inverse_noise_map(
         cls, pixel_scale, exposure_time, inverse_noise_map
@@ -214,7 +214,7 @@ def load_image(image_path, image_hdu, pixel_scale):
     pixel_scale : float
         The size of each pixel in arc seconds..
     """
-    return aa.ScaledArray.from_fits(
+    return aa.ScaledSubArray.from_fits_pixel_scale_and_sub_size(
         file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale
     )
 
@@ -263,11 +263,11 @@ def load_exposure_time_map(
     if exposure_time_map_options == 0:
 
         if exposure_time is not None and exposure_time_map_path is None:
-            return ExposureTimeMap.from_single_value_shape_and_pixel_scale(
+            return ExposureTimeMap.from_single_value_shape_pixel_scale_and_sub_size(
                 value=exposure_time, pixel_scale=pixel_scale, shape=shape
             )
         elif exposure_time is None and exposure_time_map_path is not None:
-            return ExposureTimeMap.from_fits(
+            return ExposureTimeMap.from_fits_pixel_scale_and_sub_size(
                 file_path=exposure_time_map_path,
                 hdu=exposure_time_map_hdu,
                 pixel_scale=pixel_scale,

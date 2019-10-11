@@ -71,7 +71,7 @@ class MetaDataFit:
         if self.inner_mask_radii is not None:
             inner_mask = aa.AbstractMask.circular(
                 shape=mask.shape,
-                pixel_scales=mask.pixel_scale,
+                pixel_scales=mask.geometry.pixel_scale,
                 radius_arcsec=self.inner_mask_radii,
                 sub_size=self.sub_size,
                 invert=True,
@@ -92,21 +92,21 @@ class MetaDataFit:
 
         if self.pixel_scale_binned_cluster_grid is None:
 
-            pixel_scale_binned_cluster_grid = mask.pixel_scale
+            pixel_scale_binned_cluster_grid = mask.geometry.pixel_scale
 
         else:
 
             pixel_scale_binned_cluster_grid = self.pixel_scale_binned_cluster_grid
 
-        if pixel_scale_binned_cluster_grid > mask.pixel_scale:
+        if pixel_scale_binned_cluster_grid > mask.geometry.pixel_scale:
 
-            bin_up_factor = int(self.pixel_scale_binned_cluster_grid / mask.pixel_scale)
+            bin_up_factor = int(self.pixel_scale_binned_cluster_grid / mask.geometry.pixel_scale)
 
         else:
 
             bin_up_factor = 1
 
-        binned_mask = mask.binned_up_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
+        binned_mask = mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
 
         while binned_mask.pixels_in_mask < self.inversion_pixel_limit:
 
@@ -121,9 +121,9 @@ class MetaDataFit:
                 )
 
             bin_up_factor -= 1
-            binned_mask = mask.binned_up_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
+            binned_mask = mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
 
-        return mask.pixel_scale * bin_up_factor
+        return mask.geometry.pixel_scale * bin_up_factor
 
     @property
     def pixelization(self):
