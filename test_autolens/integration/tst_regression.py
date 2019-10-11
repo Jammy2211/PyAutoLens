@@ -4,9 +4,9 @@ import shutil
 
 import autofit as af
 import autolens as al
-from autoarray.util import array_util
+from autolens.array.util import array_util
 from autolens.model.galaxy import galaxy
-from test import integration_util
+from test.integration import integration_util
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 af.conf.instance = af.conf.Config(
@@ -16,7 +16,7 @@ af.conf.instance = af.conf.Config(
 dirpath = os.path.dirname(dirpath)
 output_path = "{}/output".format(dirpath)
 
-test_name = "test_autoarray"
+test_name = "test"
 
 
 def simulate_integration_image(test_name, pixel_scale, galaxies):
@@ -32,7 +32,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
         shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale
     )
 
-    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
+    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
         shape=image_shape, pixel_scale=pixel_scale, sub_size=1
     )
 
@@ -52,20 +52,20 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    aa.array_util.numpy_array_2d_to_fits(
+    array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.image,
         file_path=output_path + "/image.fits",
         overwrite=True,
     )
-    aa.array_util.numpy_array_2d_to_fits(
+    array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.noise_map,
         file_path=output_path + "/noise_map.fits",
         overwrite=True,
     )
-    aa.array_util.numpy_array_2d_to_fits(
+    array_util.numpy_array_2d_to_fits(
         array_2d=psf, file_path=output_path + "/psf.fits", overwrite=True
     )
-    aa.array_util.numpy_array_2d_to_fits(
+    array_util.numpy_array_2d_to_fits(
         array_2d=imaging_simulated.exposure_time_map,
         file_path=output_path + "/exposure_map.fits",
         overwrite=True,
@@ -82,10 +82,7 @@ class TestAdvancedModelMapper(object):
         mapper.galaxy_model = galaxy_model
 
         assert light_profile.name_for_prior(light_profile.axis_ratio) == "axis_ratio"
-        assert (
-            light_profile.name_for_prior(light_profile.mask_centre.centre_0)
-            == "centre_0"
-        )
+        assert light_profile.name_for_prior(light_profile.centre.centre_0) == "centre_0"
 
         assert (
             galaxy_model.name_for_prior(light_profile.axis_ratio)

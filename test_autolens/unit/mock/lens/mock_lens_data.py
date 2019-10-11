@@ -1,9 +1,10 @@
 import numpy as np
 
+from autolens.array import mapping
+
 
 class MockLensImagingData(object):
     def __init__(self, imaging_data, mask, grid, blurring_grid, convolver, binned_grid):
-
         self.imaging_data = imaging_data
         self.pixel_scale = imaging_data.pixel_scale
 
@@ -14,7 +15,7 @@ class MockLensImagingData(object):
         self._mask_1d = self.mask.mapping.array_from_array_2d(array_2d=self.mask)
 
         self.grid = grid
-        self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
+        self.grid.binned = binned_grid
         self.sub_size = self.grid.sub_size
         self.convolver = convolver
 
@@ -45,6 +46,12 @@ class MockLensImagingData(object):
     def signal_to_noise_map(self):
         return self._image_1d / self._noise_map_1d
 
+    def check_positions_trace_within_threshold_via_tracer(self, tracer):
+        pass
+
+    def check_inversion_pixels_are_below_limit_via_tracer(self, tracer):
+        pass
+
 
 class MockLensUVPlaneData(object):
     def __init__(self, uv_plane_data, mask, grid, transformer, binned_grid):
@@ -56,7 +63,7 @@ class MockLensUVPlaneData(object):
         self._mask_1d = self.mask.mapping.array_from_array_2d(array_2d=self.mask)
 
         self.grid = grid
-        self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
+        self.grid.binned = binned_grid
         self.sub_size = self.grid.sub_size
         self.transformer = transformer
 

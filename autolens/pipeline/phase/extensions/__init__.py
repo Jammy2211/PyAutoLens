@@ -1,5 +1,5 @@
 import autofit as af
-from autolens.pipeline.phase import phase_imaging
+from autolens.pipeline.phase import imaging
 from .hyper_galaxy_phase import HyperGalaxyPhase
 from .hyper_phase import HyperPhase
 from .inversion_phase import InversionBackgroundBothPhase
@@ -11,7 +11,7 @@ from .inversion_phase import VariableFixingHyperPhase
 
 class CombinedHyperPhase(HyperPhase):
     def __init__(
-        self, phase: phase_imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()
+        self, phase: imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()
     ):
         """
         A hyper_combined hyper_galaxies phase that can run zero or more other hyper_galaxies phases after the initial phase is
@@ -63,7 +63,6 @@ class CombinedHyperPhase(HyperPhase):
         result
             The result of the phase, with hyper_galaxies results attached by associated hyper_galaxies names
         """
-
         results = results.copy() if results is not None else af.ResultsCollection()
         result = self.phase.run(
             data, results=results, mask=mask, positions=positions, **kwargs
