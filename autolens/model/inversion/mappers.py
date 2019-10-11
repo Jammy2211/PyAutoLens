@@ -161,7 +161,7 @@ class RectangularMapper(Mapper):
             mask=np.full(fill_value=False, shape=self.shape),
             sub_size=1,
         )
-        return aa.ScaledArray(
+        return aa.ScaledSubArray(
             array=recon, pixel_scales=self.pixel_scales, origin=self.origin
         )
 

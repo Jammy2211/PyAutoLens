@@ -2356,7 +2356,7 @@ class TestAbstractTracerData(object):
         def test__unmasked_images_of_tracer_planes_and_galaxies(self):
 
             psf = al.PSF(
-                sub_array_1d=(
+                array_1d=(
                     np.array([[0.0, 3.0, 0.0], [0.0, 1.0, 2.0], [0.0, 0.0, 0.0]])
                 ),
                 pixel_scales=1.0,

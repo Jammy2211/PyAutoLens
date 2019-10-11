@@ -171,7 +171,7 @@ class TestPhase(object):
             bin_up_factor=2
         )
 
-        binned_up_mask = mask_7x7_1_pix.binned_up_mask_from_bin_up_factor(bin_up_factor=2)
+        binned_up_mask = mask_7x7_1_pix.binned_mask_from_bin_up_factor(bin_up_factor=2)
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="phase_imaging_7x7",

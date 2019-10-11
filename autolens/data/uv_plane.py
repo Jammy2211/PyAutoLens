@@ -120,7 +120,7 @@ class NoiseMap(abstract_data.AbstractNoiseMap):
     pass
 
 
-class PrimaryBeam(aa.ScaledArray):
+class PrimaryBeam(aa.ScaledSubArray):
 
     # noinspection PyUnusedLocal
     def __init__(self, array_1d, pixel_scales, renormalize=False, **kwargs):
@@ -151,7 +151,7 @@ class PrimaryBeam(aa.ScaledArray):
             centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
         gaussian = gaussian.profile_image_from_grid(grid=grid)
@@ -340,7 +340,7 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid_1d = aa.Grid.from_shape_pixel_scale_and_sub_size(
+        grid_1d = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
 
@@ -465,13 +465,13 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = aa.ScaledArray.from_single_value_shape_and_pixel_scale(
+            exposure_time_map = aa.ScaledSubArray.from_single_value_shape_pixel_scale_and_sub_size(
                 value=exposure_time, shape=image.shape, pixel_scale=pixel_scale
             )
 
         if background_sky_map is None:
 
-            background_sky_map = aa.ScaledArray.from_single_value_shape_and_pixel_scale(
+            background_sky_map = aa.ScaledSubArray.from_single_value_shape_pixel_scale_and_sub_size(
                 value=background_sky_level, shape=image.shape, pixel_scale=pixel_scale
             )
 
@@ -489,11 +489,11 @@ class SimulatedUVPlaneData(UVPlaneData):
                 shape=visibilities.shape, sigma=noise_sigma, noise_seed=noise_seed
             )
             visibilities = visibilities + noise_map_realization
-            noise_map = NoiseMap.from_single_value_shape_and_pixel_scale(
+            noise_map = NoiseMap.from_single_value_shape_pixel_scale_and_sub_size(
                 value=noise_sigma, shape=visibilities.shape, pixel_scale=pixel_scale
             )
         else:
-            noise_map = NoiseMap.from_single_value_shape_and_pixel_scale(
+            noise_map = NoiseMap.from_single_value_shape_pixel_scale_and_sub_size(
                 value=noise_if_add_noise_false,
                 shape=visibilities.shape,
                 pixel_scale=pixel_scale,

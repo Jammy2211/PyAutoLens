@@ -18,17 +18,17 @@ class AbstractLensData(object):
     ):
 
         self.mask = mask
-        self._mask_1d = mask.mapping.scaled_array_from_array_2d(array_2d=mask)
+        self._mask_1d = mask.mapping.array_from_array_2d(array_2d=mask)
         self.sub_size = mask.sub_size
 
         ### GRIDS ###
 
-        self.grid = aa.Grid.from_mask(mask=mask)
+        self.grid = aa.SubGrid.from_mask(mask=mask)
 
         self.pixel_scale_binned_grid = pixel_scale_binned_grid
 
         if pixel_scale_binned_grid is not None:
-            binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            binned_grid = aa.BinnedSubGrid.from_mask_and_pixel_scale_binned_grid(
                 mask=mask, pixel_scale_binned_grid=pixel_scale_binned_grid
             )
             self.grid.new_grid_with_binned_grid(binned_grid=binned_grid)
@@ -65,7 +65,7 @@ class AbstractLensData(object):
 
     @property
     def pixel_scale(self):
-        return self.mask.pixel_scale
+        return self.mask.geometry.pixel_scale
 
 
 class LensImagingData(AbstractLensData):
@@ -142,15 +142,15 @@ class LensImagingData(AbstractLensData):
 
         self.convolver = Convolver(
             mask=mask,
-            blurring_mask=mask.blurring_mask_from_kernel_shape(
+            blurring_mask=mask.regions.blurring_mask_from_kernel_shape(
                 kernel_shape=self.trimmed_psf_shape
             ),
-            kernel=self.psf.new_scaled_array_resized_from_new_shape(
+            kernel=self.psf.new_array_resized_from_new_shape(
                 new_shape=self.trimmed_psf_shape
             ),
         )
 
-        self.blurring_grid = aa.Grid.blurring_grid_from_mask_and_kernel_shape(
+        self.blurring_grid = aa.SubGrid.blurring_grid_from_mask_and_kernel_shape(
             mask=mask, kernel_shape=self.trimmed_psf_shape
         )
 
@@ -198,7 +198,7 @@ class LensImagingData(AbstractLensData):
         binned_up_imaging_data = self.imaging_data.new_imaging_data_with_binned_up_arrays(
             bin_up_factor=bin_up_factor
         )
-        binned_up_mask = self.mask.binned_up_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
+        binned_up_mask = self.mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
 
         return LensImagingData(
             imaging_data=binned_up_imaging_data,

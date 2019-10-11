@@ -512,7 +512,7 @@ class TestSimulateUVPlaneData(object):
     def test__setup_with_all_features_off(self, transformer_7x7_7):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
+        exposure_time_map = aa.Scaled.from_single_value_shape_pixel_scale_and_sub_size(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -540,11 +540,11 @@ class TestSimulateUVPlaneData(object):
     ):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
+        exposure_time_map = aa.Scaled.from_single_value_shape_pixel_scale_and_sub_size(
             value=1.0, pixel_scale=0.1, shape=image.shape
         )
 
-        background_sky_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
+        background_sky_map = aa.Scaled.from_single_value_shape_pixel_scale_and_sub_size(
             value=2.0, pixel_scale=0.1, shape=image.shape
         )
 
@@ -578,7 +578,7 @@ class TestSimulateUVPlaneData(object):
     def test__setup_with_noise(self, transformer_7x7_7):
         image = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = aa.Scaled.from_single_value_shape_and_pixel_scale(
+        exposure_time_map = aa.Scaled.from_single_value_shape_pixel_scale_and_sub_size(
             value=20.0, pixel_scale=0.1, shape=image.shape
         )
 
