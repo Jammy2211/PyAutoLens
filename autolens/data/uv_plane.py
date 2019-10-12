@@ -120,180 +120,9 @@ class NoiseMap(abstract_data.AbstractNoiseMap):
     pass
 
 
-class PrimaryBeam(aa.ScaledSubArray):
+class PrimaryBeam(aa.Kernel):
 
-    # noinspection PyUnusedLocal
-    def __init__(self, array_1d, pixel_scales, renormalize=False, **kwargs):
-        """
-        Class storing a 2D Point Spread Function (PrimaryBeam), including its blurring kernel.
-
-        Parameters
-        ----------
-        array_1d : ndarray
-            The 2d PrimaryBeam blurring kernel.
-        renormalize : bool
-            Renormalize the PrimaryBeam such that he sum of kernel values total 1.0?
-        """
-
-        # noinspection PyArgumentList
-        super().__init__(array_1d=array_1d, pixel_scales=pixel_scales)
-        if renormalize:
-            self[:, :] = np.divide(self, np.sum(self))
-
-    @classmethod
-    def from_gaussian(
-        cls, shape, pixel_scale, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0
-    ):
-        """Simulate the primary beam as an elliptical Gaussian profile."""
-        from autolens.model.profiles.light_profiles import EllipticalGaussian
-
-        gaussian = EllipticalGaussian(
-            centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma
-        )
-
-        grid = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
-            shape=shape, pixel_scale=pixel_scale, sub_size=1
-        )
-        gaussian = gaussian.profile_image_from_grid(grid=grid)
-
-        return PrimaryBeam(
-            array_1d=gaussian, pixel_scales=pixel_scale, renormalize=True
-        )
-
-    @classmethod
-    def from_fits_renormalized(cls, file_path, hdu, pixel_scale):
-        """Loads a primary beam from fits and renormalizes it
-
-        Parameters
-        ----------
-        pixel_scale
-        file_path: String
-            The path to the file containing the PrimaryBeam
-        hdu : int
-            The HDU the PrimaryBeam is stored in the .fits file.
-
-        Returns
-        -------
-        primary_beam: PrimaryBeam
-            A renormalized PrimaryBeam instance
-        """
-        primary_beam = PrimaryBeam.from_fits_with_scale(file_path, hdu, pixel_scale)
-        primary_beam[:, :] = np.divide(primary_beam, np.sum(primary_beam))
-        return primary_beam
-
-    @classmethod
-    def from_fits_with_scale(cls, file_path, hdu, pixel_scale):
-        """
-        Loads the PrimaryBeam from a .fits file.
-
-        Parameters
-        ----------
-        pixel_scale
-        file_path: String
-            The path to the file containing the PrimaryBeam
-        hdu : int
-            The HDU the PrimaryBeam is stored in the .fits file.
-        """
-        return cls(
-            array=aa.array_util.numpy_array_2d_from_fits(file_path, hdu),
-            pixel_scale=pixel_scale,
-        )
-
-    def new_primary_beam_with_rescaled_odd_dimensioned_array(
-        self, rescale_factor, renormalize=True
-    ):
-
-        primary_beam_rescaled = rescale(
-            self,
-            rescale_factor,
-            anti_aliasing=False,
-            mode="constant",
-            multichannel=False,
-        )
-
-        if (
-            primary_beam_rescaled.shape[0] % 2 == 0
-            and primary_beam_rescaled.shape[1] % 2 == 0
-        ):
-            primary_beam_rescaled = resize(
-                primary_beam_rescaled,
-                output_shape=(
-                    primary_beam_rescaled.shape[0] + 1,
-                    primary_beam_rescaled.shape[1] + 1,
-                ),
-                anti_aliasing=False,
-                mode="constant",
-            )
-        elif (
-            primary_beam_rescaled.shape[0] % 2 == 0
-            and primary_beam_rescaled.shape[1] % 2 != 0
-        ):
-            primary_beam_rescaled = resize(
-                primary_beam_rescaled,
-                output_shape=(
-                    primary_beam_rescaled.shape[0] + 1,
-                    primary_beam_rescaled.shape[1],
-                ),
-                anti_aliasing=False,
-                mode="constant",
-            )
-        elif (
-            primary_beam_rescaled.shape[0] % 2 != 0
-            and primary_beam_rescaled.shape[1] % 2 == 0
-        ):
-            primary_beam_rescaled = resize(
-                primary_beam_rescaled,
-                output_shape=(
-                    primary_beam_rescaled.shape[0],
-                    primary_beam_rescaled.shape[1] + 1,
-                ),
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        pixel_scale_factors = (
-            self.shape[0] / primary_beam_rescaled.shape[0],
-            self.shape[1] / primary_beam_rescaled.shape[1],
-        )
-        pixel_scale = (
-            self.pixel_scales * pixel_scale_factors[0],
-            self.pixel_scales * pixel_scale_factors[1],
-        )
-        return PrimaryBeam(
-            array_1d=primary_beam_rescaled,
-            pixel_scales=np.max(pixel_scale),
-            renormalize=renormalize,
-        )
-
-    def new_primary_beam_with_renormalized_array(self):
-        """Renormalize the PrimaryBeam such that its data_vector values sum to unity."""
-        return PrimaryBeam(
-            array_1d=self, pixel_scales=self.pixel_scales, renormalize=True
-        )
-
-    def convolve(self, array_2d):
-        """
-        Convolve an array with this PrimaryBeam
-
-        Parameters
-        ----------
-        image : ndarray
-            An array representing the image the PrimaryBeam is convolved with.
-
-        Returns
-        -------
-        convolved_image : ndarray
-            An array representing the image after convolution.
-
-        Raises
-        ------
-        KernelException if either PrimaryBeam primary_beam dimension is odd
-        """
-        if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
-            raise exc.ConvolutionException("PrimaryBeam Kernel must be odd")
-
-        return scipy.signal.convolve2d(array_2d, self, mode="same")
-
+    pass
 
 class SimulatedUVPlaneData(UVPlaneData):
     def __init__(
@@ -773,11 +602,11 @@ def load_primary_beam(
         If True, the PrimaryBeam is renoralized such that all elements sum to 1.0.
     """
     if renormalize:
-        return PrimaryBeam.from_fits_renormalized(
+        return PrimaryBeam.from_fits_and_pixel_scale(
             file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scale=pixel_scale
         )
     if not renormalize:
-        return PrimaryBeam.from_fits_with_scale(
+        return PrimaryBeam.from_fits_and_pixel_scale(
             file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scale=pixel_scale
         )
 

@@ -310,7 +310,7 @@ class TestLensImagingData(object):
     def test__lens_imaging_data_6x6_with_binned_up_imaging_data(
         self, lens_imaging_data_6x6
     ):
-        binned_up_psf = lens_imaging_data_6x6.imaging_data.psf.rescaled_psf_with_odd_dimensions_from_rescale_factor(
+        binned_up_psf = lens_imaging_data_6x6.imaging_data.psf.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5
         )
 
