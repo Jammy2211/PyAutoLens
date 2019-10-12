@@ -374,7 +374,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
-        return psf.convolved_scaled_array_from_array_2d_and_mask(
+        return psf.convolved_array_from_array_2d_and_mask(
             array_2d=profile_image.in_2d_binned + blurring_image.in_2d_binned,
             mask=grid.mask,
         )
@@ -460,7 +460,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
     def unmasked_blurred_profile_image_from_grid_and_psf(self, grid, psf):
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.shape)
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.in_2d.shape)
 
         padded_image_1d = self.profile_image_from_grid(grid=padded_grid)
 
@@ -470,7 +470,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
     def unmasked_blurred_profile_image_of_planes_from_grid_and_psf(self, grid, psf):
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.shape)
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.in_2d.shape)
 
         traced_padded_grids = self.traced_grids_of_planes_from_grid(grid=padded_grid)
 
@@ -494,7 +494,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         unmasked_blurred_profile_images_of_planes_and_galaxies = []
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.shape)
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.in_2d.shape)
 
         traced_padded_grids = self.traced_grids_of_planes_from_grid(grid=padded_grid)
 

@@ -102,7 +102,7 @@ class TestPrimaryBeam(object):
                 array_1d=np.ones((3, 3)), pixel_scales=1.0, renormalize=False
             )
 
-            assert psf.shape == (3, 3)
+            assert psf.in_2d.shape == (3, 3)
             assert psf.pixel_scales == 1.0
             assert (psf == np.ones((3, 3))).all()
             assert psf.origin == (0.0, 0.0)
@@ -113,7 +113,7 @@ class TestPrimaryBeam(object):
 
             assert (psf == np.ones((4, 3))).all()
             assert psf.pixel_scales == 1.0
-            assert psf.shape == (4, 3)
+            assert psf.in_2d.shape == (4, 3)
             assert psf.origin == (0.0, 0.0)
 
         def test__from_fits__input_primary_beam_3x3__all_attributes_correct_including_data_inheritance(

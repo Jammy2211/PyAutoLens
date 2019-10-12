@@ -49,7 +49,7 @@ class MockBackgrondSkyMap(object):
 
 class MockPSF(object):
     def __new__(cls, shape, value, pixel_scale=1.0, *args, **kwargs):
-        return al.PSF.from_2d(
+        return al.PSF.from_2d_and_pixel_scale(
             array_2d=value * np.ones(shape=shape),
             pixel_scale=pixel_scale,
             origin=(0.0, 0.0),

@@ -1,12 +1,7 @@
 import numpy as np
 
+import autoarray as aa
 from autolens import exc
-from autolens.array import grids
-from autolens.array import mapping
-from autolens.array import mask as msk
-from autolens.array.convolution import Convolver
-from autolens.array.fourier_transform import Transformer
-from autolens.lens import lens_fit
 
 
 class AbstractLensData(object):
@@ -29,12 +24,12 @@ class AbstractLensData(object):
 
         ### GRIDS ###
 
-        self.grid = grids.Grid.from_mask(mask=mask)
+        self.grid = aa.SubGrid.from_mask(mask=mask)
 
         self.pixel_scale_binned_grid = pixel_scale_binned_grid
 
         if pixel_scale_binned_grid is not None:
-            binned_grid = grids.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
+            binned_grid = aa.BinnedSubGrid.from_mask_and_pixel_scale_binned_grid(
                 mask=mask, pixel_scale_binned_grid=pixel_scale_binned_grid
             )
             self.grid.binned = binned_grid
@@ -141,7 +136,7 @@ class LensImagingData(AbstractLensData):
         ### PSF TRIMMING + CONVOLVER ###
 
         if trimmed_psf_shape is None:
-            self.trimmed_psf_shape = self.psf.shape
+            self.trimmed_psf_shape = self.psf.in_2d.shape
         else:
             self.trimmed_psf_shape = trimmed_psf_shape
 
@@ -164,11 +159,11 @@ class LensImagingData(AbstractLensData):
                 pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
             )
 
-    @mapping.reshape_returned_array_no_input
+
     def image(self):
         return self.imaging_data.image
 
-    @mapping.reshape_returned_array_no_input
+
     def noise_map(self):
         return self.imaging_data.noise_map
 
@@ -176,13 +171,13 @@ class LensImagingData(AbstractLensData):
     def psf(self):
         return self.imaging_data.psf
 
-    @mapping.reshape_returned_array_no_input
+
     def signal_to_noise_map(self):
         return self.imaging_data.image / self.imaging_data.noise_map
 
     def new_lens_imaging_data_with_binned_up_imaging_data_and_mask(self, bin_up_factor):
 
-        binned_up_imaging_data = self.imaging_data.new_imaging_data_with_binned_up_arrays(
+        binned_up_imaging_data = self.imaging_data.binned_imaging_data_from_bin_up_factor(
             bin_up_factor=bin_up_factor
         )
         binned_up_mask = self.mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
@@ -203,7 +198,7 @@ class LensImagingData(AbstractLensData):
 
     def new_lens_imaging_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
 
-        imaging_data_with_signal_to_noise_limit = self.imaging_data.new_imaging_data_with_signal_to_noise_limit(
+        imaging_data_with_signal_to_noise_limit = self.imaging_data.signal_to_noise_limit_imaging_data(
             signal_to_noise_limit=signal_to_noise_limit
         )
 

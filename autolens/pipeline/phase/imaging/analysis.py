@@ -1,7 +1,7 @@
 import autofit as af
 from autolens.lens import lens_fit, ray_tracing
 from autolens.model.galaxy import galaxy as g
-from autolens.plotters import visualizer
+from autolens.pipeline import visualizer
 
 
 class Analysis(af.Analysis):

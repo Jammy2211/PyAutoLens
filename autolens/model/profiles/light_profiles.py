@@ -105,7 +105,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
         blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
-        return psf.convolved_scaled_array_from_array_2d_and_mask(
+        return psf.convolved_array_from_array_2d_and_mask(
             array_2d=profile_image.in_2d_binned + blurring_image.in_2d_binned,
             mask=grid.mask,
         )

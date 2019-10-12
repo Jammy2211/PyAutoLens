@@ -6,7 +6,7 @@ from autolens import exc
 from autoarray.util import mask_util
 
 
-class MockAbstractMask(aa.AbstractMask):
+class MockMask(aa.ScaledSubMask):
     def __new__(
         cls,
         array_2d,
@@ -54,7 +54,7 @@ class MockAbstractMask(aa.AbstractMask):
             self, kernel_shape
         )
 
-        return MockAbstractMask(array_2d=blurring_mask, pixel_scales=self.pixel_scales)
+        return MockMask(array_2d=blurring_mask, pixel_scales=self.pixel_scales)
 
 
 class MockMask1D(np.ndarray):

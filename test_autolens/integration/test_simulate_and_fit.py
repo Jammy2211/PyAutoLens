@@ -117,7 +117,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     imaging_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
         image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
-            grid=grid, psf_shape=psf.shape
+            grid=grid, psf_shape=psf.in_2d.shape
         ),
         pixel_scale=0.2,
         exposure_time=300.0,
