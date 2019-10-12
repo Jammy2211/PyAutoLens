@@ -1,8 +1,5 @@
 import numpy as np
 
-from autolens.array import mapping
-
-
 class MockLensImagingData(object):
     def __init__(self, imaging_data, mask, grid, blurring_grid, convolver, binned_grid):
         self.imaging_data = imaging_data

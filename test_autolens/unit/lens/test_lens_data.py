@@ -301,7 +301,7 @@ class TestLensImagingData(object):
         assert (lens_imaging_data_7x7.psf == np.ones((7, 7))).all()
 
         assert lens_imaging_data_7x7.sub_size == 8
-        assert lens_imaging_data_7x7.convolver.psf.shape == (7, 7)
+        assert lens_imaging_data_7x7.convolver.psf.in_2d.shape == (7, 7)
         assert (lens_imaging_data_7x7.positions[0] == np.array([[1.0, 1.0]])).all()
         assert lens_imaging_data_7x7.positions_threshold == 1.0
 
@@ -310,7 +310,7 @@ class TestLensImagingData(object):
     def test__lens_imaging_data_6x6_with_binned_up_imaging_data(
         self, lens_imaging_data_6x6
     ):
-        binned_up_psf = lens_imaging_data_6x6.imaging_data.psf.new_psf_with_rescaled_odd_dimensioned_array(
+        binned_up_psf = lens_imaging_data_6x6.imaging_data.psf.rescaled_psf_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5
         )
 

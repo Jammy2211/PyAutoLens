@@ -2391,7 +2391,7 @@ class TestAbstractTracerData(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, g3])
 
-            padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.shape)
+            padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.in_2d.shape)
 
             traced_padded_grids = tracer.traced_grids_of_planes_from_grid(
                 grid=padded_grid
@@ -2402,8 +2402,8 @@ class TestAbstractTracerData(object):
             )[
                 0
             ]
-            manual_blurred_image_0 = psf.convolved_array_2d_from_array_2d(
-                array_2d=manual_blurred_image_0
+            manual_blurred_image_0 = psf.convolved_array_from_array(
+                array=manual_blurred_image_0
             )
 
             manual_blurred_image_1 = tracer.image_plane.profile_images_of_galaxies_from_grid(
@@ -2411,8 +2411,8 @@ class TestAbstractTracerData(object):
             )[
                 1
             ]
-            manual_blurred_image_1 = psf.convolved_array_2d_from_array_2d(
-                array_2d=manual_blurred_image_1
+            manual_blurred_image_1 = psf.convolved_array_from_array(
+                array=manual_blurred_image_1
             )
 
             manual_blurred_image_2 = tracer.source_plane.profile_images_of_galaxies_from_grid(
@@ -2420,8 +2420,8 @@ class TestAbstractTracerData(object):
             )[
                 0
             ]
-            manual_blurred_image_2 = psf.convolved_array_2d_from_array_2d(
-                array_2d=manual_blurred_image_2
+            manual_blurred_image_2 = psf.convolved_array_from_array(
+                array=manual_blurred_image_2
             )
 
             manual_blurred_image_3 = tracer.source_plane.profile_images_of_galaxies_from_grid(
@@ -2429,8 +2429,8 @@ class TestAbstractTracerData(object):
             )[
                 1
             ]
-            manual_blurred_image_3 = psf.convolved_array_2d_from_array_2d(
-                array_2d=manual_blurred_image_3
+            manual_blurred_image_3 = psf.convolved_array_from_array(
+                array=manual_blurred_image_3
             )
 
             unmasked_blurred_image = tracer.unmasked_blurred_profile_image_from_grid_and_psf(

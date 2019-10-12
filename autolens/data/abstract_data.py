@@ -31,19 +31,24 @@ class AbstractData(object):
         background_sky_map : aa.Scaled
             An array describing the background sky.
         """
-        self._data = data
-        self.pixel_scale = pixel_scale
+        self.data = data
         self.noise_map = noise_map
         self.exposure_time_map = exposure_time_map
 
+        self.pixel_scale = pixel_scale
+
     @property
-    def origin(self):
-        return self._data.mask.origin
+    def mapping(self):
+        return self.data.mask.mapping
+
+    @property
+    def geometry(self):
+        return self.data.mask.geometry
 
     @staticmethod
     def bin_up_scaled_array(scaled_array, bin_up_factor, method):
         if scaled_array is not None:
-            return scaled_array.new_array_binned_from_bin_up_factor(
+            return scaled_array.binned_array_from_bin_up_factor(
                 bin_up_factor=bin_up_factor, method=method
             )
         else:
@@ -54,7 +59,7 @@ class AbstractData(object):
         scaled_array, new_shape, new_centre_pixels=None, new_centre_arcsec=None
     ):
         if scaled_array is not None:
-            return scaled_array.new_array_resized_from_new_shape(
+            return scaled_array.resized_array_from_new_shape(
                 new_shape=new_shape,
                 new_centre_pixels=new_centre_pixels,
                 new_centre_arcsec=new_centre_arcsec,
@@ -65,7 +70,7 @@ class AbstractData(object):
     @property
     def signal_to_noise_map(self):
         """The estimated signal-to-noise_maps mappers of the image."""
-        signal_to_noise_map = np.divide(self._data, self.noise_map)
+        signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 
@@ -77,7 +82,7 @@ class AbstractData(object):
     @property
     def absolute_signal_to_noise_map(self):
         """The estimated absolute_signal-to-noise_maps mappers of the image."""
-        return np.divide(np.abs(self._data), self.noise_map)
+        return self.mapping.array_from_array_1d(array_1d=np.divide(np.abs(self.data), self.noise_map))
 
     @property
     def absolute_signal_to_noise_max(self):
@@ -88,7 +93,7 @@ class AbstractData(object):
     def potential_chi_squared_map(self):
         """The potential chi-squared map of the imaging data_type. This represents how much each pixel can contribute to \
         the chi-squared map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
-        return np.square(self.absolute_signal_to_noise_map)
+        return self.mapping.array_from_array_1d(array_1d=np.square(self.absolute_signal_to_noise_map))
 
     @property
     def potential_chi_squared_max(self):
@@ -137,12 +142,12 @@ class AbstractData(object):
     @property
     def image_counts(self):
         """The image in units of counts."""
-        return self.array_from_electrons_per_second_to_counts(self._data)
+        return self.array_from_electrons_per_second_to_counts(self.data)
 
 
-class AbstractNoiseMap(aa.ScaledSubArray):
+class AbstractNoiseMap(aa.ScaledArray):
     @classmethod
-    def from_weight_map(cls, pixel_scale, weight_map):
+    def from_weight_map(cls, weight_map):
         """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and \
         the software package MultiDrizzle.
 
@@ -161,12 +166,12 @@ class AbstractNoiseMap(aa.ScaledSubArray):
             The weight-value of each pixel which is converted to a variance.
         """
         np.seterr(divide="ignore")
-        noise_map = 1.0 / np.sqrt(weight_map.in_2d)
-        noise_map[noise_map == np.inf] = 1.0e8
-        return cls.from_2d(array_2d=noise_map, pixel_scale=pixel_scale)
+        noise_map = 1.0 / np.sqrt(weight_map)
+        noise_map[noise_map > 1.0e8] = 1.0e8
+        return noise_map
 
     @classmethod
-    def from_inverse_noise_map(cls, pixel_scale, inverse_noise_map):
+    def from_inverse_noise_map(cls, inverse_noise_map):
         """Setup the noise-map from an root-mean square standard deviation map, which is a form of noise-map that \
         comes via HST image-reduction and the software package MultiDrizzle.
 
@@ -184,22 +189,18 @@ class AbstractNoiseMap(aa.ScaledSubArray):
         inverse_noise_map : ndarray
             The inverse noise_map value of each pixel which is converted to a variance.
         """
-        noise_map = 1.0 / inverse_noise_map.in_2d
-        return cls.from_2d(array_2d=noise_map, pixel_scale=pixel_scale)
+        return 1.0 / inverse_noise_map
 
 
-class ExposureTimeMap(aa.ScaledSubArray):
+class ExposureTimeMap(aa.ScaledArray):
     @classmethod
     def from_exposure_time_and_inverse_noise_map(
-        cls, pixel_scale, exposure_time, inverse_noise_map
+        cls, exposure_time, inverse_noise_map
     ):
-        relative_background_noise_map = inverse_noise_map.in_2d / np.max(
+        relative_background_noise_map = inverse_noise_map / np.max(
             inverse_noise_map
         )
-        return ExposureTimeMap.from_2d(
-            array_2d=np.abs(exposure_time * (relative_background_noise_map)),
-            pixel_scale=pixel_scale,
-        )
+        return np.abs(exposure_time * (relative_background_noise_map))
 
 
 def load_image(image_path, image_hdu, pixel_scale):
@@ -214,7 +215,7 @@ def load_image(image_path, image_hdu, pixel_scale):
     pixel_scale : float
         The size of each pixel in arc seconds..
     """
-    return aa.ScaledSubArray.from_fits_pixel_scale_and_sub_size(
+    return aa.ScaledArray.from_fits_and_pixel_scale(
         file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale
     )
 
@@ -263,21 +264,20 @@ def load_exposure_time_map(
     if exposure_time_map_options == 0:
 
         if exposure_time is not None and exposure_time_map_path is None:
-            return ExposureTimeMap.from_single_value_shape_pixel_scale_and_sub_size(
-                value=exposure_time, pixel_scale=pixel_scale, shape=shape
+            return ExposureTimeMap.from_single_value_shape_and_pixel_scales(
+                value=exposure_time, pixel_scales=(pixel_scale, pixel_scale), shape=shape
             )
         elif exposure_time is None and exposure_time_map_path is not None:
-            return ExposureTimeMap.from_fits_pixel_scale_and_sub_size(
+            return ExposureTimeMap.from_fits_and_pixel_scales(
                 file_path=exposure_time_map_path,
                 hdu=exposure_time_map_hdu,
-                pixel_scale=pixel_scale,
+                pixel_scales=(pixel_scale, pixel_scale),
             )
 
     else:
 
         if exposure_time_map_from_inverse_noise_map:
             return ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
-                pixel_scale=pixel_scale,
                 exposure_time=exposure_time,
                 inverse_noise_map=inverse_noise_map,
             )

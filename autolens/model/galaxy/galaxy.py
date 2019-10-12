@@ -182,7 +182,7 @@ class Galaxy(af.ModelObject):
 
         blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
-        return psf.convolved_scaled_array_from_array_2d_and_mask(
+        return psf.convolved_array_from_array_2d_and_mask(
             array_2d=profile_image.in_2d_binned + blurring_image.in_2d_binned,
             mask=grid.mask,
         )
@@ -359,7 +359,7 @@ class Galaxy(af.ModelObject):
                 map(lambda p: p.deflections_from_grid(grid=grid), self.mass_profiles)
             )
             return grid.mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=deflections)
-        return grid.mask.mapping.scaled_array_from_sub_grid_1d(
+        return grid.mask.mapping.grid_from_sub_grid_1d(
             sub_grid_1d=np.full((grid.shape[0], 2), 0.0)
         )
 

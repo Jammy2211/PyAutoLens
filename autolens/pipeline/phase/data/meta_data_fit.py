@@ -1,6 +1,6 @@
 import autofit as af
+import autoarray as aa
 from autolens import exc
-from autolens.array import mask as msk
 from autolens.model.inversion import pixelizations as pix
 from autolens.pipeline.phase.data.phase import default_mask_function, isinstance_or_prior
 
@@ -53,7 +53,7 @@ class MetaDataFit:
             mask = mask.new_mask_with_new_sub_size(sub_size=self.sub_size)
 
         if self.inner_mask_radii is not None:
-            inner_mask = msk.Mask.circular(
+            inner_mask = aa.ScaledSubMask.circular(
                 shape=mask.shape,
                 pixel_scale=mask.pixel_scale,
                 radius_arcsec=self.inner_mask_radii,

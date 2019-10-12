@@ -124,7 +124,7 @@ class TestPhase(object):
     def test__lens_data_signal_to_noise_limit(
         self, imaging_data_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
     ):
-        imaging_data_snr_limit = imaging_data_7x7.new_imaging_data_with_signal_to_noise_limit(
+        imaging_data_snr_limit = imaging_data_7x7.signal_to_noise_limit_imaging_data(
             signal_to_noise_limit=1.0
         )
 
@@ -144,7 +144,7 @@ class TestPhase(object):
             == imaging_data_snr_limit.noise_map
         ).all()
 
-        imaging_data_snr_limit = imaging_data_7x7.new_imaging_data_with_signal_to_noise_limit(
+        imaging_data_snr_limit = imaging_data_7x7.signal_to_noise_limit_imaging_data(
             signal_to_noise_limit=0.1
         )
 
@@ -167,7 +167,7 @@ class TestPhase(object):
     def test__lens_data_is_binned_up(
         self, imaging_data_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
     ):
-        binned_up_imaging_data = imaging_data_7x7.new_imaging_data_with_binned_up_arrays(
+        binned_up_imaging_data = imaging_data_7x7.binned_imaging_data_from_bin_up_factor(
             bin_up_factor=2
         )
 

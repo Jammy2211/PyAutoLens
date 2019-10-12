@@ -41,7 +41,7 @@ class UVPlaneData(abstract_data.AbstractData):
 
     @property
     def visibilities(self):
-        return self._data
+        return self.data
 
     def new_uv_plane_data_with_modified_visibilities(self, modified_visibilities):
 
@@ -61,7 +61,7 @@ class UVPlaneData(abstract_data.AbstractData):
         )
         return UVPlaneData(
             shape=self.shape,
-            visibilities=self._data,
+            visibilities=self.data,
             pixel_scale=self.pixel_scale,
             noise_map=self.noise_map,
             exposure_time_map=self.exposure_time_map,
@@ -72,10 +72,10 @@ class UVPlaneData(abstract_data.AbstractData):
     def new_uv_plane_data_converted_from_electrons(self):
 
         real_visibilities = self.array_from_counts_to_electrons_per_second(
-            array=self._data[:, 0]
+            array=self.data[:, 0]
         )
         imaginary_visibilities = self.array_from_counts_to_electrons_per_second(
-            array=self._data[:, 1]
+            array=self.data[:, 1]
         )
         visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
         noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
@@ -93,10 +93,10 @@ class UVPlaneData(abstract_data.AbstractData):
     def new_uv_plane_data_converted_from_adus(self, gain):
 
         real_visibilities = self.array_from_adus_to_electrons_per_second(
-            array=self._data[:, 0], gain=gain
+            array=self.data[:, 0], gain=gain
         )
         imaginary_visibilities = self.array_from_adus_to_electrons_per_second(
-            array=self._data[:, 1], gain=gain
+            array=self.data[:, 1], gain=gain
         )
         visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
 

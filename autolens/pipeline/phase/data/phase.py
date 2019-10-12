@@ -1,15 +1,14 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.array import mask as msk
-from autolens.lens import ray_tracing
+import autoarray as aa
 from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.data.result import Result
 
 
 def default_mask_function(image):
-    return msk.Mask.circular(
+    return aa.ScaledSubMask.circular(
         shape=image.shape, pixel_scale=image.pixel_scale, sub_size=1, radius_arcsec=3.0
     )
 
