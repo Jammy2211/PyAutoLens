@@ -681,7 +681,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
         profile_image_1d = self.profile_image_from_grid(grid=grid)
 
-        return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
+        return transformer.visibilities_from_image(image=profile_image_1d)
 
     def profile_visibilities_of_galaxies_from_grid_and_transformer(
         self, grid, transformer

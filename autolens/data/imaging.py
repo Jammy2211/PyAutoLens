@@ -76,7 +76,7 @@ class ImagingData(abstract_data.AbstractData):
     def shape(self):
         return self.image.in_2d.shape
 
-    def binned_imaging_data_from_bin_up_factor(self, bin_up_factor):
+    def binned_data_from_bin_up_factor(self, bin_up_factor):
 
         image = self.image.binned_array_from_bin_up_factor(
             scaled_array=self.image, bin_up_factor=bin_up_factor, method="mean"
@@ -121,7 +121,7 @@ class ImagingData(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def resized_imaging_data_from_new_shape(
+    def resized_data_from_new_shape(
         self, new_shape,
     ):
 
@@ -161,7 +161,7 @@ class ImagingData(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def resized_psf_imaging_data_from_new_shape(self, new_shape):
+    def resized_psf_data_from_new_shape(self, new_shape):
         psf = self.psf.resized_array_from_new_shape(new_shape=new_shape)
         return ImagingData(
             image=self.image,
@@ -175,7 +175,7 @@ class ImagingData(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def modified_image_imaging_data_from_image(self, image):
+    def modified_image_data_from_image(self, image):
 
         return ImagingData(
             image=image,
@@ -189,7 +189,7 @@ class ImagingData(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def add_poisson_noise_to_imaging_data(self, seed=-1):
+    def add_poisson_noise_to_data(self, seed=-1):
 
         image_with_sky = self.image + self.background_sky_map
 
@@ -209,7 +209,7 @@ class ImagingData(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def convert_imaging_data_to_electrons(self):
+    def data_in_electrons(self):
 
         image = self.array_from_counts_to_electrons_per_second(array=self.image)
         noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
@@ -235,7 +235,7 @@ class ImagingData(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def convert_imaging_data_from_adus(self, gain):
+    def data_in_adus_from_gain(self, gain):
 
         image = self.array_from_adus_to_electrons_per_second(
             array=self.image, gain=gain
@@ -265,7 +265,7 @@ class ImagingData(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def signal_to_noise_limit_imaging_data(self, signal_to_noise_limit):
+    def signal_to_noise_limited_data_from_signal_to_noise_limit(self, signal_to_noise_limit):
 
         noise_map_limit = np.where(
             self.signal_to_noise_map > signal_to_noise_limit,
@@ -595,16 +595,16 @@ class SimulatedImagingData(ImagingData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = aa.ScaledArray.from_single_value_shape_and_pixel_scale(
-                value=exposure_time, shape=image.mask.shape, pixel_scale=pixel_scale
+            exposure_time_map = aa.ScaledArray.from_single_value_shape_2d_and_pixel_scales(
+                value=exposure_time, shape_2d=image.mask.shape, pixel_scales=pixel_scale
             )
 
         if background_sky_map is None:
 
-            background_sky_map = aa.ScaledArray.from_single_value_shape_and_pixel_scale(
+            background_sky_map = aa.ScaledArray.from_single_value_shape_2d_and_pixel_scales(
                 value=background_sky_level,
-                shape=image.mask.shape,
-                pixel_scale=pixel_scale,
+                shape_2d=image.mask.shape,
+                pixel_scales=pixel_scale,
             )
 
         image += background_sky_map
@@ -633,10 +633,10 @@ class SimulatedImagingData(ImagingData):
             noise_map = np.divide(np.sqrt(image_counts), exposure_time_map)
             noise_map = NoiseMap(array_1d=noise_map, mask=noise_map.mask)
         else:
-            noise_map = NoiseMap.from_single_value_shape_and_pixel_scale(
+            noise_map = NoiseMap.from_single_value_shape_2d_and_pixel_scales(
                 value=noise_if_add_noise_false,
-                shape=image.mask.shape,
-                pixel_scale=pixel_scale,
+                shape_2d=image.mask.shape,
+                pixel_scales=pixel_scale,
             )
             noise_realization = None
 
@@ -955,19 +955,19 @@ def load_imaging_data_from_fits(
     )
 
     if resized_imaging_shape is not None:
-        imaging_data = imaging_data.resized_imaging_data_from_new_shape(
+        imaging_data = imaging_data.resized_data_from_new_shape(
             new_shape=resized_imaging_shape,
         )
 
     if resized_psf_shape is not None:
-        imaging_data = imaging_data.resized_psf_imaging_data_from_new_shape(
+        imaging_data = imaging_data.resized_psf_data_from_new_shape(
             new_shape=resized_psf_shape
         )
 
     if convert_from_electrons:
-        imaging_data = imaging_data.convert_imaging_data_to_electrons()
+        imaging_data = imaging_data.data_in_electrons()
     elif convert_from_adus:
-        imaging_data = imaging_data.convert_imaging_data_from_adus(gain=gain)
+        imaging_data = imaging_data.data_in_adus_from_gain(gain=gain)
 
     return imaging_data
 

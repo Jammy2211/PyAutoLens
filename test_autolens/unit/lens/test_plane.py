@@ -2349,8 +2349,8 @@ class TestAbstractPlaneData(object):
 
             image_1d = g0.profile_image_from_grid(grid=sub_grid_7x7)
 
-            visibilities = transformer_7x7_7.visibilities_from_image_1d(
-                image_1d=image_1d
+            visibilities = transformer_7x7_7.visibilities_from_image(
+                image=image_1d
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0])
@@ -2370,8 +2370,8 @@ class TestAbstractPlaneData(object):
                 grid=sub_grid_7x7
             ) + g1.profile_image_from_grid(grid=sub_grid_7x7)
 
-            visibilities = transformer_7x7_7.visibilities_from_image_1d(
-                image_1d=image_1d
+            visibilities = transformer_7x7_7.visibilities_from_image(
+                image=image_1d
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
@@ -2399,12 +2399,12 @@ class TestAbstractPlaneData(object):
 
             g1_image_1d = g1.profile_image_from_grid(grid=sub_grid_7x7)
 
-            g0_visibilities = transformer_7x7_7.visibilities_from_image_1d(
-                image_1d=g0_image_1d
+            g0_visibilities = transformer_7x7_7.visibilities_from_image(
+                image=g0_image_1d
             )
 
-            g1_visibilities = transformer_7x7_7.visibilities_from_image_1d(
-                image_1d=g1_image_1d
+            g1_visibilities = transformer_7x7_7.visibilities_from_image(
+                image=g1_image_1d
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])

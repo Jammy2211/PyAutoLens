@@ -177,7 +177,7 @@ class LensImagingData(AbstractLensData):
 
     def new_lens_imaging_data_with_binned_up_imaging_data_and_mask(self, bin_up_factor):
 
-        binned_up_imaging_data = self.imaging_data.binned_imaging_data_from_bin_up_factor(
+        binned_up_imaging_data = self.imaging_data.binned_data_from_bin_up_factor(
             bin_up_factor=bin_up_factor
         )
         binned_up_mask = self.mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
@@ -198,7 +198,7 @@ class LensImagingData(AbstractLensData):
 
     def new_lens_imaging_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
 
-        imaging_data_with_signal_to_noise_limit = self.imaging_data.signal_to_noise_limit_imaging_data(
+        imaging_data_with_signal_to_noise_limit = self.imaging_data.signal_to_noise_limited_data_from_signal_to_noise_limit(
             signal_to_noise_limit=signal_to_noise_limit
         )
 
@@ -345,7 +345,7 @@ class LensUVPlaneData(AbstractLensData):
 
     def new_lens_imaging_data_with_modified_visibilities(self, modified_visibilities):
 
-        uv_plane_data_with_modified_visibilities = self.uv_plane_data.new_uv_plane_data_with_modified_visibilities(
+        uv_plane_data_with_modified_visibilities = self.uv_plane_data.modified_visibilities_data_from_modified_visibilities(
             modified_visibilities=modified_visibilities
         )
 

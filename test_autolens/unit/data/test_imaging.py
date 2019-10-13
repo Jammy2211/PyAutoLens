@@ -568,7 +568,7 @@ class TestImagingData:
                 background_sky_map=background_sky_map_array,
             )
 
-            imaging_data = imaging_data.resized_imaging_data_from_new_shape(
+            imaging_data = imaging_data.resized_data_from_new_shape(
                 new_shape=(4, 4)
             )
 
@@ -643,7 +643,7 @@ class TestImagingData:
                 psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.zeros((3, 3))),
             )
 
-            imaging_data = imaging_data.resized_psf_imaging_data_from_new_shape(
+            imaging_data = imaging_data.resized_psf_data_from_new_shape(
                 new_shape=(1, 1)
             )
 
@@ -691,7 +691,7 @@ class TestImagingData:
             )
             modified_image[2, 2] = 10.0
 
-            imaging_data = imaging_data.modified_image_imaging_data_from_image(
+            imaging_data = imaging_data.modified_image_data_from_image(
                 image=modified_image
             )
 
@@ -812,7 +812,7 @@ class TestImagingData:
                 background_sky_map=background_sky_map_array,
             )
 
-            imaging_data = imaging_data.binned_imaging_data_from_bin_up_factor(
+            imaging_data = imaging_data.binned_data_from_bin_up_factor(
                 bin_up_factor=2
             )
 
@@ -863,7 +863,7 @@ class TestImagingData:
                 background_sky_map=3.0 * np.ones((2, 2)),
             )
 
-            imaging_data = imaging_data.signal_to_noise_limit_imaging_data(
+            imaging_data = imaging_data.signal_to_noise_limited_data_from_signal_to_noise_limit(
                 signal_to_noise_limit=100.0
             )
 
@@ -903,7 +903,7 @@ class TestImagingData:
                 background_sky_map=3.0 * np.ones((2, 2)),
             )
 
-            imaging_data_capped = imaging_data.signal_to_noise_limit_imaging_data(
+            imaging_data_capped = imaging_data.signal_to_noise_limited_data_from_signal_to_noise_limit(
                 signal_to_noise_limit=2.0
             )
 
@@ -933,7 +933,7 @@ class TestImagingData:
                 imaging_data_capped.background_sky_map.in_2d == 3.0 * np.ones((2, 2))
             ).all()
 
-            imaging_data_capped = imaging_data.signal_to_noise_limit_imaging_data(
+            imaging_data_capped = imaging_data.signal_to_noise_limited_data_from_signal_to_noise_limit(
                 signal_to_noise_limit=3.0
             )
 
@@ -984,7 +984,7 @@ class TestImagingData:
                 background_sky_map=background_sky_map_array,
             )
 
-            imaging_data = imaging_data.convert_imaging_data_to_electrons()
+            imaging_data = imaging_data.data_in_electrons()
 
             assert (imaging_data.image.in_2d == 2.0 * np.ones((3, 3))).all()
             assert (imaging_data.noise_map.in_2d == 4.0 * np.ones((3, 3))).all()
@@ -1014,7 +1014,7 @@ class TestImagingData:
                 background_sky_map=background_sky_map_array,
             )
 
-            imaging_data = imaging_data.convert_imaging_data_from_adus(gain=2.0)
+            imaging_data = imaging_data.data_in_adus_from_gain(gain=2.0)
 
             assert (imaging_data.image.in_2d == 2.0 * 2.0 * np.ones((3, 3))).all()
             assert (imaging_data.noise_map.in_2d == 2.0 * 4.0 * np.ones((3, 3))).all()
@@ -1061,7 +1061,7 @@ class TestImagingData:
                 (16,)
             )
 
-            imaging_with_noise = imaging_data.add_poisson_noise_to_imaging_data(
+            imaging_with_noise = imaging_data.add_poisson_noise_to_data(
                 seed=1
             )
 
@@ -1481,8 +1481,8 @@ class TestSimulateImaging(object):
             array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape(
-            value=1.0, shape=image.in_2d.shape
+        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
+            value=1.0, shape_2d=image.in_2d.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
@@ -1508,12 +1508,12 @@ class TestSimulateImaging(object):
             array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape(
-            value=1.0, shape=image.mask.shape
+        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
+            value=1.0, shape_2d=image.mask.shape
         )
 
-        background_sky_map = aa.Array.from_single_value_and_shape(
-            value=16.0, shape=image.mask.shape
+        background_sky_map = aa.Array.from_single_value_and_shape_2d(
+            value=16.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
@@ -1550,12 +1550,12 @@ class TestSimulateImaging(object):
             array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape(
-            value=1.0, shape=image.mask.shape
+        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
+            value=1.0, shape_2d=image.mask.shape
         )
 
-        background_sky_map = aa.Array.from_single_value_and_shape(
-            value=16.0, shape=image.mask.shape
+        background_sky_map = aa.Array.from_single_value_and_shape_2d(
+            value=16.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
@@ -1611,8 +1611,8 @@ class TestSimulateImaging(object):
             pixel_scale=1.0,
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape(
-            value=1.0, shape=image.mask.shape
+        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
+            value=1.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
@@ -1651,12 +1651,12 @@ class TestSimulateImaging(object):
             pixel_scale=1.0,
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape(
-            value=1.0, shape=image.mask.shape
+        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
+            value=1.0, shape_2d=image.mask.shape
         )
 
-        background_sky_map = aa.Array.from_single_value_and_shape(
-            value=16.0, shape=image.mask.shape
+        background_sky_map = aa.Array.from_single_value_and_shape_2d(
+            value=16.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
@@ -1689,8 +1689,8 @@ class TestSimulateImaging(object):
             array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape(
-            value=20.0, shape=image.mask.shape
+        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
+            value=20.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
@@ -1742,8 +1742,8 @@ class TestSimulateImaging(object):
             pixel_scale=1.0,
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape(
-            value=20.0, shape=image.mask.shape
+        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
+            value=20.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
@@ -1794,12 +1794,12 @@ class TestSimulateImaging(object):
             pixel_scale=1.0,
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape(
-            value=1.0, shape=image.mask.shape
+        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
+            value=1.0, shape_2d=image.mask.shape
         )
 
-        background_sky_map = aa.Array.from_single_value_and_shape(
-            value=16.0, shape=image.mask.shape
+        background_sky_map = aa.Array.from_single_value_and_shape_2d(
+            value=16.0, shape_2d=image.mask.shape
         )
 
         imaging_variable = al.SimulatedImagingData.from_image_and_exposure_arrays(
@@ -1853,12 +1853,12 @@ class TestSimulateImaging(object):
 
         psf = al.PSF.from_gaussian(shape=(3, 3), sigma=0.1, pixel_scale=0.2)
 
-        exposure_time_map = aa.Array.from_single_value_and_shape(
-            value=1.0, shape=image.mask.shape
+        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
+            value=1.0, shape_2d=image.mask.shape
         )
 
-        background_sky_map = aa.Array.from_single_value_and_shape(
-            value=1.0, shape=image.mask.shape
+        background_sky_map = aa.Array.from_single_value_and_shape_2d(
+            value=1.0, shape_2d=image.mask.shape
         )
 
         with pytest.raises(exc.DataException):

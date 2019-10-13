@@ -361,8 +361,8 @@ class TestLightProfiles(object):
                 grid=sub_grid_7x7
             ) + light_profile_1.profile_image_from_grid(grid=sub_grid_7x7)
 
-            visibilities = transformer_7x7_7.visibilities_from_image_1d(
-                image_1d=image_1d
+            visibilities = transformer_7x7_7.visibilities_from_image(
+                image=image_1d
             )
 
             galaxy = al.Galaxy(

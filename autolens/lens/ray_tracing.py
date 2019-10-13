@@ -524,7 +524,7 @@ class AbstractTracerData(AbstractTracerLensing):
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
         profile_image_1d = self.profile_image_from_grid(grid=grid)
-        return transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
+        return transformer.visibilities_from_image(image=profile_image_1d)
 
     def profile_visibilities_of_planes_from_grid_and_transformer(
         self, grid, transformer
@@ -532,7 +532,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         profile_images_1d_of_planes = self.profile_images_of_planes_from_grid(grid=grid)
         return [
-            transformer.visibilities_from_image_1d(image_1d=profile_image_1d)
+            transformer.visibilities_from_image(image=profile_image_1d)
             for profile_image_1d in profile_images_1d_of_planes
         ]
 

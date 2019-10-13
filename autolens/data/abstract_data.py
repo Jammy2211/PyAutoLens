@@ -45,28 +45,6 @@ class AbstractData(object):
     def geometry(self):
         return self.data.mask.geometry
 
-    @staticmethod
-    def bin_up_scaled_array(scaled_array, bin_up_factor, method):
-        if scaled_array is not None:
-            return scaled_array.binned_array_from_bin_up_factor(
-                bin_up_factor=bin_up_factor, method=method
-            )
-        else:
-            return None
-
-    @staticmethod
-    def resize_scaled_array(
-        scaled_array, new_shape, new_centre_pixels=None, new_centre_arcsec=None
-    ):
-        if scaled_array is not None:
-            return scaled_array.resized_array_from_new_shape(
-                new_shape=new_shape,
-                new_centre_pixels=new_centre_pixels,
-                new_centre_arcsec=new_centre_arcsec,
-            )
-        else:
-            return None
-
     @property
     def signal_to_noise_map(self):
         """The estimated signal-to-noise_maps mappers of the image."""

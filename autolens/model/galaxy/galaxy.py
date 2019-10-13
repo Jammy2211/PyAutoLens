@@ -204,8 +204,8 @@ class Galaxy(af.ModelObject):
 
         profile_image = self.profile_image_from_grid(grid=grid)
 
-        return transformer.visibilities_from_image_1d(
-            image_1d=profile_image.in_1d_binned
+        return transformer.visibilities_from_image(
+            image=profile_image.in_1d_binned
         )
 
     def luminosity_within_circle_in_units(
