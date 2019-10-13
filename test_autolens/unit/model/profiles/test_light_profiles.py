@@ -941,8 +941,8 @@ class TestVisibilities(object):
 
         image = light_profile.profile_image_from_grid(grid=grid_7x7)
 
-        visibilities = transformer_7x7_7.visibilities_from_image_1d(
-            image_1d=image.in_1d_binned
+        visibilities = transformer_7x7_7.visibilities_from_image(
+            image=image.in_1d_binned
         )
 
         light_profile_visibilities = light_profile.profile_visibilities_from_grid_and_transformer(

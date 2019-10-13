@@ -60,7 +60,7 @@ class MetaImagingFit(data.MetaDataFit):
         )
 
         lens_imaging_data = ld.LensImagingData(
-            imaging_data=data.modified_image_imaging_data_from_image(
+            imaging_data=data.modified_image_data_from_image(
                 modified_image
             ),
             mask=mask,

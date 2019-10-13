@@ -30,7 +30,6 @@ class UVPlaneData(abstract_data.AbstractData):
             pixel_scale=pixel_scale,
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
-            origin=(0.0, 0.0),
         )
 
         self.visibilities_magnitudes = np.sqrt(
@@ -43,7 +42,7 @@ class UVPlaneData(abstract_data.AbstractData):
     def visibilities(self):
         return self.data
 
-    def new_uv_plane_data_with_modified_visibilities(self, modified_visibilities):
+    def modified_visibilities_data_from_modified_visibilities(self, modified_visibilities):
 
         return UVPlaneData(
             shape=self.shape,
@@ -55,9 +54,10 @@ class UVPlaneData(abstract_data.AbstractData):
             exposure_time_map=self.exposure_time_map,
         )
 
-    def new_uv_plane_data_with_resized_primary_beam(self, new_shape):
-        primary_beam = self.resize_scaled_array(
-            scaled_array=self.primary_beam, new_shape=new_shape
+    def resized_primary_beam_data_from_new_shape(self, new_shape):
+
+        primary_beam = self.primary_beam.resized_array_from_new_shape(
+            new_shape=new_shape
         )
         return UVPlaneData(
             shape=self.shape,
@@ -69,7 +69,7 @@ class UVPlaneData(abstract_data.AbstractData):
             primary_beam=primary_beam,
         )
 
-    def new_uv_plane_data_converted_from_electrons(self):
+    def data_in_electrons(self):
 
         real_visibilities = self.array_from_counts_to_electrons_per_second(
             array=self.data[:, 0]
@@ -90,7 +90,7 @@ class UVPlaneData(abstract_data.AbstractData):
             primary_beam=self.primary_beam,
         )
 
-    def new_uv_plane_data_converted_from_adus(self, gain):
+    def data_in_adus_from_gain(self, gain):
 
         real_visibilities = self.array_from_adus_to_electrons_per_second(
             array=self.data[:, 0], gain=gain
@@ -169,17 +169,11 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid_1d = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
             shape=shape, pixel_scale=pixel_scale, sub_size=1
         )
 
-        deflections_1d = grid_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
-            sub_grid_2d=deflections,
-            mask=np.full(shape=shape, fill_value=False),
-            sub_size=1,
-        )
-
-        deflected_grid_1d = grid_1d - deflections_1d
+        deflected_grid_1d = grid.in_1d - deflections.in_1d
 
         image_2d = sum(
             map(lambda g: g.profile_image_from_grid(grid=deflected_grid_1d), galaxies)
@@ -294,24 +288,19 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = aa.ScaledSubArray.from_single_value_shape_pixel_scale_and_sub_size(
-                value=exposure_time, shape=image.shape, pixel_scale=pixel_scale
+            exposure_time_map = aa.ScaledSubArray.from_single_value_shape_2d_pixel_scales_and_sub_size(
+                value=exposure_time, shape_2d=image.shape, pixel_scales=pixel_scale
             )
 
         if background_sky_map is None:
 
-            background_sky_map = aa.ScaledSubArray.from_single_value_shape_pixel_scale_and_sub_size(
-                value=background_sky_level, shape=image.shape, pixel_scale=pixel_scale
+            background_sky_map = aa.ScaledSubArray.from_single_value_shape_2d_pixel_scales_and_sub_size(
+                value=background_sky_level, shape_2d=image.shape, pixel_scales=pixel_scale
             )
 
         image += background_sky_map
-        image_1d = array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
-            sub_array_2d=image,
-            mask=np.full(fill_value=False, shape=image.shape),
-            sub_size=1,
-        )
 
-        visibilities = transformer.visibilities_from_image_1d(image_1d=image_1d)
+        visibilities = transformer.visibilities_from_image(image=image_1d)
 
         if noise_sigma is not None:
             noise_map_realization = gaussian_noise_map_from_shape_and_sigma(
@@ -558,14 +547,14 @@ def load_uv_plane_data_from_fits(
     )
 
     if resized_primary_beam_shape is not None:
-        uv_plane_data = uv_plane_data.new_uv_plane_data_with_resized_primary_beam(
+        uv_plane_data = uv_plane_data.resized_primary_beam_data_from_new_shape(
             new_shape=resized_primary_beam_shape
         )
 
     if convert_from_electrons:
-        uv_plane_data = uv_plane_data.new_uv_plane_data_converted_from_electrons()
+        uv_plane_data = uv_plane_data.data_in_electrons()
     elif convert_from_adus:
-        uv_plane_data = uv_plane_data.new_uv_plane_data_converted_from_adus(gain=gain)
+        uv_plane_data = uv_plane_data.data_in_adus_from_gain(gain=gain)
 
     return uv_plane_data
 

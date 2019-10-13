@@ -2502,8 +2502,8 @@ class TestAbstractTracerData(object):
 
             g1_image_1d = g1.profile_image_from_grid(grid=source_grid_7x7)
 
-            visibilities = transformer_7x7_7.visibilities_from_image_1d(
-                image_1d=g0_image_1d + g1_image_1d
+            visibilities = transformer_7x7_7.visibilities_from_image(
+                image=g0_image_1d + g1_image_1d
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])

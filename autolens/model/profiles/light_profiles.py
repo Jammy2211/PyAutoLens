@@ -127,8 +127,8 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
         profile_image = self.profile_image_from_grid(grid=grid)
 
-        return transformer.visibilities_from_image_1d(
-            image_1d=profile_image.in_1d_binned
+        return transformer.visibilities_from_image(
+            image=profile_image.in_1d_binned
         )
 
     @dim.convert_units_to_input_units

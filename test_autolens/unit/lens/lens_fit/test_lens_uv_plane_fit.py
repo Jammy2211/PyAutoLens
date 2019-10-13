@@ -172,8 +172,8 @@ class TestLikelihood:
         )
 
         profile_image = g0.profile_image_from_grid(grid=lens_uv_plane_data_7.grid)
-        model_visibilities_manual = transformer.visibilities_from_image_1d(
-            image_1d=profile_image
+        model_visibilities_manual = transformer.visibilities_from_image(
+            image=profile_image
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
