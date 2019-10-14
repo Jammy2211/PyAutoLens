@@ -9,7 +9,7 @@ from autoarray.util import mask_util
 class MockMask(aa.ScaledSubMask):
     def __new__(
         cls,
-        array_2d,
+        mask_2d,
         pixel_scales=(1.0, 1.0),
         sub_size=1,
         origin=(0.0, 0.0),
@@ -17,7 +17,7 @@ class MockMask(aa.ScaledSubMask):
         **kwargs
     ):
 
-        obj = array_2d.view(cls)
+        obj = mask_2d.view(cls)
         obj.pixel_scales = pixel_scales
         obj.sub_size = sub_size
         obj.sub_length = int(obj.sub_size ** 2.0)
