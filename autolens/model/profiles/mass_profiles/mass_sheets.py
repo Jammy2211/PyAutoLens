@@ -95,7 +95,7 @@ class ExternalShear(geometry_profiles.EllipticalProfile, mp.MassProfile):
 
         Parameters
         ----------
-        grid : aa.SubGrid
+        grid : aa.ScaledSubGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """

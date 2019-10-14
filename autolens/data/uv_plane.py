@@ -169,8 +169,8 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
-            shape=shape, pixel_scale=pixel_scale, sub_size=1
+        grid = aa.ScaledSubGrid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=shape, pixel_scale=pixel_scale, sub_size=1
         )
 
         deflected_grid_1d = grid.in_1d - deflections.in_1d

@@ -21,8 +21,8 @@ def galaxy_fit_phase():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=image_shape, pixel_scale=pixel_scale, sub_size=4
+    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=image_shape, pixel_scale=pixel_scale, sub_size=4
     )
 
     galaxy = al.Galaxy(

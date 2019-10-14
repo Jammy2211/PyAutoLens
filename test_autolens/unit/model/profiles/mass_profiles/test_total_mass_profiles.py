@@ -158,8 +158,8 @@ class TestPointMass(object):
 
     def test__reshape_decorators(self):
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         point_mass = al.mass_profiles.PointMass()
@@ -648,8 +648,8 @@ class TestCoredPowerLaw(object):
 
     def test__reshape_decorators(self):
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         cored_power_law = al.mass_profiles.EllipticalCoredPowerLaw()
@@ -1019,8 +1019,8 @@ class TestPowerLaw(object):
 
     def test__reshape_decorators(self):
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         power_law = al.mass_profiles.EllipticalPowerLaw()
@@ -1422,8 +1422,8 @@ class TestCoredIsothermal(object):
 
     def test__reshape_decorators(self):
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         cored_isothermal = al.mass_profiles.EllipticalCoredIsothermal()
@@ -1760,8 +1760,8 @@ class TestIsothermal(object):
 
     def test__reshape_decorators(self):
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         isothermal = al.mass_profiles.EllipticalIsothermal()
@@ -1795,8 +1795,8 @@ class TestIsothermal(object):
 
 def test__reshape_decorators():
 
-    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=(2, 2), pixel_scale=1.0, sub_size=1
+    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
     )
 
     isothermal = al.mass_profiles.SphericalIsothermal()
@@ -1811,8 +1811,8 @@ def test__reshape_decorators():
     assert deflections.in_2d.shape == (2, 2, 2)
     assert deflections.shape == (4, 2)
 
-    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=(3, 3), pixel_scale=1.0, sub_size=2
+    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=(3, 3), pixel_scale=1.0, sub_size=2
     )
 
     isothermal = al.mass_profiles.SphericalIsothermal()

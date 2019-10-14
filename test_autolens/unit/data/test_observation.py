@@ -106,8 +106,8 @@ class TestObservation:
             ),
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(11, 11), pixel_scale=0.2, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(11, 11), pixel_scale=0.2, sub_size=1
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -220,8 +220,8 @@ class TestObservation:
             ),
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(11, 11), pixel_scale=0.2, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(11, 11), pixel_scale=0.2, sub_size=1
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])

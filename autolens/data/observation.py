@@ -55,8 +55,8 @@ class ImagingObservation(object):
         5) Output the data to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
-        grid = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
-            shape=self.shape, pixel_scale=self.psf.pixel_scale, sub_size=sub_size
+        grid = aa.ScaledSubGrid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=self.shape, pixel_scale=self.psf.pixel_scale, sub_size=sub_size
         )
 
         tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)

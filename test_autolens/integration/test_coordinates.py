@@ -14,8 +14,8 @@ import pytest
 
 def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
-    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=(5, 5), pixel_scale=1.0, sub_size=1
+    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=(5, 5), pixel_scale=1.0, sub_size=1
     )
 
     sersic = al.light_profiles.SphericalSersic(centre=(2.0, -2.0))
@@ -49,8 +49,8 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
 def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index():
 
-    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=(5, 5), pixel_scale=1.0, sub_size=1
+    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=(5, 5), pixel_scale=1.0, sub_size=1
     )
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(2.0, -2.0))
@@ -84,8 +84,8 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
 
 def test__deflection_angles():
 
-    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=(5, 5), pixel_scale=1.0, sub_size=1
+    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=(5, 5), pixel_scale=1.0, sub_size=1
     )
 
     sis = al.mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)

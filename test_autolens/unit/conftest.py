@@ -265,12 +265,12 @@ def make_noise_map_1d_7x7(noise_map_7x7, mask_7x7):
 
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7(mask_7x7):
-    return aa.SubGrid.from_mask(mask=mask_7x7)
+    return aa.ScaledSubGrid.from_mask(mask=mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7(sub_mask_7x7):
-    return aa.SubGrid.from_mask(mask=sub_mask_7x7)
+    return aa.ScaledSubGrid.from_mask(mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7_simple")
@@ -284,7 +284,7 @@ def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
-    return aa.SubGrid.from_mask(mask=blurring_mask_7x7)
+    return aa.ScaledSubGrid.from_mask(mask=blurring_mask_7x7)
 
 
 @pytest.fixture(name="binned_grid_7x7")

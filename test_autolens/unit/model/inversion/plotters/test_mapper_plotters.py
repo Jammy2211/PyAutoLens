@@ -42,8 +42,8 @@ def make_galaxy_mass():
 
 @pytest.fixture(name="grid")
 def make_grid():
-    return aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=(100, 100), pixel_scale=0.05, sub_size=2
+    return aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
     )
 
 

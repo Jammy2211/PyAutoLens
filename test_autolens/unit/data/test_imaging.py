@@ -20,11 +20,11 @@ class TestImagingData:
     class TestConstructor:
         def test__setup_image__correct_attributes(self):
 
-            image = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(
                 array_2d=[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]],
             )
             psf = al.PSF.from_2d_and_pixel_scale(array_2d=3.0 * np.ones((3, 3)), pixel_scale=1.0)
-            noise_map = aa.Array.from_2d(
+            noise_map = aa.Array.from_array_2d(
                 array_2d=5.0 * np.ones((3, 3)),
             )
 
@@ -33,13 +33,13 @@ class TestImagingData:
                 pixel_scale=0.1,
                 noise_map=noise_map,
                 psf=psf,
-                background_noise_map=aa.Array.from_2d(
+                background_noise_map=aa.Array.from_array_2d(
                     array_2d=7.0 * np.ones((3, 3)),
                 ),
-                poisson_noise_map=aa.Array.from_2d(
+                poisson_noise_map=aa.Array.from_array_2d(
                     array_2d=9.0 * np.ones((3, 3)),
                 ),
-                exposure_time_map=aa.Array.from_2d(
+                exposure_time_map=aa.Array.from_array_2d(
                     array_2d=11.0 * np.ones((3, 3)),
                 ),
             )
@@ -69,9 +69,9 @@ class TestImagingData:
             # Noise (counts) = sqrt(1.0 + 0.0**2) = 1.0
             # Noise (eps) = 1.0 / 1.0
 
-            image = aa.Array.from_2d(array_2d=np.ones((3, 3)))
-            exposure_time = aa.Array.from_2d(array_2d=np.ones((3, 3)))
-            background_noise = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+            background_noise = aa.Array.from_array_2d(
                 array_2d=np.zeros((3, 3))
             )
 
@@ -97,10 +97,10 @@ class TestImagingData:
             # Noise (counts) = sqrt(4.0 + 0.0**2) = 2.0
             # Noise (eps) = 2.0 / 1.0
 
-            image = aa.Array.from_2d(array_2d=4.0 * np.ones((4, 2)))
+            image = aa.Array.from_array_2d(array_2d=4.0 * np.ones((4, 2)))
 
-            exposure_time = aa.Array.from_2d(array_2d=np.ones((4, 2)))
-            background_noise = aa.Array.from_2d(
+            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((4, 2)))
+            background_noise = aa.Array.from_array_2d(
                 array_2d=np.zeros((4, 2))
             )
 
@@ -128,13 +128,13 @@ class TestImagingData:
             # Noise (counts) = sqrt(4.0 + 0.0**2) = 2.0
             # Noise (eps) = 2.0 / 4.0 = 0.5
 
-            image = aa.Array.from_2d(array_2d=np.ones((1, 5)))
+            image = aa.Array.from_array_2d(array_2d=np.ones((1, 5)))
 
-            exposure_time = aa.Array.from_2d(
+            exposure_time = aa.Array.from_array_2d(
                 array_2d=4.0 * np.ones((1, 5))
             )
 
-            background_noise = aa.Array.from_2d(
+            background_noise = aa.Array.from_array_2d(
                 array_2d=0 * np.ones((1, 5))
             )
 
@@ -153,15 +153,15 @@ class TestImagingData:
         def test__image_and_exposure_times_range_of_values__no_background__noises_estimates_correct(
             self
         ):
-            image = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(
                 array_2d=np.array([[5.0, 3.0], [10.0, 20.0]])
             )
 
-            exposure_time = aa.Array.from_2d(
+            exposure_time = aa.Array.from_array_2d(
                 np.array([[1.0, 2.0], [3.0, 4.0]])
             )
 
-            background_noise = aa.Array.from_2d(
+            background_noise = aa.Array.from_array_2d(
                 array_2d=0.0 * np.ones((2, 2))
             )
 
@@ -195,11 +195,11 @@ class TestImagingData:
             # Noise (counts) = sqrt(1.0 + sqrt(3.0)**2) = sqrt(1.0 + 3.0) = 2.0
             # Noise (eps) = 2.0 / 1.0 = 2.0
 
-            image = aa.Array.from_2d(array_2d=np.ones((3, 3)))
+            image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
 
-            exposure_time = aa.Array.from_2d(array_2d=np.ones((3, 3)))
+            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
 
-            background_noise = aa.Array.from_2d(
+            background_noise = aa.Array.from_array_2d(
                 array_2d=3.0 ** 0.5 * np.ones((3, 3))
             )
 
@@ -227,11 +227,11 @@ class TestImagingData:
             # Noise (counts) = sqrt(1.0 + 5**2)
             # Noise (eps) = sqrt(1.0 + 5**2) / 1.0
 
-            image = aa.Array.from_2d(array_2d=np.ones((2, 3)))
+            image = aa.Array.from_array_2d(array_2d=np.ones((2, 3)))
 
-            exposure_time = aa.Array.from_2d(array_2d=np.ones((2, 3)))
+            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((2, 3)))
 
-            background_noise = aa.Array.from_2d(
+            background_noise = aa.Array.from_array_2d(
                 array_2d=5 * np.ones((2, 3))
             )
 
@@ -265,12 +265,12 @@ class TestImagingData:
             # Noise (counts) = sqrt(2.0 + 10**2) = sqrt(2.0 + 100.0)
             # Noise (eps) = sqrt(2.0 + 100.0) / 2.0
 
-            image = aa.Array.from_2d(array_2d=np.ones((2, 3)))
+            image = aa.Array.from_array_2d(array_2d=np.ones((2, 3)))
 
-            exposure_time = aa.Array.from_2d(
+            exposure_time = aa.Array.from_array_2d(
                 array_2d=2.0 * np.ones((2, 3))
             )
-            background_noise = aa.Array.from_2d(
+            background_noise = aa.Array.from_array_2d(
                 array_2d=5.0 * np.ones((2, 3))
             )
 
@@ -305,12 +305,12 @@ class TestImagingData:
         ):
             # Can use pattern from previous test_autoarray for values
 
-            image = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(
                 array_2d=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
             )
 
-            exposure_time = aa.Array.from_2d(array_2d=np.ones((3, 2)))
-            background_noise = aa.Array.from_2d(
+            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((3, 2)))
+            background_noise = aa.Array.from_array_2d(
                 array_2d=12.0 * np.ones((3, 2))
             )
 
@@ -339,14 +339,14 @@ class TestImagingData:
             # Use same pattern as above, noting that here our background values are now being converts to counts using
             # different exposure time and then being squared.
 
-            image = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(
                 array_2d=[[5.0, 3.0], [10.0, 20.0]]
             )
 
-            exposure_time = aa.Array.from_2d(
+            exposure_time = aa.Array.from_array_2d(
                 array_2d=[[1.0, 2.0], [3.0, 4.0]]
             )
-            background_noise = aa.Array.from_2d(
+            background_noise = aa.Array.from_array_2d(
                 array_2d=9.0 * np.ones((2, 2))
             )
 
@@ -376,15 +376,15 @@ class TestImagingData:
         ):
             # Use same pattern as above, noting that we are now also using a variable background signal_to_noise_ratio map.
 
-            image = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(
                 array_2d=[[5.0, 3.0], [10.0, 20.0]]
             )
 
-            exposure_time = aa.Array.from_2d(
+            exposure_time = aa.Array.from_array_2d(
                 array_2d=[[1.0, 2.0], [3.0, 4.0]]
             )
 
-            background_noise = aa.Array.from_2d(
+            background_noise = aa.Array.from_array_2d(
                 array_2d=[[5.0, 6.0], [7.0, 8.0]]
             )
 
@@ -412,7 +412,7 @@ class TestImagingData:
     class TestEstimateDataGrid(object):
         def test__via_edges__input_all_ones__sky_bg_level_1(self):
             imaging_data = al.ImagingData(
-                image=aa.Array.from_2d(np.ones((3, 3))),
+                image=aa.Array.from_array_2d(np.ones((3, 3))),
                 noise_map=np.ones((3, 3)),
                 psf=np.ones((3, 3)),
                 pixel_scale=0.1,
@@ -425,7 +425,7 @@ class TestImagingData:
         def test__via_edges__3x3_image_simple_gaussian__answer_ignores_central_pixel(
             self
         ):
-            image = aa.Array.from_2d([[1, 1, 1], [1, 100, 1], [1, 1, 1]])
+            image = aa.Array.from_array_2d([[1, 1, 1], [1, 100, 1], [1, 1, 1]])
 
             imaging_data = al.ImagingData(
                 image=image,
@@ -438,7 +438,7 @@ class TestImagingData:
             assert sky_noise == 0.0
 
         def test__via_edges__4x3_image_simple_gaussian__ignores_central_pixels(self):
-            image = aa.Array.from_2d([[1, 1, 1], [1, 100, 1], [1, 100, 1], [1, 1, 1]])
+            image = aa.Array.from_array_2d([[1, 1, 1], [1, 100, 1], [1, 100, 1], [1, 1, 1]])
 
             imaging_data = al.ImagingData(
                 image=image,
@@ -451,7 +451,7 @@ class TestImagingData:
             assert sky_noise == 0.0
 
         def test__via_edges__4x4_image_simple_gaussian__ignores_central_pixels(self):
-            image = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(
                 [[1, 1, 1, 1], [1, 100, 100, 1], [1, 100, 100, 1], [1, 1, 1, 1]]
             )
 
@@ -468,7 +468,7 @@ class TestImagingData:
         def test__via_edges__5x5_image_simple_gaussian_two_edges__ignores_central_pixel(
             self
         ):
-            image = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(
                 [
                     [1, 1, 1, 1, 1],
                     [1, 1, 1, 1, 1],
@@ -489,7 +489,7 @@ class TestImagingData:
             assert sky_noise == 0.0
 
         def test__via_edges__6x5_image_two_edges__values(self):
-            image = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(
                 [
                     [0, 1, 2, 3, 4],
                     [5, 6, 7, 8, 9],
@@ -511,7 +511,7 @@ class TestImagingData:
             assert sky_noise == np.std(np.arange(28))
 
         def test__via_edges__7x7_image_three_edges__values(self):
-            image = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(
                 [
                     [0, 1, 2, 3, 4, 5, 6],
                     [7, 8, 9, 10, 11, 12, 13],
@@ -535,25 +535,25 @@ class TestImagingData:
 
     class TestNewImagingDataResized:
         def test__all_components_resized__psf_is_not(self):
-            image = aa.Array.from_2d(array_2d=np.ones((6, 6)))
+            image = aa.Array.from_array_2d(array_2d=np.ones((6, 6)))
             image[3, 3] = 2.0
 
-            noise_map_array = aa.Array.from_2d(
+            noise_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((6, 6))
             )
             noise_map_array[3, 3] = 3.0
 
-            background_noise_map_array = aa.Array.from_2d(
+            background_noise_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((6, 6))
             )
             background_noise_map_array[3, 3] = 4.0
 
-            exposure_time_map_array = aa.Array.from_2d(
+            exposure_time_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((6, 6))
             )
             exposure_time_map_array[3, 3] = 5.0
 
-            background_sky_map_array = aa.Array.from_2d(
+            background_sky_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((6, 6))
             )
             background_sky_map_array[3, 3] = 6.0
@@ -635,7 +635,7 @@ class TestImagingData:
             assert imaging_data.geometry.origin == (0.0, 0.0)
 
         def test__resize_psf(self):
-            image = aa.Array.from_2d(array_2d=np.ones((6, 6)))
+            image = aa.Array.from_array_2d(array_2d=np.ones((6, 6)))
 
             imaging_data = al.ImagingData(
                 image=image,
@@ -653,25 +653,25 @@ class TestImagingData:
 
     class TestNewImagingModifiedImage:
         def test__imaging_data_returns_with_modified_image(self):
-            image = aa.Array.from_2d(array_2d=np.ones((4, 4)))
+            image = aa.Array.from_array_2d(array_2d=np.ones((4, 4)))
             image[2, 2] = 2.0
 
-            noise_map_array = aa.Array.from_2d(
+            noise_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((4, 4))
             )
             noise_map_array[2, 2] = 3.0
 
-            background_noise_map_array = aa.Array.from_2d(
+            background_noise_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((4, 4))
             )
             background_noise_map_array[2, 2] = 4.0
 
-            exposure_time_map_array = aa.Array.from_2d(
+            exposure_time_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((4, 4))
             )
             exposure_time_map_array[2, 2] = 5.0
 
-            background_sky_map_array = aa.Array.from_2d(
+            background_sky_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((4, 4))
             )
             background_sky_map_array[2, 2] = 6.0
@@ -686,7 +686,7 @@ class TestImagingData:
                 background_sky_map=background_sky_map_array,
             )
 
-            modified_image = aa.Array.from_2d(
+            modified_image = aa.Array.from_array_2d(
                 array_2d=np.ones((4, 4))
             )
             modified_image[2, 2] = 10.0
@@ -759,13 +759,13 @@ class TestImagingData:
 
     class TestNewImagingBinnedUp:
         def test__all_components_binned_up_correct(self):
-            image = aa.Array.from_2d(array_2d=np.ones((6, 6)))
+            image = aa.Array.from_array_2d(array_2d=np.ones((6, 6)))
             image[3:5, 3] = 2.0
             binned_image_util = aa.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=image, bin_up_factor=2
             )
 
-            noise_map_array = aa.Array.from_2d(
+            noise_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((6, 6))
             )
             noise_map_array[3, 3:5] = 3.0
@@ -773,7 +773,7 @@ class TestImagingData:
                 array_2d=noise_map_array, bin_up_factor=2
             )
 
-            background_noise_map_array = aa.Array.from_2d(
+            background_noise_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((6, 6))
             )
             background_noise_map_array[3:5, 3] = 4.0
@@ -781,7 +781,7 @@ class TestImagingData:
                 array_2d=background_noise_map_array, bin_up_factor=2
             )
 
-            exposure_time_map_array = aa.Array.from_2d(
+            exposure_time_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((6, 6))
             )
             exposure_time_map_array[3, 3:5] = 5.0
@@ -789,7 +789,7 @@ class TestImagingData:
                 array_2d=exposure_time_map_array, bin_up_factor=2
             )
 
-            background_sky_map_array = aa.Array.from_2d(
+            background_sky_map_array = aa.Array.from_array_2d(
                 array_2d=np.ones((6, 6))
             )
             background_sky_map_array[3, 3:5] = 6.0
@@ -847,10 +847,10 @@ class TestImagingData:
         def test__signal_to_noise_limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
             self
         ):
-            image = aa.Array.from_2d(20.0 * np.ones((2, 2)))
+            image = aa.Array.from_array_2d(20.0 * np.ones((2, 2)))
             image[1, 1] = 5.0
 
-            noise_map_array = aa.Array.from_2d(5.0 * np.ones((2, 2)))
+            noise_map_array = aa.Array.from_array_2d(5.0 * np.ones((2, 2)))
             noise_map_array[1, 1] = 2.0
 
             imaging_data = al.ImagingData(
@@ -887,10 +887,10 @@ class TestImagingData:
         def test__signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
             self
         ):
-            image = aa.Array.from_2d(20.0 * np.ones((2, 2)))
+            image = aa.Array.from_array_2d(20.0 * np.ones((2, 2)))
             image[1, 1] = 5.0
 
-            noise_map_array = aa.Array.from_2d(5.0 * np.ones((2, 2)))
+            noise_map_array = aa.Array.from_array_2d(5.0 * np.ones((2, 2)))
             noise_map_array[1, 1] = 2.0
 
             imaging_data = al.ImagingData(
@@ -965,13 +965,13 @@ class TestImagingData:
 
     class TestImageConvertedFrom:
         def test__counts__all_arrays_in_units_of_flux_are_converted(self):
-            image = aa.Array.from_2d(array_2d=np.ones((3, 3)))
-            noise_map_array = aa.Array.from_2d(2.0 * np.ones((3, 3)))
-            background_noise_map_array = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+            noise_map_array = aa.Array.from_array_2d(2.0 * np.ones((3, 3)))
+            background_noise_map_array = aa.Array.from_array_2d(
                 3.0 * np.ones((3, 3))
             )
-            exposure_time_map_array = aa.Array.from_2d(0.5 * np.ones((3, 3)))
-            background_sky_map_array = aa.Array.from_2d(6.0 * np.ones((3, 3)))
+            exposure_time_map_array = aa.Array.from_array_2d(0.5 * np.ones((3, 3)))
+            background_sky_map_array = aa.Array.from_array_2d(6.0 * np.ones((3, 3)))
 
             imaging_data = al.ImagingData(
                 image=image,
@@ -995,13 +995,13 @@ class TestImagingData:
             assert (imaging_data.background_sky_map.in_2d == 12.0 * np.ones((3, 3))).all()
 
         def test__adus__all_arrays_in_units_of_flux_are_converted(self):
-            image = aa.Array.from_2d(array_2d=np.ones((3, 3)))
-            noise_map_array = aa.Array.from_2d(2.0 * np.ones((3, 3)))
-            background_noise_map_array = aa.Array.from_2d(
+            image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+            noise_map_array = aa.Array.from_array_2d(2.0 * np.ones((3, 3)))
+            background_noise_map_array = aa.Array.from_array_2d(
                 3.0 * np.ones((3, 3))
             )
-            exposure_time_map_array = aa.Array.from_2d(0.5 * np.ones((3, 3)))
-            background_sky_map_array = aa.Array.from_2d(6.0 * np.ones((3, 3)))
+            exposure_time_map_array = aa.Array.from_array_2d(0.5 * np.ones((3, 3)))
+            background_sky_map_array = aa.Array.from_array_2d(6.0 * np.ones((3, 3)))
 
             imaging_data = al.ImagingData(
                 image=image,
@@ -1032,25 +1032,25 @@ class TestImagingData:
                 array_2d=np.ones((3, 3)), pixel_scale=3.0, renormalize=False
             )
             imaging_data = al.ImagingData(
-                image=aa.Array.from_2d(array_2d=np.ones((4, 4))),
+                image=aa.Array.from_array_2d(array_2d=np.ones((4, 4))),
                 pixel_scale=3.0,
                 psf=psf,
-                noise_map=aa.Array.from_2d(array_2d=np.ones((4, 4))),
-                exposure_time_map=aa.Array.from_2d(
+                noise_map=aa.Array.from_array_2d(array_2d=np.ones((4, 4))),
+                exposure_time_map=aa.Array.from_array_2d(
                     array_2d=3.0 * np.ones((4, 4))
                 ),
-                background_sky_map=aa.Array.from_2d(
+                background_sky_map=aa.Array.from_array_2d(
                     array_2d=4.0 * np.ones((4, 4))
                 ),
             )
 
-            mock_image = aa.Array.from_2d(array_2d=np.ones((4, 4)))
+            mock_image = aa.Array.from_array_2d(array_2d=np.ones((4, 4)))
             mock_image_with_sky = mock_image + 4.0 * np.ones((16,))
             mock_image_with_sky_and_noise = (
                 mock_image_with_sky
                 + al.generate_poisson_noise(
                     image=mock_image_with_sky,
-                    exposure_time_map=aa.Array.from_2d(
+                    exposure_time_map=aa.Array.from_array_2d(
                         array_2d=3.0 * np.ones((4, 4))
                     ),
                     seed=1,
@@ -1073,9 +1073,9 @@ class TestNoiseMap(object):
         def test__image_all_1s__bg_noise_all_1s__exposure_time_all_1s__noise_map_all_sqrt_2s(
             self
         ):
-            imaging_data = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1095,9 +1095,9 @@ class TestNoiseMap(object):
         def test__image_all_2s__bg_noise_all_1s__exposure_time_all_1s__noise_map_all_sqrt_3s(
             self
         ):
-            imaging_data = aa.Array.from_2d([[2.0, 2.0], [2.0, 2.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.Array.from_array_2d([[2.0, 2.0], [2.0, 2.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1117,9 +1117,9 @@ class TestNoiseMap(object):
         def test__image_all_1s__bg_noise_all_2s__exposure_time_all_1s__noise_map_all_sqrt_5s(
             self
         ):
-            imaging_data = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            background_noise_map = aa.Array.from_2d([[2.0, 2.0], [2.0, 2.0]])
-            exposure_time_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            background_noise_map = aa.Array.from_array_2d([[2.0, 2.0], [2.0, 2.0]])
+            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1139,9 +1139,9 @@ class TestNoiseMap(object):
         def test__image_all_1s__bg_noise_all_1s__exposure_time_all_2s__noise_map_all_sqrt_6s_over_2(
             self
         ):
-            imaging_data = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_2d([[2.0, 2.0], [2.0, 2.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            exposure_time_map = aa.Array.from_array_2d([[2.0, 2.0], [2.0, 2.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1164,9 +1164,9 @@ class TestNoiseMap(object):
         def test__image_all_negative_2s__bg_noise_all_1s__exposure_time_all_1s__noise_map_all_1s(
             self
         ):
-            imaging_data = aa.Array.from_2d([[-2.0, -2.0], [-2.0, -2.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.Array.from_array_2d([[-2.0, -2.0], [-2.0, -2.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1179,9 +1179,9 @@ class TestNoiseMap(object):
             assert (noise_map.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
 
         def test__same_as_above__use_different_values_in_different_array_elemets(self):
-            imaging_data = aa.Array.from_2d([[1.0, 2.0], [2.0, 3.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [2.0, 3.0]])
-            exposure_time_map = aa.Array.from_2d([[4.0, 3.0], [2.0, 1.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 3.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [2.0, 3.0]])
+            exposure_time_map = aa.Array.from_array_2d([[4.0, 3.0], [2.0, 1.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1204,9 +1204,9 @@ class TestNoiseMap(object):
         def test__convert_from_electrons__image_all_1s__bg_noise_all_1s__exposure_time_all_1s__noise_map_all_sqrt_2s(
             self
         ):
-            imaging_data = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1227,9 +1227,9 @@ class TestNoiseMap(object):
         def test__convert_from_electrons__image_all_negative_2s__bg_noise_all_1s__exposure_time_all_10s__noise_map_all_1s(
             self
         ):
-            imaging_data = aa.Array.from_2d([[-2.0, -2.0], [-2.0, -2.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_2d([[10.0, 10.0], [10.0, 10.0]])
+            imaging_data = aa.Array.from_array_2d([[-2.0, -2.0], [-2.0, -2.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            exposure_time_map = aa.Array.from_array_2d([[10.0, 10.0], [10.0, 10.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1245,9 +1245,9 @@ class TestNoiseMap(object):
         def test__convert_from_electrons__same_as_above__use_different_values_in_different_array_elemets(
             self
         ):
-            imaging_data = aa.Array.from_2d([[1.0, 2.0], [2.0, 3.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [2.0, 3.0]])
-            exposure_time_map = aa.Array.from_2d([[10.0, 11.0], [12.0, 13.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 3.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [2.0, 3.0]])
+            exposure_time_map = aa.Array.from_array_2d([[10.0, 11.0], [12.0, 13.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1266,9 +1266,9 @@ class TestNoiseMap(object):
             ).all()
 
         def test__convert_from_adus__same_as_above__gain_is_1__same_values(self):
-            imaging_data = aa.Array.from_2d([[1.0, 2.0], [2.0, 3.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [2.0, 3.0]])
-            exposure_time_map = aa.Array.from_2d([[10.0, 11.0], [12.0, 13.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 3.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [2.0, 3.0]])
+            exposure_time_map = aa.Array.from_array_2d([[10.0, 11.0], [12.0, 13.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1287,9 +1287,9 @@ class TestNoiseMap(object):
             ).all()
 
         def test__convert_from_adus__same_as_above__gain_is_2__values_change(self):
-            imaging_data = aa.Array.from_2d([[1.0, 2.0], [2.0, 3.0]])
-            background_noise_map = aa.Array.from_2d([[1.0, 1.0], [2.0, 3.0]])
-            exposure_time_map = aa.Array.from_2d([[10.0, 11.0], [12.0, 13.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 3.0]])
+            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [2.0, 3.0]])
+            exposure_time_map = aa.Array.from_array_2d([[10.0, 11.0], [12.0, 13.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
                 pixel_scale=0.1,
@@ -1314,8 +1314,8 @@ class TestNoiseMap(object):
 class TestPoissonNoiseMap(object):
     class TestFromImageAndExposureTimeMap:
         def test__image_all_1s__exposure_time_all_1s__noise_map_all_1s(self):
-            imaging_data = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
                 pixel_scale=0.1,
@@ -1329,8 +1329,8 @@ class TestPoissonNoiseMap(object):
         def test__image_all_2s_and_3s__exposure_time_all_1s__noise_map_all_sqrt_2s_and_3s(
             self
         ):
-            imaging_data = aa.Array.from_2d([[2.0, 2.0], [3.0, 3.0]])
-            exposure_time_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 3.0]])
+            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
                 pixel_scale=0.1,
@@ -1349,8 +1349,8 @@ class TestPoissonNoiseMap(object):
         def test__image_all_1s__exposure_time_all__2s_and_3s__noise_map_all_sqrt_2s_and_3s(
             self
         ):
-            imaging_data = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_2d([[2.0, 2.0], [3.0, 3.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            exposure_time_map = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 3.0]])
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
                 pixel_scale=0.1,
@@ -1372,8 +1372,8 @@ class TestPoissonNoiseMap(object):
         def test__image_all_1s__exposure_time_all_1s__noise_map_all_1s__gain_is_2__ignores_gain(
             self
         ):
-            imaging_data = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
                 pixel_scale=0.1,
@@ -1392,8 +1392,8 @@ class TestPoissonNoiseMap(object):
         def test__convert_from_electrons_is_true__image_already_in_counts_so_exposure_time_ignored(
             self
         ):
-            imaging_data = aa.Array.from_2d([[2.0, 2.0], [3.0, 3.0]])
-            exposure_time_map = aa.Array.from_2d([[10.0, 10.0], [10.0, 10.0]])
+            imaging_data = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 3.0]])
+            exposure_time_map = aa.Array.from_array_2d([[10.0, 10.0], [10.0, 10.0]])
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
                 pixel_scale=0.1,
@@ -1411,8 +1411,8 @@ class TestPoissonNoiseMap(object):
             ).all()
 
         def test__same_as_above__convert_from_adus__includes_gain_multiplication(self):
-            imaging_data = aa.Array.from_2d([[2.0, 2.0], [3.0, 3.0]])
-            exposure_time_map = aa.Array.from_2d([[10.0, 10.0], [10.0, 10.0]])
+            imaging_data = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 3.0]])
+            exposure_time_map = aa.Array.from_array_2d([[10.0, 10.0], [10.0, 10.0]])
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
                 pixel_scale=0.1,
@@ -1477,7 +1477,7 @@ class TestPSF(object):
 class TestSimulateImaging(object):
     def test__setup_with_all_features_off(self):
 
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
@@ -1504,7 +1504,7 @@ class TestSimulateImaging(object):
         self
     ):
 
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
@@ -1546,7 +1546,7 @@ class TestSimulateImaging(object):
         self
     ):
 
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
@@ -1594,7 +1594,7 @@ class TestSimulateImaging(object):
         ).all()
 
     def test__setup_with_psf_blurring_on__blurs_image_and_trims_psf_edge_off(self):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             array_2d=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1634,7 +1634,7 @@ class TestSimulateImaging(object):
     def test__setup_with_background_sky_and_psf_on__psf_does_no_blurring__image_and_sky_both_trimmed(
         self
     ):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             array_2d=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1685,7 +1685,7 @@ class TestSimulateImaging(object):
         ).all()
 
     def test__setup_with_noise(self):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
@@ -1725,7 +1725,7 @@ class TestSimulateImaging(object):
     def test__setup_with__psf_blurring_and_poisson_noise_on__poisson_noise_added_to_blurred_image(
         self
     ):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             array_2d=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1777,7 +1777,7 @@ class TestSimulateImaging(object):
         )
 
     def test__simulate_function__turns_exposure_time_and_sky_level_to_arrays(self):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             array_2d=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1813,7 +1813,7 @@ class TestSimulateImaging(object):
             noise_seed=1,
         )
 
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             array_2d=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1849,7 +1849,7 @@ class TestSimulateImaging(object):
         ).all()
 
     def test__noise_map_creates_nans_due_to_low_exposure_time__raises_error(self):
-        image = aa.Array.from_2d(array_2d=np.ones((9, 9)))
+        image = aa.Array.from_array_2d(array_2d=np.ones((9, 9)))
 
         psf = al.PSF.from_gaussian(shape=(3, 3), sigma=0.1, pixel_scale=0.2)
 
@@ -1877,8 +1877,8 @@ class TestSimulateImaging(object):
         self
     ):
 
-        grid = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=1.0, sub_size=1
+        grid = aa.ScaledSubGrid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=1.0, sub_size=1
         )
 
         g0 = al.Galaxy(
@@ -1941,8 +1941,8 @@ class TestSimulateImaging(object):
             pixel_scale=1.0,
         )
 
-        grid = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.05, sub_size=1
+        grid = aa.ScaledSubGrid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.05, sub_size=1
         )
 
         lens_galaxy = al.Galaxy(
@@ -2003,8 +2003,8 @@ class TestSimulateImaging(object):
 class TestSimulatePoissonNoise(object):
     def test__input_image_all_0s__exposure_time_all_1s__all_noise_values_are_0s(self):
         
-        image = aa.Array.from_2d(np.zeros((2, 2)))
-        exposure_time = aa.Array.from_2d(np.ones((2, 2)))
+        image = aa.Array.from_array_2d(np.zeros((2, 2)))
+        exposure_time = aa.Array.from_array_2d(np.ones((2, 2)))
         simulated_poisson_image = image + al.generate_poisson_noise(
             image, exposure_time, seed=1
         )
@@ -2015,9 +2015,9 @@ class TestSimulatePoissonNoise(object):
     def test__input_image_includes_10s__exposure_time_is_1s__gives_noise_values_near_1_to_5(
         self
     ):
-        image = aa.Array.from_2d([[10.0, 0.0], [0.0, 10.0]])
+        image = aa.Array.from_array_2d([[10.0, 0.0], [0.0, 10.0]])
 
-        exposure_time = aa.Array.from_2d(np.ones((2, 2)))
+        exposure_time = aa.Array.from_array_2d(np.ones((2, 2)))
         poisson_noise_map = al.generate_poisson_noise(image, exposure_time, seed=1)
         simulated_poisson_image = image + poisson_noise_map
 
@@ -2034,9 +2034,9 @@ class TestSimulatePoissonNoise(object):
     def test__input_image_is_all_10s__exposure_time_is_1s__gives_noise_values_near_1_to_5(
         self
     ):
-        image = aa.Array.from_2d([[10.0, 10.0], [10.0, 10.0]])
+        image = aa.Array.from_array_2d([[10.0, 10.0], [10.0, 10.0]])
 
-        exposure_time = aa.Array.from_2d(np.ones((2, 2)))
+        exposure_time = aa.Array.from_array_2d(np.ones((2, 2)))
         poisson_noise_map = al.generate_poisson_noise(image, exposure_time, seed=1)
         simulated_poisson_image = image + poisson_noise_map
 
@@ -2052,9 +2052,9 @@ class TestSimulatePoissonNoise(object):
     def test__input_image_has_1000000s__exposure_times_is_1s__these_give_positive_noise_values_near_1000(
         self
     ):
-        image = aa.Array.from_2d([[10000000.0, 0.0], [0.0, 10000000.0]])
+        image = aa.Array.from_array_2d([[10000000.0, 0.0], [0.0, 10000000.0]])
 
-        exposure_time_map = aa.Array.from_2d(np.ones((2, 2)))
+        exposure_time_map = aa.Array.from_array_2d(np.ones((2, 2)))
 
         poisson_noise_map = al.generate_poisson_noise(
             image=image, exposure_time_map=exposure_time_map, seed=2
@@ -2077,13 +2077,13 @@ class TestSimulatePoissonNoise(object):
     def test__two_images_same_in_counts_but_different_in_electrons_per_sec__noise_related_by_exposure_times(
         self
     ):
-        image_0 = aa.Array.from_2d([[10.0, 0.0], [0.0, 10.0]])
+        image_0 = aa.Array.from_array_2d([[10.0, 0.0], [0.0, 10.0]])
 
-        exposure_time_0 = aa.Array.from_2d(np.ones((2, 2)))
+        exposure_time_0 = aa.Array.from_array_2d(np.ones((2, 2)))
 
-        image_1 = aa.Array.from_2d([[5.0, 0.0], [0.0, 5.0]])
+        image_1 = aa.Array.from_array_2d([[5.0, 0.0], [0.0, 5.0]])
 
-        exposure_time_1 = 2.0 * aa.Array.from_2d(np.ones((2, 2)))
+        exposure_time_1 = 2.0 * aa.Array.from_array_2d(np.ones((2, 2)))
 
         simulated_poisson_image_0 = image_0 + al.generate_poisson_noise(
             image_0, exposure_time_0, seed=1
@@ -2095,13 +2095,13 @@ class TestSimulatePoissonNoise(object):
         assert (simulated_poisson_image_0 / 2.0 == simulated_poisson_image_1).all()
 
     def test__same_as_above_but_range_of_image_values_and_exposure_times(self):
-        image_0 = aa.Array.from_2d([[10.0, 20.0], [30.0, 40.0]])
+        image_0 = aa.Array.from_array_2d([[10.0, 20.0], [30.0, 40.0]])
 
-        exposure_time_0 = aa.Array.from_2d([[2.0, 2.0], [3.0, 4.0]])
+        exposure_time_0 = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 4.0]])
 
-        image_1 = aa.Array.from_2d([[20.0, 20.0], [45.0, 20.0]])
+        image_1 = aa.Array.from_array_2d([[20.0, 20.0], [45.0, 20.0]])
 
-        exposure_time_1 = aa.Array.from_2d([[1.0, 2.0], [2.0, 8.0]])
+        exposure_time_1 = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 8.0]])
 
         simulated_poisson_image_0 = image_0 + al.generate_poisson_noise(
             image_0, exposure_time_0, seed=1
@@ -2266,7 +2266,7 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        inverse_noise_map = aa.Array.from_2d(
+        inverse_noise_map = aa.Array.from_array_2d(
             array_2d=np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]]),
         )
 
@@ -2412,7 +2412,7 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        weight_map = aa.Array.from_2d(array_2d=3.0 * np.ones((3, 3)))
+        weight_map = aa.Array.from_array_2d(array_2d=3.0 * np.ones((3, 3)))
 
         noise_map_converted = al.NoiseMap.from_weight_map(
             weight_map=weight_map,
@@ -2448,7 +2448,7 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        inverse_noise_map = aa.Array.from_2d(
+        inverse_noise_map = aa.Array.from_array_2d(
             array_2d=3.0 * np.ones((3, 3)),
         )
 
@@ -2528,8 +2528,8 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        image = aa.Array.from_2d(array_2d=np.ones((3, 3)))
-        background_noise_map = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+        background_noise_map = aa.Array.from_array_2d(
             array_2d=4.0 * np.ones((3, 3))
         )
 
@@ -2585,8 +2585,8 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        image = aa.Array.from_2d(array_2d=np.ones((3, 3)))
-        background_noise_map = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+        background_noise_map = aa.Array.from_array_2d(
             array_2d=4.0 * np.ones((3, 3)),
         )
 
@@ -2639,7 +2639,7 @@ class TestImagingFromFits(object):
             convert_background_noise_map_from_weight_map=True,
         )
 
-        weight_map = aa.Array.from_2d(array_2d=4.0 * np.ones((3, 3)))
+        weight_map = aa.Array.from_array_2d(array_2d=4.0 * np.ones((3, 3)))
 
         background_noise_map_converted = al.NoiseMap.from_weight_map(
             weight_map=weight_map,
@@ -2678,7 +2678,7 @@ class TestImagingFromFits(object):
             convert_background_noise_map_from_inverse_noise_map=True,
         )
 
-        inverse_noise_map = aa.Array.from_2d(
+        inverse_noise_map = aa.Array.from_array_2d(
             array_2d=4.0 * np.ones((3, 3)),
         )
 
@@ -2719,7 +2719,7 @@ class TestImagingFromFits(object):
             poisson_noise_map_from_image=True,
         )
 
-        image = aa.Array.from_2d(array_2d=np.ones((3, 3)))
+        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
 
         poisson_noise_map_converted = al.PoissonNoiseMap.from_image_and_exposure_time_map(
             image=image,
@@ -2764,7 +2764,7 @@ class TestImagingFromFits(object):
             convert_from_electrons=True,
         )
 
-        image = aa.Array.from_2d(array_2d=np.ones((3, 3)))
+        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
 
         poisson_noise_map_counts = al.PoissonNoiseMap.from_image_and_exposure_time_map(
             image=image,
@@ -2814,7 +2814,7 @@ class TestImagingFromFits(object):
             convert_from_adus=True,
         )
 
-        image = aa.Array.from_2d(array_2d=np.ones((3, 3)))
+        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
 
         poisson_noise_map_counts = al.PoissonNoiseMap.from_image_and_exposure_time_map(
             image=image,
@@ -2864,7 +2864,7 @@ class TestImagingFromFits(object):
             convert_poisson_noise_map_from_weight_map=True,
         )
 
-        weight_map = aa.Array.from_2d(array_2d=5.0 * np.ones((3, 3)))
+        weight_map = aa.Array.from_array_2d(array_2d=5.0 * np.ones((3, 3)))
 
         poisson_noise_map_converted = al.NoiseMap.from_weight_map(
             weight_map=weight_map,
@@ -2902,7 +2902,7 @@ class TestImagingFromFits(object):
             convert_poisson_noise_map_from_inverse_noise_map=True,
         )
 
-        inverse_noise_map = aa.Array.from_2d(
+        inverse_noise_map = aa.Array.from_array_2d(
             array_2d=5.0 * np.ones((3, 3)),
         )
 
