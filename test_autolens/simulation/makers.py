@@ -28,8 +28,8 @@ def simulate_image_from_galaxies_and_output_to_fits(
     # Setup the image-plane al.ogrid of the Imaging array which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
-    image_plane_grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=shape, pixel_scale=pixel_scale, sub_size=sub_size
+    image_plane_grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=shape, pixel_scale=pixel_scale, sub_size=sub_size
     )
 
     # Use the input galaxies to setup a tracer, which will generate the image for the simulated Imaging data_type.

@@ -967,8 +967,8 @@ class TestAbstractPlaneLensing(object):
 
     class TestDeflectionAnglesviaPotential(object):
         def test__compare_plane_deflections_via_potential_and_calculation(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=1
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -998,8 +998,8 @@ class TestAbstractPlaneLensing(object):
         def test__deflections_via_potential_same_as_its_galaxy___use_multiple_galaxies(
             self
         ):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=1
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1023,8 +1023,8 @@ class TestAbstractPlaneLensing(object):
 
     class TestJacobian(object):
         def test__jacobian_components__two_component_galaxy_plane(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.05, sub_size=1
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(20, 20), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1062,8 +1062,8 @@ class TestAbstractPlaneLensing(object):
             assert mean_error < 1e-4
 
         def test__jacobian_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
             g0 = al.Galaxy(
@@ -1111,8 +1111,8 @@ class TestAbstractPlaneLensing(object):
             )
 
         def test_lambda_t_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
             g0 = al.Galaxy(
@@ -1159,8 +1159,8 @@ class TestAbstractPlaneLensing(object):
             )
 
         def test_lambda_r_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
             g0 = al.Galaxy(
@@ -1208,8 +1208,8 @@ class TestAbstractPlaneLensing(object):
 
     class TestConvergenceviaJacobian(object):
         def test__compare_plane_convergence_via_jacobian_and_calculation(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.05, sub_size=1
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(20, 20), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1239,8 +1239,8 @@ class TestAbstractPlaneLensing(object):
             assert mean_error < 1e-1
 
         def test__convergence_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
             g0 = al.Galaxy(
@@ -1300,8 +1300,8 @@ class TestAbstractPlaneLensing(object):
             assert mean_error < 1e-1
 
         def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
             g0 = al.Galaxy(
@@ -1325,8 +1325,8 @@ class TestAbstractPlaneLensing(object):
 
     class TestShearviaJacobian(object):
         def test__shear_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
             g0 = al.Galaxy(
@@ -1373,8 +1373,8 @@ class TestAbstractPlaneLensing(object):
             )
 
         def test__plane_shear_via_jacobian_same_as_multiple_galaxies(self):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(20, 20), pixel_scale=0.05, sub_size=2
             )
 
             g0 = al.Galaxy(
@@ -1400,8 +1400,8 @@ class TestAbstractPlaneLensing(object):
         def test__compare_magnification_from_eigen_values_and_from_determinant__two_component_galaxy_plane(
             self
         ):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=1
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1436,8 +1436,8 @@ class TestAbstractPlaneLensing(object):
 
             assert mean_error < 1e-4
 
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
@@ -1461,8 +1461,8 @@ class TestAbstractPlaneLensing(object):
         def test__compare_magnification_from_determinant_and_from_convergence_and_shear__two_component_galaxy(
             self
         ):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=1
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(10, 10), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1497,8 +1497,8 @@ class TestAbstractPlaneLensing(object):
 
             assert mean_error < 1e-4
 
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(10, 10), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(10, 10), pixel_scale=0.05, sub_size=2
             )
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
@@ -1523,8 +1523,8 @@ class TestAbstractPlaneLensing(object):
         def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(100, 100), pixel_scale=0.05, sub_size=1
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1557,8 +1557,8 @@ class TestAbstractPlaneLensing(object):
                 critical_curve_tangential_from_magnification, 1e-4
             )
 
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(100, 100), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
             )
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
@@ -1580,8 +1580,8 @@ class TestAbstractPlaneLensing(object):
         def test__compare_radial_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
             self
         ):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(100, 100), pixel_scale=0.05, sub_size=1
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(100, 100), pixel_scale=0.05, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1614,8 +1614,8 @@ class TestAbstractPlaneLensing(object):
                 sum(critical_curve_radial_from_magnification), 1e-2
             )
 
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(100, 100), pixel_scale=0.05, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
             )
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
@@ -1637,8 +1637,8 @@ class TestAbstractPlaneLensing(object):
         def test__compare_tangential_caustic_from_magnification_and_lambda_t__two_component_galaxy(
             self
         ):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.25, sub_size=1
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(20, 20), pixel_scale=0.25, sub_size=1
             )
 
             g0 = al.Galaxy(
@@ -1669,8 +1669,8 @@ class TestAbstractPlaneLensing(object):
                 caustic_tangential_from_magnification, 5e-1
             )
 
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(20, 20), pixel_scale=0.5, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(20, 20), pixel_scale=0.5, sub_size=2
             )
 
             caustic_tangential_from_magnification = caustics_via_magnification_from_plane_and_grid(
@@ -1688,8 +1688,8 @@ class TestAbstractPlaneLensing(object):
         def test__compare_radial_caustic_from_magnification_and_lambda_t__two_component_galaxy(
             self
         ):
-            grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-                shape=(60, 60), pixel_scale=0.5, sub_size=2
+            grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+                shape_2d=(60, 60), pixel_scale=0.5, sub_size=2
             )
 
             g0 = al.Galaxy(

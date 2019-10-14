@@ -32,8 +32,8 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
         shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale
     )
 
-    grid = al.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=image_shape, pixel_scale=pixel_scale, sub_size=1
+    grid = al.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=image_shape, pixel_scale=pixel_scale, sub_size=1
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=galaxies)

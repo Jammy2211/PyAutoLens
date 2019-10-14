@@ -80,7 +80,7 @@ class GalaxyFitData(object):
 
         self.sub_size = mask.sub_size
 
-        self.grid = aa.SubGrid.from_mask(mask=mask)
+        self.grid = aa.ScaledSubGrid.from_mask(mask=mask)
 
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 

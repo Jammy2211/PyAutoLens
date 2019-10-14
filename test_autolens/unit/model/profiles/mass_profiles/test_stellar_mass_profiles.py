@@ -341,8 +341,8 @@ class TestSersic(object):
         assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__reshape_decorators(self):
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         sersic = al.mass_profiles.EllipticalSersic()
@@ -663,8 +663,8 @@ class TestExponential(object):
         assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__reshape_decorators(self):
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         exponential = al.mass_profiles.EllipticalExponential()
@@ -969,8 +969,8 @@ class TestDevVaucouleurs(object):
         assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__reshape_decorators(self):
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         dev_vaucouleurs = al.mass_profiles.EllipticalDevVaucouleurs()
@@ -1433,8 +1433,8 @@ class TestSersicMassRadialGradient(object):
         assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__reshape_decorators(self):
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         sersic = al.mass_profiles.EllipticalSersicRadialGradient()

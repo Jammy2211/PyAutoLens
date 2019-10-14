@@ -723,8 +723,8 @@ class TestDeflectionsViaPotential(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.05, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.05, sub_size=1
         )
 
         deflections_via_calculation = sis.deflections_from_grid(grid=grid)
@@ -741,8 +741,8 @@ class TestDeflectionsViaPotential(object):
             centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.05, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.05, sub_size=1
         )
 
         deflections_via_calculation = sie.deflections_from_grid(grid=grid)
@@ -759,8 +759,8 @@ class TestDeflectionsViaPotential(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.05, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.05, sub_size=1
         )
 
         deflections_via_calculation = sie.deflections_from_grid(grid=grid)
@@ -779,8 +779,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
         jacobian = sie.lensing_jacobian_from_grid(grid=grid)
@@ -792,8 +792,8 @@ class TestJacobianandMagnification(object):
 
         assert mean_error < 1e-4
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         jacobian = sie.lensing_jacobian_from_grid(grid=grid)
@@ -811,8 +811,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
         magnification_via_determinant = sie.magnification_from_grid(grid=grid)
@@ -835,8 +835,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         magnification_via_determinant = sie.magnification_from_grid(grid=grid)
@@ -863,8 +863,8 @@ class TestJacobianandMagnification(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
         magnification_via_determinant = sie.magnification_from_grid(grid=grid)
@@ -883,8 +883,8 @@ class TestJacobianandMagnification(object):
 
         assert mean_error < 1e-4
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         magnification_via_determinant = sie.magnification_from_grid(grid=grid)
@@ -959,8 +959,8 @@ class TestConvergenceViajacobian(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.05, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.05, sub_size=1
         )
 
         convergence_via_calculation = sis.convergence_from_grid(grid=grid)
@@ -986,8 +986,8 @@ class TestConvergenceViajacobian(object):
             centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.05, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.05, sub_size=1
         )
 
         convergence_via_calculation = sie.convergence_from_grid(grid=grid)
@@ -1008,8 +1008,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         magnification_via_determinant = sie.magnification_from_grid(grid=grid)
@@ -1034,8 +1034,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=2
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1055,8 +1055,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.5, sub_size=4
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.5, sub_size=4
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1078,8 +1078,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1092,8 +1092,8 @@ class TestCriticalCurvesAndCaustics(object):
         assert -0.03 < y_centre < 0.03
         assert -0.03 < x_centre < 0.03
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=4
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=4
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1110,8 +1110,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.5, 1.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(60, 60), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(60, 60), pixel_scale=0.25, sub_size=1
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1130,8 +1130,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1144,8 +1144,8 @@ class TestCriticalCurvesAndCaustics(object):
         assert -0.05 < y_centre < 0.05
         assert -0.05 < x_centre < 0.05
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=4
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=4
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1162,8 +1162,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.5, 1.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(60, 60), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(60, 60), pixel_scale=0.25, sub_size=1
         )
 
         critical_curves = sis.critical_curves_from_grid(grid=grid)
@@ -1182,8 +1182,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1196,8 +1196,8 @@ class TestCriticalCurvesAndCaustics(object):
         assert -0.03 < y_centre < 0.03
         assert -0.03 < x_centre < 0.03
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=4
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=4
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1214,8 +1214,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.5, 1.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(60, 60), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(60, 60), pixel_scale=0.25, sub_size=1
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1234,8 +1234,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.5, sub_size=4
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.5, sub_size=4
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1257,8 +1257,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1271,8 +1271,8 @@ class TestCriticalCurvesAndCaustics(object):
         assert -0.2 < y_centre < 0.2
         assert -0.2 < x_centre < 0.2
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=4
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=4
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1289,8 +1289,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.5, 1.0), einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(60, 60), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(60, 60), pixel_scale=0.25, sub_size=1
         )
 
         caustics = sis.caustics_from_grid(grid=grid)
@@ -1311,8 +1311,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         tangential_critical_curve_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
@@ -1329,8 +1329,8 @@ class TestCriticalCurvesAndCaustics(object):
             tangential_critical_curve_from_magnification, 5e-1
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.5, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.5, sub_size=2
         )
 
         tangential_critical_curve_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
@@ -1353,8 +1353,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         critical_curve_radial_from_magnification = critical_curve_via_magnification_from_mass_profile_and_grid(
@@ -1377,8 +1377,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.25, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(20, 20), pixel_scale=0.25, sub_size=1
         )
 
         tangential_caustic_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
@@ -1395,8 +1395,8 @@ class TestCriticalCurvesAndCaustics(object):
             sum(tangential_caustic_from_magnification), 5e-1
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.5, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.5, sub_size=2
         )
 
         tangential_caustic_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
@@ -1419,8 +1419,8 @@ class TestCriticalCurvesAndCaustics(object):
             centre=(0.0, 0.0), einstein_radius=2, axis_ratio=0.8, phi=40
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=1
         )
 
         caustic_radial_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
@@ -1435,8 +1435,8 @@ class TestCriticalCurvesAndCaustics(object):
             sum(caustic_radial_from_magnification), 7e-1
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         caustic_radial_from_magnification = caustics_via_magnification_from_mass_profile_and_grid(
@@ -1459,8 +1459,8 @@ class TestBinneGrids:
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
         deflections = sie.deflections_via_potential_from_grid(grid=grid)
@@ -1487,8 +1487,8 @@ class TestBinneGrids:
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
         jacobian = sie.lensing_jacobian_from_grid(grid=grid)
@@ -1523,8 +1523,8 @@ class TestBinneGrids:
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
         shear_via_jacobian = sie.shear_via_jacobian_from_grid(grid=grid)
@@ -1557,8 +1557,8 @@ class TestBinneGrids:
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(10, 10), pixel_scale=0.05, sub_size=2
         )
 
         tangential_eigen_values = sie.tangential_eigen_value_from_grid(grid=grid)
@@ -1591,8 +1591,8 @@ class TestBinneGrids:
             centre=(0.0, 0.0), phi=0.0, axis_ratio=0.8, einstein_radius=2.0
         )
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(100, 100), pixel_scale=0.05, sub_size=2
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(100, 100), pixel_scale=0.05, sub_size=2
         )
 
         radial_eigen_values = sie.radial_eigen_value_from_grid(grid=grid)

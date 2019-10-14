@@ -14,8 +14,8 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         pixel_scales=0.2,
     )
 
-    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=(11, 11), pixel_scale=0.2, sub_size=2
+    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=(11, 11), pixel_scale=0.2, sub_size=2
     )
 
     lens_galaxy = al.Galaxy(
@@ -98,8 +98,8 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     psf = al.PSF.from_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
 
-    grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-        shape=(11, 11), pixel_scale=0.2, sub_size=1
+    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+        shape_2d=(11, 11), pixel_scale=0.2, sub_size=1
     )
 
     lens_galaxy = al.Galaxy(

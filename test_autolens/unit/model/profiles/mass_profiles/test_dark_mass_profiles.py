@@ -989,8 +989,8 @@ class TestGeneralizedNFW(object):
 
     def test__reshape_decorators(self):
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         # gnfw = al.EllipticalGeneralizedNFW()
@@ -1347,8 +1347,8 @@ class TestTruncatedNFW(object):
 
     def test__reshape_decorators(self):
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW()
@@ -1556,8 +1556,8 @@ class TestTruncatedNFWMassToConcentration(object):
 
     def test__reshape_decorators(self):
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         truncated_nfw = al.mass_profiles.SphericalTruncatedNFW()
@@ -1845,8 +1845,8 @@ class TestNFW(object):
 
     def test__reshape_decorators(self):
 
-        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
+            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
         )
 
         nfw = al.mass_profiles.EllipticalNFW()

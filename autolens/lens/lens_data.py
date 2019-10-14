@@ -24,12 +24,12 @@ class AbstractLensData(object):
 
         ### GRIDS ###
 
-        self.grid = aa.SubGrid.from_mask(mask=mask)
+        self.grid = aa.ScaledSubGrid.from_mask(mask=mask)
 
         self.pixel_scale_binned_grid = pixel_scale_binned_grid
 
         if pixel_scale_binned_grid is not None:
-            binned_grid = aa.BinnedSubGrid.from_mask_and_pixel_scale_binned_grid(
+            binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
                 mask=mask, pixel_scale_binned_grid=pixel_scale_binned_grid
             )
             self.grid.binned = binned_grid
