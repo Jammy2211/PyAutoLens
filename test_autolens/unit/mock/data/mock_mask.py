@@ -6,7 +6,7 @@ from autolens import exc
 from autoarray.util import mask_util
 
 
-class MockMask(aa.ScaledSubMask):
+class MockMask(aa.Mask):
     def __new__(
         cls,
         mask_2d,

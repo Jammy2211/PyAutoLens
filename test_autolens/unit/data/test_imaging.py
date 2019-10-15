@@ -1877,7 +1877,7 @@ class TestSimulateImaging(object):
         self
     ):
 
-        grid = aa.ScaledSubGrid.from_shape_2d_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
             shape_2d=(10, 10), pixel_scale=1.0, sub_size=1
         )
 
@@ -1941,7 +1941,7 @@ class TestSimulateImaging(object):
             pixel_scale=1.0,
         )
 
-        grid = aa.ScaledSubGrid.from_shape_2d_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
             shape_2d=(20, 20), pixel_scale=0.05, sub_size=1
         )
 

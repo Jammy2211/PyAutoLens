@@ -62,7 +62,7 @@ class AbstractEllipticalSersic(mp.EllipticalMassProfile):
 
         Parameters
         ----------
-        grid : aa.ScaledSubGrid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
 
         """
@@ -155,7 +155,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : aa.ScaledSubGrid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """
@@ -433,7 +433,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : aa.ScaledSubGrid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the convergence is computed on.
 
         """
@@ -449,7 +449,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : aa.ScaledSubGrid
+        grid : aa.Grid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
 
         """

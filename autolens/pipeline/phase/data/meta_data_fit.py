@@ -53,7 +53,7 @@ class MetaDataFit:
             mask = mask.new_mask_with_new_sub_size(sub_size=self.sub_size)
 
         if self.inner_mask_radii is not None:
-            inner_mask = aa.ScaledSubMask.circular(
+            inner_mask = aa.Mask.circular(
                 shape=mask.shape,
                 pixel_scale=mask.pixel_scale,
                 radius_arcsec=self.inner_mask_radii,

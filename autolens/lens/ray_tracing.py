@@ -318,7 +318,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         Parameters
         ----------
-        grid : ndsrray or aa.ScaledSubGrid
+        grid : ndsrray or aa.Grid
             The image-plane grid which is traced to the redshift.
         redshift : float
             The redshift the image-plane grid is traced to.

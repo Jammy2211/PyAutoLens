@@ -7,42 +7,42 @@ from autoarray.operators import fourier_transform
 
 class MockImage(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return aa.ScaledSubArray.from_2d(
+        return aa.Array.from_2d(
             array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return aa.ScaledSubArray.from_2d(
+        return aa.Array.from_2d(
             array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockBackgroundNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return aa.ScaledSubArray.from_2d(
+        return aa.Array.from_2d(
             array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockPoissonNoiseMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return aa.ScaledSubArray.from_2d(
+        return aa.Array.from_2d(
             array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockExposureTimeMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return aa.ScaledSubArray.from_2d(
+        return aa.Array.from_2d(
             array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 
 
 class MockBackgrondSkyMap(object):
     def __new__(cls, shape, value, pixel_scale=1.0):
-        return aa.ScaledSubArray.from_2d(
+        return aa.Array.from_2d(
             array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
         )
 

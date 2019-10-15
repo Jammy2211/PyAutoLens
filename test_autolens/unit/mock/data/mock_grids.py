@@ -3,7 +3,7 @@ import numpy as np
 import autoarray as aa
 
 
-class MockScaledSubGrid(aa.ScaledSubGrid):
+class MockScaledSubGrid(aa.Grid):
     def __new__(cls, mask, *args, **kwargs):
         sub_grid_1d = aa.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask,
