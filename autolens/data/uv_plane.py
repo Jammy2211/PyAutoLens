@@ -591,11 +591,11 @@ def load_primary_beam(
         If True, the PrimaryBeam is renoralized such that all elements sum to 1.0.
     """
     if renormalize:
-        return PrimaryBeam.from_fits_and_pixel_scale(
+        return PrimaryBeam.from_fits(
             file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scale=pixel_scale
         )
     if not renormalize:
-        return PrimaryBeam.from_fits_and_pixel_scale(
+        return PrimaryBeam.from_fits(
             file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scale=pixel_scale
         )
 

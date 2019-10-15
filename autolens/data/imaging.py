@@ -588,7 +588,7 @@ class SimulatedImagingData(ImagingData):
         """
 
         if psf is None:
-            psf = PSF.from_no_blurring_kernel(pixel_scale=pixel_scale)
+            psf = PSF.no_blur(pixel_scales=pixel_scale)
             image_needs_trimming = False
         else:
             image_needs_trimming = True
