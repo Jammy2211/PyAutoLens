@@ -119,7 +119,7 @@ class TestPrimaryBeam(object):
     def test__from_fits__input_primary_beam_3x3__all_attributes_correct_including_data_inheritance(
         self
     ):
-        primary_beam = al.PrimaryBeam.from_fits_and_pixel_scale(
+        primary_beam = al.PrimaryBeam.from_fits(
             file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scale=1.0
         )
 
@@ -127,7 +127,7 @@ class TestPrimaryBeam(object):
         assert primary_beam.geometry.pixel_scale == 1.0
         assert primary_beam.geometry.origin == (0.0, 0.0)
 
-        primary_beam = al.PrimaryBeam.from_fits_and_pixel_scale(
+        primary_beam = al.PrimaryBeam.from_fits(
             file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scale=1.0
         )
 

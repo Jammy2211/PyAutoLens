@@ -1461,13 +1461,13 @@ class TestPSF(object):
     def test__from_fits__input_psf_3x3__all_attributes_correct_including_data_inheritance(
         self
     ):
-        psf = al.PSF.from_fits_and_pixel_scale(
+        psf = al.PSF.from_fits(
             file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scale=1.0
         )
 
         assert (psf.in_2d == np.ones((3, 3))).all()
 
-        psf = al.PSF.from_fits_and_pixel_scale(
+        psf = al.PSF.from_fits(
             file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scale=1.0
         )
 
