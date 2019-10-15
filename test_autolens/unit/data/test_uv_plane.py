@@ -247,7 +247,7 @@ class TestSimulateUVPlaneData(object):
         self, transformer_7x7_7
     ):
 
-        grid = aa.ScaledGrid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(10, 10), pixel_scale=1.0, sub_size=1
         )
 
@@ -303,7 +303,7 @@ class TestSimulateUVPlaneData(object):
 
     def test__from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
 
-        grid = aa.ScaledGrid.from_shape_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
             shape=(20, 20), pixel_scale=0.05, sub_size=1
         )
 

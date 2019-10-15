@@ -17,7 +17,7 @@ class GalaxyData(object):
 
         Parameters
         ----------
-        image : aa.ScaledSubArray
+        image : aa.Array
             An image of the quantity of the galaxy that is being fitted (e.g. its image, convergence, etc.).
         noise_map : aa.Scaled
             The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
@@ -80,7 +80,7 @@ class GalaxyFitData(object):
 
         self.sub_size = mask.sub_size
 
-        self.grid = aa.ScaledSubGrid.from_mask(mask=mask)
+        self.grid = aa.Grid.from_mask(mask=mask)
 
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 

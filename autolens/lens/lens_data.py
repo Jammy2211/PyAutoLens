@@ -24,7 +24,7 @@ class AbstractLensData(object):
 
         ### GRIDS ###
 
-        self.grid = aa.ScaledSubGrid.from_mask(mask=mask)
+        self.grid = aa.Grid.from_mask(mask=mask)
 
         self.pixel_scale_binned_grid = pixel_scale_binned_grid
 

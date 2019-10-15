@@ -169,7 +169,7 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid = aa.ScaledSubGrid.from_shape_2d_pixel_scale_and_sub_size(
+        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
             shape_2d=shape, pixel_scale=pixel_scale, sub_size=1
         )
 
@@ -288,13 +288,13 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = aa.ScaledSubArray.from_single_value_shape_2d_pixel_scales_and_sub_size(
+            exposure_time_map = aa.Array.from_single_value_shape_2d_pixel_scales_and_sub_size(
                 value=exposure_time, shape_2d=image.shape, pixel_scales=pixel_scale
             )
 
         if background_sky_map is None:
 
-            background_sky_map = aa.ScaledSubArray.from_single_value_shape_2d_pixel_scales_and_sub_size(
+            background_sky_map = aa.Array.from_single_value_shape_2d_pixel_scales_and_sub_size(
                 value=background_sky_level, shape_2d=image.shape, pixel_scales=pixel_scale
             )
 
