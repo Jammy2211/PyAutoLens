@@ -34,7 +34,6 @@ from autolens.data.imaging import (
 )
 from autolens.data.uv_plane import (
     UVPlaneData,
-    PrimaryBeam,
     SimulatedUVPlaneData,
     load_uv_plane_data_from_fits,
     output_uv_plane_data_to_fits,

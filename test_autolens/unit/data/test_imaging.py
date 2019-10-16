@@ -614,7 +614,7 @@ class TestImagingData:
                 psf=aa.kernel.zeros(shape_2d=(3,3)),
             )
 
-            imaging_data = imaging_data.resized_psf_data_from_new_shape(
+            imaging_data = imaging_data.resized_psf_from_new_shape(
                 new_shape=(1, 1)
             )
 
@@ -651,7 +651,7 @@ class TestImagingData:
             modified_image = aa.array.ones(shape_2d=(4,4))
             modified_image[2, 2] = 10.0
 
-            imaging_data = imaging_data.modified_image_data_from_image(
+            imaging_data = imaging_data.modified_image_from_image(
                 image=modified_image
             )
 
