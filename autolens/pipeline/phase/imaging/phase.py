@@ -34,7 +34,6 @@ class PhaseImaging(data.PhaseData):
             mask_function=None,
             inner_mask_radii=None,
             pixel_scale_interpolation_grid=None,
-            pixel_scale_binned_cluster_grid=None,
             inversion_uses_border=True,
             inversion_pixel_limit=None,
             auto_link_priors=False,
@@ -51,9 +50,6 @@ class PhaseImaging(data.PhaseData):
             The class of a non_linear optimizer
         sub_size: int
             The side length of the subgrid
-        pixel_scale_binned_cluster_grid : float or None
-            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned \
-            up to this higher pixel scale to speed up the KMeans clustering algorithm.
         """
 
         phase_tag = phase_tagging.phase_tag_from_phase_settings(
@@ -64,7 +60,6 @@ class PhaseImaging(data.PhaseData):
             positions_threshold=positions_threshold,
             inner_mask_radii=inner_mask_radii,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-            pixel_scale_binned_cluster_grid=pixel_scale_binned_cluster_grid,
         )
 
         super().__init__(
@@ -96,7 +91,6 @@ class PhaseImaging(data.PhaseData):
             mask_function=mask_function,
             inner_mask_radii=inner_mask_radii,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-            pixel_scale_binned_cluster_grid=pixel_scale_binned_cluster_grid,
             inversion_uses_border=inversion_uses_border,
             inversion_pixel_limit=inversion_pixel_limit,
         )

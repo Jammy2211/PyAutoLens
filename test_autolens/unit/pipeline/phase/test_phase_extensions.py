@@ -310,7 +310,6 @@ class TestImagePassing(object):
             ),
             mask_function=mask_function_7x7,
             inversion_pixel_limit=5,
-            pixel_scale_binned_cluster_grid=None,
             optimizer_class=mock_pipeline.MockNLO,
         )
 
@@ -337,7 +336,6 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            pixel_scale_binned_cluster_grid=imaging_data_7x7.pixel_scales,
             phase_name="test_phase",
         )
 
@@ -372,7 +370,6 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            pixel_scale_binned_cluster_grid=imaging_data_7x7.pixel_scales * 2.0,
             phase_name="test_phase",
         )
 
@@ -416,7 +413,6 @@ class TestImagePassing(object):
             inversion_pixel_limit=1,
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
-            pixel_scale_binned_cluster_grid=imaging_data_7x7.pixel_scales * 2.0,
             phase_name="test_phase",
         )
 
