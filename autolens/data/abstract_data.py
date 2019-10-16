@@ -36,6 +36,14 @@ class AbstractData(object):
         self.exposure_time_map = exposure_time_map
 
     @property
+    def pixel_scales(self):
+        return self.data.pixel_scales
+
+    @property
+    def pixel_scale(self):
+        return self.data.pixel_scale
+
+    @property
     def mapping(self):
         return self.data.mask.mapping
 
@@ -241,13 +249,13 @@ def load_exposure_time_map(
 
         if exposure_time is not None and exposure_time_map_path is None:
             return ExposureTimeMap.full(
-                fill_value=exposure_time, pixel_scales=(pixel_scales, pixel_scales), shape=shape
+                fill_value=exposure_time, pixel_scales=pixel_scales, shape_2d=shape
             )
         elif exposure_time is None and exposure_time_map_path is not None:
             return ExposureTimeMap.from_fits(
                 file_path=exposure_time_map_path,
                 hdu=exposure_time_map_hdu,
-                pixel_scales=(pixel_scales, pixel_scales),
+                pixel_scales=pixel_scales,
             )
 
     else:

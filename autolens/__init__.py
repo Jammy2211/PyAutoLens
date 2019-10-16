@@ -23,7 +23,6 @@ from autolens.data.abstract_data import (
 )
 from autolens.data.imaging import (
     ImagingData,
-    PSF,
     NoiseMap,
     PoissonNoiseMap,
     SimulatedImagingData,
