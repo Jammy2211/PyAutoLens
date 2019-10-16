@@ -14,13 +14,13 @@ output_path = test_path + "output/"
 
 def galaxy_fit_phase():
 
-    pixel_scale = 0.1
+    pixel_scales = 0.1
     image_shape = (150, 150)
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-        shape_2d=image_shape, pixel_scale=pixel_scale, sub_size=4
+    grid = aa.grid.uniform(
+        shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4
     )
 
     galaxy = al.Galaxy(
@@ -33,10 +33,10 @@ def galaxy_fit_phase():
     potential = galaxy.convergence_from_grid(galaxies=[galaxy], grid=grid)
 
     noise_map = aa.Scaled(
-        sub_array_1d=np.ones(potential.shape), pixel_scales=pixel_scale
+        sub_array_1d=np.ones(potential.shape), pixel_scales=pixel_scales
     )
 
-    data = al.GalaxyData(image=potential, noise_map=noise_map, pixel_scale=pixel_scale)
+    data = al.GalaxyData(image=potential, noise_map=noise_map, pixel_scales=pixel_scales)
 
     phase1 = al.PhaseGalaxy(
         phase_name=test_name + "/",

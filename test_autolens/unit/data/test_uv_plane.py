@@ -19,8 +19,8 @@ class TestNewUVPlaneDataFrom(object):
         uv_plane_data = al.UVPlaneData(
             shape=(2, 2),
             visibilities=np.array([[1, 1]]),
-            pixel_scale=1.0,
-            primary_beam=al.PrimaryBeam.from_2d_and_pixel_scale(array_2d=np.zeros((5, 5)), pixel_scale=1.0),
+            pixel_scales=1.0,
+            primary_beam=al.PrimaryBeam.from_2d_and_pixel_scale(array_2d=np.zeros((5, 5)), pixel_scales=1.0),
             noise_map=1,
             exposure_time_map=1,
             uv_wavelengths=1,
@@ -37,8 +37,8 @@ class TestNewUVPlaneDataFrom(object):
         uv_plane_data = al.UVPlaneData(
             shape=(2, 2),
             visibilities=np.array([[1, 1]]),
-            pixel_scale=1.0,
-            primary_beam=al.PrimaryBeam.from_2d_and_pixel_scale(array_2d=np.zeros((5, 5)), pixel_scale=1.0),
+            pixel_scales=1.0,
+            primary_beam=al.PrimaryBeam.from_2d_and_pixel_scale(array_2d=np.zeros((5, 5)), pixel_scales=1.0),
             noise_map=1,
             exposure_time_map=2,
             uv_wavelengths=3,
@@ -50,7 +50,7 @@ class TestNewUVPlaneDataFrom(object):
 
         assert (uv_plane_data.visibilities == np.array([[2, 2]])).all()
         assert uv_plane_data.shape == (2, 2)
-        assert uv_plane_data.pixel_scale == 1.0
+        assert uv_plane_data.pixel_scales == (1.0, 1.0)
         assert (uv_plane_data.primary_beam == np.zeros((1, 1))).all()
         assert uv_plane_data.noise_map == 1
         assert uv_plane_data.exposure_time_map == 2
@@ -61,7 +61,7 @@ class TestNewUVPlaneDataFrom(object):
         uv_plane_data = al.UVPlaneData(
             shape=(2, 2),
             visibilities=np.ones((3, 2)),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             noise_map=2.0 * np.ones((3,)),
             exposure_time_map=0.5 * np.ones((3,)),
             primary_beam=1,
@@ -78,7 +78,7 @@ class TestNewUVPlaneDataFrom(object):
         uv_plane_data = al.UVPlaneData(
             shape=(2, 2),
             visibilities=np.ones((3, 2)),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             noise_map=2.0 * np.ones((3,)),
             exposure_time_map=0.5 * np.ones((3)),
             primary_beam=1,
@@ -97,42 +97,42 @@ class TestPrimaryBeam(object):
         self
     ):
         primary_beam = al.PrimaryBeam.from_2d_and_pixel_scale(
-            array_2d=np.ones((3, 3)), pixel_scale=1.0, renormalize=False
+            array_2d=np.ones((3, 3)), pixel_scales=1.0, renormalize=False
         )
 
         assert isinstance(primary_beam, aa.Kernel)
         assert type(primary_beam) == al.PrimaryBeam
         assert primary_beam.in_2d.shape == (3, 3)
         assert (primary_beam.in_2d == np.ones((3, 3))).all()
-        assert primary_beam.geometry.pixel_scale == 1.0
+        assert primary_beam.geometry.pixel_scales == (1.0, 1.0)
         assert primary_beam.geometry.origin == (0.0, 0.0)
 
         primary_beam = al.PrimaryBeam.from_2d_and_pixel_scale(
-            array_2d=np.ones((4, 3)), pixel_scale=1.0, renormalize=False
+            array_2d=np.ones((4, 3)), pixel_scales=1.0, renormalize=False
         )
 
         assert primary_beam.in_2d.shape == (4, 3)
         assert (primary_beam.in_2d == np.ones((4, 3))).all()
-        assert primary_beam.geometry.pixel_scale == 1.0
+        assert primary_beam.geometry.pixel_scales == (1.0, 1.0)
         assert primary_beam.geometry.origin == (0.0, 0.0)
 
     def test__from_fits__input_primary_beam_3x3__all_attributes_correct_including_data_inheritance(
         self
     ):
         primary_beam = al.PrimaryBeam.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scale=1.0
+            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
         )
 
         assert (primary_beam.in_2d == np.ones((3, 3))).all()
-        assert primary_beam.geometry.pixel_scale == 1.0
+        assert primary_beam.geometry.pixel_scales == (1.0, 1.0)
         assert primary_beam.geometry.origin == (0.0, 0.0)
 
         primary_beam = al.PrimaryBeam.from_fits(
-            file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scale=1.0
+            file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scales=1.0
         )
 
         assert (primary_beam .in_2d== np.ones((4, 3))).all()
-        assert primary_beam.geometry.pixel_scale == 1.0
+        assert primary_beam.geometry.pixel_scales == (1.0, 1.0)
         assert primary_beam.geometry.origin == (0.0, 0.0)
 
 
@@ -148,7 +148,7 @@ class TestSimulateUVPlaneData(object):
             image=image,
             exposure_time=1.0,
             exposure_time_map=exposure_time_map,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             transformer=transformer_7x7_7,
             noise_sigma=None,
         )
@@ -161,7 +161,7 @@ class TestSimulateUVPlaneData(object):
         assert uv_plane_data_simulated.visibilities == pytest.approx(
             simulated_visibilities, 1.0e-4
         )
-        assert uv_plane_data_simulated.pixel_scale == 0.1
+        assert uv_plane_data_simulated.pixel_scales == (0.1, 0.1)
 
     def test__setup_with_background_sky_on__noise_off__no_noise_in_image__noise_map_is_noise_value(
         self, transformer_7x7_7
@@ -178,7 +178,7 @@ class TestSimulateUVPlaneData(object):
 
         uv_plane_data_simulated = al.SimulatedUVPlaneData.from_image_and_exposure_arrays(
             image=image,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=1.0,
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
@@ -199,7 +199,7 @@ class TestSimulateUVPlaneData(object):
         assert (
             uv_plane_data_simulated.exposure_time_map == 1.0 * np.ones((3, 3))
         ).all()
-        assert uv_plane_data_simulated.pixel_scale == 0.1
+        assert uv_plane_data_simulated.pixel_scales == (0.1, 0.1)
 
         assert uv_plane_data_simulated.noise_map == 0.2 * np.ones((7, 2))
 
@@ -212,7 +212,7 @@ class TestSimulateUVPlaneData(object):
 
         uv_plane_data_simulated = al.SimulatedUVPlaneData.from_image_and_exposure_arrays(
             image=image,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=20.0,
             exposure_time_map=exposure_time_map,
             transformer=transformer_7x7_7,
@@ -228,7 +228,7 @@ class TestSimulateUVPlaneData(object):
         assert (
             uv_plane_data_simulated.exposure_time_map == 20.0 * np.ones((3, 3))
         ).all()
-        assert uv_plane_data_simulated.pixel_scale == 0.1
+        assert uv_plane_data_simulated.pixel_scales == (0.1, 0.1)
 
         assert uv_plane_data_simulated.visibilities[0, :] == pytest.approx(
             [1.728611, -2.582958], 1.0e-4
@@ -248,7 +248,7 @@ class TestSimulateUVPlaneData(object):
     ):
 
         grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(10, 10), pixel_scale=1.0, sub_size=1
+            shape=(10, 10), pixel_scales=1.0, sub_size=1
         )
 
         g0 = al.Galaxy(
@@ -266,7 +266,7 @@ class TestSimulateUVPlaneData(object):
 
         uv_plane_data_simulated_via_deflections = al.SimulatedUVPlaneData.from_deflections_galaxies_and_exposure_arrays(
             deflections=deflections,
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             galaxies=[g1],
             exposure_time=10000.0,
             background_sky_level=100.0,
@@ -279,7 +279,7 @@ class TestSimulateUVPlaneData(object):
 
         uv_plane_data_simulated = al.SimulatedUVPlaneData.from_image_and_exposure_arrays(
             image=tracer_profile_image,
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             exposure_time=10000.0,
             background_sky_level=100.0,
             transformer=transformer_7x7_7,
@@ -304,7 +304,7 @@ class TestSimulateUVPlaneData(object):
     def test__from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
 
         grid = aa.Grid.from_shape_pixel_scale_and_sub_size(
-            shape=(20, 20), pixel_scale=0.05, sub_size=1
+            shape=(20, 20), pixel_scales=0.05, sub_size=1
         )
 
         lens_galaxy = al.Galaxy(
@@ -322,7 +322,7 @@ class TestSimulateUVPlaneData(object):
         uv_plane_data_simulated_via_tracer = al.SimulatedUVPlaneData.from_tracer_grid_and_exposure_arrays(
             tracer=tracer,
             grid=grid,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=10000.0,
             background_sky_level=100.0,
             transformer=transformer_7x7_7,
@@ -332,7 +332,7 @@ class TestSimulateUVPlaneData(object):
 
         uv_plane_data_simulated = al.SimulatedUVPlaneData.from_image_and_exposure_arrays(
             image=tracer.profile_image_from_grid(grid=grid),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=10000.0,
             background_sky_level=100.0,
             transformer=transformer_7x7_7,
@@ -384,7 +384,7 @@ class TestUVPlaneFromFits(object):
 
         uv_plane_data = al.load_uv_plane_data_from_fits(
             shape=(7, 7),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
             noise_map_path=test_data_dir + "3_threes.fits",
@@ -401,13 +401,13 @@ class TestUVPlaneFromFits(object):
         assert (uv_plane_data.uv_wavelengths[:, 1] == 5.0 * np.ones(3)).all()
         assert (uv_plane_data.primary_beam == 5.0 * np.ones((3, 3))).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)
 
     def test__optional_array_paths_included__loads_optional_array(self):
 
         uv_plane_data = al.load_uv_plane_data_from_fits(
             shape=(7, 7),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
             exposure_time_map_path=test_data_dir + "3_sixes.fits",
@@ -420,13 +420,13 @@ class TestUVPlaneFromFits(object):
         assert (uv_plane_data.primary_beam == 5.0 * np.ones((3, 3))).all()
         assert (uv_plane_data.exposure_time_map == 6.0 * np.ones((3,))).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)
 
     def test__all_files_in_one_fits__load_using_different_hdus(self):
 
         uv_plane_data = al.load_uv_plane_data_from_fits(
             shape=(7, 7),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3_multiple_hdu.fits",
             noise_map_hdu=2,
             primary_beam_path=test_data_dir + "3x3_multiple_hdu.fits",
@@ -452,7 +452,7 @@ class TestUVPlaneFromFits(object):
         assert (uv_plane_data.uv_wavelengths[:, 0] == 4.0 * np.ones(3)).all()
         assert (uv_plane_data.uv_wavelengths[:, 1] == 5.0 * np.ones(3)).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)
 
     def test__exposure_time_included__creates_exposure_time_map_using_exposure_time(
         self
@@ -464,7 +464,7 @@ class TestUVPlaneFromFits(object):
             primary_beam_path=test_data_dir + "3x3_ones.fits",
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time_map_from_single_value=3.0,
         )
 
@@ -474,7 +474,7 @@ class TestUVPlaneFromFits(object):
 
         uv_plane_data = al.load_uv_plane_data_from_fits(
             shape=(7, 7),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
             exposure_time_map_path=test_data_dir + "3_sixes.fits",
@@ -500,13 +500,13 @@ class TestUVPlaneFromFits(object):
 
         assert (uv_plane_data.primary_beam == primary_beam_padded_array).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)
 
     def test__trim_shape_of_primary_beam(self):
 
         uv_plane_data = al.load_uv_plane_data_from_fits(
             shape=(7, 7),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
             exposure_time_map_path=test_data_dir + "3_sixes.fits",
@@ -520,13 +520,13 @@ class TestUVPlaneFromFits(object):
 
         assert (uv_plane_data.primary_beam == 5.0 * trimmed_array).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)
 
     def test__primary_beam_renormalized_false__does_not_renormalize_primary_beam(self):
 
         uv_plane_data = al.load_uv_plane_data_from_fits(
             shape=(7, 7),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
             exposure_time_map_path=test_data_dir + "3_sixes.fits",
@@ -539,13 +539,13 @@ class TestUVPlaneFromFits(object):
         assert (uv_plane_data.noise_map == 3.0 * np.ones((3,))).all()
         assert (uv_plane_data.exposure_time_map == 6.0 * np.ones((3,))).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)
 
     def test__primary_beam_renormalized_true__renormalized_primary_beam(self):
 
         uv_plane_data = al.load_uv_plane_data_from_fits(
             shape=(7, 7),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
             exposure_time_map_path=test_data_dir + "3_sixes.fits",
@@ -560,7 +560,7 @@ class TestUVPlaneFromFits(object):
         assert (uv_plane_data.noise_map == 3.0 * np.ones((3,))).all()
         assert (uv_plane_data.exposure_time_map == 6.0 * np.ones((3,))).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)
 
     def test__convert_visibilities_from_electrons_using_exposure_time(self):
 
@@ -568,7 +568,7 @@ class TestUVPlaneFromFits(object):
             shape=(2, 2),
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
             exposure_time_map_path=test_data_dir + "3_sixes.fits",
@@ -581,7 +581,7 @@ class TestUVPlaneFromFits(object):
         assert (uv_plane_data.noise_map == 3.0 * np.ones((3,)) / 6.0).all()
         assert (uv_plane_data.exposure_time_map == 6.0 * np.ones((3,))).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)
 
     def test__convert_image_from_adus_using_exposure_time_and_gain(self):
 
@@ -589,7 +589,7 @@ class TestUVPlaneFromFits(object):
             shape=(2, 2),
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3_threes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
             exposure_time_map_path=test_data_dir + "3_sixes.fits",
@@ -604,7 +604,7 @@ class TestUVPlaneFromFits(object):
         assert (uv_plane_data.noise_map == 2.0 * 3.0 * np.ones((3, 3)) / 6.0).all()
         assert (uv_plane_data.exposure_time_map == 6.0 * np.ones((3, 3))).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)
 
     def test__exposure_time_and_exposure_time_map_included__raies_imaging_error(self):
 
@@ -613,7 +613,7 @@ class TestUVPlaneFromFits(object):
                 shape=(7, 7),
                 real_visibilities_path=test_data_dir + "3_ones.fits",
                 imaginary_visibilities_path=test_data_dir + "3_twos.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 exposure_time_map_path=test_data_dir + "3x3_ones.fits",
                 exposure_time_map_from_single_value=1.0,
@@ -623,7 +623,7 @@ class TestUVPlaneFromFits(object):
 
         uv_plane_data = al.load_uv_plane_data_from_fits(
             shape=(7, 7),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             real_visibilities_path=test_data_dir + "3_ones.fits",
             imaginary_visibilities_path=test_data_dir + "3_twos.fits",
             noise_map_path=test_data_dir + "3_threes.fits",
@@ -656,7 +656,7 @@ class TestUVPlaneFromFits(object):
 
         uv_plane_data = al.load_uv_plane_data_from_fits(
             shape=(7, 7),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             real_visibilities_path=output_data_dir + "real_visibilities.fits",
             imaginary_visibilities_path=output_data_dir + "imaginary_visibilities.fits",
             noise_map_path=output_data_dir + "noise_map.fits",
@@ -676,4 +676,4 @@ class TestUVPlaneFromFits(object):
         assert (uv_plane_data.uv_wavelengths[:, 0] == 4.0 * np.ones(3)).all()
         assert (uv_plane_data.uv_wavelengths[:, 1] == 5.0 * np.ones(3)).all()
 
-        assert uv_plane_data.pixel_scale == 0.1
+        assert uv_plane_data.pixel_scales == (0.1, 0.1)

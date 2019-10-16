@@ -15,21 +15,21 @@ def simulate_image_from_galaxies_and_output_to_fits(
     background_sky_level=1.0,
 ):
 
-    pixel_scale = simulation_util.pixel_scale_from_data_resolution(
+    pixel_scales = simulation_util.pixel_scale_from_data_resolution(
         data_resolution=data_resolution
     )
     shape = simulation_util.shape_from_data_resolution(data_resolution=data_resolution)
 
     # Simulate a simple Gaussian PSF for the image.
     psf = al.PSF.from_gaussian(
-        shape=psf_shape, sigma=pixel_scale, pixel_scale=pixel_scale
+        shape=psf_shape, sigma=pixel_scales, pixel_scales=pixel_scales
     )
 
     # Setup the image-plane al.ogrid of the Imaging array which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
-    image_plane_grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-        shape_2d=shape, pixel_scale=pixel_scale, sub_size=sub_size
+    image_plane_grid = aa.grid.uniform(
+        shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size
     )
 
     # Use the input galaxies to setup a tracer, which will generate the image for the simulated Imaging data_type.
@@ -39,7 +39,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
     imaging_data = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         psf=psf,
         exposure_time=exposure_time,
         background_sky_level=background_sky_level,

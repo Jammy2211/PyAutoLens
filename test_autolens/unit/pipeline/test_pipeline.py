@@ -172,15 +172,15 @@ class DummyPhasePositions(af.AbstractPhase):
         super().__init__(phase_name)
         self.positions = None
         self.results = None
-        self.pixel_scale = None
+        self.pixel_scales = None
         self.phase_name = phase_name
         self.phase_tag = ""
         self.phase_path = phase_name
         self.optimizer = Optimizer(phase_name)
 
-    def run(self, positions, pixel_scale, results):
+    def run(self, positions, pixel_scales, results):
         self.positions = positions
-        self.pixel_scale = pixel_scale
+        self.pixel_scales = pixel_scales
         self.results = results
         return af.Result(af.ModelInstance(), 1)
 

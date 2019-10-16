@@ -10,7 +10,7 @@ imaging_data = simulation_util.load_test_imaging_data(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 mask = aa.Mask.circular(
-    shape=imaging_data.shape, pixel_scales=imaging_data.pixel_scale, radius_arcsec=3.0
+    shape=imaging_data.shape, pixel_scales=imaging_data.pixel_scales, radius_arcsec=3.0
 )
 
 # The lines of code below do everything we're used to, that is, setup an image and its al.ogrid, mask it, trace it

@@ -31,9 +31,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class MMPhase2(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens.light.mask_centre = results.from_phase(
+            self.galaxies.lens.light.centre = results.from_phase(
                 "phase_1"
-            ).constant.galaxies.lens.light.mask_centre
+            ).constant.galaxies.lens.light.centre
 
     phase2 = MMPhase2(
         phase_name="phase_2",

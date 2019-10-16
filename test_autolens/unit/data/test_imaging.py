@@ -20,27 +20,27 @@ class TestImagingData:
     class TestConstructor:
         def test__setup_image__correct_attributes(self):
 
-            image = aa.Array.from_array_2d(
-                array_2d=[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]],
+            image = aa.array.manual_2d(
+                array=[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]],
             )
-            psf = al.PSF.from_2d_and_pixel_scale(array_2d=3.0 * np.ones((3, 3)), pixel_scale=1.0)
-            noise_map = aa.Array.from_array_2d(
-                array_2d=5.0 * np.ones((3, 3)),
+            psf = al.PSF.full(fill_value=3.0, shape_2d=(3,3))
+            noise_map = aa.array.manual_2d(
+                array=5.0 * np.ones((3, 3)),
             )
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 noise_map=noise_map,
                 psf=psf,
-                background_noise_map=aa.Array.from_array_2d(
-                    array_2d=7.0 * np.ones((3, 3)),
+                background_noise_map=aa.array.full(fill_value=7.0, 
+                    shape_2d=((3, 3)),
                 ),
-                poisson_noise_map=aa.Array.from_array_2d(
-                    array_2d=9.0 * np.ones((3, 3)),
+                poisson_noise_map=aa.array.full(fill_value=9.0, 
+                    shape_2d=((3, 3)),
                 ),
-                exposure_time_map=aa.Array.from_array_2d(
-                    array_2d=11.0 * np.ones((3, 3)),
+                exposure_time_map=aa.array.full(fill_value=11.0, 
+                    shape_2d=((3, 3)),
                 ),
             )
 
@@ -69,16 +69,14 @@ class TestImagingData:
             # Noise (counts) = sqrt(1.0 + 0.0**2) = 1.0
             # Noise (eps) = 1.0 / 1.0
 
-            image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
-            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
-            background_noise = aa.Array.from_array_2d(
-                array_2d=np.zeros((3, 3))
-            )
+            image = aa.array.ones(shape_2d=(3,3))
+            exposure_time = aa.array.ones(shape_2d=(3,3))
+            background_noise = aa.array.zeros(shape_2d=(3,3))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -97,17 +95,15 @@ class TestImagingData:
             # Noise (counts) = sqrt(4.0 + 0.0**2) = 2.0
             # Noise (eps) = 2.0 / 1.0
 
-            image = aa.Array.from_array_2d(array_2d=4.0 * np.ones((4, 2)))
+            image = aa.array.full(fill_value=4.0, shape_2d=(4, 2))
 
-            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((4, 2)))
-            background_noise = aa.Array.from_array_2d(
-                array_2d=np.zeros((4, 2))
-            )
+            exposure_time = aa.array.ones(shape_2d=(4,2))
+            background_noise = aa.array.zeros(shape_2d=(4,2))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -128,20 +124,16 @@ class TestImagingData:
             # Noise (counts) = sqrt(4.0 + 0.0**2) = 2.0
             # Noise (eps) = 2.0 / 4.0 = 0.5
 
-            image = aa.Array.from_array_2d(array_2d=np.ones((1, 5)))
+            image = aa.array.ones(shape_2d=(1,5))
 
-            exposure_time = aa.Array.from_array_2d(
-                array_2d=4.0 * np.ones((1, 5))
-            )
+            exposure_time = aa.array.full(fill_value=4.0, shape_2d=(1,5))
 
-            background_noise = aa.Array.from_array_2d(
-                array_2d=0 * np.ones((1, 5))
-            )
+            background_noise = aa.array.zeros(shape_2d=(1,5))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -153,22 +145,20 @@ class TestImagingData:
         def test__image_and_exposure_times_range_of_values__no_background__noises_estimates_correct(
             self
         ):
-            image = aa.Array.from_array_2d(
-                array_2d=np.array([[5.0, 3.0], [10.0, 20.0]])
+            image = aa.array.manual_2d(
+                array=np.array([[5.0, 3.0], [10.0, 20.0]])
             )
 
-            exposure_time = aa.Array.from_array_2d(
+            exposure_time = aa.array.manual_2d(
                 np.array([[1.0, 2.0], [3.0, 4.0]])
             )
 
-            background_noise = aa.Array.from_array_2d(
-                array_2d=0.0 * np.ones((2, 2))
-            )
+            background_noise = aa.array.zeros(shape_2d=(2,2))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -195,18 +185,16 @@ class TestImagingData:
             # Noise (counts) = sqrt(1.0 + sqrt(3.0)**2) = sqrt(1.0 + 3.0) = 2.0
             # Noise (eps) = 2.0 / 1.0 = 2.0
 
-            image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+            image = aa.array.ones(shape_2d=(3,3))
 
-            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+            exposure_time = aa.array.ones(shape_2d=(3,3))
 
-            background_noise = aa.Array.from_array_2d(
-                array_2d=3.0 ** 0.5 * np.ones((3, 3))
-            )
+            background_noise = aa.array.full(fill_value=3.0 ** 0.5, shape_2d=(3,3))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -227,18 +215,16 @@ class TestImagingData:
             # Noise (counts) = sqrt(1.0 + 5**2)
             # Noise (eps) = sqrt(1.0 + 5**2) / 1.0
 
-            image = aa.Array.from_array_2d(array_2d=np.ones((2, 3)))
+            image = aa.array.ones(shape_2d=(2,3))
 
-            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((2, 3)))
+            exposure_time = aa.array.ones(shape_2d=(2,3))
 
-            background_noise = aa.Array.from_array_2d(
-                array_2d=5 * np.ones((2, 3))
-            )
+            background_noise = aa.array.ones(shape_2d=(2,3))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -265,19 +251,15 @@ class TestImagingData:
             # Noise (counts) = sqrt(2.0 + 10**2) = sqrt(2.0 + 100.0)
             # Noise (eps) = sqrt(2.0 + 100.0) / 2.0
 
-            image = aa.Array.from_array_2d(array_2d=np.ones((2, 3)))
+            image = aa.array.ones(shape_2d=(2,3))
 
-            exposure_time = aa.Array.from_array_2d(
-                array_2d=2.0 * np.ones((2, 3))
-            )
-            background_noise = aa.Array.from_array_2d(
-                array_2d=5.0 * np.ones((2, 3))
-            )
+            exposure_time = aa.array.full(fill_value=2.0, shape_2d=(2,3))
+            background_noise = aa.array.full(fill_value=5.0, shape_2d=(2,3))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -305,19 +287,17 @@ class TestImagingData:
         ):
             # Can use pattern from previous test_autoarray for values
 
-            image = aa.Array.from_array_2d(
-                array_2d=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+            image = aa.array.manual_2d(
+                array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
             )
 
-            exposure_time = aa.Array.from_array_2d(array_2d=np.ones((3, 2)))
-            background_noise = aa.Array.from_array_2d(
-                array_2d=12.0 * np.ones((3, 2))
-            )
+            exposure_time = aa.array.ones(shape_2d=(3,2))
+            background_noise = aa.array.full(fill_value=12.0, shape_2d=(3,2))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -339,21 +319,21 @@ class TestImagingData:
             # Use same pattern as above, noting that here our background values are now being converts to counts using
             # different exposure time and then being squared.
 
-            image = aa.Array.from_array_2d(
-                array_2d=[[5.0, 3.0], [10.0, 20.0]]
+            image = aa.array.manual_2d(
+                array=[[5.0, 3.0], [10.0, 20.0]]
             )
 
-            exposure_time = aa.Array.from_array_2d(
-                array_2d=[[1.0, 2.0], [3.0, 4.0]]
+            exposure_time = aa.array.manual_2d(
+                array=[[1.0, 2.0], [3.0, 4.0]]
             )
-            background_noise = aa.Array.from_array_2d(
-                array_2d=9.0 * np.ones((2, 2))
+            background_noise = aa.array.full(fill_value=9.0, 
+                    shape_2d=((2, 2))
             )
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -376,22 +356,22 @@ class TestImagingData:
         ):
             # Use same pattern as above, noting that we are now also using a variable background signal_to_noise_ratio map.
 
-            image = aa.Array.from_array_2d(
-                array_2d=[[5.0, 3.0], [10.0, 20.0]]
+            image = aa.array.manual_2d(
+                array=[[5.0, 3.0], [10.0, 20.0]]
             )
 
-            exposure_time = aa.Array.from_array_2d(
-                array_2d=[[1.0, 2.0], [3.0, 4.0]]
+            exposure_time = aa.array.manual_2d(
+                array=[[1.0, 2.0], [3.0, 4.0]]
             )
 
-            background_noise = aa.Array.from_array_2d(
-                array_2d=[[5.0, 6.0], [7.0, 8.0]]
+            background_noise = aa.array.manual_2d(
+                array=[[5.0, 6.0], [7.0, 8.0]]
             )
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=al.PSF.ones(shape_2d=(3,3)),
                 exposure_time_map=exposure_time,
                 background_noise_map=background_noise,
             )
@@ -412,10 +392,10 @@ class TestImagingData:
     class TestEstimateDataGrid(object):
         def test__via_edges__input_all_ones__sky_bg_level_1(self):
             imaging_data = al.ImagingData(
-                image=aa.Array.from_array_2d(np.ones((3, 3))),
+                image=aa.array.manual_2d(np.ones((3, 3))),
                 noise_map=np.ones((3, 3)),
-                psf=np.ones((3, 3)),
-                pixel_scale=0.1,
+                psf=aa.kernel.ones(shape_2d=(3,3)),
+                pixel_scales=0.1,
             )
 
             sky_noise = imaging_data.background_noise_from_edges(no_edges=1)
@@ -425,41 +405,41 @@ class TestImagingData:
         def test__via_edges__3x3_image_simple_gaussian__answer_ignores_central_pixel(
             self
         ):
-            image = aa.Array.from_array_2d([[1, 1, 1], [1, 100, 1], [1, 1, 1]])
+            image = aa.array.manual_2d([[1, 1, 1], [1, 100, 1], [1, 1, 1]])
 
             imaging_data = al.ImagingData(
                 image=image,
                 noise_map=np.ones((3, 3)),
-                psf=np.ones((3, 3)),
-                pixel_scale=0.1,
+                psf=aa.kernel.ones(shape_2d=(3,3)),
+                pixel_scales=0.1,
             )
             sky_noise = imaging_data.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
 
         def test__via_edges__4x3_image_simple_gaussian__ignores_central_pixels(self):
-            image = aa.Array.from_array_2d([[1, 1, 1], [1, 100, 1], [1, 100, 1], [1, 1, 1]])
+            image = aa.array.manual_2d([[1, 1, 1], [1, 100, 1], [1, 100, 1], [1, 1, 1]])
 
             imaging_data = al.ImagingData(
                 image=image,
                 noise_map=np.ones((3, 3)),
-                psf=np.ones((3, 3)),
-                pixel_scale=0.1,
+                psf=aa.kernel.ones(shape_2d=(3,3)),
+                pixel_scales=0.1,
             )
             sky_noise = imaging_data.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
 
         def test__via_edges__4x4_image_simple_gaussian__ignores_central_pixels(self):
-            image = aa.Array.from_array_2d(
+            image = aa.array.manual_2d(
                 [[1, 1, 1, 1], [1, 100, 100, 1], [1, 100, 100, 1], [1, 1, 1, 1]]
             )
 
             imaging_data = al.ImagingData(
                 image=image,
                 noise_map=np.ones((3, 3)),
-                psf=np.ones((3, 3)),
-                pixel_scale=0.1,
+                psf=aa.kernel.ones(shape_2d=(3,3)),
+                pixel_scales=0.1,
             )
             sky_noise = imaging_data.background_noise_from_edges(no_edges=1)
 
@@ -468,7 +448,7 @@ class TestImagingData:
         def test__via_edges__5x5_image_simple_gaussian_two_edges__ignores_central_pixel(
             self
         ):
-            image = aa.Array.from_array_2d(
+            image = aa.array.manual_2d(
                 [
                     [1, 1, 1, 1, 1],
                     [1, 1, 1, 1, 1],
@@ -481,15 +461,15 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=image,
                 noise_map=np.ones((3, 3)),
-                psf=np.ones((3, 3)),
-                pixel_scale=0.1,
+                psf=aa.kernel.ones(shape_2d=(3,3)),
+                pixel_scales=0.1,
             )
             sky_noise = imaging_data.background_noise_from_edges(no_edges=2)
 
             assert sky_noise == 0.0
 
         def test__via_edges__6x5_image_two_edges__values(self):
-            image = aa.Array.from_array_2d(
+            image = aa.array.manual_2d(
                 [
                     [0, 1, 2, 3, 4],
                     [5, 6, 7, 8, 9],
@@ -503,15 +483,15 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=image,
                 noise_map=np.ones((3, 3)),
-                psf=np.ones((3, 3)),
-                pixel_scale=0.1,
+                psf=aa.kernel.ones(shape_2d=(3,3)),
+                pixel_scales=0.1,
             )
             sky_noise = imaging_data.background_noise_from_edges(no_edges=2)
 
             assert sky_noise == np.std(np.arange(28))
 
         def test__via_edges__7x7_image_three_edges__values(self):
-            image = aa.Array.from_array_2d(
+            image = aa.array.manual_2d(
                 [
                     [0, 1, 2, 3, 4, 5, 6],
                     [7, 8, 9, 10, 11, 12, 13],
@@ -526,8 +506,8 @@ class TestImagingData:
             imaging_data = al.ImagingData(
                 image=image,
                 noise_map=np.ones((3, 3)),
-                psf=np.ones((3, 3)),
-                pixel_scale=0.1,
+                psf=aa.kernel.ones(shape_2d=(3,3)),
+                pixel_scales=0.1,
             )
             sky_noise = imaging_data.background_noise_from_edges(no_edges=3)
 
@@ -535,33 +515,25 @@ class TestImagingData:
 
     class TestNewImagingDataResized:
         def test__all_components_resized__psf_is_not(self):
-            image = aa.Array.from_array_2d(array_2d=np.ones((6, 6)))
+            image = aa.array.manual_2d(array=np.ones((6, 6)))
             image[3, 3] = 2.0
 
-            noise_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((6, 6))
-            )
+            noise_map_array = aa.array.ones(shape_2d=(6,6))
             noise_map_array[3, 3] = 3.0
 
-            background_noise_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((6, 6))
-            )
+            background_noise_map_array = aa.array.ones(shape_2d=(6,6))
             background_noise_map_array[3, 3] = 4.0
 
-            exposure_time_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((6, 6))
-            )
+            exposure_time_map_array = aa.array.ones(shape_2d=(6,6))
             exposure_time_map_array[3, 3] = 5.0
 
-            background_sky_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((6, 6))
-            )
+            background_sky_map_array = aa.array.ones(shape_2d=(6,6))
             background_sky_map_array[3, 3] = 6.0
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.zeros((3, 3))),
+                pixel_scales=1.0,
+                psf=aa.kernel.zeros(shape_2d=(3,3)),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 exposure_time_map=exposure_time_map_array,
@@ -630,17 +602,17 @@ class TestImagingData:
 
             assert imaging_data.poisson_noise_map == None
 
-            assert imaging_data.pixel_scale == 1.0
+            assert imaging_data.pixel_scales == (1.0, 1.0)
             assert (imaging_data.psf.in_2d == np.zeros((3, 3))).all()
             assert imaging_data.geometry.origin == (0.0, 0.0)
 
         def test__resize_psf(self):
-            image = aa.Array.from_array_2d(array_2d=np.ones((6, 6)))
+            image = aa.array.manual_2d(array=np.ones((6, 6)))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.zeros((3, 3))),
+                pixel_scales=1.0,
+                psf=aa.kernel.zeros(shape_2d=(3,3)),
             )
 
             imaging_data = imaging_data.resized_psf_data_from_new_shape(
@@ -648,47 +620,37 @@ class TestImagingData:
             )
 
             assert (imaging_data.image.in_2d == np.ones((6, 6))).all()
-            assert imaging_data.pixel_scale == 1.0
+            assert imaging_data.pixel_scales == (1.0, 1.0)
             assert (imaging_data.psf.in_2d == np.zeros((1, 1))).all()
 
     class TestNewImagingModifiedImage:
         def test__imaging_data_returns_with_modified_image(self):
-            image = aa.Array.from_array_2d(array_2d=np.ones((4, 4)))
+            image = aa.array.manual_2d(array=np.ones((4, 4)))
             image[2, 2] = 2.0
 
-            noise_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((4, 4))
-            )
+            noise_map_array = aa.array.ones(shape_2d=(4,4))
             noise_map_array[2, 2] = 3.0
 
-            background_noise_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((4, 4))
-            )
+            background_noise_map_array = aa.array.ones(shape_2d=(4,4))
             background_noise_map_array[2, 2] = 4.0
 
-            exposure_time_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((4, 4))
-            )
+            exposure_time_map_array = aa.array.ones(shape_2d=(4,4))
             exposure_time_map_array[2, 2] = 5.0
 
-            background_sky_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((4, 4))
-            )
+            background_sky_map_array = aa.array.ones(shape_2d=(4,4))
             background_sky_map_array[2, 2] = 6.0
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.zeros((3, 3))),
+                pixel_scales=1.0,
+                psf=aa.kernel.zeros(shape_2d=(3,3)),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 exposure_time_map=exposure_time_map_array,
                 background_sky_map=background_sky_map_array,
             )
 
-            modified_image = aa.Array.from_array_2d(
-                array_2d=np.ones((4, 4))
-            )
+            modified_image = aa.array.ones(shape_2d=(4,4))
             modified_image[2, 2] = 10.0
 
             imaging_data = imaging_data.modified_image_data_from_image(
@@ -753,58 +715,50 @@ class TestImagingData:
 
             assert imaging_data.poisson_noise_map == None
 
-            assert imaging_data.pixel_scale == 1.0
+            assert imaging_data.pixel_scales == (1.0, 1.0)
             assert (imaging_data.psf.in_2d == np.zeros((3, 3))).all()
             assert imaging_data.geometry.origin == (0.0, 0.0)
 
     class TestNewImagingBinnedUp:
         def test__all_components_binned_up_correct(self):
-            image = aa.Array.from_array_2d(array_2d=np.ones((6, 6)))
+            image = aa.array.manual_2d(array=np.ones((6, 6)))
             image[3:5, 3] = 2.0
             binned_image_util = aa.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
-                array_2d=image, bin_up_factor=2
+                array=image, bin_up_factor=2
             )
 
-            noise_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((6, 6))
-            )
+            noise_map_array = aa.array.ones(shape_2d=(6,6))
             noise_map_array[3, 3:5] = 3.0
-            binned_noise_map_util = aa.binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
-                array_2d=noise_map_array, bin_up_factor=2
+            binned_noise_map_util = aa.binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
+                array=noise_map_array, bin_up_factor=2
             )
 
-            background_noise_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((6, 6))
-            )
+            background_noise_map_array = aa.array.ones(shape_2d=(6,6))
             background_noise_map_array[3:5, 3] = 4.0
             binned_background_noise_map_util = aa.binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
-                array_2d=background_noise_map_array, bin_up_factor=2
+                array=background_noise_map_array, bin_up_factor=2
             )
 
-            exposure_time_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((6, 6))
-            )
+            exposure_time_map_array = aa.array.ones(shape_2d=(6,6))
             exposure_time_map_array[3, 3:5] = 5.0
             binned_exposure_time_map_util = aa.binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
-                array_2d=exposure_time_map_array, bin_up_factor=2
+                array=exposure_time_map_array, bin_up_factor=2
             )
 
-            background_sky_map_array = aa.Array.from_array_2d(
-                array_2d=np.ones((6, 6))
-            )
+            background_sky_map_array = aa.array.ones(shape_2d=(6,6))
             background_sky_map_array[3, 3:5] = 6.0
             binned_background_sky_map_util = aa.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
-                array_2d=background_sky_map_array, bin_up_factor=2
+                array=background_sky_map_array, bin_up_factor=2
             )
 
-            psf = al.PSF.from_2d_and_pixel_scale(array_2d=np.ones((3, 5)))
+            psf = aa.kernel.ones(shape_2d=(3,5))
             psf_util = psf.rescaled_with_odd_dimensions_from_rescale_factor(
                 rescale_factor=0.5
             )
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
+                pixel_scales=1.0,
                 psf=psf,
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
@@ -831,15 +785,15 @@ class TestImagingData:
             ).all()
             assert imaging_data.poisson_noise_map == None
 
-            assert imaging_data.pixel_scale == 2.0
-            assert imaging_data.image.pixel_scale == 2.0
-            assert imaging_data.psf.mask.geometry.pixel_scale == pytest.approx(
+            assert imaging_data.pixel_scales == (2.0, 2.0)
+            assert imaging_data.image.pixel_scales == (2.0, 2.0)
+            assert imaging_data.psf.mask.geometry.pixel_scales == pytest.approx(
                 1.66666666666, 1.0e-4
             )
-            assert imaging_data.noise_map.mask.geometry.pixel_scale == 2.0
-            assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 2.0
-            assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 2.0
-            assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 2.0
+            assert imaging_data.noise_map.mask.geometry.pixel_scales == (2.0, 2.0)
+            assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (2.0, 2.0)
+            assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (2.0, 2.0)
+            assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (2.0, 2.0)
 
             assert imaging_data.geometry.origin == (0.0, 0.0)
 
@@ -847,20 +801,20 @@ class TestImagingData:
         def test__signal_to_noise_limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
             self
         ):
-            image = aa.Array.from_array_2d(20.0 * np.ones((2, 2)))
+            image = aa.array.full(fill_value=20.0, shape_2d=(2,2))
             image[1, 1] = 5.0
 
-            noise_map_array = aa.Array.from_array_2d(5.0 * np.ones((2, 2)))
+            noise_map_array = aa.array.full(fill_value=5.0, shape_2d=(2,2))
             noise_map_array[1, 1] = 2.0
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.zeros((3, 3))),
+                pixel_scales=1.0,
+                psf=aa.kernel.zeros(shape_2d=(3,3)),
                 noise_map=noise_map_array,
-                background_noise_map=1.0 * np.ones((2, 2)),
-                exposure_time_map=2.0 * np.ones((2, 2)),
-                background_sky_map=3.0 * np.ones((2, 2)),
+                background_noise_map=aa.array.full(fill_value=1.0, shape_2d=(2,2)),
+                exposure_time_map=aa.array.full(fill_value=2.0, shape_2d=(2,2)),
+                background_sky_map=aa.array.full(fill_value=3.0, shape_2d=(2,2)),
             )
 
             imaging_data = imaging_data.signal_to_noise_limited_data_from_signal_to_noise_limit(
@@ -878,7 +832,7 @@ class TestImagingData:
                 == np.array([[4.0, 4.0], [4.0, 2.5]])
             ).all()
 
-            assert imaging_data.pixel_scale == 1.0
+            assert imaging_data.pixel_scales == (1.0, 1.0)
             assert (imaging_data.psf.in_2d == np.zeros((3, 3))).all()
             assert (imaging_data.background_noise_map.in_2d == np.ones((2, 2))).all()
             assert (imaging_data.exposure_time_map.in_2d == 2.0 * np.ones((2, 2))).all()
@@ -887,20 +841,20 @@ class TestImagingData:
         def test__signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
             self
         ):
-            image = aa.Array.from_array_2d(20.0 * np.ones((2, 2)))
+            image = aa.array.full(fill_value=20.0, shape_2d=(2,2))
             image[1, 1] = 5.0
 
-            noise_map_array = aa.Array.from_array_2d(5.0 * np.ones((2, 2)))
+            noise_map_array = aa.array.full(fill_value=5.0, shape_2d=(2,2))
             noise_map_array[1, 1] = 2.0
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.zeros((3, 3))),
+                pixel_scales=1.0,
+                psf=aa.kernel.zeros(shape_2d=(3,3)),
                 noise_map=noise_map_array,
-                background_noise_map=1.0 * np.ones((2, 2)),
-                exposure_time_map=2.0 * np.ones((2, 2)),
-                background_sky_map=3.0 * np.ones((2, 2)),
+                background_noise_map=aa.array.full(fill_value=1.0, shape_2d=(2,2)),
+                exposure_time_map=aa.array.full(fill_value=2.0, shape_2d=(2,2)),
+                background_sky_map=aa.array.full(fill_value=3.0, shape_2d=(2,2)),
             )
 
             imaging_data_capped = imaging_data.signal_to_noise_limited_data_from_signal_to_noise_limit(
@@ -921,7 +875,7 @@ class TestImagingData:
                 == np.array([[2.0, 2.0], [2.0, 2.0]])
             ).all()
 
-            assert imaging_data_capped.pixel_scale == 1.0
+            assert imaging_data_capped.pixel_scales == (1.0, 1.0)
             assert (imaging_data_capped.psf.in_2d == np.zeros((3, 3))).all()
             assert (
                 imaging_data_capped.background_noise_map.in_2d == np.ones((2, 2))
@@ -951,7 +905,7 @@ class TestImagingData:
                 == np.array([[3.0, 3.0], [3.0, 2.5]])
             ).all()
 
-            assert imaging_data_capped.pixel_scale == 1.0
+            assert imaging_data_capped.pixel_scales == (1.0, 1.0)
             assert (imaging_data_capped.psf.in_2d == np.zeros((3, 3))).all()
             assert (
                 imaging_data_capped.background_noise_map.in_2d == np.ones((2, 2))
@@ -965,18 +919,16 @@ class TestImagingData:
 
     class TestImageConvertedFrom:
         def test__counts__all_arrays_in_units_of_flux_are_converted(self):
-            image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
-            noise_map_array = aa.Array.from_array_2d(2.0 * np.ones((3, 3)))
-            background_noise_map_array = aa.Array.from_array_2d(
-                3.0 * np.ones((3, 3))
-            )
-            exposure_time_map_array = aa.Array.from_array_2d(0.5 * np.ones((3, 3)))
-            background_sky_map_array = aa.Array.from_array_2d(6.0 * np.ones((3, 3)))
+            image = aa.array.ones(shape_2d=(3,3))
+            noise_map_array = aa.array.full(fill_value=2.0, shape_2d=(3,3))
+            background_noise_map_array = aa.array.full(fill_value=3.0, shape_2d=(3,3))
+            exposure_time_map_array = aa.array.full(fill_value=0.5, shape_2d=(3, 3))
+            background_sky_map_array = aa.array.full(fill_value=6.0, shape_2d=(3, 3))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.zeros((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=aa.kernel.zeros(shape_2d=(3,3)),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 poisson_noise_map=None,
@@ -995,18 +947,16 @@ class TestImagingData:
             assert (imaging_data.background_sky_map.in_2d == 12.0 * np.ones((3, 3))).all()
 
         def test__adus__all_arrays_in_units_of_flux_are_converted(self):
-            image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
-            noise_map_array = aa.Array.from_array_2d(2.0 * np.ones((3, 3)))
-            background_noise_map_array = aa.Array.from_array_2d(
-                3.0 * np.ones((3, 3))
-            )
-            exposure_time_map_array = aa.Array.from_array_2d(0.5 * np.ones((3, 3)))
-            background_sky_map_array = aa.Array.from_array_2d(6.0 * np.ones((3, 3)))
+            image = aa.array.ones(shape_2d=(3,3))
+            noise_map_array = aa.array.full(fill_value=2.0, shape_2d=(3,3))
+            background_noise_map_array = aa.array.full(fill_value=3.0, shape_2d=(3,3))
+            exposure_time_map_array = aa.array.full(fill_value=0.5, shape_2d=(3, 3))
+            background_sky_map_array = aa.array.full(fill_value=6.0, shape_2d=(3, 3))
 
             imaging_data = al.ImagingData(
                 image=image,
-                pixel_scale=1.0,
-                psf=al.PSF.from_2d_and_pixel_scale(array_2d=np.zeros((3, 3)), pixel_scale=1.0),
+                pixel_scales=1.0,
+                psf=aa.kernel.zeros(shape_2d=(3,3)),
                 noise_map=noise_map_array,
                 background_noise_map=background_noise_map_array,
                 poisson_noise_map=None,
@@ -1028,30 +978,30 @@ class TestImagingData:
 
     class TestImageWithPoissonNoiseAdded:
         def test__mock_image_all_1s__poisson_noise_is_added_correct(self):
-            psf = al.PSF.from_2d_and_pixel_scale(
-                array_2d=np.ones((3, 3)), pixel_scale=3.0, renormalize=False
+            psf = al.PSF.manual_2d(
+                array=np.ones((3, 3)), pixel_scales=3.0, renormalize=False
             )
             imaging_data = al.ImagingData(
-                image=aa.Array.from_array_2d(array_2d=np.ones((4, 4))),
-                pixel_scale=3.0,
+                image=aa.array.manual_2d(array=np.ones((4, 4))),
+                pixel_scales=3.0,
                 psf=psf,
-                noise_map=aa.Array.from_array_2d(array_2d=np.ones((4, 4))),
-                exposure_time_map=aa.Array.from_array_2d(
-                    array_2d=3.0 * np.ones((4, 4))
+                noise_map=aa.array.manual_2d(array=np.ones((4, 4))),
+                exposure_time_map=aa.array.manual_2d(
+                    array=3.0 * np.ones((4, 4))
                 ),
-                background_sky_map=aa.Array.from_array_2d(
-                    array_2d=4.0 * np.ones((4, 4))
+                background_sky_map=aa.array.manual_2d(
+                    array=4.0 * np.ones((4, 4))
                 ),
             )
 
-            mock_image = aa.Array.from_array_2d(array_2d=np.ones((4, 4)))
+            mock_image = aa.array.manual_2d(array=np.ones((4, 4)))
             mock_image_with_sky = mock_image + 4.0 * np.ones((16,))
             mock_image_with_sky_and_noise = (
                 mock_image_with_sky
                 + al.generate_poisson_noise(
                     image=mock_image_with_sky,
-                    exposure_time_map=aa.Array.from_array_2d(
-                        array_2d=3.0 * np.ones((4, 4))
+                    exposure_time_map=aa.array.manual_2d(
+                        array=3.0 * np.ones((4, 4))
                     ),
                     seed=1,
                 )
@@ -1073,12 +1023,12 @@ class TestNoiseMap(object):
         def test__image_all_1s__bg_noise_all_1s__exposure_time_all_1s__noise_map_all_sqrt_2s(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.array.ones(shape_2d=(2,2))
+            background_noise_map = aa.array.ones(shape_2d=(2,2))
+            exposure_time_map = aa.array.ones(shape_2d=(2,2))
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 gain=1.0,
@@ -1095,12 +1045,12 @@ class TestNoiseMap(object):
         def test__image_all_2s__bg_noise_all_1s__exposure_time_all_1s__noise_map_all_sqrt_3s(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[2.0, 2.0], [2.0, 2.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.array.full(fill_value=2.0, shape_2d=(2,2))
+            background_noise_map = aa.array.ones(shape_2d=(2,2))
+            exposure_time_map = aa.array.ones(shape_2d=(2,2))
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 gain=1.0,
@@ -1117,12 +1067,12 @@ class TestNoiseMap(object):
         def test__image_all_1s__bg_noise_all_2s__exposure_time_all_1s__noise_map_all_sqrt_5s(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            background_noise_map = aa.Array.from_array_2d([[2.0, 2.0], [2.0, 2.0]])
-            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.array.ones(shape_2d=(2,2))
+            background_noise_map = aa.array.full(fill_value=2.0, shape_2d=(2,2))
+            exposure_time_map = aa.array.ones(shape_2d=(2,2))
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 gain=1.0,
@@ -1139,12 +1089,12 @@ class TestNoiseMap(object):
         def test__image_all_1s__bg_noise_all_1s__exposure_time_all_2s__noise_map_all_sqrt_6s_over_2(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_array_2d([[2.0, 2.0], [2.0, 2.0]])
+            imaging_data = aa.array.ones(shape_2d=(2,2))
+            background_noise_map = aa.array.ones(shape_2d=(2,2))
+            exposure_time_map = aa.array.full(fill_value=2.0, shape_2d=(2,2))
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 gain=1.0,
@@ -1164,12 +1114,12 @@ class TestNoiseMap(object):
         def test__image_all_negative_2s__bg_noise_all_1s__exposure_time_all_1s__noise_map_all_1s(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[-2.0, -2.0], [-2.0, -2.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.array.full(fill_value=-2.0, shape_2d=(2,2))
+            background_noise_map = aa.array.ones(shape_2d=(2,2))
+            exposure_time_map = aa.array.ones(shape_2d=(2,2))
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 gain=1.0,
@@ -1179,12 +1129,12 @@ class TestNoiseMap(object):
             assert (noise_map.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
 
         def test__same_as_above__use_different_values_in_different_array_elemets(self):
-            imaging_data = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 3.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [2.0, 3.0]])
-            exposure_time_map = aa.Array.from_array_2d([[4.0, 3.0], [2.0, 1.0]])
+            imaging_data = aa.array.manual_2d([[1.0, 2.0], [2.0, 3.0]])
+            background_noise_map = aa.array.manual_2d([[1.0, 1.0], [2.0, 3.0]])
+            exposure_time_map = aa.array.manual_2d([[4.0, 3.0], [2.0, 1.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 gain=1.0,
@@ -1204,12 +1154,12 @@ class TestNoiseMap(object):
         def test__convert_from_electrons__image_all_1s__bg_noise_all_1s__exposure_time_all_1s__noise_map_all_sqrt_2s(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.array.ones(shape_2d=(2,2))
+            background_noise_map = aa.array.ones(shape_2d=(2,2))
+            exposure_time_map = aa.array.ones(shape_2d=(2,2))
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 exposure_time_map=exposure_time_map,
@@ -1227,12 +1177,12 @@ class TestNoiseMap(object):
         def test__convert_from_electrons__image_all_negative_2s__bg_noise_all_1s__exposure_time_all_10s__noise_map_all_1s(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[-2.0, -2.0], [-2.0, -2.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_array_2d([[10.0, 10.0], [10.0, 10.0]])
+            imaging_data = aa.array.full(fill_value=-2.0, shape_2d=(2,2))
+            background_noise_map = aa.array.ones(shape_2d=(2,2))
+            exposure_time_map = aa.array.full(fill_value=10.0, shape_2d=(2,2))
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 exposure_time_map=exposure_time_map,
@@ -1245,12 +1195,12 @@ class TestNoiseMap(object):
         def test__convert_from_electrons__same_as_above__use_different_values_in_different_array_elemets(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 3.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [2.0, 3.0]])
-            exposure_time_map = aa.Array.from_array_2d([[10.0, 11.0], [12.0, 13.0]])
+            imaging_data = aa.array.manual_2d([[1.0, 2.0], [2.0, 3.0]])
+            background_noise_map = aa.array.manual_2d([[1.0, 1.0], [2.0, 3.0]])
+            exposure_time_map = aa.array.manual_2d([[10.0, 11.0], [12.0, 13.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 exposure_time_map=exposure_time_map,
@@ -1266,12 +1216,12 @@ class TestNoiseMap(object):
             ).all()
 
         def test__convert_from_adus__same_as_above__gain_is_1__same_values(self):
-            imaging_data = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 3.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [2.0, 3.0]])
-            exposure_time_map = aa.Array.from_array_2d([[10.0, 11.0], [12.0, 13.0]])
+            imaging_data = aa.array.manual_2d([[1.0, 2.0], [2.0, 3.0]])
+            background_noise_map = aa.array.manual_2d([[1.0, 1.0], [2.0, 3.0]])
+            exposure_time_map = aa.array.manual_2d([[10.0, 11.0], [12.0, 13.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 exposure_time_map=exposure_time_map,
@@ -1287,12 +1237,12 @@ class TestNoiseMap(object):
             ).all()
 
         def test__convert_from_adus__same_as_above__gain_is_2__values_change(self):
-            imaging_data = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 3.0]])
-            background_noise_map = aa.Array.from_array_2d([[1.0, 1.0], [2.0, 3.0]])
-            exposure_time_map = aa.Array.from_array_2d([[10.0, 11.0], [12.0, 13.0]])
+            imaging_data = aa.array.manual_2d([[1.0, 2.0], [2.0, 3.0]])
+            background_noise_map = aa.array.manual_2d([[1.0, 1.0], [2.0, 3.0]])
+            exposure_time_map = aa.array.manual_2d([[10.0, 11.0], [12.0, 13.0]])
 
             noise_map = al.NoiseMap.from_image_and_background_noise_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 background_noise_map=background_noise_map,
                 exposure_time_map=exposure_time_map,
@@ -1314,11 +1264,11 @@ class TestNoiseMap(object):
 class TestPoissonNoiseMap(object):
     class TestFromImageAndExposureTimeMap:
         def test__image_all_1s__exposure_time_all_1s__noise_map_all_1s(self):
-            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.array.ones(shape_2d=(2,2))
+            exposure_time_map = aa.array.ones(shape_2d=(2,2))
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 exposure_time_map=exposure_time_map,
                 gain=1.0,
@@ -1329,11 +1279,11 @@ class TestPoissonNoiseMap(object):
         def test__image_all_2s_and_3s__exposure_time_all_1s__noise_map_all_sqrt_2s_and_3s(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 3.0]])
-            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.array.manual_2d([[2.0, 2.0], [3.0, 3.0]])
+            exposure_time_map = aa.array.ones(shape_2d=(2,2))
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 exposure_time_map=exposure_time_map,
                 gain=1.0,
@@ -1349,11 +1299,11 @@ class TestPoissonNoiseMap(object):
         def test__image_all_1s__exposure_time_all__2s_and_3s__noise_map_all_sqrt_2s_and_3s(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 3.0]])
+            imaging_data = aa.array.ones(shape_2d=(2,2))
+            exposure_time_map = aa.array.manual_2d([[2.0, 2.0], [3.0, 3.0]])
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 exposure_time_map=exposure_time_map,
                 gain=1.0,
@@ -1372,11 +1322,11 @@ class TestPoissonNoiseMap(object):
         def test__image_all_1s__exposure_time_all_1s__noise_map_all_1s__gain_is_2__ignores_gain(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
-            exposure_time_map = aa.Array.from_array_2d([[1.0, 1.0], [1.0, 1.0]])
+            imaging_data = aa.array.ones(shape_2d=(2,2))
+            exposure_time_map = aa.array.ones(shape_2d=(2,2))
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 exposure_time_map=exposure_time_map,
                 gain=2.0,
@@ -1392,11 +1342,11 @@ class TestPoissonNoiseMap(object):
         def test__convert_from_electrons_is_true__image_already_in_counts_so_exposure_time_ignored(
             self
         ):
-            imaging_data = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 3.0]])
-            exposure_time_map = aa.Array.from_array_2d([[10.0, 10.0], [10.0, 10.0]])
+            imaging_data = aa.array.manual_2d([[2.0, 2.0], [3.0, 3.0]])
+            exposure_time_map = aa.array.full(fill_value=10.0, shape_2d=(2,2))
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 exposure_time_map=exposure_time_map,
                 gain=4.0,
@@ -1411,11 +1361,11 @@ class TestPoissonNoiseMap(object):
             ).all()
 
         def test__same_as_above__convert_from_adus__includes_gain_multiplication(self):
-            imaging_data = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 3.0]])
-            exposure_time_map = aa.Array.from_array_2d([[10.0, 10.0], [10.0, 10.0]])
+            imaging_data = aa.array.manual_2d([[2.0, 2.0], [3.0, 3.0]])
+            exposure_time_map = aa.array.full(fill_value=10.0, shape_2d=(2,2))
 
             poisson_noise_map = al.PoissonNoiseMap.from_image_and_exposure_time_map(
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 image=imaging_data,
                 exposure_time_map=exposure_time_map,
                 gain=2.0,
@@ -1438,9 +1388,7 @@ class TestPSF(object):
     def test__init__input_psf__all_attributes_correct_including_data_inheritance(
         self
     ):
-        psf = al.PSF.from_2d_and_pixel_scale(
-            array_2d=np.ones((3, 3)), pixel_scale=1.0, renormalize=False
-        )
+        psf = aa.kernel.ones(shape_2d=(3,3), pixel_scales=1.0)
 
         assert isinstance(psf, aa.Kernel)
         assert type(psf) == al.PSF
@@ -1449,9 +1397,7 @@ class TestPSF(object):
         assert psf.mask.geometry.pixel_scales == (1.0, 1.0)
         assert psf.mask.origin == (0.0, 0.0)
 
-        psf = al.PSF.from_2d_and_pixel_scale(
-            array_2d=np.ones((4, 3)), pixel_scale=1.0, renormalize=False
-        )
+        psf = aa.kernel.ones(shape_2d=(4,3), pixel_scales=1.0)
 
         assert psf.in_2d.shape == (4, 3)
         assert (psf.in_2d == np.ones((4, 3))).all()
@@ -1461,15 +1407,11 @@ class TestPSF(object):
     def test__from_fits__input_psf_3x3__all_attributes_correct_including_data_inheritance(
         self
     ):
-        psf = al.PSF.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scale=1.0
-        )
+        psf = aa.kernel.from_fits(file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0)
 
         assert (psf.in_2d == np.ones((3, 3))).all()
 
-        psf = al.PSF.from_fits(
-            file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scale=1.0
-        )
+        psf = aa.kernel.from_fits(file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scales=1.0)
 
         assert (psf.in_2d == np.ones((4, 3))).all()
 
@@ -1477,19 +1419,17 @@ class TestPSF(object):
 class TestSimulateImaging(object):
     def test__setup_with_all_features_off(self):
 
-        image = aa.Array.from_array_2d(
-            array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+        image = aa.array.manual_2d(
+            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
-            value=1.0, shape_2d=image.in_2d.shape
-        )
+        exposure_time_map = aa.array.ones(shape_2d=image.in_2d.shape)
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
             image=image,
             exposure_time=1.0,
             exposure_time_map=exposure_time_map,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             add_noise=False,
         )
 
@@ -1498,27 +1438,24 @@ class TestSimulateImaging(object):
             imaging_data_simulated.image.in_2d
             == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
         ).all()
-        assert imaging_data_simulated.pixel_scale == 0.1
+        assert imaging_data_simulated.pixel_scales == (0.1, 0.1)
 
     def test__setup_with_background_sky_on__noise_off__no_noise_in_image__noise_map_is_noise_value(
         self
     ):
 
-        image = aa.Array.from_array_2d(
-            array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+        image = aa.array.manual_2d(
+            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
-            value=1.0, shape_2d=image.mask.shape
-        )
+        exposure_time_map = aa.array.ones(shape_2d=image.mask.shape)
 
-        background_sky_map = aa.Array.from_single_value_and_shape_2d(
-            value=16.0, shape_2d=image.mask.shape
+        background_sky_map = aa.array.full(fill_value=16.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
             image=image,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=1.0,
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
@@ -1530,7 +1467,7 @@ class TestSimulateImaging(object):
         assert (
             imaging_data_simulated.exposure_time_map.in_2d == 1.0 * np.ones((3, 3))
         ).all()
-        assert imaging_data_simulated.pixel_scale == 0.1
+        assert imaging_data_simulated.pixel_scales == (0.1, 0.1)
 
         assert (
             imaging_data_simulated.image.in_2d
@@ -1546,21 +1483,19 @@ class TestSimulateImaging(object):
         self
     ):
 
-        image = aa.Array.from_array_2d(
-            array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+        image = aa.array.manual_2d(
+            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
-            value=1.0, shape_2d=image.mask.shape
+        exposure_time_map = aa.array.ones(shape_2d=image.mask.shape
         )
 
-        background_sky_map = aa.Array.from_single_value_and_shape_2d(
-            value=16.0, shape_2d=image.mask.shape
+        background_sky_map = aa.array.full(fill_value=16.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
             image=image,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=1.0,
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
@@ -1571,7 +1506,7 @@ class TestSimulateImaging(object):
         assert (
             imaging_data_simulated.exposure_time_map.in_2d == 1.0 * np.ones((3, 3))
         ).all()
-        assert imaging_data_simulated.pixel_scale == 0.1
+        assert imaging_data_simulated.pixel_scales == (0.1, 0.1)
 
         assert (
             imaging_data_simulated.image.in_2d
@@ -1594,8 +1529,8 @@ class TestSimulateImaging(object):
         ).all()
 
     def test__setup_with_psf_blurring_on__blurs_image_and_trims_psf_edge_off(self):
-        image = aa.Array.from_array_2d(
-            array_2d=np.array(
+        image = aa.array.manual_2d(
+            array=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1606,18 +1541,17 @@ class TestSimulateImaging(object):
             ),
         )
 
-        psf = al.PSF.from_2d_and_pixel_scale(
-            array_2d=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
-            pixel_scale=1.0,
+        psf = al.PSF.manual_2d(
+            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
-            value=1.0, shape_2d=image.mask.shape
+        exposure_time_map = aa.array.ones(shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
             image=image,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=1.0,
             exposure_time_map=exposure_time_map,
             psf=psf,
@@ -1629,13 +1563,13 @@ class TestSimulateImaging(object):
             == np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
         ).all()
         assert (imaging_data_simulated.exposure_time_map.in_2d == np.ones((3, 3))).all()
-        assert imaging_data_simulated.pixel_scale == 0.1
+        assert imaging_data_simulated.pixel_scales == (0.1, 0.1)
 
     def test__setup_with_background_sky_and_psf_on__psf_does_no_blurring__image_and_sky_both_trimmed(
         self
     ):
-        image = aa.Array.from_array_2d(
-            array_2d=np.array(
+        image = aa.array.manual_2d(
+            array=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1646,22 +1580,17 @@ class TestSimulateImaging(object):
             ),
         )
 
-        psf = al.PSF.from_2d_and_pixel_scale(
-            array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
-            pixel_scale=1.0,
+        psf = aa.kernel.no_blur()
+
+        exposure_time_map = aa.array.ones(shape_2d=image.mask.shape
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
-            value=1.0, shape_2d=image.mask.shape
-        )
-
-        background_sky_map = aa.Array.from_single_value_and_shape_2d(
-            value=16.0, shape_2d=image.mask.shape
+        background_sky_map = aa.array.full(fill_value=16.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
             image=image,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=1.0,
             exposure_time_map=exposure_time_map,
             psf=psf,
@@ -1673,7 +1602,7 @@ class TestSimulateImaging(object):
         assert (
             imaging_data_simulated.exposure_time_map.in_2d == 1.0 * np.ones((3, 3))
         ).all()
-        assert imaging_data_simulated.pixel_scale == 0.1
+        assert imaging_data_simulated.pixel_scales == (0.1, 0.1)
 
         assert (
             imaging_data_simulated.image.in_2d
@@ -1685,17 +1614,16 @@ class TestSimulateImaging(object):
         ).all()
 
     def test__setup_with_noise(self):
-        image = aa.Array.from_array_2d(
-            array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+        image = aa.array.manual_2d(
+            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
-            value=20.0, shape_2d=image.mask.shape
+        exposure_time_map = aa.array.full(fill_value=20.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
             image=image,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=20.0,
             exposure_time_map=exposure_time_map,
             add_noise=True,
@@ -1705,7 +1633,7 @@ class TestSimulateImaging(object):
         assert (
             imaging_data_simulated.exposure_time_map.in_2d == 20.0 * np.ones((3, 3))
         ).all()
-        assert imaging_data_simulated.pixel_scale == 0.1
+        assert imaging_data_simulated.pixel_scales == (0.1, 0.1)
 
         assert imaging_data_simulated.image.in_2d == pytest.approx(
             np.array([[0.0, 0.0, 0.0], [0.0, 1.05, 0.0], [0.0, 0.0, 0.0]]), 1e-2
@@ -1725,8 +1653,8 @@ class TestSimulateImaging(object):
     def test__setup_with__psf_blurring_and_poisson_noise_on__poisson_noise_added_to_blurred_image(
         self
     ):
-        image = aa.Array.from_array_2d(
-            array_2d=np.array(
+        image = aa.array.manual_2d(
+            array=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1737,18 +1665,16 @@ class TestSimulateImaging(object):
             ),
         )
 
-        psf = al.PSF.from_2d_and_pixel_scale(
-            array_2d=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
-            pixel_scale=1.0,
+        psf = aa.kernel.manual_2d(
+            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
-            value=20.0, shape_2d=image.mask.shape
+        exposure_time_map = aa.array.full(fill_value=20.0, shape_2d=image.mask.shape
         )
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
             image=image,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=20.0,
             exposure_time_map=exposure_time_map,
             psf=psf,
@@ -1759,7 +1685,7 @@ class TestSimulateImaging(object):
         assert (
             imaging_data_simulated.exposure_time_map.in_2d == 20.0 * np.ones((3, 3))
         ).all()
-        assert imaging_data_simulated.pixel_scale == 0.1
+        assert imaging_data_simulated.pixel_scales == (0.1, 0.1)
         assert imaging_data_simulated.image.in_2d == pytest.approx(
             np.array([[0.0, 1.05, 0.0], [1.3, 2.35, 1.05], [0.0, 1.05, 0.0]]), 1e-2
         )
@@ -1777,8 +1703,8 @@ class TestSimulateImaging(object):
         )
 
     def test__simulate_function__turns_exposure_time_and_sky_level_to_arrays(self):
-        image = aa.Array.from_array_2d(
-            array_2d=np.array(
+        image = aa.array.manual_2d(
+            array=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1789,17 +1715,12 @@ class TestSimulateImaging(object):
             ),
         )
 
-        psf = al.PSF.from_2d_and_pixel_scale(
-            array_2d=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
-            pixel_scale=1.0,
+        psf = aa.kernel.no_blur()
+
+        exposure_time_map = aa.array.ones(shape_2d=image.mask.shape
         )
 
-        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
-            value=1.0, shape_2d=image.mask.shape
-        )
-
-        background_sky_map = aa.Array.from_single_value_and_shape_2d(
-            value=16.0, shape_2d=image.mask.shape
+        background_sky_map = aa.array.full(fill_value=16.0, shape_2d=image.mask.shape
         )
 
         imaging_variable = al.SimulatedImagingData.from_image_and_exposure_arrays(
@@ -1808,13 +1729,13 @@ class TestSimulateImaging(object):
             exposure_time_map=exposure_time_map,
             psf=psf,
             background_sky_map=background_sky_map,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             add_noise=False,
             noise_seed=1,
         )
 
-        image = aa.Array.from_array_2d(
-            array_2d=np.array(
+        image = aa.array.manual_2d(
+            array=np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1827,7 +1748,7 @@ class TestSimulateImaging(object):
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
             image=image,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=1.0,
             background_sky_level=16.0,
             psf=psf,
@@ -1839,7 +1760,7 @@ class TestSimulateImaging(object):
             imaging_variable.exposure_time_map.in_2d
             == imaging_data_simulated.exposure_time_map.in_2d
         ).all()
-        assert imaging_variable.pixel_scale == imaging_data_simulated.pixel_scale
+        assert imaging_variable.pixel_scales == imaging_data_simulated.pixel_scales
         assert imaging_variable.image.in_2d == pytest.approx(
             imaging_data_simulated.image.in_2d, 1e-4
         )
@@ -1849,23 +1770,21 @@ class TestSimulateImaging(object):
         ).all()
 
     def test__noise_map_creates_nans_due_to_low_exposure_time__raises_error(self):
-        image = aa.Array.from_array_2d(array_2d=np.ones((9, 9)))
+        image = aa.array.manual_2d(array=np.ones((9, 9)))
 
-        psf = al.PSF.from_gaussian(shape=(3, 3), sigma=0.1, pixel_scale=0.2)
+        psf = al.PSF.from_gaussian(shape=(3, 3), sigma=0.1, pixel_scales=0.2)
 
-        exposure_time_map = aa.Array.from_single_value_and_shape_2d(
-            value=1.0, shape_2d=image.mask.shape
+        exposure_time_map = aa.array.ones(shape_2d=image.mask.shape
         )
 
-        background_sky_map = aa.Array.from_single_value_and_shape_2d(
-            value=1.0, shape_2d=image.mask.shape
+        background_sky_map = aa.array.ones(shape_2d=image.mask.shape
         )
 
         with pytest.raises(exc.DataException):
             al.SimulatedImagingData.from_image_and_exposure_arrays(
                 image=image,
                 psf=psf,
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 exposure_time=1.0,
                 exposure_time_map=exposure_time_map,
                 background_sky_map=background_sky_map,
@@ -1877,8 +1796,8 @@ class TestSimulateImaging(object):
         self
     ):
 
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=(10, 10), pixel_scale=1.0, sub_size=1
+        grid = aa.grid.uniform(
+            shape_2d=(10, 10), pixel_scales=1.0, sub_size=1
         )
 
         g0 = al.Galaxy(
@@ -1896,7 +1815,7 @@ class TestSimulateImaging(object):
 
         imaging_data_simulated_via_deflections = al.SimulatedImagingData.from_deflections_galaxies_and_exposure_arrays(
             deflections=deflections,
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             galaxies=[g1],
             exposure_time=10000.0,
             background_sky_level=100.0,
@@ -1908,7 +1827,7 @@ class TestSimulateImaging(object):
 
         imaging_data_simulated = al.SimulatedImagingData.from_image_and_exposure_arrays(
             image=tracer_profile_image,
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             exposure_time=10000.0,
             background_sky_level=100.0,
             add_noise=True,
@@ -1936,13 +1855,13 @@ class TestSimulateImaging(object):
         ).all()
 
     def test__from_tracer__same_as_manual_tracer_input(self):
-        psf = al.PSF.from_2d_and_pixel_scale(
-            array_2d=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
-            pixel_scale=1.0,
+        psf = al.PSF.manual_2d(
+            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=(20, 20), pixel_scale=0.05, sub_size=1
+        grid = aa.grid.uniform(
+            shape_2d=(20, 20), pixel_scales=0.05, sub_size=1
         )
 
         lens_galaxy = al.Galaxy(
@@ -1960,7 +1879,7 @@ class TestSimulateImaging(object):
         imaging_data_simulated_via_tracer = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
             tracer=tracer,
             grid=grid,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=10000.0,
             psf=psf,
             background_sky_level=100.0,
@@ -1972,7 +1891,7 @@ class TestSimulateImaging(object):
             image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
                 grid=grid, psf_shape=(3, 3)
             ),
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time=10000.0,
             psf=psf,
             background_sky_level=100.0,
@@ -2003,8 +1922,8 @@ class TestSimulateImaging(object):
 class TestSimulatePoissonNoise(object):
     def test__input_image_all_0s__exposure_time_all_1s__all_noise_values_are_0s(self):
         
-        image = aa.Array.from_array_2d(np.zeros((2, 2)))
-        exposure_time = aa.Array.from_array_2d(np.ones((2, 2)))
+        image = aa.array.ones(shape_2d=(2,2))
+        exposure_time = aa.array.ones(shape_2d=(2,2))
         simulated_poisson_image = image + al.generate_poisson_noise(
             image, exposure_time, seed=1
         )
@@ -2015,9 +1934,9 @@ class TestSimulatePoissonNoise(object):
     def test__input_image_includes_10s__exposure_time_is_1s__gives_noise_values_near_1_to_5(
         self
     ):
-        image = aa.Array.from_array_2d([[10.0, 0.0], [0.0, 10.0]])
+        image = aa.array.manual_2d([[10.0, 0.0], [0.0, 10.0]])
 
-        exposure_time = aa.Array.from_array_2d(np.ones((2, 2)))
+        exposure_time = aa.array.ones(shape_2d=(2,2))
         poisson_noise_map = al.generate_poisson_noise(image, exposure_time, seed=1)
         simulated_poisson_image = image + poisson_noise_map
 
@@ -2034,9 +1953,9 @@ class TestSimulatePoissonNoise(object):
     def test__input_image_is_all_10s__exposure_time_is_1s__gives_noise_values_near_1_to_5(
         self
     ):
-        image = aa.Array.from_array_2d([[10.0, 10.0], [10.0, 10.0]])
+        image = aa.array.full(fill_value=10.0, shape_2d=(2,2))
 
-        exposure_time = aa.Array.from_array_2d(np.ones((2, 2)))
+        exposure_time = aa.array.ones(shape_2d=(2,2))
         poisson_noise_map = al.generate_poisson_noise(image, exposure_time, seed=1)
         simulated_poisson_image = image + poisson_noise_map
 
@@ -2052,9 +1971,9 @@ class TestSimulatePoissonNoise(object):
     def test__input_image_has_1000000s__exposure_times_is_1s__these_give_positive_noise_values_near_1000(
         self
     ):
-        image = aa.Array.from_array_2d([[10000000.0, 0.0], [0.0, 10000000.0]])
+        image = aa.array.manual_2d([[10000000.0, 0.0], [0.0, 10000000.0]])
 
-        exposure_time_map = aa.Array.from_array_2d(np.ones((2, 2)))
+        exposure_time_map = aa.array.ones(shape_2d=(2,2))
 
         poisson_noise_map = al.generate_poisson_noise(
             image=image, exposure_time_map=exposure_time_map, seed=2
@@ -2077,13 +1996,13 @@ class TestSimulatePoissonNoise(object):
     def test__two_images_same_in_counts_but_different_in_electrons_per_sec__noise_related_by_exposure_times(
         self
     ):
-        image_0 = aa.Array.from_array_2d([[10.0, 0.0], [0.0, 10.0]])
+        image_0 = aa.array.manual_2d([[10.0, 0.0], [0.0, 10.0]])
 
-        exposure_time_0 = aa.Array.from_array_2d(np.ones((2, 2)))
+        exposure_time_0 = aa.array.ones(shape_2d=(2,2))
 
-        image_1 = aa.Array.from_array_2d([[5.0, 0.0], [0.0, 5.0]])
+        image_1 = aa.array.manual_2d([[5.0, 0.0], [0.0, 5.0]])
 
-        exposure_time_1 = 2.0 * aa.Array.from_array_2d(np.ones((2, 2)))
+        exposure_time_1 = 2.0 * aa.array.ones(shape_2d=(2,2))
 
         simulated_poisson_image_0 = image_0 + al.generate_poisson_noise(
             image_0, exposure_time_0, seed=1
@@ -2095,13 +2014,13 @@ class TestSimulatePoissonNoise(object):
         assert (simulated_poisson_image_0 / 2.0 == simulated_poisson_image_1).all()
 
     def test__same_as_above_but_range_of_image_values_and_exposure_times(self):
-        image_0 = aa.Array.from_array_2d([[10.0, 20.0], [30.0, 40.0]])
+        image_0 = aa.array.manual_2d([[10.0, 20.0], [30.0, 40.0]])
 
-        exposure_time_0 = aa.Array.from_array_2d([[2.0, 2.0], [3.0, 4.0]])
+        exposure_time_0 = aa.array.manual_2d([[2.0, 2.0], [3.0, 4.0]])
 
-        image_1 = aa.Array.from_array_2d([[20.0, 20.0], [45.0, 20.0]])
+        image_1 = aa.array.manual_2d([[20.0, 20.0], [45.0, 20.0]])
 
-        exposure_time_1 = aa.Array.from_array_2d([[1.0, 2.0], [2.0, 8.0]])
+        exposure_time_1 = aa.array.manual_2d([[1.0, 2.0], [2.0, 8.0]])
 
         simulated_poisson_image_0 = image_0 + al.generate_poisson_noise(
             image_0, exposure_time_0, seed=1
@@ -2127,7 +2046,7 @@ class TestImagingFromFits(object):
     def test__no_settings_just_pass_fits(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             renormalize_psf=False,
@@ -2141,14 +2060,14 @@ class TestImagingFromFits(object):
         assert imaging_data.exposure_time_map == None
         assert imaging_data.background_sky_map == None
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__optional_array_paths_included__loads_optional_array(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2166,19 +2085,19 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__all_files_in_one_fits__load_using_different_hdus(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_multiple_hdu.fits",
             image_hdu=0,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_multiple_hdu.fits",
             psf_hdu=1,
             noise_map_path=test_data_dir + "3x3_multiple_hdu.fits",
@@ -2202,13 +2121,13 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__exposure_time_included__creates_exposure_time_map_using_exposure_time(
         self
@@ -2217,7 +2136,7 @@ class TestImagingFromFits(object):
             image_path=test_data_dir + "3x3_ones.fits",
             noise_map_path=test_data_dir + "3x3_ones.fits",
             psf_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             exposure_time_map_from_single_value=3.0,
             renormalize_psf=False,
         )
@@ -2227,7 +2146,7 @@ class TestImagingFromFits(object):
     def test__exposure_time_map_from_inverse_noise_map(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2240,7 +2159,7 @@ class TestImagingFromFits(object):
 
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2256,7 +2175,7 @@ class TestImagingFromFits(object):
     ):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_ones_central_two.fits",
@@ -2266,8 +2185,8 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        inverse_noise_map = aa.Array.from_array_2d(
-            array_2d=np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]]),
+        inverse_noise_map = aa.array.manual_2d(
+            array=np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]]),
         )
 
         background_noise_map_converted = al.NoiseMap.from_inverse_noise_map(
@@ -2291,7 +2210,7 @@ class TestImagingFromFits(object):
     def test__pad_shape_of_images_and_psf(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2333,20 +2252,20 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * padded_array).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * padded_array).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             exposure_time_map_from_single_value=3.0,
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             resized_imaging_shape=(5, 5),
             resized_psf_shape=(7, 7),
             renormalize_psf=False,
@@ -2368,7 +2287,7 @@ class TestImagingFromFits(object):
     def test__trim_shape_of_images_and_psf(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2390,18 +2309,18 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * trimmed_array).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * trimmed_array).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__convert_noise_map_from_weight_map(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2412,7 +2331,7 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        weight_map = aa.Array.from_array_2d(array_2d=3.0 * np.ones((3, 3)))
+        weight_map = aa.array.full(fill_value=3.0, shape_2d=(3,3))
 
         noise_map_converted = al.NoiseMap.from_weight_map(
             weight_map=weight_map,
@@ -2426,18 +2345,18 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__convert_noise_map_from_inverse_noise_map(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2448,8 +2367,8 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        inverse_noise_map = aa.Array.from_array_2d(
-            array_2d=3.0 * np.ones((3, 3)),
+        inverse_noise_map = aa.array.manual_2d(
+            array=3.0 * np.ones((3, 3)),
         )
 
         noise_map_converted = al.NoiseMap.from_inverse_noise_map(
@@ -2464,18 +2383,18 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__noise_map_from_image_and_background_noise_map(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_from_image_and_background_noise_map=True,
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2504,20 +2423,20 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__noise_map_from_image_and_background_noise_map__include_convert_from_electrons(
         self
     ):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_from_image_and_background_noise_map=True,
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2528,9 +2447,9 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
-        background_noise_map = aa.Array.from_array_2d(
-            array_2d=4.0 * np.ones((3, 3))
+        image = aa.array.ones(shape_2d=(3,3))
+        background_noise_map = aa.array.manual_2d(
+            array=4.0 * np.ones((3, 3))
         )
 
         noise_map_converted = al.NoiseMap.from_image_and_background_noise_map(
@@ -2560,20 +2479,20 @@ class TestImagingFromFits(object):
             imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3)) / 6.0
         ).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__noise_map_from_image_and_background_noise_map__include_convert_from_adus(
         self
     ):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_from_image_and_background_noise_map=True,
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2585,9 +2504,9 @@ class TestImagingFromFits(object):
             renormalize_psf=False,
         )
 
-        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
-        background_noise_map = aa.Array.from_array_2d(
-            array_2d=4.0 * np.ones((3, 3)),
+        image = aa.array.ones(shape_2d=(3,3))
+        background_noise_map = aa.array.manual_2d(
+            array=4.0 * np.ones((3, 3)),
         )
 
         noise_map_converted = al.NoiseMap.from_image_and_background_noise_map(
@@ -2617,18 +2536,18 @@ class TestImagingFromFits(object):
             imaging_data.background_sky_map.in_2d == 2.0 * 7.0 * np.ones((3, 3)) / 6.0
         ).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__convert_background_noise_map_from_weight_map(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2639,7 +2558,7 @@ class TestImagingFromFits(object):
             convert_background_noise_map_from_weight_map=True,
         )
 
-        weight_map = aa.Array.from_array_2d(array_2d=4.0 * np.ones((3, 3)))
+        weight_map = aa.array.manual_2d(array=4.0 * np.ones((3, 3)))
 
         background_noise_map_converted = al.NoiseMap.from_weight_map(
             weight_map=weight_map,
@@ -2656,18 +2575,18 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__convert_background_noise_map_from_inverse_noise_map(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2678,8 +2597,8 @@ class TestImagingFromFits(object):
             convert_background_noise_map_from_inverse_noise_map=True,
         )
 
-        inverse_noise_map = aa.Array.from_array_2d(
-            array_2d=4.0 * np.ones((3, 3)),
+        inverse_noise_map = aa.array.manual_2d(
+            array=4.0 * np.ones((3, 3)),
         )
 
         background_noise_map_converted = al.NoiseMap.from_inverse_noise_map(
@@ -2697,18 +2616,18 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__poisson_noise_map_from_image(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2719,7 +2638,7 @@ class TestImagingFromFits(object):
             poisson_noise_map_from_image=True,
         )
 
-        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+        image = aa.array.ones(shape_2d=(3,3))
 
         poisson_noise_map_converted = al.PoissonNoiseMap.from_image_and_exposure_time_map(
             image=image,
@@ -2741,18 +2660,18 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__poisson_noise_map_from_image__include_convert_from_electrons(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2764,7 +2683,7 @@ class TestImagingFromFits(object):
             convert_from_electrons=True,
         )
 
-        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+        image = aa.array.ones(shape_2d=(3,3))
 
         poisson_noise_map_counts = al.PoissonNoiseMap.from_image_and_exposure_time_map(
             image=image,
@@ -2790,18 +2709,18 @@ class TestImagingFromFits(object):
             imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3)) / 6.0
         ).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__poisson_noise_map_from_image__include_convert_from_adus(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2814,7 +2733,7 @@ class TestImagingFromFits(object):
             convert_from_adus=True,
         )
 
-        image = aa.Array.from_array_2d(array_2d=np.ones((3, 3)))
+        image = aa.array.ones(shape_2d=(3,3))
 
         poisson_noise_map_counts = al.PoissonNoiseMap.from_image_and_exposure_time_map(
             image=image,
@@ -2842,18 +2761,18 @@ class TestImagingFromFits(object):
             imaging_data.background_sky_map.in_2d == 2.0 * 7.0 * np.ones((3, 3)) / 6.0
         ).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__convert_poisson_noise_map_from_weight_map(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2864,7 +2783,7 @@ class TestImagingFromFits(object):
             convert_poisson_noise_map_from_weight_map=True,
         )
 
-        weight_map = aa.Array.from_array_2d(array_2d=5.0 * np.ones((3, 3)))
+        weight_map = aa.array.manual_2d(array=5.0 * np.ones((3, 3)))
 
         poisson_noise_map_converted = al.NoiseMap.from_weight_map(
             weight_map=weight_map,
@@ -2880,18 +2799,18 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__convert_poisson_noise_map_from_inverse_noise_map(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2902,8 +2821,8 @@ class TestImagingFromFits(object):
             convert_poisson_noise_map_from_inverse_noise_map=True,
         )
 
-        inverse_noise_map = aa.Array.from_array_2d(
-            array_2d=5.0 * np.ones((3, 3)),
+        inverse_noise_map = aa.array.manual_2d(
+            array=5.0 * np.ones((3, 3)),
         )
 
         poisson_noise_map_converted = al.NoiseMap.from_inverse_noise_map(
@@ -2920,18 +2839,18 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__psf_renormalized_true__renormalized_psf(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2951,18 +2870,18 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__convert_image_from_electrons_using_exposure_time(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -2987,18 +2906,18 @@ class TestImagingFromFits(object):
             imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3)) / 6.0
         ).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__convert_image_from_adus_using_exposure_time_and_gain(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -3024,19 +2943,19 @@ class TestImagingFromFits(object):
             imaging_data.background_sky_map.in_2d == 2.0 * 7.0 * np.ones((3, 3)) / 6.0
         ).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)
 
     def test__no_noise_map_input__raises_imaging_exception(self):
         with pytest.raises(exc.DataException):
             al.load_imaging_data_from_fits(
                 image_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 psf_path=test_data_dir + "3x3_twos.fits",
             )
 
@@ -3044,7 +2963,7 @@ class TestImagingFromFits(object):
         with pytest.raises(exc.DataException):
             al.load_imaging_data_from_fits(
                 image_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 psf_path=test_data_dir + "3x3_twos.fits",
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 convert_noise_map_from_inverse_noise_map=True,
@@ -3054,7 +2973,7 @@ class TestImagingFromFits(object):
         with pytest.raises(exc.DataException):
             al.load_imaging_data_from_fits(
                 image_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 psf_path=test_data_dir + "3x3_twos.fits",
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 convert_noise_map_from_inverse_noise_map=True,
@@ -3064,7 +2983,7 @@ class TestImagingFromFits(object):
         with pytest.raises(exc.DataException):
             al.load_imaging_data_from_fits(
                 image_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 psf_path=test_data_dir + "3x3_twos.fits",
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 noise_map_from_image_and_background_noise_map=True,
@@ -3076,7 +2995,7 @@ class TestImagingFromFits(object):
             al.load_imaging_data_from_fits(
                 image_path=test_data_dir + "3x3_ones.fits",
                 psf_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 exposure_time_map_path=test_data_dir + "3x3_ones.fits",
                 exposure_time_map_from_single_value=1.0,
@@ -3088,7 +3007,7 @@ class TestImagingFromFits(object):
             al.load_imaging_data_from_fits(
                 image_path=test_data_dir + "3x3_ones.fits",
                 psf_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 exposure_time_map_from_single_value=1.0,
                 noise_map_from_image_and_background_noise_map=True,
@@ -3098,7 +3017,7 @@ class TestImagingFromFits(object):
         al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
             psf_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
             exposure_time_map_from_single_value=1.0,
@@ -3111,7 +3030,7 @@ class TestImagingFromFits(object):
             al.load_imaging_data_from_fits(
                 image_path=test_data_dir + "3x3_ones.fits",
                 psf_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 background_noise_map_path=test_data_dir + "3x3_fours.fits",
                 noise_map_from_image_and_background_noise_map=True,
@@ -3122,7 +3041,7 @@ class TestImagingFromFits(object):
         al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
             psf_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
             exposure_time_map_from_single_value=1.0,
@@ -3136,7 +3055,7 @@ class TestImagingFromFits(object):
         al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
             psf_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             noise_map_path=test_data_dir + "3x3_threes.fits",
             exposure_time_map_from_single_value=1.0,
             poisson_noise_map_from_image=True,
@@ -3147,7 +3066,7 @@ class TestImagingFromFits(object):
             al.load_imaging_data_from_fits(
                 image_path=test_data_dir + "3x3_ones.fits",
                 psf_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 poisson_noise_map_from_image=True,
                 convert_from_electrons=True,
             )
@@ -3157,7 +3076,7 @@ class TestImagingFromFits(object):
             al.load_imaging_data_from_fits(
                 image_path=test_data_dir + "3x3_ones.fits",
                 psf_path=test_data_dir + "3x3_ones.fits",
-                pixel_scale=0.1,
+                pixel_scales=0.1,
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 background_noise_map_path=test_data_dir + "3x3_fours.fits",
                 exposure_time_map_from_single_value=1.0,
@@ -3168,7 +3087,7 @@ class TestImagingFromFits(object):
     def test__output_all_arrays(self):
         imaging_data = al.load_imaging_data_from_fits(
             image_path=test_data_dir + "3x3_ones.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             background_noise_map_path=test_data_dir + "3x3_fours.fits",
@@ -3199,7 +3118,7 @@ class TestImagingFromFits(object):
 
         imaging_data = al.load_imaging_data_from_fits(
             image_path=output_data_dir + "image.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
             psf_path=output_data_dir + "psf.fits",
             noise_map_path=output_data_dir + "noise_map.fits",
             background_noise_map_path=output_data_dir + "background_noise_map.fits",
@@ -3217,10 +3136,10 @@ class TestImagingFromFits(object):
         assert (imaging_data.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
         assert (imaging_data.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
 
-        assert imaging_data.pixel_scale == 0.1
-        assert imaging_data.psf.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.exposure_time_map.mask.geometry.pixel_scale == 0.1
-        assert imaging_data.background_sky_map.mask.geometry.pixel_scale == 0.1
+        assert imaging_data.pixel_scales == (0.1, 0.1)
+        assert imaging_data.psf.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.poisson_noise_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.exposure_time_map.mask.geometry.pixel_scales == (0.1, 0.1)
+        assert imaging_data.background_sky_map.mask.geometry.pixel_scales == (0.1, 0.1)

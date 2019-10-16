@@ -3,7 +3,7 @@ import numpy as np
 class MockLensImagingData(object):
     def __init__(self, imaging_data, mask, grid, blurring_grid, convolver, binned_grid):
         self.imaging_data = imaging_data
-        self.pixel_scale = imaging_data.pixel_scale
+        self.pixel_scales = imaging_data.pixel_scales
 
         self.psf = imaging_data.psf
 
@@ -54,7 +54,7 @@ class MockLensUVPlaneData(object):
     def __init__(self, uv_plane_data, mask, grid, transformer, binned_grid):
 
         self.uv_plane_data = uv_plane_data
-        self.pixel_scale = uv_plane_data.pixel_scale
+        self.pixel_scales = uv_plane_data.pixel_scales
 
         self.mask = mask
         self._mask_1d = self.mask.mapping.array_from_array_2d(array_2d=self.mask)

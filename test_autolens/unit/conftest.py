@@ -84,7 +84,7 @@ def make_imaging_data_7x7(
 ):
     return mock_data.MockImagingData(
         image=image_7x7,
-        pixel_scale=image_7x7.pixel_scale,
+        pixel_scales=image_7x7.pixel_scales,
         psf=psf_3x3,
         noise_map=noise_map_7x7,
         background_noise_map=background_noise_map_7x7,
@@ -107,7 +107,7 @@ def make_imaging_data_6x6():
 
     return mock_data.MockImagingData(
         image=image,
-        pixel_scale=1.0,
+        pixel_scales=1.0,
         psf=psf,
         noise_map=noise_map,
         background_noise_map=background_noise_map,
@@ -145,7 +145,7 @@ def make_uv_plane_data_7(
     return mock_data.MockUVPlaneData(
         shape=(7, 7),
         visibilities=visibilities_7,
-        pixel_scale=1.0,
+        pixel_scales=1.0,
         noise_map=visibilities_noise_map_7,
         primary_beam=primary_beam_3x3,
         uv_wavelengths=uv_wavelengths_7,
@@ -383,7 +383,7 @@ def make_hyper_galaxy():
 @pytest.fixture(name="gal_data_7x7")
 def make_gal_data_7x7(image_7x7, noise_map_7x7):
     return al.GalaxyData(
-        image=image_7x7, noise_map=noise_map_7x7, pixel_scale=image_7x7.pixel_scale
+        image=image_7x7, noise_map=noise_map_7x7, pixel_scales=image_7x7.pixel_scales
     )
 
 

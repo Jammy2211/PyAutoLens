@@ -98,10 +98,10 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             ### Source Light, Sersic -> Sersic ###
 
-            self.galaxies.source.light.mask_centre = (
+            self.galaxies.source.light.centre = (
                 results.from_phase("phase_1")
                 .variable_absolute(a=0.05)
-                .galaxies.source.light.mask_centre
+                .galaxies.source.light.centre
             )
 
             self.galaxies.source.light.intensity = (

@@ -19,7 +19,7 @@ output_path = "{}/output".format(dirpath)
 test_name = "test"
 
 
-def simulate_integration_image(test_name, pixel_scale, galaxies):
+def simulate_integration_image(test_name, pixel_scales, galaxies):
     output_path = (
         "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
         + test_name
@@ -29,11 +29,11 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
     image_shape = (150, 150)
 
     psf = al.PSF.from_gaussian(
-        shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale
+        shape=psf_shape, pixel_scales=pixel_scales, sigma=pixel_scales
     )
 
     grid = al.Grid.from_shape_2d_pixel_scale_and_sub_size(
-        shape_2d=image_shape, pixel_scale=pixel_scale, sub_size=1
+        shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=1
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=galaxies)
@@ -42,7 +42,7 @@ def simulate_integration_image(test_name, pixel_scale, galaxies):
 
     imaging_simulated = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         exposure_time=100.0,
         background_sky_level=10.0,
         psf=psf,
@@ -111,7 +111,7 @@ class TestPhaseModelMapper(object):
         lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(
-            test_name=test_name, pixel_scale=0.5, galaxies=[lens_galaxy]
+            test_name=test_name, pixel_scales=0.5, galaxies=[lens_galaxy]
         )
 
         path = "{}/".format(
@@ -122,7 +122,7 @@ class TestPhaseModelMapper(object):
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
         )
 
         class MMPhase(al.PhaseImaging):
@@ -185,7 +185,7 @@ class TestPhaseModelMapper(object):
         lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(
-            test_name=test_name, pixel_scale=0.5, galaxies=[lens_galaxy]
+            test_name=test_name, pixel_scales=0.5, galaxies=[lens_galaxy]
         )
         path = "{}/".format(
             os.path.dirname(os.path.realpath(__file__))
@@ -195,7 +195,7 @@ class TestPhaseModelMapper(object):
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
-            pixel_scale=0.1,
+            pixel_scales=0.1,
         )
 
         class MMPhase(al.PhaseImaging):

@@ -429,8 +429,8 @@ class TestFixedProfiles(object):
             galaxy_model.variable_light.intensity.value: 0.6,
             galaxy_model.variable_light.effective_radius.value: 0.7,
             galaxy_model.variable_light.sersic_index: 0.8,
-            galaxy_model.variable_light.mask_centre.centre_0: 0,
-            galaxy_model.variable_light.mask_centre.centre_1: 0,
+            galaxy_model.variable_light.centre.centre_0: 0,
+            galaxy_model.variable_light.centre.centre_1: 0,
         }
 
         galaxy = galaxy_model.instance_for_arguments(arguments)

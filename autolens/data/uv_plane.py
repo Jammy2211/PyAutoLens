@@ -16,7 +16,7 @@ class UVPlaneData(abstract_data.AbstractData):
         self,
         shape,
         visibilities,
-        pixel_scale,
+        pixel_scales,
         noise_map,
         uv_wavelengths,
         primary_beam,
@@ -27,7 +27,7 @@ class UVPlaneData(abstract_data.AbstractData):
 
         super(UVPlaneData, self).__init__(
             data=visibilities,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
         )
@@ -47,7 +47,7 @@ class UVPlaneData(abstract_data.AbstractData):
         return UVPlaneData(
             shape=self.shape,
             visibilities=modified_visibilities,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             noise_map=self.noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=self.primary_beam,
@@ -56,13 +56,13 @@ class UVPlaneData(abstract_data.AbstractData):
 
     def resized_primary_beam_data_from_new_shape(self, new_shape):
 
-        primary_beam = self.primary_beam.resized_array_from_new_shape(
+        primary_beam = self.primary_beam.resized_from_new_shape(
             new_shape=new_shape
         )
         return UVPlaneData(
             shape=self.shape,
             visibilities=self.data,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             noise_map=self.noise_map,
             exposure_time_map=self.exposure_time_map,
             uv_wavelengths=self.uv_wavelengths,
@@ -83,7 +83,7 @@ class UVPlaneData(abstract_data.AbstractData):
         return UVPlaneData(
             shape=self.shape,
             visibilities=visibilities,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             noise_map=noise_map,
             exposure_time_map=self.exposure_time_map,
             uv_wavelengths=self.uv_wavelengths,
@@ -107,7 +107,7 @@ class UVPlaneData(abstract_data.AbstractData):
         return UVPlaneData(
             shape=self.shape,
             visibilities=visibilities,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             noise_map=noise_map,
             exposure_time_map=self.exposure_time_map,
             uv_wavelengths=self.uv_wavelengths,
@@ -129,7 +129,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         self,
         shape,
         visibilities,
-        pixel_scale,
+        pixel_scales,
         noise_map,
         uv_wavelengths,
         primary_beam,
@@ -141,7 +141,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         super(SimulatedUVPlaneData, self).__init__(
             shape=shape,
             visibilities=visibilities,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
             primary_beam=primary_beam,
@@ -154,7 +154,7 @@ class SimulatedUVPlaneData(UVPlaneData):
     def from_deflections_galaxies_and_exposure_arrays(
         cls,
         deflections,
-        pixel_scale,
+        pixel_scales,
         galaxies,
         exposure_time,
         transformer,
@@ -169,8 +169,8 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         shape = (deflections.shape[0], deflections.shape[1])
 
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=shape, pixel_scale=pixel_scale, sub_size=1
+        grid = aa.grid.uniform(
+            shape_2d=shape, pixel_scales=pixel_scales, sub_size=1
         )
 
         deflected_grid_1d = grid.in_1d - deflections.in_1d
@@ -181,7 +181,7 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         return cls.from_image_and_exposure_arrays(
             image=image_2d,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             exposure_time=exposure_time,
             exposure_time_map=exposure_time_map,
             background_sky_level=background_sky_level,
@@ -198,7 +198,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         cls,
         tracer,
         grid,
-        pixel_scale,
+        pixel_scales,
         exposure_time,
         transformer,
         primary_beam=None,
@@ -217,7 +217,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         name
         image : ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
-        pixel_scale: float
+        pixel_scales: float
             The scale of each pixel in arc seconds
         exposure_time_map : ndarray
             An array representing the effective exposure time of each pixel.
@@ -236,7 +236,7 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         return cls.from_image_and_exposure_arrays(
             image=image_2d,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             exposure_time=exposure_time,
             exposure_time_map=exposure_time_map,
             background_sky_level=background_sky_level,
@@ -252,7 +252,7 @@ class SimulatedUVPlaneData(UVPlaneData):
     def from_image_and_exposure_arrays(
         cls,
         image,
-        pixel_scale,
+        pixel_scales,
         exposure_time,
         transformer,
         primary_beam=None,
@@ -271,7 +271,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         name
         image : ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
-        pixel_scale: float
+        pixel_scales: float
             The scale of each pixel in arc seconds
         exposure_time_map : ndarray
             An array representing the effective exposure time of each pixel.
@@ -289,13 +289,13 @@ class SimulatedUVPlaneData(UVPlaneData):
         if exposure_time_map is None:
 
             exposure_time_map = aa.Array.from_single_value_shape_2d_pixel_scales_and_sub_size(
-                value=exposure_time, shape_2d=image.shape, pixel_scales=pixel_scale
+                value=exposure_time, shape_2d=image.shape, pixel_scales=pixel_scales
             )
 
         if background_sky_map is None:
 
             background_sky_map = aa.Array.from_single_value_shape_2d_pixel_scales_and_sub_size(
-                value=background_sky_level, shape_2d=image.shape, pixel_scales=pixel_scale
+                value=background_sky_level, shape_2d=image.shape, pixel_scales=pixel_scales
             )
 
         image += background_sky_map
@@ -308,13 +308,13 @@ class SimulatedUVPlaneData(UVPlaneData):
             )
             visibilities = visibilities + noise_map_realization
             noise_map = NoiseMap.from_single_value_shape_pixel_scale_and_sub_size(
-                value=noise_sigma, shape=visibilities.shape, pixel_scale=pixel_scale
+                value=noise_sigma, shape=visibilities.shape, pixel_scales=pixel_scales
             )
         else:
             noise_map = NoiseMap.from_single_value_shape_pixel_scale_and_sub_size(
                 value=noise_if_add_noise_false,
                 shape=visibilities.shape,
-                pixel_scale=pixel_scale,
+                pixel_scales=pixel_scales,
             )
             noise_map_realization = None
 
@@ -329,7 +329,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         return SimulatedUVPlaneData(
             shape=image.shape,
             visibilities=visibilities,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             noise_map=noise_map,
             uv_wavelengths=transformer.uv_wavelengths,
             primary_beam=primary_beam,
@@ -343,7 +343,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         if isinstance(obj, SimulatedUVPlaneData):
             try:
                 self.image = obj.image
-                self.pixel_scale = obj.pixel_scale
+                self.pixel_scales = obj.pixel_scales
                 self.psf = obj.psf
                 self.noise_map = obj.noise_map
                 self.background_noise_map = obj.background_noise_map
@@ -381,7 +381,7 @@ def gaussian_noise_map_from_shape_and_sigma(shape, sigma, noise_seed=-1):
 
 def load_uv_plane_data_from_fits(
     shape,
-    pixel_scale,
+    pixel_scales,
     real_visibilities_path=None,
     real_visibilities_hdu=0,
     imaginary_visibilities_path=None,
@@ -414,7 +414,7 @@ def load_uv_plane_data_from_fits(
     lens_name
     image_path : str
         The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds.
     image_hdu : int
         The hdu the image is contained in the .fits file specified by *image_path*.        
@@ -510,7 +510,7 @@ def load_uv_plane_data_from_fits(
     exposure_time_map = abstract_data.load_exposure_time_map(
         exposure_time_map_path=exposure_time_map_path,
         exposure_time_map_hdu=exposure_time_map_hdu,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         shape=real_visibilities.shape,
         exposure_time=exposure_time_map_from_single_value,
         exposure_time_map_from_inverse_noise_map=False,
@@ -532,14 +532,14 @@ def load_uv_plane_data_from_fits(
     primary_beam = load_primary_beam(
         primary_beam_path=primary_beam_path,
         primary_beam_hdu=primary_beam_hdu,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         renormalize=renormalize_primary_beam,
     )
 
     uv_plane_data = UVPlaneData(
         shape=shape,
         visibilities=visibilities,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         primary_beam=primary_beam,
         noise_map=noise_map,
         uv_wavelengths=uv_wavelengths,
@@ -575,7 +575,7 @@ def load_visibilities_noise_map(noise_map_path, noise_map_hdu):
 
 
 def load_primary_beam(
-    primary_beam_path, primary_beam_hdu, pixel_scale, renormalize=False
+    primary_beam_path, primary_beam_hdu, pixel_scales, renormalize=False
 ):
     """Factory for loading the primary_beam from a .fits file.
 
@@ -585,18 +585,18 @@ def load_primary_beam(
         The path to the primary_beam .fits file containing the primary_beam (e.g. '/path/to/primary_beam.fits')
     primary_beam_hdu : int
         The hdu the primary_beam is contained in the .fits file specified by *primary_beam_path*.
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds.
     renormalize : bool
         If True, the PrimaryBeam is renoralized such that all elements sum to 1.0.
     """
     if renormalize:
         return PrimaryBeam.from_fits(
-            file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scale=pixel_scale
+            file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scales=pixel_scales
         )
     if not renormalize:
         return PrimaryBeam.from_fits(
-            file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scale=pixel_scale
+            file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scales=pixel_scales
         )
 
 

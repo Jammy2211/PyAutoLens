@@ -11,7 +11,7 @@ imaging_data = simulation_util.load_test_imaging_data(
 )
 mask = aa.Mask.circular(
     shape=imaging_data.shape,
-    pixel_scales=imaging_data.pixel_scale,
+    pixel_scales=imaging_data.pixel_scales,
     radius_arcsec=3.0,
     centre=(1.0, 1.0),
 )

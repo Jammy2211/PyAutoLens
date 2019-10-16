@@ -193,8 +193,8 @@ class TestGaussian:
         ).all()
 
     def test__reshape_results(self):
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.grid.uniform(
+            shape_2d=(2, 2), pixel_scales=1.0, sub_size=1
         )
 
         gaussian = al.light_profiles.EllipticalGaussian()
@@ -381,8 +381,8 @@ class TestSersic:
         i += 1
 
     def test__reshape_decorators(self):
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.grid.uniform(
+            shape_2d=(2, 2), pixel_scales=1.0, sub_size=1
         )
 
         sersic = al.light_profiles.EllipticalSersic()
@@ -529,8 +529,8 @@ class TestExponential:
         ).all()
 
     def test__reshape_decorators(self):
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.grid.uniform(
+            shape_2d=(2, 2), pixel_scales=1.0, sub_size=1
         )
 
         exponential = al.light_profiles.EllipticalExponential()
@@ -678,8 +678,8 @@ class TestDevVaucouleurs:
         ).all()
 
     def test__reshape_decorators(self):
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.grid.uniform(
+            shape_2d=(2, 2), pixel_scales=1.0, sub_size=1
         )
 
         dev_vaucouleurs = al.light_profiles.EllipticalDevVaucouleurs()
@@ -844,8 +844,8 @@ class TestCoreSersic(object):
         ).all()
 
     def test__reshape_decorators(self):
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=(2, 2), pixel_scale=1.0, sub_size=1
+        grid = aa.grid.uniform(
+            shape_2d=(2, 2), pixel_scales=1.0, sub_size=1
         )
 
         core_sersic = al.light_profiles.EllipticalCoreSersic()

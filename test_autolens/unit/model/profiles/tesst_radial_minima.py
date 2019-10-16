@@ -230,7 +230,7 @@ class TestPowerLaw(object):
             ]
         )
 
-        mask = aa.Mask(mask, pixel_scale=1.0)
+        mask = aa.Mask(mask, pixel_scales=1.0)
 
         grid = aa.Grid.from_mask(mask=mask)
 
@@ -954,7 +954,7 @@ class TestSersicMassRadialGradient(object):
             ]
         )
 
-        mask = aa.Mask(mask, pixel_scale=1.0)
+        mask = aa.Mask(mask, pixel_scales=1.0)
 
         grid = aa.Grid.from_mask(mask=mask)
 

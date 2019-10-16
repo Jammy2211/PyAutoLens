@@ -59,7 +59,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.mask_function = None
 
         mask_input = al.Mask.circular(
-            shape=imaging_data_7x7.shape, pixel_scale=1, sub_size=1, radius_arcsec=1.5
+            shape=imaging_data_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -72,7 +72,7 @@ class TestPhase(object):
 
         def mask_function(image, sub_size):
             return al.Mask.circular(
-                shape=image.shape, pixel_scale=1, sub_size=sub_size, radius_arcsec=0.3
+                shape=image.shape, pixel_scales=1, sub_size=sub_size, radius_arcsec=0.3
             )
 
         mask_from_function = mask_function(image=imaging_data_7x7.image, sub_size=1)
@@ -102,7 +102,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.inner_mask_radii = 0.5
 
         mask_input = al.Mask.circular(
-            shape=imaging_data_7x7.shape, pixel_scale=1, sub_size=1, radius_arcsec=1.5
+            shape=imaging_data_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -119,7 +119,7 @@ class TestPhase(object):
 
         def mask_function(image, sub_size):
             return al.Mask.circular(
-                shape=image.shape, pixel_scale=1, sub_size=sub_size, radius_arcsec=1.4
+                shape=image.shape, pixel_scales=1, sub_size=sub_size, radius_arcsec=1.4
             )
 
         mask_from_function = mask_function(image=imaging_data_7x7.image, sub_size=1)
@@ -152,7 +152,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.mask_function = None
 
         mask_input = al.Mask.circular(
-            shape=imaging_data_7x7.shape, pixel_scale=1, sub_size=1, radius_arcsec=1.5
+            shape=imaging_data_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
         phase_imaging_7x7.meta_data_fit.sub_size = 1
@@ -396,30 +396,30 @@ class TestPhase(object):
             regularization=al.regularization.Constant,
         )
 
-        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale
+        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scales
         phase_imaging_7x7.meta_data_fit.inversion_pixel_limit = 5
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
 
         assert (
-            analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scale
+            analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scales
         )
 
         # There are 9 pixels in the mask, so to meet the inversoin pixel limit the pixel scale will be rescaled to the
         # masks's pixel scale
 
-        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale * 2.0
+        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scales * 2.0
         phase_imaging_7x7.meta_data_fit.inversion_pixel_limit = 5
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
 
         assert (
-            analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scale
+            analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scales
         )
 
         # This image cannot meet the requirement, so will raise an error.
 
-        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scale * 2.0
+        phase_imaging_7x7.meta_data_fit.pixel_scale_binned_cluster_grid = mask_7x7.pixel_scales * 2.0
         phase_imaging_7x7.meta_data_fit.inversion_pixel_limit = 10
 
         with pytest.raises(exc.DataException):

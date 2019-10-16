@@ -14,7 +14,7 @@ class TestGalaxyFitData(object):
             galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_image=True
         )
 
-        assert galaxy_fit_data.pixel_scale == 1.0
+        assert galaxy_fit_data.pixel_scales == (1.0, 1.0)
         assert (galaxy_fit_data.image(return_masked=False) == np.ones((7, 7))).all()
         assert (
             galaxy_fit_data.noise_map(return_masked=False) == 2.0 * np.ones((7, 7))
@@ -81,7 +81,7 @@ class TestGalaxyFitData(object):
 
         noise_map = aa.Scaled(sub_array_1d=2.0 * np.ones((7, 7)), pixel_scales=3.0)
         gal_data_7x7 = al.GalaxyData(
-            image=image_7x7, noise_map=noise_map, pixel_scale=3.0
+            image=image_7x7, noise_map=noise_map, pixel_scales=3.0
         )
         gal_data_7x7 = al.GalaxyFitData(
             galaxy_data=gal_data_7x7,
@@ -102,7 +102,7 @@ class TestGalaxyFitData(object):
             galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_image=True
         )
 
-        assert galaxy_fit_data.pixel_scale == 1.0
+        assert galaxy_fit_data.pixel_scales == (1.0, 1.0)
         assert (galaxy_fit_data.image(return_masked=False) == np.ones((7, 7))).all()
         assert (
             galaxy_fit_data.noise_map(return_masked=False) == 2.0 * np.ones((7, 7))
@@ -179,7 +179,7 @@ class TestGalaxyFitData(object):
             galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_convergence=True
         )
 
-        assert galaxy_fit_data.pixel_scale == 1.0
+        assert galaxy_fit_data.pixel_scales == (1.0, 1.0)
         assert (galaxy_fit_data.image(return_masked=False) == np.ones((7, 7))).all()
         assert (
             galaxy_fit_data.noise_map(return_masked=False) == 2.0 * np.ones((7, 7))
@@ -258,7 +258,7 @@ class TestGalaxyFitData(object):
             galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_potential=True
         )
 
-        assert galaxy_fit_data.pixel_scale == 1.0
+        assert galaxy_fit_data.pixel_scales == (1.0, 1.0)
         assert (galaxy_fit_data.image(return_masked=False) == np.ones((7, 7))).all()
         assert (
             galaxy_fit_data.noise_map(return_masked=False) == 2.0 * np.ones((7, 7))
@@ -334,7 +334,7 @@ class TestGalaxyFitData(object):
         galaxy_fit_data = al.GalaxyFitData(
             galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_deflections_y=True
         )
-        assert galaxy_fit_data.pixel_scale == 1.0
+        assert galaxy_fit_data.pixel_scales == (1.0, 1.0)
         assert (galaxy_fit_data.image(return_masked=False) == np.ones((7, 7))).all()
         assert (
             galaxy_fit_data.noise_map(return_masked=False) == 2.0 * np.ones((7, 7))
@@ -425,7 +425,7 @@ class TestGalaxyFitData(object):
             galaxy_data=gal_data_7x7, mask=sub_mask_7x7, use_deflections_x=True
         )
 
-        assert galaxy_fit_data.pixel_scale == 1.0
+        assert galaxy_fit_data.pixel_scales == (1.0, 1.0)
         assert (galaxy_fit_data.image(return_masked=False) == np.ones((7, 7))).all()
         assert (
             galaxy_fit_data.noise_map(return_masked=False) == 2.0 * np.ones((7, 7))
@@ -513,7 +513,7 @@ class TestGalaxyFitData(object):
     def test__no_use_method__raises_exception(self, image_7x7, sub_mask_7x7):
 
         gal_data_7x7 = al.GalaxyData(
-            image=image_7x7, noise_map=2.0 * np.ones((7, 7)), pixel_scale=3.0
+            image=image_7x7, noise_map=2.0 * np.ones((7, 7)), pixel_scales=3.0
         )
 
         with pytest.raises(exc.GalaxyException):
@@ -522,7 +522,7 @@ class TestGalaxyFitData(object):
     def test__multiple_use_methods__raises_exception(self, image_7x7, sub_mask_7x7):
 
         gal_data_7x7 = al.GalaxyData(
-            image=image_7x7, noise_map=2.0 * np.ones((7, 7)), pixel_scale=3.0
+            image=image_7x7, noise_map=2.0 * np.ones((7, 7)), pixel_scales=3.0
         )
 
         with pytest.raises(exc.GalaxyException):

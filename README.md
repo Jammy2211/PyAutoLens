@@ -30,10 +30,10 @@ imaging_data = al.load_imaging_data_from_fits(
     image_path=data_path + lens_name + '/image.fits',
     psf_path=data_path+lens_name+'/psf.fits',
     noise_map_path=data_path+lens_name+'/noise_map.fits', 
-    pixel_scale=0.1)
+    pixel_scales=0.1)
 
 # Create a mask for the data, which we setup as a 3.0" circle.
-mask = aa.Mask.circular(shape=imaging_data.shape, pixel_scale=imaging_data.pixel_scale, radius_arcsec=3.0)
+mask = aa.Mask.circular(shape=imaging_data.shape, pixel_scales=imaging_data.pixel_scales, radius_arcsec=3.0)
 
 # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) & our source galaxy 
 # a light profile (an elliptical Sersic).

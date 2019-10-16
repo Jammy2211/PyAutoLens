@@ -6,73 +6,73 @@ from autoarray.operators import fourier_transform
 
 
 class MockImage(object):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         return aa.Array.from_2d(
-            array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
+            array_2d=value * np.ones(shape=shape), pixel_scales=pixel_scales
         )
 
 
 class MockNoiseMap(object):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         return aa.Array.from_2d(
-            array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
+            array_2d=value * np.ones(shape=shape), pixel_scales=pixel_scales
         )
 
 
 class MockBackgroundNoiseMap(object):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         return aa.Array.from_2d(
-            array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
+            array_2d=value * np.ones(shape=shape), pixel_scales=pixel_scales
         )
 
 
 class MockPoissonNoiseMap(object):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         return aa.Array.from_2d(
-            array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
+            array_2d=value * np.ones(shape=shape), pixel_scales=pixel_scales
         )
 
 
 class MockExposureTimeMap(object):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         return aa.Array.from_2d(
-            array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
+            array_2d=value * np.ones(shape=shape), pixel_scales=pixel_scales
         )
 
 
 class MockBackgrondSkyMap(object):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         return aa.Array.from_2d(
-            array_2d=value * np.ones(shape=shape), pixel_scale=pixel_scale
+            array_2d=value * np.ones(shape=shape), pixel_scales=pixel_scales
         )
 
 
 class MockPSF(object):
-    def __new__(cls, shape, value, pixel_scale=1.0, *args, **kwargs):
-        return al.PSF.from_2d_and_pixel_scale(
+    def __new__(cls, shape, value, pixel_scales=1.0, *args, **kwargs):
+        return al.PSF.manual_2d(
             array_2d=value * np.ones(shape=shape),
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             origin=(0.0, 0.0),
         )
 
 
 class MockImage1D(np.ndarray):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         array = value * np.ones(shape=shape)
 
         obj = np.array(array, dtype="float64").view(cls)
-        obj.pixel_scale = pixel_scale
+        obj.pixel_scales = pixel_scales
         obj.origin = (0.0, 0.0)
 
         return obj
 
 
 class MockNoiseMap1D(np.ndarray):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         array = value * np.ones(shape=shape)
 
         obj = np.array(array, dtype="float64").view(cls)
-        obj.pixel_scale = pixel_scale
+        obj.pixel_scales = pixel_scales
         obj.origin = (0.0, 0.0)
 
         return obj
@@ -82,7 +82,7 @@ class MockImagingData(al.ImagingData):
     def __init__(
         self,
         image,
-        pixel_scale,
+        pixel_scales,
         psf,
         noise_map,
         background_noise_map,
@@ -93,7 +93,7 @@ class MockImagingData(al.ImagingData):
     ):
         super(MockImagingData, self).__init__(
             image=image,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             psf=psf,
             noise_map=noise_map,
             background_noise_map=background_noise_map,
@@ -105,38 +105,38 @@ class MockImagingData(al.ImagingData):
 
 
 class MockPrimaryBeam(object):
-    def __new__(cls, shape, value, pixel_scale=1.0, *args, **kwargs):
+    def __new__(cls, shape, value, pixel_scales=1.0, *args, **kwargs):
         return al.PSF(
             array_1d=value * np.ones(shape=shape),
-            pixel_scales=pixel_scale,
+            pixel_scales=pixel_scales,
             origin=(0.0, 0.0),
         )
 
 
 class MockVisibilities(np.ndarray):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         array = value * np.ones(shape=(shape, 2))
 
         obj = np.array(array, dtype="float64").view(cls)
-        obj.pixel_scale = pixel_scale
+        obj.pixel_scales = pixel_scales
         obj.origin = (0.0, 0.0)
 
         return obj
 
 
 class MockVisibilitiesNoiseMap(np.ndarray):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         array = value * np.ones(shape=shape)
 
         obj = np.array(array, dtype="float64").view(cls)
-        obj.pixel_scale = pixel_scale
+        obj.pixel_scales = pixel_scales
         obj.origin = (0.0, 0.0)
 
         return obj
 
 
 class MockUVWavelengths(np.ndarray):
-    def __new__(cls, shape, value, pixel_scale=1.0):
+    def __new__(cls, shape, value, pixel_scales=1.0):
         array = np.array(
             [
                 [-55636.4609375, 171376.90625],
@@ -150,7 +150,7 @@ class MockUVWavelengths(np.ndarray):
         )
 
         obj = np.array(array, dtype="float64").view(cls)
-        obj.pixel_scale = pixel_scale
+        obj.pixel_scales = pixel_scales
         obj.origin = (0.0, 0.0)
 
         return obj
@@ -158,12 +158,12 @@ class MockUVWavelengths(np.ndarray):
 
 class MockUVPlaneData(al.UVPlaneData):
     def __init__(
-        self, shape, visibilities, pixel_scale, primary_beam, noise_map, uv_wavelengths
+        self, shape, visibilities, pixel_scales, primary_beam, noise_map, uv_wavelengths
     ):
         super(MockUVPlaneData, self).__init__(
             shape=shape,
             visibilities=visibilities,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             primary_beam=primary_beam,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,

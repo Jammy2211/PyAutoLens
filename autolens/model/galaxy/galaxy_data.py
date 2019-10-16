@@ -3,7 +3,7 @@ from autolens import exc
 
 
 class GalaxyData(object):
-    def __init__(self, image, noise_map, pixel_scale):
+    def __init__(self, image, noise_map, pixel_scales):
         """ A galaxy-fit data_type is a collection of fit data_type components which are used to fit a galaxy to another galaxy. \
         This is where a component of a galaxy's light profiles (e.g. image) or mass profiles (e.g. convergence \
         , potential or deflection angles) are fitted to one another.
@@ -24,7 +24,7 @@ class GalaxyData(object):
         """
         self.image = image
         self.noise_map = noise_map
-        self.pixel_scale = pixel_scale
+        self.pixel_scales = pixel_scales
 
 
 class GalaxyFitData(object):
@@ -69,7 +69,7 @@ class GalaxyFitData(object):
         """
         self.galaxy_data = galaxy_data
         self.mapping = mask.mapping
-        self.pixel_scale = galaxy_data.pixel_scale
+        self.pixel_scales = galaxy_data.pixel_scales
 
         self._image_1d = mask.mapping.array_from_array_2d(array_2d=galaxy_data.image)
         self._noise_map_1d = mask.mapping.array_from_array_2d(
@@ -139,7 +139,7 @@ class GalaxyFitData(object):
         super(GalaxyFitData, self).__array_finalize__(obj)
         if isinstance(obj, GalaxyFitData):
             self.galaxy_data = obj.galaxy_data
-            self.pixel_scale = obj.pixel_scale
+            self.pixel_scales = obj.pixel_scales
             self.mask = obj.mask
             self._image_1d = obj._image_1d
             self._noise_map_1d = obj._noise_map_1d

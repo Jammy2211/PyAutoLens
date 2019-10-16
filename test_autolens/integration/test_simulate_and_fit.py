@@ -14,8 +14,8 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         pixel_scales=0.2,
     )
 
-    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-        shape_2d=(11, 11), pixel_scale=0.2, sub_size=2
+    grid = aa.grid.uniform(
+        shape_2d=(11, 11), pixel_scales=0.2, sub_size=2
     )
 
     lens_galaxy = al.Galaxy(
@@ -36,7 +36,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     imaging_simulated = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
-        pixel_scale=0.2,
+        pixel_scales=0.2,
         exposure_time=300.0,
         psf=psf,
         background_sky_level=0.0,
@@ -69,7 +69,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
-        pixel_scale=0.2,
+        pixel_scales=0.2,
     )
 
     mask = aa.Mask.circular(
@@ -96,10 +96,10 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
 def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    psf = al.PSF.from_gaussian(shape=(3, 3), pixel_scale=0.2, sigma=0.75)
+    psf = al.PSF.from_gaussian(shape=(3, 3), pixel_scales=0.2, sigma=0.75)
 
-    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-        shape_2d=(11, 11), pixel_scale=0.2, sub_size=1
+    grid = aa.grid.uniform(
+        shape_2d=(11, 11), pixel_scales=0.2, sub_size=1
     )
 
     lens_galaxy = al.Galaxy(
@@ -119,7 +119,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
             grid=grid, psf_shape=psf.in_2d.shape
         ),
-        pixel_scale=0.2,
+        pixel_scales=0.2,
         exposure_time=300.0,
         psf=psf,
         background_sky_level=0.0,
@@ -151,7 +151,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
-        pixel_scale=0.2,
+        pixel_scales=0.2,
     )
 
     mask = aa.Mask.circular(
