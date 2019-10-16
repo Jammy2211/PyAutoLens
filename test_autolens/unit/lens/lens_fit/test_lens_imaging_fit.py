@@ -101,7 +101,7 @@ class TestLikelihood:
         )
 
         imaging_data = al.ImagingData(
-            5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4))
+            5.0 * np.ones((3, 4)), pixel_scales=1.0, psf=psf, noise_map=np.ones((3, 4))
         )
         imaging_data.image[1, 2] = 4.0
 
@@ -206,7 +206,7 @@ class TestLikelihood:
         )
 
         imaging_data = al.ImagingData(
-            5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4))
+            5.0 * np.ones((3, 4)), pixel_scales=1.0, psf=psf, noise_map=np.ones((3, 4))
         )
         imaging_data.image[1, 2] = 4.0
 
@@ -317,7 +317,7 @@ class TestLikelihood:
         )
 
         imaging_data = al.ImagingData(
-            5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4))
+            5.0 * np.ones((3, 4)), pixel_scales=1.0, psf=psf, noise_map=np.ones((3, 4))
         )
         imaging_data.image[1, 2] = 4.0
 
@@ -429,7 +429,7 @@ class TestLikelihood:
         )
 
         imaging_data = al.ImagingData(
-            5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4))
+            5.0 * np.ones((3, 4)), pixel_scales=1.0, psf=psf, noise_map=np.ones((3, 4))
         )
         imaging_data.image[1, 2] = 4.0
 
@@ -537,7 +537,7 @@ class TestLikelihood:
         )
 
         imaging_data = al.ImagingData(
-            5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4))
+            5.0 * np.ones((3, 4)), pixel_scales=1.0, psf=psf, noise_map=np.ones((3, 4))
         )
         imaging_data.image[1, 2] = 4.0
 
@@ -643,7 +643,7 @@ class TestLikelihood:
         )
 
         imaging_data = al.ImagingData(
-            5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4))
+            5.0 * np.ones((3, 4)), pixel_scales=1.0, psf=psf, noise_map=np.ones((3, 4))
         )
         imaging_data.image[1, 2] = 4.0
 

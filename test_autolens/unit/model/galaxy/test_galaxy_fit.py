@@ -11,7 +11,7 @@ class TestLikelihood:
 
         noise_map = aa.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
 
-        galaxy_data = al.GalaxyData(image=image, noise_map=noise_map, pixel_scale=3.0)
+        galaxy_data = al.GalaxyData(image=image, noise_map=noise_map, pixel_scales=3.0)
 
         mask = aa.Mask(
             array_2d=np.array(
@@ -63,7 +63,7 @@ class TestLikelihood:
 
         noise_map = aa.Scaled(sub_array_1d=2.0 * np.ones((3, 4)), pixel_scales=1.0)
 
-        galaxy_data = al.GalaxyData(image=image, noise_map=noise_map, pixel_scale=3.0)
+        galaxy_data = al.GalaxyData(image=image, noise_map=noise_map, pixel_scales=3.0)
 
         mask = aa.Mask(
             array_2d=np.array(

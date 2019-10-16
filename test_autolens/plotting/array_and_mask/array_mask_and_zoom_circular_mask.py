@@ -13,7 +13,7 @@ array = imaging_data.image
 
 mask = aa.Mask.circular(
     shape=imaging_data.shape,
-    pixel_scales=imaging_data.pixel_scale,
+    pixel_scales=imaging_data.pixel_scales,
     radius_arcsec=5.0,
     centre=(0.0, 0.0),
 )
@@ -33,7 +33,7 @@ array = imaging_data.image
 
 mask = aa.Mask.circular(
     shape=imaging_data.shape,
-    pixel_scales=imaging_data.pixel_scale,
+    pixel_scales=imaging_data.pixel_scales,
     radius_arcsec=5.0,
     centre=(1.0, 1.0),
 )

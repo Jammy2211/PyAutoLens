@@ -58,12 +58,12 @@ class MockMask(aa.Mask):
 
 
 class MockMask1D(np.ndarray):
-    def __new__(cls, shape, pixel_scale=1.0, *args, **kwargs):
+    def __new__(cls, shape, pixel_scales=1.0, *args, **kwargs):
 
         array = np.full(fill_value=False, shape=shape)
 
         obj = np.array(array, dtype="bool").view(cls)
-        obj.pixel_scale = pixel_scale
+        obj.pixel_scales = pixel_scales
         obj.origin = (0.0, 0.0)
 
         return obj

@@ -74,7 +74,7 @@ class TestLikelihood:
         uv_plane_data = al.UVPlaneData(
             shape=(1, 2),
             visibilities=5.0 * np.ones((1, 2)),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             noise_map=np.ones((1,)),
             uv_wavelengths=uv_wavelengths,
             primary_beam=None,
@@ -142,7 +142,7 @@ class TestLikelihood:
         uv_plane_data = al.UVPlaneData(
             shape=(1, 2),
             visibilities=5.0 * np.ones((3, 2)),
-            pixel_scale=1.0,
+            pixel_scales=1.0,
             noise_map=2.0 * np.ones((3,)),
             uv_wavelengths=uv_wavelengths,
             primary_beam=None,

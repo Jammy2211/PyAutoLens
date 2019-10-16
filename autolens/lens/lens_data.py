@@ -64,8 +64,8 @@ class AbstractLensData(object):
         return self.mask.mapping
 
     @property
-    def pixel_scale(self):
-        return self.mask.pixel_scale
+    def pixel_scales(self):
+        return self.mask.pixel_scales
 
 
 class LensImagingData(AbstractLensData):
@@ -229,7 +229,7 @@ class LensImagingData(AbstractLensData):
 
             fit = lens_fit.LensPositionFit(
                 positions=traced_positions_of_planes[-1],
-                noise_map=self.pixel_scale,
+                noise_map=self.pixel_scales,
             )
 
             if not fit.maximum_separation_within_threshold(

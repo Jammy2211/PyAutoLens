@@ -237,7 +237,7 @@ class TestReconstructedDataVectorAndImage:
 #
 #         mask = aa.Mask(array=np.array([[True, True, True],
 #                                         [False, False, False],
-#                                         [True, True, True]]), pixel_scale=1.0)
+#                                         [True, True, True]]), pixel_scales=1.0)
 #
 #         grid = aa.grid_stack_from_mask_sub_size_and_psf_shape(
 #             mask=mask, sub_size=1, psf_shape=(1,1))

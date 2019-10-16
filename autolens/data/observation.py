@@ -7,7 +7,7 @@ from autolens.data.plotters import imaging_plotters
 
 
 class ImagingObservation(object):
-    def __init__(self, shape, pixel_scale, psf, exposure_time, background_sky_level):
+    def __init__(self, shape, pixel_scales, psf, exposure_time, background_sky_level):
         """A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
 
@@ -16,7 +16,7 @@ class ImagingObservation(object):
         shape : (int, int)
             The shape of the observation. Note that we do not simulate a full Imaging frame (e.g. 2000 x 2000 pixels for \
             Hubble imaging), but instead just a cut-out around the strong lens.
-        pixel_scale : float
+        pixel_scales : float
             The size of each pixel in arc seconds.
         psf : PSF
             An array describing the PSF kernel of the image.
@@ -26,7 +26,7 @@ class ImagingObservation(object):
             The level of the background sky of an observationg using this data_type.
         """
         self.shape = shape
-        self.pixel_scale = pixel_scale
+        self.pixel_scales = pixel_scales
         self.psf = psf
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
@@ -55,8 +55,8 @@ class ImagingObservation(object):
         5) Output the data to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=self.shape, pixel_scale=self.psf.pixel_scale, sub_size=sub_size
+        grid = aa.grid.uniform(
+            shape_2d=self.shape, pixel_scales=self.psf.pixel_scales, sub_size=sub_size
         )
 
         tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
@@ -64,7 +64,7 @@ class ImagingObservation(object):
         imaging_data = imaging.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
             tracer=tracer,
             grid=grid,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             exposure_time=self.exposure_time,
             psf=self.psf,
             background_sky_level=self.background_sky_level,
@@ -133,7 +133,7 @@ class ImagingObservation(object):
     def lsst(
         cls,
         shape=(101, 101),
-        pixel_scale=0.2,
+        pixel_scales=0.2,
         psf_shape=(31, 31),
         psf_sigma=0.5,
         exposure_time=100.0,
@@ -143,11 +143,11 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scale=pixel_scale
+            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -157,7 +157,7 @@ class ImagingObservation(object):
     def euclid(
         cls,
         shape=(151, 151),
-        pixel_scale=0.1,
+        pixel_scales=0.1,
         psf_shape=(31, 31),
         psf_sigma=0.1,
         exposure_time=565.0,
@@ -167,11 +167,11 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scale=pixel_scale
+            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -181,7 +181,7 @@ class ImagingObservation(object):
     def hst(
         cls,
         shape=(251, 251),
-        pixel_scale=0.05,
+        pixel_scales=0.05,
         psf_shape=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
@@ -191,11 +191,11 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scale=pixel_scale
+            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -205,7 +205,7 @@ class ImagingObservation(object):
     def hst_up_sampled(
         cls,
         shape=(401, 401),
-        pixel_scale=0.03,
+        pixel_scales=0.03,
         psf_shape=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
@@ -216,11 +216,11 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scale=pixel_scale
+            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -230,7 +230,7 @@ class ImagingObservation(object):
     def keck_adaptive_optics(
         cls,
         shape=(751, 751),
-        pixel_scale=0.01,
+        pixel_scales=0.01,
         psf_shape=(31, 31),
         psf_sigma=0.025,
         exposure_time=1000.0,
@@ -240,11 +240,11 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scale=pixel_scale
+            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,

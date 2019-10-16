@@ -7,7 +7,7 @@ class MockScaledSubGrid(aa.Grid):
     def __new__(cls, mask, *args, **kwargs):
         sub_grid_1d = aa.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask,
-            pixel_scales=(mask.geometry.pixel_scale, mask.geometry.pixel_scale),
+            pixel_scales=(mask.geometry.pixel_scales, mask.geometry.pixel_scales),
             sub_size=mask.sub_size,
         )
 

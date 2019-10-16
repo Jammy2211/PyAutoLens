@@ -41,7 +41,7 @@ class TestAbstractLensData(object):
     def test__pixel_scale_binned_grid_is_input__correct_binned_up_grid_calculated(
         self, sub_mask_7x7, grid_7x7
     ):
-        sub_mask_7x7.pixel_scale = 1.0
+        sub_mask_7x7.pixel_scales = 1.0
         lens_imaging_data_7x7 = al.AbstractLensData(
             mask=sub_mask_7x7, pixel_scale_binned_grid=1.0
         )
@@ -56,7 +56,7 @@ class TestAbstractLensData(object):
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
-        sub_mask_7x7.pixel_scale = 1.0
+        sub_mask_7x7.pixel_scales = 1.0
         lens_imaging_data_7x7 = al.AbstractLensData(
             mask=sub_mask_7x7, pixel_scale_binned_grid=1.9
         )
@@ -70,7 +70,7 @@ class TestAbstractLensData(object):
             == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
         ).all()
 
-        sub_mask_7x7.pixel_scale = 1.0
+        sub_mask_7x7.pixel_scales = 1.0
         lens_imaging_data_7x7 = al.AbstractLensData(
             mask=sub_mask_7x7, pixel_scale_binned_grid=2.0
         )
@@ -95,14 +95,14 @@ class TestAbstractLensData(object):
             == np.array([[0, -1, -1, -1], [1, 2, -1, -1], [3, 6, -1, -1], [4, 5, 7, 8]])
         ).all()
 
-        sub_mask_7x7.pixel_scale = 2.0
+        sub_mask_7x7.pixel_scales = 2.0
         lens_imaging_data_7x7 = al.AbstractLensData(
             mask=sub_mask_7x7, pixel_scale_binned_grid=1.0
         )
 
         assert lens_imaging_data_7x7.grid.binned.bin_up_factor == 1
 
-        sub_mask_7x7.pixel_scale = 1.0
+        sub_mask_7x7.pixel_scales = 1.0
         lens_imaging_data_7x7 = al.AbstractLensData(
             mask=sub_mask_7x7, pixel_scale_binned_grid=None
         )
@@ -138,8 +138,8 @@ class TestAbstractLensData(object):
 
 class TestLensImagingData(object):
     def test__attributes(self, imaging_data_7x7, lens_imaging_data_7x7):
-        assert lens_imaging_data_7x7.pixel_scale == imaging_data_7x7.pixel_scale
-        assert lens_imaging_data_7x7.pixel_scale == 1.0
+        assert lens_imaging_data_7x7.pixel_scales == imaging_data_7x7.pixel_scales
+        assert lens_imaging_data_7x7.pixel_scales == (1.0, 1.0)
 
         assert (
             lens_imaging_data_7x7.image(return_in_2d=True, return_masked=False)
@@ -273,12 +273,12 @@ class TestLensImagingData(object):
         psf = al.PSF(np.ones((7, 7)), 1)
         imaging_data = al.ImagingData(
             np.ones((19, 19)),
-            pixel_scale=3.0,
+            pixel_scales=3.0,
             psf=psf,
             noise_map=2.0 * np.ones((19, 19)),
         )
         mask = al.Mask.unmasked_from_shape_pixel_scale_and_sub_size(
-            shape=(19, 19), pixel_scale=1.0, invert=True, sub_size=8
+            shape=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         mask[9, 9] = False
 
@@ -360,8 +360,8 @@ class TestLensImagingData(object):
             signal_to_noise_limit=0.25
         )
 
-        assert lens_data_snr_limit.pixel_scale == imaging_data_7x7.pixel_scale
-        assert lens_data_snr_limit.pixel_scale == 1.0
+        assert lens_data_snr_limit.pixel_scales == imaging_data_7x7.pixel_scales
+        assert lens_data_snr_limit.pixel_scales == (1.0, 1.0)
 
         assert (
             lens_data_snr_limit.image(return_in_2d=True, return_masked=False)
@@ -404,8 +404,8 @@ class TestLensImagingData(object):
 class TestLensUVPlaneData(object):
     def test__attributes(self, uv_plane_data_7, lens_uv_plane_data_7, sub_mask_7x7):
 
-        assert lens_uv_plane_data_7.pixel_scale == uv_plane_data_7.pixel_scale
-        assert lens_uv_plane_data_7.pixel_scale == 1.0
+        assert lens_uv_plane_data_7.pixel_scales == uv_plane_data_7.pixel_scales
+        assert lens_uv_plane_data_7.pixel_scales == (1.0, 1.0)
 
         assert (
             lens_uv_plane_data_7.visibilities() == uv_plane_data_7.visibilities
@@ -450,13 +450,13 @@ class TestLensUVPlaneData(object):
         uv_plane_data = al.UVPlaneData(
             shape=(2, 2),
             visibilities=np.ones((19, 2)),
-            pixel_scale=3.0,
+            pixel_scales=3.0,
             primary_beam=primary_beam,
             noise_map=2.0 * np.ones((19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
         mask = al.Mask.unmasked_from_shape_pixel_scale_and_sub_size(
-            shape=(19, 19), pixel_scale=1.0, invert=True, sub_size=8
+            shape=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         mask[9, 9] = False
 

@@ -16,13 +16,13 @@ af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_pa
 
 def galaxy_fit_phase():
 
-    pixel_scale = 0.1
+    pixel_scales = 0.1
     image_shape = (150, 150)
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-        shape_2d=image_shape, pixel_scale=pixel_scale, sub_size=4
+    grid = aa.grid.uniform(
+        shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4
     )
 
     galaxy = al.Galaxy(
@@ -35,14 +35,14 @@ def galaxy_fit_phase():
     deflections = galaxy.deflections_from_grid(galaxies=[galaxy], grid=grid)
 
     noise_map = aa.Scaled(
-        sub_array_1d=np.ones(deflections[:, 0].shape), pixel_scales=pixel_scale
+        sub_array_1d=np.ones(deflections[:, 0].shape), pixel_scales=pixel_scales
     )
 
     data_y = al.GalaxyData(
-        image=deflections[:, 0], noise_map=noise_map, pixel_scale=pixel_scale
+        image=deflections[:, 0], noise_map=noise_map, pixel_scales=pixel_scales
     )
     data_x = al.GalaxyData(
-        image=deflections[:, 1], noise_map=noise_map, pixel_scale=pixel_scale
+        image=deflections[:, 1], noise_map=noise_map, pixel_scales=pixel_scales
     )
 
     phase1 = al.PhaseGalaxy(

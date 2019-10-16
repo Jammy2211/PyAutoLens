@@ -86,7 +86,7 @@ def make_pipeline(
             self.galaxies.lens.mass.mask_centre = (
                 results.from_phase("phase_1__lens_sersic")
                 .variable_absolute(a=0.1)
-                .galaxies.lens.light.mask_centre
+                .galaxies.lens.light.centre
             )
 
     phase2 = LensSubtractedPhase(
@@ -180,7 +180,7 @@ def make_pipeline(
 
             self.galaxies.lens.light_mass.mask_centre = results.from_phase(
                 "phase_3__lens_sersic_sie__source_sersic"
-            ).variable.galaxies.lens.light.mask_centre
+            ).variable.galaxies.lens.light.centre
 
             self.galaxies.lens.light_mass.axis_ratio = results.from_phase(
                 "phase_3__lens_sersic_sie__source_sersic"

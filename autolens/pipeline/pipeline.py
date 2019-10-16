@@ -89,10 +89,10 @@ class PipelineImaging(af.Pipeline):
 
 
 class PipelinePositions(af.Pipeline):
-    def run(self, positions, pixel_scale):
+    def run(self, positions, pixel_scales):
         def runner(phase, results):
             return phase.run(
-                positions=positions, pixel_scale=pixel_scale, results=results
+                positions=positions, pixel_scales=pixel_scales, results=results
             )
 
         return self.run_function(runner)

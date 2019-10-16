@@ -2,10 +2,6 @@ import logging
 
 from scipy.stats import norm
 
-import scipy.signal
-from astropy import units
-from skimage.transform import resize, rescale
-
 import numpy as np
 
 import autoarray as aa
@@ -20,7 +16,7 @@ class ImagingData(abstract_data.AbstractData):
     def __init__(
         self,
         image,
-        pixel_scale,
+        pixel_scales,
         psf,
         noise_map=None,
         background_noise_map=None,
@@ -34,9 +30,9 @@ class ImagingData(abstract_data.AbstractData):
 
         Parameters
         ----------
-        image : aa.ScaledSquarePixels
+        image : aa.Array
             The array of the image data_type, in units of electrons per second.
-        pixel_scale : float
+        pixel_scales : float
             The size of each pixel in arc seconds.
         psf : PSF
             An array describing the PSF kernel of the image.
@@ -57,7 +53,7 @@ class ImagingData(abstract_data.AbstractData):
 
         super(ImagingData, self).__init__(
             data=image,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
         )
@@ -78,40 +74,40 @@ class ImagingData(abstract_data.AbstractData):
 
     def binned_data_from_bin_up_factor(self, bin_up_factor):
 
-        image = self.image.binned_array_from_bin_up_factor(
+        image = self.image.binned_from_bin_up_factor(
             scaled_array=self.image, bin_up_factor=bin_up_factor, method="mean"
         )
-        psf = self.psf.rescaled_psf_with_odd_dimensions_from_rescale_factor(
+        psf = self.psf.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=1.0 / bin_up_factor, renormalize=True
         )
-        noise_map = self.noise_map.binned_array_from_bin_up_factor(
+        noise_map = self.noise_map.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor,
             method="quadrature",
         ) if self.noise_map is not None else None
 
-        background_noise_map = self.background_noise_map.binned_array_from_bin_up_factor(
+        background_noise_map = self.background_noise_map.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor,
             method="quadrature",
         ) if self.background_noise_map is not None else None
 
-        poisson_noise_map = self.poisson_noise_map.binned_array_from_bin_up_factor(
+        poisson_noise_map = self.poisson_noise_map.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor,
             method="quadrature",
         ) if self.poisson_noise_map is not None else None
 
-        exposure_time_map = self.exposure_time_map.binned_array_from_bin_up_factor(
+        exposure_time_map = self.exposure_time_map.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor,
             method="sum",
         ) if self.exposure_time_map is not None else None
 
-        background_sky_map = self.background_sky_map.binned_array_from_bin_up_factor(
+        background_sky_map = self.background_sky_map.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor,
             method="mean",
         ) if self.background_sky_map is not None else None
 
         return ImagingData(
             image=image,
-            pixel_scale=self.pixel_scale * bin_up_factor,
+            pixel_scales=self.pixel_scales * bin_up_factor,
             psf=psf,
             noise_map=noise_map,
             background_noise_map=background_noise_map,
@@ -125,33 +121,33 @@ class ImagingData(abstract_data.AbstractData):
         self, new_shape,
     ):
 
-        image = self.image.resized_array_from_new_shape(
+        image = self.image.resized_from_new_shape(
             new_shape=new_shape,
         )
 
-        noise_map = self.noise_map.resized_array_from_new_shape(
+        noise_map = self.noise_map.resized_from_new_shape(
             new_shape=new_shape,
         ) if self.noise_map is not None else None
 
-        background_noise_map = self.background_noise_map.resized_array_from_new_shape(
+        background_noise_map = self.background_noise_map.resized_from_new_shape(
             new_shape=new_shape,
         ) if self.background_noise_map is not None else None
 
-        poisson_noise_map = self.poisson_noise_map.resized_array_from_new_shape(
+        poisson_noise_map = self.poisson_noise_map.resized_from_new_shape(
             new_shape=new_shape
         ) if self.poisson_noise_map is not None else None
 
-        exposure_time_map = self.exposure_time_map.resized_array_from_new_shape(
+        exposure_time_map = self.exposure_time_map.resized_from_new_shape(
             new_shape=new_shape,
         ) if self.exposure_time_map is not None else None
 
-        background_sky_map = self.background_sky_map.resized_array_from_new_shape(
+        background_sky_map = self.background_sky_map.resized_from_new_shape(
             new_shape=new_shape,
         ) if self.background_sky_map is not None else None
 
         return ImagingData(
             image=image,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             psf=self.psf,
             noise_map=noise_map,
             background_noise_map=background_noise_map,
@@ -162,10 +158,10 @@ class ImagingData(abstract_data.AbstractData):
         )
 
     def resized_psf_data_from_new_shape(self, new_shape):
-        psf = self.psf.resized_array_from_new_shape(new_shape=new_shape)
+        psf = self.psf.resized_from_new_shape(new_shape=new_shape)
         return ImagingData(
             image=self.image,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             psf=psf,
             noise_map=self.noise_map,
             background_noise_map=self.background_noise_map,
@@ -179,7 +175,7 @@ class ImagingData(abstract_data.AbstractData):
 
         return ImagingData(
             image=image,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             psf=self.psf,
             noise_map=self.noise_map,
             background_noise_map=self.background_noise_map,
@@ -201,7 +197,7 @@ class ImagingData(abstract_data.AbstractData):
 
         return ImagingData(
             image=image_with_noise,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             psf=self.psf,
             noise_map=self.noise_map,
             background_noise_map=self.background_noise_map,
@@ -225,7 +221,7 @@ class ImagingData(abstract_data.AbstractData):
 
         return ImagingData(
             image=image,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             psf=self.psf,
             noise_map=noise_map,
             background_noise_map=background_noise_map,
@@ -255,7 +251,7 @@ class ImagingData(abstract_data.AbstractData):
 
         return ImagingData(
             image=image,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             psf=self.psf,
             noise_map=noise_map,
             background_noise_map=background_noise_map,
@@ -275,7 +271,7 @@ class ImagingData(abstract_data.AbstractData):
 
         return ImagingData(
             image=self.image,
-            pixel_scale=self.pixel_scale,
+            pixel_scales=self.pixel_scales,
             psf=self.psf,
             noise_map=noise_map_limit,
             background_noise_map=self.background_noise_map,
@@ -345,8 +341,8 @@ class ImagingData(abstract_data.AbstractData):
     def __array_finalize__(self, obj):
         if isinstance(obj, ImagingData):
             try:
-                self.image = obj.image
-                self.pixel_scale = obj.pixel_scale
+                self.data = obj.data
+                self.pixel_scales = obj.pixel_scales
                 self.psf = obj.psf
                 self.noise_map = obj.noise_map
                 self.background_noise_map = obj.background_noise_map
@@ -419,7 +415,7 @@ class SimulatedImagingData(ImagingData):
     def __init__(
         self,
         image,
-        pixel_scale,
+        pixel_scales,
         psf,
         noise_map=None,
         background_noise_map=None,
@@ -433,7 +429,7 @@ class SimulatedImagingData(ImagingData):
 
         super(SimulatedImagingData, self).__init__(
             image=image,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             psf=psf,
             noise_map=noise_map,
             background_noise_map=background_noise_map,
@@ -450,7 +446,7 @@ class SimulatedImagingData(ImagingData):
     def from_deflections_galaxies_and_exposure_arrays(
         cls,
         deflections,
-        pixel_scale,
+        pixel_scales,
         galaxies,
         exposure_time,
         psf=None,
@@ -465,8 +461,8 @@ class SimulatedImagingData(ImagingData):
 
         shape = (deflections.mask.shape[0], deflections.mask.shape[1])
 
-        grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-            shape_2d=shape, pixel_scale=pixel_scale, sub_size=1
+        grid = aa.grid.uniform(
+            shape_2d=shape, pixel_scales=pixel_scales, sub_size=1
         )
 
         deflected_grid_1d = grid.in_1d - deflections.in_1d
@@ -477,7 +473,7 @@ class SimulatedImagingData(ImagingData):
 
         return cls.from_image_and_exposure_arrays(
             image=image_2d,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             exposure_time=exposure_time,
             psf=psf,
             exposure_time_map=exposure_time_map,
@@ -494,7 +490,7 @@ class SimulatedImagingData(ImagingData):
         cls,
         tracer,
         grid,
-        pixel_scale,
+        pixel_scales,
         exposure_time,
         psf=None,
         exposure_time_map=None,
@@ -513,7 +509,7 @@ class SimulatedImagingData(ImagingData):
         name
         image : ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
-        pixel_scale: float
+        pixel_scales: float
             The scale of each pixel in arc seconds
         exposure_time_map : ndarray
             An array representing the effective exposure time of each pixel.
@@ -537,7 +533,7 @@ class SimulatedImagingData(ImagingData):
 
         return cls.from_image_and_exposure_arrays(
             image=image_2d,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             exposure_time=exposure_time,
             psf=psf,
             exposure_time_map=exposure_time_map,
@@ -553,7 +549,7 @@ class SimulatedImagingData(ImagingData):
     def from_image_and_exposure_arrays(
         cls,
         image,
-        pixel_scale,
+        pixel_scales,
         exposure_time,
         psf=None,
         exposure_time_map=None,
@@ -572,7 +568,7 @@ class SimulatedImagingData(ImagingData):
         name
         image : ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
-        pixel_scale: float
+        pixel_scales: float
             The scale of each pixel in arc seconds
         exposure_time_map : ndarray
             An array representing the effective exposure time of each pixel.
@@ -588,7 +584,7 @@ class SimulatedImagingData(ImagingData):
         """
 
         if psf is None:
-            psf = PSF.no_blur(pixel_scales=pixel_scale)
+            psf = PSF.no_blur(pixel_scales=pixel_scales)
             image_needs_trimming = False
         else:
             image_needs_trimming = True
@@ -596,7 +592,7 @@ class SimulatedImagingData(ImagingData):
         if exposure_time_map is None:
 
             exposure_time_map = aa.Array.from_single_value_shape_2d_and_pixel_scales(
-                value=exposure_time, shape_2d=image.mask.shape, pixel_scales=pixel_scale
+                value=exposure_time, shape_2d=image.mask.shape, pixel_scales=pixel_scales
             )
 
         if background_sky_map is None:
@@ -604,7 +600,7 @@ class SimulatedImagingData(ImagingData):
             background_sky_map = aa.Array.from_single_value_shape_2d_and_pixel_scales(
                 value=background_sky_level,
                 shape_2d=image.mask.shape,
-                pixel_scales=pixel_scale,
+                pixel_scales=pixel_scales,
             )
 
         image += background_sky_map
@@ -614,13 +610,13 @@ class SimulatedImagingData(ImagingData):
         )
 
         if image_needs_trimming:
-            image = image.trimmed_array_from_kernel_shape(
+            image = image.trimmed_from_kernel_shape(
                 kernel_shape=psf.mask.shape
             )
-            exposure_time_map = exposure_time_map.trimmed_array_from_kernel_shape(
+            exposure_time_map = exposure_time_map.trimmed_from_kernel_shape(
                 kernel_shape=psf.mask.shape
             )
-            background_sky_map = background_sky_map.trimmed_array_from_kernel_shape(
+            background_sky_map = background_sky_map.trimmed_from_kernel_shape(
                 kernel_shape=psf.mask.shape
             )
 
@@ -636,7 +632,7 @@ class SimulatedImagingData(ImagingData):
             noise_map = NoiseMap.from_single_value_shape_2d_and_pixel_scales(
                 value=noise_if_add_noise_false,
                 shape_2d=image.mask.shape,
-                pixel_scales=pixel_scale,
+                pixel_scales=pixel_scales,
             )
             noise_realization = None
 
@@ -670,7 +666,7 @@ class SimulatedImagingData(ImagingData):
 
         return SimulatedImagingData(
             image=image,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
             psf=psf,
             noise_map=noise_map,
             background_noise_map=background_noise_map,
@@ -685,7 +681,7 @@ class SimulatedImagingData(ImagingData):
         if isinstance(obj, SimulatedImagingData):
             try:
                 self.image = obj.image
-                self.pixel_scale = obj.pixel_scale
+                self.pixel_scales = obj.pixel_scales
                 self.psf = obj.psf
                 self.noise_map = obj.noise_map
                 self.background_noise_map = obj.background_noise_map
@@ -746,7 +742,7 @@ def generate_poisson_noise(image, exposure_time_map, seed=-1):
 
 def load_imaging_data_from_fits(
     image_path,
-    pixel_scale,
+    pixel_scales,
     image_hdu=0,
     resized_imaging_shape=None,
     psf_path=None,
@@ -789,7 +785,7 @@ def load_imaging_data_from_fits(
     lens_name
     image_path : str
         The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds.
     image_hdu : int
         The hdu the image is contained in the .fits file specified by *image_path*.
@@ -873,13 +869,13 @@ def load_imaging_data_from_fits(
     """
 
     image = abstract_data.load_image(
-        image_path=image_path, image_hdu=image_hdu, pixel_scale=pixel_scale
+        image_path=image_path, image_hdu=image_hdu, pixel_scales=pixel_scales
     )
 
     background_noise_map = load_background_noise_map(
         background_noise_map_path=background_noise_map_path,
         background_noise_map_hdu=background_noise_map_hdu,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         convert_background_noise_map_from_weight_map=convert_background_noise_map_from_weight_map,
         convert_background_noise_map_from_inverse_noise_map=convert_background_noise_map_from_inverse_noise_map,
     )
@@ -892,7 +888,7 @@ def load_imaging_data_from_fits(
     exposure_time_map = abstract_data.load_exposure_time_map(
         exposure_time_map_path=exposure_time_map_path,
         exposure_time_map_hdu=exposure_time_map_hdu,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         shape=image.mask.shape,
         exposure_time=exposure_time_map_from_single_value,
         exposure_time_map_from_inverse_noise_map=exposure_time_map_from_inverse_noise_map,
@@ -902,7 +898,7 @@ def load_imaging_data_from_fits(
     poisson_noise_map = load_poisson_noise_map(
         poisson_noise_map_path=poisson_noise_map_path,
         poisson_noise_map_hdu=poisson_noise_map_hdu,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         convert_poisson_noise_map_from_weight_map=convert_poisson_noise_map_from_weight_map,
         convert_poisson_noise_map_from_inverse_noise_map=convert_poisson_noise_map_from_inverse_noise_map,
         image=image,
@@ -916,7 +912,7 @@ def load_imaging_data_from_fits(
     noise_map = load_noise_map(
         noise_map_path=noise_map_path,
         noise_map_hdu=noise_map_hdu,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         image=image,
         background_noise_map=background_noise_map,
         exposure_time_map=exposure_time_map,
@@ -931,19 +927,19 @@ def load_imaging_data_from_fits(
     psf = load_psf(
         psf_path=psf_path,
         psf_hdu=psf_hdu,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         renormalize=renormalize_psf,
     )
 
     background_sky_map = load_background_sky_map(
         background_sky_map_path=background_sky_map_path,
         background_sky_map_hdu=background_sky_map_hdu,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
     )
 
     imaging_data = ImagingData(
         image=image,
-        pixel_scale=pixel_scale,
+        pixel_scales=pixel_scales,
         psf=psf,
         noise_map=noise_map,
         background_noise_map=background_noise_map,
@@ -975,7 +971,7 @@ def load_imaging_data_from_fits(
 def load_noise_map(
     noise_map_path,
     noise_map_hdu,
-    pixel_scale,
+    pixel_scales,
     image=None,
     background_noise_map=None,
     exposure_time_map=None,
@@ -997,7 +993,7 @@ def load_noise_map(
         The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
     noise_map_hdu : int
         The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds.
     image : ndarray
         The image-image, which the noise-map can be calculated using.
@@ -1051,16 +1047,16 @@ def load_noise_map(
 
     if noise_map_options == 0 and noise_map_path is not None:
         return NoiseMap.from_fits_and_pixel_scale(
-            file_path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale
+            file_path=noise_map_path, hdu=noise_map_hdu, pixel_scales=pixel_scales
         )
     elif convert_noise_map_from_weight_map and noise_map_path is not None:
-        weight_map = aa.Array.from_fits_and_pixel_scale(
-            file_path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale
+        weight_map = aa.array.from_fits(
+            file_path=noise_map_path, hdu=noise_map_hdu, pixel_scales=pixel_scales
         )
         return NoiseMap.from_weight_map(weight_map=weight_map)
     elif convert_noise_map_from_inverse_noise_map and noise_map_path is not None:
-        inverse_noise_map = aa.Array.from_fits_and_pixel_scale(
-            file_path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale
+        inverse_noise_map = aa.array.from_fits(
+            file_path=noise_map_path, hdu=noise_map_hdu, pixel_scales=pixel_scales
         )
         return NoiseMap.from_inverse_noise_map(
             inverse_noise_map=inverse_noise_map,
@@ -1102,7 +1098,7 @@ def load_noise_map(
         )
 
 
-def load_psf(psf_path, psf_hdu, pixel_scale, renormalize=False):
+def load_psf(psf_path, psf_hdu, pixel_scales, renormalize=False):
     """Factory for loading the psf from a .fits file.
 
     Parameters
@@ -1111,25 +1107,20 @@ def load_psf(psf_path, psf_hdu, pixel_scale, renormalize=False):
         The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
     psf_hdu : int
         The hdu the psf is contained in the .fits file specified by *psf_path*.
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds.
     renormalize : bool
         If True, the PSF is renoralized such that all elements sum to 1.0.
     """
-    if renormalize:
-        return PSF.from_fits_renormalized(
-            file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale
-        )
-    if not renormalize:
-        return PSF.from_fits_with_scale(
-            file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale
-        )
+    return PSF.from_fits(
+        file_path=psf_path, hdu=psf_hdu, pixel_scales=pixel_scales, renormalize=renormalize
+    )
 
 
 def load_background_noise_map(
     background_noise_map_path,
     background_noise_map_hdu,
-    pixel_scale,
+    pixel_scales,
     convert_background_noise_map_from_weight_map=False,
     convert_background_noise_map_from_inverse_noise_map=False,
 ):
@@ -1145,7 +1136,7 @@ def load_background_noise_map(
         (e.g. '/path/to/background_noise_map.fits')
     background_noise_map_hdu : int
         The hdu the background_noise_map is contained in the .fits file specified by *background_noise_map_path*.
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds.
     convert_background_noise_map_from_weight_map : bool
         If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
@@ -1165,26 +1156,26 @@ def load_background_noise_map(
         return NoiseMap.from_fits_and_pixel_scale(
             file_path=background_noise_map_path,
             hdu=background_noise_map_hdu,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
         )
     elif (
         convert_background_noise_map_from_weight_map
         and background_noise_map_path is not None
     ):
-        weight_map = aa.Array.from_fits_and_pixel_scale(
+        weight_map = aa.array.from_fits(
             file_path=background_noise_map_path,
             hdu=background_noise_map_hdu,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
         )
         return NoiseMap.from_weight_map(weight_map=weight_map)
     elif (
         convert_background_noise_map_from_inverse_noise_map
         and background_noise_map_path is not None
     ):
-        inverse_noise_map = aa.Array.from_fits_and_pixel_scale(
+        inverse_noise_map = aa.array.from_fits(
             file_path=background_noise_map_path,
             hdu=background_noise_map_hdu,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
         )
         return NoiseMap.from_inverse_noise_map(
             inverse_noise_map=inverse_noise_map,
@@ -1196,7 +1187,7 @@ def load_background_noise_map(
 def load_poisson_noise_map(
     poisson_noise_map_path,
     poisson_noise_map_hdu,
-    pixel_scale,
+    pixel_scales,
     convert_poisson_noise_map_from_weight_map=False,
     convert_poisson_noise_map_from_inverse_noise_map=False,
     poisson_noise_map_from_image=False,
@@ -1218,7 +1209,7 @@ def load_poisson_noise_map(
          (e.g. '/path/to/poisson_noise_map.fits')
     poisson_noise_map_hdu : int
         The hdu the poisson_noise_map is contained in the .fits file specified by *poisson_noise_map_path*.
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds.
     convert_poisson_noise_map_from_weight_map : bool
         If True, the Poisson noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
@@ -1255,7 +1246,7 @@ def load_poisson_noise_map(
         return PoissonNoiseMap.from_fits_and_pixel_scale(
             file_path=poisson_noise_map_path,
             hdu=poisson_noise_map_hdu,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
         )
     elif poisson_noise_map_from_image:
 
@@ -1285,10 +1276,10 @@ def load_poisson_noise_map(
     elif (
         convert_poisson_noise_map_from_weight_map and poisson_noise_map_path is not None
     ):
-        weight_map = aa.Array.from_fits_and_pixel_scale(
+        weight_map = aa.array.from_fits(
             file_path=poisson_noise_map_path,
             hdu=poisson_noise_map_hdu,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
         )
         return PoissonNoiseMap.from_weight_map(
             weight_map=weight_map,
@@ -1297,10 +1288,10 @@ def load_poisson_noise_map(
         convert_poisson_noise_map_from_inverse_noise_map
         and poisson_noise_map_path is not None
     ):
-        inverse_noise_map = aa.Array.from_fits_and_pixel_scale(
+        inverse_noise_map = aa.array.from_fits(
             file_path=poisson_noise_map_path,
             hdu=poisson_noise_map_hdu,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
         )
         return PoissonNoiseMap.from_inverse_noise_map(
             inverse_noise_map=inverse_noise_map,
@@ -1310,7 +1301,7 @@ def load_poisson_noise_map(
 
 
 def load_background_sky_map(
-    background_sky_map_path, background_sky_map_hdu, pixel_scale
+    background_sky_map_path, background_sky_map_hdu, pixel_scales
 ):
     """Factory for loading the background sky from a .fits file.
 
@@ -1321,14 +1312,14 @@ def load_background_sky_map(
         (e.g. '/path/to/background_sky_map.fits').
     background_sky_map_hdu : int
         The hdu the background_sky_map is contained in the .fits file specified by *background_sky_map_path*.
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds.
     """
     if background_sky_map_path is not None:
-        return aa.Array.from_fits_and_pixel_scale(
+        return aa.array.from_fits(
             file_path=background_sky_map_path,
             hdu=background_sky_map_hdu,
-            pixel_scale=pixel_scale,
+            pixel_scales=pixel_scales,
         )
     else:
         return None

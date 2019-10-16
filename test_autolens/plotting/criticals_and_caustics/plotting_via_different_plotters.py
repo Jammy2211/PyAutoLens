@@ -1,8 +1,8 @@
 from autolens.model.profiles import mass_profiles
 from autolens.model.profiles.plotters import profile_plotters
 
-grid = aa.Grid.from_shape_2d_pixel_scale_and_sub_size(
-    shape_2d=(100, 100), pixel_scale=0.05, sub_size=4
+grid = aa.grid.uniform(
+    shape_2d=(100, 100), pixel_scales=0.05, sub_size=4
 )
 
 sis_mass_profile = mass_profiles.EllipticalIsothermal(

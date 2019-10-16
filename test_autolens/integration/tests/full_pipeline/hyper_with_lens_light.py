@@ -45,7 +45,7 @@ def make_pipeline(
             self.galaxies.lens.mass.mask_centre = (
                 results.from_phase("phase_1__lens_sersic")
                 .variable_absolute(a=0.1)
-                .galaxies.lens.light.mask_centre
+                .galaxies.lens.light.centre
             )
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##

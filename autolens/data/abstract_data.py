@@ -6,14 +6,14 @@ from autolens import exc
 
 
 class AbstractData(object):
-    def __init__(self, data, pixel_scale, noise_map, exposure_time_map=None):
+    def __init__(self, data, noise_map, exposure_time_map=None):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
         ----------
-        data : aa.ScaledSquarePixels
+        data : aa.Array
             The array of the image data_type, in units of electrons per second.
-        pixel_scale : float
+        pixel_scales : float
             The size of each pixel in arc seconds.
         psf : PSF
             An array describing the PSF kernel of the image.
@@ -34,8 +34,6 @@ class AbstractData(object):
         self.data = data
         self.noise_map = noise_map
         self.exposure_time_map = exposure_time_map
-
-        self.pixel_scale = pixel_scale
 
     @property
     def mapping(self):
@@ -138,7 +136,7 @@ class AbstractNoiseMap(aa.Array):
 
         Parameters
         -----------
-        pixel_scale : float
+        pixel_scales : float
             The size of each pixel in arc seconds.
         weight_map : ndarray
             The weight-value of each pixel which is converted to a variance.
@@ -162,7 +160,7 @@ class AbstractNoiseMap(aa.Array):
 
         Parameters
         -----------
-        pixel_scale : float
+        pixel_scales : float
             The size of each pixel in arc seconds.
         inverse_noise_map : ndarray
             The inverse noise_map value of each pixel which is converted to a variance.
@@ -181,7 +179,7 @@ class ExposureTimeMap(aa.Array):
         return np.abs(exposure_time * (relative_background_noise_map))
 
 
-def load_image(image_path, image_hdu, pixel_scale):
+def load_image(image_path, image_hdu, pixel_scales):
     """Factory for loading the image from a .fits file
 
     Parameters
@@ -190,18 +188,18 @@ def load_image(image_path, image_hdu, pixel_scale):
         The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
     image_hdu : int
         The hdu the image is contained in the .fits file specified by *image_path*.
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds..
     """
-    return aa.Array.from_fits_and_pixel_scale(
-        file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale
+    return aa.array.from_fits(
+        file_path=image_path, hdu=image_hdu, pixel_scales=pixel_scales
     )
 
 
 def load_exposure_time_map(
     exposure_time_map_path,
     exposure_time_map_hdu,
-    pixel_scale,
+    pixel_scales,
     shape=None,
     exposure_time=None,
     exposure_time_map_from_inverse_noise_map=False,
@@ -219,7 +217,7 @@ def load_exposure_time_map(
         (e.g. '/path/to/exposure_time_map.fits')
     exposure_time_map_hdu : int
         The hdu the exposure_time_map is contained in the .fits file specified by *exposure_time_map_path*.
-    pixel_scale : float
+    pixel_scales : float
         The size of each pixel in arc seconds.
     shape : (int, int)
         The shape of the image, required if a single value is used to calculate the exposure time map.
@@ -242,14 +240,14 @@ def load_exposure_time_map(
     if exposure_time_map_options == 0:
 
         if exposure_time is not None and exposure_time_map_path is None:
-            return ExposureTimeMap.from_single_value_shape_and_pixel_scales(
-                value=exposure_time, pixel_scales=(pixel_scale, pixel_scale), shape=shape
+            return ExposureTimeMap.full(
+                fill_value=exposure_time, pixel_scales=(pixel_scales, pixel_scales), shape=shape
             )
         elif exposure_time is None and exposure_time_map_path is not None:
-            return ExposureTimeMap.from_fits_and_pixel_scales(
+            return ExposureTimeMap.from_fits(
                 file_path=exposure_time_map_path,
                 hdu=exposure_time_map_hdu,
-                pixel_scales=(pixel_scale, pixel_scale),
+                pixel_scales=(pixel_scales, pixel_scales),
             )
 
     else:
