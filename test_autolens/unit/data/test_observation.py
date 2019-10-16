@@ -13,7 +13,7 @@ test_data_dir = "{}/../test_files/array/".format(
 class TestObservation:
     def test__constructor_and_specific_instrument_class_methods(self):
 
-        psf = al.PSF.from_gaussian(shape=(11, 11), sigma=0.1, pixel_scales=0.1)
+        psf = aa.kernel.from_gaussian(shape=(11, 11), sigma=0.1, pixel_scales=0.1)
 
         observation = obs.ImagingObservation(
             shape=(51, 51),
@@ -31,7 +31,7 @@ class TestObservation:
 
         lsst = obs.ImagingObservation.lsst()
 
-        lsst_psf = al.PSF.from_gaussian(shape=(31, 31), sigma=0.5, pixel_scales=0.2)
+        lsst_psf = aa.kernel.from_gaussian(shape=(31, 31), sigma=0.5, pixel_scales=0.2)
 
         assert lsst.shape == (101, 101)
         assert lsst.pixel_scales == (0.2, 0.2)
@@ -41,7 +41,7 @@ class TestObservation:
 
         euclid = obs.ImagingObservation.euclid()
 
-        euclid_psf = al.PSF.from_gaussian(shape=(31, 31), sigma=0.1, pixel_scales=0.1)
+        euclid_psf = aa.kernel.from_gaussian(shape=(31, 31), sigma=0.1, pixel_scales=0.1)
 
         assert euclid.shape == (151, 151)
         assert euclid.pixel_scales == (0.1, 0.1)
@@ -51,7 +51,7 @@ class TestObservation:
 
         hst = obs.ImagingObservation.hst()
 
-        hst_psf = al.PSF.from_gaussian(shape=(31, 31), sigma=0.05, pixel_scales=0.05)
+        hst_psf = aa.kernel.from_gaussian(shape=(31, 31), sigma=0.05, pixel_scales=0.05)
 
         assert hst.shape == (251, 251)
         assert hst.pixel_scales == (0.05, 0.05)
@@ -61,7 +61,7 @@ class TestObservation:
 
         hst_up_sampled = obs.ImagingObservation.hst_up_sampled()
 
-        hst_up_sampled_psf = al.PSF.from_gaussian(
+        hst_up_sampled_psf = aa.kernel.from_gaussian(
             shape=(31, 31), sigma=0.05, pixel_scales=0.03
         )
 
@@ -73,7 +73,7 @@ class TestObservation:
 
         adaptive_optics = obs.ImagingObservation.keck_adaptive_optics()
 
-        adaptive_optics_psf = al.PSF.from_gaussian(
+        adaptive_optics_psf = aa.kernel.from_gaussian(
             shape=(31, 31), sigma=0.025, pixel_scales=0.01
         )
 
@@ -114,7 +114,7 @@ class TestObservation:
 
         shape = (11, 11)
         pixel_scales = 0.2
-        psf = al.PSF.from_gaussian(shape=(7, 7), sigma=0.1, pixel_scales=0.2)
+        psf = aa.kernel.from_gaussian(shape=(7, 7), sigma=0.1, pixel_scales=0.2)
         exposure_time = 100.0
         background_sky_level = 1.0
 
@@ -228,7 +228,7 @@ class TestObservation:
 
         shape = (11, 11)
         pixel_scales = 0.2
-        psf = al.PSF.from_gaussian(shape=(7, 7), sigma=0.1, pixel_scales=0.2)
+        psf = aa.kernel.from_gaussian(shape=(7, 7), sigma=0.1, pixel_scales=0.2)
         exposure_time = 100.0
         background_sky_level = 1.0
 

@@ -288,14 +288,14 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         if exposure_time_map is None:
 
-            exposure_time_map = aa.Array.from_single_value_shape_2d_pixel_scales_and_sub_size(
-                value=exposure_time, shape_2d=image.shape, pixel_scales=pixel_scales
+            exposure_time_map = aa.array.full(
+                fill_value=exposure_time, shape_2d=image.shape, pixel_scales=pixel_scales
             )
 
         if background_sky_map is None:
 
-            background_sky_map = aa.Array.from_single_value_shape_2d_pixel_scales_and_sub_size(
-                value=background_sky_level, shape_2d=image.shape, pixel_scales=pixel_scales
+            background_sky_map = aa.array.full(
+                fill_value=background_sky_level, shape_2d=image.shape, pixel_scales=pixel_scales
             )
 
         image += background_sky_map

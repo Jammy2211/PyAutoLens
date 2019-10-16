@@ -16,7 +16,7 @@ def make_mapper_plotter_setup():
 def make_image():
     image = aa.Scaled(sub_array_1d=np.ones((3, 3)), pixel_scales=1.0)
     noise_map = al.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scales=1.0)
-    psf = al.PSF(array_1d=3.0 * np.ones((3, 3)), pixel_scales=1.0)
+    psf = aa.kernel(array_1d=3.0 * np.ones((3, 3)), pixel_scales=1.0)
 
     return al.ImagingData(image=image, pixel_scales=1.0, noise_map=noise_map, psf=psf)
 

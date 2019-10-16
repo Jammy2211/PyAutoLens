@@ -287,13 +287,6 @@ def make_blurring_grid_7x7(blurring_mask_7x7):
     return aa.Grid.from_mask(mask=blurring_mask_7x7)
 
 
-@pytest.fixture(name="binned_grid_7x7")
-def make_binned_grid_7x7(mask_7x7):
-    return mock_aa.MockBinnedGrid.from_mask_and_pixel_scale_binned_grid(
-        mask=mask_7x7, pixel_scale_binned_grid=mask_7x7.pixel_scales
-    )
-
-
 # CONVOLVERS #
 
 

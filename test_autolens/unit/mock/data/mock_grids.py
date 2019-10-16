@@ -22,10 +22,6 @@ class MockScaledSubGrid(aa.Grid):
         pass
 
 
-class MockBinnedGrid(aa.BinnedGrid):
-    pass
-
-
 class MockPixelizationGrid(np.ndarray):
     def __new__(
         cls,

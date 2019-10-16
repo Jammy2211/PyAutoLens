@@ -93,7 +93,7 @@ class TestLikelihood:
 
         # Thus the chi squared is 4.0**2.0 + 3.0**2.0 = 25.0
 
-        psf = al.PSF(
+        psf = aa.kernel(
             array_1d=(
                 np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
             ),
@@ -198,7 +198,7 @@ class TestLikelihood:
 
         # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
-        psf = al.PSF(
+        psf = aa.kernel(
             array_1d=(
                 np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])
             ),
@@ -309,7 +309,7 @@ class TestLikelihood:
 
         # This reduces the chi squared to 2.0 instead of 4.0
 
-        psf = al.PSF(
+        psf = aa.kernel(
             array_1d=(
                 np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])
             ),
@@ -421,7 +421,7 @@ class TestLikelihood:
 
     def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
-        psf = al.PSF(
+        psf = aa.kernel(
             array_1d=(
                 np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
             ),
@@ -529,7 +529,7 @@ class TestLikelihood:
         self
     ):
 
-        psf = al.PSF(
+        psf = aa.kernel(
             array_1d=(
                 np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
             ),
@@ -635,7 +635,7 @@ class TestLikelihood:
 
     def test__hyper_noise_map_max_changes_noise_map__reflected_in_likelihood(self):
 
-        psf = al.PSF(
+        psf = aa.kernel(
             array_1d=(
                 np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
             ),
